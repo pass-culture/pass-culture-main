@@ -33,7 +33,7 @@ const stateWithBookings = {
             dateCreated: '2018-10-29T09:44:38.216817Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
             eventId: 'AE',
-            eventOrThing: {
+            product: {
               accessibility: '\u0000',
               ageMax: null,
               ageMin: null,
@@ -119,7 +119,7 @@ const stateWithBookings = {
             dateCreated: '2018-10-29T09:44:38.216817Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
             eventId: 'AE',
-            eventOrThing: {
+            product: {
               accessibility: '\u0000',
               ageMax: null,
               ageMin: null,
@@ -205,7 +205,7 @@ const stateWithBookings = {
             dateCreated: '2018-10-29T09:44:38.216817Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
             eventId: 'AE',
-            eventOrThing: {
+            product: {
               accessibility: '\u0000',
               ageMax: null,
               ageMin: null,
@@ -291,7 +291,7 @@ const stateWithBookings = {
             dateCreated: '2018-10-29T09:44:38.216817Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
             eventId: 'AE',
-            eventOrThing: {
+            product: {
               accessibility: '\u0000',
               ageMax: null,
               ageMin: null,
@@ -377,7 +377,7 @@ const stateWithBookings = {
             dateCreated: '2018-10-29T09:44:38.216817Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
             eventId: 'AE',
-            eventOrThing: {
+            product: {
               accessibility: '\u0000',
               ageMax: null,
               ageMin: null,
@@ -463,7 +463,7 @@ const stateWithBookings = {
             dateCreated: '2018-10-29T09:44:38.216817Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
             eventId: 'AE',
-            eventOrThing: {
+            product: {
               accessibility: '\u0000',
               ageMax: null,
               ageMin: null,
@@ -549,7 +549,7 @@ const stateWithBookings = {
             dateCreated: '2018-10-29T09:44:38.216817Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
             eventId: 'AE',
-            eventOrThing: {
+            product: {
               accessibility: '\u0000',
               ageMax: null,
               ageMin: null,
@@ -635,7 +635,7 @@ const stateWithBookings = {
             dateCreated: '2018-10-29T09:44:38.291323Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.291297Z',
             eventId: 'A9',
-            eventOrThing: {
+            product: {
               accessibility: '\u0000',
               ageMax: null,
               ageMin: null,
@@ -721,7 +721,7 @@ const stateWithBookings = {
             dateCreated: '2018-10-29T09:44:38.291323Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.291297Z',
             eventId: 'A9',
-            eventOrThing: {
+            product: {
               accessibility: '\u0000',
               ageMax: null,
               ageMin: null,
@@ -805,7 +805,7 @@ const stateWithBookings = {
             dateCreated: '2018-10-29T09:44:38.329923Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.329902Z',
             eventId: 'AM',
-            eventOrThing: {
+            product: {
               accessibility: '\u0000',
               ageMax: null,
               ageMin: null,
@@ -882,7 +882,7 @@ const stateWithBookings = {
             '2018-12-28T22:42:56.790000Z',
           ],
           eventId: 'AE',
-          eventOrThing: {
+          product: {
             accessibility: '\u0000',
             ageMax: null,
             ageMin: null,
@@ -1061,7 +1061,7 @@ const stateWithBookings = {
           dateModifiedAtLastProvider: '2018-10-29T09:44:38.329902Z',
           dateRange: [],
           eventId: 'AM',
-          eventOrThing: {
+          product: {
             accessibility: '\u0000',
             ageMax: null,
             ageMin: null,
@@ -1157,7 +1157,7 @@ const stateWithBookings = {
             '2018-12-28T22:42:56.790000Z',
           ],
           eventId: 'AE',
-          eventOrThing: {
+          product: {
             accessibility: '\u0000',
             ageMax: null,
             ageMin: null,
@@ -1336,7 +1336,7 @@ const stateWithBookings = {
           dateModifiedAtLastProvider: '2018-10-29T09:44:38.329902Z',
           dateRange: [],
           eventId: 'AM',
-          eventOrThing: {
+          product: {
             accessibility: '\u0000',
             ageMax: null,
             ageMin: null,
@@ -1432,7 +1432,7 @@ const stateWithBookings = {
             '2018-12-01T22:42:56.790000Z',
           ],
           eventId: 'A9',
-          eventOrThing: {
+          product: {
             accessibility: '\u0000',
             ageMax: null,
             ageMin: null,
@@ -1546,7 +1546,7 @@ const stateWithBookings = {
             '2018-12-28T22:42:56.790000Z',
           ],
           eventId: 'AE',
-          eventOrThing: {
+          product: {
             accessibility: '\u0000',
             ageMax: null,
             ageMin: null,

@@ -2,6 +2,7 @@ export function setUniqIdOnRecommendation(recommendation) {
   const { mediation, offer } = recommendation
   const { productId } = offer || {}
   const { tutoIndex } = mediation || {}
+
   let uniqId
   if (productId) {
     uniqId = `product_${productId}`

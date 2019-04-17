@@ -60,8 +60,8 @@ describe('nextRecommendationSelector', () => {
           dateCreated: '2018-10-11T09:33:37.061555Z',
           dateModifiedAtLastProvider: '2018-10-11T09:33:37.061543Z',
           dateRange: ['2018-12-30T18:30:39Z', '2018-12-31T22:30:39Z'],
-          eventId: 'ARBA',
-          eventOrThing: {
+          productId: 'ARBA',
+          product: {
             accessibility: '\u0000',
             ageMax: null,
             ageMin: null,
@@ -112,7 +112,6 @@ describe('nextRecommendationSelector', () => {
               price: 15,
             },
           ],
-          thingId: null,
           venue: {
             address: '15 RUE MALTE BRUN',
             bic: null,
@@ -162,7 +161,7 @@ describe('nextRecommendationSelector', () => {
         shareMedium: null,
         thumbUrl: 'http://localhost/storage/thumbs/mediations/ARFA',
         tz: 'Europe/Paris',
-        uniqId: 'event_ARBA',
+        uniqId: 'product_ARBA',
         userId: 'BU',
         validUntilDate: '2018-10-29T05:39:21.819736Z',
       }

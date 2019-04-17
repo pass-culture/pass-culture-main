@@ -101,8 +101,12 @@ const recommendations = [
         'Thu, 10 Jan 2019 18:30:53 GMT',
         'Fri, 18 Jan 2019 20:50:53 GMT',
       ],
-      eventId: 'AN6A',
-      eventOrThing: {
+      id: 'A8YA',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -129,11 +133,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'A8YA',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AN6A',
       stocks: [
         {
           available: 30,
@@ -272,7 +272,6 @@ const recommendations = [
           price: 12.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '2 RUE EDOUARD POISSON',
         bookingEmail: 'manon.bencheikh@live.fr',
@@ -355,8 +354,12 @@ const recommendations = [
         'Thu, 27 Sep 2018 17:00:41 GMT',
         'Mon, 15 Oct 2018 15:00:41 GMT',
       ],
-      eventId: 'ANDA',
-      eventOrThing: {
+      id: 'AN2A',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -384,11 +387,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'AN2A',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'ANDA',
       stocks: [
         {
           available: 30,
@@ -629,7 +628,6 @@ const recommendations = [
           price: 12.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '2 RUE EDOUARD POISSON',
         bookingEmail: 'manon.bencheikh@live.fr',
@@ -709,8 +707,12 @@ const recommendations = [
       dateCreated: '2018-10-08T10:22:11.942090Z',
       dateModifiedAtLastProvider: '2018-10-08T10:22:11.942077Z',
       dateRange: [],
-      eventId: null,
-      eventOrThing: {
+      id: 'ARGQ',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         dateModifiedAtLastProvider: '2018-10-08T10:22:11.912100Z',
         description: null,
         extraData: null,
@@ -726,11 +728,7 @@ const recommendations = [
         type: 'ThingType.LIVRE_EDITION',
         url: null,
       },
-      id: 'ARGQ',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'HU',
       stocks: [
         {
           available: 10,
@@ -748,7 +746,6 @@ const recommendations = [
           price: 0.0,
         },
       ],
-      thingId: 'HU',
       venue: {
         address: '23 Rue Championnet',
         bookingEmail: 'scalcagno@octo.com',
@@ -828,8 +825,12 @@ const recommendations = [
       dateCreated: '2018-09-28T07:24:54.633514Z',
       dateModifiedAtLastProvider: '2018-09-28T07:24:54.633503Z',
       dateRange: [],
-      eventId: null,
-      eventOrThing: {
+      id: 'A8RQ',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         dateModifiedAtLastProvider: '2018-09-28T07:24:54.630147Z',
         description:
           'coaching vocal et sc\u00e9nique : 2 s\u00e9ances de 1h20 chacune pour pr\u00e9parer un projet, un concert, un enregistrement, une audition....',
@@ -848,11 +849,7 @@ const recommendations = [
         type: 'PRATIQUE_ARTISTIQUE_ABO',
         url: null,
       },
-      id: 'A8RQ',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'FQ',
       stocks: [
         {
           available: 7,
@@ -870,7 +867,6 @@ const recommendations = [
           price: 170.0,
         },
       ],
-      thingId: 'FQ',
       venue: {
         address: '2 Rue Paul Bert',
         bookingEmail: 'artificium.asso@gmail.com',
@@ -953,8 +949,12 @@ const recommendations = [
         'Mon, 05 Nov 2018 19:30:10 GMT',
         'Tue, 04 Dec 2018 21:00:10 GMT',
       ],
-      eventId: 'AJ3A',
-      eventOrThing: {
+      id: 'AJ7A',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -975,11 +975,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'MUSIQUE',
       },
-      id: 'AJ7A',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AJ3A',
       stocks: [
         {
           available: 10,
@@ -1033,7 +1029,6 @@ const recommendations = [
           price: 15.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '124 AVENUE DE LA REPUBLIQUE',
         bookingEmail: 'acp@manufacturechanson.org',
@@ -1116,8 +1111,12 @@ const recommendations = [
         'Sat, 19 Jan 2019 19:30:41 GMT',
         'Sun, 20 Jan 2019 21:00:41 GMT',
       ],
-      eventId: 'A8YQ',
-      eventOrThing: {
+      id: 'APTQ',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -1144,11 +1143,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'APTQ',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'A8YQ',
       stocks: [
         {
           available: 100,
@@ -1168,7 +1163,6 @@ const recommendations = [
           price: 19.0,
         },
       ],
-      thingId: null,
       venue: {
         address: "3 Place de l'Orangerie",
         bookingEmail: 'espace93@clichysousbois.fr',
@@ -1251,8 +1245,12 @@ const recommendations = [
         'Fri, 25 Jan 2019 19:30:42 GMT',
         'Wed, 30 Jan 2019 19:50:42 GMT',
       ],
-      eventId: 'AN6Q',
-      eventOrThing: {
+      id: 'A8YQ',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -1278,11 +1276,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'A8YQ',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AN6Q',
       stocks: [
         {
           available: 30,
@@ -1370,7 +1364,6 @@ const recommendations = [
           price: 12.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '2 RUE EDOUARD POISSON',
         bookingEmail: 'manon.bencheikh@live.fr',
@@ -1453,8 +1446,12 @@ const recommendations = [
         'Mon, 15 Oct 2018 17:30:23 GMT',
         'Sun, 19 May 2019 15:25:23 GMT',
       ],
-      eventId: 'A8HA',
-      eventOrThing: {
+      id: 'APCA',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -1481,11 +1478,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'APCA',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'A8HA',
       stocks: [
         {
           available: 30,
@@ -1573,7 +1566,6 @@ const recommendations = [
           price: 12.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '2 RUE EDOUARD POISSON',
         bookingEmail: 'manon.bencheikh@live.fr',
@@ -1653,8 +1645,12 @@ const recommendations = [
       dateCreated: '2018-10-05T13:12:16.482124Z',
       dateModifiedAtLastProvider: '2018-10-05T13:12:16.482118Z',
       dateRange: [],
-      eventId: null,
-      eventOrThing: {
+      id: 'ARBA',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         dateModifiedAtLastProvider: '2018-10-05T13:12:16.478149Z',
         description:
           'Abonnement Premium :  plus de 300 journaux et magazines disponibles en illimit\u00e9 sur tous vos \u00e9crans, sans engagement.',
@@ -1671,11 +1667,7 @@ const recommendations = [
         type: 'ThingType.LIVRE_EDITION',
         url: null,
       },
-      id: 'ARBA',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'HE',
       stocks: [
         {
           available: 10000,
@@ -1693,7 +1685,6 @@ const recommendations = [
           price: 10.0,
         },
       ],
-      thingId: 'HE',
       venue: {
         address: '59 Rue Spontini',
         bookingEmail: 'jflambert@toutabo.com',
@@ -1776,8 +1767,12 @@ const recommendations = [
         'Fri, 08 Feb 2019 19:30:32 GMT',
         'Thu, 14 Feb 2019 20:00:32 GMT',
       ],
-      eventId: 'A8BA',
-      eventOrThing: {
+      id: 'A83A',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -1802,11 +1797,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'A83A',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'A8BA',
       stocks: [
         {
           available: 30,
@@ -1911,7 +1902,6 @@ const recommendations = [
           price: 12.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '2 RUE EDOUARD POISSON',
         bookingEmail: 'manon.bencheikh@live.fr',
@@ -1994,8 +1984,12 @@ const recommendations = [
         'Sat, 13 Oct 2018 18:30:03 GMT',
         'Sun, 14 Oct 2018 20:00:03 GMT',
       ],
-      eventId: 'AJZA',
-      eventOrThing: {
+      id: 'AJ5A',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -2016,11 +2010,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'MUSIQUE',
       },
-      id: 'AJ5A',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AJZA',
       stocks: [
         {
           available: 10,
@@ -2040,7 +2030,6 @@ const recommendations = [
           price: 15.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '124 AVENUE DE LA REPUBLIQUE',
         bookingEmail: 'acp@manufacturechanson.org',
@@ -2123,8 +2112,12 @@ const recommendations = [
         'Thu, 11 Oct 2018 18:00:39 GMT',
         'Mon, 15 Oct 2018 15:15:39 GMT',
       ],
-      eventId: 'AQBA',
-      eventOrThing: {
+      id: 'ARAQ',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -2145,11 +2138,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'EventType.SPECTACLE_VIVANT',
       },
-      id: 'ARAQ',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AQBA',
       stocks: [
         {
           available: 5,
@@ -2220,7 +2209,6 @@ const recommendations = [
           price: 0.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '9 BOULEVARD LENINE',
         bookingEmail: 'sultan@mc93.com',
@@ -2303,8 +2291,12 @@ const recommendations = [
         'Fri, 28 Sep 2018 16:20:58 GMT',
         'Sun, 24 Mar 2019 16:00:47 GMT',
       ],
-      eventId: 'A8CA',
-      eventOrThing: {
+      id: 'A84A',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -2328,11 +2320,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'A84A',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'A8CA',
       stocks: [
         {
           available: 30,
@@ -2522,7 +2510,6 @@ const recommendations = [
           price: 12.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '2 RUE EDOUARD POISSON',
         bookingEmail: 'manon.bencheikh@live.fr',
@@ -2605,8 +2592,12 @@ const recommendations = [
         'Fri, 19 Oct 2018 18:30:57 GMT',
         'Sat, 20 Oct 2018 20:00:57 GMT',
       ],
-      eventId: 'AJ2Q',
-      eventOrThing: {
+      id: 'AJ6Q',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -2627,11 +2618,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'MUSIQUE',
       },
-      id: 'AJ6Q',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AJ2Q',
       stocks: [
         {
           available: 10,
@@ -2651,7 +2638,6 @@ const recommendations = [
           price: 15.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '124 AVENUE DE LA REPUBLIQUE',
         bookingEmail: 'acp@manufacturechanson.org',
@@ -2734,8 +2720,12 @@ const recommendations = [
         'Fri, 21 Sep 2018 18:00:34 GMT',
         'Sat, 20 Oct 2018 19:00:34 GMT',
       ],
-      eventId: 'AJ8Q',
-      eventOrThing: {
+      id: 'AJSA',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -2756,11 +2746,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'Workshop',
       },
-      id: 'AJSA',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AJ8Q',
       stocks: [
         {
           available: 2,
@@ -2848,7 +2834,6 @@ const recommendations = [
           price: 0.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '22 Rue Victor Hugo',
         bookingEmail: 'Sebastien.tharsis@wanadoo.fr',
@@ -2931,8 +2916,12 @@ const recommendations = [
         'Thu, 13 Dec 2018 18:30:32 GMT',
         'Sat, 22 Dec 2018 20:45:32 GMT',
       ],
-      eventId: 'AN5Q',
-      eventOrThing: {
+      id: 'A8XQ',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -2958,11 +2947,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'A8XQ',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AN5Q',
       stocks: [
         {
           available: 30,
@@ -3101,7 +3086,6 @@ const recommendations = [
           price: 12.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '2 RUE EDOUARD POISSON',
         bookingEmail: 'manon.bencheikh@live.fr',
@@ -3184,8 +3168,12 @@ const recommendations = [
         'Wed, 17 Oct 2018 18:30:50 GMT',
         'Thu, 18 Oct 2018 20:00:50 GMT',
       ],
-      eventId: 'AJZQ',
-      eventOrThing: {
+      id: 'AJ5Q',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -3206,11 +3194,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'MUSIQUE',
       },
-      id: 'AJ5Q',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AJZQ',
       stocks: [
         {
           available: 10,
@@ -3230,7 +3214,6 @@ const recommendations = [
           price: 15.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '124 AVENUE DE LA REPUBLIQUE',
         bookingEmail: 'acp@manufacturechanson.org',
@@ -3313,8 +3296,12 @@ const recommendations = [
         'Tue, 02 Oct 2018 17:30:17 GMT',
         'Tue, 16 Oct 2018 18:30:17 GMT',
       ],
-      eventId: 'ANFQ',
-      eventOrThing: {
+      id: 'AN4Q',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -3337,11 +3324,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'PRATIQUE_ARTISTIQUE',
       },
-      id: 'AN4Q',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'ANFQ',
       stocks: [
         {
           available: 3,
@@ -3395,7 +3378,6 @@ const recommendations = [
           price: 0.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '2 Boulevard Anatole France',
         bookingEmail: 'nicolas.lorach@gmail.com',
@@ -3478,8 +3460,12 @@ const recommendations = [
         'Mon, 15 Oct 2018 12:30:23 GMT',
         'Fri, 19 Oct 2018 13:15:23 GMT',
       ],
-      eventId: 'AN3Q',
-      eventOrThing: {
+      id: 'A8VA',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -3506,11 +3492,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'A8VA',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AN3Q',
       stocks: [
         {
           available: 30,
@@ -3615,7 +3597,6 @@ const recommendations = [
           price: 12.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '2 RUE EDOUARD POISSON',
         bookingEmail: 'manon.bencheikh@live.fr',
@@ -3698,8 +3679,12 @@ const recommendations = [
         'Wed, 07 Nov 2018 19:30:11 GMT',
         'Thu, 08 Nov 2018 21:00:11 GMT',
       ],
-      eventId: 'AJ3Q',
-      eventOrThing: {
+      id: 'AJ7Q',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -3720,11 +3705,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'MUSIQUE',
       },
-      id: 'AJ7Q',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AJ3Q',
       stocks: [
         {
           available: 10,
@@ -3744,7 +3725,6 @@ const recommendations = [
           price: 15.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '124 AVENUE DE LA REPUBLIQUE',
         bookingEmail: 'acp@manufacturechanson.org',
@@ -3827,8 +3807,12 @@ const recommendations = [
         'Tue, 13 Nov 2018 19:00:35 GMT',
         'Sat, 17 Nov 2018 19:15:35 GMT',
       ],
-      eventId: 'ANZA',
-      eventOrThing: {
+      id: 'A8SQ',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -3856,11 +3840,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'A8SQ',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'ANZA',
       stocks: [
         {
           available: 5,
@@ -3931,7 +3911,6 @@ const recommendations = [
           price: 8.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '17 Boulevard Jourdan',
         bookingEmail: 'aurelien.peroumal@theatredelacite.com',
@@ -4014,8 +3993,12 @@ const recommendations = [
         'Tue, 20 Nov 2018 18:30:54 GMT',
         'Sun, 25 Nov 2018 17:00:54 GMT',
       ],
-      eventId: 'AN4Q',
-      eventOrThing: {
+      id: 'A8WA',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -4042,11 +4025,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'A8WA',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AN4Q',
       stocks: [
         {
           available: 30,
@@ -4151,7 +4130,6 @@ const recommendations = [
           price: 12.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '2 RUE EDOUARD POISSON',
         bookingEmail: 'manon.bencheikh@live.fr',
@@ -4234,8 +4212,12 @@ const recommendations = [
         'Tue, 02 Apr 2019 08:00:09 GMT',
         'Sun, 07 Apr 2019 14:00:09 GMT',
       ],
-      eventId: 'A8FQ',
-      eventOrThing: {
+      id: 'APAQ',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -4262,11 +4244,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'APAQ',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'A8FQ',
       stocks: [
         {
           available: 30,
@@ -4422,7 +4400,6 @@ const recommendations = [
           price: 12.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '2 RUE EDOUARD POISSON',
         bookingEmail: 'manon.bencheikh@live.fr',
@@ -4506,8 +4483,12 @@ const recommendations = [
         'Fri, 30 Nov 2018 18:00:23 GMT',
         'Fri, 30 Nov 2018 23:00:23 GMT',
       ],
-      eventId: 'ANBQ',
-      eventOrThing: {
+      id: 'ANXQ',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -4528,11 +4509,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'MUSEES_PATRIMOINE',
       },
-      id: 'ANXQ',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'ANBQ',
       stocks: [
         {
           available: null,
@@ -4552,7 +4529,6 @@ const recommendations = [
           price: 0.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '37 Quai Branly',
         bookingEmail: 'clemence.gros@quaibranly.fr',
@@ -4635,8 +4611,12 @@ const recommendations = [
         'Fri, 29 Mar 2019 19:30:58 GMT',
         'Sat, 06 Apr 2019 17:40:58 GMT',
       ],
-      eventId: 'A8FA',
-      eventOrThing: {
+      id: 'APAA',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -4662,11 +4642,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'APAA',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'A8FA',
       stocks: [
         {
           available: 30,
@@ -4805,7 +4781,6 @@ const recommendations = [
           price: 12.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '2 RUE EDOUARD POISSON',
         bookingEmail: 'manon.bencheikh@live.fr',
@@ -4888,8 +4863,12 @@ const recommendations = [
         'Wed, 07 Nov 2018 18:30:49 GMT',
         'Sat, 17 Nov 2018 18:05:49 GMT',
       ],
-      eventId: 'AN4A',
-      eventOrThing: {
+      id: 'A8VQ',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -4912,11 +4891,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'A8VQ',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AN4A',
       stocks: [
         {
           available: 30,
@@ -5072,7 +5047,6 @@ const recommendations = [
           price: 12.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '2 RUE EDOUARD POISSON',
         bookingEmail: 'manon.bencheikh@live.fr',
@@ -5155,8 +5129,12 @@ const recommendations = [
         'Fri, 16 Nov 2018 19:30:22 GMT',
         'Sat, 17 Nov 2018 21:00:22 GMT',
       ],
-      eventId: 'AJ5A',
-      eventOrThing: {
+      id: 'AKBA',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -5177,11 +5155,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'MUSIQUE',
       },
-      id: 'AKBA',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AJ5A',
       stocks: [
         {
           available: 10,
@@ -5201,7 +5175,6 @@ const recommendations = [
           price: 15.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '124 AVENUE DE LA REPUBLIQUE',
         bookingEmail: 'acp@manufacturechanson.org',
@@ -5284,8 +5257,12 @@ const recommendations = [
         'Fri, 09 Nov 2018 19:30:15 GMT',
         'Sat, 10 Nov 2018 21:00:15 GMT',
       ],
-      eventId: 'AJ4A',
-      eventOrThing: {
+      id: 'AKAA',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -5306,11 +5283,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'MUSIQUE',
       },
-      id: 'AKAA',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AJ4A',
       stocks: [
         {
           available: 10,
@@ -5330,7 +5303,6 @@ const recommendations = [
           price: 15.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '124 AVENUE DE LA REPUBLIQUE',
         bookingEmail: 'acp@manufacturechanson.org',
@@ -5413,8 +5385,12 @@ const recommendations = [
         'Wed, 08 May 2019 08:00:32 GMT',
         'Thu, 09 May 2019 20:00:32 GMT',
       ],
-      eventId: 'A8HQ',
-      eventOrThing: {
+      id: 'APCQ',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -5439,11 +5415,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'APCQ',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'A8HQ',
       stocks: [
         {
           available: 30,
@@ -5480,7 +5452,6 @@ const recommendations = [
           price: 12.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '2 RUE EDOUARD POISSON',
         bookingEmail: 'manon.bencheikh@live.fr',
@@ -5563,8 +5534,12 @@ const recommendations = [
         'Tue, 02 Oct 2018 17:30:25 GMT',
         'Wed, 24 Oct 2018 19:00:25 GMT',
       ],
-      eventId: 'ANFA',
-      eventOrThing: {
+      id: 'AN4A',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -5587,11 +5562,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'PRATIQUE_ARTISTIQUE',
       },
-      id: 'AN4A',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'ANFA',
       stocks: [
         {
           available: 3,
@@ -5662,7 +5633,6 @@ const recommendations = [
           price: 0.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '52 Rue du Sergent Bobillot',
         bookingEmail: 'nicolas.lorach@gmail.com',
@@ -5745,8 +5715,12 @@ const recommendations = [
         'Thu, 20 Sep 2018 18:00:00 GMT',
         'Sun, 21 Oct 2018 10:00:37 GMT',
       ],
-      eventId: 'AGRQ',
-      eventOrThing: {
+      id: 'AGGQ',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -5767,11 +5741,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'Workshop',
       },
-      id: 'AGGQ',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AGRQ',
       stocks: [
         {
           available: 2,
@@ -5859,7 +5829,6 @@ const recommendations = [
           price: 0.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '71 Avenue Marceau',
         bookingEmail: 'nicolas.lorach@gmail.com',
@@ -5942,8 +5911,12 @@ const recommendations = [
         'Sat, 20 Oct 2018 09:00:07 GMT',
         'Sun, 21 Oct 2018 18:00:07 GMT',
       ],
-      eventId: 'ANEA',
-      eventOrThing: {
+      id: 'AN3A',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -5965,11 +5938,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'MUSEES_PATRIMOINE',
       },
-      id: 'AN3A',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'ANEA',
       stocks: [
         {
           available: 60,
@@ -6006,7 +5975,6 @@ const recommendations = [
           price: 0.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '51 RUE DE BERCY',
         bookingEmail: 'm.miel@cinematheque.fr',
@@ -6089,8 +6057,12 @@ const recommendations = [
         'Tue, 04 Dec 2018 19:30:11 GMT',
         'Wed, 05 Dec 2018 21:30:11 GMT',
       ],
-      eventId: 'A8XA',
-      eventOrThing: {
+      id: 'APSA',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -6115,11 +6087,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'APSA',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'A8XA',
       stocks: [
         {
           available: 100,
@@ -6139,7 +6107,6 @@ const recommendations = [
           price: 19.0,
         },
       ],
-      thingId: null,
       venue: {
         address: "3 Place de l'Orangerie",
         bookingEmail: 'espace93@clichysousbois.fr',
@@ -6222,8 +6189,12 @@ const recommendations = [
         'Wed, 14 Nov 2018 19:30:17 GMT',
         'Thu, 13 Dec 2018 21:00:17 GMT',
       ],
-      eventId: 'AJ4Q',
-      eventOrThing: {
+      id: 'AKAQ',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -6244,11 +6215,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'MUSIQUE',
       },
-      id: 'AKAQ',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AJ4Q',
       stocks: [
         {
           available: 10,
@@ -6285,7 +6252,6 @@ const recommendations = [
           price: 15.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '124 AVENUE DE LA REPUBLIQUE',
         bookingEmail: 'acp@manufacturechanson.org',
@@ -6368,8 +6334,12 @@ const recommendations = [
         'Tue, 06 Nov 2018 19:30:24 GMT',
         'Wed, 07 Nov 2018 21:20:24 GMT',
       ],
-      eventId: 'A8WA',
-      eventOrThing: {
+      id: 'APRA',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -6395,11 +6365,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'APRA',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'A8WA',
       stocks: [
         {
           available: 6,
@@ -6419,7 +6385,6 @@ const recommendations = [
           price: 19.0,
         },
       ],
-      thingId: null,
       venue: {
         address: "3 Place de l'Orangerie",
         bookingEmail: 'espace93@clichysousbois.fr',
@@ -6502,8 +6467,12 @@ const recommendations = [
         'Tue, 23 Oct 2018 18:30:26 GMT',
         'Sun, 02 Dec 2018 16:30:26 GMT',
       ],
-      eventId: 'AN5A',
-      eventOrThing: {
+      id: 'A8XA',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -6527,11 +6496,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'A8XA',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AN5A',
       stocks: [
         {
           available: 30,
@@ -6687,7 +6652,6 @@ const recommendations = [
           price: 12.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '2 RUE EDOUARD POISSON',
         bookingEmail: 'manon.bencheikh@live.fr',
@@ -6770,8 +6734,12 @@ const recommendations = [
         'Mon, 01 Oct 2018 18:30:05 GMT',
         'Tue, 16 Oct 2018 20:00:28 GMT',
       ],
-      eventId: 'AJTA',
-      eventOrThing: {
+      id: 'AJWQ',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -6792,11 +6760,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'MUSIQUE',
       },
-      id: 'AJWQ',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AJTA',
       stocks: [
         {
           available: 10,
@@ -6850,7 +6814,6 @@ const recommendations = [
           price: 15.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '124 AVENUE DE LA REPUBLIQUE',
         bookingEmail: 'acp@manufacturechanson.org',
@@ -6933,8 +6896,12 @@ const recommendations = [
         'Mon, 24 Sep 2018 18:30:34 GMT',
         'Sat, 15 Dec 2018 21:00:44 GMT',
       ],
-      eventId: 'AMZA',
-      eventOrThing: {
+      id: 'ANKQ',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -6955,11 +6922,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'SPECTACLE_VIVANT',
       },
-      id: 'ANKQ',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AMZA',
       stocks: [
         {
           available: 100,
@@ -6979,7 +6942,6 @@ const recommendations = [
           price: 11.0,
         },
       ],
-      thingId: null,
       venue: {
         address: "3 Place de l'Orangerie",
         bookingEmail: 'espace93@clichysousbois.fr',
@@ -7062,8 +7024,12 @@ const recommendations = [
         'Thu, 25 Oct 2018 18:15:24 GMT',
         'Fri, 26 Oct 2018 19:45:24 GMT',
       ],
-      eventId: 'AQCQ',
-      eventOrThing: {
+      id: 'ARCQ',
+      idAtProviders: null,
+      isActive: true,
+      lastProviderId: null,
+      modelName: 'Offer',
+      product: {
         accessibility: '\u0000',
         ageMax: null,
         ageMin: null,
@@ -7084,11 +7050,7 @@ const recommendations = [
         thumbCount: 0,
         type: 'EventType.CINEMA',
       },
-      id: 'ARCQ',
-      idAtProviders: null,
-      isActive: true,
-      lastProviderId: null,
-      modelName: 'Offer',
+      productId: 'AQCQ',
       stocks: [
         {
           available: 10,
@@ -7108,7 +7070,6 @@ const recommendations = [
           price: 3.0,
         },
       ],
-      thingId: null,
       venue: {
         address: '104 Avenue Jean Lolive',
         bookingEmail: 'contact@cotecourt.org',

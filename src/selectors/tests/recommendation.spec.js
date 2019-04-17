@@ -39,8 +39,7 @@ describe('selectRecommendation', () => {
           dateCreated: '2018-09-14T13:46:33.401791Z',
           dateModifiedAtLastProvider: '2018-09-14T13:46:33.401781Z',
           dateRange: [],
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-09-14T13:46:33.399386Z',
             description:
               'Abonnement Premium :  plus de 350 journaux et magazines disponibles en illimité sur tous vos écrans, sans engagement.',
@@ -81,7 +80,7 @@ describe('selectRecommendation', () => {
               price: 10,
             },
           ],
-          thingId: 'CM',
+          productId: 'CM',
           venue: {
             address: null,
             bic: null,
@@ -128,6 +127,7 @@ describe('selectRecommendation', () => {
         offerId: 'AM3A',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/mediations/ALGA',
         userId: 'V9',
         validUntilDate: '2018-10-28T19:48:46.809836Z',
       }
@@ -138,15 +138,4 @@ describe('selectRecommendation', () => {
     })
   })
 
-  describe('when the recommendationId does not exist', () => {
-    it.skip('should return empty string', () => {
-      // given
-      const recommendationId = null
-      const expected = ''
-
-      // when
-      const result = selectRecommendation(state, recommendationId)
-      expect(result).toEqual(expected)
-    })
-  })
 })

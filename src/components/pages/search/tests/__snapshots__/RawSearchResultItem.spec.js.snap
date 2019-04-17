@@ -4,6 +4,8 @@ exports[`src | components | pages | RawSearchResultItem snapshot should match sn
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <RawSearchResultItem
+    dispatch={[Function]}
+    history={Object {}}
     location={
       Object {
         "pathname": "/recherche/Applaudir",
@@ -43,12 +45,16 @@ ShallowWrapper {
           "dehumanizedLastProviderId": 6,
           "dehumanizedThingId": 129,
           "dehumanizedVenueId": 2,
-          "description": null,
-          "eventId": null,
-          "eventOrThing": Object {
+          "id": "X9",
+          "idAtProviders": "2921:9782367740911",
+          "lastProviderId": "AY",
+          "modelName": "Offer",
+          "name": "sur la route des migrants ; rencontres à Calais",
+          "product": Object {
             "dateModifiedAtLastProvider": "2018-01-30T00:00:00Z",
             "dehumanizedId": 129,
             "dehumanizedLastProviderId": 8,
+            "description": null,
             "extraData": Object {
               "author": "Jouve, Jessica ;Dufour, Anthony",
               "dewey": "840",
@@ -68,17 +74,12 @@ ShallowWrapper {
             "lastProviderId": "BA",
             "mediaUrls": Array [],
             "modelName": "Thing",
+            "name": "sur la route des migrants ; rencontres à Calais",
             "thumbCount": 2,
             "type": "Book",
             "url": null,
           },
-          "id": "X9",
-          "idAtProviders": "2921:9782367740911",
-          "lastProviderId": "AY",
-          "modelName": "Offer",
-          "name": "sur la route des migrants ; rencontres à Calais",
-          "thingId": "QE",
-          "type": "Book",
+          "productId": "QE",
           "venue": Object {
             "address": "72 rue Carnot",
             "bookingEmail": "passculture-dev@beta.gouv.fr",
@@ -125,9 +126,9 @@ ShallowWrapper {
         "offerId": "X9",
         "search": "route",
         "shareMedium": null,
-        "thumbUrl": "http://localhost/storage/thumbs/things/QE",
+        "thumbUrl": "http://localhost/storage/thumbs/products/QE",
         "tz": "Europe/Paris",
-        "uniqId": "thing_QE",
+        "uniqId": "product_QE",
         "userId": "AE",
         "validUntilDate": "2018-09-11T14:27:31.798174Z",
       }
@@ -165,7 +166,7 @@ ShallowWrapper {
           >
             <img
               alt=""
-              src="http://localhost/storage/thumbs/things/QE"
+              src="http://localhost/storage/thumbs/products/QE"
             />
           </div>
           <div
@@ -224,7 +225,7 @@ ShallowWrapper {
             >
               <img
                 alt=""
-                src="http://localhost/storage/thumbs/things/QE"
+                src="http://localhost/storage/thumbs/products/QE"
               />
             </div>
             <div
@@ -293,7 +294,7 @@ ShallowWrapper {
               >
                 <img
                   alt=""
-                  src="http://localhost/storage/thumbs/things/QE"
+                  src="http://localhost/storage/thumbs/products/QE"
                 />
               </div>,
               <div
@@ -342,7 +343,7 @@ ShallowWrapper {
               "props": Object {
                 "children": <img
                   alt=""
-                  src="http://localhost/storage/thumbs/things/QE"
+                  src="http://localhost/storage/thumbs/products/QE"
                 />,
                 "className": "image flex-0 dotted-right-primary flex-rows flex-center",
               },
@@ -353,7 +354,7 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "alt": "",
-                  "src": "http://localhost/storage/thumbs/things/QE",
+                  "src": "http://localhost/storage/thumbs/products/QE",
                 },
                 "ref": null,
                 "rendered": null,
@@ -531,7 +532,7 @@ ShallowWrapper {
             >
               <img
                 alt=""
-                src="http://localhost/storage/thumbs/things/QE"
+                src="http://localhost/storage/thumbs/products/QE"
               />
             </div>
             <div
@@ -590,7 +591,7 @@ ShallowWrapper {
               >
                 <img
                   alt=""
-                  src="http://localhost/storage/thumbs/things/QE"
+                  src="http://localhost/storage/thumbs/products/QE"
                 />
               </div>
               <div
@@ -659,7 +660,7 @@ ShallowWrapper {
                 >
                   <img
                     alt=""
-                    src="http://localhost/storage/thumbs/things/QE"
+                    src="http://localhost/storage/thumbs/products/QE"
                   />
                 </div>,
                 <div
@@ -708,7 +709,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": <img
                     alt=""
-                    src="http://localhost/storage/thumbs/things/QE"
+                    src="http://localhost/storage/thumbs/products/QE"
                   />,
                   "className": "image flex-0 dotted-right-primary flex-rows flex-center",
                 },
@@ -719,7 +720,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "alt": "",
-                    "src": "http://localhost/storage/thumbs/things/QE",
+                    "src": "http://localhost/storage/thumbs/products/QE",
                   },
                   "ref": null,
                   "rendered": null,

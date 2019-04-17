@@ -2,7 +2,6 @@ import get from 'lodash.get'
 import uniqBy from 'lodash.uniqby'
 import { createSelector } from 'reselect'
 
-import { THUMBS_URL } from '../utils/config'
 import { computeDistanceInMeters, humanizeDistance } from '../utils/geolocation'
 import { getTimezone } from '../utils/timezone'
 import { setUniqIdOnRecommendation } from '../utils/recommendation'
@@ -27,33 +26,12 @@ export const selectRecommendations = createSelector(
     filteredRecommendations = filteredRecommendations.map(
       (recommendation, index) => {
         const { mediation, offer } = recommendation
-        const { eventOrThing, eventId, thingId, venue } = offer || {}
+        const { product, venue } = offer || {}
 
         // thumbUrl
-        let thumbUrl
         const firstThumbDominantColor =
           get(mediation, 'firstThumbDominantColor') ||
-          get(eventOrThing, 'firstThumbDominantColor')
-        const mediationId = get(mediation, 'id')
-        if (get(mediation, 'thumbCount')) {
-          thumbUrl = get(
-            mediation,
-            'thumbUrls[0]',
-            `${THUMBS_URL}/mediations/${mediationId}`
-          )
-        } else if (eventId && get(offer, 'eventOrThing.thumbCount')) {
-          thumbUrl = get(
-            eventOrThing,
-            'thumbUrls[0]',
-            `${THUMBS_URL}/events/${eventId}`
-          )
-        } else if (thingId && get(offer, 'eventOrThing.thumbCount')) {
-          thumbUrl = get(
-            eventOrThing,
-            'thumbUrls[0]',
-            `${THUMBS_URL}/things/${thingId}`
-          )
-        }
+          get(product, 'firstThumbDominantColor')
 
         let distance
         if (!latitude || !longitude || !offer || !venue) {
@@ -77,7 +55,6 @@ export const selectRecommendations = createSelector(
             distance,
             firstThumbDominantColor,
             index,
-            thumbUrl,
             tz,
           },
           recommendation

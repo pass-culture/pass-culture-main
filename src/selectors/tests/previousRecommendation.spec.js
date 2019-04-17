@@ -59,8 +59,7 @@ describe('previousRecommendationSelector', () => {
           dateCreated: '2018-09-14T13:46:33.401791Z',
           dateModifiedAtLastProvider: '2018-09-14T13:46:33.401781Z',
           dateRange: [],
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-09-14T13:46:33.399386Z',
             description:
               'Abonnement Premium :  plus de 350 journaux et magazines disponibles en illimité sur tous vos écrans, sans engagement.',
@@ -101,7 +100,7 @@ describe('previousRecommendationSelector', () => {
               price: 10,
             },
           ],
-          thingId: 'CM',
+          productId: 'CM',
           venue: {
             address: null,
             bic: null,
@@ -151,7 +150,7 @@ describe('previousRecommendationSelector', () => {
         shareMedium: null,
         thumbUrl: 'http://localhost/storage/thumbs/mediations/ALGA',
         tz: 'Europe/Paris',
-        uniqId: 'thing_CM',
+        uniqId: 'product_CM',
         userId: 'V9',
         validUntilDate: '2018-10-28T19:48:46.809836Z',
       }

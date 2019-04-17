@@ -7,10 +7,10 @@ ShallowWrapper {
     recommendation={
       Object {
         "offer": Object {
-          "eventOrThing": Object {
-            "name": "Titre de eventorthing",
-          },
           "name": "Titre de la recommendation",
+          "product": Object {
+            "name": "Titre de la recommendation",
+          },
           "venue": Object {
             "name": "Titre de la venue ",
           },

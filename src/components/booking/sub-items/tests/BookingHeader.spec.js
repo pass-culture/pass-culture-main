@@ -9,8 +9,8 @@ describe('src | components | booking | BookingHeader', () => {
       const props = {
         recommendation: {
           offer: {
-            eventOrThing: { name: 'Titre de eventorthing' },
             name: 'Titre de la recommendation',
+            product: { name: 'Titre de la recommendation' },
             venue: { name: 'Titre de la venue ' },
           },
         },

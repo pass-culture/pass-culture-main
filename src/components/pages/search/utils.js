@@ -1,5 +1,6 @@
 import find from 'lodash.find'
 import get from 'lodash.get'
+import _isEmpty from 'lodash.isempty'
 import moment from 'moment'
 import {
   capitalize,
@@ -97,7 +98,8 @@ const formatDate = (date, tz) =>
   )
 
 export const getRecommendationDateString = offer => {
-  if (offer.eventId === null) return 'permanent'
+  if (_isEmpty(offer.dateRange) ) return 'permanent'
+
   const { departementCode } = offer.venue
   const tz = getTimezone(departementCode)
 

@@ -46,8 +46,7 @@ describe('currentRecommendationSelector', () => {
           dateCreated: '2018-10-05T13:12:16.482124Z',
           dateModifiedAtLastProvider: '2018-10-05T13:12:16.482118Z',
           dateRange: [],
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-10-05T13:12:16.478149Z',
             description:
               'Abonnement Premium :  plus de 350 journaux et magazines disponibles en illimité sur tous vos écrans, sans engagement.',
@@ -88,7 +87,7 @@ describe('currentRecommendationSelector', () => {
               price: 10,
             },
           ],
-          thingId: 'HE',
+          productId: 'HE',
           venue: {
             address: '59 Rue Spontini',
             bic: null,
@@ -138,7 +137,7 @@ describe('currentRecommendationSelector', () => {
         shareMedium: null,
         thumbUrl: 'http://localhost/storage/thumbs/mediations/AP8A',
         tz: 'Europe/Paris',
-        uniqId: 'thing_HE',
+        uniqId: 'product_HE',
         userId: 'BU',
         validUntilDate: '2018-10-29T05:39:21.029146Z',
       }

@@ -26,12 +26,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 129,
           dehumanizedVenueId: 2,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 129,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Jouve, Jessica ;Dufour, Anthony',
               dewey: '840',
@@ -47,6 +46,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: 'sur la route des migrants ; rencontres à Calais',
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -56,8 +56,7 @@ const state = {
           lastProviderId: 'AY',
           modelName: 'Offer',
           name: 'sur la route des migrants ; rencontres à Calais',
-          thingId: 'QE',
-          type: 'Book',
+          productId: 'QE',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -104,6 +103,7 @@ const state = {
         offerId: 'X9',
         search: 'route',
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/QE',
         userId: 'AE',
         validUntilDate: '2018-09-11T14:27:31.798174Z',
         bookingsIds: [],
@@ -132,9 +132,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 131,
           dehumanizedVenueId: 2,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 131,
             dehumanizedLastProviderId: 8,
@@ -164,9 +162,7 @@ const state = {
           idAtProviders: '2921:9791033178330',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: "route de la soie ; de l'extrême-orient chinois à l'Europe occidentale (édition 2018)",
-          thingId: 'QM',
-          type: 'Book',
+          productId: 'QM',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -213,6 +209,7 @@ const state = {
         offerId: 'AFMA',
         search: 'route',
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/QM',
         userId: 'AE',
         validUntilDate: '2018-09-11T14:27:31.942613Z',
         bookingsIds: [],
@@ -241,9 +238,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 105,
           dehumanizedVenueId: 2,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 105,
             dehumanizedLastProviderId: 8,
@@ -272,9 +267,7 @@ const state = {
           idAtProviders: '2921:9783037784990',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'landscape of faith architectural interventions along the mexican pilgrimage route /anglais/espagnol',
-          thingId: 'NE',
-          type: 'Book',
+          productId: 'NE',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -321,6 +314,7 @@ const state = {
         offerId: 'AE7A',
         search: 'route',
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/NE',
         userId: 'AE',
         validUntilDate: '2018-09-11T14:27:31.982868Z',
         bookingsIds: [],
@@ -349,12 +343,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 85,
           dehumanizedVenueId: 1,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 85,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Hamilton, Peter F.',
               collection: 'BRAGELONNE IMAGINAIRE',
@@ -380,9 +373,7 @@ const state = {
           idAtProviders: '2949:9782352947325',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'la grande route du Nord t.2',
-          thingId: 'KU',
-          type: 'Book',
+          productId: 'KU',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -429,6 +420,7 @@ const state = {
         offerId: 'VU',
         search: 'route',
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/KU',
         userId: 'AE',
         validUntilDate: '2018-09-11T14:27:32.022552Z',
         bookingsIds: [],
@@ -457,9 +449,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 6,
           dehumanizedVenueId: 2,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2017-06-23T00:00:00Z',
             dehumanizedId: 6,
             dehumanizedLastProviderId: 8,
@@ -479,6 +469,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: 'sur la route des Etats-Unis',
             thumbCount: 0,
             type: 'Book',
             url: null,
@@ -487,9 +478,7 @@ const state = {
           idAtProviders: '2921:9782816146462',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'sur la route des Etats-Unis',
-          type: 'Book',
-          thingId: 'AY',
+          productId: 'AY',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -536,6 +525,7 @@ const state = {
         offerId: 'AECQ',
         search: 'route',
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/AY',
         userId: 'AE',
         validUntilDate: '2018-09-11T14:27:32.064444Z',
         bookingsIds: [],
@@ -578,6 +568,7 @@ const state = {
         offerId: null,
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/mediations/AE',
         userId: 'AE',
         validUntilDate: '2018-09-20T08:28:24.010779Z',
       },
@@ -619,6 +610,7 @@ const state = {
         offerId: null,
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/mediations/A9',
         userId: 'AE',
         validUntilDate: '2018-09-20T08:28:24.057062Z',
       },
@@ -646,9 +638,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 141,
           dehumanizedVenueId: 1,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 141,
             dehumanizedLastProviderId: 8,
@@ -668,6 +658,8 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name:
+              "fiches de sciences de l'éducation ; rappels de cours et exercices corrigés (2e édition)",
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -676,9 +668,7 @@ const state = {
           idAtProviders: '2949:9782340022980',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: "fiches de sciences de l'éducation ; rappels de cours et exercices corrigés (2e édition)",
-          thingId: 'RU',
-          type: 'Book',
+          productId: 'RU',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -725,6 +715,7 @@ const state = {
         offerId: 'U4',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/RU',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:48.745294Z',
         bookingsIds: [],
@@ -753,9 +744,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 246,
           dehumanizedVenueId: 1,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 246,
             dehumanizedLastProviderId: 8,
@@ -782,9 +771,7 @@ const state = {
           idAtProviders: '2949:9780500287804',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'the human past (2d ed.) /anglais',
-          thingId: '6Y',
-          type: 'Book',
+          productId: '6Y',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -831,6 +818,7 @@ const state = {
         offerId: 'B4',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/6Y',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:55:10.425783Z',
         bookingsIds: [],
@@ -859,12 +847,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 23,
           dehumanizedVenueId: 1,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 23,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Goldsworthy, Andy',
               dewey: '770',
@@ -879,6 +866,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: 'andy goldsworthy wall /anglais',
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -887,9 +875,7 @@ const state = {
           idAtProviders: '2949:9780500019917',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'andy goldsworthy wall /anglais',
-          thingId: 'C4',
-          type: 'Book',
+          productId: 'C4',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -936,6 +922,7 @@ const state = {
         offerId: 'AQ',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/C4',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:50.315841Z',
         bookingsIds: [],
@@ -964,12 +951,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 57,
           dehumanizedVenueId: 1,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 57,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Collectif',
               bookFormat: 'Hardcover',
@@ -986,16 +972,16 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: 'moma highlights',
             thumbCount: 2,
+            type: 'Book',
             url: null,
           },
           id: 'E4',
           idAtProviders: '2949:9780870700989',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'moma highlights',
-          thingId: 'HE',
-          type: 'Book',
+          productId: 'HE',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -1042,6 +1028,7 @@ const state = {
         offerId: 'E4',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/HE',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:50.092009Z',
         bookingsIds: [],
@@ -1070,12 +1057,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 162,
           dehumanizedVenueId: 2,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 162,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Chappuis, Pierre',
               collection: 'EN LISANT EN ECRIVANT',
@@ -1091,6 +1077,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: 'battre le briquet',
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -1099,9 +1086,7 @@ const state = {
           idAtProviders: '2921:9782714312020',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'battre le briquet',
-          thingId: 'U9',
-          type: 'Book',
+          productId: 'U9',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -1148,6 +1133,7 @@ const state = {
         offerId: 'ZU',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/U9',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.615843Z',
         bookingsIds: [],
@@ -1176,12 +1162,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 186,
           dehumanizedVenueId: 1,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 186,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Chpp 1',
               prix_livre: '21.50',
@@ -1195,6 +1180,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: 'conduite humaine et pratiques psychologiques n 1',
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -1203,9 +1189,7 @@ const state = {
           idAtProviders: '2949:9782343105987',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'conduite humaine et pratiques psychologiques n 1',
-          thingId: 'X9',
-          type: 'Book',
+          productId: 'X9',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -1252,6 +1236,7 @@ const state = {
         offerId: 'VA',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/X9',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.775723Z',
         bookingsIds: [],
@@ -1280,12 +1265,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 161,
           dehumanizedVenueId: 1,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 161,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Renault-Brahinsky, Corinne',
               collection: 'LES CARRES ROUGE',
@@ -1302,6 +1286,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: "l'essentiel du droit des successions (édition 2018)",
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -1310,9 +1295,7 @@ const state = {
           idAtProviders: '2949:9782297068918',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: "l'essentiel du droit des successions (édition 2018)",
-          thingId: 'UE',
-          type: 'Book',
+          productId: 'UE',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -1359,6 +1342,7 @@ const state = {
         offerId: 'U9',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/UE',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:50.400365Z',
         bookingsIds: [],
@@ -1387,12 +1371,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 109,
           dehumanizedVenueId: 1,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 109,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Hawkins Alice',
               dewey: '700',
@@ -1407,6 +1390,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: "alice hawkins alice's adventures /anglais",
             thumbCount: 0,
             type: 'Book',
             url: null,
@@ -1415,9 +1399,7 @@ const state = {
           idAtProviders: '2949:9780500292907',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: "alice hawkins alice's adventures /anglais",
-          thingId: 'NU',
-          type: 'Book',
+          productId: 'NU',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -1464,6 +1446,7 @@ const state = {
         offerId: 'C9',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/NU',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:55:10.606302Z',
         bookingsIds: [],
@@ -1492,12 +1475,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 337,
           dehumanizedVenueId: 2,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 337,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Arnaud, Diane',
               collection: 'DECORS',
@@ -1514,6 +1496,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: 'faux reveils au cinéma ; glissements progressifs du réel',
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -1522,9 +1505,7 @@ const state = {
           idAtProviders: '2921:9791097309022',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'faux reveils au cinéma ; glissements progressifs du réel',
-          thingId: 'AF9Q',
-          type: 'Book',
+          productId: 'AF9Q',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -1571,6 +1552,7 @@ const state = {
         offerId: 'AFPA',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/AF9Q',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:48.417854Z',
         bookingsIds: [],
@@ -1599,12 +1581,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 330,
           dehumanizedVenueId: 2,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 330,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Roumette, Sara',
               bookFormat: 'Paperback',
@@ -1621,6 +1602,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: 'les métiers du bâtiment et des travaux publics',
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -1629,9 +1611,7 @@ const state = {
           idAtProviders: '2921:9782817606002',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'les métiers du bâtiment et des travaux publics',
-          thingId: 'AFFA',
-          type: 'Book',
+          productId: 'AFFA',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -1678,6 +1658,7 @@ const state = {
         offerId: 'AEDQ',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/AFFA',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:48.936466Z',
         bookingsIds: [],
@@ -1706,12 +1687,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 164,
           dehumanizedVenueId: 1,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 164,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Collectif',
               comment: 'édition en anglais',
@@ -1727,16 +1707,16 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: 'New York City transit authority ; graphics standards manual',
             thumbCount: 2,
+            type: 'Book',
             url: null,
           },
           id: 'EQ',
           idAtProviders: '2949:9780692496954',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'New York City transit authority ; graphics standards manual',
-          thingId: 'UQ',
-          type: 'Book',
+          productId: 'UQ',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -1783,6 +1763,7 @@ const state = {
         offerId: 'EQ',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/UQ',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:48.349401Z',
         bookingsIds: [],
@@ -1811,12 +1792,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 278,
           dehumanizedVenueId: 1,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 278,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Tzonis',
               dewey: '700',
@@ -1831,6 +1811,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: 'le corbusier poetics of machine metaphor /anglais',
             thumbCount: 0,
             type: 'Book',
             url: null,
@@ -1839,9 +1820,7 @@ const state = {
           idAtProviders: '2949:9780500283196',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'le corbusier poetics of machine metaphor /anglais',
-          thingId: 'AELA',
-          type: 'Book',
+          productId: 'AELA',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -1888,6 +1867,7 @@ const state = {
         offerId: 'BQ',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/AELA',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:55:10.306382Z',
         bookingsIds: [],
@@ -1916,12 +1896,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 180,
           dehumanizedVenueId: 2,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 180,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Collectif',
               dewey: '700',
@@ -1936,6 +1915,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: 'per kirkeby brick sculptures /anglais',
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -1944,9 +1924,7 @@ const state = {
           idAtProviders: '2921:9782851171962',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'per kirkeby brick sculptures /anglais',
-          thingId: 'WQ',
-          type: 'Book',
+          productId: 'WQ',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -1993,6 +1971,7 @@ const state = {
         offerId: 'AESA',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/WQ',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:48.888265Z',
         bookingsIds: [],
@@ -2021,12 +2000,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 170,
           dehumanizedVenueId: 1,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 170,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Collectif',
               dewey: '700',
@@ -2041,16 +2019,17 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name:
+              'helen frankenthaler: after abstract expressionism, 1959-1962 /francais/anglais',
             thumbCount: 2,
+            type: 'Book',
             url: null,
           },
           id: 'EY',
           idAtProviders: '2949:9780847861996',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'helen frankenthaler: after abstract expressionism, 1959-1962 /francais/anglais',
-          thingId: 'V9',
-          type: 'Book',
+          productId: 'V9',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -2097,6 +2076,7 @@ const state = {
         offerId: 'EY',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/V9',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.036720Z',
         bookingsIds: [],
@@ -2125,12 +2105,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 78,
           dehumanizedVenueId: 2,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 78,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Haughton, Chris',
               comment: 'PRIX SORCIERES TOUT-PETITS 2012',
@@ -2147,16 +2126,16 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: 'un peu perdu',
             thumbCount: 2,
+            type: 'Book',
             url: null,
           },
           id: 'AE8Q',
           idAtProviders: '2921:9782844208934',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'un peu perdu',
-          thingId: 'JY',
-          type: 'Book',
+          productId: 'JY',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -2203,6 +2182,7 @@ const state = {
         offerId: 'AE8Q',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/JY',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.833076Z',
         bookingsIds: [],
@@ -2231,12 +2211,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 129,
           dehumanizedVenueId: 2,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 129,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Jouve, Jessica ;Dufour, Anthony',
               dewey: '840',
@@ -2252,6 +2231,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: 'sur la route des migrants ; rencontres à Calais',
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -2260,9 +2240,7 @@ const state = {
           idAtProviders: '2921:9782367740911',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'sur la route des migrants ; rencontres à Calais',
-          thingId: 'QE',
-          type: 'Book',
+          productId: 'QE',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -2309,6 +2287,7 @@ const state = {
         offerId: 'X9',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/QE',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.273248Z',
         bookingsIds: [],
@@ -2337,12 +2316,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 53,
           dehumanizedVenueId: 1,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 53,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Leiter Saul/Kozloff',
               dewey: '700',
@@ -2357,6 +2335,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: 'saul leiter (photofile) /anglais',
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -2365,9 +2344,7 @@ const state = {
           idAtProviders: '2949:9780500410974',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'saul leiter (photofile) /anglais',
-          thingId: 'GU',
-          type: 'Book',
+          productId: 'GU',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -2414,6 +2391,7 @@ const state = {
         offerId: 'DA',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/GU',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:48.518227Z',
         bookingsIds: [],
@@ -2442,9 +2420,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 135,
           dehumanizedVenueId: 1,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 135,
             dehumanizedLastProviderId: 8,
@@ -2473,9 +2449,7 @@ const state = {
           idAtProviders: '2949:9782016261903',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: "cuisiner avec Herta c'est simplissime",
-          thingId: 'Q4',
-          type: 'Book',
+          productId: 'Q4',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -2522,6 +2496,7 @@ const state = {
         offerId: 'JQ',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/Q4',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:48.286688Z',
         bookingsIds: [],
@@ -2550,12 +2525,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 339,
           dehumanizedVenueId: 2,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 339,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Argento, Dario',
               collection: 'RACCORDS',
@@ -2572,6 +2546,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: 'peur ; autobiographie',
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -2580,9 +2555,7 @@ const state = {
           idAtProviders: '2921:9791097309053',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'peur ; autobiographie',
-          thingId: 'AFJQ',
-          type: 'Book',
+          productId: 'AFJQ',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -2629,6 +2602,7 @@ const state = {
         offerId: 'AFPQ',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/AFJQ',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.520920Z',
         bookingsIds: [],
@@ -2657,12 +2631,11 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 166,
           dehumanizedVenueId: 1,
-          description: null,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 166,
             dehumanizedLastProviderId: 8,
+            description: null,
             extraData: {
               author: 'Present & Correct',
               dewey: '700',
@@ -2677,6 +2650,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Thing',
+            name: 'clip art 20 historical paper clips /anglais',
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -2685,8 +2659,7 @@ const state = {
           idAtProviders: '2949:9781616896973',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          name: 'clip art 20 historical paper clips /anglais',
-          thingId: 'UY',
+          productId: 'UY',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -2733,6 +2706,7 @@ const state = {
         offerId: 'GA',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/UY',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:50.042649Z',
         bookingsIds: [],
@@ -2761,8 +2735,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 114,
           dehumanizedVenueId: 2,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 114,
             dehumanizedLastProviderId: 8,
@@ -2791,7 +2764,7 @@ const state = {
           idAtProviders: '2921:9782806307989',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: '89',
+          productId: '89',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -2838,6 +2811,7 @@ const state = {
         offerId: '69',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/89',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.229787Z',
         bookingsIds: [],
@@ -2866,8 +2840,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 77,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 77,
             dehumanizedLastProviderId: 8,
@@ -2895,7 +2868,7 @@ const state = {
           idAtProviders: '2949:9780500512951',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'JU',
+          productId: 'JU',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -2942,6 +2915,7 @@ const state = {
         offerId: 'D9',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/JU',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.140292Z',
         bookingsIds: [],
@@ -2970,8 +2944,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 173,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 173,
             dehumanizedLastProviderId: 8,
@@ -2999,7 +2972,7 @@ const state = {
           idAtProviders: '2949:9781786271945',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'VU',
+          productId: 'VU',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -3046,6 +3019,7 @@ const state = {
         offerId: 'GY',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/VU',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:48.841996Z',
         bookingsIds: [],
@@ -3074,13 +3048,12 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 147,
           dehumanizedVenueId: 2,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-02-01T00:00:00Z',
             dehumanizedId: 147,
             dehumanizedLastProviderId: 9,
             description:
-              "Médaillé de bronze des championnats du monde 2010, champion d'Europe et double champion de France de judo dans la catégorie des moins de 66 kg, Loïc Korval a connu une trajectoire hors du commun. Le natif de Nogent-sur-Marne a su tourner la page d'une adolescence tourmentée pour s'épanouir sur les tatamis, en dépit des multiples embûches semées sur sa route. Dans cette autobiographie vérité, il n'élude rien. \r\nLe racisme, qu'il a dû affronter dès son plus jeune âge, le difficile apprentissage du judo, les faits divers qui ont défrayé l'actualité, les filles, les distractions, les amitiés et les inimitiés au sein de l'équipe de France. Il s'explique aussi sur sa réputation de grande gueule et son image d' \"enfant terrible du judo français\" . Après chaque coup dur, Loïc s'est toujours relevé pour tenter d'atteindre le sommet de sa discipline, et prendre sa vie en main. \r\nPartagez le quotidien, les joies, les doutes et les colères d'un judoka qui a mené sa carrière en n'écoutant que son coeur. Et ses convictions.",
+              "Médaillé de bronze des championnats du monde 2010, champion d'Europe et double champion de France de judo dans la catégorie des moins de 66 kg, Loïc Korval a connu une trajectoire hors du commun. Le natif de Nogent-sur-Marne a su tourner la page d'une adolescence tourmentée pour s'épanouir sur les tatamis, en dépit des multiples embûches semées sur sa route. Dans cette autobiographie vérité, il n'élude rien. \r\nLe racisme, qu'il a dû affronter dès son plus jeune âge, le difficile apprentissage du jud', les faits divers qui ont défrayé l'actualité, les filles, les distractions, les amitiés et les inimitiés au sein de l'équipe de France. Il s'explique aussi sur sa réputation de grande gueule et son image d' \"enfant terrible du judo français\" . Après chaque coup dur, Loïc s'est toujours relevé pour tenter d'atteindre le sommet de sa discipline, et prendre sa vie en main. \r\nPartagez le quotidien, les joies, les doutes et les colères d'un judoka qui a mené sa carrière en n'écoutant que son coeur. Et ses convictions.",
             extraData: {
               author: 'Korval Loic',
               prix_livre: '18.90',
@@ -3103,7 +3076,7 @@ const state = {
           idAtProviders: '2921:9782378150020',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'SM',
+          productId: 'SM',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -3150,6 +3123,7 @@ const state = {
         offerId: 'YQ',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/SM',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:50.233900Z',
         bookingsIds: [],
@@ -3178,8 +3152,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 107,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 107,
             dehumanizedLastProviderId: 8,
@@ -3207,7 +3180,7 @@ const state = {
           idAtProviders: '2949:9780500292921',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'NM',
+          productId: 'NM',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -3254,6 +3227,7 @@ const state = {
         offerId: 'CQ',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/NM',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:55:10.749595Z',
         bookingsIds: [],
@@ -3282,8 +3256,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 111,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 111,
             dehumanizedLastProviderId: 8,
@@ -3311,7 +3284,7 @@ const state = {
           idAtProviders: '2949:9780500283967',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'N4',
+          productId: 'N4',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -3358,6 +3331,7 @@ const state = {
         offerId: 'BU',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/N4',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:55:10.364020Z',
         bookingsIds: [],
@@ -3386,8 +3360,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 137,
           dehumanizedVenueId: 2,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 137,
             dehumanizedLastProviderId: 8,
@@ -3416,7 +3389,7 @@ const state = {
           idAtProviders: '2921:9782501126908',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'RE',
+          productId: 'RE',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -3463,6 +3436,7 @@ const state = {
         offerId: 'YY',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/RE',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:50.188084Z',
         bookingsIds: [],
@@ -3491,8 +3465,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 176,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 176,
             dehumanizedLastProviderId: 8,
@@ -3520,7 +3493,7 @@ const state = {
           idAtProviders: '2949:9780847858903',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'WA',
+          productId: 'WA',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -3567,6 +3540,7 @@ const state = {
         offerId: 'EU',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/WA',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.377947Z',
         bookingsIds: [],
@@ -3595,8 +3569,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 76,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 76,
             dehumanizedLastProviderId: 8,
@@ -3624,7 +3597,7 @@ const state = {
           idAtProviders: '2949:9780500300992',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'JQ',
+          productId: 'JQ',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -3671,6 +3644,7 @@ const state = {
         offerId: 'C4',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/JQ',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:48.563516Z',
         bookingsIds: [],
@@ -3699,8 +3673,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 143,
           dehumanizedVenueId: 2,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 143,
             dehumanizedLastProviderId: 8,
@@ -3729,7 +3702,7 @@ const state = {
           idAtProviders: '2921:9791021020931',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'R4',
+          productId: 'R4',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -3776,6 +3749,7 @@ const state = {
         offerId: 'AFCQ',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/R4',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:48.791199Z',
         bookingsIds: [],
@@ -3804,8 +3778,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 139,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 139,
             dehumanizedLastProviderId: 8,
@@ -3834,7 +3807,7 @@ const state = {
           idAtProviders: '2949:9782226393920',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'RM',
+          productId: 'RM',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -3881,6 +3854,7 @@ const state = {
         offerId: 'RQ',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/RM',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.090885Z',
         bookingsIds: [],
@@ -3909,8 +3883,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 256,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 256,
             dehumanizedLastProviderId: 8,
@@ -3937,7 +3910,7 @@ const state = {
           idAtProviders: '2949:9780500280980',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'AEAA',
+          productId: 'AEAA',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -3984,6 +3957,7 @@ const state = {
         offerId: 'BM',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/AEAA',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:55:10.216865Z',
         bookingsIds: [],
@@ -4012,8 +3986,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 165,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 165,
             dehumanizedLastProviderId: 8,
@@ -4041,7 +4014,7 @@ const state = {
           idAtProviders: '2949:9781616896959',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'UU',
+          productId: 'UU',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -4088,6 +4061,7 @@ const state = {
         offerId: 'F4',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/UU',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.327395Z',
         bookingsIds: [],
@@ -4116,8 +4090,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 316,
           dehumanizedVenueId: 2,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 316,
             dehumanizedLastProviderId: 8,
@@ -4147,7 +4120,7 @@ const state = {
           idAtProviders: '2921:9782756091020',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'AE6A',
+          productId: 'AE6A',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -4194,6 +4167,7 @@ const state = {
         offerId: '5M',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/AE6A',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:48.657538Z',
         bookingsIds: [],
@@ -4222,8 +4196,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 333,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 333,
             dehumanizedLastProviderId: 8,
@@ -4252,7 +4225,7 @@ const state = {
           idAtProviders: '2949:9782221190081',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'AFGQ',
+          productId: 'AFGQ',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -4299,6 +4272,7 @@ const state = {
         offerId: 'Q4',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/AFGQ',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:50.489273Z',
         bookingsIds: [],
@@ -4327,8 +4301,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 45,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 45,
             dehumanizedLastProviderId: 8,
@@ -4356,7 +4329,7 @@ const state = {
           idAtProviders: '2949:9780500288955',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'FU',
+          productId: 'FU',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -4403,6 +4376,7 @@ const state = {
         offerId: 'CE',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/FU',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:55:10.540672Z',
         bookingsIds: [],
@@ -4431,8 +4405,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 146,
           dehumanizedVenueId: 2,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 146,
             dehumanizedLastProviderId: 8,
@@ -4461,7 +4434,7 @@ const state = {
           idAtProviders: '2921:9782877069922',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'S9',
+          productId: 'S9',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -4508,6 +4481,7 @@ const state = {
         offerId: 'AEWQ',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/S9',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:48.612943Z',
         bookingsIds: [],
@@ -4536,8 +4510,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 49,
           dehumanizedVenueId: 2,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 49,
             dehumanizedLastProviderId: 8,
@@ -4565,7 +4538,7 @@ const state = {
           idAtProviders: '2921:9782843378966',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'GE',
+          productId: 'GE',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -4612,6 +4585,7 @@ const state = {
         offerId: 'AENA',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/GE',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:48.986752Z',
         bookingsIds: [],
@@ -4640,8 +4614,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 26,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 26,
             dehumanizedLastProviderId: 8,
@@ -4670,7 +4643,7 @@ const state = {
           idAtProviders: '2949:9780500516904',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'D9',
+          productId: 'D9',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -4717,6 +4690,7 @@ const state = {
         offerId: 'DU',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/D9',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:48.471609Z',
         bookingsIds: [],
@@ -4745,8 +4719,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 156,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 156,
             dehumanizedLastProviderId: 8,
@@ -4776,7 +4749,7 @@ const state = {
           idAtProviders: '2949:9782016266939',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'TQ',
+          productId: 'TQ',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -4823,6 +4796,7 @@ const state = {
         offerId: 'JY',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/TQ',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.943689Z',
         bookingsIds: [],
@@ -4851,8 +4825,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 177,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 177,
             dehumanizedLastProviderId: 8,
@@ -4880,7 +4853,7 @@ const state = {
           idAtProviders: '2949:9781851498963',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'WE',
+          productId: 'WE',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -4927,6 +4900,7 @@ const state = {
         offerId: 'HQ',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/WE',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:50.275767Z',
         bookingsIds: [],
@@ -4955,8 +4929,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 27,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 27,
             dehumanizedLastProviderId: 8,
@@ -4984,7 +4957,7 @@ const state = {
           idAtProviders: '2949:9780500285954',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'DM',
+          productId: 'DM',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -5031,6 +5004,7 @@ const state = {
         offerId: 'BY',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/DM',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.567710Z',
         bookingsIds: [],
@@ -5059,8 +5033,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 108,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 108,
             dehumanizedLastProviderId: 8,
@@ -5088,7 +5061,7 @@ const state = {
           idAtProviders: '2949:9780500292945',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'NQ',
+          productId: 'NQ',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -5135,6 +5108,7 @@ const state = {
         offerId: 'CU',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/NQ',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.725438Z',
         bookingsIds: [],
@@ -5163,8 +5137,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 153,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 153,
             dehumanizedLastProviderId: 8,
@@ -5196,7 +5169,7 @@ const state = {
           idAtProviders: '2949:9782204125987',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'TE',
+          productId: 'TE',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -5243,6 +5216,7 @@ const state = {
         offerId: 'PY',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/TE',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.890759Z',
         bookingsIds: [],
@@ -5271,8 +5245,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 158,
           dehumanizedVenueId: 2,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 158,
             dehumanizedLastProviderId: 8,
@@ -5301,7 +5274,7 @@ const state = {
           idAtProviders: '2921:9782889275090',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'TY',
+          productId: 'TY',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -5348,6 +5321,7 @@ const state = {
         offerId: 'AE2A',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/TY',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.990164Z',
         bookingsIds: [],
@@ -5376,8 +5350,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 169,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 169,
             dehumanizedLastProviderId: 8,
@@ -5405,7 +5378,7 @@ const state = {
           idAtProviders: '2949:9781780676968',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'VE',
+          productId: 'VE',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -5452,6 +5425,7 @@ const state = {
         offerId: 'GM',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/VE',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:50.445769Z',
         bookingsIds: [],
@@ -5480,8 +5454,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 329,
           dehumanizedVenueId: 2,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 329,
             dehumanizedLastProviderId: 8,
@@ -5510,7 +5483,7 @@ const state = {
           idAtProviders: '2921:9782817606064',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'AFEQ',
+          productId: 'AFEQ',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -5557,6 +5530,7 @@ const state = {
         offerId: 'AEEA',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/AFEQ',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.431924Z',
         bookingsIds: [],
@@ -5585,8 +5559,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 103,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 103,
             dehumanizedLastProviderId: 8,
@@ -5614,7 +5587,7 @@ const state = {
           idAtProviders: '2949:9780500518915',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'M4',
+          productId: 'M4',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -5661,6 +5634,7 @@ const state = {
         offerId: 'D4',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/M4',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.187301Z',
         bookingsIds: [],
@@ -5689,8 +5663,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 24,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 24,
             dehumanizedLastProviderId: 8,
@@ -5719,7 +5692,7 @@ const state = {
           idAtProviders: '2949:9780500287972',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'DA',
+          productId: 'DA',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -5766,6 +5739,7 @@ const state = {
         offerId: 'CA',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/DA',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:55:10.483510Z',
         bookingsIds: [],
@@ -5794,8 +5768,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 122,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 122,
             dehumanizedLastProviderId: 8,
@@ -5825,7 +5798,7 @@ const state = {
           idAtProviders: '2949:9782367600963',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'P9',
+          productId: 'P9',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -5872,6 +5845,7 @@ const state = {
         offerId: 'XE',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/P9',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:50.138556Z',
         bookingsIds: [],
@@ -5900,8 +5874,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 154,
           dehumanizedVenueId: 2,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 154,
             dehumanizedLastProviderId: 8,
@@ -5933,7 +5906,7 @@ const state = {
           idAtProviders: '2921:9782846792974',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'T9',
+          productId: 'T9',
           venue: {
             address: '72 rue Carnot',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -5980,6 +5953,7 @@ const state = {
         offerId: 'AEQA',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/T9',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:50.356352Z',
         bookingsIds: [],
@@ -6008,8 +5982,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 332,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 332,
             dehumanizedLastProviderId: 8,
@@ -6040,7 +6013,7 @@ const state = {
           idAtProviders: '2949:9782221216040',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'AFGA',
+          productId: 'AFGA',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -6087,6 +6060,7 @@ const state = {
         offerId: 'RA',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/AFGA',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.476916Z',
         bookingsIds: [],
@@ -6115,8 +6089,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 106,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-30T00:00:00Z',
             dehumanizedId: 106,
             dehumanizedLastProviderId: 8,
@@ -6144,7 +6117,7 @@ const state = {
           idAtProviders: '2949:9780500292914',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'N9',
+          productId: 'N9',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -6191,6 +6164,7 @@ const state = {
         offerId: 'CM',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/N9',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:55:10.681800Z',
         bookingsIds: [],
@@ -6219,8 +6193,7 @@ const state = {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 110,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 110,
             dehumanizedLastProviderId: 8,
@@ -6249,7 +6222,7 @@ const state = {
           idAtProviders: '2949:9780500051917',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'NY',
+          productId: 'NY',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -6296,6 +6269,7 @@ const state = {
         offerId: 'AY',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/NY',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:48.699881Z',
         bookingsIds: [],
@@ -6321,11 +6295,10 @@ const state = {
           dateRange: [],
           dehumanizedEventId: null,
           dehumanizedId: 106,
-          dehumanizedLastProviderId: 6,
+         dehumanizedLastProviderId: 6,
           dehumanizedThingId: 335,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 335,
             dehumanizedLastProviderId: 8,
@@ -6355,7 +6328,7 @@ const state = {
           idAtProviders: '2949:9782100775064',
           lastProviderId: 'AY',
           modelName: 'Offer',
-          thingId: 'AFHQ',
+          productId: 'AFHQ',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -6402,6 +6375,7 @@ const state = {
         offerId: 'N9',
         search: null,
         shareMedium: null,
+        thumbUrl: 'http://localhost/storage/thumbs/products/AFHQ',
         userId: 'AE',
         validUntilDate: '2018-09-11T08:04:49.679145Z',
         bookingsIds: [],

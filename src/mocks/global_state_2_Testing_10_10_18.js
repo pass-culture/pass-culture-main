@@ -38,8 +38,8 @@ const state = {
           "dateCreated": "2018-09-12T08:19:01.614549Z",
           "dateModifiedAtLastProvider": "2018-09-12T08:19:01.614532Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "productId": "BE",
+          "product": {
             "dateModifiedAtLastProvider": "2018-09-12T08:19:01.612018Z",
             "description": "LA TOILE est une plateforme VOD qui vous propose une programmation complémentaire en lien avec VOTRE salle de cinéma. ",
             "extraData": null,
@@ -79,7 +79,6 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "BE",
           "venue": {
             "address": null,
             "bookingEmail": null,
@@ -123,6 +122,7 @@ const state = {
         "offerId": "AKLA",
         "search": "page=1",
         "shareMedium": null,
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AKSA",
         "userId": "AQBA",
         "validUntilDate": "2018-10-13T14:19:27.442986Z",
         "bookingsIds": []
@@ -163,8 +163,8 @@ const state = {
           "dateCreated": "2018-09-12T16:02:28.632245Z",
           "dateModifiedAtLastProvider": "2018-09-12T16:02:28.632237Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "productId": 'BM',
+          "product": {
             "dateModifiedAtLastProvider": "2018-09-12T16:02:28.627926Z",
             "description": "Cours particuliers hebdomadaires de musique traditionnelle :\n- accordéon chromatique\n- accordéon diatonique\n- binioù-kozh\n- bombarde\n- chant choral\n- chant traditionnel\n- clarinette\n- cornemuse écossaise\n- flûte traversière irlandaise\n- guitare dadgad\n- harpe celtique\n- percussions\n- piano\n- saxophone\n- tin whistle\n- uillean pipe\n- violon\n\nLe répertoire abordé sera constitué des musiques traditionnelles de Bretagne, mais également d'Irlande, d'Écosse, ou d'autres horizons selon les instruments.",
             "extraData": null,
@@ -238,7 +238,6 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "BM",
           "venue": {
             "address": "5 RUE MARENGO",
             "bookingEmail": "direction@centrebreton.org",
@@ -322,8 +321,8 @@ const state = {
           "dateCreated": "2018-09-13T09:44:16.007204Z",
           "dateModifiedAtLastProvider": "2018-09-13T09:44:16.007192Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "productId": 'BQ',
+          "product": {
             "dateModifiedAtLastProvider": "2018-09-13T09:44:15.998167Z",
             "description": "20h45 IKUI DOKI\nUn basson qui groove, un sax velouté, une harpe percussive : Ikui Doki est un trio atypique et captivant.\n\n22H00 - Ensemble Nautilis EVERGREEN\nL’Ensemble Nautilis crée son nouveau répertoire en grand ensemble et confie la partition au batteur Nicolas Pointard. Une surprenante poésie sonore qui groove.",
             "extraData": null,
@@ -482,7 +481,6 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "BQ",
           "venue": {
             "address": "17 Avenue Georges Clemenceau",
             "bookingEmail": "administration@plages-magnetiques.org",
@@ -643,8 +641,8 @@ const state = {
             "Thu, 25 Oct 2018 18:15:24 GMT",
             "Fri, 26 Oct 2018 19:45:24 GMT"
           ],
-          "eventId": "AQCQ",
-          "eventOrThing": {
+          "productId": 'AQCQ',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -688,7 +686,6 @@ const state = {
               "price": 3
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "104 Avenue Jean Lolive",
             "bookingEmail": "contact@cotecourt.org",
@@ -775,8 +772,8 @@ const state = {
             "Tue, 23 Oct 2018 18:30:26 GMT",
             "Sun, 02 Dec 2018 16:30:26 GMT"
           ],
-          "eventId": "AN5A",
-          "eventOrThing": {
+          "productId": 'AN5A',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -959,7 +956,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bookingEmail": "manon.bencheikh@live.fr",
@@ -1046,8 +1042,8 @@ const state = {
             "Wed, 07 Nov 2018 18:30:49 GMT",
             "Sat, 17 Nov 2018 18:05:49 GMT"
           ],
-          "eventId": "AN4A",
-          "eventOrThing": {
+          "productId": 'AN4A',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -1229,7 +1225,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bookingEmail": "manon.bencheikh@live.fr",
@@ -1316,8 +1311,8 @@ const state = {
             "Fri, 12 Oct 2018 18:30:59 GMT",
             "Sat, 13 Oct 2018 20:00:59 GMT"
           ],
-          "eventId": "AJUQ",
-          "eventOrThing": {
+          "productId": 'AJUQ',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -1361,7 +1356,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "124 AVENUE DE LA REPUBLIQUE",
             "bookingEmail": "acp@manufacturechanson.org",
@@ -1448,8 +1442,8 @@ const state = {
             "Fri, 28 Sep 2018 16:20:58 GMT",
             "Sun, 24 Mar 2019 16:00:47 GMT"
           ],
-          "eventId": "A8CA",
-          "eventOrThing": {
+          "productId": 'A8CA',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -1666,7 +1660,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bookingEmail": "manon.bencheikh@live.fr",
@@ -1746,8 +1739,8 @@ const state = {
           "dateCreated": "2018-09-28T07:24:54.633514Z",
           "dateModifiedAtLastProvider": "2018-09-28T07:24:54.633503Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "productId": 'FQ',
+          "product": {
             "dateModifiedAtLastProvider": "2018-09-28T07:24:54.630147Z",
             "description": "coaching vocal et scénique : 2 séances de 1h20 chacune pour préparer un projet, un concert, un enregistrement, une audition....",
             "extraData": {
@@ -1789,7 +1782,6 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "FQ",
           "venue": {
             "address": "2 Rue Paul Bert",
             "bookingEmail": "artificium.asso@gmail.com",
@@ -1876,8 +1868,8 @@ const state = {
             "Tue, 04 Dec 2018 19:30:11 GMT",
             "Wed, 05 Dec 2018 21:30:11 GMT"
           ],
-          "eventId": "A8XA",
-          "eventOrThing": {
+          "productId": 'A8XA',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -1925,7 +1917,6 @@ const state = {
               "price": 19
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "3 Place de l'Orangerie",
             "bookingEmail": "espace93@clichysousbois.fr",
@@ -2012,8 +2003,8 @@ const state = {
             "Mon, 15 Oct 2018 17:30:23 GMT",
             "Sun, 19 May 2019 15:25:23 GMT"
           ],
-          "eventId": "A8HA",
-          "eventOrThing": {
+          "productId": 'A8HA',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -2129,7 +2120,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bookingEmail": "manon.bencheikh@live.fr",
@@ -2216,8 +2206,8 @@ const state = {
             "Sat, 13 Oct 2018 18:30:03 GMT",
             "Sun, 14 Oct 2018 20:00:03 GMT"
           ],
-          "eventId": "AJZA",
-          "eventOrThing": {
+          "productId": 'AJZA',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -2261,7 +2251,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "124 AVENUE DE LA REPUBLIQUE",
             "bookingEmail": "acp@manufacturechanson.org",
@@ -2348,8 +2337,8 @@ const state = {
             "Wed, 07 Nov 2018 19:30:11 GMT",
             "Thu, 08 Nov 2018 21:00:11 GMT"
           ],
-          "eventId": "AJ3Q",
-          "eventOrThing": {
+          "productId": 'AJ3Q',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -2393,7 +2382,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "124 AVENUE DE LA REPUBLIQUE",
             "bookingEmail": "acp@manufacturechanson.org",
@@ -2480,8 +2468,8 @@ const state = {
             "Sat, 20 Oct 2018 09:00:07 GMT",
             "Sun, 21 Oct 2018 18:00:07 GMT"
           ],
-          "eventId": "ANEA",
-          "eventOrThing": {
+          "productId": 'ANEA',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -2542,7 +2530,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "51 RUE DE BERCY",
             "bookingEmail": "m.miel@cinematheque.fr",
@@ -2626,8 +2613,8 @@ const state = {
           "dateCreated": "2018-10-05T13:12:16.482124Z",
           "dateModifiedAtLastProvider": "2018-10-05T13:12:16.482118Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "productId": 'HE',
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-05T13:12:16.478149Z",
             "description": "Abonnement Premium :  plus de 300 journaux et magazines disponibles en illimité sur tous vos écrans, sans engagement.",
             "extraData": null,
@@ -2667,7 +2654,6 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "HE",
           "venue": {
             "address": "59 Rue Spontini",
             "bookingEmail": "jflambert@toutabo.com",
@@ -2754,8 +2740,8 @@ const state = {
             "Fri, 09 Nov 2018 19:30:15 GMT",
             "Sat, 10 Nov 2018 21:00:15 GMT"
           ],
-          "eventId": "AJ4A",
-          "eventOrThing": {
+          "productId": 'AJ4A',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -2799,7 +2785,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "124 AVENUE DE LA REPUBLIQUE",
             "bookingEmail": "acp@manufacturechanson.org",
@@ -2886,8 +2871,8 @@ const state = {
             "Mon, 05 Nov 2018 19:30:10 GMT",
             "Tue, 04 Dec 2018 21:00:10 GMT"
           ],
-          "eventId": "AJ3A",
-          "eventOrThing": {
+          "productId": 'AJ3A',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -2965,7 +2950,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "124 AVENUE DE LA REPUBLIQUE",
             "bookingEmail": "acp@manufacturechanson.org",
@@ -3052,8 +3036,8 @@ const state = {
             "Tue, 06 Nov 2018 19:30:24 GMT",
             "Wed, 07 Nov 2018 21:20:24 GMT"
           ],
-          "eventId": "A8WA",
-          "eventOrThing": {
+          "productId": 'A8WA',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -3102,7 +3086,6 @@ const state = {
               "price": 19
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "3 Place de l'Orangerie",
             "bookingEmail": "espace93@clichysousbois.fr",
@@ -3189,8 +3172,8 @@ const state = {
             "Fri, 08 Feb 2019 19:30:32 GMT",
             "Thu, 14 Feb 2019 20:00:32 GMT"
           ],
-          "eventId": "A8BA",
-          "eventOrThing": {
+          "productId": 'A8BA',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -3322,7 +3305,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bookingEmail": "manon.bencheikh@live.fr",
@@ -3409,8 +3391,8 @@ const state = {
             "Thu, 27 Sep 2018 17:00:41 GMT",
             "Mon, 15 Oct 2018 15:00:41 GMT"
           ],
-          "eventId": "ANDA",
-          "eventOrThing": {
+          "productId": 'ANDA',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -3681,7 +3663,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bookingEmail": "manon.bencheikh@live.fr",
@@ -3768,8 +3749,8 @@ const state = {
             "Fri, 14 Sep 2018 18:00:00 GMT",
             "Sat, 13 Oct 2018 20:30:30 GMT"
           ],
-          "eventId": "AGNA",
-          "eventOrThing": {
+          "productId": 'AGNA',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -3898,7 +3879,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "13 Rue de la République",
             "bookingEmail": "nicolas.lorach@gmail.com",
@@ -3985,8 +3965,8 @@ const state = {
             "Fri, 30 Nov 2018 18:00:23 GMT",
             "Fri, 30 Nov 2018 23:00:23 GMT"
           ],
-          "eventId": "ANBQ",
-          "eventOrThing": {
+          "productId": 'ANBQ',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -4030,7 +4010,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "37 Quai Branly",
             "bookingEmail": "clemence.gros@quaibranly.fr",
@@ -4117,8 +4096,8 @@ const state = {
             "Fri, 29 Mar 2019 19:30:58 GMT",
             "Sat, 06 Apr 2019 17:40:58 GMT"
           ],
-          "eventId": "A8FA",
-          "eventOrThing": {
+          "productId": '',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -4285,7 +4264,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bookingEmail": "manon.bencheikh@live.fr",
@@ -4372,8 +4350,8 @@ const state = {
             "Mon, 15 Oct 2018 12:30:23 GMT",
             "Fri, 19 Oct 2018 13:15:23 GMT"
           ],
-          "eventId": "AN3Q",
-          "eventOrThing": {
+          "productId": 'AN3Q',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -4507,7 +4485,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bookingEmail": "manon.bencheikh@live.fr",
@@ -4594,8 +4571,8 @@ const state = {
             "Sat, 19 Jan 2019 19:30:41 GMT",
             "Sun, 20 Jan 2019 21:00:41 GMT"
           ],
-          "eventId": "A8YQ",
-          "eventOrThing": {
+          "productId": 'A8YQ',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -4645,7 +4622,6 @@ const state = {
               "price": 19
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "3 Place de l'Orangerie",
             "bookingEmail": "espace93@clichysousbois.fr",
@@ -4732,8 +4708,8 @@ const state = {
             "Wed, 14 Nov 2018 19:30:17 GMT",
             "Thu, 13 Dec 2018 21:00:17 GMT"
           ],
-          "eventId": "AJ4Q",
-          "eventOrThing": {
+          "productId": 'AJ4Q',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -4794,7 +4770,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "124 AVENUE DE LA REPUBLIQUE",
             "bookingEmail": "acp@manufacturechanson.org",
@@ -4881,8 +4856,8 @@ const state = {
             "Thu, 11 Oct 2018 18:00:39 GMT",
             "Mon, 15 Oct 2018 15:15:39 GMT"
           ],
-          "eventId": "AQBA",
-          "eventOrThing": {
+          "productId": 'AQBA',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -4977,7 +4952,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "9 BOULEVARD LENINE",
             "bookingEmail": "sultan@mc93.com",
@@ -5072,8 +5046,8 @@ const state = {
             "Fri, 25 Jan 2019 19:30:42 GMT",
             "Wed, 30 Jan 2019 19:50:42 GMT"
           ],
-          "eventId": "AN6Q",
-          "eventOrThing": {
+          "productId": 'AN6Q',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -5189,7 +5163,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bookingEmail": "manon.bencheikh@live.fr",
@@ -5276,8 +5249,8 @@ const state = {
             "Mon, 01 Oct 2018 18:30:05 GMT",
             "Tue, 16 Oct 2018 20:00:28 GMT"
           ],
-          "eventId": "AJTA",
-          "eventOrThing": {
+          "productId": 'AJTA',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -5355,7 +5328,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "124 AVENUE DE LA REPUBLIQUE",
             "bookingEmail": "acp@manufacturechanson.org",
@@ -5442,8 +5414,8 @@ const state = {
             "Fri, 16 Nov 2018 19:30:22 GMT",
             "Sat, 17 Nov 2018 21:00:22 GMT"
           ],
-          "eventId": "AJ5A",
-          "eventOrThing": {
+          "productId": 'AJ5A',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -5487,7 +5459,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "124 AVENUE DE LA REPUBLIQUE",
             "bookingEmail": "acp@manufacturechanson.org",
@@ -5574,8 +5545,8 @@ const state = {
             "Mon, 24 Sep 2018 18:30:34 GMT",
             "Sat, 15 Dec 2018 21:00:44 GMT"
           ],
-          "eventId": "AMZA",
-          "eventOrThing": {
+          "productId": 'AMZA',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -5619,7 +5590,6 @@ const state = {
               "price": 11
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "3 Place de l'Orangerie",
             "bookingEmail": "espace93@clichysousbois.fr",
@@ -5706,8 +5676,8 @@ const state = {
             "Tue, 02 Oct 2018 17:30:25 GMT",
             "Wed, 24 Oct 2018 19:00:25 GMT"
           ],
-          "eventId": "ANFA",
-          "eventOrThing": {
+          "productId": 'ANFA',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -5804,7 +5774,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "52 Rue du Sergent Bobillot",
             "bookingEmail": "nicolas.lorach@gmail.com",
@@ -5891,8 +5860,8 @@ const state = {
             "Wed, 17 Oct 2018 18:30:50 GMT",
             "Thu, 18 Oct 2018 20:00:50 GMT"
           ],
-          "eventId": "AJZQ",
-          "eventOrThing": {
+          "productId": 'AJZQ',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -5936,7 +5905,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "124 AVENUE DE LA REPUBLIQUE",
             "bookingEmail": "acp@manufacturechanson.org",
@@ -6023,8 +5991,8 @@ const state = {
             "Fri, 21 Sep 2018 16:00:54 GMT",
             "Sat, 13 Oct 2018 17:00:17 GMT"
           ],
-          "eventId": "AJGQ",
-          "eventOrThing": {
+          "productId": 'AJGQ',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -6153,7 +6121,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "22 Rue Victor Hugo",
             "bookingEmail": "Sebastien.tharsis@wanadoo.fr",
@@ -6240,8 +6207,8 @@ const state = {
             "Tue, 02 Apr 2019 08:00:09 GMT",
             "Sun, 07 Apr 2019 14:00:09 GMT"
           ],
-          "eventId": "A8FQ",
-          "eventOrThing": {
+          "productId": 'A8FQ',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -6426,7 +6393,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bookingEmail": "manon.bencheikh@live.fr",
@@ -6513,8 +6479,8 @@ const state = {
             "Fri, 21 Sep 2018 18:00:34 GMT",
             "Sat, 20 Oct 2018 19:00:34 GMT"
           ],
-          "eventId": "AJ8Q",
-          "eventOrThing": {
+          "productId": 'AJ8Q',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -6626,7 +6592,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "22 Rue Victor Hugo",
             "bookingEmail": "Sebastien.tharsis@wanadoo.fr",
@@ -6713,8 +6678,8 @@ const state = {
             "Tue, 02 Oct 2018 17:30:17 GMT",
             "Tue, 16 Oct 2018 18:30:17 GMT"
           ],
-          "eventId": "ANFQ",
-          "eventOrThing": {
+          "productId": 'ANFQ',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -6794,7 +6759,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 Boulevard Anatole France",
             "bookingEmail": "nicolas.lorach@gmail.com",
@@ -6881,8 +6845,8 @@ const state = {
             "Thu, 13 Dec 2018 18:30:32 GMT",
             "Sat, 22 Dec 2018 20:45:32 GMT"
           ],
-          "eventId": "AN5Q",
-          "eventOrThing": {
+          "productId": 'AN5Q',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -7049,7 +7013,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bookingEmail": "manon.bencheikh@live.fr",
@@ -7136,8 +7099,7 @@ const state = {
             "Wed, 08 May 2019 08:00:32 GMT",
             "Thu, 09 May 2019 20:00:32 GMT"
           ],
-          "eventId": "A8HQ",
-          "eventOrThing": {
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -7160,6 +7122,7 @@ const state = {
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
           },
+          "productId": 'A8HQ',
           "id": "APCQ",
           "idAtProviders": null,
           "isActive": true,
@@ -7201,7 +7164,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bookingEmail": "manon.bencheikh@live.fr",
@@ -7288,8 +7250,8 @@ const state = {
             "Tue, 13 Nov 2018 19:00:35 GMT",
             "Sat, 17 Nov 2018 19:15:35 GMT"
           ],
-          "eventId": "ANZA",
-          "eventOrThing": {
+          "productId": 'ANZA',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -7390,7 +7352,6 @@ const state = {
               "price": 8
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "17 Boulevard Jourdan",
             "bookingEmail": "aurelien.peroumal@theatredelacite.com",
@@ -7477,8 +7438,8 @@ const state = {
             "Thu, 10 Jan 2019 18:30:53 GMT",
             "Fri, 18 Jan 2019 20:50:53 GMT"
           ],
-          "eventId": "AN6A",
-          "eventOrThing": {
+          "productId": 'AN6A',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -7646,7 +7607,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bookingEmail": "manon.bencheikh@live.fr",
@@ -7730,8 +7690,8 @@ const state = {
           "dateCreated": "2018-09-12T08:19:01.614549Z",
           "dateModifiedAtLastProvider": "2018-09-12T08:19:01.614532Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "productId": 'BE',
+          "product": {
             "dateModifiedAtLastProvider": "2018-09-12T08:19:01.612018Z",
             "description": "LA TOILE est une plateforme VOD qui vous propose une programmation complémentaire en lien avec VOTRE salle de cinéma. ",
             "extraData": null,
@@ -7771,7 +7731,6 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "BE",
           "venue": {
             "address": null,
             "bookingEmail": null,
@@ -7858,8 +7817,8 @@ const state = {
             "Thu, 20 Sep 2018 18:00:00 GMT",
             "Sun, 21 Oct 2018 10:00:37 GMT"
           ],
-          "eventId": "AGRQ",
-          "eventOrThing": {
+          "productId": 'AGRQ',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -7971,7 +7930,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "71 Avenue Marceau",
             "bookingEmail": "nicolas.lorach@gmail.com",
@@ -8058,8 +8016,8 @@ const state = {
             "Fri, 19 Oct 2018 18:30:57 GMT",
             "Sat, 20 Oct 2018 20:00:57 GMT"
           ],
-          "eventId": "AJ2Q",
-          "eventOrThing": {
+          "productId": 'AJ2Q',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -8103,7 +8061,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "124 AVENUE DE LA REPUBLIQUE",
             "bookingEmail": "acp@manufacturechanson.org",
@@ -8190,8 +8147,8 @@ const state = {
             "Tue, 20 Nov 2018 18:30:54 GMT",
             "Sun, 25 Nov 2018 17:00:54 GMT"
           ],
-          "eventId": "AN4Q",
-          "eventOrThing": {
+          "productId": 'AN4Q',
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -8325,7 +8282,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bookingEmail": "manon.bencheikh@live.fr",

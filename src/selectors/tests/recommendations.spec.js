@@ -72,8 +72,12 @@ describe('selectRecommendations', () => {
         dateCreated: '2018-09-12T08:19:01.614549Z',
         dateModifiedAtLastProvider: '2018-09-12T08:19:01.614532Z',
         dateRange: [],
-        eventId: null,
-        eventOrThing: {
+        id: 'AKLA',
+        idAtProviders: null,
+        isActive: true,
+        lastProviderId: null,
+        modelName: 'Offer',
+        product: {
           dateModifiedAtLastProvider: '2018-09-12T08:19:01.612018Z',
           description:
             'LA TOILE est une plateforme VOD qui vous propose une programmation complémentaire en lien avec VOTRE salle de cinéma. ',
@@ -90,11 +94,7 @@ describe('selectRecommendations', () => {
           type: 'AUDIOVISUEL',
           url: 'https://www.la-toile-vod.com/login',
         },
-        id: 'AKLA',
-        idAtProviders: null,
-        isActive: true,
-        lastProviderId: null,
-        modelName: 'Offer',
+        productId: 'BE',
         stocks: [
           {
             available: 200,
@@ -114,7 +114,6 @@ describe('selectRecommendations', () => {
             price: 3,
           },
         ],
-        thingId: 'BE',
         venue: {
           address: null,
           bookingEmail: null,
@@ -160,7 +159,7 @@ describe('selectRecommendations', () => {
       shareMedium: null,
       thumbUrl: 'http://localhost/storage/thumbs/mediations/AKSA',
       tz: 'Europe/Paris',
-      uniqId: 'thing_BE',
+      uniqId: 'product_BE',
       userId: 'AQBA',
       validUntilDate: '2018-10-13T14:19:27.442986Z',
     }
@@ -183,7 +182,7 @@ describe('selectRecommendations', () => {
               {
                 id: 'AEWPS',
                 offer: {
-                  thingId: 'BE',
+                  productId: 'BE',
                   venue: {
                     latitude: 48.8638,
                     longitude: 2.3375,
@@ -217,7 +216,7 @@ describe('selectRecommendations', () => {
               {
                 id: 'AEWPS',
                 offer: {
-                  thingId: 'BE',
+                  productId: 'BE',
                   venue: {
                     latitude: 48.8643,
                     longitude: 2.3374,
@@ -251,7 +250,7 @@ describe('selectRecommendations', () => {
               {
                 id: 'AEWPS',
                 offer: {
-                  thingId: 'BE',
+                  productId: 'BE',
                   venue: {
                     latitude: 48.86795,
                     longitude: 2.3374,
@@ -285,7 +284,7 @@ describe('selectRecommendations', () => {
               {
                 id: 'AEWPS',
                 offer: {
-                  thingId: 'BE',
+                  productId: 'BE',
                   venue: {
                     latitude: 48.8437,
                     longitude: 2.3374,
@@ -319,7 +318,7 @@ describe('selectRecommendations', () => {
               {
                 id: 'AEWPS',
                 offer: {
-                  thingId: 'BE',
+                  productId: 'BE',
                   venue: {
                     latitude: 48.7137,
                     longitude: 2.3374,
@@ -356,7 +355,7 @@ describe('selectRecommendations', () => {
               {
                 id: 'AEWPS',
                 offer: {
-                  thingId: 'BE',
+                  productId: 'BE',
                   venue: {
                     latitude: 48.7137,
                     longitude: 2.3374,
@@ -477,8 +476,7 @@ describe('selectRecommendations', () => {
                   dateCreated: '2018-09-12T08:19:01.614549Z',
                   dateModifiedAtLastProvider: '2018-09-12T08:19:01.614532Z',
                   dateRange: [],
-                  eventId: null,
-                  eventOrThing: {
+                  product: {
                     dateModifiedAtLastProvider: '2018-09-12T08:19:01.612018Z',
                     description:
                       'LA TOILE est une plateforme VOD qui vous propose une programmation complémentaire en lien avec VOTRE salle de cinéma. ',
@@ -519,7 +517,6 @@ describe('selectRecommendations', () => {
                       price: 3,
                     },
                   ],
-                  thingId: 'BE',
                 },
                 offerId: 'AKLA',
                 search: 'page=1',

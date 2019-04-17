@@ -32,14 +32,15 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ALGA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ALGA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-09-14T13:46:33.401791Z",
           "dateModifiedAtLastProvider": "2018-09-14T13:46:33.401781Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "productId": "CM",
+          "product": {
             "dateModifiedAtLastProvider": "2018-09-14T13:46:33.399386Z",
             "description": "Abonnement Premium :  plus de 350 journaux et magazines disponibles en illimité sur tous vos écrans, sans engagement.",
             "extraData": null,
@@ -79,7 +80,6 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "CM",
           "venue": {
             "address": null,
             "bic": null,
@@ -160,6 +160,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AHQQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AHQQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -169,8 +170,8 @@ const state = {
             "2018-07-16T09:00:00Z",
             "2018-11-30T20:00:00Z"
           ],
-          "eventId": "AF7A",
-          "eventOrThing": {
+          "productId": "AF7A",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -1455,7 +1456,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "120 Rue Saint-Martin 75004 Paris",
             "bic": null,
@@ -1536,6 +1536,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ANZQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ANZQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -1545,8 +1546,8 @@ const state = {
             "2018-12-04T19:30:11Z",
             "2018-12-05T21:30:11Z"
           ],
-          "eventId": "A8XA",
-          "eventOrThing": {
+          "productId": "A8XA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -1594,7 +1595,6 @@ const state = {
               "price": 19
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "3 Place de l'Orangerie",
             "bic": null,
@@ -1675,6 +1675,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ARFA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ARFA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -1684,8 +1685,8 @@ const state = {
             "2018-12-30T18:30:39Z",
             "2018-12-31T22:30:39Z"
           ],
-          "eventId": "ARBA",
-          "eventOrThing": {
+          "productId": "ARBA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -1735,7 +1736,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "15 RUE MALTE BRUN",
             "bic": null,
@@ -1816,6 +1816,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AQFA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AQFA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -1825,8 +1826,8 @@ const state = {
             "2019-02-07T19:30:13Z",
             "2019-02-08T20:50:13Z"
           ],
-          "eventId": "AQLA",
-          "eventOrThing": {
+          "productId": "AQLA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -1870,7 +1871,6 @@ const state = {
               "price": 9
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "3 Place de l'Orangerie",
             "bic": null,
@@ -1951,14 +1951,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AQRQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AQRQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-09T16:12:01.145380Z",
           "dateModifiedAtLastProvider": "2018-10-09T16:12:01.145372Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-09T16:12:01.142515Z",
             "description": "Découvrez la french pop de Rubin et le Paradoxe ! ",
             "extraData": {
@@ -2003,7 +2003,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "JA",
+          "productId": "JA",
           "venue": {
             "address": null,
             "bic": null,
@@ -2084,6 +2084,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ASWA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ASWA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -2093,8 +2094,8 @@ const state = {
             "2018-11-05T19:30:02Z",
             "2018-11-06T20:30:02Z"
           ],
-          "eventId": "AR5Q",
-          "eventOrThing": {
+          "productId": "AR5Q",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -2143,7 +2144,6 @@ const state = {
               "price": 4
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "15 RUE MALTE BRUN",
             "bic": null,
@@ -2224,6 +2224,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ANHA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ANHA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -2233,8 +2234,8 @@ const state = {
             "2018-11-20T18:30:54Z",
             "2018-11-25T17:00:54Z"
           ],
-          "eventId": "AN4Q",
-          "eventOrThing": {
+          "productId": "AN4Q",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -2368,7 +2369,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bic": null,
@@ -2449,14 +2449,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ASNA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ASNA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-16T13:38:13.466505Z",
           "dateModifiedAtLastProvider": "2018-10-16T13:38:13.466497Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-16T13:38:13.464748Z",
             "description": "Label : LABORIE JAZZ\nFesten est un quartet puisant dans l’univers complexe et inquiétant du cinéma de Vinterberg, le groupe s’est inspiré de cette sobriété formelle, de ce style vif et brutal propre au cinéma danois des années 90. On remarquera que leurs oreilles ont du traîner du côté du rock des années 90, notamment Sonic Youth, Soundgarden, Birthday Party... Le discours ne se perd jamais en bavardage. Le son, l'harmonie, le rythme ne sont plus imposés par un soliste, mais emportés dans la dynamique d’ensemble. Le travail de composition est toujours collectif, et il semblerait que le quartet fonctionne comme si chaque musicien était au service d'une seule et même entité.",
             "extraData": {
@@ -2500,7 +2500,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "ME",
+          "productId": "ME",
           "venue": {
             "address": null,
             "bic": null,
@@ -2581,6 +2581,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ANHQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ANHQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -2590,8 +2591,8 @@ const state = {
             "2018-10-23T18:30:26Z",
             "2018-12-02T16:30:26Z"
           ],
-          "eventId": "AN5A",
-          "eventOrThing": {
+          "productId": "AN5A",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -2774,7 +2775,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bic": null,
@@ -2855,6 +2855,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AQGQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AQGQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -2864,8 +2865,8 @@ const state = {
             "2019-02-12T19:30:53Z",
             "2019-02-13T21:00:53Z"
           ],
-          "eventId": "AQMA",
-          "eventOrThing": {
+          "productId": "AQMA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -2909,7 +2910,6 @@ const state = {
               "price": 16
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "3 Place de l'Orangerie",
             "bic": null,
@@ -2990,6 +2990,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AN8Q",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AN8Q",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -2999,8 +3000,8 @@ const state = {
             "2019-04-02T08:00:09Z",
             "2019-04-07T14:00:09Z"
           ],
-          "eventId": "A8FQ",
-          "eventOrThing": {
+          "productId": "A8FQ",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -3185,7 +3186,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bic": null,
@@ -3266,6 +3266,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ATDQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ATDQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -3275,8 +3276,8 @@ const state = {
             "2018-11-03T10:00:03Z",
             "2018-11-04T11:00:03Z"
           ],
-          "eventId": "ASNA",
-          "eventOrThing": {
+          "productId": "ASNA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -3343,7 +3344,6 @@ const state = {
               "price": 17
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "157 AVENUE DE WAGRAM",
             "bic": null,
@@ -3424,14 +3424,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AQTA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AQTA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-08T15:35:27.348961Z",
           "dateModifiedAtLastProvider": "2018-10-08T15:35:27.348951Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-08T15:35:27.345132Z",
             "description": "Les élèves du lycée professionnel Truffaut seront vos médiateurs le temps d'une soirée lors de notre Before Delacroix. Ils vous présenteront leur court métrage Métamorphoses, une série de tableaux vivants inspirés de l'oeuvre de Delacroix. Rejoignez-nous pour une soirée de partage et de transmission.",
             "extraData": null,
@@ -3471,7 +3471,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "9M",
+          "productId": "9M",
           "venue": {
             "address": "6 rue de Fürstenberg",
             "bic": null,
@@ -3552,16 +3552,16 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ASNQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ASNQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-16T13:42:38.136253Z",
           "dateModifiedAtLastProvider": "2018-10-16T13:42:38.136247Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-16T13:42:38.134187Z",
-            "description": "Label : MICROCULTURES\n\"Dès le départ, j’ai voulu faire un album qui rétablisse ma foi dans la musique et ma foi dans le monde. C’est un exercice que je devais faire seul et pour lequel j’ai choisi une forme de musique qui me touche depuis toujours : le rembetiko. Celui que je connais est une musique de vérité. Toutes les chansons de l’album obéissent à cette loi.\nJ’ai commencé par écrire la musique, essentiellement modale, sans suite d’accords. J’ai ensuite développé une technique de guitare qui donne le rythme et la mélodie. J’ai utilisé les anciens modes musicaux et les mesures spécifiques pour créer le Son avant le Verbe. Puis les paroles sont venues – et elles sont venues des Ombres, de l’au-delà : The Other Side. Dans cet album, le chanteur est un personnage des Enfers qui ressent le besoin de nous parler.\"",
+            "description": "Label : MICROCULTURES\n\"Dès le départ, j’ai voulu faire un album qui rétablisse ma foi dans la musique et ma foi dans le monde. C’est un exercice que je devais faire seul et pour lequel j’ai choisi une forme de musique qui me touche depuis toujours : le rembetiko. Celui que je connais est une musique de vérité. Toutes les chansons de l’album obéissent à cette loi.\nJ’ai commencé par écrire la musique, essentiellement modale, sans suite d’accords. J’ai ensuite développé une technique de guitare qui donne le rythme et la mélodie. J’ai utilisé les anciens modes musicaux et les mesures spécifiques pour créer le Son avant le Verbe. Puis les paroles sont venues – et elles sont venues des Ombres, de l’au-delà : The Other Side. Dans cet album, le chanteur est un personnage des Enfers qui ressent le besoin de nous parler.",
             "extraData": {
               "author": " Jim Yamourdis",
               "musicType": "860",
@@ -3603,7 +3603,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "M9",
+          "productId": "M9",
           "venue": {
             "address": null,
             "bic": null,
@@ -3684,14 +3684,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ARJA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ARJA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-11T15:56:47.971667Z",
           "dateModifiedAtLastProvider": "2018-10-11T15:56:47.971658Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-11T15:56:47.969743Z",
             "description": "Découvrez la salsa portoricaine, une danse en couple, dans ce cours tous niveaux. Moins connue que la salsa cubaine, cette danse possède une palette de figures très large et met l’accent sur la liberté individuelle, les partenaires pouvant improviser. En salsa portoricaine la danseuse est mise en avant et ne se contente pas de suivre son cavalier!\n\nLes cours ont lieu tous les vendredi de 20h à 21h. Le premier cours est offert. La carte de 10 cours est valable 5 mois.",
             "extraData": {
@@ -3733,7 +3733,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "KM",
+          "productId": "KM",
           "venue": {
             "address": "22 Rue Victor Hugo",
             "bic": null,
@@ -3814,14 +3814,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AT8A",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AT8A",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-23T09:01:18.700734Z",
           "dateModifiedAtLastProvider": "2018-10-23T09:01:18.700717Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-23T09:01:18.680084Z",
             "description": "Tu fumes ?",
             "extraData": {
@@ -3864,7 +3864,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "P9",
+          "productId": "P9",
           "venue": {
             "address": null,
             "bic": null,
@@ -3945,6 +3945,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AQVA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AQVA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -3954,8 +3955,8 @@ const state = {
             "2018-11-22T17:30:02Z",
             "2019-02-06T16:00:47Z"
           ],
-          "eventId": "APQA",
-          "eventOrThing": {
+          "productId": "APQA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -4050,7 +4051,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "6 rue de Fürstenberg",
             "bic": null,
@@ -4131,14 +4131,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AQRA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AQRA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-10T07:51:38.427980Z",
           "dateModifiedAtLastProvider": "2018-10-10T07:51:38.427973Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-10T07:51:38.425288Z",
             "description": "La House Dance, ça ne se danse pas qu'en club, il y a aussi des cours! Venez découvrir cette danse très libre. Elle repose sur un travail rapide des pieds, des mouvements amples et un travail au sol. Cette danse a son identité propre mais elle emprunte aussi aux danses latines et africaines, aux claquettes, à la disco...\n\nLes cours ont lieu le vendredi de 18h à 19h.\n\nCe forfait consiste en une carte de 10 cours utilisables sur une période de 5 mois. Le premier cours d'essai est gratuit.",
             "extraData": {
@@ -4180,7 +4180,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "JE",
+          "productId": "JE",
           "venue": {
             "address": "22 Rue Victor Hugo",
             "bic": null,
@@ -4261,6 +4261,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AREA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AREA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -4270,8 +4271,8 @@ const state = {
             "2018-11-13T18:30:22Z",
             "2018-11-24T21:45:33Z"
           ],
-          "eventId": "AQYA",
-          "eventOrThing": {
+          "productId": "AQYA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -4338,7 +4339,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "15 RUE MALTE BRUN",
             "bic": null,
@@ -4419,6 +4419,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AN9A",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AN9A",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -4428,8 +4429,8 @@ const state = {
             "2018-12-13T18:30:32Z",
             "2018-12-22T20:45:32Z"
           ],
-          "eventId": "AN5Q",
-          "eventOrThing": {
+          "productId": "AN5Q",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -4596,7 +4597,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bic": null,
@@ -4677,14 +4677,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ASJA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ASJA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-08T13:18:03.720469Z",
           "dateModifiedAtLastProvider": "2018-10-08T13:18:03.720460Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-08T13:18:03.716190Z",
             "description": "Profite de 3 mois de musique illimitée avec l’offre Deezer Premium pour 4,99 €/mois.\n\n• Toute la musique que tu aimes sans aucune limite\n• Les nouveautés de tes artistes préférés\n• Tes titres favoris même quand ça ne capte pas\n\n0 pub, 0 contrainte, 100% musique, il ne te reste plus qu’à activer ton offre.\n\nPour valider ton offre, tu dois utiliser la même adresse mail sur ton compte Deezer que sur ton compte Pass Culture.",
             "extraData": null,
@@ -4724,7 +4724,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "99",
+          "productId": "99",
           "venue": {
             "address": null,
             "bic": null,
@@ -4805,6 +4805,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ANBQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ANBQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -4814,8 +4815,8 @@ const state = {
             "2018-11-13T19:00:35Z",
             "2018-11-17T19:15:35Z"
           ],
-          "eventId": "ANZA",
-          "eventOrThing": {
+          "productId": "ANZA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -4916,7 +4917,6 @@ const state = {
               "price": 8
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "17 Boulevard Jourdan",
             "bic": null,
@@ -4997,6 +4997,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ATDA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ATDA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -5006,8 +5007,8 @@ const state = {
             "2018-11-15T19:00:00Z",
             "2018-12-09T16:15:00Z"
           ],
-          "eventId": "ASLQ",
-          "eventOrThing": {
+          "productId": "ASLQ",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -5414,7 +5415,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "59 BOULEVARD JULES GUESDE",
             "bic": null,
@@ -5495,6 +5495,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AN9Q",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AN9Q",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -5504,8 +5505,8 @@ const state = {
             "2019-01-10T18:30:53Z",
             "2019-01-18T20:50:53Z"
           ],
-          "eventId": "AN6A",
-          "eventOrThing": {
+          "productId": "AN6A",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -5673,7 +5674,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bic": null,
@@ -5754,6 +5754,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ANQA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ANQA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -5763,8 +5764,8 @@ const state = {
             "2019-03-29T19:30:58Z",
             "2019-04-06T17:40:58Z"
           ],
-          "eventId": "A8FA",
-          "eventOrThing": {
+          "productId": "A8FA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -5931,7 +5932,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bic": null,
@@ -6012,6 +6012,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ANGA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ANGA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -6021,8 +6022,8 @@ const state = {
             "2018-11-07T18:30:49Z",
             "2018-11-17T18:05:49Z"
           ],
-          "eventId": "AN4A",
-          "eventOrThing": {
+          "productId": "AN4A",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -6204,7 +6205,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bic": null,
@@ -6285,6 +6285,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ANPQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ANPQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -6294,8 +6295,8 @@ const state = {
             "2019-02-08T19:30:32Z",
             "2019-02-14T20:00:32Z"
           ],
-          "eventId": "A8BA",
-          "eventOrThing": {
+          "productId": "A8BA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -6427,7 +6428,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bic": null,
@@ -6508,6 +6508,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AP4Q",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AP4Q",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -6517,8 +6518,8 @@ const state = {
             "2018-11-04T19:30:00Z",
             "2018-11-09T21:30:00Z"
           ],
-          "eventId": "AN7Q",
-          "eventOrThing": {
+          "productId": "AN7Q",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -6585,7 +6586,6 @@ const state = {
               "price": 5
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "PLACE COLETTE",
             "bic": null,
@@ -6666,14 +6666,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ATBA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ATBA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-18T13:00:17.048124Z",
           "dateModifiedAtLastProvider": "2018-10-18T13:00:17.048117Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-18T13:00:17.046157Z",
             "description": "Cette nouvelle série audio de science-fiction de 10 épisodes s'écoute de préférence avec un casque audio pour profiter du son 3D.\nAprès la catastrophe, deux mondes s’affrontent pour leur survie... Depuis la montée des eaux, l’océan sépare l’élite financière, recluse dans une cité immergée, des laissés-pour-compte de la surface. Marin, élevé à l’air libre, découvre qu’il aurait dû grandir dans les abysses. Il doit désormais choisir entre ses origines et sa famille d’adoption. \nUne série d'anticipation de Cyril Legrais et Juliette Rose, réalisée par Baptiste Guiton, en association avec la SACD.",
             "extraData": null,
@@ -6713,7 +6713,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "NQ",
+          "productId": "NQ",
           "venue": {
             "address": null,
             "bic": null,
@@ -6794,6 +6794,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ARBA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ARBA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -6803,8 +6804,8 @@ const state = {
             "2018-11-25T15:00:42Z",
             "2018-11-28T19:30:42Z"
           ],
-          "eventId": "AQ7Q",
-          "eventOrThing": {
+          "productId": "AQ7Q",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -6871,7 +6872,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "15 RUE MALTE BRUN",
             "bic": null,
@@ -6952,14 +6952,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AQDQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AQDQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-08T12:52:45.234042Z",
           "dateModifiedAtLastProvider": "2018-10-08T12:52:45.234035Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-08T12:52:45.229536Z",
             "description": "Lisez 5 tomes historiques de la série Lucky Luke !\n- L'alibi\n- Fingers\n- Le Pony Express\n- Daisy Town\n- L'amnésie des Dalton",
             "extraData": null,
@@ -6999,7 +6999,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "9A",
+          "productId": "9A",
           "venue": {
             "address": null,
             "bic": null,
@@ -7080,6 +7080,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AK9Q",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AK9Q",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -7089,8 +7090,8 @@ const state = {
             "2018-11-07T19:30:11Z",
             "2018-11-08T21:00:11.886000Z"
           ],
-          "eventId": "AJ3Q",
-          "eventOrThing": {
+          "productId": "AJ3Q",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -7134,7 +7135,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "124 AVENUE DE LA REPUBLIQUE",
             "bic": null,
@@ -7215,6 +7215,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ARAQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ARAQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -7224,8 +7225,8 @@ const state = {
             "2018-12-12T13:30:54Z",
             "2018-12-16T19:00:54Z"
           ],
-          "eventId": "ARCA",
-          "eventOrThing": {
+          "productId": "ARCA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -7292,7 +7293,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "15 RUE MALTE BRUN",
             "bic": null,
@@ -7373,6 +7373,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ALXA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ALXA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -7382,8 +7383,8 @@ const state = {
             "2018-09-24T18:30:34.285000Z",
             "2018-12-15T21:00:44.047000Z"
           ],
-          "eventId": "AMZA",
-          "eventOrThing": {
+          "productId": "AMZA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -7430,7 +7431,6 @@ const state = {
               "price": 11
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "3 Place de l'Orangerie",
             "bic": null,
@@ -7511,14 +7511,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ASMQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ASMQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-16T13:36:40.472740Z",
           "dateModifiedAtLastProvider": "2018-10-16T13:36:40.472733Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-16T13:36:40.466481Z",
             "description": "Fondées en 2018, les éditions Stéphane Marsan publient des titres qui ont fait mouche à la librairie. C'est avec un grand plaisir que nous rencontrerons l'éditeur de Tous les soleils d'hier, L'Oiseau Captif, les Immortalistes, Power, pour parler de son métier et de son catalogue. ",
             "extraData": {
@@ -7561,7 +7561,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "MA",
+          "productId": "MA",
           "venue": {
             "address": null,
             "bic": null,
@@ -7642,6 +7642,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ARTA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ARTA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -7651,8 +7652,8 @@ const state = {
             "2018-11-08T19:30:31Z",
             "2018-11-09T20:30:31Z"
           ],
-          "eventId": "ARSQ",
-          "eventOrThing": {
+          "productId": "ARSQ",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -7699,7 +7700,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "11 BIS Rue du Coq Français",
             "bic": null,
@@ -7780,14 +7780,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ATAA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ATAA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-18T12:55:21.039364Z",
           "dateModifiedAtLastProvider": "2018-10-18T12:55:21.039352Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-18T12:55:21.036074Z",
             "description": "D’Alan Mathison Turing (1912-1954), le grand public n’a longtemps rien su. En quelques années, Turing est devenu la figure rêvée du génie scientifique maltraité par les conventions morales d’une époque.\n\nDepuis la sortie du film Imitation Game en 2012, on ne cesse de redécouvrir la vie et l’oeuvre de ce Britannique secret et excentrique, mathématicien inspiré, impliqué dans le cassage des codes nazis pendant la Seconde Guerre mondiale, théoricien de l’informatique puis pionnier de l’intelligence artificielle, poursuivi pour homosexualité avant de disparaître en croquant dans une pomme enduite de cyanure… ",
             "extraData": {
@@ -7830,7 +7830,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "NM",
+          "productId": "NM",
           "venue": {
             "address": null,
             "bic": null,
@@ -7911,6 +7911,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AKKQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AKKQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -7920,8 +7921,8 @@ const state = {
             "2018-11-16T19:30:22Z",
             "2018-11-17T21:00:22.344000Z"
           ],
-          "eventId": "AJ5A",
-          "eventOrThing": {
+          "productId": "AJ5A",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -7965,7 +7966,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "124 AVENUE DE LA REPUBLIQUE",
             "bic": null,
@@ -8046,6 +8046,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AP5A",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AP5A",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -8055,8 +8056,8 @@ const state = {
             "2018-11-02T19:30:57Z",
             "2018-11-28T21:40:00Z"
           ],
-          "eventId": "AN7A",
-          "eventOrThing": {
+          "productId": "AN7A",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -8123,7 +8124,6 @@ const state = {
               "price": 5
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "PLACE COLETTE",
             "bic": null,
@@ -8200,14 +8200,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ANAQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ANAQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-09-28T07:24:54.633514Z",
           "dateModifiedAtLastProvider": "2018-09-28T07:24:54.633503Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-09-28T07:24:54.630147Z",
             "description": "coaching vocal et scénique : 2 séances de 1h20 chacune pour préparer un projet, un concert, un enregistrement, une audition....",
             "extraData": {
@@ -8249,7 +8249,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "FQ",
+          "productId": "FQ",
           "venue": {
             "address": "2 Rue Paul Bert",
             "bic": null,
@@ -8330,6 +8330,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AQ7Q",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AQ7Q",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -8339,8 +8340,8 @@ const state = {
             "2019-03-16T19:30:49Z",
             "2019-03-17T21:00:49Z"
           ],
-          "eventId": "ARBQ",
-          "eventOrThing": {
+          "productId": "ARBQ",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -8388,7 +8389,6 @@ const state = {
               "price": 11
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "3 Place de l'Orangerie",
             "bic": null,
@@ -8469,6 +8469,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ANJA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ANJA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -8478,8 +8479,8 @@ const state = {
             "2019-01-25T19:30:42Z",
             "2019-01-30T19:50:42Z"
           ],
-          "eventId": "AN6Q",
-          "eventOrThing": {
+          "productId": "AN6Q",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -8595,7 +8596,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bic": null,
@@ -8676,6 +8676,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AR9A",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AR9A",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -8685,8 +8686,8 @@ const state = {
             "2018-10-27T13:00:58Z",
             "2018-11-01T17:00:58Z"
           ],
-          "eventId": "ARMQ",
-          "eventOrThing": {
+          "productId": "ARMQ",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -8747,7 +8748,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "1 ter Rue des Sycomores",
             "bic": null,
@@ -8828,6 +8828,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AQUQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AQUQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -8837,8 +8838,8 @@ const state = {
             "2018-12-08T15:00:37Z",
             "2018-12-09T21:30:37Z"
           ],
-          "eventId": "AQYQ",
-          "eventOrThing": {
+          "productId": "AQYQ",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -8904,7 +8905,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "1 Rue Victor Hugo",
             "bic": null,
@@ -8993,6 +8993,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ASVA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ASVA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -9002,8 +9003,8 @@ const state = {
             "2018-12-17T18:00:44Z",
             "2018-12-18T21:00:44Z"
           ],
-          "eventId": "AR5A",
-          "eventOrThing": {
+          "productId": "AR5A",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -9069,7 +9070,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "15 RUE MALTE BRUN",
             "bic": null,
@@ -9150,14 +9150,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ATCQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ATCQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-18T15:21:36.175385Z",
           "dateModifiedAtLastProvider": "2018-10-18T15:21:36.175374Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-18T15:21:36.173535Z",
             "description": "Pixel Museum, le musée permanent du jeu vidéo, des loisirs connectés et de l'art vidéoludique situé à Schiltigheim juste à côté de Strasbourg vous propose de découvrir l'histoire du « 10e Art » à travers de nombreuses consoles et jeux mythiques !",
             "extraData": null,
@@ -9197,7 +9197,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "NU",
+          "productId": "NU",
           "venue": {
             "address": null,
             "bic": null,
@@ -9278,6 +9278,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AJWA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AJWA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -9287,8 +9288,8 @@ const state = {
             "2018-12-14T13:00:43Z",
             "2018-12-15T19:00:43Z"
           ],
-          "eventId": "AJLA",
-          "eventOrThing": {
+          "productId": "AJLA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -9332,7 +9333,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "Quai François Mauriac",
             "bic": null,
@@ -9409,14 +9409,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ASLA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ASLA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-16T13:12:08.835300Z",
           "dateModifiedAtLastProvider": "2018-10-16T13:12:08.835293Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-16T13:12:08.832385Z",
             "description": "Label : PLATINUM RECORDS\nTout terrain, le groupe a fait une pause le temps d’enregistrer son deuxième album, en formation plus resserrée cette fois-ci (une batterie, une basse et trois synthés). S’il est certain qu’on leur parlera encore de krautrock et qu’on les associera, comme pour leur premier album - sold-out en quelques mois -, à des groupes comme Beak>, Zombie Zombie, Nisennenmondai, Stereolab ou Cavern Of Anti-Matter, DRAME reste avant tout un groupe unique en son genre, un groupe qui enregistre live, et qui cherche à fuir la routine des styles avec un réel désir de provoquer la transe, et donc la danse.",
             "extraData": {
@@ -9461,7 +9461,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "LY",
+          "productId": "LY",
           "venue": {
             "address": null,
             "bic": null,
@@ -9542,6 +9542,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ARGQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ARGQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -9551,8 +9552,8 @@ const state = {
             "2018-11-09T13:30:51Z",
             "2018-11-10T13:30:51Z"
           ],
-          "eventId": "ARMA",
-          "eventOrThing": {
+          "productId": "ARMA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -9596,7 +9597,6 @@ const state = {
               "price": 7
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "Place Carnot",
             "bic": null,
@@ -9677,14 +9677,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ARYA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ARYA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-12T14:42:28.085237Z",
           "dateModifiedAtLastProvider": "2018-10-12T14:42:28.085221Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-12T14:42:28.082670Z",
             "description": "Mr Godson (will be the last one to survive) pratique le punk rock de proximité, genre épicerie de nuit où l’on trouve le minimum vital, un punk rock tendu, nerveux, pugnace et mélodique.\nAucune prétention d’être les premiers en quoi que ce soit, juste les derniers à survivre.",
             "extraData": {
@@ -9729,7 +9729,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "LQ",
+          "productId": "LQ",
           "venue": {
             "address": null,
             "bic": null,
@@ -9810,6 +9810,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AMKA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AMKA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -9819,8 +9820,8 @@ const state = {
             "2018-11-30T18:00:23Z",
             "2018-11-30T23:00:23.845000Z"
           ],
-          "eventId": "ANBQ",
-          "eventOrThing": {
+          "productId": "ANBQ",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -9836,7 +9837,7 @@ const state = {
             "lastProviderId": null,
             "mediaUrls": [],
             "modelName": "Event",
-            "name": "Before \"Japon\"",
+            "name": "Before Japon",
             "thumbCount": 0,
             "type": "EventType.MUSEES_PATRIMOINE"
           },
@@ -9864,7 +9865,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "37 Quai Branly",
             "bic": null,
@@ -9945,14 +9945,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AP8A",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AP8A",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-05T13:12:16.482124Z",
           "dateModifiedAtLastProvider": "2018-10-05T13:12:16.482118Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-05T13:12:16.478149Z",
             "description": "Abonnement Premium :  plus de 350 journaux et magazines disponibles en illimité sur tous vos écrans, sans engagement.",
             "extraData": null,
@@ -9992,7 +9992,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "HE",
+          "productId": "HE",
           "venue": {
             "address": "59 Rue Spontini",
             "bic": null,
@@ -10073,6 +10073,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AKKA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AKKA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -10082,8 +10083,8 @@ const state = {
             "2018-11-14T19:30:17Z",
             "2018-12-13T21:00:17.288000Z"
           ],
-          "eventId": "AJ4Q",
-          "eventOrThing": {
+          "productId": "AJ4Q",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -10144,7 +10145,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "124 AVENUE DE LA REPUBLIQUE",
             "bic": null,
@@ -10225,6 +10225,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AK9A",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AK9A",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -10234,8 +10235,8 @@ const state = {
             "2018-11-05T19:30:10Z",
             "2018-12-04T21:00:10.487000Z"
           ],
-          "eventId": "AJ3A",
-          "eventOrThing": {
+          "productId": "AJ3A",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -10313,7 +10314,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "124 AVENUE DE LA REPUBLIQUE",
             "bic": null,
@@ -10394,6 +10394,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ANPA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ANPA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -10403,8 +10404,8 @@ const state = {
             "2018-09-28T16:20:58.001000Z",
             "2019-03-24T16:00:47Z"
           ],
-          "eventId": "A8CA",
-          "eventOrThing": {
+          "productId": "A8CA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -10621,7 +10622,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bic": null,
@@ -10702,14 +10702,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "APWA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/APWA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-07T15:24:47.186676Z",
           "dateModifiedAtLastProvider": "2018-10-07T15:24:47.186670Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-07T15:24:47.184962Z",
             "description": "LE DIMANCHE 16 DECEMBRE A 16H A L'EGLISE DE CROZON CONCERT GRATUIT TROMPETTES ET ORGUE:  Noëls des grands compositeurs des 17/18ème siècles sur l'orgue baroque de Crozon avec deux trompettistes de Versailles.",
             "extraData": null,
@@ -10749,7 +10749,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "HQ",
+          "productId": "HQ",
           "venue": {
             "address": null,
             "bic": null,
@@ -10830,6 +10830,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ANKQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ANKQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -10839,8 +10840,8 @@ const state = {
             "2018-09-28T13:02:20.820000Z",
             "2018-11-25T18:00:05Z"
           ],
-          "eventId": "AN2A",
-          "eventOrThing": {
+          "productId": "AN2A",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -10887,7 +10888,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "17 Boulevard Jourdan",
             "bic": null,
@@ -10968,14 +10968,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AL8Q",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AL8Q",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-09-16T17:44:07.772434Z",
           "dateModifiedAtLastProvider": "2018-09-16T17:44:07.772424Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-09-16T17:44:07.770604Z",
             "description": "Une découverte des arts du cirque ouverte à toutes et à tous. Venez comme vous êtes! Au programme plusieurs disciplines: jonglerie, agrès d'équilibre, acrobaties au sol, création de numéros et spectacle... Le cirque est une discipline artistique à part entière, technique et expressive! L'inscription est valable pour l'année scolaire 2018/2019.\n\nLa tarif est de 145 euros au lieu de 170 euros pour les résidents de Clichy-sous-Bois.",
             "extraData": {
@@ -11017,7 +11017,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "C4",
+          "productId": "C4",
           "venue": {
             "address": "Allée Fernand Lindet",
             "bic": null,
@@ -11098,14 +11098,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AQ8Q",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AQ8Q",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-09T13:50:49.539797Z",
           "dateModifiedAtLastProvider": "2018-10-09T13:50:49.539790Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-09T13:50:49.538076Z",
             "description": "Des jours de plus en plus courts. Des températures basses. Une humidité prolongée. La neige. L'hiver est là. L'hiver est là et il a des histoires à nous raconter.\n\nDans ce nouveau recueil des Editions Secrètes, les auteurs nous livrent leur vision de la saison la plus froide. Sans transition, vous passerez d'une ambiance glaciale et cruelle à des situations cocasses et émouvantes.\n\nAmateurs de fantastique, d'horreur, de fantasy ou d'histoires réalistes, vous tenez un ouvrage qui saura vous ravir!\n\nUn conseil: munissez-vous d'un plaid et d'un mug pour mieux apprécier votre lecture.",
             "extraData": {
@@ -11148,7 +11148,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "9Y",
+          "productId": "9Y",
           "venue": {
             "address": null,
             "bic": null,
@@ -11229,6 +11229,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AN8A",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AN8A",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -11238,8 +11239,8 @@ const state = {
             "2018-10-15T17:30:23Z",
             "2019-05-19T15:25:23Z"
           ],
-          "eventId": "A8HA",
-          "eventOrThing": {
+          "productId": "A8HA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -11355,7 +11356,6 @@ const state = {
               "price": 12
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "2 RUE EDOUARD POISSON",
             "bic": null,
@@ -11436,6 +11436,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AKJQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AKJQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -11445,8 +11446,8 @@ const state = {
             "2018-11-09T19:30:15Z",
             "2018-11-10T21:00:15.664000Z"
           ],
-          "eventId": "AJ4A",
-          "eventOrThing": {
+          "productId": "AJ4A",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -11490,7 +11491,6 @@ const state = {
               "price": 15
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "124 AVENUE DE LA REPUBLIQUE",
             "bic": null,
@@ -11571,14 +11571,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ARCA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ARCA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-11T12:11:50.546226Z",
           "dateModifiedAtLastProvider": "2018-10-11T12:11:50.546215Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-11T12:11:50.542875Z",
             "description": "Un cours de danse africaine, d'inspiration guinéenne, accompagné de musiciens, les mardis de 19h30 à 21h et jusqu'au 25 juin 2019. Cécile et Mariana,  deux profs hyper expérimentées,sauront vous initier à toutes les subtilités des danses africaines. 1er cours d'essai gratuit!",
             "extraData": {
@@ -11620,7 +11620,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "JQ",
+          "productId": "JQ",
           "venue": {
             "address": "52 Rue du Sergent Bobillot",
             "bic": null,
@@ -11701,14 +11701,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AQPA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AQPA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-09T14:45:16.578776Z",
           "dateModifiedAtLastProvider": "2018-10-09T14:45:16.578770Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-09T14:45:16.577075Z",
             "description": "Loop est un jeu mobile narratif disponible prochainement sur tous les smartphones et tablettes. Une expérience unique à la frontière du jeu vidéo et du livre de science-fiction, dans laquelle vos choix impacteront la suite du récit. La moindre décision prise et les liens tissés avec les personnages principaux détermineront l’issue finale !\n\nUn incident grave vient de se produire à bord du croiseur intergalactique Raptora. Vous incarnez un officier de l’Etat Major et recevez l’appel de détresse venu de l’espace émis par le sous-officier Althea Young. Rassemblez les indices et menez l’enquête aux côtés d’Althea afin d’éviter l’anéantissement du vaisseau et de son équipage.\n\nJeu en entièrement en Français. Prochainement sur l’App Store et le Play Store Google au prix de 4,99€. \n\nLoop est développé par Advenworks, une start-up française membre de la French Tech et résidant à la Station F.",
             "extraData": null,
@@ -11748,7 +11748,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "94",
+          "productId": "94",
           "venue": {
             "address": null,
             "bic": null,
@@ -11829,6 +11829,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AMKQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AMKQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -11838,8 +11839,8 @@ const state = {
             "2018-10-02T17:30:25Z",
             "2018-10-31T20:00:25Z"
           ],
-          "eventId": "ANFA",
-          "eventOrThing": {
+          "productId": "ANFA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -11919,7 +11920,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "52 Rue du Sergent Bobillot",
             "bic": null,
@@ -12000,6 +12000,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AQ6Q",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AQ6Q",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -12009,8 +12010,8 @@ const state = {
             "2018-12-08T19:30:35Z",
             "2018-12-09T21:30:35Z"
           ],
-          "eventId": "ARAQ",
-          "eventOrThing": {
+          "productId": "ARAQ",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -12058,7 +12059,6 @@ const state = {
               "price": 16
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "3 Place de l'Orangerie",
             "bic": null,
@@ -12139,14 +12139,14 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "ASMA",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/ASMA",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
           "dateCreated": "2018-10-16T13:32:03.813760Z",
           "dateModifiedAtLastProvider": "2018-10-16T13:32:03.813752Z",
           "dateRange": [],
-          "eventId": null,
-          "eventOrThing": {
+          "product": {
             "dateModifiedAtLastProvider": "2018-10-16T13:32:03.810177Z",
             "description": "Professeur d'histoire, Marie-Fleur Albecker revisite une révolution paysanne anglaises au 14ème siècle et offre une lecture contemporaine, moderne, vivante, de la révolution. \n\nL'héroïne du livre s'embarque aux côtés de milliers de paysans, pour rejoindre Londres, rencontrer le jeune roi Richard II, et remettre en cause le servage. Sur le chemin va s'éveiller la conscience de sa condition de femme, et ça vaut le détour. ",
             "extraData": {
@@ -12189,7 +12189,7 @@ const state = {
               "endDatetime": null
             }
           ],
-          "thingId": "L4",
+          "productId": "L4",
           "venue": {
             "address": null,
             "bic": null,
@@ -12270,6 +12270,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AN3Q",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AN3Q",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -12279,8 +12280,8 @@ const state = {
             "2019-01-19T19:30:41Z",
             "2019-01-20T21:00:41Z"
           ],
-          "eventId": "A8YQ",
-          "eventOrThing": {
+          "productId": "A8YQ",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -12330,7 +12331,6 @@ const state = {
               "price": 19
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "3 Place de l'Orangerie",
             "bic": null,
@@ -12411,6 +12411,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AQTQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AQTQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -12420,8 +12421,8 @@ const state = {
             "2018-12-15T13:00:02Z",
             "2019-04-14T14:00:02Z"
           ],
-          "eventId": "AQJA",
-          "eventOrThing": {
+          "productId": "AQJA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -12533,7 +12534,6 @@ const state = {
               "price": 0
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "6 rue de Fürstenberg",
             "bic": null,
@@ -12614,6 +12614,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AQ5Q",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AQ5Q",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -12623,8 +12624,8 @@ const state = {
             "2019-01-25T19:30:25Z",
             "2019-01-26T20:40:25Z"
           ],
-          "eventId": "ARAA",
-          "eventOrThing": {
+          "productId": "ARAA",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -12672,7 +12673,6 @@ const state = {
               "price": 16
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "3 Place de l'Orangerie",
             "bic": null,
@@ -12753,6 +12753,7 @@ const state = {
           "tutoIndex": null
         },
         "mediationId": "AQFQ",
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AQFQ",
         "modelName": "Recommendation",
         "offer": {
           "bookingEmail": null,
@@ -12762,8 +12763,8 @@ const state = {
             "2019-02-16T19:30:46Z",
             "2019-02-17T21:00:46Z"
           ],
-          "eventId": "AQLQ",
-          "eventOrThing": {
+          "productId": "AQLQ",
+          "product": {
             "accessibility": "\u0000",
             "ageMax": null,
             "ageMin": null,
@@ -12807,7 +12808,6 @@ const state = {
               "price": 19
             }
           ],
-          "thingId": null,
           "venue": {
             "address": "3 Place de l'Orangerie",
             "bic": null,
