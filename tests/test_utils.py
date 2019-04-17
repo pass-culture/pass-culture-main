@@ -271,9 +271,11 @@ def create_thing(
         dominant_color=None,
         thumb_count=1,
         url=None,
-        owning_offerer=None
+        owning_offerer=None,
+        id = '',
 ):
     product = Product()
+    product.id = id
     product.type = str(thing_type)
     product.name = thing_name
     product.description = description

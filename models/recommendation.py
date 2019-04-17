@@ -82,3 +82,7 @@ class Recommendation(PcObject, Model):
 
     search = Column(String,
                     nullable=True)
+
+    @property
+    def thumbUrl(self):
+        return 'http://localhost/storage/thumbs/products/AKSA'
