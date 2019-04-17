@@ -17,11 +17,13 @@ jobs:
             echo "Waiting for apt ..."
             sleep 2
             done
-            curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+            wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
+            source ~/.profile
+            nvm install v8.15.1
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
             echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
             sudo apt-get update
-            sudo apt-get install -y nodejs yarn realpath
+            sudo apt-get install -y yarn realpath
             wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
             sudo dpkg -i google-chrome-stable_current_amd64.deb
       - checkout:
@@ -29,9 +31,9 @@ jobs:
       - run:
           name: Running Unit Tests
           command: |
-            export PATH=${PATH:44}
-            export NVM_BIN=/usr/bin/nodejs
-            export PATH=$NVM_BIN:$PATH
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use v8.15.1
             cd ~/pass-culture-main/webapp
             yarn install
             yarn fontello
@@ -63,9 +65,9 @@ jobs:
       - run:
           name: Run Frontend
           command: |
-            export PATH=${PATH:44}
-            export NVM_BIN=/usr/bin/nodejs
-            export PATH=$NVM_BIN:$PATH
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use v8.15.1
             cd ~/pass-culture-main/webapp
             yarn start
           background: true
@@ -78,17 +80,17 @@ jobs:
       - run:
           name: Running tests
           command: |
-            export PATH=${PATH:44}
-            export NVM_BIN=/usr/bin/nodejs
-            export PATH=$NVM_BIN:$PATH
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use v8.15.1
             cd ~/pass-culture-main/webapp
             yarn test:visual
       - run:
           name: Running tests
           command: |
-            export PATH=${PATH:44}
-            export NVM_BIN=/usr/bin/nodejs
-            export PATH=$NVM_BIN:$PATH
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use v8.15.1
             cd ~/pass-culture-main/webapp
             yarn test:cafe
 
