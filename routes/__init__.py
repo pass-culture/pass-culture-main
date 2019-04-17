@@ -6,9 +6,11 @@ import routes.error_handlers
 import routes.events
 import routes.export
 import routes.mediations
+import routes.music_types
 import routes.offers
 import routes.offerers
 import routes.signup
+import routes.show_types
 import routes.stocks
 import routes.passwords
 import routes.providers
