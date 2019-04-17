@@ -52,11 +52,7 @@ ShallowWrapper {
               }
             }
           >
-<<<<<<< HEAD
             <withRouter(Connect(VersoContentOffer)) />
-=======
-            <withRouter(Connect(VersoInfoOffer)) />
->>>>>>> (PC-1546): updated logic when checking if offer is finished, updated tests to simplify reading, added missing tests
           </div>
         </div>,
         <withRouter(Connect(Footer))
@@ -90,11 +86,7 @@ ShallowWrapper {
                 }
               }
             >
-<<<<<<< HEAD
               <withRouter(Connect(VersoContentOffer)) />
-=======
-              <withRouter(Connect(VersoInfoOffer)) />
->>>>>>> (PC-1546): updated logic when checking if offer is finished, updated tests to simplify reading, added missing tests
             </div>,
           ],
           "className": "verso-wrapper is-black-text scroll-y flex-rows is-relative text-left",
@@ -129,11 +121,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-<<<<<<< HEAD
                 <withRouter(Connect(VersoContentOffer)) />,
-=======
-                <withRouter(Connect(VersoInfoOffer)) />,
->>>>>>> (PC-1546): updated logic when checking if offer is finished, updated tests to simplify reading, added missing tests
                 false,
               ],
               "className": "verso-content",
@@ -201,11 +189,7 @@ ShallowWrapper {
                 }
               }
             >
-<<<<<<< HEAD
               <withRouter(Connect(VersoContentOffer)) />
-=======
-              <withRouter(Connect(VersoInfoOffer)) />
->>>>>>> (PC-1546): updated logic when checking if offer is finished, updated tests to simplify reading, added missing tests
             </div>
           </div>,
           <withRouter(Connect(Footer))
@@ -239,11 +223,7 @@ ShallowWrapper {
                   }
                 }
               >
-<<<<<<< HEAD
                 <withRouter(Connect(VersoContentOffer)) />
-=======
-                <withRouter(Connect(VersoInfoOffer)) />
->>>>>>> (PC-1546): updated logic when checking if offer is finished, updated tests to simplify reading, added missing tests
               </div>,
             ],
             "className": "verso-wrapper is-black-text scroll-y flex-rows is-relative text-left",
@@ -278,11 +258,7 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-<<<<<<< HEAD
                   <withRouter(Connect(VersoContentOffer)) />,
-=======
-                  <withRouter(Connect(VersoInfoOffer)) />,
->>>>>>> (PC-1546): updated logic when checking if offer is finished, updated tests to simplify reading, added missing tests
                   false,
                 ],
                 "className": "verso-content",
