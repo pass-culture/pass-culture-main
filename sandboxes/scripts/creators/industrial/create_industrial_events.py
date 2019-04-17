@@ -62,11 +62,11 @@ def create_industrial_events():
                 elif conditionalField == "musicType":
                     music_type_index = conditional_index % len(music_types)
                     music_type = music_types[music_type_index]
-                    extraData[conditionalField] = music_type['label']
+                    extraData[conditionalField] = music_type['code']
                 elif conditionalField == "showType":
                     show_type_index = conditional_index % len(show_types)
                     show_type = show_types[show_type_index]
-                    extraData[conditionalField] = show_type['label']
+                    extraData[conditionalField] = show_type['code']
                 elif conditionalField == "visa":
                     pass
                 extra_data_index += 1
