@@ -3,10 +3,11 @@ const state = {
     "bookings": [],
     "recommendations": [
       {
-        "id": "AEWPS",
+        "bookingsIds": [],
         "dateCreated": "2018-10-10T14:19:27.410551Z",
         "dateRead": null,
         "dateUpdated": "2018-10-10T14:19:27.410609Z",
+        "id": "AEWPS",
         "isClicked": true,
         "isFavorite": false,
         "isFirst": false,
@@ -38,7 +39,11 @@ const state = {
           "dateCreated": "2018-09-12T08:19:01.614549Z",
           "dateModifiedAtLastProvider": "2018-09-12T08:19:01.614532Z",
           "dateRange": [],
-          "productId": "BE",
+          "id": "AKLA",
+          "idAtProviders": null,
+          "isActive": true,
+          "lastProviderId": null,
+          "modelName": "Offer",
           "product": {
             "dateModifiedAtLastProvider": "2018-09-12T08:19:01.612018Z",
             "description": "LA TOILE est une plateforme VOD qui vous propose une programmation complémentaire en lien avec VOTRE salle de cinéma. ",
@@ -55,18 +60,16 @@ const state = {
             "type": "AUDIOVISUEL",
             "url": "https://www.la-toile-vod.com/login"
           },
-          "id": "AKLA",
-          "idAtProviders": null,
-          "isActive": true,
-          "lastProviderId": null,
-          "modelName": "Offer",
+          "productId": "BE",
           "stocks": [
             {
               "available": 200,
+              "beginningDatetime": null,
               "bookingLimitDatetime": null,
               "bookingRecapSent": null,
               "dateModified": "2018-09-12T15:13:50.187143Z",
               "dateModifiedAtLastProvider": "2018-09-12T15:13:50.187134Z",
+              "endDatetime": null,
               "groupSize": 1,
               "id": "C8PA",
               "idAtProviders": null,
@@ -74,9 +77,7 @@ const state = {
               "lastProviderId": null,
               "modelName": "Stock",
               "offerId": "AKLA",
-              "price": 3,
-              "beginningDatetime": null,
-              "endDatetime": null
+              "price": 3
             }
           ],
           "venue": {
@@ -124,14 +125,14 @@ const state = {
         "shareMedium": null,
         "thumbUrl": "http://localhost/storage/thumbs/mediations/AKSA",
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:27.442986Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:27.442986Z"
       },
       {
-        "id": "AEWPU",
+        "bookingsIds": [],
         "dateCreated": "2018-10-10T14:19:27.566047Z",
         "dateRead": null,
         "dateUpdated": "2018-10-10T14:19:27.566083Z",
+        "id": "AEWPU",
         "isClicked": false,
         "isFavorite": false,
         "isFirst": false,
@@ -163,7 +164,11 @@ const state = {
           "dateCreated": "2018-09-12T16:02:28.632245Z",
           "dateModifiedAtLastProvider": "2018-09-12T16:02:28.632237Z",
           "dateRange": [],
-          "productId": 'BM',
+          "id": "AMRQ",
+          "idAtProviders": null,
+          "isActive": true,
+          "lastProviderId": null,
+          "modelName": "Offer",
           "product": {
             "dateModifiedAtLastProvider": "2018-09-12T16:02:28.627926Z",
             "description": "Cours particuliers hebdomadaires de musique traditionnelle :\n- accordéon chromatique\n- accordéon diatonique\n- binioù-kozh\n- bombarde\n- chant choral\n- chant traditionnel\n- clarinette\n- cornemuse écossaise\n- flûte traversière irlandaise\n- guitare dadgad\n- harpe celtique\n- percussions\n- piano\n- saxophone\n- tin whistle\n- uillean pipe\n- violon\n\nLe répertoire abordé sera constitué des musiques traditionnelles de Bretagne, mais également d'Irlande, d'Écosse, ou d'autres horizons selon les instruments.",
@@ -180,18 +185,16 @@ const state = {
             "type": "PRATIQUE_ARTISTIQUE_ABO",
             "url": null
           },
-          "id": "AMRQ",
-          "idAtProviders": null,
-          "isActive": true,
-          "lastProviderId": null,
-          "modelName": "Offer",
+          "productId": 'BM',
           "stocks": [
             {
               "available": 380,
+              "beginningDatetime": null,
               "bookingLimitDatetime": null,
               "bookingRecapSent": null,
               "dateModified": "2018-09-12T16:02:46.609806Z",
               "dateModifiedAtLastProvider": "2018-09-12T16:02:46.609798Z",
+              "endDatetime": null,
               "groupSize": 1,
               "id": "C8PQ",
               "idAtProviders": null,
@@ -199,16 +202,16 @@ const state = {
               "lastProviderId": null,
               "modelName": "Stock",
               "offerId": "AMRQ",
-              "price": 1,
-              "beginningDatetime": null,
-              "endDatetime": null
+              "price": 1
             },
             {
               "available": 380,
+              "beginningDatetime": null,
               "bookingLimitDatetime": null,
               "bookingRecapSent": null,
               "dateModified": "2018-09-12T16:03:06.359525Z",
               "dateModifiedAtLastProvider": "2018-09-12T16:03:06.359517Z",
+              "endDatetime": null,
               "groupSize": 1,
               "id": "C8QA",
               "idAtProviders": null,
@@ -216,16 +219,16 @@ const state = {
               "lastProviderId": null,
               "modelName": "Stock",
               "offerId": "AMRQ",
-              "price": 30,
-              "beginningDatetime": null,
-              "endDatetime": null
+              "price": 30
             },
             {
               "available": 380,
+              "beginningDatetime": null,
               "bookingLimitDatetime": null,
               "bookingRecapSent": null,
               "dateModified": "2018-09-12T16:11:52.028194Z",
               "dateModifiedAtLastProvider": "2018-09-12T16:11:52.028182Z",
+              "endDatetime": null,
               "groupSize": 1,
               "id": "C8RA",
               "idAtProviders": null,
@@ -233,9 +236,7 @@ const state = {
               "lastProviderId": null,
               "modelName": "Stock",
               "offerId": "AMRQ",
-              "price": 30,
-              "beginningDatetime": null,
-              "endDatetime": null
+              "price": 30
             }
           ],
           "venue": {
@@ -283,13 +284,13 @@ const state = {
         "shareMedium": null,
         "userId": "AQBA",
         "validUntilDate": "2018-10-13T14:19:27.621362Z",
-        "bookingsIds": []
       },
       {
-        "id": "AEWPW",
+        "bookingsIds": [],
         "dateCreated": "2018-10-10T14:19:27.820773Z",
         "dateRead": null,
         "dateUpdated": "2018-10-10T14:19:27.820788Z",
+        "id": "AEWPW",
         "isClicked": false,
         "isFavorite": false,
         "isFirst": false,
@@ -321,7 +322,11 @@ const state = {
           "dateCreated": "2018-09-13T09:44:16.007204Z",
           "dateModifiedAtLastProvider": "2018-09-13T09:44:16.007192Z",
           "dateRange": [],
-          "productId": 'BQ',
+          "id": "AMSQ",
+          "idAtProviders": null,
+          "isActive": true,
+          "lastProviderId": null,
+          "modelName": "Offer",
           "product": {
             "dateModifiedAtLastProvider": "2018-09-13T09:44:15.998167Z",
             "description": "20h45 IKUI DOKI\nUn basson qui groove, un sax velouté, une harpe percussive : Ikui Doki est un trio atypique et captivant.\n\n22H00 - Ensemble Nautilis EVERGREEN\nL’Ensemble Nautilis crée son nouveau répertoire en grand ensemble et confie la partition au batteur Nicolas Pointard. Une surprenante poésie sonore qui groove.",
@@ -338,18 +343,16 @@ const state = {
             "type": "MUSIQUE_ABO",
             "url": null
           },
-          "id": "AMSQ",
-          "idAtProviders": null,
-          "isActive": true,
-          "lastProviderId": null,
-          "modelName": "Offer",
+          "productId": 'BQ',
           "stocks": [
             {
               "available": 10,
+              "beginningDatetime": null,
               "bookingLimitDatetime": null,
               "bookingRecapSent": null,
               "dateModified": "2018-09-13T09:46:42.934061Z",
               "dateModifiedAtLastProvider": "2018-09-13T09:46:42.934053Z",
+              "endDatetime": null,
               "groupSize": 1,
               "id": "C8SQ",
               "idAtProviders": null,
@@ -357,16 +360,16 @@ const state = {
               "lastProviderId": null,
               "modelName": "Stock",
               "offerId": "AMSQ",
-              "price": 11,
-              "beginningDatetime": null,
-              "endDatetime": null
+              "price": 11
             },
             {
               "available": 10,
+              "beginningDatetime": null,
               "bookingLimitDatetime": null,
               "bookingRecapSent": null,
               "dateModified": "2018-09-13T13:08:42.454240Z",
               "dateModifiedAtLastProvider": "2018-09-13T13:08:42.454231Z",
+              "endDatetime": null,
               "groupSize": 1,
               "id": "C8UA",
               "idAtProviders": null,
@@ -374,16 +377,16 @@ const state = {
               "lastProviderId": null,
               "modelName": "Stock",
               "offerId": "AMSQ",
-              "price": 11,
-              "beginningDatetime": null,
-              "endDatetime": null
+              "price": 11
             },
             {
               "available": 10,
+              "beginningDatetime": null,
               "bookingLimitDatetime": null,
               "bookingRecapSent": null,
               "dateModified": "2018-09-13T13:08:56.001824Z",
               "dateModifiedAtLastProvider": "2018-09-13T13:08:56.001813Z",
+              "endDatetime": null,
               "groupSize": 1,
               "id": "C8UQ",
               "idAtProviders": null,
@@ -391,16 +394,16 @@ const state = {
               "lastProviderId": null,
               "modelName": "Stock",
               "offerId": "AMSQ",
-              "price": 11,
-              "beginningDatetime": null,
-              "endDatetime": null
+              "price": 11
             },
             {
               "available": 10,
+              "beginningDatetime": null,
               "bookingLimitDatetime": null,
               "bookingRecapSent": null,
               "dateModified": "2018-09-13T13:09:20.294200Z",
               "dateModifiedAtLastProvider": "2018-09-13T13:09:20.294191Z",
+              "endDatetime": null,
               "groupSize": 1,
               "id": "C8VA",
               "idAtProviders": null,
@@ -408,16 +411,16 @@ const state = {
               "lastProviderId": null,
               "modelName": "Stock",
               "offerId": "AMSQ",
-              "price": 11,
-              "beginningDatetime": null,
-              "endDatetime": null
+              "price": 11
             },
             {
               "available": 10,
+              "beginningDatetime": null,
               "bookingLimitDatetime": null,
               "bookingRecapSent": null,
               "dateModified": "2018-09-13T13:10:03.557741Z",
               "dateModifiedAtLastProvider": "2018-09-13T13:10:03.557734Z",
+              "endDatetime": null,
               "groupSize": 1,
               "id": "C8VQ",
               "idAtProviders": null,
@@ -425,16 +428,16 @@ const state = {
               "lastProviderId": null,
               "modelName": "Stock",
               "offerId": "AMSQ",
-              "price": 11,
-              "beginningDatetime": null,
-              "endDatetime": null
+              "price": 11
             },
             {
               "available": 10,
+              "beginningDatetime": null,
               "bookingLimitDatetime": null,
               "bookingRecapSent": null,
               "dateModified": "2018-09-13T13:14:19.578868Z",
               "dateModifiedAtLastProvider": "2018-09-13T13:14:19.578856Z",
+              "endDatetime": null,
               "groupSize": 1,
               "id": "C8WA",
               "idAtProviders": null,
@@ -442,16 +445,16 @@ const state = {
               "lastProviderId": null,
               "modelName": "Stock",
               "offerId": "AMSQ",
-              "price": 11,
-              "beginningDatetime": null,
-              "endDatetime": null
+              "price": 11
             },
             {
               "available": 10,
+              "beginningDatetime": null,
               "bookingLimitDatetime": null,
               "bookingRecapSent": null,
               "dateModified": "2018-09-13T14:42:43.161037Z",
               "dateModifiedAtLastProvider": "2018-09-13T14:42:43.161029Z",
+              "endDatetime": null,
               "groupSize": 1,
               "id": "C8ZQ",
               "idAtProviders": null,
@@ -459,16 +462,16 @@ const state = {
               "lastProviderId": null,
               "modelName": "Stock",
               "offerId": "AMSQ",
-              "price": 11,
-              "beginningDatetime": null,
-              "endDatetime": null
+              "price": 11
             },
             {
               "available": 10,
+              "beginningDatetime": null,
               "bookingLimitDatetime": null,
               "bookingRecapSent": null,
               "dateModified": "2018-09-13T14:50:04.937734Z",
               "dateModifiedAtLastProvider": "2018-09-13T14:50:04.937727Z",
+              "endDatetime": null,
               "groupSize": 1,
               "id": "C84A",
               "idAtProviders": null,
@@ -476,9 +479,7 @@ const state = {
               "lastProviderId": null,
               "modelName": "Stock",
               "offerId": "AMSQ",
-              "price": 11,
-              "beginningDatetime": null,
-              "endDatetime": null
+              "price": 11
             }
           ],
           "venue": {
@@ -525,14 +526,13 @@ const state = {
         "search": "page=1",
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:27.834648Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:27.834648Z"
       },
       {
-        "id": "AEWM4",
         "dateCreated": "2018-10-10T14:19:00.934469Z",
         "dateRead": null,
         "dateUpdated": "2018-10-10T14:19:00.934492Z",
+        "id": "AEWM4",
         "isClicked": false,
         "isFavorite": false,
         "isFirst": false,
@@ -566,10 +566,10 @@ const state = {
         "validUntilDate": "2018-10-24T14:19:00.905616Z"
       },
       {
-        "id": "AEWM6",
         "dateCreated": "2018-10-10T14:19:00.965333Z",
         "dateRead": null,
         "dateUpdated": "2018-10-10T14:19:00.965344Z",
+        "id": "AEWM6",
         "isClicked": false,
         "isFavorite": false,
         "isFirst": false,
@@ -603,10 +603,11 @@ const state = {
         "validUntilDate": "2018-10-24T14:19:00.944921Z"
       },
       {
-        "id": "AEWP9",
+        "bookingsIds": [],
         "dateCreated": "2018-10-10T14:19:05.418465Z",
         "dateRead": null,
         "dateUpdated": "2018-10-10T14:19:05.418488Z",
+        "id": "AEWP9",
         "isClicked": false,
         "isFavorite": false,
         "isFirst": false,
@@ -641,7 +642,11 @@ const state = {
             "Thu, 25 Oct 2018 18:15:24 GMT",
             "Fri, 26 Oct 2018 19:45:24 GMT"
           ],
-          "productId": 'AQCQ',
+          "id": "ARCQ",
+          "idAtProviders": null,
+          "isActive": true,
+          "lastProviderId": null,
+          "modelName": "Offer",
           "product": {
             "accessibility": "\u0000",
             "ageMax": null,
@@ -662,11 +667,7 @@ const state = {
             "thumbCount": 0,
             "type": "EventType.CINEMA"
           },
-          "id": "ARCQ",
-          "idAtProviders": null,
-          "isActive": true,
-          "lastProviderId": null,
-          "modelName": "Offer",
+          "productId": 'AQCQ',
           "stocks": [
             {
               "available": 10,
@@ -730,14 +731,14 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:05.431082Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:05.431082Z"
       },
       {
-        "id": "AEW8M",
+        "bookingsIds": [],
         "dateCreated": "2018-10-10T14:19:04.125023Z",
         "dateRead": null,
         "dateUpdated": "2018-10-10T14:19:04.125033Z",
+        "id": "AEW8M",
         "isClicked": false,
         "isFavorite": false,
         "isFirst": false,
@@ -772,7 +773,11 @@ const state = {
             "Tue, 23 Oct 2018 18:30:26 GMT",
             "Sun, 02 Dec 2018 16:30:26 GMT"
           ],
-          "productId": 'AN5A',
+          "id": "A8XA",
+          "idAtProviders": null,
+          "isActive": true,
+          "lastProviderId": null,
+          "modelName": "Offer",
           "product": {
             "accessibility": "\u0000",
             "ageMax": null,
@@ -796,11 +801,7 @@ const state = {
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
           },
-          "id": "A8XA",
-          "idAtProviders": null,
-          "isActive": true,
-          "lastProviderId": null,
-          "modelName": "Offer",
+          "productId": 'AN5A',
           "stocks": [
             {
               "available": 30,
@@ -1001,13 +1002,13 @@ const state = {
         "shareMedium": null,
         "userId": "AQBA",
         "validUntilDate": "2018-10-13T14:19:04.129996Z",
-        "bookingsIds": []
       },
       {
-        "id": "AEW84",
+        "bookingsIds": [],
         "dateCreated": "2018-10-10T14:19:04.729351Z",
         "dateRead": null,
         "dateUpdated": "2018-10-10T14:19:04.729363Z",
+        "id": "AEW84",
         "isClicked": false,
         "isFavorite": false,
         "isFirst": false,
@@ -1269,14 +1270,14 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:04.734791Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:04.734791Z"
       },
       {
-        "id": "AEWPE",
+        "bookingsIds": [],
         "dateCreated": "2018-10-10T14:19:05.159344Z",
         "dateRead": null,
         "dateUpdated": "2018-10-10T14:19:05.159364Z",
+        "id": "AEWPE",
         "isClicked": false,
         "isFavorite": false,
         "isFirst": false,
@@ -1400,14 +1401,14 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-11T18:29:59Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-11T18:29:59Z"
       },
       {
-        "id": "AEW8W",
+        "bookingsIds": [],
         "dateCreated": "2018-10-10T14:19:04.479468Z",
         "dateRead": null,
         "dateUpdated": "2018-10-10T14:19:04.479478Z",
+        "id": "AEW8W",
         "isClicked": false,
         "isFavorite": false,
         "isFirst": false,
@@ -1704,14 +1705,14 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:04.486005Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:04.486005Z"
       },
       {
-        "id": "AEWNA",
+        "bookingsIds": [],
         "dateCreated": "2018-10-10T14:19:00.990463Z",
         "dateRead": null,
         "dateUpdated": "2018-10-10T14:19:00.990487Z",
+        "id": "AEWNA",
         "isClicked": false,
         "isFavorite": false,
         "isFirst": false,
@@ -1826,14 +1827,14 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:01.001705Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:01.001705Z"
       },
       {
-        "id": "AEW88",
+        "bookingsIds": [],
         "dateCreated": "2018-10-10T14:19:04.216336Z",
         "dateRead": null,
         "dateUpdated": "2018-10-10T14:19:04.216356Z",
+        "id": "AEW88",
         "isClicked": false,
         "isFavorite": false,
         "isFirst": false,
@@ -1961,14 +1962,14 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:04.223462Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:04.223462Z"
       },
       {
-        "id": "AEWNW",
+        "bookingsIds": [],
         "dateCreated": "2018-10-10T14:19:02.158105Z",
         "dateRead": null,
         "dateUpdated": "2018-10-10T14:19:02.158116Z",
+        "id": "AEWNW",
         "isClicked": false,
         "isFavorite": false,
         "isFirst": false,
@@ -2164,14 +2165,14 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:02.163672Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:02.163672Z"
       },
       {
-        "id": "AEW8Q",
+        "bookingsIds": [],
         "dateCreated": "2018-10-10T14:19:04.285040Z",
         "dateRead": null,
         "dateUpdated": "2018-10-10T14:19:04.285050Z",
+        "id": "AEW8Q",
         "isClicked": false,
         "isFavorite": false,
         "isFirst": false,
@@ -2295,14 +2296,14 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-12T18:29:03Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-12T18:29:03Z"
       },
       {
-        "id": "AEWN2",
+        "bookingsIds": [],
         "dateCreated": "2018-10-10T14:19:02.321731Z",
         "dateRead": null,
         "dateUpdated": "2018-10-10T14:19:02.321744Z",
+        "id": "AEWN2",
         "isClicked": false,
         "isFavorite": false,
         "isFirst": false,
@@ -2426,10 +2427,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:02.333187Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:02.333187Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWNG",
         "dateCreated": "2018-10-10T14:19:01.265029Z",
         "dateRead": null,
@@ -2574,10 +2575,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:01.279299Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:01.279299Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWNE",
         "dateCreated": "2018-10-10T14:19:01.135830Z",
         "dateRead": null,
@@ -2698,10 +2699,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:01.151672Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:01.151672Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEW8C",
         "dateCreated": "2018-10-10T14:19:03.788717Z",
         "dateRead": null,
@@ -2829,10 +2830,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:03.796958Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:03.796958Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEW8S",
         "dateCreated": "2018-10-10T14:19:04.345915Z",
         "dateRead": null,
@@ -2994,10 +2995,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:04.352191Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:04.352191Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWPC",
         "dateCreated": "2018-10-10T14:19:05.024915Z",
         "dateRead": null,
@@ -3130,10 +3131,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:05.031140Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:05.031140Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWPQ",
         "dateCreated": "2018-10-10T14:19:05.917086Z",
         "dateRead": null,
@@ -3349,10 +3350,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:05.922247Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:05.922247Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWNC",
         "dateCreated": "2018-10-10T14:19:01.058784Z",
         "dateRead": null,
@@ -3707,10 +3708,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:01.067629Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:01.067629Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWNK",
         "dateCreated": "2018-10-10T14:19:01.532332Z",
         "dateRead": null,
@@ -3923,10 +3924,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-10T18:29:30Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-10T18:29:30Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEW82",
         "dateCreated": "2018-10-10T14:19:04.651184Z",
         "dateRead": null,
@@ -4054,10 +4055,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:04.660667Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:04.660667Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEW86",
         "dateCreated": "2018-10-10T14:19:04.804545Z",
         "dateRead": null,
@@ -4308,10 +4309,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:04.814478Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:04.814478Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEW89",
         "dateCreated": "2018-10-10T14:19:04.003340Z",
         "dateRead": null,
@@ -4529,10 +4530,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:04.008856Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:04.008856Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWNY",
         "dateCreated": "2018-10-10T14:19:02.233259Z",
         "dateRead": null,
@@ -4666,10 +4667,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:02.239095Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:02.239095Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWNS",
         "dateCreated": "2018-10-10T14:19:02.010629Z",
         "dateRead": null,
@@ -4814,10 +4815,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:02.018349Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:02.018349Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEW8G",
         "dateCreated": "2018-10-10T14:19:03.936013Z",
         "dateRead": null,
@@ -5004,10 +5005,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-12T13:59:39Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-12T13:59:39Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEW8E",
         "dateCreated": "2018-10-10T14:19:03.861553Z",
         "dateRead": null,
@@ -5207,10 +5208,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:03.867159Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:03.867159Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEW8A",
         "dateCreated": "2018-10-10T14:19:03.706079Z",
         "dateRead": null,
@@ -5372,10 +5373,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:03.712825Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:03.712825Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEW8Y",
         "dateCreated": "2018-10-10T14:19:04.555063Z",
         "dateRead": null,
@@ -5503,10 +5504,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:04.561545Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:04.561545Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWPK",
         "dateCreated": "2018-10-10T14:19:05.603041Z",
         "dateRead": null,
@@ -5634,10 +5635,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:05.619190Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:05.619190Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWPM",
         "dateCreated": "2018-10-10T14:19:05.735054Z",
         "dateRead": null,
@@ -5818,10 +5819,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:05.747034Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:05.747034Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWN8",
         "dateCreated": "2018-10-10T14:19:01.779454Z",
         "dateRead": null,
@@ -5949,10 +5950,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:01.792279Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:01.792279Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWNM",
         "dateCreated": "2018-10-10T14:19:01.619032Z",
         "dateRead": null,
@@ -6165,10 +6166,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-10T15:59:17Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-10T15:59:17Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWPG",
         "dateCreated": "2018-10-10T14:19:05.271794Z",
         "dateRead": null,
@@ -6437,10 +6438,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:05.283023Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:05.283023Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWN6",
         "dateCreated": "2018-10-10T14:19:03.590757Z",
         "dateRead": null,
@@ -6636,10 +6637,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:03.612351Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:03.612351Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWP8",
         "dateCreated": "2018-10-10T14:19:05.835495Z",
         "dateRead": null,
@@ -6803,10 +6804,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:05.848079Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:05.848079Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWN9",
         "dateCreated": "2018-10-10T14:19:01.384815Z",
         "dateRead": null,
@@ -7057,10 +7058,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:01.403298Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:01.403298Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWPA",
         "dateCreated": "2018-10-10T14:19:04.928974Z",
         "dateRead": null,
@@ -7208,10 +7209,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:04.935854Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:04.935854Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEW8K",
         "dateCreated": "2018-10-10T14:19:04.068321Z",
         "dateRead": null,
@@ -7396,10 +7397,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:04.073507Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:04.073507Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEW8U",
         "dateCreated": "2018-10-10T14:19:04.411768Z",
         "dateRead": null,
@@ -7651,10 +7652,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:04.421157Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:04.421157Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWPY",
         "dateCreated": "2018-10-10T14:21:08.371488Z",
         "dateRead": null,
@@ -7775,10 +7776,10 @@ const state = {
         "search": "page=1&keywords=TOILE",
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:21:08.377043Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:21:08.377043Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWN4",
         "dateCreated": "2018-10-10T14:19:03.464175Z",
         "dateRead": null,
@@ -7974,10 +7975,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:03.474725Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:03.474725Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWNQ",
         "dateCreated": "2018-10-10T14:19:01.887267Z",
         "dateRead": null,
@@ -8105,10 +8106,10 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:01.900447Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:01.900447Z"
       },
       {
+        "bookingsIds": [],
         "id": "AEWNU",
         "dateCreated": "2018-10-10T14:19:02.095385Z",
         "dateRead": null,
@@ -8326,8 +8327,7 @@ const state = {
         "search": null,
         "shareMedium": null,
         "userId": "AQBA",
-        "validUntilDate": "2018-10-13T14:19:02.101529Z",
-        "bookingsIds": []
+        "validUntilDate": "2018-10-13T14:19:02.101529Z"
       }
     ],
     "types": [
@@ -8561,11 +8561,11 @@ const state = {
   },
   menu: false,
   modal: {
+    $modal: null,
     config: {
       fromDirection: 'right',
     },
     isActive: false,
-    $modal: null,
   },
   share: {
     options: false,
@@ -8576,7 +8576,6 @@ const state = {
     isActive: false,
   },
   user: {
-    id: 'AQBA',
     canBookFreeOffers: true,
     dateCreated: '2018-10-10T14:18:38.267021Z',
     departementCode: '93',
@@ -8597,6 +8596,7 @@ const state = {
     },
     firstName: null,
     firstThumbDominantColor: null,
+    id: 'AQBA',
     isAdmin: false,
     lastName: null,
     modelName: 'User',
@@ -8608,17 +8608,16 @@ const state = {
     thumbCount: 0,
     wallet_balance: 0,
   },
+  _persist: {
+    rehydrated: true,
+    version: -1,
+  },
   card: {
+    areDetailsVisible: false,
     draggable: true,
     isActive: false,
-    areDetailsVisible: false,
     unFlippable: false,
-  },
-  _persist: {
-    version: -1,
-    rehydrated: true,
   },
 }
 
-//export default state
 module.exports = state
