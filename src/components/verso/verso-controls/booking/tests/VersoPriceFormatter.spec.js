@@ -48,6 +48,6 @@ describe('src | components | VersoPriceFormatter', () => {
     const wrapper = shallow(<VersoPriceFormatter {...props} />)
 
     // then
-    expect(wrapper.text()).toEqual(`12${nbsp}${arrow}22${nbsp}poires`)
+    expect(wrapper.text()).toEqual(`12${nbsp}${arrow}${nbsp}22${nbsp}poires`)
   })
 })

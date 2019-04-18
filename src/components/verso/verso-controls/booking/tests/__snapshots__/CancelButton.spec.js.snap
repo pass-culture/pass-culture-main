@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | verso | verso-controls | booking | RawCancelButton snapshot with required props should match snapshot 1`] = `
+exports[`src | components | verso | verso-controls | booking | CancelButton snapshot with required props should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawCancelButton
+  Symbol(enzyme.__unrendered__): <CancelButton
     booking={Object {}}
     dispatch={[MockFunction]}
     history={Object {}}
@@ -31,6 +31,7 @@ ShallowWrapper {
         >
           <Price
             className=""
+            format={null}
             free="Gratuit"
             value={42}
           />
@@ -59,6 +60,7 @@ ShallowWrapper {
           "children": Array [
             <Price
               className=""
+              format={null}
               free="Gratuit"
               value={42}
             />,
@@ -76,6 +78,7 @@ ShallowWrapper {
             "nodeType": "function",
             "props": Object {
               "className": "",
+              "format": null,
               "free": "Gratuit",
               "value": 42,
             },
@@ -124,6 +127,7 @@ ShallowWrapper {
           >
             <Price
               className=""
+              format={null}
               free="Gratuit"
               value={42}
             />
@@ -152,6 +156,7 @@ ShallowWrapper {
             "children": Array [
               <Price
                 className=""
+                format={null}
                 free="Gratuit"
                 value={42}
               />,
@@ -169,6 +174,7 @@ ShallowWrapper {
               "nodeType": "function",
               "props": Object {
                 "className": "",
+                "format": null,
                 "free": "Gratuit",
                 "value": 42,
               },

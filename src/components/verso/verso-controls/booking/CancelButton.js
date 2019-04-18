@@ -1,15 +1,12 @@
 import React from 'react'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
-import { compose } from 'redux'
-import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
-import { withRouter } from 'react-router-dom'
 
 import Price from '../../../layout/Price'
 import { openSharePopin, closeSharePopin } from '../../../../reducers/share'
 
-export class RawCancelButton extends React.PureComponent {
+class CancelButton extends React.PureComponent {
   getButton = (label, id, onClick) => (
     <button
       id={id}
@@ -22,7 +19,7 @@ export class RawCancelButton extends React.PureComponent {
     </button>
   )
 
-  getBookingName = booking => booking.stock.resolvedOffer.eventOrThing.name
+  getBookingName = booking => booking.stock.resolvedOffer.name
 
   getMediationId = booking => booking.recommendation.mediationId
 
@@ -119,9 +116,9 @@ export class RawCancelButton extends React.PureComponent {
   }
 }
 
-RawCancelButton.defaultProps = {}
+CancelButton.defaultProps = {}
 
-RawCancelButton.propTypes = {
+CancelButton.propTypes = {
   booking: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
@@ -130,20 +127,4 @@ RawCancelButton.propTypes = {
   priceValue: PropTypes.number.isRequired,
 }
 
-const mapStateToProps = (state, props) => {
-  const { booking, history, location } = props
-  const locationSearch = location.search
-  const priceValue = get(booking, 'stock.price')
-  const isCancelled = get(booking, 'isCancelled')
-  return {
-    history,
-    isCancelled,
-    locationSearch,
-    priceValue,
-  }
-}
-
-export default compose(
-  withRouter,
-  connect(mapStateToProps)
-)(RawCancelButton)
+export default CancelButton

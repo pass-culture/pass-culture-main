@@ -13,6 +13,7 @@ const VersoPriceFormatter = ({ endingPrice, devise, startingPrice }) => {
           <span className="fs12">
             &nbsp;
             {arrow}
+            &nbsp;
           </span>
           <span>{endingPrice}</span>
         </React.Fragment>
@@ -31,8 +32,9 @@ VersoPriceFormatter.defaultProps = {
 
 VersoPriceFormatter.propTypes = {
   devise: PropTypes.string.isRequired,
-  endingPrice: PropTypes.number,
-  startingPrice: PropTypes.number.isRequired,
+  endingPrice: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  startingPrice: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    .isRequired,
 }
 
 export default VersoPriceFormatter

@@ -7,7 +7,7 @@ import Finishable from '../../layout/Finishable'
 import { ShareButton } from '../../share/ShareButton'
 import VersoWallet from './wallet/VersoWalletContainer'
 import VersoButtonFavorite from './favorite/VersoButtonFavoriteContainer'
-import CancelButton from './booking/CancelButton'
+import CancelButton from './booking/CancelButtonContainer'
 import BookThisButton from './booking/BookThisButtonContainer'
 
 const renderClickBlockerIfFinished = () => (

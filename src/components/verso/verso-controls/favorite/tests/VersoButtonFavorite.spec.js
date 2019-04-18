@@ -1,7 +1,6 @@
 // $(yarn bin)/jest --env=jsdom ./src/components/verso/verso-controls/favorite/tests/VersoButtonFavorite.spec.js --watch
 import React from 'react'
 import { shallow } from 'enzyme'
-import { Icon } from 'pass-culture-shared'
 
 import VersoButtonFavorite from '../VersoButtonFavorite'
 
@@ -27,11 +26,11 @@ describe('src | components | VersoButtonFavorite', () => {
 
     // when
     const wrapper = shallow(<VersoButtonFavorite {...props} />)
-    const iconProps = wrapper.find(Icon).props()
+    const iconProps = wrapper.find('span').props()
 
     // then
-    expect(iconProps.alt).toEqual('Retirer des favoris')
-    expect(iconProps.svg).toEqual('ico-like-w-on')
+    expect(iconProps.title).toEqual('Retirer des favoris')
+    expect(iconProps.className).toEqual('icon-ico-like-on')
   })
 
   it('should display add to favorite icon', () => {
@@ -43,10 +42,10 @@ describe('src | components | VersoButtonFavorite', () => {
 
     // when
     const wrapper = shallow(<VersoButtonFavorite {...props} />)
-    const iconProps = wrapper.find(Icon).props()
+    const iconProps = wrapper.find('span').props()
 
     // then
-    expect(iconProps.alt).toEqual('Ajouter aux favoris')
-    expect(iconProps.svg).toEqual('ico-like-w')
+    expect(iconProps.title).toEqual('Ajouter aux favoris')
+    expect(iconProps.className).toEqual('icon-ico-like')
   })
 })

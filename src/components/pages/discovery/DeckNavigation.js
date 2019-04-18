@@ -142,7 +142,7 @@ RawDeckNavigation.defaultProps = {
   flipHandler: null,
   handleGoNext: null,
   handleGoPrevious: null,
-  isFinished: null,
+  isFinished: false,
   recommendation: null,
   transitionTimeout: 250,
   verticalSlideRatio: 0.3,

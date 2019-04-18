@@ -1,3 +1,4 @@
+// $(yarn bin)/jest --env=jsdom ./src/components/verso/verso-controls/booking/tests/BookThisButton.spec.js --watch
 import React from 'react'
 import { mount, shallow } from 'enzyme'
 import { MemoryRouter } from 'react-router-dom'
@@ -50,6 +51,8 @@ describe('src | components | verso | verso-buttons | BookThisButton', () => {
 
   it('should render a price range when multiples prices are given', () => {
     // given
+    const nbsp = '\u00a0'
+    const arrow = '\u27A4'
     const props = {
       linkDestination: '/path/to/page',
       priceValue: [0, 30, 10],
@@ -70,7 +73,7 @@ describe('src | components | verso | verso-buttons | BookThisButton', () => {
     // then
     const price = wrapper.find('.price')
     expect(price).toHaveLength(1)
-    expect(price.text()).toEqual('0 \u2192 30 €')
+    expect(price.text()).toEqual(`0${nbsp}${arrow}${nbsp}30${nbsp}€`)
   })
 
   describe('formatOutputPrice', () => {

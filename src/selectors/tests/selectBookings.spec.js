@@ -18,8 +18,10 @@ describe('src | selectors | selectBookings', () => {
           bookings: [{ id: 'foo' }, { id: 'bar' }, { id: 'baz' }],
         },
       }
+
       // When
       const result = selectBookingById(state, 'bar')
+
       // Then
       expect(result).toBeDefined()
       expect(result).toEqual({ id: 'bar' })
@@ -31,30 +33,39 @@ describe('src | selectors | selectBookings', () => {
     it('remove offer from bookings, missing stock', () => {
       // given
       const bookingobj = {}
+
       // when
       const result = filterValidBookings(bookingobj)
+
       // then
       const expected = false
       expect(result).toStrictEqual(expected)
     })
+
     it('remove offer from bookings, missing stock.resolvedOffer', () => {
       // given
       const booking = { stock: {} }
+
       // when
       const result = filterValidBookings(booking)
+
       // then
       const expected = false
       expect(result).toStrictEqual(expected)
     })
+
     it('remove offer from bookings, missing stock.resolvedOffer.type', () => {
       // given
       const booking = { stock: { resolvedOffer: {} } }
+
       // when
       const result = filterValidBookings(booking)
+
       // then
       const expected = false
       expect(result).toStrictEqual(expected)
     })
+
     it('do not remove offer from bookings, is not an activation type', () => {
       const booking = {
         stock: {
@@ -63,12 +74,15 @@ describe('src | selectors | selectBookings', () => {
           },
         },
       }
+
       // when
       const result = filterValidBookings(booking)
+
       // then
       const expected = true
       expect(result).toStrictEqual(expected)
     })
+
     it('remove offer from bookings, is an activation type (event)', () => {
       // given
       const booking = {
@@ -78,12 +92,15 @@ describe('src | selectors | selectBookings', () => {
           },
         },
       }
+
       // when
       const result = filterValidBookings(booking)
+
       // then
       const expected = false
       expect(result).toStrictEqual(expected)
     })
+
     it('remove offer from bookings, is an activation type (thing)', () => {
       // given
       const booking = {
@@ -102,6 +119,7 @@ describe('src | selectors | selectBookings', () => {
       expect(result).toStrictEqual(expected)
     })
   })
+
   describe('filterBookingsInLessThanTwoDays', () => {
     it('returns an array of bookings with beginningDatetime today or in less than 2 days', () => {
       // given
@@ -120,6 +138,7 @@ describe('src | selectors | selectBookings', () => {
       ).toBe(true)
     })
   })
+
   describe('filterBookingsInMoreThanTwoDaysOrPast', () => {
     it('returns all bookings excepts >= today hh:mm:s', () => {
       // given

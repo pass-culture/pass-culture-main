@@ -159,6 +159,7 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
 
   it('should render distance to the venue when latitude & longitude are given', () => {
     // given
+    const nbsp = '\u00a0'
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
       handleRequestMusicAndShowTypes: jest.fn(),
@@ -175,7 +176,7 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
     const venueDistance = wrapper.find('.distance')
     const iconComponent = wrapper.find('.distance').find(Icon)
     expect(venueDistance.prop('href')).toBe('this is a fake url')
-    expect(venueDistance.find('span').text()).toBe('1')
+    expect(venueDistance.find('span').text()).toBe(`1${nbsp}`)
     expect(iconComponent).toBeDefined()
     expect(iconComponent.prop('svg')).toBe('ico-geoloc-solid2')
     expect(iconComponent.prop('alt')).toBe(

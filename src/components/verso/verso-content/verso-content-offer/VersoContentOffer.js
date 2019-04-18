@@ -1,9 +1,10 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import get from 'lodash.get'
-import { Icon, capitalize } from 'pass-culture-shared'
+import { capitalize } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React from 'react'
+import { Icon } from '../../../layout/Icon'
 
 import {
   getDurationFromMinutes,
@@ -179,6 +180,7 @@ class VersoContentOffer extends React.PureComponent {
 
 VersoContentOffer.defaultProps = {
   bookables: null,
+  isFinished: false,
   maxShownDates: 7,
   musicSubType: null,
   musicType: null,
@@ -191,7 +193,7 @@ VersoContentOffer.defaultProps = {
 VersoContentOffer.propTypes = {
   bookables: PropTypes.array,
   handleRequestMusicAndShowTypes: PropTypes.func.isRequired,
-  isFinished: PropTypes.bool.isRequired,
+  isFinished: PropTypes.bool,
   maxShownDates: PropTypes.number,
   musicSubType: PropTypes.object,
   musicType: PropTypes.object,

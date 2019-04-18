@@ -8,7 +8,7 @@ ShallowWrapper {
     handleGoNext={null}
     handleGoPrevious={null}
     height={500}
-    isFinished={null}
+    isFinished={false}
     recommendation={Object {}}
     transitionTimeout={250}
     verticalSlideRatio={0.3}
@@ -203,7 +203,7 @@ ShallowWrapper {
     handleGoNext={null}
     handleGoPrevious={null}
     height={500}
-    isFinished={null}
+    isFinished={false}
     recommendation={Object {}}
     transitionTimeout={250}
     verticalSlideRatio={0.3}
@@ -297,7 +297,7 @@ ShallowWrapper {
                 }
               >
                 <Finishable
-                  finished={null}
+                  finished={false}
                 >
                   <Price
                     className=""
@@ -400,7 +400,7 @@ ShallowWrapper {
                   }
                 >
                   <Finishable
-                    finished={null}
+                    finished={false}
                   >
                     <Price
                       className=""
@@ -508,7 +508,7 @@ ShallowWrapper {
                   }
                 >
                   <Finishable
-                    finished={null}
+                    finished={false}
                   >
                     <Price
                       className=""
@@ -570,7 +570,7 @@ ShallowWrapper {
                   }
                 >
                   <Finishable
-                    finished={null}
+                    finished={false}
                   >
                     <Price
                       className=""
@@ -641,7 +641,7 @@ ShallowWrapper {
                     }
                   >
                     <Finishable
-                      finished={null}
+                      finished={false}
                     >
                       <Price
                         className=""
@@ -701,7 +701,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": <Finishable
-                      finished={null}
+                      finished={false}
                     >
                       <Price
                         className=""
@@ -747,7 +747,7 @@ ShallowWrapper {
                            
                         </div>,
                       ],
-                      "finished": null,
+                      "finished": false,
                     },
                     "ref": null,
                     "rendered": Array [
@@ -896,7 +896,7 @@ ShallowWrapper {
                   }
                 >
                   <Finishable
-                    finished={null}
+                    finished={false}
                   >
                     <Price
                       className=""
@@ -999,7 +999,7 @@ ShallowWrapper {
                     }
                   >
                     <Finishable
-                      finished={null}
+                      finished={false}
                     >
                       <Price
                         className=""
@@ -1107,7 +1107,7 @@ ShallowWrapper {
                     }
                   >
                     <Finishable
-                      finished={null}
+                      finished={false}
                     >
                       <Price
                         className=""
@@ -1169,7 +1169,7 @@ ShallowWrapper {
                     }
                   >
                     <Finishable
-                      finished={null}
+                      finished={false}
                     >
                       <Price
                         className=""
@@ -1240,7 +1240,7 @@ ShallowWrapper {
                       }
                     >
                       <Finishable
-                        finished={null}
+                        finished={false}
                       >
                         <Price
                           className=""
@@ -1300,7 +1300,7 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": <Finishable
-                        finished={null}
+                        finished={false}
                       >
                         <Price
                           className=""
@@ -1346,7 +1346,7 @@ ShallowWrapper {
                              
                           </div>,
                         ],
-                        "finished": null,
+                        "finished": false,
                       },
                       "ref": null,
                       "rendered": Array [

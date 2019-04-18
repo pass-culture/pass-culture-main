@@ -27,7 +27,8 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <Price
-          className="pc-ticket-button-price"
+          className="pc-ticket-button-price flex-columns items-center"
+          format={[Function]}
           free="Gratuit"
           value={
             Array [
@@ -41,7 +42,7 @@ ShallowWrapper {
           J'y vais!
         </span>,
       ],
-      "className": "flex-columns",
+      "className": "flex-columns is-bold is-white-text fs18",
       "id": "verso-booking-button",
       "to": "/path/to/page/",
     },
@@ -52,7 +53,8 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "className": "pc-ticket-button-price",
+          "className": "pc-ticket-button-price flex-columns items-center",
+          "format": [Function],
           "free": "Gratuit",
           "value": Array [
             0,
@@ -85,7 +87,8 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <Price
-            className="pc-ticket-button-price"
+            className="pc-ticket-button-price flex-columns items-center"
+            format={[Function]}
             free="Gratuit"
             value={
               Array [
@@ -99,7 +102,7 @@ ShallowWrapper {
             J'y vais!
           </span>,
         ],
-        "className": "flex-columns",
+        "className": "flex-columns is-bold is-white-text fs18",
         "id": "verso-booking-button",
         "to": "/path/to/page/",
       },
@@ -110,7 +113,8 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "className": "pc-ticket-button-price",
+            "className": "pc-ticket-button-price flex-columns items-center",
+            "format": [Function],
             "free": "Gratuit",
             "value": Array [
               0,
@@ -159,5 +163,6 @@ ShallowWrapper {
       },
     },
   },
+  Symbol(enzyme.__childContext__): null,
 }
 `;
