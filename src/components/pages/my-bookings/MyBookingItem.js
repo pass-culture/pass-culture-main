@@ -1,29 +1,14 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
-import get from 'lodash.get'
-import moment from 'moment'
-import { capitalize, Icon } from 'pass-culture-shared'
+import { Icon } from 'pass-culture-shared'
 import React from 'react'
-import { connect } from 'react-redux'
 import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
 
 import Thumb from '../../layout/Thumb'
 import Ribbon from '../../layout/Ribbon'
 import { getQueryURL } from '../../../helpers'
-import { THUMBS_URL } from '../../../utils/config'
-import { getTimezone } from '../../../utils/timezone'
-import { selectRecommendation } from '../../../selectors'
-
-// TODO A tester
-const getDateString = (date, tz) =>
-  date &&
-  capitalize(
-    moment(date)
-      .tz(tz)
-      .format('dddd DD/MM/YYYY à H:mm')
-  )
 
 const MyBookingItem = ({
   completedUrl,
@@ -35,12 +20,13 @@ const MyBookingItem = ({
   name,
   offerId,
   timezone,
+  recommendation,
   token,
 }) => {
+  // TODO Fix the style, according to type of offer
   const cssclass = (isEvent && 'event') || 'thing'
   const queryURL = getQueryURL({ mediationId, offerId })
   const linkURL = `/decouverte/${queryURL}/verso`
-  const thumbUrl = `${THUMBS_URL}/mediations/${mediationId}`
   return (
     <li
       data-token={token}
@@ -50,7 +36,7 @@ const MyBookingItem = ({
     >
       {isCancelled && <Ribbon />}
       <Link to={linkURL}>
-        <Thumb src={thumbUrl} />
+        <Thumb src={recommendation.thumbUrl} />
         <div className="infos">
           <div className="top">
             <h5 title={name} className="fs18 is-semi-bold">
@@ -77,6 +63,7 @@ MyBookingItem.defaultProps = {
   mediationId: null,
   name: null,
   offerId: null,
+  recommendation: {},
   token: null,
 }
 
@@ -89,38 +76,9 @@ MyBookingItem.propTypes = {
   mediationId: PropTypes.string,
   name: PropTypes.string,
   offerId: PropTypes.string,
+  recommendation: PropTypes.shape(),
   timezone: PropTypes.string.isRequired,
   token: PropTypes.string,
 }
 
-export default connect((state, ownProps) => {
-  const { booking } = ownProps || {}
-  const { isCancelled, recommendationId, stock, token } = booking
-  const completedUrl = get(booking, 'completedUrl')
-  const offerId = get(stock, 'resolvedOffer.id')
-  const name = get(stock, 'resolvedOffer.name')
-  const date = get(stock, 'beginningDatetime')
-  const departementCode = get(stock, 'resolvedOffer.venue.departementCode')
-  const timezone = getTimezone(departementCode)
-  const dateString = getDateString(date, timezone)
-
-  const recommendation = selectRecommendation(state, recommendationId)
-  const mediationId = get(recommendation, 'mediationId')
-
-  const isEvent = Boolean(get(stock, 'resolvedOffer.eventId'))
-
-  // injected
-  return {
-    completedUrl,
-    date,
-    dateString,
-    isCancelled,
-    isEvent,
-    mediationId,
-    name,
-    offerId,
-    recommendation,
-    timezone,
-    token,
-  }
-})(MyBookingItem)
+export default MyBookingItem
