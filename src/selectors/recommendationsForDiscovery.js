@@ -8,10 +8,10 @@ const fakeLastReco = {
       'Vous avez parcouru toutes les offres. Revenez bientôt pour découvrir les nouveautés.',
     id: 'fin',
     thumbCount: 1,
-    thumbUrls: [`${ROOT_PATH}/splash-finReco@2x.png`],
     tutoIndex: -1,
   },
   mediationId: 'fin',
+  thumbUrl: `${ROOT_PATH}/splash-finReco@2x.png`,
   uniqId: 'tuto_-1',
 }
 
