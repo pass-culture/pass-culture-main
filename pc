@@ -462,7 +462,7 @@ elif [[ "$CMD" == "deploy-backend" ]] \
   fi
 
   cd "$APP_PATH"
-  echo "$current_branch will be deployed to $ENV"
+  echo "$TAG_NAME will be deployed to $ENV"
   commit_to_deploy=$(git log -n 1 --pretty=format:%H)
 
   update_deploy_branches

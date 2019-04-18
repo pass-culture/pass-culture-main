@@ -1,6 +1,166 @@
 version: 2
 jobs:
+
   tests-script-pc:
+    machine:
+      image: circleci/classic:latest
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - run:
+          name: Install requirements
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y realpath
+            sudo ./pc symlink
+      - run:
+          name: Install requirements
+          command: |
+            cd tests
+            ./run_tests.sh
+
+  tests-api:
+    machine:
+      image: circleci/classic:latest
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run: ./install_lib_ci.sh
+      - run: ./install_dockerize.sh v0.6.1
+      - run:
+          name: Running API server
+          command: |
+            cd api
+            gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
+            tar xf private.tar.gz
+            ../pc start-backend
+          background: true
+      - run:
+          name: Running API tests
+          command: |
+            dockerize -wait http://localhost/health -timeout 4m -wait-retry-interval 2s
+            echo 'y' | ./pc test-backend
+
+  tests-webapp:
+    machine:
+      image: circleci/classic:latest
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run: ./install_lib_ci.sh
+      - run: ./install_dockerize.sh v0.6.1
+      - run:
+          name: Run Unit Test WEBAPP
+          command: |
+            source .jsenv
+            cd webapp
+            yarn install
+            yarn test:unit
+      - run:
+          name: Running API server
+          command: |
+            cd api
+            gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
+            tar xf private.tar.gz
+            ../pc start-backend
+          background: true
+      - run:
+          name: Run Frontend WEBAPP
+          command: |
+            source .jsenv
+            cd webapp
+            yarn start
+          background: true
+      - run:
+          name: Running Sandbox
+          command: |
+            dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
+            ./pc sandbox --name=industrial
+      - run:
+          name: Running functional tests WEBAPP
+          command: |
+            source .jsenv
+            cd webapp
+            yarn test:cafe
+      - run:
+          name: Notify PC Ops Bot
+          when: on_fail
+          command: |
+            export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
+            curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
+
+  tests-pro:
+    machine:
+      image: circleci/classic:latest
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run: ./install_lib_ci.sh
+      - run: ./install_dockerize.sh v0.6.1
+      - run:
+          name: Run Unit Test PRO
+          command: |
+            source .jsenv
+            cd pro
+            yarn install
+            yarn test:unit
+      - run:
+          name: Running API server
+          command: |
+            cd api
+            gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
+            tar xf private.tar.gz
+            ../pc start-backend
+          background: true
+      - run:
+          name: Run Frontend PRO
+          command: |
+            source .jsenv
+            cd pro
+            yarn start
+          background: true
+      - run:
+          name: Running Sandbox
+          command: |
+            dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
+            ./pc sandbox --name=industrial
+      - run:
+          name: Running functional tests PRO
+          command: |
+            source .jsenv
+            cd pro
+            yarn test:cafe
+      - run:
+          name: Notify PC Ops Bot
+          when: on_fail
+          command: |
+            export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
+            curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
+
+
+  deploy-api:
+    machine:
+      image: circleci/classic:latest
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run:
+          name: Deploy API
+          command: |
+            export SCALINGO_APP_NAME=$(./compute_app_name.sh ${CIRCLE_BRANCH})
+            cd api
+            git remote add scalingo git@scalingo.com:${SCALINGO_APP_NAME}.git
+            git push scalingo master
+
+  deploy-pro:
     machine:
       image: circleci/classic:latest
     working_directory: ~/pass-culture
@@ -9,14 +169,41 @@ jobs:
       - run:
           name: Install libraries
           command: |
-            sudo apt-get update
-            sudo apt-get install -y realpath
-            sudo ./pc symlink
+            source .jsenv
+            cd pro
+            yarn install
+            set -a; source ~/node_modules/pass-culture-shared/config/run_envs/${CIRCLE_BRANCH}" && yarn build
       - run:
-          name: Running PC Tests
+          name: Deploy Pro
           command: |
-            cd tests
-            ./run_tests.sh
+            cd pro
+            netlify deploy -e "${CIRCLE_BRANCH}" -t ${NETLIFY_TOKEN}
+
+  deploy-webapp:
+    machine:
+      image: circleci/classic:latest
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run: ./install_lib_ci.sh
+      - run:
+          name: Install netlify CLI
+          command: npm install -g netlify-cli@1.2.3
+      - run:
+          name: Build WEBAPP
+          command: |
+            source .jsenv
+            cd webapp
+            yarn install
+            set -a; source ~/node_modules/pass-culture-shared/config/run_envs/${CIRCLE_BRANCH}" && yarn build
+      - run:
+          name: Deploy WEBAPP
+          command: |
+            cd webapp
+            netlify deploy -e "${CIRCLE_BRANCH}" -t ${NETLIFY_TOKEN}
+
 
 
 workflows:
@@ -24,3 +211,45 @@ workflows:
   commit:
     jobs:
       - tests-script-pc
+      - tests-api:
+          filters:
+            branches:
+              only:
+                - testing
+                - staging
+                - integration
+                - demo
+                - production
+      - tests-webapp:
+          filters:
+            branches:
+              only:
+                - testing
+                - staging
+                - integration
+                - demo
+                - production
+      - tests-pro:
+          filters:
+            branches:
+              only:
+                - testing
+                - staging
+                - integration
+                - demo
+                - production
+      - deploy-api:
+          requires:
+            - tests-api
+            - tests-webapp
+            - tests-pro
+      - deploy-webapp:
+          requires:
+            - tests-api
+            - tests-webapp
+            - tests-pro
+      - deploy-pro:
+          requires:
+            - tests-api
+            - tests-webapp
+            - tests-pro
