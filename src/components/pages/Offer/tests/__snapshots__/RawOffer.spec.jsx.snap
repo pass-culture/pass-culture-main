@@ -58,11 +58,6 @@ ShallowWrapper {
         >
                 Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
         </p>
-        <p
-                className="subtitle"
-        >
-                Attention : les offres payantes ne seront visibles auprès du public qu’à partir du début de l’expérimentation.
-        </p>
         <withRouter(Connect(_Form))
                 BlockComponent={null}
                 Tag={null}
@@ -245,11 +240,6 @@ ShallowWrapper {
             className="subtitle"
 >
             Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
-</p>,
-          <p
-            className="subtitle"
->
-            Attention : les offres payantes ne seront visibles auprès du public qu’à partir du début de l’expérimentation.
 </p>,
           <withRouter(Connect(_Form))
             BlockComponent={null}
@@ -434,18 +424,6 @@ ShallowWrapper {
           },
           "ref": null,
           "rendered": "Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.",
-          "type": "p",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "Attention : les offres payantes ne seront visibles auprès du public qu’à partir du début de l’expérimentation.",
-            "className": "subtitle",
-          },
-          "ref": null,
-          "rendered": "Attention : les offres payantes ne seront visibles auprès du public qu’à partir du début de l’expérimentation.",
           "type": "p",
         },
         Object {
@@ -1166,11 +1144,6 @@ ShallowWrapper {
           >
                     Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
           </p>
-          <p
-                    className="subtitle"
-          >
-                    Attention : les offres payantes ne seront visibles auprès du public qu’à partir du début de l’expérimentation.
-          </p>
           <withRouter(Connect(_Form))
                     BlockComponent={null}
                     Tag={null}
@@ -1353,11 +1326,6 @@ ShallowWrapper {
               className="subtitle"
 >
               Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
-</p>,
-            <p
-              className="subtitle"
->
-              Attention : les offres payantes ne seront visibles auprès du public qu’à partir du début de l’expérimentation.
 </p>,
             <withRouter(Connect(_Form))
               BlockComponent={null}
@@ -1542,18 +1510,6 @@ ShallowWrapper {
             },
             "ref": null,
             "rendered": "Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.",
-            "type": "p",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Attention : les offres payantes ne seront visibles auprès du public qu’à partir du début de l’expérimentation.",
-              "className": "subtitle",
-            },
-            "ref": null,
-            "rendered": "Attention : les offres payantes ne seront visibles auprès du public qu’à partir du début de l’expérimentation.",
             "type": "p",
           },
           Object {
