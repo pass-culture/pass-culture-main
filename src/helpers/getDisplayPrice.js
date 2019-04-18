@@ -1,5 +1,3 @@
-// jest --env=jsdom ./src/helpers/tests/getDisplayPrice --watch
-// import uniq from 'lodash.uniq'
 import isEqual from 'lodash.isequal'
 
 const sortNumber = (a, b) => {
