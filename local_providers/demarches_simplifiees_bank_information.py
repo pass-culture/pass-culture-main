@@ -49,8 +49,10 @@ class BankInformationProvider(LocalProvider):
         return self.retrieve_providable_info()
 
     def updateObject(self, bank_information):
-        bank_information.iban = self.bank_information_dict['iban']
-        bank_information.bic = self.bank_information_dict['bic']
+        iban = self.bank_information_dict['iban']
+        bank_information.iban = iban.upper() if iban else None
+        bic = self.bank_information_dict['bic']
+        bank_information.bic = bic.upper() if bic else None
         bank_information.applicationId = self.bank_information_dict['applicationId']
         bank_information.offererId = self.bank_information_dict.get('offererId', None)
         bank_information.venueId = self.bank_information_dict.get('venueId', None)

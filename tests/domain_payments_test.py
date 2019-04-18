@@ -53,8 +53,8 @@ def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_in
     venue = create_venue(offerer, name='Test Venue', )
     booking = create_booking(user, stock=stock, quantity=1)
 
-    offerer_bank_information = create_bank_information(bic='LAJR93', iban='B135TGGEG532TG', offerer=offerer)
-    venue_bank_information = create_bank_information(bic='LOKIJU76', iban='KD98765RFGHZ788', venue=venue)
+    offerer_bank_information = create_bank_information(bic='Lajr93', iban='B135TGGEG532TG', offerer=offerer)
+    venue_bank_information = create_bank_information(bic='LokiJU76', iban='KD98765RFGHZ788', venue=venue)
 
     booking.stock.offer = Offer()
     booking.stock.offer.venue = venue
@@ -77,7 +77,7 @@ def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_in
     offerer = create_offerer(name='Test Offerer')
     venue = create_venue(offerer, name='Test Venue')
 
-    offerer_bank_information = create_bank_information(bic='QSDFGH8Z555', iban='CF13QSDFGH456789', offerer=offerer)
+    offerer_bank_information = create_bank_information(bic='QsdFGH8Z555', iban='cf13QSDFGH456789', offerer=offerer)
     venue_bank_information = create_bank_information(bic=None, iban=None, venue=venue)
 
     booking = create_booking(user, stock=stock, quantity=1)

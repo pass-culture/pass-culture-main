@@ -49,12 +49,12 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     payment.customMessage = make_custom_message(datetime.utcnow())
 
     if venue.iban:
-        payment.iban = venue.iban
-        payment.bic = venue.bic
+        payment.iban = venue.iban.upper() if venue.iban else None
+        payment.bic = venue.bic.upper() if venue.bic else None
     else:
         offerer = venue.managingOfferer
-        payment.iban = offerer.iban
-        payment.bic = offerer.bic
+        payment.iban = offerer.iban.upper() if offerer.iban else None
+        payment.bic = offerer.bic.upper() if offerer.bic else None
 
     payment.recipientName = venue.managingOfferer.name
     payment.recipientSiren = venue.managingOfferer.siren
