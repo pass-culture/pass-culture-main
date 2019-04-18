@@ -128,8 +128,8 @@ class BankInformationProviderProviderTest:
         assert bank_information.offererId == offerer_id
         assert bank_information.venueId == None
         assert bank_information.idAtProviders == '793875030'
-        local_provider_events = LocalProviderEvent.query\
-            .order_by(LocalProviderEvent.id)\
+        local_provider_events = LocalProviderEvent.query \
+            .order_by(LocalProviderEvent.id) \
             .all()
         assert len(local_provider_events) == 2
         assert local_provider_events[0].type == LocalProviderEventType.SyncStart
@@ -360,8 +360,8 @@ class BankInformationProviderProviderTest:
         bank_information = BankInformation.query.all()
         assert len(bank_information)
         assert bank_information[0].idAtProviders == '79387503000016'
-        sync_error = LocalProviderEvent.query\
-            .filter_by(type=LocalProviderEventType.SyncError)\
+        sync_error = LocalProviderEvent.query \
+            .filter_by(type=LocalProviderEventType.SyncError) \
             .first()
         assert sync_error.payload == 'unknown RIB affiliation for application id 1'
 
@@ -834,7 +834,6 @@ class BankInformationProviderProviderTest:
         local_provider_event = LocalProviderEvent.query.filter_by(type=LocalProviderEventType.SyncError).one()
         assert local_provider_event.payload == 'ApiErrors'
 
-
     @patch(
         'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_from_demarches_simplifiees_procedure')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
@@ -995,6 +994,103 @@ class BankInformationProviderProviderTest:
         TOKEN = os.environ['DEMARCHES_SIMPLIFIEES_TOKEN']
         get_all_application_ids_from_demarches_simplifiees_procedure.assert_called_with(PROCEDURE_ID, TOKEN,
                                                                                         datetime(2019, 1, 1))
+
+    @patch(
+        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_from_demarches_simplifiees_procedure')
+    @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
+    @clean_database
+    def test_provider_creates_one_bank_information_and_format_IBAN_and_BIC(self,
+                                                                           get_application_details,
+                                                                           get_all_application_ids_from_demarches_simplifiees_procedure,
+                                                                           app):
+        # Given
+        get_all_application_ids_from_demarches_simplifiees_procedure.return_value = [1]
+        get_application_details.return_value = {
+            "dossier":
+                {
+                    "id": 1,
+                    "updated_at": "2019-01-21T18:55:03.387Z",
+                    "state": "closed",
+                    "entreprise":
+                        {
+                            "siren": "793875030",
+                            "siret_siege_social": "79387503000017"
+                        },
+                    "etablissement":
+                        {
+                            "siret": "79387503000016"
+                        },
+                    "champs":
+                        [
+                            {
+                                "value": "Le RIB par défaut pour toute structure liée à mon SIREN",
+                                "type_de_champ":
+                                    {
+                                        "id": 352721,
+                                        "libelle": "Je souhaite renseigner",
+                                        "type_champ": "drop_down_list",
+                                        "order_place": 6,
+                                        "description": ""
+                                    }
+                            },
+                            {
+                                "value": "BdFefr2LCCB",
+                                "type_de_champ":
+                                    {
+                                        "id": 352727,
+                                        "libelle": "BIC",
+                                        "type_champ": "text",
+                                        "order_place": 8,
+                                        "description": ""
+                                    }
+                            },
+                            {
+                                "value": "FR76 3000 6000 0112 3456 7890 189",
+                                "type_de_champ":
+                                    {
+                                        "id": 352722,
+                                        "libelle": "IBAN",
+                                        "type_champ": "text",
+                                        "order_place": 9,
+                                        "description": ""
+                                    }
+                            },
+                        ]
+                }
+        }
+        offerer = create_offerer(siren='793875030')
+        venue = create_venue(offerer, siret='79387503000016')
+
+        PcObject.check_and_save(venue)
+
+        offerer_id = offerer.id
+
+        # When Then
+        provider_test(app,
+                      BankInformationProvider,
+                      None,
+                      checkedObjects=1,
+                      createdObjects=1,
+                      updatedObjects=0,
+                      erroredObjects=0,
+                      checkedThumbs=0,
+                      createdThumbs=0,
+                      updatedThumbs=0,
+                      erroredThumbs=0,
+                      BankInformation=1)
+        bank_information = BankInformation.query.first()
+        assert bank_information.iban == 'FR7630006000011234567890189'
+        assert bank_information.bic == 'BDFEFR2LCCB'
+        assert bank_information.applicationId == 1
+        assert bank_information.offererId == offerer_id
+        assert bank_information.venueId == None
+        assert bank_information.idAtProviders == '793875030'
+        local_provider_events = LocalProviderEvent.query \
+            .order_by(LocalProviderEvent.id) \
+            .all()
+        assert len(local_provider_events) == 2
+        assert local_provider_events[0].type == LocalProviderEventType.SyncStart
+        assert local_provider_events[1].type == LocalProviderEventType.SyncEnd
 
 
 class RetrieveBankInformationTest:

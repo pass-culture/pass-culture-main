@@ -49,10 +49,8 @@ class BankInformationProvider(LocalProvider):
         return self.retrieve_providable_info()
 
     def updateObject(self, bank_information):
-        iban = self.bank_information_dict['iban']
-        bank_information.iban = iban.upper() if iban else None
-        bic = self.bank_information_dict['bic']
-        bank_information.bic = bic.upper() if bic else None
+        bank_information.iban = _format_raw_iban(self.bank_information_dict['iban'])
+        bank_information.bic = _format_raw_bic(self.bank_information_dict['bic'])
         bank_information.applicationId = self.bank_information_dict['applicationId']
         bank_information.offererId = self.bank_information_dict.get('offererId', None)
         bank_information.venueId = self.bank_information_dict.get('venueId', None)
@@ -97,4 +95,13 @@ def _find_value_in_fields(fields, value_name):
             return field["value"]
 
 
+def _format_raw_iban(raw_iban):
+    formatted_iban = raw_iban.upper() if raw_iban else None
+    formatted_iban = formatted_iban.replace(' ', '')
+    return formatted_iban
 
+
+def _format_raw_bic(raw_bic):
+    formatted_bic = raw_bic.upper() if raw_bic else None
+    formatted_bic = formatted_bic.replace(' ', '')
+    return formatted_bic
