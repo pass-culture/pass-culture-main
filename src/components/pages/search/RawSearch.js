@@ -103,6 +103,7 @@ class RawSearch extends PureComponent {
             payload: { data },
           } = action
           const hasMore = data.length > 0
+          window._paq.push(['trackSiteSearch', apiParams.keywords, apiParams.categories, data.length])
           this.setState({ hasMore })
         },
       })
