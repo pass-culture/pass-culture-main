@@ -11,6 +11,7 @@ from lxml import etree
 from typing import List, Dict
 from uuid import UUID
 
+from domain.bank_account import format_raw_iban_or_bic
 from domain.reimbursement import BookingReimbursement
 from models import PaymentTransaction
 from models.payment import Payment, PaymentDetails
@@ -49,12 +50,12 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     payment.customMessage = make_custom_message(datetime.utcnow())
 
     if venue.iban:
-        payment.iban = venue.iban.upper() if venue.iban else None
-        payment.bic = venue.bic.upper() if venue.bic else None
+        payment.iban = format_raw_iban_or_bic(venue.iban)
+        payment.bic = format_raw_iban_or_bic(venue.bic)
     else:
         offerer = venue.managingOfferer
-        payment.iban = offerer.iban.upper() if offerer.iban else None
-        payment.bic = offerer.bic.upper() if offerer.bic else None
+        payment.iban = format_raw_iban_or_bic(offerer.iban)
+        payment.bic = format_raw_iban_or_bic(offerer.bic)
 
     payment.recipientName = venue.managingOfferer.name
     payment.recipientSiren = venue.managingOfferer.siren

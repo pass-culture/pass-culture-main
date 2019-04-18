@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from connectors.api_demarches_simplifiees import get_application_details
-from domain.bank_account import get_all_application_ids_from_demarches_simplifiees_procedure
+from domain.bank_account import get_all_application_ids_from_demarches_simplifiees_procedure, format_raw_iban_or_bic
 from models import BankInformation
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
@@ -49,8 +49,8 @@ class BankInformationProvider(LocalProvider):
         return self.retrieve_providable_info()
 
     def updateObject(self, bank_information):
-        bank_information.iban = _format_raw_iban(self.bank_information_dict['iban'])
-        bank_information.bic = _format_raw_bic(self.bank_information_dict['bic'])
+        bank_information.iban = format_raw_iban_or_bic(self.bank_information_dict['iban'])
+        bank_information.bic = format_raw_iban_or_bic(self.bank_information_dict['bic'])
         bank_information.applicationId = self.bank_information_dict['applicationId']
         bank_information.offererId = self.bank_information_dict.get('offererId', None)
         bank_information.venueId = self.bank_information_dict.get('venueId', None)
@@ -93,15 +93,3 @@ def _find_value_in_fields(fields, value_name):
     for field in fields:
         if field["type_de_champ"]["libelle"] == value_name:
             return field["value"]
-
-
-def _format_raw_iban(raw_iban):
-    formatted_iban = raw_iban.upper() if raw_iban else None
-    formatted_iban = formatted_iban.replace(' ', '')
-    return formatted_iban
-
-
-def _format_raw_bic(raw_bic):
-    formatted_bic = raw_bic.upper() if raw_bic else None
-    formatted_bic = formatted_bic.replace(' ', '')
-    return formatted_bic

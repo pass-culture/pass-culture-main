@@ -1045,7 +1045,7 @@ class BankInformationProviderProviderTest:
                                     }
                             },
                             {
-                                "value": "FR76 3000 6000 0112 3456 7890 189",
+                                "value": "FR76 3000 6000  0112 3456 7890 189",
                                 "type_de_champ":
                                     {
                                         "id": 352722,
@@ -1063,8 +1063,6 @@ class BankInformationProviderProviderTest:
 
         PcObject.check_and_save(venue)
 
-        offerer_id = offerer.id
-
         # When Then
         provider_test(app,
                       BankInformationProvider,
@@ -1081,16 +1079,6 @@ class BankInformationProviderProviderTest:
         bank_information = BankInformation.query.first()
         assert bank_information.iban == 'FR7630006000011234567890189'
         assert bank_information.bic == 'BDFEFR2LCCB'
-        assert bank_information.applicationId == 1
-        assert bank_information.offererId == offerer_id
-        assert bank_information.venueId == None
-        assert bank_information.idAtProviders == '793875030'
-        local_provider_events = LocalProviderEvent.query \
-            .order_by(LocalProviderEvent.id) \
-            .all()
-        assert len(local_provider_events) == 2
-        assert local_provider_events[0].type == LocalProviderEventType.SyncStart
-        assert local_provider_events[1].type == LocalProviderEventType.SyncEnd
 
 
 class RetrieveBankInformationTest:
