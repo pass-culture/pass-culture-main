@@ -1,38 +1,37 @@
 /* eslint
-  semi: [2, "always"]
   react/jsx-one-expression-per-line: 0 */
-import get from 'lodash.get';
-import { compose } from 'redux';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import get from 'lodash.get'
+import { compose } from 'redux'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 
-import VersoButtonFavorite from './VersoButtonFavorite';
-import currentRecommendationSelector from '../../../../selectors/currentRecommendation';
+import VersoButtonFavorite from './VersoButtonFavorite'
+import currentRecommendationSelector from '../../../../selectors/currentRecommendation'
 
-export const checkIsFavorite = recommendation => {
-  const result = get(recommendation, 'isFavorite');
-  return result || false;
-};
+const checkIsFavorite = recommendation => {
+  const result = get(recommendation, 'isFavorite')
+  return result || false
+}
 
-export const getRecommendationId = recommendation => {
-  const result = get(recommendation, 'id');
-  return result || null;
-};
+const getRecommendationId = recommendation => {
+  const result = get(recommendation, 'id')
+  return result || null
+}
 
 export const mapStateToProps = (state, ownProps) => {
-  const { mediationId, offerId } = ownProps.match.params;
+  const { mediationId, offerId } = ownProps.match.params
   const recommendation = currentRecommendationSelector(
     state,
     offerId,
     mediationId
-  );
-  const isFavorite = checkIsFavorite(recommendation);
-  const recommendationId = getRecommendationId(recommendation);
+  )
+  const isFavorite = checkIsFavorite(recommendation)
+  const recommendationId = getRecommendationId(recommendation)
   return {
     isFavorite,
     recommendationId,
-  };
-};
+  }
+}
 
 export const mapDispatchToProps = () => ({
   onClick: () => () => {
@@ -48,7 +47,7 @@ export const mapDispatchToProps = () => ({
     //   })
     // );
   },
-});
+})
 
 export default compose(
   withRouter,
@@ -56,4 +55,4 @@ export default compose(
     mapStateToProps,
     mapDispatchToProps
   )
-)(VersoButtonFavorite);
+)(VersoButtonFavorite)

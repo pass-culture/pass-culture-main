@@ -42,7 +42,7 @@ ShallowWrapper {
             subtitle="Offer subtitle"
             title="Offer title"
           />
-          <VersoControl />
+          <withRouter(Connect(VersoControl)) />
           <div
             className="verso-content"
             style={
@@ -76,7 +76,7 @@ ShallowWrapper {
               subtitle="Offer subtitle"
               title="Offer title"
             />,
-            <VersoControl />,
+            <withRouter(Connect(VersoControl)) />,
             <div
               className="verso-content"
               style={
@@ -179,7 +179,7 @@ ShallowWrapper {
               subtitle="Offer subtitle"
               title="Offer title"
             />
-            <VersoControl />
+            <withRouter(Connect(VersoControl)) />
             <div
               className="verso-content"
               style={
@@ -213,7 +213,7 @@ ShallowWrapper {
                 subtitle="Offer subtitle"
                 title="Offer title"
               />,
-              <VersoControl />,
+              <withRouter(Connect(VersoControl)) />,
               <div
                 className="verso-content"
                 style={

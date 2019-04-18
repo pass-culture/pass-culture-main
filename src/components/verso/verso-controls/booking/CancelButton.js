@@ -9,40 +9,38 @@ import { withRouter } from 'react-router-dom'
 import Price from '../../../layout/Price'
 import { openSharePopin, closeSharePopin } from '../../../../reducers/share'
 
-export const getButton = (label, id, onClick) => (
-  <button
-    id={id}
-    className="no-border no-background no-outline is-block py12 is-bold fs14"
-    key={label}
-    onClick={onClick}
-    type="button"
-  >
-    <span>{label}</span>
-  </button>
-)
-
-export const getBookingName = booking =>
-  booking.stock.resolvedOffer.eventOrThing.name
-
-export const getMediationId = booking => booking.recommendation.mediationId
-export const getOfferId = booking => booking.recommendation.offerId
-export const getCancelSuccessRedirectFromBookingAndSearch = (
-  booking,
-  search
-) => {
-  const offerId = getOfferId(booking)
-  const bookingId = get(booking, 'id')
-  const mediationId = getMediationId(booking)
-  const url = `/decouverte/${offerId}/${mediationId}/cancelled/${bookingId}${search}`
-  return url
-}
-
 export class RawCancelButton extends React.PureComponent {
+  getButton = (label, id, onClick) => (
+    <button
+      id={id}
+      className="no-border no-background no-outline is-block py12 is-bold fs14"
+      key={label}
+      onClick={onClick}
+      type="button"
+    >
+      <span>{label}</span>
+    </button>
+  )
+
+  getBookingName = booking => booking.stock.resolvedOffer.eventOrThing.name
+
+  getMediationId = booking => booking.recommendation.mediationId
+
+  getOfferId = booking => booking.recommendation.offerId
+
+  getCancelSuccessRedirectFromBookingAndSearch = (booking, search) => {
+    const offerId = this.getOfferId(booking)
+    const bookingId = get(booking, 'id')
+    const mediationId = this.getMediationId(booking)
+    const url = `/decouverte/${offerId}/${mediationId}/cancelled/${bookingId}${search}`
+    return url
+  }
+
   onCancelSuccess = booking => {
     const { dispatch, history, locationSearch } = this.props
     dispatch(closeSharePopin())
 
-    const redirect = getCancelSuccessRedirectFromBookingAndSearch(
+    const redirect = this.getCancelSuccessRedirectFromBookingAndSearch(
       booking,
       locationSearch
     )
@@ -52,12 +50,12 @@ export class RawCancelButton extends React.PureComponent {
   onCancelFailure = (state, request) => {
     const { dispatch } = this.props
     const message = get(request, 'errors.booking') || [
-      'Une erreur inconnue sest produite',
+      `Une erreur inconnue s'est produite`,
     ]
 
     const options = {
       buttons: [
-        getButton('OK', 'popin-cancel-booking-fail-ok', () => {
+        this.getButton('OK', 'popin-cancel-booking-fail-ok', () => {
           dispatch(closeSharePopin())
         }),
       ],
@@ -89,11 +87,15 @@ export class RawCancelButton extends React.PureComponent {
     const { dispatch } = this.props
     const options = {
       buttons: [
-        getButton('Oui', 'popin-cancel-booking-yes', this.onCancelYes(booking)),
-        getButton('Non', 'popin-cancel-booking-no', this.onCancelNo()),
+        this.getButton(
+          'Oui',
+          'popin-cancel-booking-yes',
+          this.onCancelYes(booking)
+        ),
+        this.getButton('Non', 'popin-cancel-booking-no', this.onCancelNo()),
       ],
-      text: 'Souhaitez vous réellement annuler cette réservation ?',
-      title: getBookingName(booking),
+      text: 'Souhaitez-vous réellement annuler cette réservation ?',
+      title: this.getBookingName(booking),
     }
     dispatch(openSharePopin(options))
   }

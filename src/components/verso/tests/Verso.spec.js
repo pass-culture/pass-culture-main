@@ -3,7 +3,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import Verso from '../Verso'
-import VersoControl from '../verso-controls/VersoControl'
+import VersoControl from '../verso-controls/VersoControlContainer'
 import VersoContentOfferContainer from '../verso-content/verso-content-offer/VersoContentOfferContainer'
 import VersoContentTuto from '../verso-content/VersoContentTuto'
 
@@ -23,33 +23,41 @@ describe('src | components | verso | Verso', () => {
   it('should match snapshot', () => {
     // given
     const cprops = { ...props, isTuto: false }
+
     // when
     const wrapper = shallow(<Verso {...cprops} />)
+
     // then
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
+
   it('should show offer view', () => {
     // given
     const cprops = { ...props, isTuto: false }
+
     // when
     const wrapper = shallow(<Verso {...cprops} />)
     const infos = wrapper.find(VersoContentOfferContainer)
     const tuto = wrapper.find(VersoContentTuto)
     const controls = wrapper.find(VersoControl)
+
     // then
     expect(tuto).toHaveLength(0)
     expect(infos).toHaveLength(1)
     expect(controls).toHaveLength(1)
   })
+
   it('should show tuto view', () => {
     // given
     const cprops = { ...props, isTuto: true }
+
     // when
     const wrapper = shallow(<Verso {...cprops} />)
     const infos = wrapper.find(VersoContentOfferContainer)
     const tuto = wrapper.find(VersoContentTuto)
     const controls = wrapper.find(VersoControl)
+
     // then
     expect(tuto).toHaveLength(1)
     expect(infos).toHaveLength(0)

@@ -9,34 +9,42 @@ describe('src | components | VersoButtonFavorite', () => {
   it('should match snapshot, with required props', () => {
     // given
     const props = { onClick: jest.fn() }
+
     // when
     const wrapper = shallow(<VersoButtonFavorite {...props} />)
+
     // then
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
-  it('should use deactivated icon if is favorite', () => {
+
+  it('should display remove to favorite icon', () => {
     // given
     const props = {
       isFavorite: true,
       onClick: jest.fn(),
     }
+
     // when
     const wrapper = shallow(<VersoButtonFavorite {...props} />)
     const iconProps = wrapper.find(Icon).props()
+
     // then
     expect(iconProps.alt).toEqual('Retirer des favoris')
     expect(iconProps.svg).toEqual('ico-like-w-on')
   })
-  it('should use deactivated icon', () => {
+
+  it('should display add to favorite icon', () => {
     // given
     const props = {
       isFavorite: false,
       onClick: jest.fn(),
     }
+
     // when
     const wrapper = shallow(<VersoButtonFavorite {...props} />)
     const iconProps = wrapper.find(Icon).props()
+
     // then
     expect(iconProps.alt).toEqual('Ajouter aux favoris')
     expect(iconProps.svg).toEqual('ico-like-w')

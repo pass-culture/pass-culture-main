@@ -7,7 +7,7 @@ import { compose } from 'redux'
 
 import VersoControl from './VersoControl'
 
-import { isRecommendationFinished } from '../../../helpers'
+import { isRecommendationOfferFinished } from '../../../helpers'
 
 import { selectBookings } from '../../../selectors/selectBookings'
 import currentRecommendation from '../../../selectors/currentRecommendation'
@@ -20,8 +20,11 @@ const mapStateToProps = (state, { match }) => {
   const bookings = selectBookings(state)
   const booking = bookings.find(b => stockIds.includes(b.stockId))
   const isFinished =
-    isRecommendationFinished(recommendation, offerId) || get(booking, 'isUsed')
+    isRecommendationOfferFinished(recommendation, offerId) ||
+    get(booking, 'isUsed')
+
   return {
+    booking,
     isFinished,
   }
 }

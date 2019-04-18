@@ -3,9 +3,7 @@
 exports[`src | components | layout | Finishable should match snapshot with required props 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Finishable
-    finished={false}
-  >
+  Symbol(enzyme.__unrendered__): <Finishable>
     <div>
       cette offre n'est pas terminée
     </div>

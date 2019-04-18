@@ -1,4 +1,5 @@
 import get from 'lodash.get'
+import { selectBookings } from '../../../../selectors/selectBookings'
 import selectMusicTypeByCode from './selectors/selectMusicTypeByCode'
 import selectMusicSubTypeByCodeAndSubCode from './selectors/selectMusicSubTypeByCodeAndSubCode'
 import selectShowTypeByCode from './selectors/selectShowTypeByCode'
@@ -7,6 +8,14 @@ import { isRecommendationOfferFinished } from '../../../../helpers'
 import { selectBookables } from '../../../../selectors/selectBookables'
 import currentRecommendationSelector from '../../../../selectors/currentRecommendation'
 
+const getOnlineUrl = (recommendation, state) => {
+  const stocks = get(recommendation, 'offer.stocks')
+  const stockIds = (stocks || []).map(o => o.id)
+  const bookings = selectBookings(state)
+  const booking = bookings.find(b => stockIds.includes(b.stockId))
+  const onlineOfferUrl = get(booking, 'completedUrl')
+  return onlineOfferUrl
+}
 
 const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
@@ -34,12 +43,15 @@ const mapStateToProps = (state, ownProps) => {
     get(extraData, 'showSubType')
   )
 
+  const onlineOfferUrl = getOnlineUrl(recommendation, state)
+
   return {
     bookables,
     isFinished,
     musicSubType,
     musicType,
     musicTypes: get(state, 'data.musicTypes'),
+    onlineOfferUrl,
     recommendation,
     showSubType,
     showType,

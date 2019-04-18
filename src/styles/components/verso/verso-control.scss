@@ -1,11 +1,16 @@
 .verso {
   .verso-control {
     @extend .is-clipped;
+
+    height: 62px;
+    min-height: 62px;
+  }
+
+  .verso-control ul {
     @extend .no-list-style;
 
     height: 62px;
     min-height: 62px;
-    list-style: none;
   }
 
   .verso-control span[class^='icon-']::before {
@@ -34,8 +39,8 @@
     font-size: 28px;
   }
 
-  .verso-control .button-with-price .price,
-  .verso-control .button-with-price .button-label {
+  .verso-control .pc-ticket-button-price,
+  .verso-control .pc-ticket-button-label {
     padding-left: 6px;
     padding-right: 6px;
   }
@@ -46,8 +51,8 @@
     font-size: 44px;
   }
 
-  .verso-control .button-with-price .price,
-  .verso-control .button-with-price .button-label {
+  .verso-control .pc-ticket-button-price,
+  .verso-control .pc-ticket-button-label {
     padding-left: 12px;
     padding-right: 12px;
   }

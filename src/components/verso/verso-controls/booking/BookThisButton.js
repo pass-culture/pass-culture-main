@@ -29,11 +29,11 @@ class BookThisButton extends React.PureComponent {
       >
         <Price
           free="Gratuit"
-          className="pc-ticket-button-price px6 py8 flex-columns items-center"
+          className="pc-ticket-button-price flex-columns items-center"
           value={priceValue}
           format={formatOutputPrice}
         />
-        <span className="pc-ticket-button-label px6 py8">J&apos;y vais!</span>
+        <span className="pc-ticket-button-label">J&apos;y vais!</span>
       </Link>
     )
   }

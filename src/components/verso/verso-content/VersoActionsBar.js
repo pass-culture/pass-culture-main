@@ -8,7 +8,7 @@ const VersoActionsBar = ({ url }) => (
     <a
       target="_blank"
       rel="noopener noreferrer"
-      href={`${url}`}
+      href={url}
       id="verso-online-booked-button"
       className="is-red-text is-bold flex-columns items-center flex-center"
     >

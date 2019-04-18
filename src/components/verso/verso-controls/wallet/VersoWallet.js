@@ -1,8 +1,7 @@
 /* eslint
-  semi: [2, "always"]
   react/jsx-one-expression-per-line: 0 */
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
 const VersoWallet = ({ value }) => (
   <div id="verso-wallet">
@@ -13,10 +12,10 @@ const VersoWallet = ({ value }) => (
       {value}&nbsp;€
     </span>
   </div>
-);
+)
 
 VersoWallet.propTypes = {
   value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-};
+}
 
-export default VersoWallet;
+export default VersoWallet

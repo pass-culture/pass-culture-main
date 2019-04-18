@@ -1,7 +1,7 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import get from 'lodash.get'
-import { capitalize } from 'pass-culture-shared'
+import { Icon, capitalize } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React from 'react'
 
@@ -9,7 +9,6 @@ import {
   getDurationFromMinutes,
   getWhatTitleFromLabelAndIsVirtualVenue,
 } from './utils'
-import { Icon } from '../../../layout/Icon'
 import { navigationLink } from '../../../../utils/geolocation'
 import VersoActionsBar from '../VersoActionsBar'
 
@@ -152,10 +151,7 @@ class VersoContentOffer extends React.PureComponent {
           </p>
           {latitude && longitude && (
             <a className="distance" href={navigationLink(latitude, longitude)}>
-              <span>
-                {distance}
-                {''}
-              </span>
+              <span>{distance}&nbsp;</span>
               <Icon
                 svg="ico-geoloc-solid2"
                 alt="Géolocalisation dans Open Street Map"
