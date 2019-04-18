@@ -48,8 +48,11 @@ describe('src | components | pages | SearchResults', () => {
           dehumanizedLastProviderId: 6,
           dehumanizedThingId: 333,
           dehumanizedVenueId: 1,
-          eventId: null,
-          eventOrThing: {
+          id: 'Q4',
+          idAtProviders: '2949:9782221190081',
+          lastProviderId: 'AY',
+          modelName: 'Offer',
+          product: {
             dateModifiedAtLastProvider: '2018-01-31T00:00:00Z',
             dehumanizedId: 333,
             dehumanizedLastProviderId: 8,
@@ -75,10 +78,7 @@ describe('src | components | pages | SearchResults', () => {
             type: 'LIVRE_EDITION',
             url: null,
           },
-          id: 'Q4',
-          idAtProviders: '2949:9782221190081',
-          lastProviderId: 'AY',
-          modelName: 'Offer',
+          productId: 'AFGQ',
           stocks: [
             {
               available: null,
@@ -101,7 +101,6 @@ describe('src | components | pages | SearchResults', () => {
               price: 17.9,
             },
           ],
-          thingId: 'AFGQ',
           venue: {
             address: '41 Boulevard de Strasbourg',
             bookingEmail: 'passculture-dev@beta.gouv.fr',

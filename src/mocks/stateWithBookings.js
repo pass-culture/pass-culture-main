@@ -32,7 +32,7 @@ const stateWithBookings = {
             bookingEmail: null,
             dateCreated: '2018-10-29T09:44:38.216817Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
-            eventId: 'AE',
+            productId: 'AE',
             product: {
               accessibility: '\u0000',
               ageMax: null,
@@ -58,7 +58,6 @@ const stateWithBookings = {
             isActive: true,
             lastProviderId: null,
             modelName: 'Offer',
-            thingId: null,
             venue: {
               address: '1 BD POISSONNIERE',
               bic: null,
@@ -118,7 +117,7 @@ const stateWithBookings = {
             bookingEmail: null,
             dateCreated: '2018-10-29T09:44:38.216817Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
-            eventId: 'AE',
+            productId: 'AE',
             product: {
               accessibility: '\u0000',
               ageMax: null,
@@ -144,7 +143,6 @@ const stateWithBookings = {
             isActive: true,
             lastProviderId: null,
             modelName: 'Offer',
-            thingId: null,
             venue: {
               address: '1 BD POISSONNIERE',
               bic: null,
@@ -204,7 +202,7 @@ const stateWithBookings = {
             bookingEmail: null,
             dateCreated: '2018-10-29T09:44:38.216817Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
-            eventId: 'AE',
+            productId: 'AE',
             product: {
               accessibility: '\u0000',
               ageMax: null,
@@ -230,7 +228,6 @@ const stateWithBookings = {
             isActive: true,
             lastProviderId: null,
             modelName: 'Offer',
-            thingId: null,
             venue: {
               address: '1 BD POISSONNIERE',
               bic: null,
@@ -290,7 +287,7 @@ const stateWithBookings = {
             bookingEmail: null,
             dateCreated: '2018-10-29T09:44:38.216817Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
-            eventId: 'AE',
+            productId: 'AE',
             product: {
               accessibility: '\u0000',
               ageMax: null,
@@ -316,7 +313,6 @@ const stateWithBookings = {
             isActive: true,
             lastProviderId: null,
             modelName: 'Offer',
-            thingId: null,
             venue: {
               address: '1 BD POISSONNIERE',
               bic: null,
@@ -376,7 +372,7 @@ const stateWithBookings = {
             bookingEmail: null,
             dateCreated: '2018-10-29T09:44:38.216817Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
-            eventId: 'AE',
+            productId: 'AE',
             product: {
               accessibility: '\u0000',
               ageMax: null,
@@ -402,7 +398,6 @@ const stateWithBookings = {
             isActive: true,
             lastProviderId: null,
             modelName: 'Offer',
-            thingId: null,
             venue: {
               address: '1 BD POISSONNIERE',
               bic: null,
@@ -462,7 +457,7 @@ const stateWithBookings = {
             bookingEmail: null,
             dateCreated: '2018-10-29T09:44:38.216817Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
-            eventId: 'AE',
+            productId: 'AE',
             product: {
               accessibility: '\u0000',
               ageMax: null,
@@ -488,7 +483,6 @@ const stateWithBookings = {
             isActive: true,
             lastProviderId: null,
             modelName: 'Offer',
-            thingId: null,
             venue: {
               address: '1 BD POISSONNIERE',
               bic: null,
@@ -548,7 +542,7 @@ const stateWithBookings = {
             bookingEmail: null,
             dateCreated: '2018-10-29T09:44:38.216817Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
-            eventId: 'AE',
+            productId: 'AE',
             product: {
               accessibility: '\u0000',
               ageMax: null,
@@ -574,7 +568,6 @@ const stateWithBookings = {
             isActive: true,
             lastProviderId: null,
             modelName: 'Offer',
-            thingId: null,
             venue: {
               address: '1 BD POISSONNIERE',
               bic: null,
@@ -634,7 +627,7 @@ const stateWithBookings = {
             bookingEmail: null,
             dateCreated: '2018-10-29T09:44:38.291323Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.291297Z',
-            eventId: 'A9',
+            productId: 'A9',
             product: {
               accessibility: '\u0000',
               ageMax: null,
@@ -660,7 +653,6 @@ const stateWithBookings = {
             isActive: true,
             lastProviderId: null,
             modelName: 'Offer',
-            thingId: null,
             venue: {
               address: '6 rue Grolee',
               bic: null,
@@ -720,7 +712,7 @@ const stateWithBookings = {
             bookingEmail: null,
             dateCreated: '2018-10-29T09:44:38.291323Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.291297Z',
-            eventId: 'A9',
+            productId: 'A9',
             product: {
               accessibility: '\u0000',
               ageMax: null,
@@ -746,7 +738,6 @@ const stateWithBookings = {
             isActive: true,
             lastProviderId: null,
             modelName: 'Offer',
-            thingId: null,
             venue: {
               address: '6 rue Grolee',
               bic: null,
@@ -804,7 +795,7 @@ const stateWithBookings = {
             bookingEmail: null,
             dateCreated: '2018-10-29T09:44:38.329923Z',
             dateModifiedAtLastProvider: '2018-10-29T09:44:38.329902Z',
-            eventId: 'AM',
+            productId: 'AM',
             product: {
               accessibility: '\u0000',
               ageMax: null,
@@ -830,7 +821,6 @@ const stateWithBookings = {
             isActive: true,
             lastProviderId: null,
             modelName: 'Offer',
-            thingId: null,
             venue: {
               address: '6 rue Grolee',
               bic: null,
@@ -881,7 +871,7 @@ const stateWithBookings = {
             '2018-10-29T21:42:56.790000Z',
             '2018-12-28T22:42:56.790000Z',
           ],
-          eventId: 'AE',
+          productId: 'AE',
           product: {
             accessibility: '\u0000',
             ageMax: null,
@@ -994,7 +984,6 @@ const stateWithBookings = {
               price: 15,
             },
           ],
-          thingId: null,
           venue: {
             address: '1 BD POISSONNIERE',
             bic: null,
@@ -1060,7 +1049,7 @@ const stateWithBookings = {
           dateCreated: '2018-10-29T09:44:38.329923Z',
           dateModifiedAtLastProvider: '2018-10-29T09:44:38.329902Z',
           dateRange: [],
-          eventId: 'AM',
+          productId: 'AM',
           product: {
             accessibility: '\u0000',
             ageMax: null,
@@ -1087,7 +1076,6 @@ const stateWithBookings = {
           lastProviderId: null,
           modelName: 'Offer',
           stocks: [],
-          thingId: null,
           venue: {
             address: '6 rue Grolee',
             bic: null,
@@ -1156,7 +1144,7 @@ const stateWithBookings = {
             '2018-10-29T21:42:56.790000Z',
             '2018-12-28T22:42:56.790000Z',
           ],
-          eventId: 'AE',
+          productId: 'AE',
           product: {
             accessibility: '\u0000',
             ageMax: null,
@@ -1269,7 +1257,6 @@ const stateWithBookings = {
               price: 15,
             },
           ],
-          thingId: null,
           venue: {
             address: '1 BD POISSONNIERE',
             bic: null,
@@ -1335,7 +1322,7 @@ const stateWithBookings = {
           dateCreated: '2018-10-29T09:44:38.329923Z',
           dateModifiedAtLastProvider: '2018-10-29T09:44:38.329902Z',
           dateRange: [],
-          eventId: 'AM',
+          productId: 'AM',
           product: {
             accessibility: '\u0000',
             ageMax: null,
@@ -1362,7 +1349,6 @@ const stateWithBookings = {
           lastProviderId: null,
           modelName: 'Offer',
           stocks: [],
-          thingId: null,
           venue: {
             address: '6 rue Grolee',
             bic: null,
@@ -1431,7 +1417,7 @@ const stateWithBookings = {
             '2018-11-06T21:42:56.790000Z',
             '2018-12-01T22:42:56.790000Z',
           ],
-          eventId: 'A9',
+          productId: 'A9',
           product: {
             accessibility: '\u0000',
             ageMax: null,
@@ -1476,7 +1462,6 @@ const stateWithBookings = {
               price: 50,
             },
           ],
-          thingId: null,
           venue: {
             address: '6 rue Grolee',
             bic: null,
@@ -1545,7 +1530,7 @@ const stateWithBookings = {
             '2018-10-29T21:42:56.790000Z',
             '2018-12-28T22:42:56.790000Z',
           ],
-          eventId: 'AE',
+          productId: 'AE',
           product: {
             accessibility: '\u0000',
             ageMax: null,
@@ -1658,7 +1643,6 @@ const stateWithBookings = {
               price: 15,
             },
           ],
-          thingId: null,
           venue: {
             address: '1 BD POISSONNIERE',
             bic: null,

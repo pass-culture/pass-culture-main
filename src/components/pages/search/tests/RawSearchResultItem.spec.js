@@ -19,7 +19,7 @@ describe('src | components | pages | RawSearchResultItem', () => {
           pathname: '/recherche/Applaudir',
           search: '',
         },
-        recommendation: recommendations[0]
+        recommendation: recommendations[0],
       }
 
       // when
@@ -68,7 +68,6 @@ describe('src | components | pages | RawSearchResultItem', () => {
               dehumanizedLastProviderId: 6,
               dehumanizedThingId: 129,
               dehumanizedVenueId: 2,
-              eventId: null,
               id: 'X9',
               idAtProviders: '2921:9782367740911',
               lastProviderId: 'AY',
@@ -98,7 +97,7 @@ describe('src | components | pages | RawSearchResultItem', () => {
                 type: 'Book',
                 url: null,
               },
-              thingId: 'QE',
+              productId: 'QE',
               venue: {
                 address: '72 rue Carnot',
                 bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -148,7 +147,7 @@ describe('src | components | pages | RawSearchResultItem', () => {
             thumbUrl: 'http://localhost/storage/thumbs/things/QE',
             userId: 'AE',
             validUntilDate: '2018-09-11T08:04:49.273248Z',
-          }
+          },
         }
         wrapper = shallow(<RawSearchResultItem {...props} />)
 

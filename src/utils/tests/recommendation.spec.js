@@ -1,11 +1,10 @@
 import { setUniqIdOnRecommendation } from '../recommendation'
 
 describe('utils recommendation', () => {
-  it('should return an object having an `uniqId` property begining with `event_`', () => {
+  it('should return an object having an `uniqId` property begining with `product_`', () => {
     // Given
     const recommendation = {
       offer: {
-        eventId: 267,
         productId: 42,
       },
     }
