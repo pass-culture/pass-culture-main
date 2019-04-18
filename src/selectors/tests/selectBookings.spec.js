@@ -1,7 +1,7 @@
 // jest --env=jsdom ./src/selectors/tests/selectBookings --watch
 import moment from 'moment'
 
-import {allBookingsDataset, inExactTwoDays} from './data/selectBookings'
+import { allBookingsDataset, inExactTwoDays } from './data/selectBookings'
 import {
   filterValidBookings,
   filterBookingsInLessThanTwoDays,
@@ -46,18 +46,9 @@ describe('src | selectors | selectBookings', () => {
       const expected = false
       expect(result).toStrictEqual(expected)
     })
-    it('remove offer from bookings, missing stock.resolvedOffer.eventOrThing', () => {
+    it('remove offer from bookings, missing stock.resolvedOffer.type', () => {
       // given
       const booking = { stock: { resolvedOffer: {} } }
-      // when
-      const result = filterValidBookings(booking)
-      // then
-      const expected = false
-      expect(result).toStrictEqual(expected)
-    })
-    it('remove offer from bookings, missing stock.resolvedOffer.eventOrThing.type', () => {
-      // given
-      const booking = { stock: { resolvedOffer: { eventOrThing: {} } } }
       // when
       const result = filterValidBookings(booking)
       // then
@@ -68,7 +59,7 @@ describe('src | selectors | selectBookings', () => {
       const booking = {
         stock: {
           resolvedOffer: {
-            eventOrThing: { type: 'EventType.ANY' },
+            type: 'EventType.ANY',
           },
         },
       }
@@ -83,9 +74,7 @@ describe('src | selectors | selectBookings', () => {
       const booking = {
         stock: {
           resolvedOffer: {
-            eventOrThing: {
-              type: 'EventType.ACTIVATION',
-            },
+            type: 'EventType.ACTIVATION',
           },
         },
       }
@@ -100,9 +89,7 @@ describe('src | selectors | selectBookings', () => {
       const booking = {
         stock: {
           resolvedOffer: {
-            eventOrThing: {
-              type: 'ThingType.ACTIVATION',
-            },
+            type: 'ThingType.ACTIVATION',
           },
         },
       }
@@ -126,32 +113,30 @@ describe('src | selectors | selectBookings', () => {
 
       // then
       expect(results).toHaveLength(4)
-      expect(results.every(
-        (booking) => booking.stock.beginningDatetime <= inExactTwoDays(now)
-      )).toBe(true)
+      expect(
+        results.every(
+          booking => booking.stock.beginningDatetime <= inExactTwoDays(now)
+        )
+      ).toBe(true)
     })
   })
   describe('filterBookingsInMoreThanTwoDaysOrPast', () => {
     it('returns all bookings excepts >= today hh:mm:s', () => {
       // given
       const now = moment()
-      const allBookings = allBookingsDataset(now)
-        .filter(filterValidBookings)
+      const allBookings = allBookingsDataset(now).filter(filterValidBookings)
 
       // when
-      const results = filterBookingsInMoreThanTwoDaysOrPast(
-        allBookings,
-        now
-      )
+      const results = filterBookingsInMoreThanTwoDaysOrPast(allBookings, now)
 
       // then
       expect(results).toHaveLength(4)
-      expect(results.every(
-        (booking) => {
+      expect(
+        results.every(booking => {
           const date = booking.stock.beginningDatetime
           return date > inExactTwoDays(now) || date < now
-        }
-      )).toBe(true)
+        })
+      ).toBe(true)
     })
   })
 })

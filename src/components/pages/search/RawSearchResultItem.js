@@ -56,11 +56,9 @@ class RawSearchResultItem extends Component {
                 <Fragment>
                   <h5
                     className="fs18 is-bold"
-                    title={recommendation.offer.eventOrThing.name}
+                    title={recommendation.offer.name}
                   >
-                    <Dotdotdot clamp="2">
-                      {recommendation.offer.eventOrThing.name}
-                    </Dotdotdot>
+                    <Dotdotdot clamp="2">{recommendation.offer.name}</Dotdotdot>
                   </h5>
                   <span id="recommendation-date" className="fs13">
                     {recommendation.offer &&

@@ -25,7 +25,7 @@ export const getCancelSuccessRedirectFromBookingAndSearch = (
 }
 
 class VersoBookingButton extends React.PureComponent {
-  getBookingName = booking => booking.stock.resolvedOffer.eventOrThing.name
+  getBookingName = booking => booking.stock.resolvedOffer.name
 
   getButton = (label, onClick) => (
     <button

@@ -20,7 +20,7 @@ class VersoContentOffer extends React.PureComponent {
 
   renderOfferDetails() {
     const { recommendation } = this.props
-    const description = get(recommendation, 'offer.eventOrThing.description')
+    const description = get(recommendation, 'offer.description')
     if (!description) return null
     return (
       <div>

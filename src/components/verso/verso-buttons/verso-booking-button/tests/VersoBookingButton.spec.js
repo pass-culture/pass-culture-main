@@ -36,9 +36,7 @@ describe('src | components | verso | VersoBookingButton', () => {
         isUserCancellable: true,
         stock: {
           resolvedOffer: {
-            eventOrThing: {
-              name: 'foo',
-            },
+            name: 'foo',
           },
         },
       }

@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 
 const BookingHeader = ({ recommendation }) => {
   const { offer } = recommendation || {}
-  const title = get(offer, 'eventOrThing.name')
+  const title = get(offer, 'name')
   const subtitle = get(offer, 'venue.name')
   return (
     <header className="flex-0">

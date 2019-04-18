@@ -27,9 +27,10 @@ ShallowWrapper {
         "distance": 1,
         "id": "AEAQ",
         "offer": Object {
+          "description": "fake description",
           "eventId": null,
           "eventOrThing": Object {
-            "description": "fake description",
+            "description": "fake description do not use",
           },
           "id": "X9",
           "thingId": "QE",

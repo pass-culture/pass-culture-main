@@ -24,17 +24,11 @@ export const checkIsTuto = recommendation => {
   return result;
 };
 
-export const getOfferVenue = recommendation => {
-  const result = get(recommendation, 'offer.venue.name', null);
-  return result;
-};
+export const getOfferVenue = recommendation =>
+  get(recommendation, 'offer.venue.name', null);
 
-export const getOfferName = recommendation => {
-  const path = 'offer.eventOrThing.name';
-  const name = get(recommendation, path, null);
-  if (!name) return null;
-  return name;
-};
+export const getOfferName = recommendation =>
+  get(recommendation, 'offer.name', null);
 
 export const getBackgroundColor = recommendation => {
   const firstThumbDominantColor = get(recommendation, 'firstThumbDominantColor');

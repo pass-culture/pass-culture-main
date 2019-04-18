@@ -18,7 +18,7 @@ const mapStateToProps = (state, ownProps) => {
   )
   const user = selectCurrentUser(state)
   const url = (user && getShareURL(location, user)) || null
-  const offerName = get(recommendation, 'offer.eventOrThing.name')
+  const offerName = get(recommendation, 'offer.name')
   const text = offerName && `Retrouvez ${offerName} sur le pass Culture`
   return { offerName, text, url, ...state.share }
 }

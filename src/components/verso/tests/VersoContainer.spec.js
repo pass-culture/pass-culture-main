@@ -106,7 +106,7 @@ describe('src | components | verso | VersoContainer', () => {
     it('returns a string value', () => {
       // given
       recommendation = {};
-      set(recommendation, 'offer.eventOrThing.name', name);
+      set(recommendation, 'offer.name', name);
       // when
       result = getOfferName(recommendation);
       // then
@@ -117,7 +117,7 @@ describe('src | components | verso | VersoContainer', () => {
     it('returns null', () => {
       // given
       recommendation = {};
-      set(recommendation, 'offer.eventOrThing.name', null);
+      set(recommendation, 'offer.name', null);
       // when
       result = getOfferName(recommendation);
       // then

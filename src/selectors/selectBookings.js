@@ -6,7 +6,7 @@ export const filterValidBookings = booking => {
   if (!booking) return false
   const offer = get(booking, 'stock.resolvedOffer')
   if (!offer) return false
-  const offerType = get(offer, 'eventOrThing.type')
+  const offerType = get(offer, 'type')
   if (!offerType) return false
   const isActivationType =
     offerType === 'EventType.ACTIVATION' || offerType === 'ThingType.ACTIVATION'

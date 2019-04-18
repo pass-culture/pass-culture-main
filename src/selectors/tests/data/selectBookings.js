@@ -3,6 +3,7 @@ const resolvedActivationOffer = {
     eventOrThing: {
       type: 'EventType.ACTIVATION',
     },
+    type: 'EventType.ACTIVATION',
   },
 }
 
@@ -11,6 +12,7 @@ const resolvedNotActivationOffer = {
     eventOrThing: {
       type: 'EventType.ANY',
     },
+    type: 'EventType.ANY',
   },
 }
 

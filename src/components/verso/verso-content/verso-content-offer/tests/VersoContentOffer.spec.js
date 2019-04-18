@@ -16,9 +16,10 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
       distance: 1,
       id: 'AEAQ',
       offer: {
+        description: 'fake description',
         eventId: null,
         eventOrThing: {
-          description: 'fake description',
+          description: 'fake description do not use',
         },
         id: 'X9',
         thingId: 'QE',
