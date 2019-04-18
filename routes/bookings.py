@@ -4,7 +4,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 from itertools import chain
 
-from domain.bookings import generate_offer_bookings_details_csv
+from domain.bookings import generate_bookings_details_csv
 from domain.expenses import get_expenses
 from domain.user_activation import create_initial_deposit, check_is_activation_booking
 from domain.user_emails import send_booking_recap_emails, \
@@ -21,8 +21,7 @@ from utils.includes import BOOKING_INCLUDES
 from utils.human_ids import dehumanize, humanize
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
-    expect_json_data, \
-    load_or_404
+    expect_json_data
 from utils.token import random_token
 from validation.bookings import check_booking_is_usable, \
     check_can_book_free_offer, \
@@ -48,7 +47,7 @@ def get_bookings_csv():
     bookings = chain(*list(map(lambda o: find_offerer_bookings(o.id),
                                query)))
 
-    bookings_csv = generate_offer_bookings_details_csv(bookings)
+    bookings_csv = generate_bookings_details_csv(bookings)
 
     return bookings_csv.encode('utf-8-sig'), \
            200, \

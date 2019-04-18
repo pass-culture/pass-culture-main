@@ -2,7 +2,7 @@ import pytest
 
 from datetime import datetime
 from tests.conftest import clean_database
-from domain.bookings import generate_offer_bookings_details_csv
+from domain.bookings import generate_bookings_details_csv
 from models import Booking, PcObject
 from tests.test_utils import create_booking, create_deposit, create_stock, create_user, create_offerer, create_venue, \
     create_thing_offer, create_bank_information
@@ -10,28 +10,28 @@ from tests.test_utils import create_booking, create_deposit, create_stock, creat
 
 @pytest.mark.standalone
 class BookingsCSVTest:
-    def test_generate_offer_bookings_details_csv_with_headers_and_zero_bookings_lines(self):
+    def test_generate_bookings_details_csv_with_headers_and_zero_bookings_lines(self):
         # given
         bookings = []
 
         # when
-        csv = generate_offer_bookings_details_csv(bookings)
+        csv = generate_bookings_details_csv(bookings)
 
         # then
         assert _count_non_empty_lines(csv) == 1
         
-    def test_generate_offer_bookings_details_csv_has_human_readable_header(self):
+    def test_generate_bookings_details_csv_has_human_readable_header(self):
         # given
         bookings = []
 
         # when
-        csv = generate_offer_bookings_details_csv(bookings)
+        csv = generate_bookings_details_csv(bookings)
 
         # then
         assert _get_header(csv) == 'Raison sociale du lieu;Nom de l\'offre;Nom utilisateur;Prénom utilisateur;E-mail utilisateur;Date de la réservation;Tarif pass Culture;Statut'
 
     @clean_database
-    def test_generate_offer_bookings_details_csv_with_headers_and_three_bookings_lines(self, app):
+    def test_generate_bookings_details_csv_with_headers_and_three_bookings_lines(self, app):
         # given
         user = create_user(email='jane.doe@test.com', idx=3)
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
@@ -48,7 +48,7 @@ class BookingsCSVTest:
         expected_line = 'La petite librairie;Test Book;Doe;John;jane.doe@test.com;2010-01-01 00:00:00;12;En attente'
 
         # when
-        csv = generate_offer_bookings_details_csv(bookings)
+        csv = generate_bookings_details_csv(bookings)
 
         # then
         assert _count_non_empty_lines(csv) == 2
