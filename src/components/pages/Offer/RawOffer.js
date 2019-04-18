@@ -335,11 +335,6 @@ class RawOffer extends Component {
             ajoutant une ou plusieurs accroches.
           </p>
 
-          <p className="subtitle">
-            Attention : les offres payantes ne seront visibles auprès du public
-            qu’à partir du début de l’expérimentation.
-          </p>
-
           <Form
             action={formApiPath}
             method={method}
