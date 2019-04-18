@@ -27,7 +27,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <Price
-          className="px6 py8"
+          className="px6 py8 flex-columns items-center"
           format={[Function]}
           free="Gratuit"
           value={
@@ -56,7 +56,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "className": "px6 py8",
+          "className": "px6 py8 flex-columns items-center",
           "format": [Function],
           "free": "Gratuit",
           "value": Array [
@@ -101,7 +101,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <Price
-            className="px6 py8"
+            className="px6 py8 flex-columns items-center"
             format={[Function]}
             free="Gratuit"
             value={
@@ -130,7 +130,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "className": "px6 py8",
+            "className": "px6 py8 flex-columns items-center",
             "format": [Function],
             "free": "Gratuit",
             "value": Array [

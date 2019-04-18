@@ -119,7 +119,7 @@ class VersoBookingButton extends React.PureComponent {
     <button
       id="verso-cancel-booking-button"
       type="button"
-      className="cancel-button is-bold fs18 px10 py5"
+      className="cancel-button is-bold fs18 px6 py5"
       onClick={() => this.openCancelPopin(booking)}
     >
       Annuler
