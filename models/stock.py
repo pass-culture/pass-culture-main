@@ -75,7 +75,7 @@ class Stock(PcObject,
     def errors(self):
         api_errors = super(Stock, self).errors()
         if self.available is not None and self.available < 0:
-            api_errors.addError('available', 'Le stock ne peut pas être égal ou inférieur à zéro')
+            api_errors.addError('available', 'Le stock doit être positif')
 
         if self.endDatetime \
            and self.beginningDatetime \

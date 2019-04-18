@@ -153,7 +153,7 @@ class Post:
 
             # Then
             assert response.status_code == 400
-            assert response.json()["available"] == ["Le stock ne peut pas être égal ou inférieur à zéro"]
+            assert response.json()["available"] == ["Le stock doit être positif"]
 
         @clean_database
         def when_setting_beginning_and_end_datetimes_on_offer_with_thing(self, app):

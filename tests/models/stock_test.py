@@ -79,6 +79,39 @@ def test_stock_cannot_have_a_negative_price(app):
 
 @clean_database
 @pytest.mark.standalone
+def test_stock_cannot_have_a_negative_available_stock(app):
+    # given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_thing_offer(venue)
+    stock = create_stock_from_offer(offer, available=-4)
+
+    # when
+    with pytest.raises(ApiErrors) as e:
+        PcObject.check_and_save(stock)
+
+    # then
+    assert e.value.errors['available']  == ["Le stock doit être positif"]
+
+
+@clean_database
+@pytest.mark.standalone
+def test_stock_can_have_an_available_stock_equal_to_(app):
+    # given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_thing_offer(venue)
+    stock = create_stock_from_offer(offer, available=0)
+
+    # when
+    PcObject.check_and_save(stock)
+
+    # then
+    assert stock.available == 0
+
+
+@clean_database
+@pytest.mark.standalone
 def test_available_stocks_can_be_changed_even_when_bookings_with_cancellations_exceed_available(app):
     # Given
     offerer = create_offerer()
