@@ -5,7 +5,7 @@ import {
   getWhatTitleFromLabelAndIsVirtualVenue,
 } from '../utils'
 
-describe('src | components | verso | verso-content | utils', () => {
+describe('src | components | verso | verso-content | verso-content-offer | utils', () => {
   describe('getDurationFromMinutes', () => {
     it('inférieure à une heure', () => {
       // given
