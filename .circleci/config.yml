@@ -123,9 +123,9 @@ jobs: # a collection of steps
       - run:
           name: Run Frontend Webapp (Prod version)
           command: |
-            export PATH=${PATH:44}
-            export NVM_BIN=/usr/bin/nodejs
-            export PATH=$NVM_BIN:$PATH
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use v8.15.1
             cd ~/pass-culture-main/webapp
             git checkout "${CIRCLE_BRANCH}"
             yarn install
@@ -140,9 +140,9 @@ jobs: # a collection of steps
       - run:
           name: Running tests Webapp
           command: |
-            export PATH=${PATH:44}
-            export NVM_BIN=/usr/bin/nodejs
-            export PATH=$NVM_BIN:$PATH
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use v8.15.1
             cd ~/pass-culture-main/webapp
             yarn test:cafe
       - run:
@@ -190,9 +190,9 @@ jobs: # a collection of steps
       - run:
           name: Run Frontend Pro (Prod version)
           command: |
-            export PATH=${PATH:44}
-            export NVM_BIN=/usr/bin/nodejs
-            export PATH=$NVM_BIN:$PATH
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use v8.15.1
             cd ~/pass-culture-main/pro
             git checkout "${CIRCLE_BRANCH}"
             yarn install
@@ -207,9 +207,9 @@ jobs: # a collection of steps
       - run:
           name: Running tests Pro
           command: |
-            export PATH=${PATH:44}
-            export NVM_BIN=/usr/bin/nodejs
-            export PATH=$NVM_BIN:$PATH
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use v8.15.1
             cd ~/pass-culture-main/pro
             yarn test:cafe
       - run:
