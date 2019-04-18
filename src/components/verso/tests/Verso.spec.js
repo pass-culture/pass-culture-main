@@ -4,7 +4,7 @@ import { shallow } from 'enzyme'
 
 import Verso from '../Verso'
 import VersoControl from '../verso-controls/VersoControl'
-import VersoContentOfferContainer from '../verso-content/VersoContentOfferContainer'
+import VersoContentOfferContainer from '../verso-content/verso-content-offer/VersoContentOfferContainer'
 import VersoContentTuto from '../verso-content/VersoContentTuto'
 
 const backgroundColor = '#ACE539'

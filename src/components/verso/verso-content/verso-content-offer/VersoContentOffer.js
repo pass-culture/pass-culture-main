@@ -1,29 +1,79 @@
+/* eslint
+  react/jsx-one-expression-per-line: 0 */
 import get from 'lodash.get'
-import { Icon, Logger, capitalize } from 'pass-culture-shared'
+import { capitalize } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React from 'react'
 
+import {
+  getDurationFromMinutes,
+  getWhatTitleFromLabelAndIsVirtualVenue,
+} from './utils'
+import { Icon } from '../../../layout/Icon'
 import { navigationLink } from '../../../../utils/geolocation'
 
-class VersoInfoOffer extends React.PureComponent {
-  componentWillMount() {
-    Logger.fixme('VersoInfoOffer ---> componentWillMount')
+class VersoContentOffer extends React.PureComponent {
+  componentDidMount() {
+    const { handleRequestMusicAndShowTypes } = this.props
+    handleRequestMusicAndShowTypes()
   }
 
-  componentWillUnmount() {
-    Logger.fixme('VersoInfoOffer ---> componentWillUnmount')
+  renderOfferDetails() {
+    const { recommendation } = this.props
+    const description = get(recommendation, 'offer.eventOrThing.description')
+    if (!description) return null
+    return (
+      <div>
+        <h3>Et en détails ?</h3>
+        <pre className="is-raw-description">{description}</pre>
+      </div>
+    )
   }
 
   renderOfferWhat() {
-    const { recommendation } = this.props
-    const description = get(recommendation, 'offer.eventOrThing.description')
+    const {
+      musicSubType,
+      musicType,
+      recommendation,
+      showSubType,
+      showType,
+    } = this.props
+    const offer = get(recommendation, 'offer')
 
-    if (!description) return null
+    const venue = get(offer, 'venue')
+    const isVirtualVenue = get(venue, 'isVirtual')
 
+    const eventOrThing = get(offer, 'eventOrThing')
+    const durationMinutes = get(eventOrThing, 'durationMinutes')
+    const duration = getDurationFromMinutes(durationMinutes)
+
+    const extraData = get(eventOrThing, 'extraData')
+    const label = get(eventOrThing, 'offerType.label')
+    const title = getWhatTitleFromLabelAndIsVirtualVenue(label, isVirtualVenue)
+
+    const author = get(extraData, 'author')
+    const performer = get(extraData, 'performer')
+    const speaker = get(extraData, 'speaker')
+    const stageDirector = get(extraData, 'stageDirector')
+    const type = get(musicType, 'label') || get(showType, 'label')
+    const subType = get(musicSubType, 'label') || get(showSubType, 'label')
     return (
       <div>
         <h3>Quoi ?</h3>
-        <pre className="is-raw-description">{description}</pre>
+        <div>
+          <span className="is-bold">{title}</span>
+          {durationMinutes && <span> - Durée {duration}</span>}
+        </div>
+        {type && (
+          <div>
+            Genre : {type}
+            {subType && `/ ${subType}`}
+          </div>
+        )}
+        {author && <div>Auteur : {author}</div>}
+        {performer && <div>Interprète : {performer}</div>}
+        {speaker && <div>Intervenant : {speaker}</div>}
+        {stageDirector && <div>Metteur en scène : {stageDirector}</div>}
       </div>
     )
   }
@@ -55,8 +105,7 @@ class VersoInfoOffer extends React.PureComponent {
       <React.Fragment>
         <li>
           Dès maintenant
-          {limitDatetime && ` et jusqu&apos;au ${limitDatetime}`}
-          {' '}
+          {limitDatetime && ` et jusqu&apos;au ${limitDatetime}`}{' '}
         </li>
       </React.Fragment>
     )
@@ -121,6 +170,7 @@ class VersoInfoOffer extends React.PureComponent {
     return (
       <div className="verso-info">
         {this.renderOfferWhat()}
+        {this.renderOfferDetails()}
         {this.renderOfferWhen()}
         {this.renderOfferWhere()}
       </div>
@@ -128,17 +178,26 @@ class VersoInfoOffer extends React.PureComponent {
   }
 }
 
-VersoInfoOffer.defaultProps = {
+VersoContentOffer.defaultProps = {
   bookables: null,
   maxShownDates: 7,
+  musicSubType: null,
+  musicType: null,
   recommendation: null,
+  showSubType: null,
+  showType: null,
 }
 
-VersoInfoOffer.propTypes = {
+VersoContentOffer.propTypes = {
   bookables: PropTypes.array,
+  handleRequestMusicAndShowTypes: PropTypes.func.isRequired,
   isFinished: PropTypes.bool.isRequired,
   maxShownDates: PropTypes.number,
+  musicSubType: PropTypes.object,
+  musicType: PropTypes.object,
   recommendation: PropTypes.object,
+  showSubType: PropTypes.object,
+  showType: PropTypes.object,
 }
 
-export default VersoInfoOffer
+export default VersoContentOffer

@@ -1,15 +1,15 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import VersoContentOffer from './VersoContentOffer'
+import mapDispatchToProps from './mapDispatchToProps'
 import mapStateToProps from './mapStateToProps'
 
-const VersoContentOfferContainer = compose(
+export default compose(
   withRouter,
-  connect(mapStateToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(VersoContentOffer)
-
-export default VersoContentOfferContainer

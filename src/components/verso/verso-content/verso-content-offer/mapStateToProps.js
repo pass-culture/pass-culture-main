@@ -1,18 +1,16 @@
 import get from 'lodash.get'
-import {
-  selectMusicTypeByCode,
-  selectMusicSubTypeByCodeAndSubCode,
-  selectShowTypeByCode,
-  selectShowSubTypeByCodeAndSubCode,
-} from './selectors'
-import { selectBookables } from '../../../selectors/selectBookables'
-import currentRecommendationSelector from '../../../selectors/currentRecommendation'
-import { isRecommendationOfferFinished } from '../../../helpers'
+import selectMusicTypeByCode from './selectors/selectMusicTypeByCode'
+import selectMusicSubTypeByCodeAndSubCode from './selectors/selectMusicSubTypeByCodeAndSubCode'
+import selectShowTypeByCode from './selectors/selectShowTypeByCode'
+import selectShowSubTypeByCodeAndSubCode from './selectors/selectShowSubTypeByCodeAndSubCode'
+import { isRecommendationOfferFinished } from '../../../../helpers'
+import { selectBookables } from '../../../../selectors/selectBookables'
+import currentRecommendationSelector from '../../../../selectors/currentRecommendation'
+
 
 const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const { mediationId, offerId } = match.params
-  // recuperation de la recommandation
   const recommendation = currentRecommendationSelector(
     state,
     offerId,

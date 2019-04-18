@@ -1,6 +1,6 @@
-import { mapStateToProps } from '../VersoInfoOfferContainer'
+import mapStateToProps from '../mapStateToProps'
 
-describe('src | components | verso | verso-content | verso-info-offer | VersoInfoOfferContainer', () => {
+describe('src | components | verso | verso-content | verso-info-offer | VersoContentOfferContainer', () => {
   describe('mapStateToProps', () => {
     it('should return an object containing bookables, current recommendation and information regarding the offer expiration', () => {
       // given

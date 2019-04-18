@@ -1,14 +1,14 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import { Icon } from 'pass-culture-shared'
-import { navigationLink } from '../../../../../utils/geolocation'
 
-import VersoInfoOffer from '../VersoInfoOffer'
+import VersoContentOffer from '../VersoContentOffer'
+import { Icon } from '../../../../layout/Icon'
+import { navigationLink } from '../../../../../utils/geolocation'
 
 jest.mock('../../../../../utils/geolocation', () => ({
   navigationLink: jest.fn(),
 }))
-describe('src | components | verso | verso-content | verso-info-offer | VersoInfoOffer', () => {
+describe('src | components | verso | verso-content | verso-info-offer | VersoContentOffer', () => {
   let recommendation
 
   beforeEach(() => {
@@ -40,13 +40,14 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoInf
     // given
     const props = {
       bookables: [],
+      handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: false,
       maxShownDates: 7,
       recommendation,
     }
 
     // when
-    const wrapper = shallow(<VersoInfoOffer {...props} />)
+    const wrapper = shallow(<VersoContentOffer {...props} />)
 
     // then
     expect(wrapper).toBeDefined()
@@ -57,13 +58,14 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoInf
     // given
     const props = {
       bookables: [],
+      handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: false,
       maxShownDates: 7,
       recommendation,
     }
 
     // when
-    const wrapper = shallow(<VersoInfoOffer {...props} />)
+    const wrapper = shallow(<VersoContentOffer {...props} />)
 
     // then
     expect(wrapper.find('.is-raw-description').text()).toBe('fake description')
@@ -76,13 +78,14 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoInf
 
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
+      handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: false,
       maxShownDates: 1,
       recommendation,
     }
 
     // when
-    const wrapper = shallow(<VersoInfoOffer {...props} />)
+    const wrapper = shallow(<VersoContentOffer {...props} />)
 
     // then
     const liElements = wrapper.find('.dates-info').find('li')
@@ -98,13 +101,14 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoInf
         { bookinglimitDatetime: '2019-04-01', id: 1 },
         { bookinglimitDatetime: '2019-04-01', id: 2 },
       ],
+      handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: false,
       maxShownDates: 1,
       recommendation,
     }
 
     // when
-    const wrapper = shallow(<VersoInfoOffer {...props} />)
+    const wrapper = shallow(<VersoContentOffer {...props} />)
 
     // then
     const liElements = wrapper.find('.dates-info').find('li')
@@ -117,13 +121,14 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoInf
     // given
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
+      handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: true,
       maxShownDates: 1,
       recommendation,
     }
 
     // when
-    const wrapper = shallow(<VersoInfoOffer {...props} />)
+    const wrapper = shallow(<VersoContentOffer {...props} />)
 
     // then
     const liElements = wrapper.find('.dates-info').find('li')
@@ -134,13 +139,14 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoInf
     // given
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
+      handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: true,
       maxShownDates: 1,
       recommendation,
     }
 
     // when
-    const wrapper = shallow(<VersoInfoOffer {...props} />)
+    const wrapper = shallow(<VersoContentOffer {...props} />)
 
     // then
     const venueInfos = wrapper.find('.address-info').find('span')
@@ -154,6 +160,7 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoInf
     // given
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
+      handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: true,
       maxShownDates: 1,
       recommendation,
@@ -161,7 +168,7 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoInf
     navigationLink.mockReturnValue('this is a fake url')
 
     // when
-    const wrapper = shallow(<VersoInfoOffer {...props} />)
+    const wrapper = shallow(<VersoContentOffer {...props} />)
 
     // then
     const venueDistance = wrapper.find('.distance')

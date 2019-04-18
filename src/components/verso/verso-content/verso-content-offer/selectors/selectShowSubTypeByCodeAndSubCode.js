@@ -1,12 +1,12 @@
 import createCachedSelector from 're-reselect'
 
-import { selectShowTypeByCode } from './selectShowTypeByCode'
+import selectShowTypeByCode from './selectShowTypeByCode'
 
 function mapArgsToCacheKey(state, code, subCode) {
   return `${code || ''}/${subCode || ''}`
 }
 
-export const selectShowSubTypeByCodeAndSubCode = createCachedSelector(
+const selectShowSubTypeByCodeAndSubCode = createCachedSelector(
   selectShowTypeByCode,
   (state, code, subCode) => subCode,
   (showType, subCode) => {
