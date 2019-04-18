@@ -1,6 +1,7 @@
 """ bookings routes """
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
+from itertools import chain
 
 from domain.bookings import generate_offer_bookings_details_csv
 from domain.expenses import get_expenses
@@ -8,11 +9,13 @@ from domain.user_activation import create_initial_deposit, check_is_activation_b
 from domain.user_emails import send_booking_recap_emails, \
     send_booking_confirmation_email_to_user, send_cancellation_emails_to_user_and_offerer, \
     send_activation_notification_email
-from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType
+from models import ApiErrors, Booking, Offerer, PcObject, Stock, RightsType, EventType
 from models.pc_object import serialize
 from repository import booking_queries
 from repository.booking_queries import find_active_bookings_by_user_id, \
-find_all_bookings_for_stock_and_user, find_offerer_bookings
+                                       find_all_bookings_for_stock_and_user, \
+                                       find_offerer_bookings
+from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.includes import BOOKING_INCLUDES
 from utils.human_ids import dehumanize, humanize
 from utils.mailing import MailServiceException, send_raw_email
@@ -34,34 +37,23 @@ from validation.bookings import check_booking_is_usable, \
     check_stock_booking_limit_date, \
     check_user_is_logged_in_or_email_is_provided, check_email_and_offer_id_for_anonymous_user, \
     check_booking_is_cancellable, check_stock_venue_is_validated, check_rights_for_activation_offer
-from validation.offers import check_user_has_rights_for_query
 
-from repository.user_offerer_queries import find_first_by_user_id
 
-@app.route('/bookings_csv', methods=['GET'])
+@app.route('/bookings/csv', methods=['GET'])
 @login_required
 def get_bookings_csv():
-    toto = find_first_by_user_id(current_user.id)
-    print('toto, toto', toto)
-    print('totoid', toto.id)
-    offerer_id = current_user.id
-    venue_id = None
-    venue = None
+    query = filter_query_where_user_is_user_offerer_and_is_validated(Offerer.query,
+                                                                     current_user)
+    bookings = chain(*list(map(lambda o: find_offerer_bookings(o.id),
+                               query)))
 
-
-    # check_user_has_rights_for_query(offerer_id, venue, venue_id)
-    # ensure_current_user_has_rights(RightsType.editor, offerer_id)
-
-    bookings = find_offerer_bookings(offerer_id)
-    print('                      ')
-    print('                      ')
-    print('bookings', bookings)
-    print('offerer_id', offerer_id)
     bookings_csv = generate_offer_bookings_details_csv(bookings)
 
-    return jsonify(
-        bookings_csv
-    ), 200
+    return bookings_csv, \
+           200, \
+           {'Content-type': 'text/csv; charset=utf-8;',
+            'Content-Disposition': 'attachment; filename=reservations_pass_culture.csv'}
+
 
 @app.route('/bookings', methods=['GET'])
 @login_required
