@@ -70,6 +70,8 @@ OFFER_INCLUDES = [
     {
         "key": "event",
         "sub_joins": [
+            '-description',
+            '-name',
             'offerType',
             '-type'
         ]
@@ -84,11 +86,13 @@ OFFER_INCLUDES = [
     {
         "key": "thing",
         "sub_joins": [
+            '-description',
+            'mediations',
+            '-name',
+            'offerType',
             {
                 "key": "stock"
             },
-            'mediations',
-            'offerType',
             '-type'
         ]
     },

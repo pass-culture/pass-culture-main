@@ -134,7 +134,7 @@ class Get:
             assert len(offers) == 10
             for offer in offers:
                 assert offer['venueId'] == humanize(venue_id)
-                assert 'event' in offer['event']['name'].lower()
+                assert 'event' in offer['name'].lower()
 
         @clean_database
         def test_can_be_searched_using_multiple_search_terms(self, app):
