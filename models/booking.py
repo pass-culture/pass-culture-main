@@ -17,6 +17,7 @@ from models.db import Model
 from models.pc_object import PcObject
 from models.versioned_mixin import VersionedMixin
 from utils.human_ids import humanize
+from utils.string_processing import format_decimal
 
 
 class Booking(PcObject,
@@ -111,26 +112,35 @@ class Booking(PcObject,
         return PcObject.restize_integrity_error(ie)
 
     CSV_HEADER = [
-        "Date de la réservation",
+        "Raison sociale du lieu",
         "Nom de l'offre",
-        "Nom du lieu",
-        "Nom de la structure",
-        "Quantité réservée",
-        "Prix de la réservation",
-        "Réservation annulée",
-        "Contremarque validée"
+        "Nom utilisateur",
+        "Prénom utilisateur",
+        "E-mail utilisateur",
+        "Date de la réservation",
+        "Tarif pass Culture",
+        "Statut",
     ]
+
+    @property
+    def statusLabel(self):
+        if self.isCancelled:
+            return "Réservation annulée"
+        elif self.isUsed:
+            return "Contremarque validée"
+        else:
+            return "En attente"
 
     def as_csv_row(self):
         return [
-            self.dateCreated,
-            self.stock.offer.name,
             self.stock.offer.venue.name,
-            self.stock.offer.venue.managingOfferer.name,
-            self.quantity,
-            self.amount,
-            self.isCancelled,
-            self.isUsed
+            self.stock.offer.name,
+            self.user.lastName,
+            self.user.firstName,
+            self.user.email,
+            self.dateCreated,
+            format_decimal(self.amount),
+            self.statusLabel
         ]
 
 class ActivationUser:

@@ -1,10 +1,11 @@
 # coding=utf-8
-import re
-from datetime import datetime, timedelta
-from operator import itemgetter
+from babel.numbers import format_decimal as babel_format_decimal
 from dateparser import parse
+from datetime import datetime, timedelta
 from nltk import edit_distance
+from operator import itemgetter
 from psycopg2.extras import DateTimeRange
+import re
 
 from utils.inflect_engine import inflect_engine
 
@@ -29,12 +30,15 @@ schedules = [
     }
 ]
 
+
 def get_model_plural_name(obj):
     return inflect_engine.plural(obj.__class__.__name__.lower())
+
 
 def dashify(name):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
 
 # from a typical 10h33, 19h, 17h45m33s...
 def parse_timedelta(string):
@@ -54,22 +58,27 @@ def parse_timedelta(string):
             break
     return timedelta(**config)
 
+
 def get_format_timedelta_string (string):
     today_date = datetime.today().replace(hour=0,minute=0,second=0,microsecond=0)
     schedule_date = today_date + parse_timedelta(string)
     return schedule_date.strftime(SCHEDULE_FORMAT)
 
+
 def parse_datetime(string, **kwargs):
     return parse(string, languages=['fr'], **kwargs)
+
 
 def read_date(date_string):
     # remove centiseconds if they are not here
     date_format = DATE_FORMAT if '.' in date_string else DATE_FORMAT.split('.')[0] + "Z"
     return datetime.strptime(date_string, date_format)
 
+
 def trim_with_elipsis(string, length):
     length_wo_elipsis = length-1
     return string[:length_wo_elipsis] + (string[length_wo_elipsis:] and '…')
+
 
 def get_date_time_range(date_string, schedule_string, duration_string):
     # DETERMINE DAY MONTH YEAR
@@ -116,9 +125,11 @@ def get_date_time_range(date_string, schedule_string, duration_string):
     # RETURN
     return date_time_ranges
 
+
 def get_matched_string_index(target_string, strings):
     distances = map(lambda string:edit_distance(string, target_string), strings)
     return min(enumerate(distances), key=itemgetter(1))[0]
+
 
 def get_price_value(price_string):
     if isinstance(price_string, int):
@@ -131,11 +142,18 @@ def get_price_value(price_string):
     else:
         return 0
 
+
 def get_camel_string(string):
     return ''.join(word.capitalize() for word in string.split('_'))
+
 
 def tokenize_for_search(string):
     return re.split('[^0-9a-zÀ-ÿ]+', string.lower())
 
+
 def remove_single_letters_for_search(array_of_keywords):
     return list(filter(lambda k: len(k) > 1, array_of_keywords))
+
+
+def format_decimal(dec):
+    return babel_format_decimal(dec, locale='fr_FR')

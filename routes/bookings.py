@@ -1,4 +1,5 @@
 """ bookings routes """
+import codecs
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 from itertools import chain
@@ -49,7 +50,7 @@ def get_bookings_csv():
 
     bookings_csv = generate_offer_bookings_details_csv(bookings)
 
-    return bookings_csv, \
+    return bookings_csv.encode('utf-8-sig'), \
            200, \
            {'Content-type': 'text/csv; charset=utf-8;',
             'Content-Disposition': 'attachment; filename=reservations_pass_culture.csv'}
