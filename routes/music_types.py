@@ -1,5 +1,5 @@
 from flask import current_app as app, jsonify
-from flask_login import current_user, login_required
+from flask_login import login_required
 
 from domain.music_types import music_types
 
