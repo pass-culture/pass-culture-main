@@ -24,8 +24,8 @@ class UserAdminView(BaseAdminView):
 
 class VenueAdminView(BaseAdminView):
     can_edit = True
-    column_list = ['id', 'name', 'siret', 'city', 'postalCode', 'address']
-    column_labels = dict(name='Nom', siret='SIRET', city='Ville', postalCode='Code postal', address='Adresse')
-    column_searchable_list = ['name', 'siret']
-    column_filters = ['postalCode', 'city']
-    form_columns = ['name', 'siret', 'city', 'postalCode', 'address']
+    column_list = ['id', 'name', 'siret', 'city', 'postalCode', 'address', 'publicName']
+    column_labels = dict(name='Nom', siret='SIRET', city='Ville', postalCode='Code postal', address='Adresse', publicName='Nom d\'usage')
+    column_searchable_list = ['name', 'siret', 'publicName']
+    column_filters = ['postalCode', 'city', 'publicName']
+    form_columns = ['name', 'siret', 'city', 'postalCode', 'address', 'publicName']
