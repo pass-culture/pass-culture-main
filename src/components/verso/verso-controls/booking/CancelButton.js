@@ -108,7 +108,12 @@ class CancelButton extends React.PureComponent {
       >
         <span className="pc-ticket-button-price reserved">
           <Price free="Gratuit" value={priceValue} />
-          {!isCancelled && <i className="icon-ico-check fs24" />}
+          {!isCancelled && (
+            <i
+              id="verso-cancel-booking-button-reserved"
+              className="icon-ico-check fs24"
+            />
+          )}
         </span>
         <span className="pc-ticket-button-label">Annuler</span>
       </button>

@@ -1,3 +1,4 @@
+// $(yarn bin)/testcafe chrome:headless ./testcafe/08_05_booking_event_offer_multi_dates.js
 import moment from 'moment-timezone'
 import { Selector } from 'testcafe'
 
@@ -20,7 +21,7 @@ const myBookingsURL = `${ROOT_PATH}reservations`
 
 const bookingToken = Selector('#booking-booked-token')
 const bookOfferButton = Selector('#verso-booking-button')
-const alreadyBookedOfferButton = Selector('#verso-already-booked-button')
+const checkReversedIcon = Selector('#verso-cancel-booking-button-reserved')
 const bookingSuccessButton = Selector('#booking-success-ok-button')
 const closeMenu = Selector('#main-menu-close-button')
 const openMenuFromVerso = Selector('#verso-footer .profile-button')
@@ -122,8 +123,8 @@ test(`Parcours complet de réservation d'une offre event à date unique`, async 
     .click(bookingSuccessButton)
     .expect(getPageUrl())
     .eql(offerPage)
-    .expect(alreadyBookedOfferButton.textContent)
-    .eql(`Réservé`)
+    .expect(checkReversedIcon.exists)
+    .ok()
     .click(openMenuFromVerso)
 
   const currentWalletValue = await getMenuWalletValue()
@@ -144,8 +145,8 @@ test(`Parcours complet de réservation d'une offre event à date unique`, async 
     .click(bookedOffer)
     .expect(getPageUrl())
     .eql(offerPageVerso)
-    .expect(alreadyBookedOfferButton.textContent)
-    .eql(`Réservé`)
+    .expect(checkReversedIcon.exists)
+    .ok()
 })
 
 // test(`Parcours complet de réservation d'une offre digitale`)
@@ -174,11 +175,8 @@ test(`Je vérifie mes réservations, après reconnexion`, async t => {
     .eql(date)
     .click(bookedOffer)
     .click(openVerso)
-    .expect(alreadyBookedOfferButton.textContent)
-    .eql(`Réservé`)
-    .click(alreadyBookedOfferButton)
-    .expect(getPageUrl())
-    .eql(myBookingsURL)
+    .expect(checkReversedIcon.exists)
+    .ok()
 })
 
 test(`Je vérifie le montant de mon pass, après reconnexion`, async t => {
@@ -194,6 +192,6 @@ test(`Je ne peux plus réserver cette offre, après reconnexion`, async t => {
     .click(openMenuFromVerso)
     .expect(bookOfferButton.exists)
     .notOk()
-    .expect(alreadyBookedOfferButton.exists)
+    .expect(checkReversedIcon.exists)
     .ok()
 })

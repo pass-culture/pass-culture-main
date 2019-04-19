@@ -37,6 +37,7 @@ ShallowWrapper {
           />
           <i
             className="icon-ico-check fs24"
+            id="verso-cancel-booking-button-reserved"
           />
         </span>,
         <span
@@ -66,6 +67,7 @@ ShallowWrapper {
             />,
             <i
               className="icon-ico-check fs24"
+              id="verso-cancel-booking-button-reserved"
             />,
           ],
           "className": "pc-ticket-button-price reserved",
@@ -92,6 +94,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "className": "icon-ico-check fs24",
+              "id": "verso-cancel-booking-button-reserved",
             },
             "ref": null,
             "rendered": null,
@@ -133,6 +136,7 @@ ShallowWrapper {
             />
             <i
               className="icon-ico-check fs24"
+              id="verso-cancel-booking-button-reserved"
             />
           </span>,
           <span
@@ -162,6 +166,7 @@ ShallowWrapper {
               />,
               <i
                 className="icon-ico-check fs24"
+                id="verso-cancel-booking-button-reserved"
               />,
             ],
             "className": "pc-ticket-button-price reserved",
@@ -188,6 +193,7 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "className": "icon-ico-check fs24",
+                "id": "verso-cancel-booking-button-reserved",
               },
               "ref": null,
               "rendered": null,
