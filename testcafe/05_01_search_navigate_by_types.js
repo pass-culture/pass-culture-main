@@ -169,7 +169,7 @@ test('Je vois les résultats de la page de résultats de la catégorie Lire', as
     .expect(Selector('#recommendation-date').exists)
     .ok()
     .expect(imgResult.getAttribute('src'))
-    .match(/\/storage\/thumbs\/(mediations|things)/)
+    .match(/\/storage\/thumbs\/(mediations|products)/)
 
     .click(linkResult)
 
