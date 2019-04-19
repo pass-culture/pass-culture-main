@@ -122,30 +122,34 @@ def test_venue_raises_exception_when_siret_and_comment_but_virtual(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_venue_can_have_siret_and_comment(app):
+def test_venue_should_not_raise_exception_when_siret_and_comment(app):
     # given
     offerer = create_offerer()
     venue = create_venue(offerer, siret="02345678912345", comment="hello I have some comment and siret !", is_virtual=False)
-    PcObject.check_and_save(venue)
 
     # when
-    siret = venue.siret
+    try:
+        PcObject.check_and_save(venue)
 
-    assert siret == "02345678912345"
+    except ApiErrors:
+        # Then
+        assert pytest.fail("Should not fail with comment and siret but not virtual")
 
 
 @clean_database
 @pytest.mark.standalone
-def test_venue_can_have_no_siret_but_comment(app):
+def test_venue_should_not_raise_exception_when_no_siret_but_comment(app):
     # given
     offerer = create_offerer()
     venue = create_venue(offerer, siret=None, comment="hello I have some comment but no siret :(", is_virtual=False)
-    PcObject.check_and_save(venue)
 
     # when
-    comment = venue.comment
-
-    assert comment == "hello I have some comment but no siret :("
+    try:
+        PcObject.check_and_save(venue)
+        
+    except ApiErrors:
+        # Then
+        assert pytest.fail("Should not fail with comment but not virtual nor siret")
 
 
 @pytest.mark.standalone
