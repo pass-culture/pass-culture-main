@@ -18,10 +18,14 @@ export const IS_PROD = !IS_DEV
 export const MOBILE_OS = getMobileOperatingSystem()
 
 // NOTE: valeur également présente en dur dans:
-// - ./config-staging.xml
-// - ./config-production.xml
-// - ./public/MentionsLegalesPass.md
-export const SUPPORT_EMAIL = 'support.passculture@beta.gouv.fr'
+// - ./webapp/README.md
+// - ./webapp/config-staging.xml
+// - ./webapp/config-production.xml
+// - ./webapp/public/MentionsLegalesPass.md
+export const SUPPORT_EMAIL = 'support@passculture.app'
+export const SUPPORT_EMAIL_SUBJECT = encodeURI(
+  "Votre question depuis l'application pass Culture"
+)
 
 export const API_URL = process.env.API_URL || 'http://localhost'
 export const THUMBS_URL =

@@ -1,6 +1,5 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-// jest --env=jsdom src/components/layout/tests/MailToLink --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 

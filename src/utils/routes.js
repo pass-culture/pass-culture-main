@@ -12,10 +12,8 @@ import Search from '../components/pages/search'
 import { Signin } from '../components/pages/signin'
 import SignupPage from '../components/pages/SignupPage'
 
-import { SUPPORT_EMAIL } from './config'
+import { SUPPORT_EMAIL, SUPPORT_EMAIL_SUBJECT } from './config'
 
-// NOTE: la gestion des éléments du menu principal
-// se fait dans le fichier src/components/MainMenu
 const routes = [
   {
     path: '/',
@@ -94,7 +92,7 @@ const routes = [
   },
   {
     disabled: false,
-    href: `mailto:${SUPPORT_EMAIL}`,
+    href: `mailto:${SUPPORT_EMAIL}?subject=${SUPPORT_EMAIL_SUBJECT}`,
     icon: 'mail-w',
     title: 'Nous contacter',
   },

@@ -1,3 +1,4 @@
+// $(yarn bin)/testcafe chrome:headless ./testcafe/01_activation.js
 import { Selector } from 'testcafe'
 
 import getPageUrl from './helpers/getPageUrl'
@@ -8,6 +9,7 @@ const activationEmailSpan = Selector('#activation-email')
 const cguInput = Selector("input[name='cguCheckBox']")
 const newPasswordInput = Selector('#activation-newPassword')
 const newPasswordConfirm = Selector('#activation-newPasswordConfirm')
+const mailToButton = Selector('#activation-error-contact-us')
 const submitButton = Selector("button[type='submit']")
 
 const baseURL = `${ROOT_PATH}activation`
@@ -23,14 +25,10 @@ test('Je suis redirigé·e vers découverte', async t => {
   const { email, password, resetPasswordToken } = user
   const url = `${baseURL}/${resetPasswordToken}?email=${email}`
 
-  // when
-  await t.navigateTo(url)
-
-  // then
-  await t.expect(activationEmailSpan.innerText).eql(email, { timeout: 2000 })
-
-  // when
   await t
+    .navigateTo(url)
+    .expect(activationEmailSpan.innerText)
+    .eql(email, { timeout: 2000 })
     .typeText(newPasswordInput, password)
     .typeText(newPasswordConfirm, password)
     .click(cguInput)
@@ -56,8 +54,16 @@ test('Sans email en query, je suis redirigé·e vers /activation/error', async t
     .eql(`${baseURL}/error`)
 })
 
+test("Sur la page d'erreur d'activation je dois pouvoir cliquer sur le bouton contactez-nous", async t => {
+  await t
+    .navigateTo(`${baseURL}/error`)
+    .expect(mailToButton.exists)
+    .ok()
+    .expect(mailToButton.textContent)
+    .eql('Contactez-nous')
+})
+
 test('Avec un email déjà activé, je suis redirigé·e vers la page lien invalide', async t => {
-  // given
   const { user } = await fetchSandbox(
     'webapp_01_activation',
     'get_existing_webapp_validated_user'
@@ -65,9 +71,8 @@ test('Avec un email déjà activé, je suis redirigé·e vers la page lien inval
   const { email } = user
   const tokenAlreadyUsed = 'BFYU73UV'
 
-  // when
-  await t.navigateTo(`${baseURL}/${tokenAlreadyUsed}?email=${email}`)
-
-  // then
-  await t.expect(getPageUrl()).eql(`${baseURL}/lien-invalide`)
+  await t
+    .navigateTo(`${baseURL}/${tokenAlreadyUsed}?email=${email}`)
+    .expect(getPageUrl())
+    .eql(`${baseURL}/lien-invalide`)
 })

@@ -8,7 +8,7 @@ import FavoritesPage from '../../components/pages/FavoritesPage'
 import MyBookingsPage from '../../components/pages/my-bookings'
 import ProfilePage from '../../components/pages/profile'
 import Search from '../../components/pages/search'
-import { SUPPORT_EMAIL } from '../config'
+import { SUPPORT_EMAIL, SUPPORT_EMAIL_SUBJECT } from '../config'
 
 describe('filterRoutes', () => {
   it('filter routes pour react-router', () => {
@@ -108,7 +108,7 @@ describe('getMainMenuItems', () => {
       },
       {
         disabled: false,
-        href: `mailto:${SUPPORT_EMAIL}`,
+        href: `mailto:${SUPPORT_EMAIL}?subject=${SUPPORT_EMAIL_SUBJECT}`,
         icon: 'mail-w',
         title: 'Nous contacter',
       },
