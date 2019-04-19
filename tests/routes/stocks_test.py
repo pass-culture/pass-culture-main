@@ -8,8 +8,9 @@ from models.pc_object import PcObject, serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_user, create_offerer, create_venue, \
     create_stock_with_event_offer, create_booking, create_event_offer, create_user_offerer, create_event_occurrence, \
-    create_recommendation, create_stock_from_event_occurrence, create_thing_offer
+    create_recommendation, create_stock_from_event_occurrence, create_thing_offer, create_stock_with_thing_offer
 from utils.human_ids import dehumanize, humanize
+
 
 
 @pytest.mark.standalone
@@ -254,3 +255,98 @@ class Delete:
             # Then
             assert response.status_code == 403
             assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in response.json()['global']
+
+
+@pytest.mark.standalone
+class Patch:
+    class Returns200:
+        @clean_database
+        def when_user_is_admin_and_stock_is_event(self, app):
+            # Given
+            user = create_user(email='email@test.fr', can_book_free_offers=False, is_admin=True)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue)
+            PcObject.check_and_save(user, stock)
+
+            beginningDatetime = datetime(2019, 2, 14)
+            
+            data = {    
+                "dateModified": serialize(beginningDatetime),
+                "beginningDatetime": serialize(beginningDatetime),
+                "endDatetime": serialize(beginningDatetime + timedelta(days=3)),
+                "offerId": humanize(stock.offer.id),
+                "price": 1256,
+                "available": 20,
+                "groupSize": 256,
+                "bookingLimitDatetime": serialize(beginningDatetime),
+                "bookingRecapSent": serialize(beginningDatetime)
+            } 
+
+            # When
+            response = TestClient().with_auth('email@test.fr').patch(API_URL + '/stocks/' + humanize(stock.id), json=data)
+
+            pprint (response)
+            pprint (response.json())
+            # Then
+            assert response.status_code == 200
+            db.session.refresh(stock)
+
+
+        @clean_database
+        def when_user_is_admin_and_stock_is_thing(self, app):
+            # Given
+            user = create_user(email='email@test.fr', can_book_free_offers=False, is_admin=True)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_thing_offer(offerer, venue)
+            PcObject.check_and_save(user, stock)
+
+            beginningDatetime = datetime(2019, 2, 14)
+            
+            data = {    
+                "dateModified": serialize(beginningDatetime),
+                "offerId": humanize(stock.offer.id),
+                "bookingLimitDatetime": None,
+            } 
+
+            # When
+            response = TestClient().with_auth('email@test.fr').patch(API_URL + '/stocks/' + humanize(stock.id), json=data)
+
+            pprint (response)
+            pprint (response.json())
+            # Then
+            assert response.status_code == 200
+            db.session.refresh(stock)
+
+
+    class Returns403:
+        @clean_database
+        def when_user_has_no_rights(self, app):
+            # Given
+            user = create_user(email='email@test.fr')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue)
+            PcObject.check_and_save(user, stock)
+            beginningDatetime = datetime(2019, 2, 14)
+            
+            data = {    
+                "dateModified": serialize(beginningDatetime),
+                "beginningDatetime": serialize(beginningDatetime),
+                "endDatetime": serialize(beginningDatetime + timedelta(days=3)),
+                "offerId": humanize(stock.offer.id),
+                "price": 1256,
+                "available": 20,
+                "groupSize": 256,
+                "bookingLimitDatetime": serialize(beginningDatetime),
+                "bookingRecapSent": serialize(beginningDatetime)
+            } 
+
+            # When
+            response = TestClient().with_auth('email@test.fr').patch(API_URL + '/stocks/' + humanize(stock.id), json=data)
+
+            # Then
+            assert response.status_code == 403
+            assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in response.json()['global']
+
