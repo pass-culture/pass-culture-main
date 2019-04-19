@@ -272,10 +272,8 @@ def create_thing(
         thumb_count=1,
         url=None,
         owning_offerer=None,
-        id = '',
 ):
     product = Product()
-    product.id = id
     product.type = str(thing_type)
     product.name = thing_name
     product.description = description
@@ -330,6 +328,7 @@ def create_thing_offer(venue, product=None, date_created=datetime.utcnow(), book
     offer = Offer()
     if product:
         offer.product = product
+        offer.productId = product.id
         offer.name = product.name
         offer.type = product.type
         offer.mediaUrls = product.mediaUrls

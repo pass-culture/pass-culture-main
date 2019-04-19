@@ -6,6 +6,10 @@ import swiftclient
 from utils.config import IS_DEV
 
 
+def get_storage_base_url():
+    return os.environ.get('OBJECT_STORAGE_URL')
+
+
 def swift_con():
     user = os.environ.get('OVH_USER')
     key = os.environ.get('OVH_PASSWORD')

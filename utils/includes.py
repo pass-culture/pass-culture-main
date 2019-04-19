@@ -120,6 +120,7 @@ RECOMMENDATION_INCLUDES = [
             }
         ]
     },
+    "thumbUrl",
 ]
 
 BOOKING_INCLUDES = [
@@ -140,7 +141,12 @@ BOOKING_INCLUDES = [
                 }
             ]
     },
-    "recommendation"
+    {
+        "key": "recommendation",
+        "sub_joins": [
+            "thumbUrl"
+        ]
+    },
 ]
 
 PRO_BOOKING_INCLUDES = [
@@ -230,17 +236,17 @@ OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
     {
         "key": "managedVenues",
         "resolve": (lambda element, filters: {
-                'id': element['id'],
-                'name': element['name'],
-                'siret': element['siret'],
-                'managingOffererId': element['managingOffererId'],
-                'bookingEmail': element['bookingEmail'],
-                'address': element['address'],
-                'postalCode': element['postalCode'],
-                'city': element['city'],
-                'departementCode': element['departementCode'],
-                'comment': element['comment'],
-                'validationToken': element['validationToken']
-            })
+            'id': element['id'],
+            'name': element['name'],
+            'siret': element['siret'],
+            'managingOffererId': element['managingOffererId'],
+            'bookingEmail': element['bookingEmail'],
+            'address': element['address'],
+            'postalCode': element['postalCode'],
+            'city': element['city'],
+            'departementCode': element['departementCode'],
+            'comment': element['comment'],
+            'validationToken': element['validationToken']
+        })
     }
 ]

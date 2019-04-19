@@ -9,9 +9,10 @@ from sqlalchemy import BigInteger, \
     String
 from sqlalchemy.orm import relationship
 
-from models import Stock
 from models.db import Model
 from models.pc_object import PcObject
+from utils.human_ids import humanize
+from utils.object_storage import get_storage_base_url
 
 
 class Recommendation(PcObject, Model):
@@ -85,4 +86,9 @@ class Recommendation(PcObject, Model):
 
     @property
     def thumbUrl(self):
-        return 'http://localhost/storage/thumbs/products/AKSA'
+        base_url = get_storage_base_url()
+
+        if self.mediationId:
+            return '{}/mediations/{}'.format(base_url, humanize(self.mediationId))
+
+        return '{}/products/{}'.format(base_url, humanize(self.offer.productId))
