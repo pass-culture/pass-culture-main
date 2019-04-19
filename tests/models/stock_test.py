@@ -96,7 +96,7 @@ def test_stock_cannot_have_a_negative_available_stock(app):
 
 @clean_database
 @pytest.mark.standalone
-def test_stock_can_have_an_available_stock_equal_to_(app):
+def test_stock_can_have_an_available_stock_equal_to_zero(app):
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
