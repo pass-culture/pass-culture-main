@@ -422,7 +422,8 @@ def create_venue(
         siret='12345678912345',
         validation_token=None,
         comment=None,
-        idx=None
+        idx=None,
+        publicName=None
 ):
     venue = Venue()
     venue.bookingEmail = booking_email
@@ -440,6 +441,7 @@ def create_venue(
     venue.validationToken = validation_token
     venue.comment = comment
     venue.id = idx
+    venue.publicName = publicName
     return venue
 
 

@@ -132,7 +132,8 @@ class Post:
                 'city': 'Paris',
                 'managingOffererId': humanize(offerer.id),
                 'latitude': 48.82387,
-                'longitude': 2.35284
+                'longitude': 2.35284,
+                'publicName': 'Ma venue publique'
             }
 
             # when
@@ -144,6 +145,7 @@ class Post:
 
             venue = Venue.query.filter_by(id=dehumanize(id)).one()
             assert venue.name == 'Ma venue'
+            assert venue.publicName == 'Ma venue publique'
             assert venue.siret == '30255917810045'
             assert venue.isValidated
 
@@ -163,7 +165,8 @@ class Post:
                 'city': 'Paris',
                 'managingOffererId': humanize(offerer.id),
                 'latitude': 48.82387,
-                'longitude': 2.35284
+                'longitude': 2.35284,
+                'publicName': 'Ma venue publique'
             }
             auth_request = TestClient().with_auth(email=user.email)
 

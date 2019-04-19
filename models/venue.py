@@ -78,6 +78,8 @@ class Venue(PcObject,
 
     city = Column(String(50), nullable=True)
 
+    publicName = Column(String(255), nullable=True)
+
     isVirtual = Column(
         Boolean,
         CheckConstraint(CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS, name='check_is_virtual_xor_has_address'),
