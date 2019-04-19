@@ -1,3 +1,5 @@
+from pprint import pprint
+
 import pytest
 from datetime import datetime, timedelta
 
@@ -137,6 +139,47 @@ class CreateOfferTest:
         assert errors.value.errors['venue'] == [
             'Une offre physique ne peut être associée au lieu "Offre en ligne"']
 
+    def test_offer_is_marked_as_isevent_property(self):
+        # Given
+        physical_thing = create_thing_product(thing_type=ThingType.JEUX_VIDEO, url=None)
+        offerer = create_offerer()
+        digital_venue = create_venue(offerer, is_virtual=True, siret=None)
+
+        # When
+        offer = create_offer_with_thing_product(digital_venue, physical_thing)
+        pprint(Offer.type)
+
+        # Then
+        assert offer.isEvent == False
+        assert offer.isThing == True
+
+    def test_offer_is_marked_as_isthing_property(self):
+        # Given
+        event_product = create_event_product(event_type=EventType.CINEMA)
+        offerer = create_offerer()
+        digital_venue = create_venue(offerer, is_virtual=False, siret=None)
+
+        # When
+        offer = create_offer_with_thing_product(digital_venue, event_product)
+        pprint(Offer.type)
+
+        # Then
+        assert offer.isEvent == True
+        assert offer.isThing == False
+
+    def test_offer_is_neither_event_nor_thing(self):
+        # Given
+        event_product = Product()
+        offerer = create_offerer()
+        digital_venue = create_venue(offerer, is_virtual=False, siret=None)
+
+        # When
+        offer = create_offer_with_thing_product(digital_venue, event_product)
+        pprint(Offer.type)
+
+        # Then
+        assert offer.isEvent == False
+        assert offer.isThing == False
 
 @pytest.mark.standalone
 def test_offer_as_dict_returns_dateRange_in_ISO_8601():

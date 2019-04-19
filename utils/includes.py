@@ -109,6 +109,8 @@ RECOMMENDATION_INCLUDES = [
             'isFinished',
             'isFullyBooked',
             "dateRange",
+            "isEvent",
+            "isThing",
             "mediation",
             "stocks",
             {

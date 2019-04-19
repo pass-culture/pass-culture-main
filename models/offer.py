@@ -132,6 +132,14 @@ class Offer(PcObject,
                 return possible_type.as_dict()
 
     @property
+    def isEvent(self):
+        return ProductType.is_event(self.type)
+
+    @property
+    def isThing(self):
+        return ProductType.is_thing(self.type)
+
+    @property
     def isDigital(self):
         return self.url is not None and self.url != ''
 
