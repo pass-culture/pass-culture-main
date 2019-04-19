@@ -54,7 +54,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Thing",
+            "modelName": "Product",
             "name": "La Toile VOD",
             "thumbCount": 0,
             "type": "AUDIOVISUEL",
@@ -179,7 +179,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Thing",
+            "modelName": "Product",
             "name": "Cours particuliers de musique traditionnelle",
             "thumbCount": 0,
             "type": "PRATIQUE_ARTISTIQUE_ABO",
@@ -337,7 +337,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Thing",
+            "modelName": "Product",
             "name": "IKUI DOKI + ENSEMBLE NAUTILIS ",
             "thumbCount": 0,
             "type": "MUSIQUE_ABO",
@@ -662,7 +662,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "ÉCRAN LIBRE #2 : CHRISTOPHE LOIZILLON ",
             "thumbCount": 0,
             "type": "EventType.CINEMA"
@@ -796,7 +796,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Naissance de la tragédie",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -1061,7 +1061,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Le Grand Sommeil",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -1328,7 +1328,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "PLATEAU IDF : FOUCH + ALICE ANIMAL",
             "thumbCount": 0,
             "type": "MUSIQUE"
@@ -1462,7 +1462,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Pièce d'actualité n°12 : Du sale !",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -1753,7 +1753,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Thing",
+            "modelName": "Product",
             "name": "cours de chant",
             "thumbCount": 0,
             "type": "PRATIQUE_ARTISTIQUE_ABO",
@@ -1889,7 +1889,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "BUENO AIRES DESIRE",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -2024,7 +2024,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Guerre des paysages Πόλεμος Τοπίων",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -2223,7 +2223,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "ADAM L'ANCIEN (+ MAÏTAGARI EN 1ÈRE PARTIE)",
             "thumbCount": 0,
             "type": "MUSIQUE"
@@ -2354,7 +2354,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "DAPHNÉ SWÂN",
             "thumbCount": 0,
             "type": "MUSIQUE"
@@ -2485,7 +2485,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Week-end découverte de l'exposition \"Il était une fois Sergio Leone\"",
             "thumbCount": 0,
             "type": "MUSEES_PATRIMOINE"
@@ -2625,7 +2625,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Thing",
+            "modelName": "Product",
             "name": "Abonnements presse numérique illimitée",
             "thumbCount": 0,
             "type": "ThingType.LIVRE_EDITION",
@@ -2757,7 +2757,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "CØLLØ",
             "thumbCount": 0,
             "type": "MUSIQUE"
@@ -2888,7 +2888,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "VANINA DE FRANCO",
             "thumbCount": 0,
             "type": "MUSIQUE"
@@ -3058,7 +3058,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "EDMOND",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -3192,7 +3192,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Il pourra toujours dire que c'est pour l'amour du prophète",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -3414,7 +3414,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Dom Juan",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -3766,7 +3766,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Improvisation théâtrale tous niveaux",
             "thumbCount": 0,
             "type": "Workshop"
@@ -3982,7 +3982,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Before \"Japon\"",
             "thumbCount": 0,
             "type": "MUSEES_PATRIMOINE"
@@ -4117,7 +4117,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Beyond caring",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -4372,7 +4372,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Sales gosses, de  mis en scène par ",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -4594,7 +4594,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "FARY",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -4725,7 +4725,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "VICTORIA DELAROZIÈRE",
             "thumbCount": 0,
             "type": "MUSIQUE"
@@ -4873,7 +4873,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "MAMA - AHMED EL ATTAR",
             "thumbCount": 0,
             "type": "EventType.SPECTACLE_VIVANT"
@@ -5067,7 +5067,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Juste le temps dramatiques",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -5266,7 +5266,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "ALBANE AUBRY",
             "thumbCount": 0,
             "type": "MUSIQUE"
@@ -5431,7 +5431,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "PLATEAU IDF : GATICA + LIZZIE",
             "thumbCount": 0,
             "type": "MUSIQUE"
@@ -5562,7 +5562,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "SHELMI",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -5695,7 +5695,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Cours de danse africaine",
             "thumbCount": 0,
             "type": "PRATIQUE_ARTISTIQUE"
@@ -5877,7 +5877,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "AÏCHA TOURÉ",
             "thumbCount": 0,
             "type": "MUSIQUE"
@@ -6008,7 +6008,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Cours d'essai de House Dance",
             "thumbCount": 0,
             "type": "Workshop"
@@ -6229,7 +6229,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "De passage",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -6496,7 +6496,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Cours d'essai de salsa portoricaine (tous niveaux)",
             "thumbCount": 0,
             "type": "Workshop"
@@ -6697,7 +6697,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Cours de danse Modern Jazz",
             "thumbCount": 0,
             "type": "PRATIQUE_ARTISTIQUE"
@@ -6866,7 +6866,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Pièce d'Actualité n°9 : Désobéir",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -7118,7 +7118,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Rencontres Chorégraphiques Internationales - FOCUS CORÉE",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -7273,7 +7273,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Désobéir",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -7460,7 +7460,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "La vie trépidante de Laura Wilson",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
@@ -7702,7 +7702,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Thing",
+            "modelName": "Product",
             "name": "La Toile VOD",
             "thumbCount": 0,
             "type": "AUDIOVISUEL",
@@ -7834,7 +7834,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Cours de Stand-up",
             "thumbCount": 0,
             "type": "Workshop"
@@ -8033,7 +8033,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "CHRISTOPHE BELL ŒIL",
             "thumbCount": 0,
             "type": "MUSIQUE"
@@ -8169,7 +8169,7 @@ const state = {
             "isNational": false,
             "lastProviderId": null,
             "mediaUrls": [],
-            "modelName": "Event",
+            "modelName": "Product",
             "name": "Sur la grand' route",
             "thumbCount": 0,
             "type": "SPECTACLE_VIVANT"
