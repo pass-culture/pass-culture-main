@@ -19,13 +19,40 @@ def check_digital_offer_consistency(offer, venue, find_thing=thing_queries.find_
     if not venue.isVirtual and thing.url:
         raise InconsistentOffer('Offer.venue is not virtual but Offer.thing has an URL')
 
+# add another class ?
+def _remove_soft_deleted_stocks(stocks):
+    valid_stocks = [stock for stock in stocks if not stock.isSoftDeleted]
+    return valid_stocks
+
+def _offer_has_unlimited_stock():
+        return "illimité"
+
+def _offer_has_no_more_stock(stock_word, all_places_word):
+        return f'plus de {stock_word} {all_places_word}'
+
+def _offer_has_remaining_stock(remaining_for_all_stocks, remaining_stock_word):
+    return f'encore {remaining_for_all_stocks} {remaining_stock_word}'
+
+def _offer_has_no_stocks_yet(thing_type):
+    stock_alert_message = 'pas encore de stock' if thing_type else 'pas encore de places'
+    return stock_alert_message
+
+def _offer_has_some_stock_empty(stock_word, empty_stocks, mot_offre):
+    return f'plus de {stock_word} pour {empty_stocks} {mot_offre}'
+
+def _count_valid_bookinks(stock):
+    total_bookings_by_stock = 0
+    valid_bookings = [booking for booking in stock.bookings if not booking.isCancelled]
+    for valid_booking in valid_bookings:
+        total_bookings_by_stock += valid_booking.quantity
+    return total_bookings_by_stock
 
 def addStockAlertMessageToOffer(offer):
+    stocks = offer.stocks
+    offer_stocks =_remove_soft_deleted_stocks(stocks)
 
-    offer_stocks = [stock for stock in offer.stocks if not stock.isSoftDeleted]
-
+    # wording
     stock_alert_message = ''
-    total_number_stocks = len(offer_stocks)
     offre_au_singulier = "offre"
     offre_au_pluriel = "offres"
 
@@ -41,55 +68,46 @@ def addStockAlertMessageToOffer(offer):
         remaining_stock_word = "place"
         pluralized_remaining_stock_word = "places"
 
-    if total_number_stocks == 0:
-        if thing_type:
-            stock_alert_message = 'pas encore de stock'
-        else:
-            stock_alert_message = 'pas encore de places'
+    TOTAL_NUMBER_STOCKS = len(offer_stocks)
+    if TOTAL_NUMBER_STOCKS == 0:
+        stock_alert_message = _offer_has_no_stocks_yet(thing_type)
 
-    if total_number_stocks > 0:
-        stocks_with_illimited_places_or_stock = [stock for stock in offer_stocks if not stock.available]
-        number_of_illimited_places_or_stock = len(stocks_with_illimited_places_or_stock)
+    NUMBER_OF_UNLIMITED_PLACES_OR_STOCKS = len([stock for stock in offer_stocks if not stock.available and stock.available is not 0])
 
-        still_available_places_or_stock = 0
-        total_remaining_places_or_stock_available_for_offer = 0
-        number_of_empty_places_or_stock_in_stock_offer = 0
+    if NUMBER_OF_UNLIMITED_PLACES_OR_STOCKS == TOTAL_NUMBER_STOCKS and TOTAL_NUMBER_STOCKS > 0:
+        stock_alert_message = _offer_has_unlimited_stock()
+
+    if TOTAL_NUMBER_STOCKS > 0:
+        remaining_stock = 0
+        remaining_for_all_stocks = 0
+        empty_stocks = 0
 
     for stock in offer_stocks:
-        total_bookings_by_stock = 0
-        valid_bookings = [booking for booking in stock.bookings if not booking.isCancelled]
+        total_bookings_by_stock = _count_valid_bookinks(stock)
 
-        for valid_booking in valid_bookings:
-            total_bookings_by_stock += valid_booking.quantity
+        if stock.available == 0:
+            empty_stocks += 1
 
         if stock.available:
-            still_available_places_or_stock = stock.available - total_bookings_by_stock
+            remaining_stock = stock.available - total_bookings_by_stock
+            remaining_for_all_stocks += remaining_stock
 
-            total_remaining_places_or_stock_available_for_offer += still_available_places_or_stock
+            if remaining_stock == 0:
+                empty_stocks += 1
 
-            if still_available_places_or_stock == 0:
-                number_of_empty_places_or_stock_in_stock_offer += 1
+        if empty_stocks >= 1:
+            mot_offre = offre_au_singulier if empty_stocks == 1 else offre_au_pluriel
+            stock_alert_message = _offer_has_some_stock_empty(stock_word, empty_stocks, mot_offre)
 
-        if number_of_empty_places_or_stock_in_stock_offer >= 1:
-            mot_offre = offre_au_singulier if number_of_empty_places_or_stock_in_stock_offer == 1 else offre_au_pluriel
+        if empty_stocks == TOTAL_NUMBER_STOCKS:
+            stock_alert_message = _offer_has_no_more_stock(stock_word, all_places_word)
 
-            stock_alert_message = f'plus de {stock_word} pour {number_of_empty_places_or_stock_in_stock_offer} {mot_offre}'
+        if remaining_stock > 0 and empty_stocks == 0:
 
-        if number_of_illimited_places_or_stock == total_number_stocks:
-            offer.stockAlertMessage = "illimité"
-            return offer
-
-        if number_of_empty_places_or_stock_in_stock_offer == total_number_stocks:
-            offer.stockAlertMessage = f'plus de {stock_word} {all_places_word}'
-            return offer
-
-
-        if still_available_places_or_stock > 0 and number_of_empty_places_or_stock_in_stock_offer == 0:
-
-            if total_remaining_places_or_stock_available_for_offer > 1 and not thing_type:
+            if remaining_for_all_stocks > 1 and not thing_type:
                 remaining_stock_word = pluralized_remaining_stock_word
 
-            stock_alert_message = f'encore {total_remaining_places_or_stock_available_for_offer} {remaining_stock_word}'
+            stock_alert_message = _offer_has_remaining_stock(remaining_for_all_stocks, remaining_stock_word)
 
     offer.stockAlertMessage = stock_alert_message
 

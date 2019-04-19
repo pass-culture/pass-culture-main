@@ -117,6 +117,76 @@ class AddStockAlertMessageToOfferTest:
             assert result.stockAlertMessage == 'illimité'
 
         @clean_database
+        def test_check_alert_stock_message_returned_all_stock_unlimited_and_available_set_to_zero(self, app):
+            # given
+            user = create_user(email='user@test.com')
+            user2 = create_user(email='user2@test.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_thing_offer(venue)
+            recommendation = create_recommendation(offer, user)
+            stock = create_stock_from_offer(offer, available=None)
+            stock2 = create_stock_from_offer(offer, available=0)
+
+            deposit = create_deposit(user2, datetime.utcnow(), amount=500)
+            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+
+            PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+
+            # when
+            result = addStockAlertMessageToOffer(offer)
+
+            # then
+            assert result.stockAlertMessage == 'plus de stock pour 1 offre'
+
+        @clean_database
+        def test_check_alert_stock_message_returned_all_empty_stock_after_booking_and_one_with_available_set_to_zero(self, app):
+            # given
+            user = create_user(email='user@test.com')
+            user2 = create_user(email='user2@test.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_thing_offer(venue)
+            recommendation = create_recommendation(offer, user)
+            stock = create_stock_from_offer(offer, available=3)
+            stock2 = create_stock_from_offer(offer, available=0)
+
+            deposit = create_deposit(user2, datetime.utcnow(), amount=500)
+            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+
+            PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+
+            # when
+            result = addStockAlertMessageToOffer(offer)
+
+            # then
+            assert result.stockAlertMessage == 'plus de stock '
+
+        @clean_database
+        def test_check_alert_stock_message_returned_all_empty_stock_after_bookings(self, app):
+            # given
+            user = create_user(email='user@test.com')
+            user2 = create_user(email='user2@test.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_thing_offer(venue)
+            recommendation = create_recommendation(offer, user)
+            stock = create_stock_from_offer(offer, available=3)
+            stock2 = create_stock_from_offer(offer, available=10)
+
+            deposit = create_deposit(user2, datetime.utcnow(), amount=500)
+            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+            booking2 = create_booking(user2, stock2, venue, recommendation, quantity=10)
+
+            PcObject.check_and_save(booking, booking2, deposit, user, offer, stock, stock2, user2)
+
+            # when
+            result = addStockAlertMessageToOffer(offer)
+
+            # then
+            assert result.stockAlertMessage == 'plus de stock '
+
+        @clean_database
         def test_check_alert_stock_message_returned_with_stock(self, app):
             # given
             user = create_user(email='user@test.com')
