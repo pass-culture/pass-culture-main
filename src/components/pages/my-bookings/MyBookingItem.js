@@ -23,7 +23,6 @@ const MyBookingItem = ({
   recommendation,
   token,
 }) => {
-  // TODO Fix the style, according to type of offer
   const cssclass = (isEvent && 'event') || 'thing'
   const queryURL = getQueryURL({ mediationId, offerId })
   const linkURL = `/decouverte/${queryURL}/verso`

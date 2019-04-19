@@ -75,9 +75,6 @@ describe('src | components | pages | signin | component', () => {
           expect(dispatchMock).toHaveBeenCalledWith(data)
         })
       })
-      describe('with fail', () => {
-        // TODO
-      })
     })
   })
 })
