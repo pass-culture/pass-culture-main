@@ -1,4 +1,4 @@
-"""empty message
+"""change constraint on venue; siret can now have siret AND comment
 
 Revision ID: d76f83432485
 Revises: ddf0dc458d57
@@ -17,7 +17,7 @@ depends_on = None
 
 
 def upgrade():
-    CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL_NEW = """
+    NEW_CONSTRAINT = """
         (siret IS NULL AND comment IS NULL AND "isVirtual" IS TRUE)
         OR (siret IS NULL AND comment IS NOT NULL AND "isVirtual" IS FALSE)
         OR (siret IS NOT NULL AND "isVirtual" IS FALSE)
@@ -25,12 +25,12 @@ def upgrade():
     op.drop_constraint('check_has_siret_xor_comment_xor_isVirtual', 'venue')
     op.create_check_constraint(constraint_name='check_has_siret_xor_comment_xor_isVirtual',
                                table_name='venue',
-                               condition=CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL_NEW
+                               condition=NEW_CONSTRAINT
                                )
 
 
 def downgrade():
-    CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL_OLD = """
+    OLD_CONSTRAINT = """
         (siret IS NULL AND comment IS NULL AND "isVirtual" IS TRUE)
         OR (siret IS NULL AND comment IS NOT NULL AND "isVirtual" IS FALSE)
         OR (siret IS NOT NULL AND comment IS NULL AND "isVirtual" IS FALSE)
@@ -38,6 +38,6 @@ def downgrade():
     op.drop_constraint('check_has_siret_xor_comment_xor_isVirtual', 'venue')
     op.create_check_constraint(constraint_name='check_has_siret_xor_comment_xor_isVirtual',
                                table_name='venue',
-                               condition=CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL_OLD
+                               condition=OLD_CONSTRAINT
                                )
 
