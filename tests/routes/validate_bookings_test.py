@@ -6,9 +6,9 @@ import pytest
 from models import PcObject, EventType, ThingType, Deposit
 from models.db import db
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_thing_offer, create_deposit, create_stock_with_event_offer, create_venue, \
+from tests.test_utils import API_URL, create_offer_with_thing_product, create_deposit, create_stock_with_event_offer, create_venue, \
     create_offerer, \
-    create_user, create_booking, create_event_offer, \
+    create_user, create_booking, create_offer_with_event_product, \
     create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, create_stock_from_offer
 from utils.human_ids import humanize
 
@@ -76,7 +76,7 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Event Name')
+            offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer, beginning_datetime=Patch.tomorrow,
                                                        end_datetime=Patch.tomorrow_plus_one_hour)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0,
@@ -100,7 +100,7 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
-            activation_offer = create_event_offer(venue, event_type=EventType.ACTIVATION)
+            activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
             activation_event_occurrence = create_event_occurrence(activation_offer, beginning_datetime=Patch.tomorrow,
                                                                   end_datetime=Patch.tomorrow_plus_one_hour)
             stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0,
@@ -129,7 +129,7 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
-            activation_offer = create_thing_offer(venue, thing_type=ThingType.ACTIVATION)
+            activation_offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
             activation_event_occurrence = create_event_occurrence(activation_offer, beginning_datetime=Patch.tomorrow,
                                                                   end_datetime=Patch.tomorrow_plus_one_hour)
             stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0,
@@ -205,6 +205,9 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
+            activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
+            activation_event_occurrence = create_event_occurrence(activation_offer)
+            stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
             activation_offer = create_event_offer(venue, event_type=EventType.ACTIVATION)
             activation_event_occurrence = create_event_occurrence(activation_offer, beginning_datetime=Patch.tomorrow,
                                                                   end_datetime=Patch.tomorrow_plus_one_hour)
@@ -251,7 +254,7 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Event Name')
+            offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer, beginning_datetime=Patch.tomorrow,
                                                        end_datetime=Patch.tomorrow_plus_one_hour)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0,
@@ -299,7 +302,7 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
-            activation_offer = create_event_offer(venue, event_type=EventType.ACTIVATION)
+            activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
             activation_event_occurrence = create_event_occurrence(activation_offer, beginning_datetime=Patch.tomorrow,
                                                                   end_datetime=Patch.tomorrow_plus_one_hour)
             stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0,

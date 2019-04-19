@@ -5,7 +5,7 @@ from tests.conftest import clean_database
 from tests.files.images import ONE_PIXEL_PNG
 from utils.human_ids import humanize
 from tests.test_utils import API_URL, create_venue, create_offerer, create_user, req_with_auth, \
-    create_mediation, create_event_offer, create_user_offerer
+    create_mediation, create_offer_with_event_product, create_user_offerer
 
 
 @clean_database
@@ -60,7 +60,7 @@ def test_post_storage_file_on_a_mediation_returns_bad_request_if_user_is_not_att
     user = create_user()
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_event_offer(venue)
+    offer = create_offer_with_event_product(venue)
     mediation = create_mediation(offer)
     PcObject.check_and_save(user, offer, mediation, venue, offerer)
 
@@ -86,7 +86,7 @@ def test_post_storage_file_on_a_mediation_returns_200_if_user_is_attached_to_off
     offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer)
     venue = create_venue(offerer)
-    offer = create_event_offer(venue)
+    offer = create_offer_with_event_product(venue)
     mediation = create_mediation(offer)
     PcObject.check_and_save(user_offerer, mediation)
 

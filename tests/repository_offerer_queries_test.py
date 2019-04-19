@@ -11,7 +11,7 @@ from repository.offerer_queries import find_all_offerers_with_managing_user_info
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
-    create_event_offer, create_thing_offer, create_event_occurrence, \
+    create_offer_with_event_product, create_offer_with_thing_product, create_event_occurrence, \
     create_stock_with_thing_offer, create_stock_from_event_occurrence, create_bank_information
 
 
@@ -766,13 +766,13 @@ def test_find_filtered_offerers_with_offer_status_with_VALID_param_return_filter
     venue_with_soft_deleted_event = create_venue(offerer_with_soft_deleted_event, siret='12345678912343')
     venue_with_not_available_event = create_venue(offerer_with_not_available_event, siret='12345678912344')
 
-    valid_event = create_event_offer(venue_with_valid_event)
-    expired_event = create_event_offer(venue_with_expired_event)
-    valid_thing = create_thing_offer(venue_with_valid_thing)
-    expired_thing = create_thing_offer(venue_with_expired_thing)
-    soft_deleted_thing = create_thing_offer(venue_with_soft_deleted_thing)
-    soft_deleted_event = create_event_offer(venue_with_soft_deleted_event)
-    not_available_event = create_event_offer(venue_with_not_available_event)
+    valid_event = create_offer_with_event_product(venue_with_valid_event)
+    expired_event = create_offer_with_event_product(venue_with_expired_event)
+    valid_thing = create_offer_with_thing_product(venue_with_valid_thing)
+    expired_thing = create_offer_with_thing_product(venue_with_expired_thing)
+    soft_deleted_thing = create_offer_with_thing_product(venue_with_soft_deleted_thing)
+    soft_deleted_event = create_offer_with_event_product(venue_with_soft_deleted_event)
+    not_available_event = create_offer_with_event_product(venue_with_not_available_event)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
                                                      beginning_datetime=datetime.utcnow() + timedelta(days=4),
@@ -851,13 +851,13 @@ def test_find_filtered_offerers_with_offer_status_with_EXPIRED_param_return_filt
     venue_with_soft_deleted_event = create_venue(offerer_with_soft_deleted_event, siret='12345678912343')
     venue_with_not_available_event = create_venue(offerer_with_not_available_event, siret='12345678912344')
 
-    valid_event = create_event_offer(venue_with_valid_event)
-    expired_event = create_event_offer(venue_with_expired_event)
-    valid_thing = create_thing_offer(venue_with_valid_thing)
-    expired_thing = create_thing_offer(venue_with_expired_thing)
-    soft_deleted_thing = create_thing_offer(venue_with_soft_deleted_thing)
-    soft_deleted_event = create_event_offer(venue_with_soft_deleted_event)
-    not_available_event = create_event_offer(venue_with_not_available_event)
+    valid_event = create_offer_with_event_product(venue_with_valid_event)
+    expired_event = create_offer_with_event_product(venue_with_expired_event)
+    valid_thing = create_offer_with_thing_product(venue_with_valid_thing)
+    expired_thing = create_offer_with_thing_product(venue_with_expired_thing)
+    soft_deleted_thing = create_offer_with_thing_product(venue_with_soft_deleted_thing)
+    soft_deleted_event = create_offer_with_event_product(venue_with_soft_deleted_event)
+    not_available_event = create_offer_with_event_product(venue_with_not_available_event)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
                                                      beginning_datetime=datetime.utcnow() + timedelta(days=4),
@@ -936,13 +936,13 @@ def test_find_filtered_offerers_with_offer_status_with_WITHOUT_param_return_filt
     venue_with_soft_deleted_event = create_venue(offerer_with_soft_deleted_event, siret='12345678912343')
     venue_with_not_available_event = create_venue(offerer_with_not_available_event, siret='12345678912344')
 
-    valid_event = create_event_offer(venue_with_valid_event)
-    expired_event = create_event_offer(venue_with_expired_event)
-    valid_thing = create_thing_offer(venue_with_valid_thing)
-    expired_thing = create_thing_offer(venue_with_expired_thing)
-    soft_deleted_thing = create_thing_offer(venue_with_soft_deleted_thing)
-    soft_deleted_event = create_event_offer(venue_with_soft_deleted_event)
-    not_available_event = create_event_offer(venue_with_not_available_event)
+    valid_event = create_offer_with_event_product(venue_with_valid_event)
+    expired_event = create_offer_with_event_product(venue_with_expired_event)
+    valid_thing = create_offer_with_thing_product(venue_with_valid_thing)
+    expired_thing = create_offer_with_thing_product(venue_with_expired_thing)
+    soft_deleted_thing = create_offer_with_thing_product(venue_with_soft_deleted_thing)
+    soft_deleted_event = create_offer_with_event_product(venue_with_soft_deleted_event)
+    not_available_event = create_offer_with_event_product(venue_with_not_available_event)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
                                                      beginning_datetime=datetime.utcnow() + timedelta(days=4),
@@ -1021,13 +1021,13 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_return_filtered
     venue_with_soft_deleted_event = create_venue(offerer_with_soft_deleted_event, siret='12345678912343')
     venue_with_not_available_event = create_venue(offerer_with_not_available_event, siret='12345678912344')
 
-    valid_event = create_event_offer(venue_with_valid_event)
-    expired_event = create_event_offer(venue_with_expired_event)
-    valid_thing = create_thing_offer(venue_with_valid_thing)
-    expired_thing = create_thing_offer(venue_with_expired_thing)
-    soft_deleted_thing = create_thing_offer(venue_with_soft_deleted_thing)
-    soft_deleted_event = create_event_offer(venue_with_soft_deleted_event)
-    not_available_event = create_event_offer(venue_with_not_available_event)
+    valid_event = create_offer_with_event_product(venue_with_valid_event)
+    expired_event = create_offer_with_event_product(venue_with_expired_event)
+    valid_thing = create_offer_with_thing_product(venue_with_valid_thing)
+    expired_thing = create_offer_with_thing_product(venue_with_expired_thing)
+    soft_deleted_thing = create_offer_with_thing_product(venue_with_soft_deleted_thing)
+    soft_deleted_event = create_offer_with_event_product(venue_with_soft_deleted_event)
+    not_available_event = create_offer_with_event_product(venue_with_not_available_event)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
                                                      beginning_datetime=datetime.utcnow() + timedelta(days=4),
@@ -1109,11 +1109,11 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_False_has_n
                                                  siret=None)
     venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345")
 
-    offer_1 = create_thing_offer(virtual_venue_with_offer_1, url='http://url.com')
-    offer_2 = create_thing_offer(virtual_venue_with_offer_3, url='http://url.com')
-    offer_3 = create_thing_offer(venue_with_offer_3, url=None)
-    offer_4 = create_thing_offer(virtual_venue_with_offer_4, url='http://url.com')
-    offer_5 = create_thing_offer(venue_with_offer_5, url=None)
+    offer_1 = create_offer_with_thing_product(virtual_venue_with_offer_1, url='http://url.com')
+    offer_2 = create_offer_with_thing_product(virtual_venue_with_offer_3, url='http://url.com')
+    offer_3 = create_offer_with_thing_product(venue_with_offer_3, url=None)
+    offer_4 = create_offer_with_thing_product(virtual_venue_with_offer_4, url='http://url.com')
+    offer_5 = create_offer_with_thing_product(venue_with_offer_5, url=None)
 
     PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5, virtual_venue_without_offer_1,
                             virtual_venue_without_offer_2,
@@ -1156,11 +1156,11 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_True_has_no
                                                  siret=None)
     venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345")
 
-    offer_1 = create_thing_offer(virtual_venue_with_offer_1, url='http://url.com')
-    offer_2 = create_thing_offer(virtual_venue_with_offer_3, url='http://url.com')
-    offer_3 = create_event_offer(venue_with_offer_3)
-    offer_4 = create_thing_offer(virtual_venue_with_offer_4, url='http://url.com')
-    offer_5 = create_event_offer(venue_with_offer_5)
+    offer_1 = create_offer_with_thing_product(virtual_venue_with_offer_1, url='http://url.com')
+    offer_2 = create_offer_with_thing_product(virtual_venue_with_offer_3, url='http://url.com')
+    offer_3 = create_offer_with_event_product(venue_with_offer_3)
+    offer_4 = create_offer_with_thing_product(virtual_venue_with_offer_4, url='http://url.com')
+    offer_5 = create_offer_with_event_product(venue_with_offer_5)
 
     PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5, virtual_venue_without_offer_1,
                             virtual_venue_without_offer_2,

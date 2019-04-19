@@ -1,5 +1,5 @@
 from models import EventType, Product
-from tests.test_utils import create_event
+from tests.test_utils import create_event_product
 
 
 def test_an_event_is_always_physical_and_cannot_be_digital():
@@ -44,7 +44,7 @@ def test_event_type_find_from_sub_labels_returns_several_types_given_several_sub
 
 def test_event_offerType_returns_dict_matching_EventType_enum():
     # given
-    event = create_event(event_type=EventType.SPECTACLE_VIVANT)
+    event = create_event_product(event_type=EventType.SPECTACLE_VIVANT)
     expected_value = {
         'conditionalFields': ["author", "showType", "stageDirector", "performer"],
         'label': "Spectacle vivant",
@@ -68,7 +68,7 @@ def test_event_offerType_returns_dict_matching_EventType_enum():
 
 def test_event_offerType_returns_None_if_type_does_not_match_EventType_enum():
     # given
-    event = create_event(event_type='Workshop')
+    event = create_event_product(event_type='Workshop')
 
     # when
     offer_type = event.offerType

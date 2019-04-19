@@ -12,7 +12,7 @@ from models.venue_provider import VenueProvider
 from tests.conftest import clean_database
 from tests.local_providers.local_provider_titelive_test import get_ordered_thing_files_from_sandbox_files, \
     get_lines_from_thing_file_sandboxes
-from tests.test_utils import create_offerer, create_venue, provider_test, create_thing
+from tests.test_utils import create_offerer, create_venue, provider_test, create_thing_product
 
 
 @pytest.mark.standalone
@@ -174,10 +174,10 @@ class TiteliveThingsTest:
         offerer = create_offerer(siren='775671464')
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
 
-        thing = create_thing(id_at_providers='9782895026310',
-                             thing_name='Toto à la playa',
-                             date_modified_at_last_provider=datetime(2001, 1, 1),
-                             last_provider_id=titelive_things_provider.id)
+        thing = create_thing_product(id_at_providers='9782895026310',
+                                     thing_name='Toto à la playa',
+                                     date_modified_at_last_provider=datetime(2001, 1, 1),
+                                     last_provider_id=titelive_things_provider.id)
         PcObject.check_and_save(venue, thing)
 
         venue_provider = VenueProvider()

@@ -2,7 +2,7 @@ import pytest
 
 from models import PcObject, ApiErrors, ThingType
 from tests.conftest import clean_database
-from tests.test_utils import create_thing
+from tests.test_utils import create_thing_product
 
 
 def test_thing_type_find_from_sub_labels_returns_nothing_if_no_sub_labels():
@@ -49,7 +49,7 @@ def test_thing_type_find_from_sub_labels_returns_several_types_given_several_sub
 @pytest.mark.standalone
 def test_thing_error_when_thing_type_is_offlineOnly_but_has_url(app):
     # Given
-    thing = create_thing(thing_type=ThingType.JEUX, url='http://mygame.fr/offre')
+    thing = create_thing_product(thing_type=ThingType.JEUX, url='http://mygame.fr/offre')
 
     # When
     with pytest.raises(ApiErrors) as errors:
@@ -61,7 +61,7 @@ def test_thing_error_when_thing_type_is_offlineOnly_but_has_url(app):
 
 def test_thing_offerType_returns_dict_matching_ThingType_enum():
     # given
-    thing = create_thing(thing_type=ThingType.LIVRE_EDITION)
+    thing = create_thing_product(thing_type=ThingType.LIVRE_EDITION)
     expected_value = {
         'conditionalFields': ["author", "isbn"],
         'label': 'Livre — Édition',
@@ -86,7 +86,7 @@ def test_thing_offerType_returns_dict_matching_ThingType_enum():
 
 def test_thing_offerType_returns_None_if_type_does_not_match_ThingType_enum():
     # given
-    thing = create_thing(thing_type='')
+    thing = create_thing_product(thing_type='')
 
     # when
     offer_type = thing.offerType

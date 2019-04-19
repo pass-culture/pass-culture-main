@@ -6,7 +6,7 @@ from models.db import db
 from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
-    create_thing_offer, API_URL, create_event, create_event_offer, create_thing, create_recommendation
+    create_offer_with_thing_product, API_URL, create_event_product, create_offer_with_event_product, create_thing_product, create_recommendation
 from utils.human_ids import humanize
 
 
@@ -20,7 +20,7 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue, booking_email='old@email.com')
+            offer = create_offer_with_thing_product(venue, booking_email='old@email.com')
 
             PcObject.check_and_save(offer, user, user_offerer)
 
@@ -46,7 +46,7 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue, booking_email='old@email.com')
+            offer = create_offer_with_thing_product(venue, booking_email='old@email.com')
             recommendation = create_recommendation(offer, user, valid_until_date=seven_days_from_now)
 
             PcObject.check_and_save(offer, user, user_offerer, recommendation)
@@ -72,8 +72,8 @@ class Patch:
             owning_offerer = create_offerer()
             user_offerer = create_user_offerer(user, owning_offerer)
             venue = create_venue(owning_offerer)
-            thing = create_thing(thing_name='Old Name', owning_offerer=owning_offerer)
-            offer = create_thing_offer(venue, thing)
+            thing = create_thing_product(thing_name='Old Name', owning_offerer=owning_offerer)
+            offer = create_offer_with_thing_product(venue, thing)
 
             PcObject.check_and_save(offer, user_offerer)
 
@@ -101,8 +101,8 @@ class Patch:
             editor_offerer = create_offerer(siren='123456780')
             editor_user_offerer = create_user_offerer(user, editor_offerer)
             venue = create_venue(editor_offerer)
-            thing = create_thing(thing_name='Old Name', owning_offerer=owning_offerer)
-            offer = create_thing_offer(venue, thing)
+            thing = create_thing_product(thing_name='Old Name', owning_offerer=owning_offerer)
+            offer = create_offer_with_thing_product(venue, thing)
 
             PcObject.check_and_save(offer, editor_user_offerer, owning_offerer)
 
@@ -129,8 +129,8 @@ class Patch:
             offerer = create_offerer(siren='123456780')
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            thing = create_thing(thing_name='Old Name', owning_offerer=None)
-            offer = create_thing_offer(venue, thing)
+            thing = create_thing_product(thing_name='Old Name', owning_offerer=None)
+            offer = create_offer_with_thing_product(venue, thing)
 
             PcObject.check_and_save(offer, user_offerer)
 
@@ -158,8 +158,8 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            thing = create_thing(thing_name='Old Name', owning_offerer=None)
-            offer = create_thing_offer(venue, thing)
+            thing = create_thing_product(thing_name='Old Name', owning_offerer=None)
+            offer = create_offer_with_thing_product(venue, thing)
 
             PcObject.check_and_save(offer, user, user_offerer)
 
@@ -194,9 +194,9 @@ class Patch:
             # Given
             user = create_user()
             offerer = create_offerer()
-            event = create_event(event_name='Old name')
+            event = create_event_product(event_name='Old name')
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event)
+            offer = create_offer_with_event_product(venue, event)
 
             PcObject.check_and_save(event, offer, user, venue)
 

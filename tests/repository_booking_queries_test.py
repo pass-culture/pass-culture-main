@@ -15,7 +15,7 @@ from tests.test_utils import create_booking, \
     create_stock_with_event_offer, \
     create_stock_with_thing_offer, \
     create_user, \
-    create_venue, create_stock_from_event_occurrence, create_event_occurrence, create_thing_offer, create_event_offer, \
+    create_venue, create_stock_from_event_occurrence, create_event_occurrence, create_offer_with_thing_product, create_offer_with_event_product, \
     create_booking_activity, save_all_activities, create_stock_from_offer
 
 
@@ -104,14 +104,14 @@ class FindFinalOffererBookingsTest:
 
         offerer1 = create_offerer(siren='123456789')
         venue = create_venue(offerer1, siret=offerer1.siren + '12345')
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer1, venue, offer)
         booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
         booking2 = create_booking(user, stock=stock, venue=venue, is_used=True)
 
         offerer2 = create_offerer(siren='987654321')
         venue = create_venue(offerer2, siret=offerer2.siren + '12345')
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer2, venue, offer)
         booking3 = create_booking(user, stock=stock, venue=venue, is_used=True)
 
@@ -133,7 +133,7 @@ class FindFinalOffererBookingsTest:
 
         offerer1 = create_offerer(siren='123456789')
         venue = create_venue(offerer1)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer1, venue, offer)
         booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
         booking2 = create_booking(user, stock=stock, venue=venue, is_cancelled=True, is_used=True)
@@ -155,7 +155,7 @@ class FindFinalOffererBookingsTest:
 
         offerer1 = create_offerer(siren='123456789')
         venue = create_venue(offerer1)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer1, venue, offer)
         booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
         booking2 = create_booking(user, stock=stock, venue=venue, is_used=False)
@@ -177,7 +177,7 @@ class FindFinalOffererBookingsTest:
 
         offerer1 = create_offerer(siren='123456789')
         venue = create_venue(offerer1)
-        offer = create_event_offer(venue)
+        offer = create_offer_with_event_product(venue)
         old_event_occurrence = create_event_occurrence(offer,
                                                        beginning_datetime=datetime.utcnow() - timedelta(hours=49))
         recent_event_occurrence = create_event_occurrence(offer,
@@ -253,7 +253,7 @@ class FindUserActivationBookingTest:
         user = create_user()
         offerer = create_offerer(siren='123456789', name='pass Culture')
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
-        activation_offer = create_thing_offer(venue_online, thing_type=ThingType.ACTIVATION)
+        activation_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.ACTIVATION)
         activation_stock = create_stock_from_offer(activation_offer, available=200, price=0)
         activation_booking = create_booking(user, stock=activation_stock, venue=venue_online)
         PcObject.check_and_save(activation_booking)
@@ -270,7 +270,7 @@ class FindUserActivationBookingTest:
         user = create_user()
         offerer = create_offerer(siren='123456789', name='pass Culture')
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
-        book_offer = create_thing_offer(venue_online, thing_type=ThingType.LIVRE_EDITION)
+        book_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.LIVRE_EDITION)
         book_stock = create_stock_from_offer(book_offer, available=200, price=0)
         book_booking = create_booking(user, stock=book_stock, venue=venue_online)
         PcObject.check_and_save(book_booking)
@@ -290,7 +290,7 @@ class GetExistingTokensTest:
         user = create_user()
         offerer = create_offerer(siren='123456789', name='pass Culture')
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
-        book_offer = create_thing_offer(venue_online, thing_type=ThingType.LIVRE_EDITION)
+        book_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.LIVRE_EDITION)
         book_stock = create_stock_from_offer(book_offer, available=200, price=0)
         booking1 = create_booking(user, stock=book_stock, venue=venue_online)
         booking2 = create_booking(user, stock=book_stock, venue=venue_online)
@@ -320,7 +320,7 @@ class FindAllActiveByUserIdTest:
         user = create_user()
         offerer = create_offerer(siren='123456789', name='pass Culture')
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
-        book_offer = create_thing_offer(venue_online, thing_type=ThingType.LIVRE_EDITION)
+        book_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.LIVRE_EDITION)
         book_stock = create_stock_from_offer(book_offer, available=200, price=0)
         booking1 = create_booking(user, stock=book_stock, venue=venue_online, is_cancelled=True)
         booking2 = create_booking(user, stock=book_stock, venue=venue_online, is_used=True)
@@ -495,7 +495,7 @@ class SaveBookingTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(offer, price=0, available=1)
         user_cancelled = create_user(email='cancelled@booking.com')
         user_booked = create_user(email='booked@email.com')
@@ -515,7 +515,7 @@ class SaveBookingTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(offer, price=0, available=1)
         user1 = create_user(email='cancelled@booking.com')
         user2 = create_user(email='booked@email.com')

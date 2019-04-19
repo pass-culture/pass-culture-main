@@ -4,7 +4,7 @@ from typing import List
 from models import PcObject, Offerer, Stock
 from recommendations_engine import create_recommendations_for_discovery
 from tests.conftest import clean_database
-from tests.test_utils import create_user, create_offerer, create_venue, create_thing_offer, create_stock
+from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_stock
 
 
 @pytest.mark.standalone
@@ -61,7 +61,7 @@ def _create_and_save_stock_for_offererer_in_departements(offerer: Offerer, depar
     for i, departement_code in enumerate(departement_codes):
         siret = f'{offerer.siren}{99999 - i}'
         venue = create_venue(offerer, postal_code="{:<5}".format(departement_code), siret=siret)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, available=10)
         stock_list.append(stock)
     return stock_list

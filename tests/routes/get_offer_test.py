@@ -5,7 +5,7 @@ from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, \
     create_offerer, \
     create_user, \
-    create_venue, create_thing_offer, create_bank_information, create_stock
+    create_venue, create_offer_with_thing_product, create_bank_information, create_stock
 from utils.human_ids import humanize
 
 
@@ -18,7 +18,7 @@ class Get:
             user = create_user(email='user@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             stock = create_stock(offer=offer)
             create_bank_information(venue=venue, id_at_providers=venue.siret)
             create_bank_information(offerer=offerer, id_at_providers=offerer.siren)

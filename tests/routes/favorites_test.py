@@ -3,7 +3,7 @@ import pytest
 from models import PcObject
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, \
-    create_event_offer, \
+    create_offer_with_event_product, \
     create_offerer, \
     create_recommendation, \
     create_user, \
@@ -31,8 +31,8 @@ class Get:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer1 = create_event_offer(venue)
-            offer2 = create_event_offer(venue)
+            offer1 = create_offer_with_event_product(venue)
+            offer2 = create_offer_with_event_product(venue)
             recommendation1 = create_recommendation(offer1, user1, is_favorite=False)
             recommendation2 = create_recommendation(offer2, user1, is_favorite=True)
             recommendation3 = create_recommendation(offer2, user1, is_favorite=True)
@@ -54,7 +54,7 @@ class Get:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer1 = create_event_offer(venue)
+            offer1 = create_offer_with_event_product(venue)
             recommendation1 = create_recommendation(offer1, user1, is_favorite=False)
             PcObject.check_and_save(user1, user2, recommendation1)
 

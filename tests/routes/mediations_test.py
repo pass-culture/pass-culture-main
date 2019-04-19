@@ -12,7 +12,7 @@ from utils.human_ids import humanize
 from tests.test_utils import API_URL, \
     create_user, \
     req_with_auth, \
-    create_event_offer, \
+    create_offer_with_event_product, \
     create_mediation, \
     create_offerer, \
     create_user_offerer, \
@@ -26,7 +26,7 @@ def test_create_mediation_with_thumb_url(app):
     user = create_user()
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_event_offer(venue)
+    offer = create_offer_with_event_product(venue)
     user_offerer = create_user_offerer(user, offerer)
 
     PcObject.check_and_save(offer)
@@ -54,7 +54,7 @@ def test_create_mediation_with_thumb_url_returns_400_if_url_is_not_an_image(app)
     user = create_user()
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_event_offer(venue)
+    offer = create_offer_with_event_product(venue)
     user_offerer = create_user_offerer(user, offerer)
     PcObject.check_and_save(user, venue, user_offerer)
 
@@ -81,7 +81,7 @@ def test_create_mediation_with_thumb_file(app):
     user = create_user()
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_event_offer(venue)
+    offer = create_offer_with_event_product(venue)
     user_offerer = create_user_offerer(user, offerer)
 
     PcObject.check_and_save(offer)
@@ -113,7 +113,7 @@ def test_patch_mediation_returns_200(app):
     user = create_user()
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_event_offer(venue)
+    offer = create_offer_with_event_product(venue)
     user_offerer = create_user_offerer(user, offerer)
     mediation = create_mediation(offer)
     PcObject.check_and_save(mediation)
@@ -145,7 +145,7 @@ def test_patch_mediation_returns_403_if_user_is_not_attached_to_offerer_of_media
     other_user = create_user(email='jimmy@test.com')
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_event_offer(venue)
+    offer = create_offer_with_event_product(venue)
     user_offerer = create_user_offerer(other_user, offerer)
     mediation = create_mediation(offer)
     PcObject.check_and_save(mediation)
@@ -182,7 +182,7 @@ def test_get_mediation_returns_200_and_the_mediation_as_json(app):
     user = create_user()
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_event_offer(venue)
+    offer = create_offer_with_event_product(venue)
     user_offerer = create_user_offerer(user, offerer)
     mediation = create_mediation(offer)
     PcObject.check_and_save(mediation)
@@ -224,7 +224,7 @@ def test_patch_mediation_make_mediations_invalid_for_all_users_when_deactivating
     other_user = create_user(email='other@email.com')
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_event_offer(venue)
+    offer = create_offer_with_event_product(venue)
     user_offerer = create_user_offerer(user_pro, offerer)
     mediation1 = create_mediation(offer)
     mediation2 = create_mediation(offer)

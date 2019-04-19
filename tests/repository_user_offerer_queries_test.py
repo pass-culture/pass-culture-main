@@ -5,10 +5,10 @@ from repository.user_offerer_queries import find_first_by_user_id, \
                                             find_user_offerer_email, \
                                             filter_query_where_user_is_user_offerer_and_is_validated
 from tests.conftest import clean_database
-from tests.test_utils import create_event, \
-                             create_event_offer, \
-                             create_thing, \
-                             create_thing_offer, \
+from tests.test_utils import create_event_product, \
+                             create_offer_with_event_product, \
+                             create_thing_product, \
+                             create_offer_with_thing_product, \
                              create_offerer, \
                              create_user, \
                              create_user_offerer, \
@@ -61,17 +61,17 @@ def test_filter_query_where_user_is_user_offerer_and_is_validated(app):
     user_offerer1 = create_user_offerer(user, offerer1)
     user_offerer2 = create_user_offerer(user, offerer2)
 
-    event1 = create_event(event_name='Rencontre avec Jacques Martin')
-    event2 = create_event(event_name='Concert de contrebasse')
-    thing1 = create_thing(thing_name='Jacques la fripouille')
-    thing2 = create_thing(thing_name='Belle du Seigneur')
+    event1 = create_event_product(event_name='Rencontre avec Jacques Martin')
+    event2 = create_event_product(event_name='Concert de contrebasse')
+    thing1 = create_thing_product(thing_name='Jacques la fripouille')
+    thing2 = create_thing_product(thing_name='Belle du Seigneur')
     venue1 = create_venue(offerer1, name='Bataclan', city='Paris', siret=offerer1.siren + '12345')
     venue2 = create_venue(offerer2, name='Librairie la Rencontre', city='Saint Denis', siret=offerer2.siren + '54321')
     venue3 = create_venue(offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis', siret=offerer3.siren + '54321')
-    offer1 = create_event_offer(venue1, event1)
-    offer2 = create_event_offer(venue1, event2)
-    offer3 = create_thing_offer(venue2, thing1)
-    offer4 = create_thing_offer(venue3, thing2)
+    offer1 = create_offer_with_event_product(venue1, event1)
+    offer2 = create_offer_with_event_product(venue1, event2)
+    offer3 = create_offer_with_thing_product(venue2, thing1)
+    offer4 = create_offer_with_thing_product(venue3, thing2)
 
     PcObject.check_and_save(
         user_offerer1, user_offerer2, offerer3,

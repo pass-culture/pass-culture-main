@@ -1,7 +1,7 @@
 from domain.user_activation import generate_activation_users_csv
 from models import ThingType
 from models.booking import ActivationUser
-from tests.test_utils import create_booking, create_user, create_stock, create_thing_offer, create_venue, create_offerer
+from tests.test_utils import create_booking, create_user, create_stock, create_offer_with_thing_product, create_venue, create_offerer
 
 
 class GenerateActivationUsersCsvTest:
@@ -13,7 +13,7 @@ class GenerateActivationUsersCsvTest:
                             reset_password_token='123AZERTY')
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=True, address=None, postal_code=None, departement_code=None)
-        activation_offer = create_thing_offer(venue, thing_type=ThingType.ACTIVATION)
+        activation_offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         stock = create_stock(offer=activation_offer, price=0)
         booking1 = create_booking(user1, stock, token='abc')
         booking2 = create_booking(user2, stock, token='def')

@@ -7,10 +7,10 @@ from models.db import db
 from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, \
-    create_event_offer, \
+    create_offer_with_event_product, \
     create_offerer, \
     create_recommendation, \
-    create_thing_offer, \
+    create_offer_with_thing_product, \
     create_user, \
     create_user_offerer, \
     create_venue, \
@@ -74,10 +74,10 @@ class Patch:
             venue1 = create_venue(offerer, siret=offerer.siren + '12345')
             venue2 = create_venue(offerer, siret=offerer.siren + '12346')
             other_venue = create_venue(other_offerer)
-            offer_venue1_1 = create_event_offer(venue1)
-            offer_venue2_1 = create_event_offer(venue2)
-            offer_venue2_2 = create_thing_offer(venue2)
-            other_offer = create_event_offer(other_venue)
+            offer_venue1_1 = create_offer_with_event_product(venue1)
+            offer_venue2_1 = create_offer_with_event_product(venue2)
+            offer_venue2_2 = create_offer_with_thing_product(venue2)
+            other_offer = create_offer_with_event_product(other_venue)
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
             original_validity_date = datetime.utcnow() + timedelta(days=7)
             recommendation1 = create_recommendation(offer_venue1_1, other_user, valid_until_date=original_validity_date)

@@ -7,7 +7,7 @@ from models import PcObject
 from models.db import db
 from tests.conftest import clean_database, TestClient
 from utils.human_ids import humanize
-from tests.test_utils import API_URL, req, req_with_auth, create_thing_offer, create_user, create_offerer, create_venue, \
+from tests.test_utils import API_URL, req, req_with_auth, create_offer_with_thing_product, create_user, create_offerer, create_venue, \
     create_stock_with_thing_offer, create_recommendation, create_deposit, create_booking
 
 
@@ -78,7 +78,7 @@ def test_user_should_have_its_wallet_balance(app):
     venue = create_venue(offerer)
     PcObject.check_and_save(venue)
 
-    thing_offer = create_thing_offer(venue=None)
+    thing_offer = create_offer_with_thing_product(venue=None)
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=5)
     PcObject.check_and_save(stock)
 
@@ -112,7 +112,7 @@ def test_get_current_user_returns_expenses(app):
     user = create_user(public_name='Test', departement_code='93', email='wallet_2_bookings_test@email.com')
     offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
     venue = create_venue(offerer)
-    thing_offer = create_thing_offer(venue=None)
+    thing_offer = create_offer_with_thing_product(venue=None)
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
     recommendation = create_recommendation(thing_offer, user)
     deposit_date = datetime.utcnow() - timedelta(minutes=2)

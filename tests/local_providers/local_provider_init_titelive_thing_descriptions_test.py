@@ -4,7 +4,7 @@ import pytest
 from local_providers import InitTiteLiveThingDescriptions
 from models import PcObject
 from tests.conftest import clean_database
-from tests.test_utils import create_thing
+from tests.test_utils import create_thing_product
 
 
 @pytest.mark.standalone
@@ -15,7 +15,7 @@ class InitTiteLiveThingDescriptionsTest:
         # given
         filename = 'tests/local_providers/Resume-full_01012019.zip'
 
-        thing_1 = create_thing(id_at_providers='1234567029006')
+        thing_1 = create_thing_product(id_at_providers='1234567029006')
         init_titelive_thing_descriptions = InitTiteLiveThingDescriptions(filename)
         init_titelive_thing_descriptions.dbObject.isActive = True
         PcObject.check_and_save(thing_1, init_titelive_thing_descriptions.dbObject)
@@ -32,9 +32,9 @@ class InitTiteLiveThingDescriptionsTest:
         # given
         filename = 'tests/local_providers/Resume-full_01012019.zip'
 
-        thing_1 = create_thing(id_at_providers='1234567029006')
-        thing_2 = create_thing(id_at_providers='9782711029006')
-        thing_3 = create_thing(id_at_providers='3760107140005')
+        thing_1 = create_thing_product(id_at_providers='1234567029006')
+        thing_2 = create_thing_product(id_at_providers='9782711029006')
+        thing_3 = create_thing_product(id_at_providers='3760107140005')
         init_titelive_thing_descriptions = InitTiteLiveThingDescriptions(filename)
         init_titelive_thing_descriptions.dbObject.isActive = True
         PcObject.check_and_save(thing_1, thing_2, thing_3, init_titelive_thing_descriptions.dbObject)

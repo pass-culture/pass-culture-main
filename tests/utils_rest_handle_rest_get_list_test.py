@@ -5,7 +5,7 @@ from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.rest import handle_rest_get_list
 from tests.test_utils import create_stock_from_event_occurrence, create_offerer, create_event_occurrence, \
-    create_event_offer, create_venue
+    create_offer_with_event_product, create_venue
 
 
 @clean_database
@@ -14,7 +14,7 @@ def test_handle_rest_get_list_should_return_only_not_soft_deleted_stock(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_event_offer(venue)
+    offer = create_offer_with_event_product(venue)
     event_occurrence = create_event_occurrence(offer)
     stock1 = create_stock_from_event_occurrence(event_occurrence)
     stock2 = create_stock_from_event_occurrence(event_occurrence)

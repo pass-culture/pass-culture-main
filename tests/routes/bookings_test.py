@@ -7,8 +7,8 @@ from models.db import db
 from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_stock_with_thing_offer, \
-    create_thing_offer, create_deposit, create_stock_with_event_offer, create_venue, create_offerer, \
-    create_recommendation, create_user, create_booking, create_event_offer, \
+    create_offer_with_thing_product, create_deposit, create_stock_with_event_offer, create_venue, create_offerer, \
+    create_recommendation, create_user, create_booking, create_offer_with_event_product, \
     create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer
 from utils.human_ids import humanize
 
@@ -24,7 +24,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             venue.generate_validation_token()
-            thing_offer = create_thing_offer(venue)
+            thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
             PcObject.check_and_save(stock, user, deposit)
 
@@ -52,7 +52,7 @@ class Post:
             venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
                                  '93')
 
-            thing_offer = create_thing_offer(venue)
+            thing_offer = create_offer_with_thing_product(venue)
 
             expired_stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, product=thing_offer,
                                                           price=0)
@@ -131,7 +131,7 @@ class Post:
                                  address='1 Test address', postal_code='93000', city='Test city', departement_code='93')
             PcObject.check_and_save(venue)
 
-            thing_offer = create_thing_offer(venue)
+            thing_offer = create_offer_with_thing_product(venue)
             PcObject.check_and_save(thing_offer)
 
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=0)
@@ -208,7 +208,7 @@ class Post:
             venue = create_venue(offerer)
             PcObject.check_and_save(venue)
 
-            thing_offer = create_thing_offer(venue)
+            thing_offer = create_offer_with_thing_product(venue)
             PcObject.check_and_save(thing_offer)
 
             thing_stock_price_190 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=190)
@@ -297,7 +297,7 @@ class Post:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            thing_offer = create_thing_offer(venue)
+            thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
             PcObject.check_and_save(stock, user)
 
@@ -321,7 +321,7 @@ class Post:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            thing_offer = create_thing_offer(venue)
+            thing_offer = create_offer_with_thing_product(venue)
             thing_offer.isActive = False
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
             PcObject.check_and_save(stock, user)
@@ -346,7 +346,7 @@ class Post:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            thing_offer = create_thing_offer(venue)
+            thing_offer = create_offer_with_thing_product(venue)
             offerer.isActive = False
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
             PcObject.check_and_save(stock, user)
@@ -371,7 +371,7 @@ class Post:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            thing_offer = create_thing_offer(venue)
+            thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
             stock.isSoftDeleted = True
             PcObject.check_and_save(stock, user)
@@ -396,7 +396,7 @@ class Post:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            thing_offer = create_thing_offer(venue)
+            thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
             PcObject.check_and_save(stock, user)
 
@@ -420,7 +420,7 @@ class Post:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            thing_offer = create_thing_offer(venue)
+            thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
             PcObject.check_and_save(stock, user)
 
@@ -448,7 +448,7 @@ class Post:
             venue = create_venue(offerer)
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, deposit_date, amount=200)
-            offer = create_event_offer(venue, event_name='Event Name', event_type=EventType.CINEMA)
+            offer = create_offer_with_event_product(venue, event_name='Event Name', event_type=EventType.CINEMA)
             event_occurrence = create_event_occurrence(offer, beginning_datetime=five_days_ago,
                                                        end_datetime=four_days_ago)
             stock = create_stock_from_event_occurrence(event_occurrence, price=20)
@@ -506,7 +506,7 @@ class Post:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            thing_offer = create_thing_offer(venue)
+            thing_offer = create_offer_with_thing_product(venue)
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, deposit_date, amount=200)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
@@ -569,7 +569,7 @@ class Post:
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, deposit_date, amount=200)
             venue = create_venue(offerer)
-            thing_offer = create_thing_offer(venue)
+            thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=20, booking_limit_datetime=None)
 
             PcObject.check_and_save(deposit, stock, user)
@@ -593,7 +593,7 @@ class Post:
             offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
             venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city',
                                  '93')
-            thing_offer = create_thing_offer(venue)
+            thing_offer = create_offer_with_thing_product(venue)
 
             user = create_user(email='test@email.com')
             PcObject.check_and_save(user)
@@ -627,7 +627,7 @@ class Post:
             offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
             venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city',
                                  '93')
-            thing_offer = create_thing_offer(venue, thing_type=ThingType.JEUX_ABO)
+            thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.JEUX_ABO)
 
             user = create_user(email='test@email.com')
             PcObject.check_and_save(user)
@@ -667,7 +667,7 @@ class Post:
             offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
             venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city',
                                  '93')
-            event_offer = create_event_offer(venue)
+            event_offer = create_offer_with_event_product(venue)
 
             stock = create_stock_with_event_offer(offerer, venue, price=50, available=1)
             PcObject.check_and_save(stock)
@@ -705,7 +705,7 @@ class Post:
                                  '93')
             PcObject.check_and_save(venue)
 
-            thing_offer = create_thing_offer(venue)
+            thing_offer = create_offer_with_thing_product(venue)
             PcObject.check_and_save(thing_offer)
 
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
@@ -741,7 +741,7 @@ class Post:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            thing_offer = create_thing_offer(venue)
+            thing_offer = create_offer_with_thing_product(venue)
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, deposit_date, amount=200)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
@@ -830,7 +830,7 @@ class PatchBookingTest:
         deposit = create_deposit(user, deposit_date, amount=500)
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_event_offer(venue)
+        offer = create_offer_with_event_product(venue)
         event_occurrence = create_event_occurrence(offer, beginning_datetime=in_four_days, end_datetime=in_five_days)
         stock = create_stock_from_event_occurrence(event_occurrence)
         booking = create_booking(user, stock, venue)
@@ -907,7 +907,7 @@ class GetBookingByTokenTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
         venue = create_venue(offerer)
-        offer = create_event_offer(venue, event_name='Event Name', event_type=EventType.CINEMA)
+        offer = create_offer_with_event_product(venue, event_name='Event Name', event_type=EventType.CINEMA)
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
@@ -938,7 +938,7 @@ class GetBookingByTokenTest:
         admin_user = create_user(email='admin@email.fr', can_book_free_offers=False, is_admin=True)
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_event_offer(venue, event_name='Offre d\'activation', event_type=EventType.ACTIVATION)
+        offer = create_offer_with_event_product(venue, event_name='Offre d\'activation', event_type=EventType.ACTIVATION)
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
@@ -973,7 +973,7 @@ class GetBookingByTokenTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
         venue = create_venue(offerer)
-        offer = create_event_offer(venue, event_name='Event Name')
+        offer = create_offer_with_event_product(venue, event_name='Event Name')
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
@@ -994,7 +994,7 @@ class GetBookingByTokenTest:
         querying_user = create_user(email='querying@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_event_offer(venue, event_name='Event Name')
+        offer = create_offer_with_event_product(venue, event_name='Event Name')
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
@@ -1014,7 +1014,7 @@ class GetBookingByTokenTest:
         admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_event_offer(venue, event_name='Event Name')
+        offer = create_offer_with_event_product(venue, event_name='Event Name')
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
@@ -1034,7 +1034,7 @@ class GetBookingByTokenTest:
         admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_event_offer(venue, event_name='Event Name')
+        offer = create_offer_with_event_product(venue, event_name='Event Name')
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
@@ -1088,7 +1088,7 @@ class GetBookingByTokenTest:
         admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_event_offer(venue, event_name='Event Name')
+        offer = create_offer_with_event_product(venue, event_name='Event Name')
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
@@ -1130,7 +1130,7 @@ class GetBookingByTokenTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
         venue = create_venue(offerer)
-        offer = create_event_offer(venue, event_name='Event Name')
+        offer = create_offer_with_event_product(venue, event_name='Event Name')
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
@@ -1150,7 +1150,7 @@ class GetBookingByTokenTest:
         admin_user = create_user(email='admin@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_event_offer(venue, event_name='Event Name')
+        offer = create_offer_with_event_product(venue, event_name='Event Name')
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
@@ -1360,7 +1360,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
         venue = create_venue(offerer)
-        offer = create_event_offer(venue, event_name='Event Name')
+        offer = create_offer_with_event_product(venue, event_name='Event Name')
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
@@ -1423,7 +1423,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
         venue = create_venue(offerer)
-        offer = create_event_offer(venue, event_name='Event Name')
+        offer = create_offer_with_event_product(venue, event_name='Event Name')
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
@@ -1512,7 +1512,7 @@ class GetBookingTest:
         user = create_user(email='user+plus@email.fr')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue, url='https://host/path/{token}?offerId={offerId}&email={email}')
+        offer = create_offer_with_thing_product(venue, url='https://host/path/{token}?offerId={offerId}&email={email}')
         stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, product=offer, price=0)
         booking = create_booking(user, stock, venue=venue, token='ABCDEF')
 
@@ -1600,7 +1600,7 @@ class PatchBookingByTokenForActivationOffersTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
-        activation_offer = create_event_offer(venue, event_type=EventType.ACTIVATION)
+        activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         activation_event_occurrence = create_event_occurrence(activation_offer)
         stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
@@ -1623,7 +1623,7 @@ class PatchBookingByTokenForActivationOffersTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
-        activation_offer = create_thing_offer(venue, thing_type=ThingType.ACTIVATION)
+        activation_offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         activation_event_occurrence = create_event_occurrence(activation_offer)
         stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
@@ -1646,7 +1646,7 @@ class PatchBookingByTokenForActivationOffersTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
-        activation_offer = create_event_offer(venue, event_type=EventType.ACTIVATION)
+        activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         activation_event_occurrence = create_event_occurrence(activation_offer)
         stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
@@ -1672,7 +1672,7 @@ class PatchBookingByTokenForActivationOffersTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
-        activation_offer = create_event_offer(venue, event_type=EventType.ACTIVATION)
+        activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         activation_event_occurrence = create_event_occurrence(activation_offer)
         stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
@@ -1697,7 +1697,7 @@ class PatchBookingByTokenForActivationOffersTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
-        activation_offer = create_event_offer(venue, event_type=EventType.ACTIVATION)
+        activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         activation_event_occurrence = create_event_occurrence(activation_offer)
         stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)

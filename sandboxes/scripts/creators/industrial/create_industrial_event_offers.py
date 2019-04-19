@@ -1,6 +1,6 @@
 from models.pc_object import PcObject
 from utils.logger import logger
-from tests.test_utils import create_event_offer
+from tests.test_utils import create_offer_with_event_product
 
 DEACTIVATED_OFFERS_PICK_MODULO = 3
 EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE = 5
@@ -41,7 +41,7 @@ def create_industrial_event_offers(
                 is_active = False
             else:
                 is_active = True
-            event_offers_by_name[name] = create_event_offer(
+            event_offers_by_name[name] = create_offer_with_event_product(
                 event_venue,
                 product=event,
                 event_type=event.type,

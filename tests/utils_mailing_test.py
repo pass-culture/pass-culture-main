@@ -14,8 +14,8 @@ from tests.conftest import clean_database, mocked_mail
 from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
 from tests.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, create_user_offerer, \
-    create_offerer, create_venue, create_thing_offer, create_event_offer, create_stock_from_offer, \
-    create_stock_from_event_occurrence, create_event_occurrence, create_thing, create_mocked_bookings, create_email
+    create_offerer, create_venue, create_offer_with_thing_product, create_offer_with_event_product, create_stock_from_offer, \
+    create_stock_from_event_occurrence, create_event_occurrence, create_thing_product, create_mocked_bookings, create_email
 from utils.mailing import make_user_booking_recap_email, \
     make_offerer_booking_recap_email_after_user_action, make_final_recap_email_for_stock_with_event, \
     write_object_validation_email, make_offerer_driven_cancellation_email_for_user, \
@@ -116,7 +116,7 @@ def test_make_user_booking_event_recap_email_should_have_standard_cancellation_b
 def test_maker_user_booking_thing_recap_email_should_have_standard_body_and_subject(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    thing_offer = create_thing_offer(venue=None)
+    thing_offer = create_offer_with_thing_product(venue=None)
     stock = create_stock_with_thing_offer(offerer=None, venue=venue, product=thing_offer)
     stock.offer.product.idAtProviders = '12345'
     user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
@@ -141,7 +141,7 @@ def test_maker_user_booking_thing_recap_email_should_have_standard_body_and_subj
 def test_make_user_booking_thing_recap_email_should_have_standard_cancellation_body_and_subject(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    thing_offer = create_thing_offer(venue=None)
+    thing_offer = create_offer_with_thing_product(venue=None)
     stock = create_stock_with_thing_offer(offerer=None, venue=venue, product=thing_offer)
     stock.offer.product.idAtProviders = '12345'
     user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
@@ -442,7 +442,7 @@ def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app)
 def test_offerer_booking_recap_email_thing_offer_has_action_and_recap_html(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    thing_offer = create_thing_offer(venue=None, thing_type=ThingType.AUDIOVISUEL)
+    thing_offer = create_offer_with_thing_product(venue=None, thing_type=ThingType.AUDIOVISUEL)
     stock = create_stock_with_thing_offer(offerer=None, venue=venue, product=thing_offer)
     stock.offer.id = 1
     user1 = create_user('Test', first_name='Joe', last_name='Dalton', departement_code='93', email='test1@email.com',
@@ -476,7 +476,7 @@ def test_offerer_booking_recap_email_thing_offer_has_action_and_recap_html(app):
 def test_offerer_booking_recap_email_thing_offer_has_recap_table(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    thing_offer = create_thing_offer(venue=None, thing_type=ThingType.AUDIOVISUEL)
+    thing_offer = create_offer_with_thing_product(venue=None, thing_type=ThingType.AUDIOVISUEL)
     stock = create_stock_with_thing_offer(offerer=None, venue=venue, product=thing_offer)
     stock.offer.id = 1
     user1 = create_user('Test', first_name='Joe', last_name='Dalton', departement_code='93', email='test1@email.com',
@@ -507,7 +507,7 @@ def test_offerer_booking_recap_email_thing_offer_has_recap_table(app):
 def test_offerer_booking_recap_email_thing_offer_does_not_have_validation_tokens(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    thing_offer = create_thing_offer(venue=None, thing_type=ThingType.AUDIOVISUEL)
+    thing_offer = create_offer_with_thing_product(venue=None, thing_type=ThingType.AUDIOVISUEL)
     stock = create_stock_with_thing_offer(offerer=None, venue=venue, product=thing_offer)
     stock.offer.id = 1
     user1 = create_user('Test', first_name='Joe', last_name='Dalton', departement_code='93', email='test1@email.com',
@@ -675,7 +675,7 @@ def test_make_offerer_booking_user_cancellation_email_for_physical_venue(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    event_offer = create_event_offer(venue, event_name='Test Event')
+    event_offer = create_offer_with_event_product(venue, event_name='Test Event')
     now = datetime.utcnow() + timedelta()
     event_occurrence = create_event_occurrence(event_offer, beginning_datetime=now)
     stock = create_stock_from_event_occurrence(event_occurrence, price=0)
@@ -713,7 +713,7 @@ def test_make_offerer_booking_recap_email_after_user_cancellation_should_have_un
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    event_offer = create_event_offer(venue, event_name='Test Event')
+    event_offer = create_offer_with_event_product(venue, event_name='Test Event')
     now = datetime.utcnow() + timedelta()
     event_occurrence = create_event_occurrence(event_offer, beginning_datetime=now)
     stock = create_stock_from_event_occurrence(event_occurrence, price=0)
@@ -758,7 +758,7 @@ def test_make_offerer_driven_cancellation_email_for_user_event(app):
     user = create_user(public_name='John Doe')
     offerer = create_offerer(name='Test offerer')
     venue = create_venue(offerer)
-    offer = create_event_offer(venue, event_name='Mains, sorts et papiers')
+    offer = create_offer_with_event_product(venue, event_name='Mains, sorts et papiers')
     event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime, end_datetime=end_datetime)
     stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10,
                                                booking_limit_date=booking_limit_datetime)
@@ -787,7 +787,7 @@ def test_make_offerer_driven_cancellation_email_for_user_thing(app):
     user = create_user(public_name='John Doe')
     offerer = create_offerer(name='Test offerer')
     venue = create_venue(offerer)
-    offer = create_thing_offer(venue, thing_name='Test Book')
+    offer = create_offer_with_thing_product(venue, thing_name='Test Book')
     stock = create_stock_from_offer(offer, price=15, available=10)
     booking = create_booking(user, stock, quantity=2)
 
@@ -818,7 +818,7 @@ def test_make_offerer_driven_cancellation_email_for_offerer_event_when_no_other_
     offerer = create_offerer(name='Test offerer')
     venue = create_venue(offerer, name='Le petit théâtre', address='1 rue de la Libération', city='Montreuil',
                          postal_code='93100')
-    offer = create_event_offer(venue, event_name='Le théâtre des ombres')
+    offer = create_offer_with_event_product(venue, event_name='Le théâtre des ombres')
     event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime, end_datetime=end_datetime)
     stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10,
                                                booking_limit_date=booking_limit_datetime)
@@ -856,7 +856,7 @@ def test_make_offerer_driven_cancellation_email_for_offerer_event_when_other_boo
     offerer = create_offerer(name='Test offerer')
     venue = create_venue(offerer, name='Le petit théâtre', address='1 rue de la Libération', city='Montreuil',
                          postal_code='93100')
-    offer = create_event_offer(venue, event_name='Le théâtre des ombres')
+    offer = create_offer_with_event_product(venue, event_name='Le théâtre des ombres')
     event_occurrence = create_event_occurrence(offer,
                                                beginning_datetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc))
     stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10)
@@ -887,8 +887,8 @@ def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_ex
     offerer = create_offerer(name='Test offerer')
     venue = create_venue(offerer, name='La petite librairie', address='1 rue de la Libération', city='Montreuil',
                          postal_code='93100')
-    thing = create_thing(thing_name='Le récit de voyage')
-    offer = create_thing_offer(venue, thing)
+    thing = create_thing_product(thing_name='Le récit de voyage')
+    offer = create_offer_with_thing_product(venue, thing)
     stock = create_stock_from_offer(offer, price=0, available=10)
     booking = create_booking(user, stock, token='12346')
 
@@ -1053,7 +1053,7 @@ def test_make_offerer_booking_user_cancellation_for_thing_email_when_virtual_ven
     offerer = create_offerer()
     venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, postal_code=None,
                          departement_code=None, address=None)
-    thing_offer = create_thing_offer(venue, thing_name='Test')
+    thing_offer = create_offer_with_thing_product(venue, thing_name='Test')
     stock = create_stock_from_offer(thing_offer, price=0)
     user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
     user_2 = create_user('Test2', departement_code='93', email='test2@email.com')
@@ -1080,7 +1080,7 @@ def test_make_offerer_booking_user_cancellation_for_event_email_when_virtual_ven
     offerer = create_offerer()
     venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None, postal_code=None,
                          departement_code=None, address=None)
-    event_offer = create_event_offer(venue, event_name='Test')
+    event_offer = create_offer_with_event_product(venue, event_name='Test')
     event_occurrence = create_event_occurrence(event_offer, beginning_datetime=datetime.utcnow())
     stock = create_stock_from_event_occurrence(event_occurrence, price=0)
     user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
@@ -1107,7 +1107,7 @@ def test_make_offerer_booking_user_cancellation_email_for_thing_has_cancellation
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer, 'Test offerer')
-    thing_offer = create_thing_offer(venue, thing_name='Test')
+    thing_offer = create_offer_with_thing_product(venue, thing_name='Test')
     stock = create_stock_from_offer(thing_offer, price=0)
     user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
     user_2 = create_user('Test2', departement_code='93', email='test2@email.com')
@@ -1131,7 +1131,7 @@ def test_make_offerer_booking_user_cancellation_email_for_event_has_cancellation
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer, 'Test offerer')
-    event_offer = create_event_offer(venue, event_name='Test')
+    event_offer = create_offer_with_event_product(venue, event_name='Test')
     event_occurrence = create_event_occurrence(event_offer, beginning_datetime=datetime.utcnow())
     stock = create_stock_from_event_occurrence(event_occurrence, price=0)
     user_1 = create_user('Test1', departement_code='93', email='test1@email.com')
@@ -1155,7 +1155,7 @@ def test_make_offerer_booking_user_cancellation_has_recap_information_but_no_tok
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', is_virtual=True, siret=None)
-    thing_offer = create_thing_offer(venue)
+    thing_offer = create_offer_with_thing_product(venue)
     stock = create_stock_from_offer(thing_offer, price=0)
     user_1 = create_user('Test1', first_name='Jane', last_name='Doe', departement_code='93', email='test1@email.com')
     user_2 = create_user('Test2', first_name='Lucy', last_name='Smith', departement_code='93', email='test2@email.com')
@@ -1458,10 +1458,10 @@ class MakeOfferCreationNotificationEmailTest:
         self.venue93 = create_venue(self.offerer, siret=siret, is_virtual=False, departement_code='93',
                                     postal_code='93100')
 
-        self.physical_offer93 = create_thing_offer(self.venue93, thing_type=ThingType.AUDIOVISUEL,
-                                                   thing_name='Le vent se lève', idx=1)
-        self.virtual_offer = create_thing_offer(self.virtual_venue, thing_type=ThingType.JEUX_VIDEO,
-                                                thing_name='Les lapins crétins', idx=2)
+        self.physical_offer93 = create_offer_with_thing_product(self.venue93, thing_type=ThingType.AUDIOVISUEL,
+                                                                thing_name='Le vent se lève', idx=1)
+        self.virtual_offer = create_offer_with_thing_product(self.virtual_venue, thing_type=ThingType.JEUX_VIDEO,
+                                                             thing_name='Les lapins crétins', idx=2)
 
     def test_when_physical_offer_returns_subject_with_departement_information_and_dictionary_with_given_content(self,
                                                                                                                 app):

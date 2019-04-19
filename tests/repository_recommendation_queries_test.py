@@ -7,9 +7,9 @@ from repository.recommendation_queries import keep_only_bookable_stocks, \
     update_read_recommendations
 from tests.conftest import clean_database
 from utils.human_ids import humanize
-from tests.test_utils import create_recommendation, create_event_offer, create_offerer, \
+from tests.test_utils import create_recommendation, create_offer_with_event_product, create_offerer, \
     create_venue, create_user, create_stock_from_event_occurrence, create_event_occurrence, create_stock_from_offer, \
-    create_thing_offer, create_mediation
+    create_offer_with_thing_product, create_mediation
 
 
 @clean_database
@@ -20,9 +20,9 @@ def test_filter_out_recommendation_with_not_bookable_stocks_returns_recos_with_a
     venue = create_venue(offerer)
     user = create_user()
 
-    event_offer = create_event_offer(venue)
-    soft_deleted_thing_offer = create_thing_offer(venue)
-    active_thing_offer = create_thing_offer(venue)
+    event_offer = create_offer_with_event_product(venue)
+    soft_deleted_thing_offer = create_offer_with_thing_product(venue)
+    active_thing_offer = create_offer_with_thing_product(venue)
 
     event_occurrence1 = create_event_occurrence(event_offer)
     event_occurrence2 = create_event_occurrence(event_offer)
@@ -63,8 +63,8 @@ def test_filter_out_recommendation_with_not_bookable_stocks_returns_recos_with_v
     venue = create_venue(offerer)
     user = create_user()
 
-    invalid_booking_date_offer = create_thing_offer(venue)
-    valid_booking_date_offer = create_thing_offer(venue)
+    invalid_booking_date_offer = create_offer_with_thing_product(venue)
+    valid_booking_date_offer = create_offer_with_thing_product(venue)
 
     invalid_booking_date_stock = create_stock_from_offer(invalid_booking_date_offer, booking_limit_datetime=one_day_ago)
     valid_booking_date_stock_valid = create_stock_from_offer(valid_booking_date_offer, booking_limit_datetime=tomorrow)
@@ -94,7 +94,7 @@ def test_filter_unseen_valid_recommendations_for_user_only_keeps_non_tuto_recomm
 
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_thing_offer(venue)
+    offer = create_offer_with_thing_product(venue)
     user = create_user()
     mediation = create_mediation(offer)
     tuto_mediation = create_mediation(offer, tuto_index=1)
@@ -123,14 +123,14 @@ def test_update_read_recommendations(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_event_offer(venue)
+    offer = create_offer_with_event_product(venue)
     user = create_user()
     event_occurrence1 = create_event_occurrence(offer)
     event_occurrence2 = create_event_occurrence(offer)
     stock1 = create_stock_from_event_occurrence(event_occurrence1)
     stock2 = create_stock_from_event_occurrence(event_occurrence2)
-    thing_offer1 = create_thing_offer(venue)
-    thing_offer2 = create_thing_offer(venue)
+    thing_offer1 = create_offer_with_thing_product(venue)
+    thing_offer2 = create_offer_with_thing_product(venue)
     stock3 = create_stock_from_offer(thing_offer1)
     stock4 = create_stock_from_offer(thing_offer2)
     recommendation1 = create_recommendation(offer, user)

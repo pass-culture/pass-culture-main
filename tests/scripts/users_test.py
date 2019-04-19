@@ -6,7 +6,7 @@ import pytest
 from models import User, Booking
 from scripts.users import fill_user_from, create_booking_for, create_users_with_activation_bookings, \
     split_rows_in_chunks_with_no_duplicated_emails
-from tests.test_utils import create_user, create_stock, create_thing_offer, create_venue, create_offerer
+from tests.test_utils import create_user, create_stock, create_offer_with_thing_product, create_venue, create_offerer
 from utils.token import random_token
 
 
@@ -105,7 +105,7 @@ class CreateBookingForTest:
     def test_returns_a_booking_for_given_user_and_stock(self):
         # given
         venue = create_venue(create_offerer())
-        offer = create_thing_offer(venue=venue)
+        offer = create_offer_with_thing_product(venue=venue)
         user = create_user()
         stock = create_stock(offer=offer)
         token = 'ABC123'
@@ -123,7 +123,7 @@ class CreateBookingForTest:
     def test_the_returned_booking_has_a_token_and_is_bookable(self):
         # given
         venue = create_venue(create_offerer())
-        offer = create_thing_offer(venue=venue)
+        offer = create_offer_with_thing_product(venue=venue)
         user = create_user()
         stock = create_stock(offer=offer)
         token = 'ABC123'
@@ -154,7 +154,7 @@ class CreateUsersWithActivationBookingsTest:
     def test_returns_n_bookings_for_n_csv_rows_on_first_run(self):
         # given
         venue = create_venue(create_offerer())
-        offer = create_thing_offer(venue=venue)
+        offer = create_offer_with_thing_product(venue=venue)
         stock = create_stock(offer=offer)
         self.find_user_query.side_effect = [None, None, None]
         self.find_activation_booking.side_effect = [None, None, None]
@@ -173,7 +173,7 @@ class CreateUsersWithActivationBookingsTest:
     def test_returns_activation_booking_if_user_already_has_one(self):
         # given
         venue = create_venue(create_offerer())
-        offer = create_thing_offer(venue=venue)
+        offer = create_offer_with_thing_product(venue=venue)
         stock = create_stock(offer=offer)
         self.find_user_query.side_effect = [None, None, None]
         self.find_activation_booking.side_effect = [None, None, Booking()]
@@ -192,7 +192,7 @@ class CreateUsersWithActivationBookingsTest:
     def test_finds_users_by_email_before_setting_them_up(self):
         # given
         venue = create_venue(create_offerer())
-        offer = create_thing_offer(venue=venue)
+        offer = create_offer_with_thing_product(venue=venue)
         stock = create_stock(offer=offer)
         blake = create_user(email='fblake@bletchley.co.uk', idx=123)
         self.find_user_query.side_effect = [None, blake, None]

@@ -5,7 +5,7 @@ import pytest
 from models import PcObject
 from repository.user_queries import get_all_users_wallet_balances
 from tests.conftest import clean_database
-from tests.test_utils import create_user, create_offerer, create_venue, create_thing_offer, create_deposit, \
+from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_deposit, \
     create_stock, create_booking
 
 
@@ -18,7 +18,7 @@ class GetAllUsersWalletBalancesTest:
         user2 = create_user(email='user2@test.com')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
         stock3 = create_stock(price=40, offer=offer)
@@ -41,7 +41,7 @@ class GetAllUsersWalletBalancesTest:
         user2 = create_user(email='user2@test.com')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         stock3 = create_stock(price=40, offer=offer)
         PcObject.check_and_save(stock3, user1, user2)
 
@@ -60,7 +60,7 @@ class GetAllUsersWalletBalancesTest:
         user2 = create_user(email='user2@test.com')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
         stock3 = create_stock(price=40, offer=offer)
@@ -83,7 +83,7 @@ class GetAllUsersWalletBalancesTest:
         user2 = create_user(email='user2@test.com')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
         stock3 = create_stock(price=40, offer=offer)

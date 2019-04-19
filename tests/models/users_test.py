@@ -6,7 +6,7 @@ import pytest
 from models import ApiErrors, PcObject, RightsType
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_deposit, create_booking, \
-    create_stock, create_venue, create_thing_offer
+    create_stock, create_venue, create_offer_with_thing_product
 
 
 @clean_database
@@ -111,7 +111,7 @@ class WalletBalanceTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
 
         deposit1 = create_deposit(user, datetime.utcnow(), amount=100)
         deposit2 = create_deposit(user, datetime.utcnow(), amount=50)
@@ -134,7 +134,7 @@ class WalletBalanceTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
 
         deposit1 = create_deposit(user, datetime.utcnow(), amount=100)
         deposit2 = create_deposit(user, datetime.utcnow(), amount=50)
@@ -186,7 +186,7 @@ class RealWalletBalanceTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
 
         deposit1 = create_deposit(user, datetime.utcnow(), amount=100)
         deposit2 = create_deposit(user, datetime.utcnow(), amount=50)
@@ -211,7 +211,7 @@ class RealWalletBalanceTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
 
         deposit1 = create_deposit(user, datetime.utcnow(), amount=100)
         deposit2 = create_deposit(user, datetime.utcnow(), amount=50)

@@ -10,7 +10,7 @@ from domain.user_emails import send_user_driven_cancellation_email_to_user, \
     send_reset_password_email, send_activation_notification_email
 from models import Offerer, UserOfferer, User, RightsType
 from tests.test_utils import create_user, create_booking, create_stock_with_event_offer, create_offerer, create_venue, \
-    create_thing_offer, create_stock_with_thing_offer, create_mocked_bookings
+    create_offer_with_thing_product, create_stock_with_thing_offer, create_mocked_bookings
 
 
 @pytest.mark.standalone
@@ -253,7 +253,7 @@ class SendBookingRecapEmailsTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue, booking_email='offer.booking.email@test.com')
+        offer = create_offer_with_thing_product(venue, booking_email='offer.booking.email@test.com')
         stock = create_stock_with_thing_offer(offerer, venue, offer)
         booking = create_booking(user, stock)
         mocked_send_email = Mock()
@@ -276,7 +276,7 @@ class SendBookingRecapEmailsTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue, booking_email='offer.booking.email@test.com')
+        offer = create_offer_with_thing_product(venue, booking_email='offer.booking.email@test.com')
         stock = create_stock_with_thing_offer(offerer, venue, offer)
         booking = create_booking(user, stock)
         mocked_send_email = Mock()
@@ -301,7 +301,7 @@ class SendBookingRecapEmailsTest:
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue, booking_email=None)
+        offer = create_offer_with_thing_product(venue, booking_email=None)
         stock = create_stock_with_thing_offer(offerer, venue, offer, booking_email=None)
         booking = create_booking(user, stock)
         mocked_send_email = Mock()

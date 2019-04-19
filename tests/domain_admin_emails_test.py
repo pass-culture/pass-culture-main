@@ -5,7 +5,7 @@ from domain.admin_emails import maybe_send_offerer_validation_email, send_venue_
     send_payment_details_email, send_wallet_balances_email, send_payments_report_emails, \
     send_offer_creation_notification_to_support, send_payment_transaction_email
 from tests.test_utils import create_offerer, create_user, \
-    create_user_offerer, create_venue, create_thing_offer
+    create_user_offerer, create_venue, create_offer_with_thing_product
 from utils.mailing import MailServiceException
 
 
@@ -292,7 +292,7 @@ class SendOfferCreationNotificationToSupportTest:
         mocked_send_email.return_value = return_value
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         author = create_user(email='author@email.com')
         # When
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
@@ -312,7 +312,7 @@ class SendOfferCreationNotificationToSupportTest:
         mocked_send_email.return_value = return_value
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         author = create_user(email='author@email.com')
         # When
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):

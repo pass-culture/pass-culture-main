@@ -14,7 +14,7 @@ from tests.test_utils import create_mediation, \
     create_offerer, \
     create_recommendation, \
     create_stock_from_offer, \
-    create_thing_offer, \
+    create_offer_with_thing_product, \
     create_user, \
     create_venue
 
@@ -26,10 +26,10 @@ def test_create_recommendations_for_discovery_does_not_put_mediation_ids_of_inac
     user = create_user()
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer1 = create_thing_offer(venue, thumb_count=0)
+    offer1 = create_offer_with_thing_product(venue, thumb_count=0)
     stock1 = create_stock_from_offer(offer1, price=0)
     mediation1 = create_mediation(offer1, is_active=False)
-    offer2 = create_thing_offer(venue, thumb_count=0)
+    offer2 = create_offer_with_thing_product(venue, thumb_count=0)
     stock2 = create_stock_from_offer(offer2, price=0)
     mediation2 = create_mediation(offer2, is_active=False)
     mediation3 = create_mediation(offer2, is_active=True)
@@ -90,10 +90,10 @@ def test_create_recommendations_for_discovery_should_include_recommendations_on_
     user = create_user()
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer1 = create_thing_offer(venue, thumb_count=0)
+    offer1 = create_offer_with_thing_product(venue, thumb_count=0)
     stock1 = create_stock_from_offer(offer1, price=0)
     mediation1 = create_mediation(offer1, is_active=True)
-    offer2 = create_thing_offer(venue, thumb_count=0)
+    offer2 = create_offer_with_thing_product(venue, thumb_count=0)
     stock2 = create_stock_from_offer(offer2, price=0)
     mediation2 = create_mediation(offer2, is_active=True)
 

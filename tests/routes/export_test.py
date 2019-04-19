@@ -7,7 +7,7 @@ from models import PcObject
 from models.pc_object import serialize
 from tests.conftest import clean_database
 from tests.test_utils import API_URL, create_user, req_with_auth, create_user_offerer, \
-    create_offerer, create_venue, create_event_occurrence, create_event_offer, \
+    create_offerer, create_venue, create_event_occurrence, create_offer_with_event_product, \
     create_venue_activity, create_stock_with_thing_offer, create_stock_with_event_offer, \
     save_all_activities, create_bank_information, create_stock_from_event_occurrence
 from utils.human_ids import humanize
@@ -345,15 +345,15 @@ def test_get_venues_return_200_and_filtered_venues(app):
                                                                   name='venue_with_not_validated_offerer_in_date_range',
                                                                   siret="12345678912318")
 
-    offer1 = create_event_offer(venue93_with_offer_before_date_range)
-    offer2 = create_event_offer(venue93_with_offer_after_date_range)
-    offer3 = create_event_offer(venue93_with_offer_in_date_range)
-    offer4 = create_event_offer(venue67_with_offer_before_date_range)
-    offer5 = create_event_offer(venue67_with_offer_in_date_range)
-    offer6 = create_event_offer(venue34_with_offer_in_date_range)
-    offer7 = create_event_offer(venue_without_siret_with_offer_in_date_range)
-    offer8 = create_event_offer(venue_virtual_with_offer_in_date_range)
-    offer9 = create_event_offer(venue_not_validated_with_offer_in_date_range)
+    offer1 = create_offer_with_event_product(venue93_with_offer_before_date_range)
+    offer2 = create_offer_with_event_product(venue93_with_offer_after_date_range)
+    offer3 = create_offer_with_event_product(venue93_with_offer_in_date_range)
+    offer4 = create_offer_with_event_product(venue67_with_offer_before_date_range)
+    offer5 = create_offer_with_event_product(venue67_with_offer_in_date_range)
+    offer6 = create_offer_with_event_product(venue34_with_offer_in_date_range)
+    offer7 = create_offer_with_event_product(venue_without_siret_with_offer_in_date_range)
+    offer8 = create_offer_with_event_product(venue_virtual_with_offer_in_date_range)
+    offer9 = create_offer_with_event_product(venue_not_validated_with_offer_in_date_range)
 
     stocks = [
         create_stock_from_event_occurrence(create_event_occurrence(offer1)),

@@ -14,7 +14,7 @@ from models import Offer, Venue, Booking
 from models.payment import Payment
 from models.payment_status import TransactionStatus
 from tests.test_utils import create_booking, create_stock, create_user, create_offerer, create_venue, create_payment, \
-    create_thing_offer, create_bank_information
+    create_offer_with_thing_product, create_bank_information
 
 
 @pytest.mark.standalone
@@ -371,7 +371,7 @@ class CreatePaymentDetailsTest:
         user = create_user(email='jane.doe@test.com', idx=3)
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=12, available=5, offer=offer)
         booking = create_booking(user, stock, date_created=datetime(2018, 2, 5), quantity=2, idx=5)
         payment = create_payment(booking, offerer, 35)
@@ -392,7 +392,7 @@ class CreatePaymentDetailsTest:
         user = create_user(email='jane.doe@test.com', idx=3)
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=12, available=5, offer=offer)
         booking = create_booking(user, stock, date_created=datetime(2018, 2, 5), quantity=2, idx=5)
         payment = create_payment(booking, offerer, 35)
@@ -412,7 +412,7 @@ class CreatePaymentDetailsTest:
         user = create_user(email='jane.doe@test.com', idx=3)
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer, name='Jack le Sculpteur', siret='1234567891234')
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=12, available=5, offer=offer)
         booking = create_booking(user, stock, date_created=datetime(2018, 2, 5), quantity=2, idx=5)
         payment = create_payment(booking, offerer, 35)
@@ -432,7 +432,7 @@ class CreatePaymentDetailsTest:
         user = create_user(email='jane.doe@test.com', idx=3)
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer, name='Jack le Sculpteur', siret='1234567891234')
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=12, available=5, offer=offer)
         booking = create_booking(user, stock, date_created=datetime(2018, 2, 5), quantity=2, idx=5)
         payment = create_payment(booking, offerer, 35)

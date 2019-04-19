@@ -6,8 +6,8 @@ from models import PcObject, ThingType
 from models.activity import load_activity
 from repository.stock_queries import find_stocks_of_finished_events_when_no_recap_sent, find_online_activation_stock
 from tests.conftest import clean_database
-from tests.test_utils import create_stock_from_event_occurrence, create_event_occurrence, create_event_offer, \
-    create_venue, create_offerer, create_thing_offer, create_stock_from_offer
+from tests.test_utils import create_stock_from_event_occurrence, create_event_occurrence, create_offer_with_event_product, \
+    create_venue, create_offerer, create_offer_with_thing_product, create_stock_from_offer
 
 
 @pytest.mark.standalone
@@ -16,8 +16,8 @@ def test_find_stocks_of_finished_events_when_no_recap_sent(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_event_offer(venue)
-    thing_offer = create_thing_offer(venue)
+    offer = create_offer_with_event_product(venue)
+    thing_offer = create_offer_with_thing_product(venue)
     event_occurrence_past = create_event_occurrence(offer, beginning_datetime=datetime.utcnow() - timedelta(hours=48),
                                                     end_datetime=datetime.utcnow() - timedelta(hours=46))
     event_occurrence_past_2 = create_event_occurrence(offer, beginning_datetime=datetime.utcnow() - timedelta(hours=10),
@@ -47,7 +47,7 @@ def test_create_stock_triggers_insert_activities(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    thing_offer = create_thing_offer(venue)
+    thing_offer = create_offer_with_thing_product(venue)
     stock = create_stock_from_offer(thing_offer)
 
     # When
@@ -69,9 +69,9 @@ def test_find_online_activation_stock(app):
     offerer = create_offerer(siren='123456789', name='pass Culture')
     venue_online = create_venue(offerer, siret=None, is_virtual=True)
     venue_physical = create_venue(offerer, siret='12345678912345', is_virtual=False)
-    activation_offer = create_thing_offer(venue_online, thing_type=ThingType.ACTIVATION)
-    other_thing_offer = create_thing_offer(venue_physical, thing_type=ThingType.ACTIVATION)
-    event_offer = create_event_offer(venue_physical)
+    activation_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.ACTIVATION)
+    other_thing_offer = create_offer_with_thing_product(venue_physical, thing_type=ThingType.ACTIVATION)
+    event_offer = create_offer_with_event_product(venue_physical)
     activation_stock = create_stock_from_offer(activation_offer, available=200, price=0)
     other_thing_stock = create_stock_from_offer(other_thing_offer, available=100, price=10)
     event_stock = create_stock_from_offer(event_offer, available=50, price=20)

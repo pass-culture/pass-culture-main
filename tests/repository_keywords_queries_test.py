@@ -3,8 +3,8 @@ import pytest
 from models.pc_object import PcObject
 from repository.keywords_queries import get_keywords_analyzer
 from tests.conftest import clean_database
-from tests.test_utils import create_event, \
-    create_event_offer, \
+from tests.test_utils import create_event_product, \
+    create_offer_with_event_product, \
     create_offerer, \
     create_venue
 
@@ -14,11 +14,11 @@ from tests.test_utils import create_event, \
 def test_get_keywords_analyzer(app):
     # given
     event_name = "Rencontre avec Jacques Nuance"
-    event = create_event(event_name=event_name)
+    event = create_event_product(event_name=event_name)
     offerer_name = "L'atelier du nuage"
     offerer = create_offerer(name=offerer_name)
     venue = create_venue(offerer, name="Le nuage magique")
-    offer = create_event_offer(venue=venue, product=event)
+    offer = create_offer_with_event_product(venue=venue, product=event)
     PcObject.check_and_save(offer)
 
     # when

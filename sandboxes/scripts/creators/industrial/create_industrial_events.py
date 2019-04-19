@@ -10,7 +10,7 @@ from sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_DESCRIPTION, \
 from sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES, \
                                                MOCK_LAST_NAMES
 from utils.logger import logger
-from tests.test_utils import create_event
+from tests.test_utils import create_event_product
 
 
 EVENT_COUNTS_PER_TYPE = 7
@@ -41,7 +41,7 @@ def create_industrial_events():
             event_type = event_type_dict['value']
 
             name = "{} / {}".format(event_type_dict['value'], MOCK_NAMES[mock_index])
-            event = create_event(
+            event = create_event_product(
                 description=description,
                 event_name=event_name,
                 event_type=event_type,

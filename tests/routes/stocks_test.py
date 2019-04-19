@@ -7,8 +7,8 @@ from models.db import db
 from models.pc_object import PcObject, serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_user, create_offerer, create_venue, \
-    create_stock_with_event_offer, create_booking, create_event_offer, create_user_offerer, create_event_occurrence, \
-    create_recommendation, create_stock_from_event_occurrence, create_thing_offer, create_stock_with_thing_offer
+    create_stock_with_event_offer, create_booking, create_offer_with_event_product, create_user_offerer, create_event_occurrence, \
+    create_recommendation, create_stock_from_event_occurrence, create_offer_with_thing_product
 from utils.human_ids import dehumanize, humanize
 
 
@@ -46,7 +46,7 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             PcObject.check_and_save(user_offerer, offer)
 
             stock_data = {'price': 1222, 'offerId': humanize(offer.id)}
@@ -70,7 +70,7 @@ class Post:
             user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             PcObject.check_and_save(user, offer)
 
             # When
@@ -87,7 +87,7 @@ class Post:
             user = create_user(email='email@test.com', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_offer_with_event_product(venue)
             PcObject.check_and_save(user, offer)
 
             beginningDatetime = datetime(2019, 2, 14)
@@ -116,7 +116,7 @@ class Post:
             user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             PcObject.check_and_save(user, offer)
 
             data = {
@@ -139,7 +139,7 @@ class Post:
             user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             PcObject.check_and_save(user, offer)
             beginningDatetime = datetime(2019, 2, 14)
 
@@ -169,7 +169,7 @@ class Post:
             user = create_user(email='test@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             PcObject.check_and_save(user, offer)
 
             data = {'price': 1222, 'offerId': humanize(offer.id)}
@@ -215,7 +215,7 @@ class Delete:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_admin, offerer)
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_offer_with_event_product(venue)
             event_occurrence = create_event_occurrence(offer)
             stock1 = create_stock_from_event_occurrence(event_occurrence, price=0, available=10)
             stock2 = create_stock_from_event_occurrence(event_occurrence, price=0, available=10)
@@ -270,8 +270,8 @@ class Patch:
             PcObject.check_and_save(user, stock)
 
             beginningDatetime = datetime(2019, 2, 14)
-            
-            data = {    
+
+            data = {
                 "dateModified": serialize(beginningDatetime),
                 "beginningDatetime": serialize(beginningDatetime),
                 "endDatetime": serialize(beginningDatetime + timedelta(days=3)),
@@ -282,7 +282,7 @@ class Patch:
                 "bookingLimitDatetime": serialize(beginningDatetime),
                 "bookingRecapSent": serialize(beginningDatetime),
                 "price": 666
-            } 
+            }
 
             # When
             response = TestClient().with_auth('email@test.fr').patch(API_URL + '/stocks/' + humanize(stock.id), json=data)
@@ -303,8 +303,8 @@ class Patch:
             stock = create_stock_with_event_offer(offerer, venue)
             PcObject.check_and_save(user, stock)
             beginningDatetime = datetime(2019, 2, 14)
-            
-            data = {    
+
+            data = {
                 "dateModified": serialize(beginningDatetime),
                 "beginningDatetime": serialize(beginningDatetime),
                 "endDatetime": serialize(beginningDatetime + timedelta(days=3)),
@@ -314,7 +314,7 @@ class Patch:
                 "groupSize": 256,
                 "bookingLimitDatetime": serialize(beginningDatetime),
                 "bookingRecapSent": serialize(beginningDatetime)
-            } 
+            }
 
             # When
             response = TestClient().with_auth('email@test.fr').patch(API_URL + '/stocks/' + humanize(stock.id), json=data)

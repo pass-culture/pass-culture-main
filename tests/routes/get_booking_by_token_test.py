@@ -8,7 +8,7 @@ from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_stock_with_thing_offer, \
     create_venue, create_offerer, \
-    create_user, create_booking, create_event_offer, \
+    create_user, create_booking, create_offer_with_event_product, \
     create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, create_stock_with_event_offer
 from utils.human_ids import humanize
 
@@ -24,7 +24,7 @@ class Get:
             offerer = create_offerer()
             user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Event Name', event_type=EventType.CINEMA)
+            offer = create_offer_with_event_product(venue, event_name='Event Name', event_type=EventType.CINEMA)
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
@@ -54,7 +54,7 @@ class Get:
             admin_user = create_user(email='admin@email.fr', is_admin=True, can_book_free_offers=False)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Offre d\'activation', event_type=EventType.ACTIVATION)
+            offer = create_offer_with_event_product(venue, event_name='Offre d\'activation', event_type=EventType.ACTIVATION)
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
@@ -89,7 +89,7 @@ class Get:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Event Name')
+            offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
@@ -112,7 +112,7 @@ class Get:
             querying_user = create_user(email='querying@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Event Name')
+            offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
@@ -132,7 +132,7 @@ class Get:
             admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Event Name')
+            offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
@@ -152,7 +152,7 @@ class Get:
             admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Event Name')
+            offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
@@ -208,7 +208,7 @@ class Get:
             admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Event Name')
+            offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
@@ -251,7 +251,7 @@ class Get:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Event Name')
+            offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
@@ -273,7 +273,7 @@ class Get:
             admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Event Name')
+            offer = create_offer_with_event_product(venue, event_name='Event Name')
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)

@@ -8,16 +8,16 @@ from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, \
     create_booking, \
     create_deposit, \
-    create_event_offer, \
+    create_offer_with_event_product, \
     create_offerer, \
     create_stock_from_offer, \
     create_stock_with_event_offer, \
     create_stock_with_thing_offer, \
-    create_thing_offer, \
+    create_offer_with_thing_product, \
     create_user, \
     create_user_offerer, \
     create_venue, \
-    create_thing, create_event, create_stock_from_event_occurrence, create_event_occurrence
+    create_thing_product, create_event_product, create_stock_from_event_occurrence, create_event_occurrence
 from utils.human_ids import dehumanize, humanize
 
 
@@ -158,13 +158,13 @@ class Get:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_pro, offerer)
             venue = create_venue(offerer)
-            thing = create_thing(thing_type=ThingType.AUDIOVISUEL)
-            offer_thing = create_thing_offer(venue, thing)
+            thing = create_thing_product(thing_type=ThingType.AUDIOVISUEL)
+            offer_thing = create_offer_with_thing_product(venue, thing)
             stock_thing = create_stock_from_offer(offer_thing, price=0)
             booking_thing = create_booking(user, stock_thing, venue, recommendation=None, quantity=2,
                                            date_created=now - timedelta(days=5))
-            event = create_event(event_type=EventType.MUSEES_PATRIMOINE)
-            offer_event = create_event_offer(venue, event)
+            event = create_event_product(event_type=EventType.MUSEES_PATRIMOINE)
+            offer_event = create_offer_with_event_product(venue, event)
             stock_event = create_stock_from_event_occurrence(create_event_occurrence(offer_event), price=0)
             booking_event = create_booking(user, stock_event, venue, recommendation=None, quantity=2,
                                            date_created=now - timedelta(days=5))
@@ -219,8 +219,8 @@ class Get:
 
             venue_1 = create_venue(offerer, name='La petite librairie', siret=offerer.siren + '12345')
             venue_2 = create_venue(offerer, name='Atelier expérimental', siret=offerer.siren + '54321')
-            offer_1 = create_thing_offer(venue_1)
-            offer_2 = create_event_offer(venue_2)
+            offer_1 = create_offer_with_thing_product(venue_1)
+            offer_2 = create_offer_with_event_product(venue_2)
             stock1 = create_stock_from_offer(offer_1)
             stock2 = create_stock_from_offer(offer_2)
             stock3 = create_stock_from_offer(offer_2)
@@ -255,8 +255,8 @@ class Get:
 
             venue_1 = create_venue(offerer, name='La petite librairie', siret=offerer.siren + '12345')
             venue_2 = create_venue(offerer, name='Atelier expérimental', siret=offerer.siren + '54321')
-            offer_1 = create_thing_offer(venue_1)
-            offer_2 = create_event_offer(venue_2)
+            offer_1 = create_offer_with_thing_product(venue_1)
+            offer_2 = create_offer_with_event_product(venue_2)
             stock1 = create_stock_from_offer(offer_1)
             stock2 = create_stock_from_offer(offer_2)
             stock3 = create_stock_from_offer(offer_2)
@@ -289,7 +289,7 @@ class Get:
             user_offerer = create_user_offerer(user_pro, offerer)
 
             venue = create_venue(offerer, name='La petite librairie')
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             stock1 = create_stock_from_offer(offer)
             stock2 = create_stock_from_offer(offer)
             stock3 = create_stock_from_offer(offer)
@@ -325,7 +325,7 @@ class Get:
             user_offerer = create_user_offerer(user_pro, offerer)
 
             venue = create_venue(offerer, name='La petite librairie')
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             stock1 = create_stock_from_offer(offer)
             stock2 = create_stock_from_offer(offer)
             stock3 = create_stock_from_offer(offer)
@@ -362,8 +362,8 @@ class Get:
 
             venue_1 = create_venue(offerer, name='La petite librairie', siret=offerer.siren + '12345')
             venue_2 = create_venue(offerer, name='Atelier expérimental', siret=offerer.siren + '54321')
-            offer_1 = create_thing_offer(venue_1, thing_type=ThingType.LIVRE_EDITION)
-            offer_2 = create_event_offer(venue_2, event_type=EventType.SPECTACLE_VIVANT)
+            offer_1 = create_offer_with_thing_product(venue_1, thing_type=ThingType.LIVRE_EDITION)
+            offer_2 = create_offer_with_event_product(venue_2, event_type=EventType.SPECTACLE_VIVANT)
             stock1 = create_stock_from_offer(offer_1)
             stock2 = create_stock_from_offer(offer_2)
             stock3 = create_stock_from_offer(offer_2)
@@ -397,8 +397,8 @@ class Get:
 
             venue_1 = create_venue(offerer, name='La petite librairie', siret=offerer.siren + '12345')
             venue_2 = create_venue(offerer, name='Atelier expérimental', siret=offerer.siren + '54321')
-            offer_1 = create_thing_offer(venue_1, thing_type=ThingType.LIVRE_EDITION)
-            offer_2 = create_event_offer(venue_2, event_type=EventType.SPECTACLE_VIVANT)
+            offer_1 = create_offer_with_thing_product(venue_1, thing_type=ThingType.LIVRE_EDITION)
+            offer_2 = create_offer_with_event_product(venue_2, event_type=EventType.SPECTACLE_VIVANT)
             stock1 = create_stock_from_offer(offer_1)
             stock2 = create_stock_from_offer(offer_2)
             stock3 = create_stock_from_offer(offer_2)
@@ -432,8 +432,8 @@ class Get:
 
             venue_1 = create_venue(offerer, name='La petite librairie', is_virtual=True, siret=None)
             venue_2 = create_venue(offerer, name='Atelier expérimental')
-            offer_1 = create_thing_offer(venue_1, thing_type=ThingType.JEUX_VIDEO, url='http://game.fr/jeu')
-            offer_2 = create_event_offer(venue_2, event_type=EventType.SPECTACLE_VIVANT)
+            offer_1 = create_offer_with_thing_product(venue_1, thing_type=ThingType.JEUX_VIDEO, url='http://game.fr/jeu')
+            offer_2 = create_offer_with_event_product(venue_2, event_type=EventType.SPECTACLE_VIVANT)
             stock1 = create_stock_from_offer(offer_1, price=10)
             stock2 = create_stock_from_offer(offer_2, price=20)
             stock3 = create_stock_from_offer(offer_2, price=0)
@@ -467,8 +467,8 @@ class Get:
 
             venue_1 = create_venue(offerer, name='La petite librairie', is_virtual=True, siret=None)
             venue_2 = create_venue(offerer, name='Atelier expérimental')
-            offer_1 = create_thing_offer(venue_1, thing_type=ThingType.JEUX_VIDEO, url='http://game.fr/jeu')
-            offer_2 = create_event_offer(venue_2, event_type=EventType.SPECTACLE_VIVANT)
+            offer_1 = create_offer_with_thing_product(venue_1, thing_type=ThingType.JEUX_VIDEO, url='http://game.fr/jeu')
+            offer_2 = create_offer_with_event_product(venue_2, event_type=EventType.SPECTACLE_VIVANT)
             stock1 = create_stock_from_offer(offer_1, price=10)
             stock2 = create_stock_from_offer(offer_2, price=20)
             stock3 = create_stock_from_offer(offer_2, price=0)

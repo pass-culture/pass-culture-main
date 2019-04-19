@@ -8,7 +8,7 @@ from models import PcObject
 from scripts.init_titelive.import_thumbs import import_init_titelive_thumbs, \
     get_titelive_thumb_names_group_by_id_at_providers
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_venue, create_thing
+from tests.test_utils import create_offerer, create_venue, create_thing_product
 from utils.human_ids import humanize
 
 
@@ -25,8 +25,8 @@ class InitTiteliveThumbsTest:
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
         PcObject.check_and_save(venue)
 
-        product_1 = create_thing(id_at_providers='3663608844000',
-                               thumb_count=0)
+        product_1 = create_thing_product(id_at_providers='3663608844000',
+                                         thumb_count=0)
 
         PcObject.check_and_save(product_1)
 

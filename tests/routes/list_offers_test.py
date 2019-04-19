@@ -7,9 +7,9 @@ from models import PcObject, Venue, EventType, ThingType
 from models.offer_type import ProductType
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, \
-    create_event_offer, \
+    create_offer_with_event_product, \
     create_offerer, \
-    create_thing_offer, \
+    create_offer_with_thing_product, \
     create_user, \
     create_user_offerer, \
     create_venue, \
@@ -170,9 +170,9 @@ class Get:
             venue1 = create_venue(offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
             venue2 = create_venue(offerer, siret=offerer.siren + '67890', postal_code='93000', departement_code='93')
             venue3 = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
-            offer1 = create_event_offer(venue1, event_type=EventType.ACTIVATION)
-            offer2 = create_event_offer(venue2, event_type=EventType.ACTIVATION)
-            offer3 = create_event_offer(venue3, event_type=EventType.ACTIVATION)
+            offer1 = create_offer_with_event_product(venue1, event_type=EventType.ACTIVATION)
+            offer2 = create_offer_with_event_product(venue2, event_type=EventType.ACTIVATION)
+            offer3 = create_offer_with_event_product(venue3, event_type=EventType.ACTIVATION)
             stock1 = create_stock_from_offer(offer1, price=0, booking_limit_datetime=five_days_ago)
             stock2 = create_stock_from_offer(offer2, price=0, booking_limit_datetime=next_week)
             stock3 = create_stock_from_offer(offer3, price=0, booking_limit_datetime=None)
@@ -195,8 +195,8 @@ class Get:
             user = create_user(can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer, siret=offerer.siren + '12345', postal_code='93000', departement_code='93')
-            event_offer = create_event_offer(venue, event_type=EventType.SPECTACLE_VIVANT)
-            thing_offer = create_thing_offer(venue, thing_type=ThingType.LIVRE_EDITION)
+            event_offer = create_offer_with_event_product(venue, event_type=EventType.SPECTACLE_VIVANT)
+            thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION)
             stock_event = create_stock_from_offer(event_offer, price=0)
             stock_thing = create_stock_from_offer(thing_offer, price=0)
             PcObject.check_and_save(user, stock_event, stock_thing)
@@ -243,7 +243,7 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             user_offerer = create_user_offerer(user, offerer, validation_token=secrets.token_urlsafe(20))
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             PcObject.check_and_save(user_offerer, offer)
             auth_request = TestClient().with_auth(email=user.email)
             # When
@@ -268,6 +268,6 @@ def create_n_mixed_offers_with_same_venue(venue, n=10):
     offers = []
     for i in range(n // 2, 0, -1):
         date_created = datetime.utcnow() - timedelta(days=i)
-        offers.append(create_thing_offer(venue, date_created=date_created, thing_name='Thing Offer %s' % i))
-        offers.append(create_event_offer(venue, event_name='Event Offer %s' % i, date_created=date_created))
+        offers.append(create_offer_with_thing_product(venue, date_created=date_created, thing_name='Thing Offer %s' % i))
+        offers.append(create_offer_with_event_product(venue, event_name='Event Offer %s' % i, date_created=date_created))
     return offers

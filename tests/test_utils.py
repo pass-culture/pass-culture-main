@@ -67,7 +67,7 @@ def create_booking(user, stock=None, venue=None, recommendation=None, quantity=1
         venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
                              '93')
     if stock is None:
-        product_with_thing_type = create_thing_offer(venue)
+        product_with_thing_type = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer, venue, product_with_thing_type, price=10)
     booking.stock = stock
     booking.user = user
@@ -86,7 +86,7 @@ def create_booking(user, stock=None, venue=None, recommendation=None, quantity=1
     if recommendation:
         booking.recommendation = recommendation
     elif not stock.offer:
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         booking.recommendation = create_recommendation(offer, user)
     else:
         booking.recommendation = create_recommendation(stock.offer, user)
@@ -188,7 +188,7 @@ def create_stock_with_event_offer(offerer, venue, price=10, booking_email='offer
     stock.endDatetime = end_datetime
     stock.bookingLimitDatetime = booking_limit_datetime
 
-    stock.offer = create_event_offer(venue, event_name=name, event_type=event_type, booking_email=booking_email, is_national=False)
+    stock.offer = create_offer_with_event_product(venue, event_name=name, event_type=event_type, booking_email=booking_email, is_national=False)
     stock.offer.id = offer_id
     stock.isSoftDeleted = is_soft_deleted
 
@@ -247,7 +247,7 @@ def create_stock_with_thing_offer(offerer, venue, product=None, price=10, availa
     if product:
         stock.offer = product
     else:
-        stock.offer = create_thing_offer(venue)
+        stock.offer = create_offer_with_thing_product(venue)
     stock.offer.bookingEmail = booking_email
     stock.bookingLimitDatetime = booking_limit_datetime
 
@@ -258,7 +258,7 @@ def create_stock_with_thing_offer(offerer, venue, product=None, price=10, availa
 
 
 # TODO Remplacer cette fonction par un create_product ou create_product_with_Thing_type
-def create_thing(
+def create_thing_product(
         thing_name='Test Book',
         thing_type=ThingType.LIVRE_EDITION,
         author_name='Test Author',
@@ -272,7 +272,7 @@ def create_thing(
         thumb_count=1,
         url=None,
         owning_offerer=None,
-):
+) -> Product:
     product = Product()
     product.type = str(thing_type)
     product.name = thing_name
@@ -298,7 +298,7 @@ def create_thing(
     return product
 
 
-def create_event(
+def create_event_product(
         event_name='Test event',
         event_type=EventType.SPECTACLE_VIVANT,
         description=None,
@@ -306,25 +306,25 @@ def create_event(
         duration_minutes=60,
         is_national=False,
         thumb_count=0,
-):
-    event = Product()
-    event.name = event_name
-    event.description = description
-    event.durationMinutes = duration_minutes
-    event.thumbCount = thumb_count
-    event.isNational = is_national
-    event.type = str(event_type)
-    event.firstThumbDominantColor = dominant_color
-    if event.thumbCount > 0 and not dominant_color:
-        event.firstThumbDominantColor = b'\x00\x00\x00'
-    event.description = description
-    return event
+) -> Product:
+    product = Product()
+    product.name = event_name
+    product.description = description
+    product.durationMinutes = duration_minutes
+    product.thumbCount = thumb_count
+    product.isNational = is_national
+    product.type = str(event_type)
+    product.firstThumbDominantColor = dominant_color
+    if product.thumbCount > 0 and not dominant_color:
+        product.firstThumbDominantColor = b'\x00\x00\x00'
+    product.description = description
+    return product
 
 
-def create_thing_offer(venue, product=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
-                       thing_type=ThingType.AUDIOVISUEL, thing_name='Test Book', media_urls=['test/urls'],
-                       author_name='Test Author', description=None, thumb_count=1, dominant_color=None, url=None,
-                       is_national=False, is_active=True, id_at_providers=None, idx=None):
+def create_offer_with_thing_product(venue, product=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
+                                    thing_type=ThingType.AUDIOVISUEL, thing_name='Test Book', media_urls=['test/urls'],
+                                    author_name='Test Author', description=None, thumb_count=1, dominant_color=None, url=None,
+                                    is_national=False, is_active=True, id_at_providers=None, idx=None) -> Offer:
     offer = Offer()
     if product:
         offer.product = product
@@ -337,9 +337,9 @@ def create_thing_offer(venue, product=None, date_created=datetime.utcnow(), book
         offer.isNational = product.isNational
         offer.description = product.description
     else:
-        offer.product = create_thing(thing_name=thing_name, thing_type=thing_type, media_urls=media_urls,
-                                   author_name=author_name, url=url, thumb_count=thumb_count,
-                                   dominant_color=dominant_color, is_national=is_national, description=description)
+        offer.product = create_thing_product(thing_name=thing_name, thing_type=thing_type, media_urls=media_urls,
+                                             author_name=author_name, url=url, thumb_count=thumb_count,
+                                             dominant_color=dominant_color, is_national=is_national, description=description)
         offer.name = thing_name
         offer.type = str(thing_type)
         offer.mediaUrls = media_urls
@@ -361,13 +361,13 @@ def create_thing_offer(venue, product=None, date_created=datetime.utcnow(), book
     return offer
 
 
-def create_event_offer(venue=None, product=None, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
-                       booking_email='booking.email@test.com', thumb_count=0, dominant_color=None,
-                       event_type=EventType.SPECTACLE_VIVANT, is_national=False, is_active=True, idx=None):
+def create_offer_with_event_product(venue=None, product=None, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
+                                    booking_email='booking.email@test.com', thumb_count=0, dominant_color=None,
+                                    event_type=EventType.SPECTACLE_VIVANT, is_national=False, is_active=True, idx=None) -> Offer:
     offer = Offer()
     if product is None:
-        product = create_event(event_name=event_name, event_type=event_type, duration_minutes=duration_minutes,
-                               thumb_count=thumb_count, dominant_color=dominant_color, is_national=is_national)
+        product = create_event_product(event_name=event_name, event_type=event_type, duration_minutes=duration_minutes,
+                                       thumb_count=thumb_count, dominant_color=dominant_color, is_national=is_national)
     offer.product = product
     offer.venue = venue
     offer.name = product.name

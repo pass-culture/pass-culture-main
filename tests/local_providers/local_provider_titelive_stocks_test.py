@@ -8,7 +8,7 @@ from models.pc_object import PcObject
 from models.provider import Provider
 from models.venue_provider import VenueProvider
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_venue, create_thing, create_thing_offer, provider_test
+from tests.test_utils import create_offerer, create_venue, create_thing_product, create_offer_with_thing_product, provider_test
 import requests
 
 savedCounts = {}
@@ -56,7 +56,7 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
         .filter_by(venueIdAtOfferProvider='77567146400110') \
         .one_or_none()
 
-    thing = create_thing(id_at_providers='0002730757438')
+    thing = create_thing_product(id_at_providers='0002730757438')
 
     PcObject.check_and_save(thing)
 
@@ -110,8 +110,8 @@ def test_titelive_stock_provider_create_1_stock_and_do_not_create_existing_offer
         .filter_by(venueIdAtOfferProvider='77567146400110') \
         .one_or_none()
 
-    thing = create_thing(id_at_providers='0002730757438')
-    offer = create_thing_offer(venue, product=thing, id_at_providers='0002730757438@77567146400110')
+    thing = create_thing_product(id_at_providers='0002730757438')
+    offer = create_offer_with_thing_product(venue, product=thing, id_at_providers='0002730757438@77567146400110')
 
     PcObject.check_and_save(thing, offer)
 
@@ -170,9 +170,9 @@ def test_titelive_stock_provider_create_2_stock_and_1_offer(get_data, app):
         .filter_by(venueIdAtOfferProvider='77567146400110') \
         .one_or_none()
 
-    thing_1 = create_thing(id_at_providers='0002730757438')
-    thing_2 = create_thing(id_at_providers='0002736409898')
-    offer = create_thing_offer(venue=venue, product=thing_1)
+    thing_1 = create_thing_product(id_at_providers='0002730757438')
+    thing_2 = create_thing_product(id_at_providers='0002736409898')
+    offer = create_offer_with_thing_product(venue=venue, product=thing_1)
 
     PcObject.check_and_save(thing_1, offer, thing_2)
 
@@ -214,8 +214,8 @@ def test_titelive_stock_provider_create_nothing_if_siret_is_not_in_titelive_data
         .filter_by(venueIdAtOfferProvider='12345678912345') \
         .one_or_none()
 
-    thing = create_thing(id_at_providers='0002730757438')
-    offer = create_thing_offer(venue=venue, product=thing)
+    thing = create_thing_product(id_at_providers='0002730757438')
+    offer = create_offer_with_thing_product(venue=venue, product=thing)
 
     PcObject.check_and_save(thing, offer)
 

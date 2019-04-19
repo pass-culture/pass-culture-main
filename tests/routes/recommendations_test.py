@@ -5,12 +5,12 @@ import pytest
 from models import PcObject
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, \
-    create_event_offer, \
+    create_offer_with_event_product, \
     create_mediation, \
     create_offerer, \
     create_recommendation, \
     create_user, \
-    create_venue, create_thing_offer
+    create_venue, create_offer_with_thing_product
 from utils.human_ids import humanize
 
 RECOMMENDATION_URL = API_URL + '/recommendations'
@@ -25,7 +25,7 @@ class Patch:
             user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
-            offer = create_thing_offer(venue, thumb_count=0)
+            offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
             PcObject.check_and_save(recommendation)
@@ -48,7 +48,7 @@ class Get:
             # Given
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_offer_with_event_product(venue)
             user = create_user(email='user@test.com')
             recommendation = create_recommendation(offer, user)
             PcObject.check_and_save(recommendation)
@@ -69,7 +69,7 @@ class Get:
             # Given
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_offer_with_event_product(venue)
             mediation1 = create_mediation(offer)
             mediation2 = create_mediation(offer)
             user = create_user(email='user@test.com')

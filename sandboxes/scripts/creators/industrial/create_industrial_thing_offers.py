@@ -1,6 +1,6 @@
 from models.pc_object import PcObject
 from utils.logger import logger
-from tests.test_utils import create_thing_offer
+from tests.test_utils import create_offer_with_thing_product
 
 DEACTIVATED_OFFERS_PICK_MODULO = 3
 THINGS_PER_OFFERER = 5
@@ -51,7 +51,7 @@ def create_industrial_thing_offers(
                 is_active = False
             else:
                 is_active = True
-            thing_offers_by_name[name] = create_thing_offer(
+            thing_offers_by_name[name] = create_offer_with_thing_product(
                 thing_venue,
                 product=thing,
                 thing_type=thing.type,

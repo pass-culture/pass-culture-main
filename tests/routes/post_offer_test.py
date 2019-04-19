@@ -2,8 +2,8 @@ import pytest
 
 from models import PcObject, EventType, Offer, ThingType, Product
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user, API_URL, create_offerer, create_venue, create_user_offerer, create_thing, \
-    create_event
+from tests.test_utils import create_user, API_URL, create_offerer, create_venue, create_user_offerer, create_thing_product, \
+    create_event_product
 from utils.human_ids import humanize, dehumanize
 
 
@@ -84,7 +84,7 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=False)
-            event = create_event()
+            event = create_event_product()
             PcObject.check_and_save(user, venue, event, user_offerer)
             json = {
                 'type': '',
@@ -189,7 +189,7 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=True, siret=None)
-            thing = create_thing()
+            thing = create_thing_product()
             PcObject.check_and_save(user, venue, thing, user_offerer)
             json = {
                 'type': 'ThingType.JEUX_VIDEO',
@@ -244,7 +244,7 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            thing = create_thing()
+            thing = create_thing_product()
             PcObject.check_and_save(user_offerer, venue, thing)
 
             data = {
@@ -266,7 +266,7 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            event = create_event()
+            event = create_event_product()
             PcObject.check_and_save(user_offerer, venue, event)
 
             data = {

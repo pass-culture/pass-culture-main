@@ -3,7 +3,7 @@ import pytest
 from models import ApiErrors, PcObject
 from models.venue import TooManyVirtualVenuesException
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_venue, create_thing_offer, create_event_offer, \
+from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, create_offer_with_event_product, \
     create_bank_information
 
 
@@ -157,10 +157,10 @@ def test_venue_should_not_raise_exception_when_no_siret_but_comment(app):
 def test_nOffers(app):
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer_1 = create_thing_offer(venue)
-    offer_2 = create_event_offer(venue)
-    offer_4 = create_event_offer(venue)
-    offer_5 = create_thing_offer(venue)
+    offer_1 = create_offer_with_thing_product(venue)
+    offer_2 = create_offer_with_event_product(venue)
+    offer_4 = create_offer_with_event_product(venue)
+    offer_5 = create_offer_with_thing_product(venue)
     PcObject.check_and_save(offer_1, offer_2, offer_4, offer_5)
 
     # when

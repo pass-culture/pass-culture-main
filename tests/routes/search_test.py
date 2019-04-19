@@ -9,13 +9,13 @@ from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, \
     create_event_occurrence, \
     create_stock_from_event_occurrence, \
-    create_event_offer, \
+    create_offer_with_event_product, \
     create_offerer, \
     create_recommendation, \
     create_stock, \
     create_stock_from_offer, \
-    create_thing, \
-    create_thing_offer, \
+    create_thing_product, \
+    create_offer_with_thing_product, \
     create_user, \
     create_venue
 from utils.date import strftime
@@ -92,7 +92,7 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Training in Modern Jazz')
+            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
             recommendation = create_recommendation(offer, user, search=search)
             stock = create_stock_from_offer(
                 offer, beginning_datetime=TEN_DAYS_FROM_NOW, end_datetime=TWENTY_DAYS_FROM_NOW
@@ -117,7 +117,7 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer(validation_token='ABC123')
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Training in Modern Jazz')
+            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
             recommendation = create_recommendation(offer, user, search=search)
             stock = create_stock_from_offer(offer)
             PcObject.check_and_save(stock, recommendation)
@@ -136,7 +136,7 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer(validation_token='ABC123')
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='www.test.fr event')
+            offer = create_offer_with_event_product(venue, event_name='www.test.fr event')
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer)
             PcObject.check_and_save(stock, recommendation)
@@ -157,7 +157,7 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer(is_active=False)
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Training in Modern Jazz')
+            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
             recommendation = create_recommendation(offer, user, search=search)
             stock = create_stock_from_offer(offer)
             PcObject.check_and_save(stock, recommendation)
@@ -176,7 +176,7 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name="L'histoire sans fin")
+            offer = create_offer_with_event_product(venue, event_name="L'histoire sans fin")
             stock = create_stock_from_offer(offer,
                                             beginning_datetime=TEN_DAYS_FROM_NOW, end_datetime=TWENTY_DAYS_FROM_NOW)
             PcObject.check_and_save(stock, user)
@@ -197,7 +197,7 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name="Vortek's")
+            offer = create_offer_with_event_product(venue, event_name="Vortek's")
             stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW,
                                             end_datetime=TWENTY_DAYS_FROM_NOW)
             PcObject.check_and_save(stock, user)
@@ -219,7 +219,7 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Rencontres avec des auteurs')
+            offer = create_offer_with_event_product(venue, event_name='Rencontres avec des auteurs')
             # NOTE: we need to create event occurrence and stock because
             # GET recommendations filter offer without stock
             recommendation = create_recommendation(offer, user, search=search)
@@ -244,7 +244,7 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Rencontres avec des auteurs')
+            offer = create_offer_with_event_product(venue, event_name='Rencontres avec des auteurs')
             recommendation = create_recommendation(offer, user, search=search)
             stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW,
                                             end_datetime=TWENTY_DAYS_FROM_NOW)
@@ -266,7 +266,7 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Rencontres avec des auteurs')
+            offer = create_offer_with_event_product(venue, event_name='Rencontres avec des auteurs')
             recommendation = create_recommendation(offer, user, search=search)
             stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW,
                                             end_datetime=TWENTY_DAYS_FROM_NOW)
@@ -289,8 +289,8 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer1 = create_event_offer(venue, event_name='Rencontres avec des peintres')
-            offer2 = create_event_offer(venue, event_name='Rencontres avec des auteurs')
+            offer1 = create_offer_with_event_product(venue, event_name='Rencontres avec des peintres')
+            offer2 = create_offer_with_event_product(venue, event_name='Rencontres avec des auteurs')
             recommendation1 = create_recommendation(offer1, user, search=search)
             recommendation2 = create_recommendation(offer2, user, search=search)
 
@@ -320,8 +320,8 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer1 = create_event_offer(venue, event_name='Training in Modern Jazz')
-            offer2 = create_event_offer(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
+            offer1 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
+            offer2 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
             recommendation = create_recommendation(offer1, user)
             recommendation2 = create_recommendation(offer2, user)
             stock = create_stock_from_offer(offer1, beginning_datetime=TEN_DAYS_FROM_NOW,
@@ -344,10 +344,10 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer1 = create_event_offer(venue, event_name='Training in Modern Jazz')
-            offer2 = create_event_offer(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
-            offer3 = create_event_offer(venue, event_name='Training in Modern Jazz',
-                                        event_type=EventType.SPECTACLE_VIVANT)
+            offer1 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
+            offer2 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
+            offer3 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz',
+                                                     event_type=EventType.SPECTACLE_VIVANT)
             recommendation = create_recommendation(offer1, user)
             recommendation2 = create_recommendation(offer2, user)
             recommendation3 = create_recommendation(offer3, user)
@@ -374,7 +374,7 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Training in Modern Jazz')
+            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
 
             event_occurrence = create_event_occurrence(
                 offer, beginning_datetime=self.three_days_from_now, end_datetime=self.three_days_and_one_hour_from_now
@@ -403,11 +403,11 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='The new film', event_type=EventType.CINEMA)
-            offer2 = create_event_offer(venue, event_name='Spectacle', event_type=EventType.SPECTACLE_VIVANT)
-            thing = create_thing(thing_name='Lire un livre', is_national=True)
+            offer = create_offer_with_event_product(venue, event_name='The new film', event_type=EventType.CINEMA)
+            offer2 = create_offer_with_event_product(venue, event_name='Spectacle', event_type=EventType.SPECTACLE_VIVANT)
+            thing = create_thing_product(thing_name='Lire un livre', is_national=True)
 
-            thing_offer = create_thing_offer(venue, thing)
+            thing_offer = create_offer_with_thing_product(venue, thing)
 
             event_occurrence = create_event_occurrence(offer, beginning_datetime=self.three_days_from_now,
                                                        end_datetime=self.three_days_and_one_hour_from_now)
@@ -443,7 +443,7 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
+            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
 
             event_occurrence = create_event_occurrence(offer, beginning_datetime=self.ten_days_from_now,
                                                        end_datetime=self.ten_days_and_three_hours_from_now)
@@ -466,11 +466,11 @@ class Get:
             # Given
             user = create_user(email='test@email.com')
 
-            concert_offer13 = create_event_offer(self.venue13, event_name='Funky Concert de Gael Faye',
-                                                 event_type=EventType.MUSIQUE)
-            concert_offer75 = create_event_offer(self.venue75, event_name='Funky Concert de Gael Faye',
-                                                 event_type=EventType.MUSIQUE)
-            concert_offer973 = create_event_offer(self.venue973, event_name='Kiwi', event_type=EventType.MUSIQUE)
+            concert_offer13 = create_offer_with_event_product(self.venue13, event_name='Funky Concert de Gael Faye',
+                                                              event_type=EventType.MUSIQUE)
+            concert_offer75 = create_offer_with_event_product(self.venue75, event_name='Funky Concert de Gael Faye',
+                                                              event_type=EventType.MUSIQUE)
+            concert_offer973 = create_offer_with_event_product(self.venue973, event_name='Kiwi', event_type=EventType.MUSIQUE)
 
             event_occurrence13 = create_event_occurrence(concert_offer13, beginning_datetime=self.in_one_hour,
                                                          end_datetime=self.ten_days_from_now)
@@ -501,11 +501,11 @@ class Get:
             # Given
             user = create_user(email='test@email.com')
 
-            concert_offer13 = create_event_offer(self.venue13, event_name='Funky Concert de Gael Faye',
-                                                 event_type=EventType.MUSIQUE)
-            concert_offer75 = create_event_offer(self.venue75, event_name='Funky Concert de Gael Faye',
-                                                 event_type=EventType.MUSIQUE)
-            concert_offer973 = create_event_offer(self.venue973, event_name='Kiwi', event_type=EventType.MUSIQUE)
+            concert_offer13 = create_offer_with_event_product(self.venue13, event_name='Funky Concert de Gael Faye',
+                                                              event_type=EventType.MUSIQUE)
+            concert_offer75 = create_offer_with_event_product(self.venue75, event_name='Funky Concert de Gael Faye',
+                                                              event_type=EventType.MUSIQUE)
+            concert_offer973 = create_offer_with_event_product(self.venue973, event_name='Kiwi', event_type=EventType.MUSIQUE)
 
             event_occurrence13 = create_event_occurrence(concert_offer13, beginning_datetime=self.in_one_hour,
                                                          end_datetime=self.ten_days_from_now)
@@ -540,7 +540,7 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Training in Modern Jazz')
+            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
 
             event_occurrence = create_event_occurrence(offer, beginning_datetime=self.three_days_from_now,
                                                        end_datetime=self.three_days_and_one_hour_from_now)
@@ -563,9 +563,9 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='The new film', event_type=EventType.CINEMA)
-            offer1 = create_event_offer(venue, event_name='Activation de votre Pass Culture',
-                                        event_type=EventType.ACTIVATION)
+            offer = create_offer_with_event_product(venue, event_name='The new film', event_type=EventType.CINEMA)
+            offer1 = create_offer_with_event_product(venue, event_name='Activation de votre Pass Culture',
+                                                     event_type=EventType.ACTIVATION)
             event_occurrence = create_event_occurrence(offer, beginning_datetime=self.in_one_hour,
                                                        end_datetime=self.one_day_from_now)
 
@@ -598,13 +598,13 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
 
-            cinema_event_offer = create_event_offer(venue, event_name='The new film', event_type=EventType.CINEMA)
+            cinema_event_offer = create_offer_with_event_product(venue, event_name='The new film', event_type=EventType.CINEMA)
 
-            activation_event_offer = create_event_offer(venue, event_name='Activation de votre Pass Culture',
-                                                        event_type=EventType.ACTIVATION)
+            activation_event_offer = create_offer_with_event_product(venue, event_name='Activation de votre Pass Culture',
+                                                                     event_type=EventType.ACTIVATION)
 
-            book_thing = create_thing(thing_name='Lire un livre', is_national=True)
-            book_thing_offer = create_thing_offer(venue, book_thing)
+            book_thing = create_thing_product(thing_name='Lire un livre', is_national=True)
+            book_thing_offer = create_offer_with_thing_product(venue, book_thing)
             cinema_event_occurrence = create_event_occurrence(cinema_event_offer,
                                                               beginning_datetime=self.three_days_from_now,
                                                               end_datetime=self.three_days_and_one_hour_from_now)
@@ -642,7 +642,7 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
+            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
 
             event_occurrence = create_event_occurrence(offer, beginning_datetime=self.in_one_hour,
                                                        end_datetime=self.ten_days_from_now)
@@ -666,10 +666,10 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='The new film', event_type=EventType.CINEMA)
-            thing = create_thing(thing_name='Lire un livre', is_national=True)
+            offer = create_offer_with_event_product(venue, event_name='The new film', event_type=EventType.CINEMA)
+            thing = create_thing_product(thing_name='Lire un livre', is_national=True)
 
-            thingOffer = create_thing_offer(venue, thing)
+            thingOffer = create_offer_with_thing_product(venue, thing)
 
             event_occurrence = create_event_occurrence(offer, beginning_datetime=self.three_days_from_now,
                                                        end_datetime=self.three_days_and_one_hour_from_now)
@@ -694,11 +694,11 @@ class Get:
             # Given
             user = create_user(email='test@email.com')
 
-            concert_offer13 = create_event_offer(self.venue13, event_name='Funky Concert de Gael Faye',
-                                                 event_type=EventType.MUSIQUE)
-            concert_offer75 = create_event_offer(self.venue75, event_name='Soulfull Concert de Gael Faye',
-                                                 event_type=EventType.MUSIQUE)
-            concert_offer973 = create_event_offer(self.venue973, event_name='Kiwi', event_type=EventType.MUSIQUE)
+            concert_offer13 = create_offer_with_event_product(self.venue13, event_name='Funky Concert de Gael Faye',
+                                                              event_type=EventType.MUSIQUE)
+            concert_offer75 = create_offer_with_event_product(self.venue75, event_name='Soulfull Concert de Gael Faye',
+                                                              event_type=EventType.MUSIQUE)
+            concert_offer973 = create_offer_with_event_product(self.venue973, event_name='Kiwi', event_type=EventType.MUSIQUE)
 
             event_occurrence13 = create_event_occurrence(concert_offer13, beginning_datetime=self.in_one_hour,
                                                          end_datetime=self.ten_days_from_now)
@@ -732,7 +732,7 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue, event_name='Training in Modern Jazz')
+            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
 
             event_occurrence = create_event_occurrence(offer, beginning_datetime=self.in_one_hour,
                                                        end_datetime=self.ten_days_from_now)

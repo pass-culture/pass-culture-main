@@ -7,15 +7,14 @@ from models.db import db
 from models.pc_object import DeletedRecordException, serialize
 from models.stock import Stock
 from tests.conftest import clean_database
-from tests.test_utils import create_stock_with_event_offer, create_offerer, create_venue, create_event_offer, \
-    create_stock_from_offer, create_thing_offer, create_booking, create_user, create_stock, create_stock_with_thing_offer
-from utils.human_ids import humanize
+from tests.test_utils import create_stock_with_event_offer, create_offerer, create_venue, create_offer_with_event_product, \
+    create_stock_from_offer, create_offer_with_thing_product, create_booking, create_user, create_stock
 
 @clean_database
 @pytest.mark.standalone
 def test_beginning_datetime_cannot_be_after_end_datetime(app):
     # given
-    offer = create_thing_offer(create_venue(create_offerer()))
+    offer = create_offer_with_thing_product(create_venue(create_offerer()))
     now = datetime.utcnow()
     beginning = now - timedelta(days=5)
     end = beginning - timedelta(days=1)
@@ -54,7 +53,7 @@ def test_populate_dict_on_soft_deleted_object_raises_DeletedRecordException(app)
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    stock = create_stock_from_offer(create_event_offer(venue))
+    stock = create_stock_from_offer(create_offer_with_event_product(venue))
     stock.isSoftDeleted = True
     PcObject.check_and_save(stock)
     # When
@@ -68,7 +67,7 @@ def test_stock_cannot_have_a_negative_price(app):
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_thing_offer(venue)
+    offer = create_offer_with_thing_product(venue)
     stock = create_stock_from_offer(offer, price=-10)
 
     # when
@@ -85,7 +84,7 @@ def test_stock_cannot_have_a_negative_available_stock(app):
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_thing_offer(venue)
+    offer = create_offer_with_thing_product(venue)
     stock = create_stock_from_offer(offer, available=-4)
 
     # when
@@ -102,7 +101,7 @@ def test_stock_can_have_an_available_stock_equal_to_zero(app):
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_thing_offer(venue)
+    offer = create_offer_with_thing_product(venue)
     stock = create_stock_from_offer(offer, available=0)
 
     # when
@@ -118,7 +117,7 @@ def test_available_stocks_can_be_changed_even_when_bookings_with_cancellations_e
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_thing_offer(venue)
+    offer = create_offer_with_thing_product(venue)
     stock = create_stock_from_offer(offer, available=2, price=0)
     PcObject.check_and_save(stock)
     user = create_user()
@@ -143,7 +142,7 @@ def test_available_stocks_cannot_be_changed_when_exceeding_bookings_quantity_2(a
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_thing_offer(venue)
+    offer = create_offer_with_thing_product(venue)
     stock = create_stock_from_offer(offer, available=2, price=0)
     PcObject.check_and_save(stock)
     user = create_user()
@@ -167,13 +166,13 @@ def test_update_stock_when_stock_is_event(app):
     stock = create_stock_with_event_offer(offerer, venue, price=69)
     PcObject.check_and_save(stock)
 
-    
-    data = {    
+
+    data = {
         "beginningDatetime": serialize(beginning_datetime),
         "offerId": humanize(stock.offer.id),
         "bookingLimitDatetime": serialize(booking_limit_datetime),
         "price": 666
-    } 
+    }
 
     # When
     stock.update_stock(data)
@@ -195,11 +194,11 @@ def test_does_not_update_stock_limit_datetime_when_not_specified(app):
     stock = create_stock_with_thing_offer(offerer, venue, price=13, booking_limit_datetime=booking_limit_datetime)
     PcObject.check_and_save(stock)
 
-    
-    data = {    
+
+    data = {
         "offerId": humanize(stock.offer.id),
         "price": 666
-    } 
+    }
 
     # When
     stock.update_stock(data)
@@ -220,12 +219,12 @@ def test_update_booking_limit_datetime_to_none_when_stock_is_thing_and_booking_l
     stock = create_stock_with_thing_offer(offerer, venue, booking_limit_datetime=booking_limit_datetime, price=13)
     PcObject.check_and_save(stock)
 
-    
-    data = {    
+
+    data = {
         "offerId": humanize(stock.offer.id),
         "bookingLimitDatetime": None,
         "price": 666
-    } 
+    }
 
     # When
     stock.update_stock(data)
@@ -246,16 +245,16 @@ def test_update_booking_limit_datetime_to_new_date_for_thing_stock(app):
     stock = create_stock_with_thing_offer(offerer, venue, price=13, booking_limit_datetime=updated_booking_limit_datetime)
     PcObject.check_and_save(stock)
 
-    
-    data = {    
+
+    data = {
         "offerId": humanize(stock.offer.id),
         "bookingLimitDatetime": serialize(updated_booking_limit_datetime),
         "price": 666
-    } 
+    }
 
     # When
     stock.update_stock(data)
-    
+
     # Then
     db.session.refresh(stock)
     assert stock.price == 666
