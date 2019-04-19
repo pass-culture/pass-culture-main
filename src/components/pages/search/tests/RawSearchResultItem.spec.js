@@ -19,7 +19,7 @@ describe('src | components | pages | RawSearchResultItem', () => {
           pathname: '/recherche/Applaudir',
           search: '',
         },
-        recommendation: recommendations[0]
+        recommendation: recommendations[0],
       }
 
       // when
@@ -92,12 +92,12 @@ describe('src | components | pages | RawSearchResultItem', () => {
                 isActive: false,
                 lastProviderId: 'BA',
                 mediaUrls: [],
-                modelName: 'Thing',
+                modelName: 'Product',
                 thumbCount: 2,
                 type: 'Book',
                 url: null,
               },
-              thingId: 'QE',
+              productId: 'QE',
               venue: {
                 address: '72 rue Carnot',
                 bookingEmail: 'passculture-dev@beta.gouv.fr',
@@ -144,10 +144,10 @@ describe('src | components | pages | RawSearchResultItem', () => {
             offerId: 'X9',
             search: null,
             shareMedium: null,
-            thumbUrl: 'http://localhost/storage/thumbs/things/QE',
+            thumbUrl: 'http://localhost/storage/thumbs/products/QE',
             userId: 'AE',
             validUntilDate: '2018-09-11T08:04:49.273248Z',
-          }
+          },
         }
         wrapper = shallow(<RawSearchResultItem {...props} />)
 
@@ -155,7 +155,7 @@ describe('src | components | pages | RawSearchResultItem', () => {
         const h5 = wrapper.find('h5').props()
         const dotdotdot = wrapper.find(Dotdotdot).props()
         const recommendationDate = wrapper.find('#recommendation-date').props()
-        expect(img.src).toEqual('http://localhost/storage/thumbs/things/QE')
+        expect(img.src).toEqual('http://localhost/storage/thumbs/products/QE')
         expect(dotdotdot.children).toEqual(
           'sur la route des migrants ; rencontres à Calais'
         )

@@ -1,14 +1,12 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import VersoContentTuto from '../VersoContentTuto'
-import { THUMBS_URL } from '../../../../utils/config'
+import VersoContentTuto from '../VersoContentTuto';
 
 describe('src | components | verso | verso-content | VersoContentTuto', () => {
   it('should match snapshot', () => {
     // given
-    const props = { mediationId: '1234' }
-
+    const props = { imageURL: 'https://example.net/img.jpg' };
     // when
     const wrapper = shallow(<VersoContentTuto {...props} />)
     // then
@@ -18,18 +16,15 @@ describe('src | components | verso | verso-content | VersoContentTuto', () => {
 
   it('should have a classnamed element with sourced img', () => {
     // given
-    const mediationId = '1234'
-    const props = { mediationId }
-    const url = `${THUMBS_URL}/mediations/${mediationId}_1`
+    const props = { imageURL: 'https://example.net/img.jpg' };
 
     // when
-    const wrapper = shallow(<VersoContentTuto {...props} />)
+    const wrapper = shallow(<VersoContentTuto {...props} />);
+    const img = wrapper.find('img');
 
     // then
-    const img = wrapper.find('img')
-    expect(img).toHaveLength(1)
-    expect(img.hasClass('verso-tuto-mediation')).toBe(true)
-    expect(img.prop('alt')).toBe('verso')
-    expect(img.prop('src')).toEqual(url)
-  })
-})
+    expect(img).toHaveLength(1);
+    expect(img.hasClass('verso-tuto-mediation')).toBe(true);
+    expect(img.prop('src')).toEqual('https://example.net/img.jpg');
+  });
+});

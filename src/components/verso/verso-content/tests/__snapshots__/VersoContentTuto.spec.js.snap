@@ -3,8 +3,8 @@
 exports[`src | components | verso | verso-content | VersoContentTuto should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <VersoTutoContent
-    mediationId="1234"
+  Symbol(enzyme.__unrendered__): <VersoContentTuto
+    imageURL="https://example.net/img.jpg"
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -22,7 +22,7 @@ ShallowWrapper {
     "props": Object {
       "alt": "verso",
       "className": "verso-tuto-mediation is-full-width",
-      "src": "http://localhost/storage/thumbs/mediations/1234_1",
+      "src": "https://example.net/img.jpg",
     },
     "ref": null,
     "rendered": null,
@@ -36,7 +36,7 @@ ShallowWrapper {
       "props": Object {
         "alt": "verso",
         "className": "verso-tuto-mediation is-full-width",
-        "src": "http://localhost/storage/thumbs/mediations/1234_1",
+        "src": "https://example.net/img.jpg",
       },
       "ref": null,
       "rendered": null,

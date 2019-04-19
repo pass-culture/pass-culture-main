@@ -44,12 +44,12 @@ class VersoContentOffer extends React.PureComponent {
     const venue = get(offer, 'venue')
     const isVirtualVenue = get(venue, 'isVirtual')
 
-    const eventOrThing = get(offer, 'eventOrThing')
-    const durationMinutes = get(eventOrThing, 'durationMinutes')
+    const product = get(offer, 'product')
+    const durationMinutes = get(product, 'durationMinutes')
     const duration = getDurationFromMinutes(durationMinutes)
 
-    const extraData = get(eventOrThing, 'extraData')
-    const label = get(eventOrThing, 'offerType.label')
+    const extraData = get(product, 'extraData')
+    const label = get(product, 'offerType.label')
     const title = getWhatTitleFromLabelAndIsVirtualVenue(label, isVirtualVenue)
 
     const author = get(extraData, 'author')
@@ -115,7 +115,7 @@ class VersoContentOffer extends React.PureComponent {
   renderOfferWhen() {
     const { isFinished } = this.props
     const { recommendation } = this.props
-    const renderDateInfos = (get(recommendation, 'offer.thingId')
+    const renderDateInfos = (get(recommendation, 'offer.isThing')
       ? this.renderThingOfferDateInfos
       : this.renderEventOfferDateInfos
     ).bind(this)

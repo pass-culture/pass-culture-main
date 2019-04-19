@@ -46,6 +46,11 @@ describe('currentRecommendationSelector', () => {
           dateCreated: '2018-10-05T13:12:16.482124Z',
           dateModifiedAtLastProvider: '2018-10-05T13:12:16.482118Z',
           dateRange: [],
+          id: 'ARBA',
+          idAtProviders: null,
+          isActive: true,
+          lastProviderId: null,
+          modelName: 'Offer',
           product: {
             dateModifiedAtLastProvider: '2018-10-05T13:12:16.478149Z',
             description:
@@ -57,17 +62,13 @@ describe('currentRecommendationSelector', () => {
             isNational: false,
             lastProviderId: null,
             mediaUrls: [],
-            modelName: 'Thing',
+            modelName: 'Product',
             name: 'Abonnements presse numérique illimitée',
             thumbCount: 0,
             type: 'ThingType.LIVRE_EDITION',
             url: null,
           },
-          id: 'ARBA',
-          idAtProviders: null,
-          isActive: true,
-          lastProviderId: null,
-          modelName: 'Offer',
+          productId: 'HE',
           stocks: [
             {
               available: 10000,
@@ -87,7 +88,6 @@ describe('currentRecommendationSelector', () => {
               price: 10,
             },
           ],
-          productId: 'HE',
           venue: {
             address: '59 Rue Spontini',
             bic: null,

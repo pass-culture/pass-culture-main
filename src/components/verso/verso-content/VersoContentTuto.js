@@ -4,20 +4,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { THUMBS_URL } from '../../../utils/config';
-
-const imageSrcBase = `${THUMBS_URL}/mediations`;
-
-const VersoTutoContent = ({ mediationId }) => (
+const VersoContentTuto = ({ imageURL }) => (
   <img
     alt="verso"
     className="verso-tuto-mediation is-full-width"
-    src={`${imageSrcBase}/${mediationId}_1`}
+    src={imageURL}
   />
 );
 
-VersoTutoContent.propTypes = {
-  mediationId: PropTypes.string.isRequired,
+VersoContentTuto.propTypes = {
+  imageURL: PropTypes.string.isRequired,
 };
 
-export default VersoTutoContent;
+export default VersoContentTuto;

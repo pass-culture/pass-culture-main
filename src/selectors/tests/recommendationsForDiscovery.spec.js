@@ -25,9 +25,7 @@ describe('selectRecommendationsForDiscovery', () => {
     )
     expect(result[0].mediation.id).toEqual('fin')
     expect(result[0].mediation.thumbCount).toEqual(1)
-    expect(result[0].mediation.thumbUrls).toEqual([
-      `${ROOT_PATH}/splash-finReco@2x.png`,
-    ])
+    expect(result[0].thumbUrl).toEqual(`${ROOT_PATH}/splash-finReco@2x.png`)
     expect(result[0].mediation.tutoIndex).toEqual(-1)
     expect(result[0].mediationId).toEqual('fin')
     expect(result[0].uniqId).toEqual('tuto_-1')

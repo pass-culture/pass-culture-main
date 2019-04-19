@@ -65,8 +65,8 @@ export const mapStateToProps = (state, { match }) => {
     backgroundColor,
     contentInlineStyle,
     draggable,
+    imageURL: get(recommendation, 'thumbUrl'),
     isTuto,
-    mediationId,
     offerName,
     offerVenueNameOrPublicName,
   }

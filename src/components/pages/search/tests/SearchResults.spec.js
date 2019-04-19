@@ -72,7 +72,7 @@ describe('src | components | pages | SearchResults', () => {
             isNational: false,
             lastProviderId: 'BA',
             mediaUrls: [],
-            modelName: 'Thing',
+            modelName: 'Product',
             name: 'la conspiration T.3 ; les confins du monde',
             thumbCount: 2,
             type: 'LIVRE_EDITION',

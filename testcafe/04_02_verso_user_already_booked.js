@@ -55,6 +55,7 @@ fixture.skip(`04_02 Verso annulation d'un réservation`).beforeEach(async t => {
   )
   offerTitle = offer.thingName
   const offerURL = `${discoverURL}/${offer.id}/${mediation.id}`
+
   await t.useRole(createUserRole(user)).navigateTo(offerURL)
   await dragButton.with({ visibilityCheck: true })()
 })

@@ -17,11 +17,12 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
       id: 'AEAQ',
       offer: {
         description: 'fake description',
-        eventId: null,
-        eventOrThing: {
+        id: 'X9',
+        isEvent: false,
+        isThing: true,
+        product: {
           description: 'fake description do not use',
         },
-        id: 'X9',
         thingId: 'QE',
         venue: {
           address: '72 rue Carnot',
@@ -40,6 +41,9 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
 
   it('should match snapshot', () => {
     // given
+    recommendation.offer.isThing = false
+    recommendation.offer.isEvent = true
+
     const props = {
       bookables: [],
       handleRequestMusicAndShowTypes: jest.fn(),
@@ -75,11 +79,11 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
 
   it('should render event offer infos when offer is event, not finished and booking is available', () => {
     // given
-    recommendation.offer.eventId = 'QE'
-    recommendation.offer.thingId = null
+    recommendation.offer.isEvent = true;
+    recommendation.offer.isThing = false;
 
     const props = {
-      bookables: [{ id: 1 }, { id: 2 }],
+      bookables: [{ id: 1 }, { id: 2 }, { id: 3 }],
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: false,
       maxShownDates: 1,

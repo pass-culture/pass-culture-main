@@ -7,7 +7,18 @@ import {
   getContentInlineStyle,
   getOfferName,
   getOfferVenueNameOrPublicName,
-} from '../VersoContainer'
+  mapStateToProps,
+} from '../VersoContainer';
+
+const backgroundColor = 'hsl(355, 100%, 7.5%)';
+const firstThumbDominantColor = [224, 108, 117];
+const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`;
+
+let result;
+let isTuto;
+let expected;
+let recommendation = {};
+const name = 'Offer title';
 
 describe('src | components | verso | VersoContainer', () => {
   const backgroundColor = 'hsl(355, 100%, 7.5%)'
@@ -177,4 +188,71 @@ describe('src | components | verso | VersoContainer', () => {
       expect(result).toEqual(backgroundColor)
     })
   })
-})
+
+  describe('mapStateToProps', () => {
+    it('should map the imageURL from recommendation', () => {
+      // given
+      const state = {
+        data: {
+          recommendations: [
+            {
+              mediation: {
+                tutoIndex: 1,
+              },
+              mediationId: 'H1',
+              offerId: 'tuto',
+              thumbUrl: 'https://example.net/image-bank/tuto.png',
+            },
+          ],
+        },
+        geolocation: {
+          latitude: 48.8637,
+          longitude: 2.3374,
+        },
+      };
+      const ownProps = {
+        match: { params: { mediationId: 'H1', offerId: 'tuto' } },
+      };
+
+      // when
+      const props = mapStateToProps(state, ownProps);
+
+      // then
+      expect(props).toHaveProperty(
+        'imageURL',
+        'https://example.net/image-bank/tuto.png'
+      );
+    });
+
+    it('should not export a mediationId', () => {
+      // given
+      const state = {
+        data: {
+          recommendations: [
+            {
+              mediation: {
+                tutoIndex: 1,
+              },
+              mediationId: 'H1',
+              offerId: 'tuto',
+              thumbUrl: 'https://example.net/image-bank/tuto.png',
+            },
+          ],
+        },
+        geolocation: {
+          latitude: 48.8637,
+          longitude: 2.3374,
+        },
+      };
+      const ownProps = {
+        match: { params: { mediationId: 'H1', offerId: 'tuto' } },
+      };
+
+      // when
+      const props = mapStateToProps(state, ownProps);
+
+      // then
+      expect(props).not.toHaveProperty('mediationId');
+    });
+  });
+});

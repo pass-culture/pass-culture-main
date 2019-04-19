@@ -17,7 +17,7 @@ const getDateString = (date, tz) =>
       .format('dddd DD/MM/YYYY à H:mm')
   )
 
-export default connect((state, ownProps) => {
+export const mapStateToProps = (state, ownProps) => {
   const { booking } = ownProps || {}
   const { isCancelled, recommendationId, stock, token } = booking
   const completedUrl = get(booking, 'completedUrl')
@@ -31,8 +31,7 @@ export default connect((state, ownProps) => {
   const recommendation = selectRecommendation(state, recommendationId)
   const mediationId = get(recommendation, 'mediationId')
 
-  // FIXME Should not use eventId
-  const isEvent = Boolean(get(stock, 'resolvedOffer.eventId'))
+  const isEvent = Boolean(get(stock, 'resolvedOffer.isEvent'))
 
   // injected
   return {
@@ -48,4 +47,5 @@ export default connect((state, ownProps) => {
     timezone,
     token,
   }
-})(MyBookingItem)
+}
+export default connect(mapStateToProps)(MyBookingItem)

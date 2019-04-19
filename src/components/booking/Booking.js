@@ -9,7 +9,6 @@ import { Transition } from 'react-transition-group'
 import { bindActionCreators } from 'redux'
 import { requestData } from 'redux-saga-data'
 import { resolveCurrentUser } from 'with-login'
-
 import { externalSubmitForm } from '../forms/utils'
 import BookingCancel from './sub-items/BookingCancel'
 import BookingForm from './sub-items/BookingForm'

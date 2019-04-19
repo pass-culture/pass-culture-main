@@ -17,7 +17,7 @@ class Verso extends React.PureComponent {
       extraClassName,
       forceDetailsVisible,
       isTuto,
-      mediationId,
+      imageURL,
       offerName,
       offerVenueNameOrPublicName,
     } = this.props
@@ -38,7 +38,7 @@ class Verso extends React.PureComponent {
           {!isTuto && <VersoControl />}
           <div className="verso-content" style={contentInlineStyle}>
             {!isTuto && <VersoContentOfferContainer />}
-            {isTuto && <VersoContentTuto mediationId={mediationId} />}
+            {isTuto && <VersoContentTuto imageURL={imageURL} />}
           </div>
         </div>
         <Footer id="verso-footer" borderTop colored={!isTuto} />
@@ -51,7 +51,7 @@ Verso.defaultProps = {
   backgroundColor: null,
   extraClassName: null,
   forceDetailsVisible: false,
-  mediationId: null,
+  imageURL: '',
   offerName: null,
   offerVenueNameOrPublicName: null,
 }
@@ -62,8 +62,8 @@ Verso.propTypes = {
   contentInlineStyle: PropTypes.object.isRequired,
   extraClassName: PropTypes.string,
   forceDetailsVisible: PropTypes.bool,
+  imageURL: PropTypes.string,
   isTuto: PropTypes.bool.isRequired,
-  mediationId: PropTypes.string,
   offerName: PropTypes.string,
   offerVenueNameOrPublicName: PropTypes.string,
 }

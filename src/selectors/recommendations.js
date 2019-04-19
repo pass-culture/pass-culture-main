@@ -28,7 +28,7 @@ export const selectRecommendations = createSelector(
         const { mediation, offer } = recommendation
         const { product, venue } = offer || {}
 
-        // thumbUrl
+        // FIXME Report the property computation on API side
         const firstThumbDominantColor =
           get(mediation, 'firstThumbDominantColor') ||
           get(product, 'firstThumbDominantColor')

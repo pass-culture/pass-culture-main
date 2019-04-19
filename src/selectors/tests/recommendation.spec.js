@@ -39,6 +39,11 @@ describe('selectRecommendation', () => {
           dateCreated: '2018-09-14T13:46:33.401791Z',
           dateModifiedAtLastProvider: '2018-09-14T13:46:33.401781Z',
           dateRange: [],
+          id: 'AM3A',
+          idAtProviders: null,
+          isActive: true,
+          lastProviderId: null,
+          modelName: 'Offer',
           product: {
             dateModifiedAtLastProvider: '2018-09-14T13:46:33.399386Z',
             description:
@@ -50,17 +55,13 @@ describe('selectRecommendation', () => {
             isNational: false,
             lastProviderId: null,
             mediaUrls: [],
-            modelName: 'Thing',
+            modelName: 'Product',
             name: 'Abonnement presse numérique illimitée',
             thumbCount: 0,
             type: 'ThingType.PRESSE_ABO',
             url: 'www.epresse.fr',
           },
-          id: 'AM3A',
-          idAtProviders: null,
-          isActive: true,
-          lastProviderId: null,
-          modelName: 'Offer',
+          productId: 'CM',
           stocks: [
             {
               available: 5000,
@@ -80,7 +81,6 @@ describe('selectRecommendation', () => {
               price: 10,
             },
           ],
-          productId: 'CM',
           venue: {
             address: null,
             bic: null,
@@ -137,5 +137,4 @@ describe('selectRecommendation', () => {
       expect(result).toEqual(expected)
     })
   })
-
 })

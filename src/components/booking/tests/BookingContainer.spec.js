@@ -31,8 +31,13 @@ describe('src | components | booking', () => {
                 bookingEmail: null,
                 dateCreated: '2018-10-29T09:44:38.216817Z',
                 dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
-                eventId: 'AE',
-                eventOrThing: {
+                id: 'AE',
+                idAtProviders: null,
+                isActive: true,
+                lastProviderId: null,
+                modelName: 'Offer',
+                productId: 'AE',
+                product: {
                   accessibility: '\u0000',
                   ageMax: null,
                   ageMin: null,
@@ -52,12 +57,6 @@ describe('src | components | booking', () => {
                   thumbCount: 1,
                   type: 'EventType.CONFERENCE_DEBAT_DEDICACE',
                 },
-                id: 'AE',
-                idAtProviders: null,
-                isActive: true,
-                lastProviderId: null,
-                modelName: 'Offer',
-                thingId: null,
                 venue: {
                   address: '1 BD POISSONNIERE',
                   bic: null,
@@ -120,7 +119,7 @@ describe('src | components | booking', () => {
     describe('isEvent', () => {
       it('should be true when offer is an event', () => {
         // given
-        state.data.recommendations[0].offer.eventId = 'AAA'
+        state.data.recommendations[0].offer.isEvent = true
 
         // when
         const result = mapStateToProps(state, { match })
@@ -131,7 +130,7 @@ describe('src | components | booking', () => {
 
       it('should be false when offer is not an event', () => {
         // given
-        state.data.recommendations[0].offer.eventId = null
+        state.data.recommendations[0].offer.isEvent = false
 
         // when
         const result = mapStateToProps(state, { match })
