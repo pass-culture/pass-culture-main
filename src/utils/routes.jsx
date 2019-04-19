@@ -13,7 +13,7 @@ import Profile from '../components/pages/Profile'
 import Signin from '../components/pages/Signin'
 import Signup from '../components/pages/Signup'
 import Terms from '../components/pages/Terms'
-import Venue from '../components/pages/Venue'
+import Venue from '../components/pages/Venue/VenueContainer'
 import LostPassword from '../components/pages/LostPassword'
 import SignupValidation from '../components/pages/Signup/SignupValidation'
 

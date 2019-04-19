@@ -28,6 +28,7 @@ describe('formatPatch', () => {
         managingOffererId: 'APWA',
         modelName: 'Venue',
         name: 'Cinéma de la fin',
+        publicName: 'Cinéma de la fin des fins',
         postalCode: '93600',
         siret: '22222222911111',
         thumbCount: 0,
@@ -52,6 +53,7 @@ describe('formatPatch', () => {
         longitude: 2.48371,
         managingOffererId: 'APWA',
         name: 'Cinéma de la fin',
+        publicName: 'Cinéma de la fin des fins',
         postalCode: '93600',
         siret: '22222222911111',
       }
@@ -83,6 +85,7 @@ describe('formatPatch', () => {
         managingOffererId: 'APWA',
         modelName: 'Venue',
         name: 'Cinéma de la fin',
+        publicName: 'Cinéma de la fin publique',
         postalCode: '93600',
         siret: '22222222911111',
         thumbCount: 0,
@@ -101,6 +104,8 @@ describe('formatPatch', () => {
       // then
       expect(result).toEqual({
         bookingEmail: 'R6465373fake674654673@email.com',
+        name: 'Cinéma de la fin',
+        publicName: 'Cinéma de la fin publique',
       })
     })
   })

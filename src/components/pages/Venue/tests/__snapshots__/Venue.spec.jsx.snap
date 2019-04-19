@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Venue | RawVenue snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Venue | Venue snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawVenue
+  Symbol(enzyme.__unrendered__): <Venue
     currentUser={Object {}}
     dispatch={[Function]}
     formComment={null}
@@ -27,7 +27,11 @@ ShallowWrapper {
     name="Maison de la Brique"
     offerer={Object {}}
     user={Object {}}
-    venuePatch={Object {}}
+    venuePatch={
+        Object {
+            "id": null,
+          }
+    }
 />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -55,7 +59,11 @@ ShallowWrapper {
           
 </HeroSection>,
         <withRouter(Connect(ProviderManager))
-          venue={Object {}}
+          venue={
+                    Object {
+                              "id": null,
+                            }
+          }
 />,
         <withRouter(Connect(_Form))
           BlockComponent={null}
@@ -88,7 +96,11 @@ ShallowWrapper {
           onEnterKey={null}
           onEscapeKey={null}
           onSubmit={null}
-          patch={Object {}}
+          patch={
+                    Object {
+                              "id": null,
+                            }
+          }
           readOnly={true}
           successNotification="Formulaire non validé"
 >
@@ -131,6 +143,16 @@ ShallowWrapper {
                               <Field
                                         displayValue={[Function]}
                                         errors={null}
+                                        label="Nom d'usage"
+                                        layout="horizontal"
+                                        name="publicName"
+                                        size="normal"
+                                        storeValue={[Function]}
+                                        type="textarea"
+                              />
+                              <Field
+                                        displayValue={[Function]}
+                                        errors={null}
                                         label="E-mail"
                                         layout="horizontal"
                                         name="bookingEmail"
@@ -152,7 +174,7 @@ ShallowWrapper {
                               <span
                                         className="is-pulled-right is-size-7 has-text-grey"
                               >
-                                        Vous avez besoin d'être administrateur de la structure pour editer ces informations.
+                                        Vous avez besoin d'être administrateur de la structure pour éditer ces informations.
                               </span>
                     </h2>
                     <div
@@ -258,7 +280,6 @@ ShallowWrapper {
                               />
                     </div>
           </div>
-          <hr />
           <div
                     className="field is-grouped is-grouped-centered"
                     style={
@@ -319,7 +340,7 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             false,
-            undefined,
+            false,
           ],
           "subtitle": undefined,
           "title": "Lieu",
@@ -327,7 +348,7 @@ ShallowWrapper {
         "ref": null,
         "rendered": Array [
           false,
-          undefined,
+          false,
         ],
         "type": [Function],
       },
@@ -336,7 +357,9 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "venue": Object {},
+          "venue": Object {
+            "id": null,
+          },
         },
         "ref": null,
         "rendered": null,
@@ -391,6 +414,16 @@ ShallowWrapper {
                             <Field
                                           displayValue={[Function]}
                                           errors={null}
+                                          label="Nom d'usage"
+                                          layout="horizontal"
+                                          name="publicName"
+                                          size="normal"
+                                          storeValue={[Function]}
+                                          type="textarea"
+                            />
+                            <Field
+                                          displayValue={[Function]}
+                                          errors={null}
                                           label="E-mail"
                                           layout="horizontal"
                                           name="bookingEmail"
@@ -412,7 +445,7 @@ ShallowWrapper {
                             <span
                                           className="is-pulled-right is-size-7 has-text-grey"
                             >
-                                          Vous avez besoin d'être administrateur de la structure pour editer ces informations.
+                                          Vous avez besoin d'être administrateur de la structure pour éditer ces informations.
                             </span>
               </h2>
               <div
@@ -518,7 +551,6 @@ ShallowWrapper {
                             />
               </div>
 </div>,
-            <hr />,
             <div
               className="field is-grouped is-grouped-centered"
               style={
@@ -591,7 +623,9 @@ ShallowWrapper {
           "onEnterKey": null,
           "onEscapeKey": null,
           "onSubmit": null,
-          "patch": Object {},
+          "patch": Object {
+            "id": null,
+          },
           "readOnly": true,
           "successNotification": "Formulaire non validé",
         },
@@ -636,6 +670,16 @@ ShallowWrapper {
                                     required={true}
                                     size="normal"
                                     storeValue={[Function]}
+                  />
+                  <Field
+                                    displayValue={[Function]}
+                                    errors={null}
+                                    label="Nom d'usage"
+                                    layout="horizontal"
+                                    name="publicName"
+                                    size="normal"
+                                    storeValue={[Function]}
+                                    type="textarea"
                   />
                   <Field
                                     displayValue={[Function]}
@@ -707,6 +751,16 @@ ShallowWrapper {
                     <Field
                       displayValue={[Function]}
                       errors={null}
+                      label="Nom d'usage"
+                      layout="horizontal"
+                      name="publicName"
+                      size="normal"
+                      storeValue={[Function]}
+                      type="textarea"
+/>,
+                    <Field
+                      displayValue={[Function]}
+                      errors={null}
                       label="E-mail"
                       layout="horizontal"
                       name="bookingEmail"
@@ -770,6 +824,24 @@ ShallowWrapper {
                     "props": Object {
                       "displayValue": [Function],
                       "errors": null,
+                      "label": "Nom d'usage",
+                      "layout": "horizontal",
+                      "name": "publicName",
+                      "size": "normal",
+                      "storeValue": [Function],
+                      "type": "textarea",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "class",
+                    "props": Object {
+                      "displayValue": [Function],
+                      "errors": null,
                       "label": "E-mail",
                       "layout": "horizontal",
                       "name": "bookingEmail",
@@ -803,7 +875,7 @@ ShallowWrapper {
                   <span
                                     className="is-pulled-right is-size-7 has-text-grey"
                   >
-                                    Vous avez besoin d'être administrateur de la structure pour editer ces informations.
+                                    Vous avez besoin d'être administrateur de la structure pour éditer ces informations.
                   </span>
 </h2>,
                 <div
@@ -848,7 +920,7 @@ ShallowWrapper {
                     <span
                       className="is-pulled-right is-size-7 has-text-grey"
 >
-                      Vous avez besoin d'être administrateur de la structure pour editer ces informations.
+                      Vous avez besoin d'être administrateur de la structure pour éditer ces informations.
 </span>,
                   ],
                   "className": "main-list-title",
@@ -861,11 +933,11 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": "Vous avez besoin d'être administrateur de la structure pour editer ces informations.",
+                      "children": "Vous avez besoin d'être administrateur de la structure pour éditer ces informations.",
                       "className": "is-pulled-right is-size-7 has-text-grey",
                     },
                     "ref": null,
-                    "rendered": "Vous avez besoin d'être administrateur de la structure pour editer ces informations.",
+                    "rendered": "Vous avez besoin d'être administrateur de la structure pour éditer ces informations.",
                     "type": "span",
                   },
                 ],
@@ -900,7 +972,6 @@ ShallowWrapper {
                       storeValue={[Function]}
                       type="iban"
 />,
-                    false,
                   ],
                   "className": "field-group",
                 },
@@ -945,7 +1016,6 @@ ShallowWrapper {
                     "rendered": null,
                     "type": [Function],
                   },
-                  false,
                 ],
                 "type": "div",
               },
@@ -1231,15 +1301,6 @@ ShallowWrapper {
             "instance": null,
             "key": undefined,
             "nodeType": "host",
-            "props": Object {},
-            "ref": null,
-            "rendered": null,
-            "type": "hr",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
             "props": Object {
               "children": Array [
                 <div
@@ -1254,7 +1315,7 @@ ShallowWrapper {
                                     Modifier le lieu
                   </NavLink>
 </div>,
-                undefined,
+                null,
                 <div
                   className="control"
 >
@@ -1321,7 +1382,7 @@ ShallowWrapper {
                 },
                 "type": "div",
               },
-              undefined,
+              null,
               Object {
                 "instance": null,
                 "key": undefined,
@@ -1438,7 +1499,11 @@ ShallowWrapper {
             
 </HeroSection>,
           <withRouter(Connect(ProviderManager))
-            venue={Object {}}
+            venue={
+                        Object {
+                                    "id": null,
+                                  }
+            }
 />,
           <withRouter(Connect(_Form))
             BlockComponent={null}
@@ -1471,7 +1536,11 @@ ShallowWrapper {
             onEnterKey={null}
             onEscapeKey={null}
             onSubmit={null}
-            patch={Object {}}
+            patch={
+                        Object {
+                                    "id": null,
+                                  }
+            }
             readOnly={true}
             successNotification="Formulaire non validé"
 >
@@ -1514,6 +1583,16 @@ ShallowWrapper {
                                     <Field
                                                 displayValue={[Function]}
                                                 errors={null}
+                                                label="Nom d'usage"
+                                                layout="horizontal"
+                                                name="publicName"
+                                                size="normal"
+                                                storeValue={[Function]}
+                                                type="textarea"
+                                    />
+                                    <Field
+                                                displayValue={[Function]}
+                                                errors={null}
                                                 label="E-mail"
                                                 layout="horizontal"
                                                 name="bookingEmail"
@@ -1535,7 +1614,7 @@ ShallowWrapper {
                                     <span
                                                 className="is-pulled-right is-size-7 has-text-grey"
                                     >
-                                                Vous avez besoin d'être administrateur de la structure pour editer ces informations.
+                                                Vous avez besoin d'être administrateur de la structure pour éditer ces informations.
                                     </span>
                         </h2>
                         <div
@@ -1641,7 +1720,6 @@ ShallowWrapper {
                                     />
                         </div>
             </div>
-            <hr />
             <div
                         className="field is-grouped is-grouped-centered"
                         style={
@@ -1702,7 +1780,7 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               false,
-              undefined,
+              false,
             ],
             "subtitle": undefined,
             "title": "Lieu",
@@ -1710,7 +1788,7 @@ ShallowWrapper {
           "ref": null,
           "rendered": Array [
             false,
-            undefined,
+            false,
           ],
           "type": [Function],
         },
@@ -1719,7 +1797,9 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "venue": Object {},
+            "venue": Object {
+              "id": null,
+            },
           },
           "ref": null,
           "rendered": null,
@@ -1774,6 +1854,16 @@ ShallowWrapper {
                                 <Field
                                                 displayValue={[Function]}
                                                 errors={null}
+                                                label="Nom d'usage"
+                                                layout="horizontal"
+                                                name="publicName"
+                                                size="normal"
+                                                storeValue={[Function]}
+                                                type="textarea"
+                                />
+                                <Field
+                                                displayValue={[Function]}
+                                                errors={null}
                                                 label="E-mail"
                                                 layout="horizontal"
                                                 name="bookingEmail"
@@ -1795,7 +1885,7 @@ ShallowWrapper {
                                 <span
                                                 className="is-pulled-right is-size-7 has-text-grey"
                                 >
-                                                Vous avez besoin d'être administrateur de la structure pour editer ces informations.
+                                                Vous avez besoin d'être administrateur de la structure pour éditer ces informations.
                                 </span>
                 </h2>
                 <div
@@ -1901,7 +1991,6 @@ ShallowWrapper {
                                 />
                 </div>
 </div>,
-              <hr />,
               <div
                 className="field is-grouped is-grouped-centered"
                 style={
@@ -1974,7 +2063,9 @@ ShallowWrapper {
             "onEnterKey": null,
             "onEscapeKey": null,
             "onSubmit": null,
-            "patch": Object {},
+            "patch": Object {
+              "id": null,
+            },
             "readOnly": true,
             "successNotification": "Formulaire non validé",
           },
@@ -2019,6 +2110,16 @@ ShallowWrapper {
                                         required={true}
                                         size="normal"
                                         storeValue={[Function]}
+                    />
+                    <Field
+                                        displayValue={[Function]}
+                                        errors={null}
+                                        label="Nom d'usage"
+                                        layout="horizontal"
+                                        name="publicName"
+                                        size="normal"
+                                        storeValue={[Function]}
+                                        type="textarea"
                     />
                     <Field
                                         displayValue={[Function]}
@@ -2090,6 +2191,16 @@ ShallowWrapper {
                       <Field
                         displayValue={[Function]}
                         errors={null}
+                        label="Nom d'usage"
+                        layout="horizontal"
+                        name="publicName"
+                        size="normal"
+                        storeValue={[Function]}
+                        type="textarea"
+/>,
+                      <Field
+                        displayValue={[Function]}
+                        errors={null}
                         label="E-mail"
                         layout="horizontal"
                         name="bookingEmail"
@@ -2153,6 +2264,24 @@ ShallowWrapper {
                       "props": Object {
                         "displayValue": [Function],
                         "errors": null,
+                        "label": "Nom d'usage",
+                        "layout": "horizontal",
+                        "name": "publicName",
+                        "size": "normal",
+                        "storeValue": [Function],
+                        "type": "textarea",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "displayValue": [Function],
+                        "errors": null,
                         "label": "E-mail",
                         "layout": "horizontal",
                         "name": "bookingEmail",
@@ -2186,7 +2315,7 @@ ShallowWrapper {
                     <span
                                         className="is-pulled-right is-size-7 has-text-grey"
                     >
-                                        Vous avez besoin d'être administrateur de la structure pour editer ces informations.
+                                        Vous avez besoin d'être administrateur de la structure pour éditer ces informations.
                     </span>
 </h2>,
                   <div
@@ -2231,7 +2360,7 @@ ShallowWrapper {
                       <span
                         className="is-pulled-right is-size-7 has-text-grey"
 >
-                        Vous avez besoin d'être administrateur de la structure pour editer ces informations.
+                        Vous avez besoin d'être administrateur de la structure pour éditer ces informations.
 </span>,
                     ],
                     "className": "main-list-title",
@@ -2244,11 +2373,11 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": "Vous avez besoin d'être administrateur de la structure pour editer ces informations.",
+                        "children": "Vous avez besoin d'être administrateur de la structure pour éditer ces informations.",
                         "className": "is-pulled-right is-size-7 has-text-grey",
                       },
                       "ref": null,
-                      "rendered": "Vous avez besoin d'être administrateur de la structure pour editer ces informations.",
+                      "rendered": "Vous avez besoin d'être administrateur de la structure pour éditer ces informations.",
                       "type": "span",
                     },
                   ],
@@ -2283,7 +2412,6 @@ ShallowWrapper {
                         storeValue={[Function]}
                         type="iban"
 />,
-                      false,
                     ],
                     "className": "field-group",
                   },
@@ -2328,7 +2456,6 @@ ShallowWrapper {
                       "rendered": null,
                       "type": [Function],
                     },
-                    false,
                   ],
                   "type": "div",
                 },
@@ -2614,15 +2741,6 @@ ShallowWrapper {
               "instance": null,
               "key": undefined,
               "nodeType": "host",
-              "props": Object {},
-              "ref": null,
-              "rendered": null,
-              "type": "hr",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
               "props": Object {
                 "children": Array [
                   <div
@@ -2637,7 +2755,7 @@ ShallowWrapper {
                                         Modifier le lieu
                     </NavLink>
 </div>,
-                  undefined,
+                  null,
                   <div
                     className="control"
 >
@@ -2704,7 +2822,7 @@ ShallowWrapper {
                   },
                   "type": "div",
                 },
-                undefined,
+                null,
                 Object {
                   "instance": null,
                   "key": undefined,

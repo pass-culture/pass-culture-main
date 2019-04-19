@@ -3,9 +3,9 @@ import get from 'lodash.get'
 import {
   CancelButton,
   closeNotification,
-  Icon,
   Field,
   Form,
+  Icon,
   showNotification,
   SubmitButton,
 } from 'pass-culture-shared'
@@ -23,13 +23,13 @@ import {
   VENUE_NEW_PATCH_KEYS,
 } from 'utils/formatPatch'
 
-class RawVenue extends Component {
+class Venue extends Component {
   constructor() {
     super()
     this.state = {
       isLoading: false,
       isNew: false,
-      isReadOnly: true,
+      isRead: true,
     }
   }
 
@@ -42,11 +42,12 @@ class RawVenue extends Component {
     } = nextProps
     const isEdit = search.includes('modifie')
     const isNew = venueId === 'nouveau'
-    const isReadOnly = !isNew && !isEdit
+    const isRead = !isNew && !isEdit
+
     return {
       isEdit,
       isNew,
-      isReadOnly,
+      isRead,
     }
   }
 
@@ -57,6 +58,7 @@ class RawVenue extends Component {
         params: { offererId, venueId },
       },
     } = this.props
+
     if (venueId !== 'nouveau') {
       dispatch(
         requestData({
@@ -75,7 +77,6 @@ class RawVenue extends Component {
           normalizer: offererNormalizer,
         })
       )
-
       dispatch(requestData({ apiPath: `/userOfferers/${offererId}` }))
     } else {
       return handleSuccess()
@@ -90,11 +91,6 @@ class RawVenue extends Component {
     } = action
     const venueId = datum.id
 
-    if (!venueId) {
-      console.warn('You should have a venueId here')
-      return
-    }
-
     const isPatchOrPostMethod = method === 'POST' || method === 'PATCH'
 
     const redirectPathname = isPatchOrPostMethod
@@ -104,8 +100,7 @@ class RawVenue extends Component {
     history.push(redirectPathname)
 
     const createOfferPathname = `/offres/creation?lieu=${venueId}`
-
-    const text =
+    const message =
       method === 'POST' ? (
         <p>
           Lieu créé. Vous pouvez maintenant y{' '}
@@ -122,13 +117,27 @@ class RawVenue extends Component {
 
     dispatch(
       showNotification({
-        text,
+        text: message,
         type: 'success',
       })
     )
-    // TODO: do it in the way that the notification
-    // is displayed in the next page an disapeear when
-    // the user is after changing to another page
+  }
+
+  buildBackToInfos = (offerer, offererId, venuePatch) => {
+    const offererName = get(offerer, 'name')
+    const venueName = get(venuePatch, 'name')
+    const isNewVenue = offererName === venueName
+
+    const backToLabel = isNewVenue ? 'STRUCTURE' : offererName
+
+    return {
+      label: backToLabel,
+      path: `/structures/${offererId}`,
+    }
+  }
+
+  checkIfVenueExists = venueId => {
+    return !!venueId
   }
 
   render() {
@@ -146,51 +155,39 @@ class RawVenue extends Component {
       venuePatch,
     } = this.props
 
-    const { isEdit, isNew, isReadOnly } = this.state
+    const { isEdit, isNew, isRead } = this.state
     const patchConfig = { isNew, isEdit }
 
-    const savedVenueId = get(venuePatch, 'id')
-    const siretVenue = get(venuePatch, 'siret')
+    const venuePatchId = get(venuePatch, 'id')
+    const venuePatchSiret = get(venuePatch, 'siret')
+    const venuePatchName = get(venuePatch, 'name')
+    const venuePatchIsVirtual = get(venuePatch, 'isVirtual')
 
-    const hasAlreadyRibUploaded =
-      get(venuePatch, 'iban') && get(venuePatch, 'thumbCount')
-
-    const areBankInfosReadOnly = isReadOnly || !adminUserOfferer
-    // const siretVenue = get(venuePatch, 'siret')
-
-    const isSiretSkipping = !venueId && name && !formSiret
+    const areBankInfosReadOnly = isRead || !adminUserOfferer
+    const isCommentRequired = !venueId && name && !formSiret
 
     const isFieldReadOnlyBecauseFrozenFormSiret =
-      isReadOnly || formSiret || (isEdit && get(venuePatch, 'siret'))
-
-    const isReadOnlyFromGeoOrSiren =
+      isRead || formSiret || (isEdit && venuePatchSiret)
+    const isReadFromGeoOrSiren =
       formGeo || isFieldReadOnlyBecauseFrozenFormSiret
-
     const isLatitudeReadOnlyFromGeoOrSiren =
       formGeo || (isFieldReadOnlyBecauseFrozenFormSiret && formLatitude)
-
     const isLongitudeReadOnlyFromGeoOrSiren =
       formGeo || (isFieldReadOnlyBecauseFrozenFormSiret && formLongitude)
 
     return (
       <Main
-        backTo={{
-          label:
-            get(offerer, 'name') === get(venuePatch, 'name')
-              ? 'STRUCTURE'
-              : get(offerer, 'name'),
-          path: `/structures/${offererId}`,
-        }}
+        backTo={this.buildBackToInfos(offerer, offererId, venuePatch)}
         name="venue"
         handleDataRequest={this.handleDataRequest}>
-        <HeroSection subtitle={get(venuePatch, 'name')} title="Lieu">
+        <HeroSection subtitle={venuePatchName} title="Lieu">
           {isNew && (
             <p className="subtitle">Ajoutez un lieu où accéder à vos offres.</p>
           )}
 
-          {get(offerer, 'id') && savedVenueId && (
+          {this.checkIfVenueExists(venuePatchId) && (
             <NavLink
-              to={`/offres/creation?lieu=${venuePatch.id}`}
+              to={`/offres/creation?lieu=${venuePatchId}`}
               className="cta button is-primary">
               <span className="icon">
                 <Icon svg="ico-offres-w" />
@@ -202,9 +199,9 @@ class RawVenue extends Component {
 
         {!isNew && <VenueProvidersManager venue={venuePatch} />}
 
-        {!get(venuePatch, 'isVirtual') && (
+        {!venuePatchIsVirtual && (
           <Form
-            action={`/venues/${savedVenueId || ''}`}
+            action={`/venues/${venuePatchId || ''}`}
             formatPatch={patch =>
               formatPatch(
                 patch,
@@ -217,12 +214,12 @@ class RawVenue extends Component {
             name="venue"
             normalizer={venueNormalizer}
             patch={venuePatch}
-            readOnly={isReadOnly}>
+            readOnly={isRead}>
             {isNew && <Field type="hidden" name="managingOffererId" />}
             <div className="section">
               <h2 className="main-list-title is-relative">
                 IDENTIFIANTS
-                {!isReadOnly && (
+                {!isRead && (
                   <span className="is-pulled-right is-size-7 has-text-grey">
                     Les champs marqués d'un{' '}
                     <span className="required-legend"> * </span> sont
@@ -230,29 +227,29 @@ class RawVenue extends Component {
                   </span>
                 )}
               </h2>
+
               <div className="field-group">
                 <Field
-                  className={classnames({ 'is-invisible': isSiretSkipping })}
+                  className={classnames({ 'is-invisible': isCommentRequired })}
                   label="SIRET (si applicable)"
                   name="siret"
-                  readOnly={siretVenue}
+                  readOnly={venuePatchSiret}
                   renderInfo={() => {
-                    if (isReadOnly) {
-                      return
-                    }
                     if (isFieldReadOnlyBecauseFrozenFormSiret) {
                       return (
                         <span
                           className="button"
                           data-place="bottom"
-                          data-tip="<p>Il n'est pas possible de modifier le nom, l'addresse et la géolocalisation du lieu quand un siret est rentré.</p>"
+                          data-tip="<p>Il n'est pas possible de modifier le nom, l'addresse et la géolocalisation du lieu quand un siret est renseigné.</p>"
                           data-type="info">
+                          <Icon svg="picto-info" />
                           <Icon svg="picto-info" />
                         </span>
                       )
                     }
+
                     return (
-                      !siretVenue && (
+                      !venuePatchSiret && (
                         <span
                           className="button"
                           data-place="bottom"
@@ -273,19 +270,16 @@ class RawVenue extends Component {
                   readOnly={isFieldReadOnlyBecauseFrozenFormSiret}
                   required
                 />
+                <Field label="Nom d'usage" name="publicName" type="textarea" />
                 <Field
                   label="E-mail"
                   name="bookingEmail"
-                  required
                   renderInfo={() => {
-                    if (isReadOnly) {
-                      return
-                    }
                     return (
-                      !siretVenue && (
+                      !venuePatchSiret && (
                         <span
                           className="button"
-                          data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une autre adresse différente est saisie lors de la création d'une offre)</p>"
+                          data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une adresse différente est saisie lors de la création d'une offre)</p>"
                           data-place="bottom"
                           data-type="info">
                           <Icon svg="picto-info" />
@@ -294,14 +288,15 @@ class RawVenue extends Component {
                     )
                   }}
                   type="email"
+                  required
                 />
-                {(isNew || (isEdit && !siretVenue)) && (
+                {(isNew || (isEdit && !venuePatchSiret)) && (
                   <Field
                     label="Commentaire (si pas de SIRET)"
                     name="comment"
                     readOnly={formSiret}
                     type="textarea"
-                    required={!this.props.formSiret}
+                    required={!formSiret}
                   />
                 )}
               </div>
@@ -312,9 +307,10 @@ class RawVenue extends Component {
                 INFORMATIONS BANCAIRES
                 <span className="is-pulled-right is-size-7 has-text-grey">
                   {!adminUserOfferer &&
-                    "Vous avez besoin d'être administrateur de la structure pour editer ces informations."}
+                    "Vous avez besoin d'être administrateur de la structure pour éditer ces informations."}
                 </span>
               </h2>
+
               <div className="field-group">
                 <Field
                   label="BIC"
@@ -329,16 +325,6 @@ class RawVenue extends Component {
                   readOnly={areBankInfosReadOnly}
                   type="iban"
                 />
-                {false && (
-                  <Field
-                    isExpanded
-                    label="Justificatif"
-                    name="rib"
-                    readOnly={isReadOnly || areBankInfosReadOnly}
-                    uploaded={hasAlreadyRibUploaded}
-                    type="file"
-                  />
-                )}
               </div>
             </div>
 
@@ -360,14 +346,14 @@ class RawVenue extends Component {
                   autocomplete="postal-code"
                   label="Code postal"
                   name="postalCode"
-                  readOnly={isReadOnlyFromGeoOrSiren}
+                  readOnly={isReadFromGeoOrSiren}
                   required
                 />
                 <Field
                   autocomplete="address-level2"
                   label="Ville"
                   name="city"
-                  readOnly={isReadOnlyFromGeoOrSiren}
+                  readOnly={isReadFromGeoOrSiren}
                   required
                 />
                 <Field
@@ -384,12 +370,12 @@ class RawVenue extends Component {
                 />
               </div>
             </div>
-            <hr />
+
             <div
               className="field is-grouped is-grouped-centered"
               style={{ justifyContent: 'space-between' }}>
               <div className="control">
-                {isReadOnly ? (
+                {isRead ? (
                   <NavLink
                     className="button is-secondary is-medium"
                     to={`/structures/${offererId}/lieux/${venueId}?modifie`}>
@@ -407,7 +393,7 @@ class RawVenue extends Component {
                   </CancelButton>
                 )}
               </div>
-              {savedVenueId && (
+              {venuePatchId && (
                 <div className="control">
                   <div
                     className="field is-grouped is-grouped-centered"
@@ -427,7 +413,7 @@ class RawVenue extends Component {
                   className="field is-grouped is-grouped-centered"
                   style={{ justifyContent: 'space-between' }}>
                   <div className="control">
-                    {isReadOnly ? (
+                    {isRead ? (
                       <NavLink
                         className="button is-primary is-medium"
                         to={`/structures/${offererId}`}>
@@ -449,4 +435,4 @@ class RawVenue extends Component {
   }
 }
 
-export default RawVenue
+export default Venue

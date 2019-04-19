@@ -3,13 +3,13 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import RawVenue from './RawVenue'
+import Venue from './Venue'
 import { withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
 import selectOffererById from 'selectors/selectOffererById'
 import selectUserOffererByOffererIdAndUserIdAndRightsType from 'selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
 import selectVenuePatchByVenueIdByOffererId from 'selectors/selectVenuePatchByVenueIdByOffererId'
 
-function mapStateToProps(state, ownProps) {
+export const mapStateToProps = (state, ownProps) => {
   const { currentUser, match } = ownProps
   const {
     params: { offererId, venueId },
@@ -39,4 +39,4 @@ export default compose(
   withRedirectToSigninWhenNotAuthenticated,
   withRouter,
   connect(mapStateToProps)
-)(RawVenue)
+)(Venue)

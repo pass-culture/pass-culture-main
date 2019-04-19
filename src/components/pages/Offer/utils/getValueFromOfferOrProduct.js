@@ -1,5 +1,3 @@
-import get from 'lodash.get'
-
 export const getValueFromOfferOrProduct = (key, offer, product) => {
   if (!offer) {
     return

@@ -1,4 +1,4 @@
-export const VENUE_EDIT_PATCH_KEYS = ['bookingEmail']
+export const VENUE_EDIT_PATCH_KEYS = ['bookingEmail', 'name', 'publicName']
 
 export const VENUE_NEW_PATCH_KEYS = [
   'address',
@@ -11,6 +11,7 @@ export const VENUE_NEW_PATCH_KEYS = [
   'longitude',
   'managingOffererId',
   'name',
+  'publicName',
   'postalCode',
   'siret',
 ]
