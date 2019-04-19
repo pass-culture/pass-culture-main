@@ -28,8 +28,6 @@ export const SUPPORT_EMAIL_SUBJECT = encodeURI(
 )
 
 export const API_URL = process.env.API_URL || 'http://localhost'
-export const THUMBS_URL =
-  process.env.THUMBS_URL || 'http://localhost/storage/thumbs'
 
 let calculatedLocalhost
 if (typeof window !== 'undefined') {
