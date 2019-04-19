@@ -380,6 +380,7 @@ def create_event_offer(venue=None, event=None, event_name='Test event', duration
     offer.id = idx
     return offer
 
+
 def create_offerer(
         siren='123456789',
         address='123 rue de Paris',
