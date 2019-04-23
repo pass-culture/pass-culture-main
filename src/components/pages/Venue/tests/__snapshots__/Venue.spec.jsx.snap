@@ -10,7 +10,14 @@ ShallowWrapper {
     formLatitude={5.15981}
     formLongitude={-52.63452}
     formSiret="22222222411111"
-    history={Object {}}
+    history={
+        Object {
+            "location": Object {
+              "pathname": "/fake",
+            },
+            "push": [Function],
+          }
+    }
     location={
         Object {
             "search": "",
@@ -25,7 +32,11 @@ ShallowWrapper {
           }
     }
     name="Maison de la Brique"
-    offerer={Object {}}
+    offerer={
+        Object {
+            "id": "BQ",
+          }
+    }
     user={Object {}}
     venuePatch={
         Object {

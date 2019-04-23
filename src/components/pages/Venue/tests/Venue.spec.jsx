@@ -7,10 +7,13 @@ import { NavLink } from 'react-router-dom'
 import VenueProvidersManager from '../VenueProvidersManager'
 
 describe('src | components | pages | Venue | Venue', () => {
-  const dispatch = jest.fn()
+  let dispatch
+  let push
   let props
 
   beforeEach(() => {
+    dispatch = jest.fn()
+    push = jest.fn()
     props = {
       currentUser: {},
       dispatch: dispatch,
@@ -18,7 +21,12 @@ describe('src | components | pages | Venue | Venue', () => {
       formLatitude: 5.15981,
       formLongitude: -52.63452,
       formSiret: '22222222411111',
-      history: {},
+      history: {
+        location: {
+          pathname: '/fake',
+        },
+        push: push,
+      },
       location: {
         search: '',
       },
@@ -29,7 +37,9 @@ describe('src | components | pages | Venue | Venue', () => {
         },
       },
       name: 'Maison de la Brique',
-      offerer: {},
+      offerer: {
+        id: 'BQ',
+      },
       user: {},
       venuePatch: {
         id: null,
@@ -202,75 +212,118 @@ describe('src | components | pages | Venue | Venue', () => {
   })
 
   describe('functions', () => {
-    describe('when patching a Venue', () => {
-      const pushMock = jest.fn()
-      const props = {
-        currentUser: {},
-        dispatch: dispatch,
-        formComment: null,
-        formLatitude: 5.15981,
-        formLongitude: -52.63452,
-        formSiret: '22222222411111',
-        history: {
-          location: {
-            pathname: '/fake',
+    describe('handleSuccess', () => {
+      describe('when creating a venue', () => {
+        const action = {
+          config: {
+            apiPath: '/venues/CM',
+            method: 'POST',
           },
-          push: pushMock,
-        },
-        location: {
-          search: '',
-        },
-        match: {
-          params: {
-            offererId: 'APEQ',
-            venueId: 'AQYQ',
+          payload: {
+            datum: {
+              id: 'CM',
+            },
           },
-        },
-        name: 'Maison de la Brique',
-        offerer: {
-          id: 'BQ',
-        },
-        user: {},
-        venuePatch: {},
-      }
-      const action = {
-        config: {
-          apiPath: '/venues/CM',
-          method: 'PATCH',
-        },
-        payload: {
-          datum: {
-            bookingEmail: 'fake@email.com',
-            id: 'CM',
-          },
-        },
-        type: 'SUCCESS_DATA_PATCH_VENUES/CM',
-      }
-
-      it('should change pathname', () => {
-        // // When
-        const wrapper = shallow(<Venue {...props} />)
-        wrapper.instance().handleSuccess(wrapper.state(), action)
-
-        // Then
-        expect(pushMock).toHaveBeenCalledWith('/structures/BQ/lieux/CM')
-      })
-
-      it('should dispatch a success message', () => {
-        // When
-        const wrapper = shallow(<Venue {...props} />)
-        wrapper.instance().handleSuccess(wrapper.state(), action)
-
-        const expected = {
-          patch: {
-            text: 'Lieu modifié avec succès !',
-            type: 'success',
-          },
-          type: 'SHOW_NOTIFICATION',
         }
 
+        it('should redirect to venue details', () => {
+          // given
+          const wrapper = shallow(<Venue {...props} />)
+          const state = wrapper.state()
+
+          // when
+          wrapper.instance().handleSuccess(state, action)
+
+          // then
+          expect(push).toHaveBeenCalledWith('/structures/BQ/lieux/CM')
+        })
+
+        it('should dispatch a success message with valid message when venue is created', () => {
+          // given
+          const wrapper = shallow(<Venue {...props} />)
+          const state = wrapper.state()
+
+          // when
+          wrapper.instance().handleSuccess(state, action)
+
+          // then
+          expect(dispatch).toHaveBeenCalled()
+        })
+      })
+
+      describe('when editing a venue', () => {
+        const action = {
+          config: {
+            apiPath: '/venues/CM',
+            method: 'PATCH',
+          },
+          payload: {
+            datum: {
+              id: 'CM',
+            },
+          },
+        }
+
+        it('should redirect to venue details', () => {
+          // given
+          const wrapper = shallow(<Venue {...props} />)
+          const state = wrapper.state()
+
+          // when
+          wrapper.instance().handleSuccess(state, action)
+
+          // then
+          expect(push).toHaveBeenCalledWith('/structures/BQ/lieux/CM')
+        })
+
+        it('should dispatch a success message with valid message when venue is modified', () => {
+          // given
+          const wrapper = shallow(<Venue {...props} />)
+          const state = wrapper.state()
+
+          // when
+          wrapper.instance().handleSuccess(state, action)
+
+          // then
+          expect(dispatch).toHaveBeenCalledWith({
+            patch: {
+              text: 'Lieu modifié avec succès !',
+              type: 'success',
+            },
+            type: 'SHOW_NOTIFICATION',
+          })
+        })
+      })
+    })
+
+    describe('handleDataRequest', () => {
+      it('should dispatch actions to update existing venue', () => {
+        // given
+        const wrapper = shallow(<Venue {...props} />)
+
+        // when
+        wrapper.instance().handleDataRequest(jest.fn(), jest.fn())
+
         // then
-        expect(dispatch).toHaveBeenCalledWith(expected)
+        expect(dispatch.mock.calls[0][0]).toEqual({
+          config: {
+            apiPath: '/offerers/APEQ',
+            handleFail: expect.any(Function),
+            handleSuccess: expect.any(Function),
+            method: 'GET',
+            normalizer: {
+              managedVenues: {
+                normalizer: { offers: 'offers' },
+                stateKey: 'venues',
+              },
+            },
+          },
+          type: 'REQUEST_DATA_GET_/OFFERERS/APEQ',
+        })
+        expect(dispatch.mock.calls[1][0]).toEqual({
+          config: { apiPath: '/userOfferers/APEQ', method: 'GET' },
+          type: 'REQUEST_DATA_GET_/USEROFFERERS/APEQ',
+        })
       })
     })
   })

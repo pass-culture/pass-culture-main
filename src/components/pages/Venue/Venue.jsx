@@ -89,38 +89,47 @@ class Venue extends Component {
       config: { method },
       payload: { datum },
     } = action
-    const venueId = datum.id
+    const offererId = get(offerer, 'id')
+    const venueId = get(datum, 'id')
 
-    const isPatchOrPostMethod = method === 'POST' || method === 'PATCH'
+    const redirectUrl = this.buildRedirectUrl(offererId, venueId, method)
+    history.push(redirectUrl)
 
-    const redirectPathname = isPatchOrPostMethod
-      ? `/structures/${get(offerer, 'id')}/lieux/${venueId}`
-      : `/structures/${get(offerer, 'id')}`
-
-    history.push(redirectPathname)
-
-    const createOfferPathname = `/offres/creation?lieu=${venueId}`
-    const message =
-      method === 'POST' ? (
-        <p>
-          Lieu créé. Vous pouvez maintenant y{' '}
-          <NavLink
-            to={createOfferPathname}
-            onClick={() => dispatch(closeNotification())}>
-            créer une offre
-          </NavLink>
-          , ou en importer automatiquement.
-        </p>
-      ) : (
-        'Lieu modifié avec succès !'
-      )
-
+    const notificationMessage = this.buildNotificationMessage(venueId, method)
     dispatch(
       showNotification({
-        text: message,
+        text: notificationMessage,
         type: 'success',
       })
     )
+  }
+
+  buildNotificationMessage = (venueId, method) => {
+    const isOfferCreated = method === 'POST'
+
+    return isOfferCreated ? (
+      <p>
+        Lieu créé. Vous pouvez maintenant y{' '}
+        <NavLink
+          to={`/offres/creation?lieu=${venueId}`}
+          onClick={() => this.dispatch(closeNotification())}>
+          créer une offre
+        </NavLink>
+        , ou en importer automatiquement.
+      </p>
+    ) : (
+      'Lieu modifié avec succès !'
+    )
+  }
+
+  buildRedirectUrl = (offererId, venueId, method) => {
+    const offererPath = `/structures/${offererId}`
+
+    if (method === 'POST' || method === 'PATCH') {
+      return `${offererPath}/lieux/${venueId}`
+    }
+
+    return offererPath
   }
 
   buildBackToInfos = (offerer, offererId, venuePatch) => {
@@ -242,7 +251,6 @@ class Venue extends Component {
                           data-place="bottom"
                           data-tip="<p>Il n'est pas possible de modifier le nom, l'addresse et la géolocalisation du lieu quand un siret est renseigné.</p>"
                           data-type="info">
-                          <Icon svg="picto-info" />
                           <Icon svg="picto-info" />
                         </span>
                       )
