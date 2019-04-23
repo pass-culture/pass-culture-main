@@ -159,6 +159,11 @@ jobs:
             cd api
             git remote add scalingo git@scalingo.com:${SCALINGO_APP_NAME}.git
             git push scalingo master
+      - run:
+          name: Check API version
+          command: |
+            export SCALINGO_APP_NAME=$(./compute_app_name.sh ${CIRCLE_BRANCH})
+            curl
 
   deploy-pro:
     machine:
@@ -173,6 +178,10 @@ jobs:
             cd pro
             yarn install
             set -a; source ~/node_modules/pass-culture-shared/config/run_envs/${CIRCLE_BRANCH}" && yarn build
+            while set -a; source ~/node_modules/pass-culture-shared/config/run_envs/${CIRCLE_BRANCH}" && yarn build; do
+              echo "Waiting for Fontello to be nice with us :("
+              sleep 1
+            done
       - run:
           name: Deploy Pro
           command: |
@@ -243,13 +252,10 @@ workflows:
             - tests-api
             - tests-webapp
             - tests-pro
-      - deploy-webapp:
-          requires:
-            - tests-api
-            - tests-webapp
-            - tests-pro
       - deploy-pro:
           requires:
-            - tests-api
-            - tests-webapp
-            - tests-pro
+            - deploy-api
+      - deploy-webapp:
+          requires:
+            - deploy-pro
+
