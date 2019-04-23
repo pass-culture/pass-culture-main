@@ -33,10 +33,6 @@ NOT_VALIDATED_OFFERER_INCLUDES = [
     "-validationToken"
 ]
 
-# EVENT_OCCURRENCE_INCLUDES = [
-#     'stocks'
-# ]
-
 EVENT_INCLUDES = [
     {
         "key": "occurrences",
