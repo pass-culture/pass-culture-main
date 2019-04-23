@@ -59,7 +59,7 @@ class Venue extends Component {
       },
     } = this.props
 
-    if (venueId !== 'nouveau') {
+    if (!this.state.isNew) {
       dispatch(
         requestData({
           apiPath: `/offerers/${offererId}`,
@@ -96,6 +96,7 @@ class Venue extends Component {
     history.push(redirectUrl)
 
     const notificationMessage = this.buildNotificationMessage(venueId, method)
+
     dispatch(
       showNotification({
         text: notificationMessage,
@@ -105,6 +106,7 @@ class Venue extends Component {
   }
 
   buildNotificationMessage = (venueId, method) => {
+    const { dispatch } = this.props
     const isOfferCreated = method === 'POST'
 
     return isOfferCreated ? (
@@ -112,7 +114,7 @@ class Venue extends Component {
         Lieu créé. Vous pouvez maintenant y{' '}
         <NavLink
           to={`/offres/creation?lieu=${venueId}`}
-          onClick={() => this.dispatch(closeNotification())}>
+          onClick={() => dispatch(closeNotification())}>
           créer une offre
         </NavLink>
         , ou en importer automatiquement.

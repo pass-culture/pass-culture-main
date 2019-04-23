@@ -93,6 +93,17 @@ describe('src | components | pages | Venue | Venue', () => {
         }
       })
 
+      it('should render component with correct state values', () => {
+        // when
+        const wrapper = shallow(<Venue {...props} />)
+
+        // then
+        expect(wrapper.state('isEdit')).toBe(false)
+        expect(wrapper.state('isLoading')).toBe(false)
+        expect(wrapper.state('isNew')).toBe(true)
+        expect(wrapper.state('isRead')).toBe(false)
+      })
+
       it('should display a paragraph with proper title', () => {
         // when
         const wrapper = shallow(<Venue {...props} />)
@@ -195,23 +206,33 @@ describe('src | components | pages | Venue | Venue', () => {
         }
       })
 
-      it('should permit user to change the e-mail', () => {
+      it('should render component with correct state values', () => {
         // when
         const wrapper = shallow(<Venue {...props} />)
-        const expected = {
-          isEdit: true,
-          isLoading: false,
-          isNew: false,
-          isRead: false,
-        }
 
         // then
-        expect(wrapper.state().isRead).toEqual(expected.isRead)
+        expect(wrapper.state('isEdit')).toBe(true)
+        expect(wrapper.state('isLoading')).toBe(false)
+        expect(wrapper.state('isNew')).toBe(false)
+        expect(wrapper.state('isRead')).toBe(false)
+      })
+    })
+
+    describe('when reading', () => {
+      it('should render component with correct state values', () => {
+        // when
+        const wrapper = shallow(<Venue {...props} />)
+
+        // then
+        expect(wrapper.state('isEdit')).toBe(false)
+        expect(wrapper.state('isLoading')).toBe(false)
+        expect(wrapper.state('isNew')).toBe(false)
+        expect(wrapper.state('isRead')).toBe(true)
       })
     })
   })
 
-  describe('functions', () => {
+  describe('when requesting API', () => {
     describe('handleSuccess', () => {
       describe('when creating a venue', () => {
         const action = {
