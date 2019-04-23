@@ -5,12 +5,13 @@ from flask import current_app as app, request, jsonify
 from domain.admin_emails import send_dev_email
 from utils.logger import logger
 from utils.mailing import send_raw_email
+from utils.rest import expect_json_data
 
 
 @app.route('/api/client_errors/store', methods=['POST'])
 def post_error():
-    if not request.is_json:
-        return jsonify('JSON data expected'), 400
+    if not request.data:
+        return jsonify('Data expected'), 400
 
     data = request.get_json(force=True)
 

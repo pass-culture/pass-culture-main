@@ -11,7 +11,11 @@ class Post:
             # when
             response = TestClient().post(
                 API_URL + '/api/client_errors/store',
-                json={'some': {'js': {'errors': ['error1', 'error2']}}}
+                json={'some': {'js': {'errors': ['error1', 'error2']}}},
+                headers={
+                    'Content-Type': 'text/plain;charset=UTF-8',
+                    'Origin': 'http://localhost:3000'
+                }
             )
 
             # then
@@ -27,4 +31,4 @@ class Post:
 
             # then
             assert response.status_code == 400
-            assert response.json() == 'JSON data expected'
+            assert response.text == '"Data expected"\n'
