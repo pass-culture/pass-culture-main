@@ -9,6 +9,7 @@ ShallowWrapper {
     formBeginningDatetime={null}
     formBookingLimitDatetime={null}
     formEndDatetime={null}
+    formInitialValues={Object {}}
     hasIban={false}
     history={
         Object {
@@ -23,7 +24,6 @@ ShallowWrapper {
           }
     }
     showInfo={[Function]}
-    formInitialValues={Object {}}
     stocks={Array []}
 />,
   Symbol(enzyme.__renderer__): Object {

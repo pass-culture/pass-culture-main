@@ -4,7 +4,7 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
   it('should build an object using initial values from offer or product (given POST or PATCH context), venue and offerer', () => {
     // given
     const state = {}
-    const event = {
+    const product = {
       ageMax: null,
       ageMin: null,
       condition: null,
@@ -18,7 +18,6 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
       type: 'EventType.CINEMA',
       url: undefined,
     }
-    const product = {}
     const offer = {}
     const offerer = {
       id: 'BF',
@@ -30,12 +29,13 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
     // when
     const value = selectFormInitialValuesByProductAndOfferAndOffererAndVenue(
       state,
-      event,
       product,
       offer,
       offerer,
       venue
     )
+
+    // then
     const expectedValue = {
       ageMax: null,
       ageMin: null,
@@ -47,23 +47,20 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
       isNational: true,
       mediaUrls: [],
       name: 'Au bb',
-      offererId: offerer.id,
+      offererId: 'BF',
       type: 'EventType.CINEMA',
       url: undefined,
-      venueId: venue.id,
+      venueId: 'CE',
     }
-
-    // then
     expect(value).toEqual(expectedValue)
   })
 
   it('should build an object taking info from product when creating new offer', () => {
     // given
     const state = {}
-    const event = {
+    const product = {
       description: "PNL n'est plus ce qu'il.elle était",
     }
-    const product = {}
     const offer = {}
     const offerer = {}
     const venue = {}
@@ -71,7 +68,6 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
     // when
     const value = selectFormInitialValuesByProductAndOfferAndOffererAndVenue(
       state,
-      event,
       product,
       offer,
       offerer,
@@ -79,13 +75,13 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
     )
 
     // then
-    expect(value.description).toEqual(event.description)
+    expect(value.description).toEqual(product.description)
   })
 
   it('should build an offer taking info from offer when updating offer', () => {
     // given
     const state = {}
-    const event = {
+    const product = {
       description: "PNL n'est plus ce qu'il.elle était",
     }
     const offer = {
@@ -93,13 +89,11 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
       id: 'AE',
     }
     const offerer = {}
-    const product = {}
     const venue = {}
 
     // when
     const value = selectFormInitialValuesByProductAndOfferAndOffererAndVenue(
       state,
-      event,
       product,
       offer,
       offerer,

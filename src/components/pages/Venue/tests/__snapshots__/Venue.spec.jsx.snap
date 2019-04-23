@@ -98,7 +98,7 @@ ShallowWrapper {
                               "managingOfferer": "offerers",
                               "offers": Object {
                                 "normalizer": Object {
-                                  "thing": "things",
+                                  "product": "products",
                                 },
                                 "stateKey": "offers",
                               },
@@ -626,7 +626,7 @@ ShallowWrapper {
             "managingOfferer": "offerers",
             "offers": Object {
               "normalizer": Object {
-                "thing": "things",
+                "product": "products",
               },
               "stateKey": "offers",
             },
@@ -1538,7 +1538,7 @@ ShallowWrapper {
                                     "managingOfferer": "offerers",
                                     "offers": Object {
                                       "normalizer": Object {
-                                        "thing": "things",
+                                        "product": "products",
                                       },
                                       "stateKey": "offers",
                                     },
@@ -2066,7 +2066,7 @@ ShallowWrapper {
               "managingOfferer": "offerers",
               "offers": Object {
                 "normalizer": Object {
-                  "thing": "things",
+                  "product": "products",
                 },
                 "stateKey": "offers",
               },

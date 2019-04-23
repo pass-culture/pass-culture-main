@@ -51,9 +51,8 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
           isMutatingDatum: true,
           method: 'PATCH',
           normalizer: {
-            event: { normalizer: { offers: 'offers' }, stateKey: 'events' },
             mediations: 'mediations',
-            product: { normalizer: { offers: 'offers' }, stateKey: 'things' },
+            product: { normalizer: { offers: 'offers' }, stateKey: 'products' },
             stocks: 'stocks',
             venue: {
               normalizer: { managingOfferer: 'offerers' },
@@ -89,7 +88,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
 
     it('should contain a Navlink Component with the right props and containing a DotDotDot component', () => {
       // given
-      props.thing = {
+      props.product = {
         name: 'fake name',
       }
       props.stocks = []
@@ -213,10 +212,10 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       expect(numberOfParticipantsLabel.text()).toBe('2 - 5')
     })
 
-    describe('when offer is an event', () => {
+    describe('when offer is an event product ', () => {
       it('should display the correct text when 0 ticket available', () => {
         // given
-        props.event = {
+        props.product = {
           offerType: { label: 'Conférence — Débat — Dédicace' },
         }
         props.stocks = []
@@ -226,12 +225,13 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
           bookingEmail: 'booking.email@test.com',
           dateCreated: '2019-02-25T09:50:10.735519Z',
           dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
-          eventId: 42,
+          productId: 42,
           idAtProviders: null,
           isActive: true,
+          isEvent: true,
+          isThing: false,
           lastProviderId: null,
           modelName: 'Offer',
-          thingId: null,
           venueId: 'BE',
           mediationsIds: ['EY'],
           stocksIds: ['JQ'],
@@ -251,7 +251,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
 
       it('should display the correct text when 1 ticket is available', () => {
         // given
-        props.event = {
+        props.product = {
           offerType: { label: 'Conférence — Débat — Dédicace' },
         }
         props.stocks = [{}]
@@ -261,12 +261,13 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
           bookingEmail: 'booking.email@test.com',
           dateCreated: '2019-02-25T09:50:10.735519Z',
           dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
-          eventId: 42,
+          productId: 42,
           idAtProviders: null,
           isActive: true,
+          isEvent: true,
+          isThing: false,
           lastProviderId: null,
           modelName: 'Offer',
-          thingId: null,
           venueId: 'BE',
           mediationsIds: ['EY'],
           stocksIds: ['JQ'],
@@ -286,7 +287,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
 
       it('should display the correct text when 2 tickets are available', () => {
         // given
-        props.event = {
+        props.product = {
           offerType: { label: 'Conférence — Débat — Dédicace' },
         }
         props.stocks = [{}, {}]
@@ -296,12 +297,13 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
           bookingEmail: 'booking.email@test.com',
           dateCreated: '2019-02-25T09:50:10.735519Z',
           dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
-          eventId: 42,
+          productId: 42,
           idAtProviders: null,
           isActive: true,
+          isEvent: true,
+          isThing: false,
           lastProviderId: null,
           modelName: 'Offer',
-          thingId: null,
           venueId: 'BE',
           mediationsIds: ['EY'],
           stocksIds: ['JQ'],
@@ -339,7 +341,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
             router: jest.fn(),
           },
         }
-        props.event = {
+        props.product = {
           offerType: { label: 'Conférence — Débat — Dédicace' },
         }
         props.stocks = [{}, {}]
@@ -348,12 +350,13 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
           bookingEmail: 'booking.email@test.com',
           dateCreated: '2019-02-25T09:50:10.735519Z',
           dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
-          eventId: 42,
+          productId: 42,
           idAtProviders: null,
           isActive: true,
+          isEvent: true,
+          isThing: false,
           lastProviderId: null,
           modelName: 'Offer',
-          thingId: null,
           venueId: 'BE',
           mediationsIds: ['EY'],
           stocksIds: ['JQ'],
@@ -375,7 +378,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       })
     })
 
-    describe('when offer is a product thing', () => {
+    describe('when offer is a thing product', () => {
       it('should display the correct text when 0 thing is available', () => {
         // given
         props.product = {
@@ -391,6 +394,8 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
           id: '1M',
           idAtProviders: null,
           isActive: true,
+          isEvent: false,
+          isThing: true,
           lastProviderId: null,
           mediationsIds: ['EY'],
           modelName: 'Offer',
@@ -440,12 +445,13 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
           bookingEmail: 'booking.email@test.com',
           dateCreated: '2019-02-25T09:50:10.735519Z',
           dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
-          eventId: 42,
+          productId: 42,
           idAtProviders: null,
           isActive: true,
+          isEvent: false,
+          isThing: true,
           lastProviderId: null,
           modelName: 'Offer',
-          thingId: null,
           venueId: 'BE',
           mediationsIds: ['EY'],
           stocksIds: ['JQ'],

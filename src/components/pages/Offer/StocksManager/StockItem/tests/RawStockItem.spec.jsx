@@ -35,6 +35,7 @@ describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
         const initialProps = {
           closeInfo: jest.fn(),
           dispatch: jest.fn(),
+          history: {},
           hasIban: false,
           isEventStock: false,
           offer: {

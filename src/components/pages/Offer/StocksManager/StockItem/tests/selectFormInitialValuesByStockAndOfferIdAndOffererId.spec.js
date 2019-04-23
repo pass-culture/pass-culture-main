@@ -1,11 +1,10 @@
 import selectFormInitialValuesByStockAndOfferIdAndOffererId from '../selectFormInitialValuesByStockAndOfferIdAndOffererId'
 
-import mockStateForformInitialValuesTest from './mockStateForformInitialValuesTest'
-
 describe('createOfferersSelector', () => {
   it('should select the global state', () => {
     // given
-    const state = mockStateForformInitialValuesTest
+    const offerId = 'UU'
+    const managingOffererId = 'BA'
     const stock = {
       available: 22,
       bookingLimitDatetime: '2019-03-13T23:00:00Z',
@@ -21,9 +20,12 @@ describe('createOfferersSelector', () => {
       offerId: 'UU',
       price: 17,
     }
-
-    const offerId = 'UU'
-    const managingOffererId = 'BA'
+    const state = {
+      data: {
+        offers: [{ id: offerId, isThing: true, isEvent: false }],
+        stocks: [stock],
+      },
+    }
 
     // when
     const result = selectFormInitialValuesByStockAndOfferIdAndOffererId(

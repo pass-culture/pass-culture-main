@@ -7,6 +7,7 @@ function mapArgsToCacheKey(state, offerId) {
   return offerId || ''
 }
 
+// TODO Add tests on this selector
 export const selectStocksByOfferId = createCachedSelector(
   state => state.data.stocks,
   (state, offerId) => offerId,
@@ -14,7 +15,7 @@ export const selectStocksByOfferId = createCachedSelector(
   (stocks, offerId, offer) => {
     let filteredStocks = stocks.filter(stock => stock.offerId === offerId)
 
-    if (offer && offer.eventId) {
+    if (offer && offer.isEvent) {
       filteredStocks.sort(
         (s1, s2) =>
           moment(s2.beginningDatetime).unix() -

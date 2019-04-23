@@ -13,6 +13,7 @@ function mapArgsToCacheKey(state, stock, offerId, offererId) {
   return `${(stock && stock.id) || ''}${offerId || ''}/${offererId || ''}`
 }
 
+// TODO No (green) tests found for this part of code
 export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCachedSelector(
   (state, stock) => stock,
   (state, stock, offerId) => selectOfferById(state, offerId),

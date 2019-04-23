@@ -30,14 +30,14 @@ class RawOfferItem extends Component {
     )
   }
 
-  buildEventLabel = remainingStock => {
-    if (remainingStock === 0) {
-      return '0 places'
-    }
-    return `encore ${pluralize(remainingStock, 'place')}`
-  }
-
   buildProductLabel = remainingStock => {
+    if (this.props.offer.isEvent) {
+      if (remainingStock === 0) {
+        return '0 places'
+      }
+      return `encore ${pluralize(remainingStock, 'place')}`
+    }
+
     return `${remainingStock} en stock`
   }
 
@@ -56,12 +56,14 @@ class RawOfferItem extends Component {
     return groupSizeMin > 0 ? groupLabel : null
   }
 
-  buildEventNavLinkLabel = stockSize => {
-    return pluralize(stockSize, 'date')
-  }
+  buildProductNavLinkLabel = (offer, stockSize) => {
+    if (offer.isThing) {
+      return `${stockSize} prix`
+    }
 
-  buildProductNavLinkLabel = stockSize => {
-    return `${stockSize} prix`
+    if (offer.isEvent) {
+      return pluralize(stockSize, 'date')
+    }
   }
 
   render() {
@@ -141,8 +143,7 @@ class RawOfferItem extends Component {
               <NavLink
                 className="has-text-primary"
                 to={`/offres/${offer.id}?gestion`}>
-                {product &&
-                  this.buildProductNavLinkLabel(remainingStockQuantity)}
+                {this.buildProductNavLinkLabel(offer, remainingStockQuantity)}
               </NavLink>
             </li>
             <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
