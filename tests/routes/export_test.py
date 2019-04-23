@@ -679,8 +679,7 @@ def test_get_offerers_return_200_and_filtered_offerers(app):
         offerer_93100_in_date_range_with_virtual_venue_with_offer, siret=None, is_virtual=True)
 
     stock_offer_1 = create_stock_with_event_offer(
-        offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer,
-        validated_venue_with_siret_with_offer_1)
+        offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer, validated_venue_with_siret_with_offer_1)
     stock_offer_2 = create_stock_with_event_offer(
         offerer_93100_in_date_range_with_validated_venue_with_siret_and_venue_without_siret_with_offer,
         validated_venue_with_siret_and_venue_without_siret_with_offer)
@@ -691,8 +690,7 @@ def test_get_offerers_return_200_and_filtered_offerers(app):
         offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer_without_siren,
         validated_venue_with_siret_with_offer_without_siren)
     stock_offer_5 = create_stock_with_event_offer(
-        offerer_66666_in_date_range_with_validated_venue_with_siret_with_offer,
-        validated_venue_with_siret_with_offer_3)
+        offerer_66666_in_date_range_with_validated_venue_with_siret_with_offer, validated_venue_with_siret_with_offer_3)
     stock_offer_6 = create_stock_with_event_offer(
         offerer_93100_before_date_range_with_validated_venue_with_siret_with_offer,
         validated_venue_with_siret_with_offer_4)

@@ -222,8 +222,7 @@ class SendBookingConfirmationEmailToUserTest:
     def when_called_calls_send_email(self, app):
         # Given
         venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-        stock = create_stock_with_event_offer(offerer=None,
-                                              venue=venue)
+        stock = create_stock_with_event_offer(offerer=None, venue=venue)
         user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
         booking = create_booking(user, stock, venue, None)
         booking.token = '56789'

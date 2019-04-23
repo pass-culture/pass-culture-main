@@ -176,30 +176,20 @@ def create_user(public_name='John Doe', password=None, first_name='John', last_n
     return user
 
 
-def create_stock_with_event_offer(
-        offerer,
-        venue,
-        beginning_datetime_future=True,
-        price=10,
-        booking_email='offer.booking.email@test.com',
-        available=10,
-        is_soft_deleted=False,
-        event_type=EventType.JEUX,
-        name='Mains, sorts et papiers',
-        offer_id=None):
+def create_stock_with_event_offer(offerer, venue, price=10, booking_email='offer.booking.email@test.com', available=10,
+                                  is_soft_deleted=False, event_type=EventType.JEUX, name='Mains, sorts et papiers',
+                                  offer_id=None, beginning_datetime=datetime.utcnow() + timedelta(hours=72),
+                                  end_datetime=datetime.utcnow() + timedelta(hours=74),
+                                  booking_limit_datetime=datetime.utcnow() + timedelta(hours=71)):
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
     stock.available = available
 
-    if beginning_datetime_future:
-        stock.beginningDatetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-        stock.endDatetime = datetime(2019, 7, 20, 12, 10, 0, tzinfo=timezone.utc)
-        stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
-    else:
-        stock.beginningDatetime = datetime(2017, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-        stock.endDatetime = datetime(2017, 7, 20, 12, 10, 0, tzinfo=timezone.utc)
-        stock.bookingLimitDatetime = datetime.utcnow() - timedelta(days=800)
+    stock.beginningDatetime = beginning_datetime
+    stock.endDatetime = end_datetime
+    stock.bookingLimitDatetime = booking_limit_datetime
+
     stock.offer = create_event_offer(venue, event_name=name, event_type=event_type, booking_email=booking_email, is_national=False)
     stock.offer.id = offer_id
     stock.isSoftDeleted = is_soft_deleted

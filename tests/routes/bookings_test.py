@@ -534,8 +534,7 @@ class Post:
             offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
             venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
                                  '93')
-            ok_stock = create_stock_with_event_offer(offerer=offerer,
-                                                     venue=venue, price=0)
+            ok_stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
             ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
             ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
             PcObject.check_and_save(ok_stock)
@@ -670,7 +669,7 @@ class Post:
                                  '93')
             event_offer = create_event_offer(venue)
 
-            stock = create_stock_with_event_offer(offerer, venue, event_offer, price=50, available=1)
+            stock = create_stock_with_event_offer(offerer, venue, price=50, available=1)
             PcObject.check_and_save(stock)
 
             booking = create_booking(user, stock, venue, is_cancelled=True)

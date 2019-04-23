@@ -1,10 +1,11 @@
-import pytest
 import re
 import secrets
-from bs4 import BeautifulSoup
 from datetime import datetime, timezone, timedelta
-from freezegun import freeze_time
 from unittest.mock import MagicMock, patch, Mock
+
+import pytest
+from bs4 import BeautifulSoup
+from freezegun import freeze_time
 
 from models import PcObject, Offerer, ThingType, EventType
 from models.db import db
@@ -51,8 +52,13 @@ def get_mocked_response_status_200(entity):
 @pytest.mark.standalone
 def test_make_user_booking_event_recap_email_should_have_standard_subject_and_body(app):
     # Given
+    beginning_datetime = datetime(2019, 7, 20, 12, 0, 0)
+    end_datetime = beginning_datetime + timedelta(hours=1)
+    booking_limit_datetime = beginning_datetime - timedelta(hours=1)
+
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    stock = create_stock_with_event_offer(offerer=None, venue=venue)
+    stock = create_stock_with_event_offer(offerer=None, venue=venue, booking_limit_datetime=booking_limit_datetime,
+                                          beginning_datetime=beginning_datetime, end_datetime=end_datetime)
     user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
     booking.token = '56789'
@@ -80,9 +86,13 @@ def test_make_user_booking_event_recap_email_should_have_standard_subject_and_bo
 @pytest.mark.standalone
 def test_make_user_booking_event_recap_email_should_have_standard_cancellation_body_and_subject(app):
     # Given
+    beginning_datetime = datetime(2019, 7, 20, 12, 0, 0)
+    end_datetime = beginning_datetime + timedelta(hours=1)
+    booking_limit_datetime = beginning_datetime - timedelta(hours=1)
+
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    stock = create_stock_with_event_offer(offerer=None,
-                                          venue=venue)
+    stock = create_stock_with_event_offer(offerer=None, venue=venue, beginning_datetime=beginning_datetime,
+                                          end_datetime=end_datetime, booking_limit_datetime=booking_limit_datetime)
     user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
 
@@ -153,8 +163,13 @@ def test_make_user_booking_thing_recap_email_should_have_standard_cancellation_b
 def test_booking_recap_email_html_should_have_place_and_structure(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    stock = create_stock_with_event_offer(offerer=None,
-                                          venue=venue, event_type=EventType.SPECTACLE_VIVANT, offer_id=1)
+    beginning_datetime = datetime(2019, 7, 20, 12, 0, 0)
+    end_datetime = beginning_datetime + timedelta(hours=1)
+    booking_limit_datetime = beginning_datetime - timedelta(hours=1)
+
+    stock = create_stock_with_event_offer(offerer=None, venue=venue, event_type=EventType.SPECTACLE_VIVANT, offer_id=1,
+                                          beginning_datetime=beginning_datetime, end_datetime=end_datetime,
+                                          booking_limit_datetime=booking_limit_datetime)
     user = create_user(public_name='Test', first_name='First', last_name='Last', departement_code='93',
                        email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
@@ -194,8 +209,7 @@ def test_booking_recap_email_html_should_have_place_and_structure(app):
 def test_booking_recap_email_html_should_have_unsubscribe_option(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    stock = create_stock_with_event_offer(offerer=None,
-                                          venue=venue)
+    stock = create_stock_with_event_offer(offerer=None, venue=venue)
     user = create_user('Test', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
     booking.token = '56789'
@@ -225,8 +239,7 @@ def test_booking_recap_email_html_should_have_unsubscribe_option(app):
 def test_booking_recap_email_html_should_not_have_cancelled_or_used_bookings(app):
     # Given
     venue = create_venue(Offerer(), 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    stock = create_stock_with_event_offer(offerer=Offerer(),
-                                          venue=venue)
+    stock = create_stock_with_event_offer(offerer=Offerer(), venue=venue)
 
     user1 = create_user(public_name='Test1', first_name='First1', last_name='Last1', departement_code='93',
                         email='test@email.com', can_book_free_offers=True)
@@ -256,11 +269,15 @@ def test_booking_recap_email_html_should_not_have_cancelled_or_used_bookings(app
 @pytest.mark.standalone
 def test_offerer_recap_email_past_offer_without_booking(app):
     # Given
+    beginning_datetime = datetime(2017, 7, 20, 12, 0, 0)
+    end_datetime = beginning_datetime + timedelta(hours=1)
+    booking_limit_datetime = beginning_datetime - timedelta(days=1)
+
     expected_subject = '[Réservations] Récapitulatif pour Mains, sorts et papiers le 20 juillet 2017 à 14:00'
+
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    stock = create_stock_with_event_offer(offerer=None,
-                                          venue=venue,
-                                          beginning_datetime_future=False)
+    stock = create_stock_with_event_offer(offerer=None, venue=venue, beginning_datetime=beginning_datetime,
+                                          end_datetime=end_datetime, booking_limit_datetime=booking_limit_datetime)
 
     # When
     with patch('utils.mailing.find_all_ongoing_bookings_by_stock', return_value=[]):
@@ -280,11 +297,15 @@ def test_offerer_recap_email_past_offer_without_booking(app):
 @pytest.mark.standalone
 def test_offerer_recap_email_past_offer_with_booking(app):
     # Given
+    beginning_datetime = datetime(2017, 7, 20, 12, 0, 0)
+    end_datetime = beginning_datetime + timedelta(hours=1)
+    booking_limit_datetime = beginning_datetime - timedelta(days=1)
+
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    stock = create_stock_with_event_offer(offerer=None,
-                                          venue=venue,
-                                          beginning_datetime_future=False)
-    user = create_user('Test', first_name='Jean', last_name='Dupont', departement_code='93', email='test@email.com', can_book_free_offers=True)
+    stock = create_stock_with_event_offer(offerer=None, venue=venue, beginning_datetime=beginning_datetime,
+                                          end_datetime=end_datetime, booking_limit_datetime=booking_limit_datetime)
+    user = create_user('Test', first_name='Jean', last_name='Dupont', departement_code='93', email='test@email.com',
+                       can_book_free_offers=True)
     booking = create_booking(user, stock, venue, None)
     booking.token = '56789'
     stock.bookings = [booking]
@@ -318,13 +339,14 @@ def test_offerer_recap_email_past_offer_with_booking(app):
 def test_offerer_recap_email_does_not_send_cancelled_or_used_booking(app):
     # Given
     venue = create_venue(Offerer(), 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    stock = create_stock_with_event_offer(offerer=Offerer(),
-                                          venue=venue)
+    stock = create_stock_with_event_offer(offerer=Offerer(), venue=venue)
 
-    user1 = create_user('Test1', first_name='Lucie', last_name='Dubois', departement_code='93', email='test@email.com', can_book_free_offers=True)
+    user1 = create_user('Test1', first_name='Lucie', last_name='Dubois', departement_code='93', email='test@email.com',
+                        can_book_free_offers=True)
     booking1 = create_booking(user1, stock)
 
-    user2 = create_user('Test2', first_name='Jean', last_name='Dupont', departement_code='93', email='test@email.com', can_book_free_offers=True)
+    user2 = create_user('Test2', first_name='Jean', last_name='Dupont', departement_code='93', email='test@email.com',
+                        can_book_free_offers=True)
     booking2 = create_booking(user2, stock)
 
     ongoing_bookings = [booking1, booking2]
@@ -348,8 +370,7 @@ def test_offerer_recap_email_does_not_send_cancelled_or_used_booking(app):
 def test_offerer_recap_email_has_unsubscribe_options(app):
     # Given
     venue = create_venue(Offerer(), 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    stock = create_stock_with_event_offer(offerer=Offerer(),
-                                          venue=venue)
+    stock = create_stock_with_event_offer(offerer=Offerer(), venue=venue)
 
     user1 = create_user('Test1', departement_code='93', email='test@email.com', can_book_free_offers=True)
     booking1 = create_booking(user1, stock)
@@ -384,9 +405,7 @@ def test_offerer_recap_email_has_unsubscribe_options(app):
 def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
-    stock = create_stock_with_event_offer(offerer=None,
-                                          venue=venue,
-                                          beginning_datetime_future=True)
+    stock = create_stock_with_event_offer(offerer=None, venue=venue)
     user_1 = create_user('Test', first_name='John', last_name='Doe', departement_code='93', email='test@email.com',
                          can_book_free_offers=True)
     user_2 = create_user('Test 2', first_name='Jane', last_name='Doe', departement_code='93', email='test@email.com',
@@ -732,13 +751,17 @@ def test_make_offerer_booking_recap_email_after_user_cancellation_should_have_un
 @pytest.mark.standalone
 def test_make_offerer_driven_cancellation_email_for_user_event(app):
     # Given
+    beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
+    end_datetime = beginning_datetime + timedelta(hours=1)
+    booking_limit_datetime = beginning_datetime - timedelta(hours=1)
+
     user = create_user(public_name='John Doe')
     offerer = create_offerer(name='Test offerer')
     venue = create_venue(offerer)
     offer = create_event_offer(venue, event_name='Mains, sorts et papiers')
-    event_occurrence = create_event_occurrence(offer,
-                                               beginning_datetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc))
-    stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10)
+    event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime, end_datetime=end_datetime)
+    stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10,
+                                               booking_limit_date=booking_limit_datetime)
     booking = create_booking(user, stock)
 
     # When
@@ -787,14 +810,18 @@ def test_make_offerer_driven_cancellation_email_for_user_thing(app):
 @pytest.mark.standalone
 def test_make_offerer_driven_cancellation_email_for_offerer_event_when_no_other_booking(app):
     # Given
+    beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
+    end_datetime = beginning_datetime + timedelta(hours=1)
+    booking_limit_datetime = beginning_datetime - timedelta(hours=1)
+
     user = create_user(public_name='John Doe', email='john@doe.fr')
     offerer = create_offerer(name='Test offerer')
     venue = create_venue(offerer, name='Le petit théâtre', address='1 rue de la Libération', city='Montreuil',
                          postal_code='93100')
     offer = create_event_offer(venue, event_name='Le théâtre des ombres')
-    event_occurrence = create_event_occurrence(offer,
-                                               beginning_datetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc))
-    stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10)
+    event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime, end_datetime=end_datetime)
+    stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10,
+                                               booking_limit_date=booking_limit_datetime)
     booking = create_booking(user, stock)
 
     # When
