@@ -7,7 +7,6 @@ from domain.keywords import LANGUAGE
 from domain.user_emails import send_batch_cancellation_emails_to_users, send_batch_cancellation_email_to_offerer
 from models.event import Event
 from models.mediation import Mediation
-from models.offer_type import ProductType
 from models.pc_object import PcObject
 from models.stock import Stock
 from models.thing import Thing
@@ -87,18 +86,14 @@ def create_stock():
 @login_or_api_key_required
 @expect_json_data
 def edit_stock(stock_id):
-    request_data = request.json
+    stock_data = request.json
     query = Stock.queryNotSoftDeleted().filter_by(id=dehumanize(stock_id))
     stock = query.first_or_404()
-    check_dates_are_allowed_on_existing_stock(request_data, stock.offer)
+    check_dates_are_allowed_on_existing_stock(stock_data, stock.offer)
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
     
-    if ProductType.is_thing(stock.offer.type) and request_data['bookingLimitDatetime'] is None:
-        stock.populateFromDict(request_data, skipped_keys=['bookingLimitDatetime'])
-    else:
-        stock.populateFromDict(request_data)
-    PcObject.check_and_save(stock)
+    stock.update_stock(stock_data)
     return jsonify(stock._asdict()), 200
 
 

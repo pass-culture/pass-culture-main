@@ -293,33 +293,6 @@ class Patch:
             assert stock.price == 666
 
 
-        @clean_database
-        def when_user_is_admin_and_stock_is_thing(self, app):
-            # Given
-            user = create_user(email='email@test.fr', can_book_free_offers=False, is_admin=True)
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            stock = create_stock_with_thing_offer(offerer, venue, price=13)
-            PcObject.check_and_save(user, stock)
-
-            beginningDatetime = datetime(2019, 2, 14)
-            
-            data = {    
-                "dateModified": serialize(beginningDatetime),
-                "offerId": humanize(stock.offer.id),
-                "bookingLimitDatetime": None,
-                "price": 666
-            } 
-
-            # When
-            response = TestClient().with_auth('email@test.fr').patch(API_URL + '/stocks/' + humanize(stock.id), json=data)
-
-            # Then
-            assert response.status_code == 200
-            db.session.refresh(stock)
-            assert stock.price == 666
-
-
     class Returns403:
         @clean_database
         def when_user_has_no_rights(self, app):

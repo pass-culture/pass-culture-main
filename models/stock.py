@@ -18,6 +18,7 @@ from models.providable_mixin import ProvidableMixin
 from models.soft_deletable_mixin import SoftDeletableMixin
 from utils.logger import logger
 from models.versioned_mixin import VersionedMixin
+from models.offer_type import ProductType
 
 
 class Stock(PcObject,
@@ -110,6 +111,16 @@ class Stock(PcObject,
                 logger.error("Unexpected error in patch stocks: " + pformat(ie))
         return PcObject.restize_internal_error(ie)
 
+    def update_stock(self, stock_data):
+        if ProductType.is_thing(self.offer.type) and 'bookingLimitDatetime' in stock_data \
+        and stock_data.get('bookingLimitDatetime') is None:
+            self.populateFromDict(stock_data, skipped_keys=['bookingLimitDatetime'])
+            self.bookingLimitDatetime = None
+        else:
+            self.populateFromDict(stock_data)
+
+        PcObject.check_and_save(self)
+
 
 @event.listens_for(Stock, 'before_insert')
 def page_defaults(mapper, configuration, target):
@@ -119,6 +130,7 @@ def page_defaults(mapper, configuration, target):
         target.bookingLimitDatetime = target.beginningDatetime\
                                             .replace(hour=23)\
                                             .replace(minute=59) - timedelta(days=3)
+
 
 
 Stock.trig_ddl = """

@@ -3,14 +3,16 @@ import pytest
 from sqlalchemy.exc import InternalError
 
 from models import Stock, ApiErrors, PcObject
-from models.pc_object import DeletedRecordException
+from models.db import db
+from models.pc_object import DeletedRecordException, serialize
+from models.stock import Stock
 from tests.conftest import clean_database
 from tests.test_utils import create_stock_with_event_offer, create_offerer, create_venue, create_event_offer, \
-    create_stock_from_offer, create_thing_offer, create_booking, create_user, create_stock
+    create_stock_from_offer, create_thing_offer, create_booking, create_user, create_stock, create_stock_with_thing_offer
+from utils.human_ids import humanize
 
-
-@pytest.mark.standalone
 @clean_database
+@pytest.mark.standalone
 def test_beginning_datetime_cannot_be_after_end_datetime(app):
     # given
     offer = create_thing_offer(create_venue(create_offerer()))
@@ -152,3 +154,148 @@ def test_available_stocks_cannot_be_changed_when_exceeding_bookings_quantity_2(a
     # When
     with pytest.raises(ApiErrors):
         PcObject.check_and_save(stock)
+
+
+@clean_database
+@pytest.mark.standalone
+def test_update_stock_when_stock_is_event(app):
+    # Given
+    beginningDatetime = datetime(2019, 2, 14)
+    bookingLimitDatetime = beginningDatetime - timedelta(days=2)
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_event_offer(offerer, venue, price=69)
+    PcObject.check_and_save(stock)
+
+    
+    data = {    
+        "dateModified": serialize(beginningDatetime),
+        "beginningDatetime": serialize(beginningDatetime),
+        "endDatetime": serialize(beginningDatetime + timedelta(days=3)),
+        "offerId": humanize(stock.offer.id),
+        "price": 1256,
+        "available": 20,
+        "groupSize": 256,
+        "bookingLimitDatetime": serialize(bookingLimitDatetime),
+        "bookingRecapSent": serialize(beginningDatetime),
+        "price": 666
+    } 
+
+    # When
+    stock.update_stock(data)
+
+    # Then
+    db.session.refresh(stock)
+    assert stock.price == 666
+    assert stock.bookingLimitDatetime == bookingLimitDatetime
+
+
+@clean_database
+@pytest.mark.standalone
+def test_update_stock_when_stock_is_thing_and_booking_limit_datetime_is_none(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_thing_offer(offerer, venue, price=13, booking_limit_datetime=None)
+    PcObject.check_and_save(stock)
+
+    beginningDatetime = datetime(2019, 2, 14)
+    
+    data = {    
+        "dateModified": serialize(beginningDatetime),
+        "offerId": humanize(stock.offer.id),
+        "bookingLimitDatetime": None,
+        "price": 666
+    } 
+
+    # When
+    stock.update_stock(data)
+
+    # Then
+    db.session.refresh(stock)
+    assert stock.price == 666
+    assert stock.bookingLimitDatetime is None
+
+
+@clean_database
+@pytest.mark.standalone
+def test_update_stock_when_stock_is_thing_dont_update_booking_limit_datetime(app):
+    # Given
+    beginningDatetime = datetime(2019, 2, 14)
+    bookingLimitDatetime = datetime.utcnow()
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_thing_offer(offerer, venue, price=13, booking_limit_datetime=bookingLimitDatetime)
+    PcObject.check_and_save(stock)
+
+    
+    data = {    
+        "dateModified": serialize(beginningDatetime),
+        "offerId": humanize(stock.offer.id),
+        "price": 666
+    } 
+
+    # When
+    stock.update_stock(data)
+
+    # Then
+    db.session.refresh(stock)
+    assert stock.price == 666
+    assert stock.bookingLimitDatetime == bookingLimitDatetime
+
+
+@clean_database
+@pytest.mark.standalone
+def test_update_stock_when_stock_is_thing_update_booking_limit_datetime_to_none(app):
+    # Given
+    beginningDatetime = datetime(2019, 2, 14)
+    bookingLimitDatetime = datetime.utcnow()
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_thing_offer(offerer, venue, booking_limit_datetime=bookingLimitDatetime, price=13)
+    PcObject.check_and_save(stock)
+
+    
+    data = {    
+        "dateModified": serialize(beginningDatetime),
+        "offerId": humanize(stock.offer.id),
+        "bookingLimitDatetime": None,
+        "price": 666
+    } 
+
+    # When
+    stock.update_stock(data)
+
+    # Then
+    db.session.refresh(stock)
+    assert stock.price == 666
+    assert stock.bookingLimitDatetime is None
+
+
+@clean_database
+@pytest.mark.standalone
+def test_update_stock_when_stock_is_thing_update_booking_limit_datetime_to_new_date(app):
+    # Given
+    beginningDatetime = datetime(2019, 2, 14)
+    bookingLimitDatetime = datetime.utcnow()
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    stock = create_stock_with_thing_offer(offerer, venue, price=13, booking_limit_datetime=bookingLimitDatetime)
+    PcObject.check_and_save(stock)
+
+    
+    data = {    
+        "dateModified": serialize(beginningDatetime),
+        "offerId": humanize(stock.offer.id),
+        "bookingLimitDatetime": serialize(beginningDatetime),
+        "price": 666
+    } 
+
+    # When
+    stock.update_stock(data)
+    
+    # Then
+    db.session.refresh(stock)
+    assert stock.price == 666
+    assert stock.bookingLimitDatetime == beginningDatetime
+
