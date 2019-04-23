@@ -4,8 +4,7 @@ exports[`src | components | verso | verso-buttons | BookThisButton should match 
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookThisButton
-    destinationPathname="/path/to/page/"
-    destinationSearch={null}
+    linkDestination="/path/to/page/"
     priceValue={
       Array [
         0,
@@ -45,10 +44,7 @@ ShallowWrapper {
       ],
       "className": "flex-columns is-bold is-white-text fs18",
       "id": "verso-booking-button",
-      "to": Object {
-        "pathname": "/path/to/page/",
-        "search": null,
-      },
+      "to": "/path/to/page/",
     },
     "ref": null,
     "rendered": Array [
@@ -108,10 +104,7 @@ ShallowWrapper {
         ],
         "className": "flex-columns is-bold is-white-text fs18",
         "id": "verso-booking-button",
-        "to": Object {
-          "pathname": "/path/to/page/",
-          "search": null,
-        },
+        "to": "/path/to/page/",
       },
       "ref": null,
       "rendered": Array [

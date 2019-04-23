@@ -7,24 +7,14 @@ import BookThisButton from './BookThisButton'
 import { getPriceRangeFromStocks } from '../../../../helpers'
 import currentRecommendation from '../../../../selectors/currentRecommendation'
 
-export const getLinkDestination = match => {
-  const isValid = match && typeof match === 'object' && match.params
+export const getLinkDestination = (url, search) => {
+  const isValid = url && typeof url === 'string'
   if (!isValid) {
-    throw new Error('Invalid match parameter')
+    throw new Error('Invalid url parameter')
   }
-
-  const offerId = get(match, 'params.offerId', null)
-  if (!offerId) {
-    throw new Error('Missing offerId parameter')
-  }
-
-  let baseURL = `/decouverte/${offerId}`
-
-  const mediationId = get(match, 'params.mediationId', null)
-  if (mediationId) baseURL = `${baseURL}/${mediationId}`
-  baseURL = `${baseURL}/booking`
-
-  return baseURL
+  const strippedUrl = url.replace(/\/$/, '')
+  const result = `${strippedUrl}/booking${search || ''}`
+  return result
 }
 
 export const getPriceValue = (state, params) => {
@@ -43,13 +33,12 @@ export const getPriceValue = (state, params) => {
 }
 
 export const mapStateToProps = (state, { match, location }) => {
-  const { params } = match
-  const { search: destinationSearch } = location
-  const destinationPathname = getLinkDestination(match)
+  const { params, url } = match
+  const { search } = location
+  const linkDestination = getLinkDestination(url, search)
   const priceValue = getPriceValue(state, params)
   return {
-    destinationPathname,
-    destinationSearch,
+    linkDestination,
     priceValue,
   }
 }
