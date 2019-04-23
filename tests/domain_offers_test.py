@@ -160,7 +160,7 @@ class AddStockAlertMessageToOfferTest:
             result = add_stock_alert_message_to_offer(offer)
 
             # then
-            assert result.stockAlertMessage == 'plus de stock '
+            assert result.stockAlertMessage == 'plus de stock'
 
         @clean_database
         def test_check_alert_stock_message_returned_all_empty_stock_after_bookings(self, app):
@@ -184,7 +184,7 @@ class AddStockAlertMessageToOfferTest:
             result = add_stock_alert_message_to_offer(offer)
 
             # then
-            assert result.stockAlertMessage == 'plus de stock '
+            assert result.stockAlertMessage == 'plus de stock'
 
         @clean_database
         def test_check_alert_stock_message_returned_with_stock(self, app):
