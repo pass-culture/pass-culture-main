@@ -138,7 +138,8 @@ class VersoContentOffer extends React.PureComponent {
     const { recommendation } = this.props
     const venue = get(recommendation, 'offer.venue')
     const distance = get(recommendation, 'distance')
-    const { address, city, latitude, longitude, name, postalCode } = venue || {}
+    const { address, city, latitude, longitude, name, postalCode, publicName } =
+      venue || {}
 
     return (
       <div>
@@ -146,6 +147,7 @@ class VersoContentOffer extends React.PureComponent {
         <div className="flex-columns flex-between">
           <p className="address-info">
             {name && <span className="is-block">{name}</span>}
+            {publicName && <span className="is-block">{publicName}</span>}
             {address && <span className="is-block">{address}</span>}
             {postalCode && <span className="is-block">{postalCode}</span>}
             {city && <span className="is-block">{city}</span>}

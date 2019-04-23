@@ -31,6 +31,7 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
           longitude: 48.88381,
           name: 'fake name',
           postalCode: '93230',
+          publicName: 'fake publicName',
         },
       },
       offerId: 'X9',
@@ -152,9 +153,10 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
     // then
     const venueInfos = wrapper.find('.address-info').find('span')
     expect(venueInfos.at(0).text()).toBe('fake name')
-    expect(venueInfos.at(1).text()).toBe('72 rue Carnot')
-    expect(venueInfos.at(2).text()).toBe('93230')
-    expect(venueInfos.at(3).text()).toBe('ROMAINVILLE')
+    expect(venueInfos.at(1).text()).toBe('fake publicName')
+    expect(venueInfos.at(2).text()).toBe('72 rue Carnot')
+    expect(venueInfos.at(3).text()).toBe('93230')
+    expect(venueInfos.at(4).text()).toBe('ROMAINVILLE')
   })
 
   it('should render distance to the venue when latitude & longitude are given', () => {

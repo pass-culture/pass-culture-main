@@ -43,6 +43,7 @@ ShallowWrapper {
             "longitude": 48.88381,
             "name": "fake name",
             "postalCode": "93230",
+            "publicName": "fake publicName",
           },
         },
         "offerId": "X9",
@@ -118,6 +119,11 @@ ShallowWrapper {
                 className="is-block"
               >
                 fake name
+              </span>
+              <span
+                className="is-block"
+              >
+                fake publicName
               </span>
               <span
                 className="is-block"
@@ -383,6 +389,11 @@ ShallowWrapper {
                 <span
                   className="is-block"
                 >
+                  fake publicName
+                </span>
+                <span
+                  className="is-block"
+                >
                   72 rue Carnot
                 </span>
                 <span
@@ -441,6 +452,11 @@ ShallowWrapper {
                   <span
                     className="is-block"
                   >
+                    fake publicName
+                  </span>
+                  <span
+                    className="is-block"
+                  >
                     72 rue Carnot
                   </span>
                   <span
@@ -485,6 +501,11 @@ ShallowWrapper {
                     <span
                       className="is-block"
                     >
+                      fake publicName
+                    </span>,
+                    <span
+                      className="is-block"
+                    >
                       72 rue Carnot
                     </span>,
                     <span
@@ -512,6 +533,18 @@ ShallowWrapper {
                     },
                     "ref": null,
                     "rendered": "fake name",
+                    "type": "span",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "fake publicName",
+                      "className": "is-block",
+                    },
+                    "ref": null,
+                    "rendered": "fake publicName",
                     "type": "span",
                   },
                   Object {
@@ -673,6 +706,11 @@ ShallowWrapper {
                   className="is-block"
                 >
                   fake name
+                </span>
+                <span
+                  className="is-block"
+                >
+                  fake publicName
                 </span>
                 <span
                   className="is-block"
@@ -938,6 +976,11 @@ ShallowWrapper {
                   <span
                     className="is-block"
                   >
+                    fake publicName
+                  </span>
+                  <span
+                    className="is-block"
+                  >
                     72 rue Carnot
                   </span>
                   <span
@@ -996,6 +1039,11 @@ ShallowWrapper {
                     <span
                       className="is-block"
                     >
+                      fake publicName
+                    </span>
+                    <span
+                      className="is-block"
+                    >
                       72 rue Carnot
                     </span>
                     <span
@@ -1040,6 +1088,11 @@ ShallowWrapper {
                       <span
                         className="is-block"
                       >
+                        fake publicName
+                      </span>,
+                      <span
+                        className="is-block"
+                      >
                         72 rue Carnot
                       </span>,
                       <span
@@ -1067,6 +1120,18 @@ ShallowWrapper {
                       },
                       "ref": null,
                       "rendered": "fake name",
+                      "type": "span",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "fake publicName",
+                        "className": "is-block",
+                      },
+                      "ref": null,
+                      "rendered": "fake publicName",
                       "type": "span",
                     },
                     Object {
