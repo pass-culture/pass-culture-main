@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from models import PcObject
-from domain.offers import addStockAlertMessageToOffer, check_digital_offer_consistency, InconsistentOffer
+from domain.offers import add_stock_alert_message_to_offer, check_digital_offer_consistency, InconsistentOffer
 from models import Offer, Venue, Thing
 from datetime import datetime
 from tests.test_utils import API_URL, \
@@ -88,7 +88,7 @@ class AddStockAlertMessageToOfferTest:
             PcObject.check_and_save(user, offer)
 
             # when
-            result = addStockAlertMessageToOffer(offer)
+            result = add_stock_alert_message_to_offer(offer)
 
             # then
             assert result.stockAlertMessage == 'pas encore de stock'
@@ -111,7 +111,7 @@ class AddStockAlertMessageToOfferTest:
             PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
-            result = addStockAlertMessageToOffer(offer)
+            result = add_stock_alert_message_to_offer(offer)
 
             # then
             assert result.stockAlertMessage == 'illimité'
@@ -134,7 +134,7 @@ class AddStockAlertMessageToOfferTest:
             PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
-            result = addStockAlertMessageToOffer(offer)
+            result = add_stock_alert_message_to_offer(offer)
 
             # then
             assert result.stockAlertMessage == 'plus de stock pour 1 offre'
@@ -157,7 +157,7 @@ class AddStockAlertMessageToOfferTest:
             PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
-            result = addStockAlertMessageToOffer(offer)
+            result = add_stock_alert_message_to_offer(offer)
 
             # then
             assert result.stockAlertMessage == 'plus de stock '
@@ -181,7 +181,7 @@ class AddStockAlertMessageToOfferTest:
             PcObject.check_and_save(booking, booking2, deposit, user, offer, stock, stock2, user2)
 
             # when
-            result = addStockAlertMessageToOffer(offer)
+            result = add_stock_alert_message_to_offer(offer)
 
             # then
             assert result.stockAlertMessage == 'plus de stock '
@@ -205,7 +205,7 @@ class AddStockAlertMessageToOfferTest:
             PcObject.check_and_save(booking, booking2, deposit, user, offer, stock, stock2, user2)
 
             # when
-            result = addStockAlertMessageToOffer(offer)
+            result = add_stock_alert_message_to_offer(offer)
 
             # then
             assert result.stockAlertMessage == 'encore 137 en stock'
@@ -228,7 +228,7 @@ class AddStockAlertMessageToOfferTest:
             PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
-            result = addStockAlertMessageToOffer(offer)
+            result = add_stock_alert_message_to_offer(offer)
 
             # then
             assert result.stockAlertMessage == 'plus de stock pour 1 offre'
@@ -255,7 +255,7 @@ class AddStockAlertMessageToOfferTest:
             PcObject.check_and_save(booking, booking2, deposit, user, offer, stock, stock2, stock3, stock4, user2)
 
             # when
-            result = addStockAlertMessageToOffer(offer)
+            result = add_stock_alert_message_to_offer(offer)
 
             # then
             assert result.stockAlertMessage == 'plus de stock pour 2 offres'
@@ -273,7 +273,7 @@ class AddStockAlertMessageToOfferTest:
             PcObject.check_and_save(user, offer)
 
             # when
-            result = addStockAlertMessageToOffer(offer)
+            result = add_stock_alert_message_to_offer(offer)
 
             # then
             assert result.stockAlertMessage == 'pas encore de places'
@@ -296,7 +296,7 @@ class AddStockAlertMessageToOfferTest:
             PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
-            result = addStockAlertMessageToOffer(offer)
+            result = add_stock_alert_message_to_offer(offer)
 
             # then
             assert result.stockAlertMessage == 'illimité'
@@ -320,7 +320,7 @@ class AddStockAlertMessageToOfferTest:
             PcObject.check_and_save(booking, booking2, deposit, user, offer, stock, stock2, user2)
 
             # when
-            result = addStockAlertMessageToOffer(offer)
+            result = add_stock_alert_message_to_offer(offer)
 
             # then
             assert result.stockAlertMessage == 'encore 36 places'
@@ -343,7 +343,7 @@ class AddStockAlertMessageToOfferTest:
             PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
-            result = addStockAlertMessageToOffer(offer)
+            result = add_stock_alert_message_to_offer(offer)
 
             # then
             assert result.stockAlertMessage == 'plus de places pour 1 offre'
@@ -370,7 +370,7 @@ class AddStockAlertMessageToOfferTest:
             PcObject.check_and_save(booking, booking2, deposit, user, offer, stock, stock2, stock3, stock4, user2)
 
             # when
-            result = addStockAlertMessageToOffer(offer)
+            result = add_stock_alert_message_to_offer(offer)
 
             # then
             assert result.stockAlertMessage == 'plus de places pour 2 offres'
@@ -396,7 +396,7 @@ class AddStockAlertMessageToOfferTest:
             PcObject.check_and_save(booking, booking2, deposit, user, offer, stock2, stock3, user2)
 
             # when
-            result = addStockAlertMessageToOffer(offer)
+            result = add_stock_alert_message_to_offer(offer)
 
             # then
             assert result.stockAlertMessage == 'plus de places pour toutes les dates'

@@ -47,7 +47,7 @@ def _count_valid_bookinks(stock):
         total_bookings_by_stock += valid_booking.quantity
     return total_bookings_by_stock
 
-def addStockAlertMessageToOffer(offer):
+def add_stock_alert_message_to_offer(offer):
     stocks = offer.stocks
     offer_stocks =_remove_soft_deleted_stocks(stocks)
 
