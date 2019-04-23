@@ -1,5 +1,7 @@
 """ bookings routes """
 import codecs
+from datetime import timedelta, datetime
+
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 from itertools import chain
@@ -183,6 +185,10 @@ def patch_booking_by_token(token):
     email = request.args.get('email', None)
     offer_id = dehumanize(request.args.get('offer_id', None))
     booking = booking_queries.find_by(token, email, offer_id)
+    if booking.stock.beginningDatetime - datetime.utcnow() > timedelta(hours=72):
+        errors = ApiErrors()
+        errors.addError('beginningDatetime', 'Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement ')
+        raise errors
 
     if current_user.is_authenticated:
         ensure_current_user_has_rights(RightsType.editor, booking.stock.resolvedOffer.venue.managingOffererId)

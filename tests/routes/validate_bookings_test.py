@@ -1,5 +1,5 @@
 import pytest
-from datetime import datetime
+from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
 from models import PcObject, EventType, ThingType, Deposit
@@ -8,7 +8,7 @@ from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_thing_offer, create_deposit, create_stock_with_event_offer, create_venue, \
     create_offerer, \
     create_user, create_booking, create_event_offer, \
-    create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer
+    create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, create_stock_from_offer
 from utils.human_ids import humanize
 
 
@@ -133,6 +133,30 @@ class Patch:
             assert len(deposits_for_user) == 1
             assert deposits_for_user[0].amount == 500
             assert user.canBookFreeOffers
+
+    class Returns400:
+        @clean_database
+        def when_booking_beginning_datetime_in_more_than_72_hours(self, app):
+            # Given
+            user = create_user()
+            pro_user = create_user(email='admin@email.fr')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(pro_user, offerer)
+            venue = create_venue(offerer)
+            offer = create_event_offer(venue)
+            four_days_from_now = datetime.utcnow() + timedelta(days=4)
+            stock = create_stock_from_offer(offer, price=0, beginning_datetime=four_days_from_now)
+            booking = create_booking(user, stock, venue=venue)
+            PcObject.check_and_save(booking, user_offerer)
+            url = API_URL + '/bookings/token/{}'.format(booking.token)
+
+            # When
+            response = TestClient().with_auth('admin@email.fr').patch(url)
+
+            # Then
+            assert response.status_code == 400
+            assert response['beginningDatetime'] == [
+                'Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement ']
 
     class Returns403:
         @clean_database
