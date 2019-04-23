@@ -10,7 +10,8 @@ describe('src | components | verso | verso-buttons | BookThisButton', () => {
   it('should match snapshot with required props', () => {
     // given
     const props = {
-      linkDestination: '/path/to/page/',
+      destinationPathname: '/path/to/page/',
+      destinationSearch: null,
       priceValue: [0],
     }
     // when
@@ -27,7 +28,8 @@ describe('src | components | verso | verso-buttons | BookThisButton', () => {
   it('should render Gratuit label when price value is 0', () => {
     // given
     const props = {
-      linkDestination: '/path/to/page',
+      destinationPathname: '/path/to/page',
+      destinationSearch: null,
       priceValue: [0],
     }
 
@@ -54,7 +56,8 @@ describe('src | components | verso | verso-buttons | BookThisButton', () => {
     const nbsp = '\u00a0'
     const arrow = '\u27A4'
     const props = {
-      linkDestination: '/path/to/page',
+      destinationPathname: '/path/to/page',
+      destinationSearch: null,
       priceValue: [0, 30, 10],
     }
 

@@ -30,7 +30,7 @@ describe('src | components | verso | verso-buttons | BookThisButtonContainer
   describe('mapStateToProps', () => {
     it('should return an object with an url and an array of prices', () => {
       // given
-      const mockedUrl = `${offerId}/${mediationId}/`
+      const mockedUrl = `/decouverte/${offerId}/${mediationId}/`
       const mockedSearchQuery = '?search_query=parameter'
       const mockedRouter = {
         location: { search: mockedSearchQuery },
@@ -40,7 +40,8 @@ describe('src | components | verso | verso-buttons | BookThisButtonContainer
         },
       }
       const expected = {
-        linkDestination: `${offerId}/${mediationId}/booking${mockedSearchQuery}`,
+        destinationPathname: `/decouverte/${offerId}/${mediationId}/booking`,
+        destinationSearch: mockedSearchQuery,
         priceValue: [0, 30, 12],
       }
 
@@ -121,50 +122,85 @@ describe('src | components | verso | verso-buttons | BookThisButtonContainer
   })
 
   describe('getLinkDestination', () => {
-    it('should add booking to current url without query to open booking card', () => {
+    it('should throw an error when match object is not an object', () => {
       // given
-      const url = '/decouverte/offer_id/mediation_id/'
-      const expected = '/decouverte/offer_id/mediation_id/booking'
+      const match = 'not an object'
 
       // when
-      const result = getLinkDestination(url)
-
-      // then
-      expect(result).toStrictEqual(expected)
-    })
-
-    it('should add booking to current url with query to open booking card', () => {
-      // given
-      const url = '/decouverte/offer_id/mediation_id'
-      const search = '?a_var=1'
-      const expected = '/decouverte/offer_id/mediation_id/booking?a_var=1'
-
-      // when
-      const result = getLinkDestination(url, search)
-
-      // then
-      expect(result).toStrictEqual(expected)
-    })
-
-    it('should throw an error when argument is missing', () => {
-      // given
-      const url = null
-
-      // when
-      const result = () => getLinkDestination(url)
-
-      expect(result).toThrow(Error)
-    })
-
-    it('should throw an error when argument type is not valid', () => {
-      // given
-      const url = { debug: 'this is an object not a string url' }
-
-      // when
-      const result = () => getLinkDestination(url)
+      const result = () => getLinkDestination(match)
 
       // then
       expect(result).toThrow(Error)
+    })
+
+    it('should throw an error when match does not contains params prop', () => {
+      // given
+      const match = {}
+
+      // when
+      const result = () => getLinkDestination(match)
+
+      // then
+      expect(result).toThrow(Error)
+    })
+
+    it('should throw an error when match.params does not contains offerId prop', () => {
+      // given
+      const match = { noOfferId: 'string' }
+
+      // when
+      const result = () => getLinkDestination(match)
+
+      // then
+      expect(result).toThrow(Error)
+    })
+
+    it('should contains decouverte keyword in destination pathname', () => {
+      // given
+      const params = { mediationId: 'BBBBB', offerId: 'AAAAA' }
+      const expectedWithSlashes = '/decouverte/'
+
+      // when
+      const result = getLinkDestination({ params })
+
+      // then
+      expect(result).toContain(expectedWithSlashes)
+    })
+
+    it('should contains booking keyword in destination pathname', () => {
+      // given
+      const params = { mediationId: 'BBBBB', offerId: 'AAAAA' }
+      const expectedWithSlashes = '/booking'
+
+      // when
+      const result = getLinkDestination({ params })
+
+      // then
+      expect(result).toContain(expectedWithSlashes)
+    })
+
+    it('should match results without mediationId', () => {
+      // given
+      const params = { offerId: 'AAAA' }
+      const expectedWithSlashes = '/decouverte/AAAA/booking'
+
+      // when
+      const result = getLinkDestination({ params })
+
+      // then
+      expect(result).toStrictEqual(expectedWithSlashes)
+    })
+
+    it('should match results with mediationId', () => {
+      // given
+      const params = { mediationId: 'BBBB', offerId: 'AAAA' }
+      const expectedWithSlashes = '/decouverte/AAAA/BBBB/booking'
+
+      // when
+      const result = getLinkDestination({ params })
+
+      // then
+      expect(result).toStrictEqual(expectedWithSlashes)
     })
   })
 })

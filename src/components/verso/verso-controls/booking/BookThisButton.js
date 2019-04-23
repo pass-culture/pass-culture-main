@@ -20,10 +20,13 @@ export const formatOutputPrice = (prices, devise) => {
 
 class BookThisButton extends React.PureComponent {
   render() {
-    const { linkDestination, priceValue } = this.props
+    const { destinationPathname, destinationSearch, priceValue } = this.props
     return (
       <Link
-        to={linkDestination}
+        to={{
+          pathname: destinationPathname,
+          search: destinationSearch,
+        }}
         id="verso-booking-button"
         className="flex-columns is-bold is-white-text fs18"
       >
@@ -40,7 +43,8 @@ class BookThisButton extends React.PureComponent {
 }
 
 BookThisButton.propTypes = {
-  linkDestination: PropTypes.string.isRequired,
+  destinationPathname: PropTypes.string.isRequired,
+  destinationSearch: PropTypes.string.isRequired,
   priceValue: PropTypes.array.isRequired,
 }
 
