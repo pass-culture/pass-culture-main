@@ -1,5 +1,10 @@
 #!/bin/bash
 
 
-bats pc_deploy_main.bats
 rm /tmp/bats-mock.*
+for filename in .;
+do
+    bats "$filename"
+    rm /tmp/bats-mock.*
+done
+
