@@ -4,6 +4,9 @@ from functools import wraps
 from flask import jsonify, request
 from flask_login import current_user
 from sqlalchemy.exc import ProgrammingError
+from sqlalchemy.sql.elements import UnaryExpression
+from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.sql.functions import random 
 
 from models.api_errors import ApiErrors
 from models.db import db
@@ -56,6 +59,7 @@ def add_table_if_missing(sql_identifier, modelClass):
         return '"'+dashify(modelClass.__name__)+'".'+sql_identifier
     return sql_identifier
 
+
 def query_with_order_by(query, order_by):
     if order_by:
         if type(order_by) == str:
@@ -74,6 +78,42 @@ def query_with_order_by(query, order_by):
                 raise e
     return query
 
+
+def check_single_order_by_string(order_by_string):
+    order_by_string = order_by_string.strip(' ')
+    optional_table_prefix = '("?\\w+"?\\.|)'
+    column_identifier = '"?\\w+"?'
+    optional_sorting_order = '(|\\s+desc|\\s+asc)'
+    if not re.match(f'^{optional_table_prefix}{column_identifier}{optional_sorting_order}$',
+                    order_by_string,
+                    re.IGNORECASE):
+        api_errors = ApiErrors()
+        api_errors.addError('order_by',
+                            'Invalid order_by field : "%s"' % order_by_string)
+        raise api_errors
+
+
+def order_by_is_native_sqlalchemy_clause(order_by):
+    return isinstance(order_by, UnaryExpression) \
+           or isinstance(order_by, InstrumentedAttribute) \
+           or isinstance(order_by, random)
+
+
+def check_order_by(order_by):
+    if isinstance(order_by, list):
+        for part in order_by:
+            check_order_by(part)
+    elif order_by_is_native_sqlalchemy_clause(order_by):
+        pass
+    elif isinstance(order_by, str):
+        order_by = re.sub('coalesce\\((.*?)\\)',
+                          '\\1',
+                          order_by,
+                          flags=re.IGNORECASE)
+        for part in order_by.split(','):
+            check_single_order_by_string(part)
+
+
 def handle_rest_get_list(modelClass, query=None,
                          refine=None, order_by=None, flask_request=None,
                          include=None, resolve=None, print_elements=None,
@@ -90,6 +130,7 @@ def handle_rest_get_list(modelClass, query=None,
         query = refine(query)
     # ORDER BY
     if order_by:
+        check_order_by(order_by)
         query = query_with_order_by(query, order_by)
 
     # PAGINATE

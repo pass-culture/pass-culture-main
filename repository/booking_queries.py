@@ -18,7 +18,7 @@ from models import ApiErrors, \
     Venue, Offerer, ThingType
 from models.api_errors import ResourceNotFound
 from models.db import db
-from utils.rest import query_with_order_by
+from utils.rest import query_with_order_by, check_order_by
 
 get_filter_matching_ts_query_for_booking = create_get_filter_matching_ts_query_in_any_model(
     Event,
@@ -64,6 +64,7 @@ def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
         query = filter_bookings_with_keywords_string(query, search)
 
     if order_by:
+        check_order_by(order_by)
         query = query_with_order_by(query, order_by)
 
     bookings = query.paginate(int(page), per_page=10, error_out=False) \

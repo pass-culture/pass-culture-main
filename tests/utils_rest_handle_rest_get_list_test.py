@@ -1,6 +1,6 @@
 import pytest
 
-from models import Stock, PcObject
+from models import ApiErrors, PcObject, Stock
 from tests.conftest import clean_database
 from utils.human_ids import humanize
 from utils.rest import handle_rest_get_list
@@ -30,3 +30,14 @@ def test_handle_rest_get_list_should_return_only_not_soft_deleted_stock(app):
     assert '"id":"{}"'.format(humanize(stock2.id)) in str(request[0].response)
     assert '"id":"{}"'.format(humanize(stock3.id)) in str(request[0].response)
     assert '"id":"{}"'.format(humanize(stock4.id)) in str(request[0].response)
+
+
+@clean_database
+@pytest.mark.standalone
+def test_handle_rest_get_list_should_check_order_by(app):
+    # When
+    with pytest.raises(ApiErrors) as e:
+        handle_rest_get_list(Stock, order_by='(SELECT * FROM "user")')
+
+    # Then
+    assert 'order_by' in e.value.errors

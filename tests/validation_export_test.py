@@ -705,11 +705,11 @@ def test_check_get_offerers_params_does_not_raise_api_error_if_good_params(app):
 def test_check_get_offerers_params_does_not_raise_api_error_if_empty_params(app):
     # given
     params = {}
-    
+
     # when
     try:
         check_get_offerers_params(params)
-    
+
     except ApiErrors:
         # Then
         assert pytest.fail("Should not fail with valid params")
