@@ -40,7 +40,7 @@ class RawActivationPassword extends React.PureComponent {
   loginActivatedUserRequestSuccess = formResolver => () => {
     const { history } = this.props
     formResolver()
-    history.replace('/decouverte?from=password')
+    history.replace('/typeform?from=password')
   }
 
   savePasswordRequestSuccess = (formResolver, formValues) => () => {

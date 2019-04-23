@@ -45,6 +45,7 @@ const App = ({ location, children }) => {
       </Helmet>
       <Debug className="app is-relative">
         <ErrorCatcher>
+          {/* TODO: mettre ici le composant from password */}
           {children}
           <Overlay />
           <Route path="*/menu" component={MainMenu} />

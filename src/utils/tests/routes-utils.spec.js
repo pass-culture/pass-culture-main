@@ -71,6 +71,7 @@ describe('getMainMenuItems', () => {
       null, // Signup/Inscription
       null, // ForgotPasswordPage
       null, // Activation
+      null, // Typeform
       {
         component: DiscoveryPage,
         disabled: false,

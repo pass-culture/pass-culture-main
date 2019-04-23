@@ -8,7 +8,10 @@ import { Route, Switch, withRouter } from 'react-router-dom'
 
 import { config } from './config'
 import NotMatch from '../NotMatch'
-import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
+import {
+  withRedirectToSigninWhenNotAuthenticated,
+  withRedirectToDiscoveryOrTypeForm,
+} from '../../hocs'
 import { Loader } from '../../layout/Loader'
 import ProfileMainView from './ProfileMainView'
 import ProfileUpdateSuccess from './ProfileUpdateSuccess'
@@ -86,6 +89,7 @@ const mapStateToProps = (state, ownProps) => {
 
 export default compose(
   withRedirectToSigninWhenNotAuthenticated,
+  withRedirectToDiscoveryOrTypeForm,
   withRouter,
   connect(mapStateToProps)
 )(ProfilePage)

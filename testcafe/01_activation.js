@@ -15,7 +15,7 @@ const baseURL = `${ROOT_PATH}activation`
 
 fixture(`01_01 Activation | succès de l'activation`)
 
-test('Je suis redirigé·e vers découverte', async t => {
+test('Je suis redirigé·e vers le typeform', async t => {
   // given
   const { user } = await fetchSandbox(
     'webapp_01_activation',
@@ -34,7 +34,7 @@ test('Je suis redirigé·e vers découverte', async t => {
     .click(submitButton)
     .wait(10000)
     .expect(getPageUrl())
-    .match(/\/decouverte\/tuto\/([A-Z0-9]*)$/)
+    .eql('/typeform')
 })
 
 fixture("01_02 Activation | erreurs avec l'activation")

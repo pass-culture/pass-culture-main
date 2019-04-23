@@ -270,7 +270,7 @@ describe('src | components | pages | activation | password | RawActivationPasswo
 
         // then
         expect(props.history.replace).toHaveBeenCalledWith(
-          '/decouverte?from=password'
+          '/typeform?from=password'
         )
       })
     })

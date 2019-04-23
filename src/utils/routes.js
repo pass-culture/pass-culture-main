@@ -8,6 +8,7 @@ import DiscoveryPage from '../components/pages/discovery'
 import FavoritesPage from '../components/pages/FavoritesPage'
 import ForgotPasswordPage from '../components/pages/ForgotPasswordPage'
 import ProfilePage from '../components/pages/profile'
+import TypeFormPage from '../components/pages/typeform/TypeFormContainer'
 import SearchContainer from '../components/pages/search/SearchContainer'
 import { Signin } from '../components/pages/signin'
 import SignupPage from '../components/pages/SignupPage'
@@ -43,6 +44,11 @@ const routes = [
     component: ForgotPasswordPage,
     path: '/mot-de-passe-perdu/:view?',
     title: 'Mot de passe perdu',
+  },
+  {
+    component: TypeFormPage,
+    path: '/typeform',
+    title: 'Questionnaire',
   },
   /* ---------------------------------------------------
    *

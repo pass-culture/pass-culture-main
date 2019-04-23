@@ -10,7 +10,10 @@ import get from 'lodash.get'
 import MyBookingItemContainer from './MyBookingItemContainer'
 import NoBookingView from './NoBookingView'
 import { mapStateToProps } from './connect'
-import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
+import {
+  withRedirectToSigninWhenNotAuthenticated,
+  withRedirectToDiscoveryOrTypeForm,
+} from '../../hocs'
 import { Loader } from '../../layout/Loader'
 import PageHeader from '../../layout/PageHeader'
 import { toggleMainMenu } from '../../../reducers/menu'
@@ -115,5 +118,6 @@ RawMyBookingsPage.propTypes = {
 
 export default compose(
   withRedirectToSigninWhenNotAuthenticated,
+  withRedirectToDiscoveryOrTypeForm,
   connect(mapStateToProps)
 )(RawMyBookingsPage)

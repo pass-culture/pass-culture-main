@@ -7,7 +7,10 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { selectCurrentUser } from 'with-login'
 
-import { withRedirectToSigninWhenNotAuthenticated } from '../hocs'
+import {
+  withRedirectToSigninWhenNotAuthenticated,
+  withRedirectToDiscoveryOrTypeForm,
+} from '../hocs'
 import Loader from '../layout/Loader'
 import PageHeader from '../layout/PageHeader'
 import NavigationFooter from '../layout/NavigationFooter'
@@ -42,5 +45,6 @@ const mapStateToProps = state => ({
 export default compose(
   withRouter,
   withRedirectToSigninWhenNotAuthenticated,
+  withRedirectToDiscoveryOrTypeForm,
   connect(mapStateToProps)
 )(NotificationsPage)

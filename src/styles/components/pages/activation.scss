@@ -11,8 +11,10 @@
   label[for='activation-newPassword'] .pc-final-form-label {
     padding: 0;
   }
+
   .checkbox-accept-CGU {
     margin-top: 40px;
+
     input {
       margin-right: 0.5rem;
       background-image: url(/icons/checkbox-w.svg);
@@ -24,6 +26,7 @@
       padding: 0;
       border-radius: 0;
       vertical-align: text-bottom;
+
       &:active,
       &:checked {
         &::after {
@@ -37,6 +40,7 @@
         }
       }
     }
+
     a {
       text-decoration: underline;
       color: $white;
@@ -76,7 +80,8 @@
   background-color: transparent;
 }
 
-#activation-error-page, #activation-link-error-page {
+#activation-error-page,
+#activation-link-error-page {
   p {
     font-weight: 500;
     font-style: italic;
@@ -91,13 +96,12 @@
     font-size: 18px;
     font-weight: 700;
     padding-top: 5px;
-    padding-bottom: 5px; 
+    padding-bottom: 5px;
     padding-left: 10px;
     padding-right: 10px;
   }
-
 }
 
-
-/*height: 36px; */
-
+.react-embed-typeform-container iframe {
+  @extend .is-full-layout;
+}
