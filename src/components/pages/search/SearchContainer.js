@@ -3,7 +3,7 @@ import { compose } from 'redux'
 import withQueryRouter from 'with-query-router'
 import get from 'lodash.get'
 
-import Search from './Search'
+import { Search } from './Search'
 import { withRedirectToSigninOrTypeformAfterLogin } from '../../hocs'
 import { selectRecommendations } from '../../../selectors'
 import selectTypeSublabels, {
