@@ -16,22 +16,24 @@ ShallowWrapper {
             "bookingEmail": "booking.email@test.com",
             "dateCreated": "2019-02-25T09:50:10.735519Z",
             "dateModifiedAtLastProvider": "2019-02-25T09:50:31.881297Z",
-            "eventId": null,
             "id": "M4",
             "idAtProviders": null,
             "isActive": true,
+            "isEvent": false,
+            "isThing": true,
             "lastProviderId": null,
             "mediationsIds": Array [
               "HA",
             ],
             "modelName": "Offer",
+            "productId": "EY",
             "stocksIds": Array [
               "MQ",
             ],
-            "thingId": "EY",
             "venueId": "CU",
           }
     }
+    stocks={Array []}
     venue={
         Object {
             "name": "Paris",
@@ -110,7 +112,9 @@ ShallowWrapper {
                                         aria-current="page"
                                         className="has-text-primary"
                                         to="/offres/M4?gestion"
-                              />
+                              >
+                                        0 prix
+                              </NavLink>
                     </li>
                     <li />
                     <li />
@@ -243,7 +247,9 @@ ShallowWrapper {
                                           aria-current="page"
                                           className="has-text-primary"
                                           to="/offres/M4?gestion"
-                            />
+                            >
+                                          0 prix
+                            </NavLink>
               </li>
               <li />
               <li />
@@ -468,7 +474,9 @@ ShallowWrapper {
                                     aria-current="page"
                                     className="has-text-primary"
                                     to="/offres/M4?gestion"
-                  />
+                  >
+                                    0 prix
+                  </NavLink>
 </li>,
                 <li />,
                 <li />,
@@ -514,7 +522,9 @@ ShallowWrapper {
                     aria-current="page"
                     className="has-text-primary"
                     to="/offres/M4?gestion"
-/>,
+>
+                    0 prix
+</NavLink>,
                 },
                 "ref": null,
                 "rendered": Object {
@@ -524,12 +534,12 @@ ShallowWrapper {
                   "props": Object {
                     "activeClassName": "active",
                     "aria-current": "page",
-                    "children": undefined,
+                    "children": "0 prix",
                     "className": "has-text-primary",
                     "to": "/offres/M4?gestion",
                   },
                   "ref": null,
-                  "rendered": null,
+                  "rendered": "0 prix",
                   "type": [Function],
                 },
                 "type": "li",
@@ -916,7 +926,9 @@ ShallowWrapper {
                                                 aria-current="page"
                                                 className="has-text-primary"
                                                 to="/offres/M4?gestion"
-                                    />
+                                    >
+                                                0 prix
+                                    </NavLink>
                         </li>
                         <li />
                         <li />
@@ -1049,7 +1061,9 @@ ShallowWrapper {
                                                 aria-current="page"
                                                 className="has-text-primary"
                                                 to="/offres/M4?gestion"
-                                />
+                                >
+                                                0 prix
+                                </NavLink>
                 </li>
                 <li />
                 <li />
@@ -1274,7 +1288,9 @@ ShallowWrapper {
                                         aria-current="page"
                                         className="has-text-primary"
                                         to="/offres/M4?gestion"
-                    />
+                    >
+                                        0 prix
+                    </NavLink>
 </li>,
                   <li />,
                   <li />,
@@ -1320,7 +1336,9 @@ ShallowWrapper {
                       aria-current="page"
                       className="has-text-primary"
                       to="/offres/M4?gestion"
-/>,
+>
+                      0 prix
+</NavLink>,
                   },
                   "ref": null,
                   "rendered": Object {
@@ -1330,12 +1348,12 @@ ShallowWrapper {
                     "props": Object {
                       "activeClassName": "active",
                       "aria-current": "page",
-                      "children": undefined,
+                      "children": "0 prix",
                       "className": "has-text-primary",
                       "to": "/offres/M4?gestion",
                     },
                     "ref": null,
-                    "rendered": null,
+                    "rendered": "0 prix",
                     "type": [Function],
                   },
                   "type": "li",

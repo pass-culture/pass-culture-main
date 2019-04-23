@@ -23,6 +23,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       venue: {
         name: 'Paris',
       },
+      stocks: [],
     }
   })
 
@@ -390,7 +391,6 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
           bookingEmail: 'booking.email@test.com',
           dateCreated: '2019-02-25T09:50:10.735519Z',
           dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
-          eventId: null,
           id: '1M',
           idAtProviders: null,
           isActive: true,

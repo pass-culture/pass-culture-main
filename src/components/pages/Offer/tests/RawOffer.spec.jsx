@@ -149,10 +149,11 @@ describe('src | components | pages | Offer | RawOffer ', () => {
             bookingEmail: 'fake@email.com',
             dateCreated: '2019-03-29T15:38:23.806900Z',
             dateModifiedAtLastProvider: '2019-03-29T15:38:23.806874Z',
-            eventId: null,
             id: 'N9',
             idAtProviders: null,
             isActive: true,
+            isEvent: true,
+            isThing: false,
             lastProviderId: null,
             modelName: 'Offer',
             productId: '94',
@@ -313,7 +314,9 @@ describe('src | components | pages | Offer | RawOffer ', () => {
           },
           offer: {
             id: 'VAG',
-            eventId: '6GD',
+            productId: '6GD',
+            isEvent: true,
+            isThing: false,
           },
         }
 

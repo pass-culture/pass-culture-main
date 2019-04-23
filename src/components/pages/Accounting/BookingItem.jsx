@@ -119,7 +119,6 @@ class BookingItem extends Component {
   render() {
     const {
       booking,
-      event,
       offerer,
       stock,
       product,
@@ -139,8 +138,7 @@ class BookingItem extends Component {
     const { email, firstName, lastName } = user || {}
     const userIdentifier =
       firstName && lastName ? `${firstName} ${lastName}` : email
-    const eventOrProduct = event || product
-    const { name } = eventOrProduct || {}
+    const { name } = product || {}
     const offererName = get(offerer, 'name')
     const venueName = get(venue, 'name')
     const { picto, message } = getBookingState(booking)

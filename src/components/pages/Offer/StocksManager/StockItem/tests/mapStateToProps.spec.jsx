@@ -21,7 +21,6 @@ describe('src | components | pages | Offer | StockItem | mapStateToProps', () =>
       const result = localMapStateToProps(mockedState, ownProps)
       const expected = {
         event: undefined,
-        eventId: null,
         formBeginningDatetime: undefined,
         formBookingLimitDatetime: undefined,
         formEndDatetime: undefined,
@@ -32,7 +31,8 @@ describe('src | components | pages | Offer | StockItem | mapStateToProps', () =>
           bookingEmail: 'booking.email@test.com',
           dateCreated: '2019-03-07T10:39:23.560392Z',
           dateModifiedAtLastProvider: '2019-03-07T10:40:05.443621Z',
-          eventId: null,
+          isEvent: false,
+          isThing: true,
           id: 'UU',
           idAtProviders: null,
           isActive: true,
