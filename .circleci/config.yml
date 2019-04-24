@@ -93,6 +93,8 @@ jobs:
             nvm use v8.15.1
             cd ~/pass-culture-main/webapp
             yarn test:cafe
+      - store_artifacts:
+          path: ~/pass-culture-main/webapp/testcafe_screenshots
 
 workflows:
   version: 2
