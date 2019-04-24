@@ -4,7 +4,7 @@ function mapArgsToCacheKey(state, optionalProviderId) {
   return optionalProviderId
 }
 
-export const selectThingsByProviderId = createCachedSelector(
+const selectThingsByProviderId = createCachedSelector(
   state => state.data.things,
   (state, optionalProviderId) => optionalProviderId,
   (things, optionalProviderId) => {

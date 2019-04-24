@@ -27,6 +27,7 @@ function mapStateToProps(state, ownProps) {
     },
     query,
   } = ownProps
+
   const translatedQueryParams = query.translate()
 
   const providers = selectProviders(state)
@@ -73,9 +74,9 @@ function mapStateToProps(state, ownProps) {
 
   const formInitialValues = selectFormInitialValuesByProductAndOfferAndOffererAndVenue(
     state,
+    product,
     offer,
     offerer,
-    product,
     venue
   )
   const extraData = get(state, 'form.offer.extraData') || {}

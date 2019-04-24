@@ -299,7 +299,9 @@ class RawOffer extends Component {
       readOnly,
     } = query.context()
 
+    // FIXME Ne plus utiliser cette selection là, mais plutôt isEvent
     const isEventType = get(selectedOfferType, 'type') === 'Event' || eventId
+
     const offerId = get(offer, 'id')
     const offererId = get(offerer, 'id')
     const productName = get(product, 'name')

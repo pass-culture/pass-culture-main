@@ -436,7 +436,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
             router: jest.fn(),
           },
         }
-        props.thing = {
+        props.product = {
           offerType: { label: 'Une place de cinéma' },
         }
         props.stocks = [{}]

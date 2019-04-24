@@ -39,13 +39,14 @@ export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCached
       lastStock = stocks[0]
     }
 
-    if (offer.eventId && !beginningDatetime) {
+    if (offer.isEvent && !beginningDatetime) {
       beginningDatetime = lastStock
         ? getDatetimeOneDayAfter(lastStock.beginningDatetime)
         : getDatetimeOneDayAfter(moment())
     }
 
-    if (offer.eventId && !endDatetime) {
+    if (offer.isEvent && !endDatetime) {
+      // FIXME Should use the offer duration
       endDatetime = lastStock
         ? getDatetimeOneDayAfter(lastStock.endDatetime)
         : getDatetimeOneHourAfter(beginningDatetime)
@@ -73,7 +74,8 @@ export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCached
       offererId,
       price,
     }
-    if (offer.eventId) {
+
+    if (offer.isEvent) {
       Object.assign(formInitialValues, { beginningDatetime, endDatetime })
     }
 
