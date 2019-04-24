@@ -150,30 +150,6 @@ class Patch:
             assert deposits_for_user[0].amount == 500
             assert user.canBookFreeOffers
 
-    class Returns400:
-        @clean_database
-        def when_booking_beginning_datetime_in_more_than_72_hours(self, app):
-            # Given
-            user = create_user()
-            pro_user = create_user(email='admin@email.fr')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(pro_user, offerer)
-            venue = create_venue(offerer)
-            offer = create_event_offer(venue)
-            four_days_from_now = datetime.utcnow() + timedelta(days=4)
-            stock = create_stock_from_offer(offer, price=0, beginning_datetime=four_days_from_now)
-            booking = create_booking(user, stock, venue=venue)
-            PcObject.check_and_save(booking, user_offerer)
-            url = API_URL + '/bookings/token/{}'.format(booking.token)
-
-            # When
-            response = TestClient().with_auth('admin@email.fr').patch(url)
-
-            # Then
-            assert response.status_code == 400
-            assert response.json()['beginningDatetime'] == [
-                'Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement ']
-
     class Returns403:
         @clean_database
         def when_user_not_editor_and_valid_email(self, app):
@@ -196,7 +172,30 @@ class Patch:
             assert response.status_code == 403
             assert response.json()['global'] == ["Cette structure n'est pas enregistr\u00e9e chez cet utilisateur."]
             db.session.refresh(booking)
-            assert not booking.isUsed
+            assert not booking.isUsed        \
+
+        @clean_database
+        def when_booking_beginning_datetime_in_more_than_72_hours(self, app):
+            # Given
+            user = create_user()
+            pro_user = create_user(email='admin@email.fr')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(pro_user, offerer)
+            venue = create_venue(offerer)
+            offer = create_event_offer(venue)
+            four_days_from_now = datetime.utcnow() + timedelta(days=4)
+            stock = create_stock_from_offer(offer, price=0, beginning_datetime=four_days_from_now)
+            booking = create_booking(user, stock, venue=venue)
+            PcObject.check_and_save(booking, user_offerer)
+            url = API_URL + '/bookings/token/{}'.format(booking.token)
+
+            # When
+            response = TestClient().with_auth('admin@email.fr').patch(url)
+
+            # Then
+            assert response.status_code == 403
+            assert response.json()['beginningDatetime'] == [
+                'Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement']
 
         @clean_database
         def when_it_is_an_offer_on_an_activation_event_and_user_patching_is_not_global_admin(self, app):

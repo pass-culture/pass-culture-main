@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from domain.expenses import is_eligible_to_physical_things_capping, is_eligible_to_digital_things_capping
 from models import ApiErrors, Booking
@@ -120,14 +120,21 @@ def check_user_is_logged_in_or_email_is_provided(user, email):
         raise api_errors
 
 
-def check_booking_is_usable(booking):
+def check_booking_is_usable(booking: Booking):
     resource_gone_error = ResourceGoneError()
+    event_starts_in_more_than_72_hours = booking.stock.beginningDatetime and (
+                booking.stock.beginningDatetime - datetime.utcnow() > timedelta(hours=72))
     if booking.isUsed:
         resource_gone_error.addError('booking', 'Cette réservation a déjà été validée')
         raise resource_gone_error
     if booking.isCancelled:
         resource_gone_error.addError('booking', 'Cette réservation a été annulée')
         raise resource_gone_error
+    if event_starts_in_more_than_72_hours:
+        errors = ForbiddenError()
+        errors.addError('beginningDatetime',
+                        'Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement')
+        raise errors
 
 
 def check_booking_is_cancellable(booking, is_user_cancellation):

@@ -5,9 +5,10 @@ import pytest
 
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS
 from models import ApiErrors, Booking, Stock, Offer, Thing, ThingType
+from models.api_errors import ResourceGoneError, ForbiddenError
 from utils.human_ids import humanize
 from tests.test_utils import create_booking_for_thing
-from validation.bookings import check_expenses_limits, check_booking_is_cancellable
+from validation.bookings import check_expenses_limits, check_booking_is_cancellable, check_booking_is_usable
 
 
 @pytest.mark.standalone
@@ -150,3 +151,76 @@ class CheckBookingIsCancellableTest:
 
         # Then
         assert check_output is None
+
+
+class CheckBookingIsUsableTest:
+    def test_raises_resource_gone_error_if_is_used(self):
+        # Given
+        booking = Booking()
+        booking.isUsed = True
+        booking.stock = Stock()
+
+        # When
+        with pytest.raises(ResourceGoneError) as e:
+            check_booking_is_usable(booking)
+        assert e.value.errors['booking'] == [
+            'Cette réservation a déjà été validée']
+
+    def test_raises_resource_gone_error_if_is_cancelled(self):
+        # Given
+        booking = Booking()
+        booking.isUsed = False
+        booking.isCancelled = True
+        booking.stock = Stock()
+
+        # When
+        with pytest.raises(ResourceGoneError) as e:
+            check_booking_is_usable(booking)
+        assert e.value.errors['booking'] == [
+            'Cette réservation a été annulée']
+
+    def test_raises_resource_gone_error_if_stock_beginning_datetime_in_more_than_72_hours(self):
+        # Given
+        in_four_days = datetime.utcnow() + timedelta(days=4)
+        booking = Booking()
+        booking.isUsed = False
+        booking.isCancelled = False
+        booking.stock = Stock()
+        booking.stock.beginningDatetime = in_four_days
+
+        # When
+        with pytest.raises(ForbiddenError) as e:
+            check_booking_is_usable(booking)
+        assert e.value.errors['beginningDatetime'] == [
+            'Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement']
+
+    def test_does_not_raise_error_if_not_cancelled_nor_used_and_no_beginning_datetime(self):
+        # Given
+        booking = Booking()
+        booking.isUsed = False
+        booking.isCancelled = False
+        booking.stock = Stock()
+        booking.stock.beginningDatetime = None
+
+        # When
+        try:
+            check_booking_is_usable(booking)
+        except ApiErrors:
+            pytest.fail(
+                'Bookings which are not used nor cancelled and do not have a beginning datetime should be usable')
+
+    def test_does_not_raise_error_if_not_cancelled_nor_used_and_beginning_datetime_in_less_than_72_hours(self):
+        # Given
+        in_two_days = datetime.utcnow() + timedelta(days=2)
+        booking = Booking()
+        booking.isUsed = False
+        booking.isCancelled = False
+        booking.stock = Stock()
+        booking.stock.beginningDatetime = in_two_days
+
+        # When
+        try:
+            check_booking_is_usable(booking)
+        except ApiErrors:
+            pytest.fail(
+                'Bookings which are not used nor cancelled and do not have a beginning datetime should be usable')

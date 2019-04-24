@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
 import pytest
@@ -9,7 +9,7 @@ from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_stock_with_thing_offer, \
     create_venue, create_offerer, \
     create_user, create_booking, create_event_offer, \
-    create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer
+    create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, create_stock_with_event_offer
 from utils.human_ids import humanize
 
 
@@ -288,6 +288,31 @@ class Get:
             error_message = response.json()
             assert error_message['email'] == [
                 'Vous devez préciser l\'email de l\'utilisateur quand vous n\'êtes pas connecté(e)']
+
+    class Returns403:
+        @clean_database
+        def when_booking_is_on_stock_with_beginning_datetime_in_more_than_72_hours(self, app):
+            # Given
+            in_73_hours = datetime.utcnow() + timedelta(hours=73)
+            in_74_hours = datetime.utcnow() + timedelta(hours=74)
+            in_72_hours = datetime.utcnow() + timedelta(hours=72)
+            user = create_user(email='user@email.fr')
+            admin_user = create_user(email='admin@email.fr')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=in_73_hours, end_datetime=in_74_hours, booking_limit_datetime=in_72_hours)
+            booking = create_booking(user, stock, venue=venue)
+
+            PcObject.check_and_save(admin_user, booking)
+            url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
+                                                                             humanize(stock.offerId))
+
+            # When
+            response = TestClient().get(url)
+            # Then
+            assert response.status_code == 403
+            assert response.json()['beginningDatetime'] == ['Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement']
+
 
     class Returns410:
 
