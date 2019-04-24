@@ -165,8 +165,7 @@ class Post:
                 'city': 'Paris',
                 'managingOffererId': humanize(offerer.id),
                 'latitude': 48.82387,
-                'longitude': 2.35284,
-                'publicName': 'Ma venue publique'
+                'longitude': 2.35284
             }
             auth_request = TestClient().with_auth(email=user.email)
 
