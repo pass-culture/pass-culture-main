@@ -14,7 +14,7 @@ describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
         dispatch: dispatchMock,
         hasIban: false,
         history: { push: jest.fn() },
-        isEventStock: false,
+        isEvent: false,
         query: { context: () => ({}) },
         stockPatch: {},
         stocks: [],
@@ -37,7 +37,7 @@ describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
           dispatch: jest.fn(),
           history: {},
           hasIban: false,
-          isEventStock: false,
+          isEvent: false,
           offer: {
             id: 'TY',
           },

@@ -71,7 +71,7 @@ export class ProductFields extends Component {
   }
 
   render() {
-    const { beginningDatetime, isEventStock, readOnly, stock } = this.props
+    const { beginningDatetime, isEvent, readOnly, stock } = this.props
     const { available, bookings } = stock || {}
     const remainingStocksCount = getRemainingStocksCount(
       available,
@@ -94,7 +94,7 @@ export class ProductFields extends Component {
         </td>
         <td title="Laissez vide si pas de limite">
           <DateField
-            maxDate={isEventStock ? moment(beginningDatetime) : undefined}
+            maxDate={isEvent ? moment(beginningDatetime) : undefined}
             name="bookingLimitDatetime"
             placeholder="Laissez vide si pas de limite"
             readOnly={readOnly}
@@ -135,7 +135,7 @@ export class ProductFields extends Component {
 ProductFields.defaultProps = {
   beginningDatetime: null,
   readOnly: true,
-  isEventStock: true,
+  isEvent: true,
   offer: null,
   stock: null,
 }
@@ -144,7 +144,7 @@ ProductFields.propTypes = {
   beginningDatetime: PropTypes.string,
   closeInfo: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
-  isEventStock: PropTypes.bool,
+  isEvent: PropTypes.bool,
   offer: PropTypes.object,
   parseFormChild: PropTypes.func,
   readOnly: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),

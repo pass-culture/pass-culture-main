@@ -35,7 +35,7 @@ class EditAndDeleteControl extends Component {
   }
 
   render() {
-    const { isEventStock, query, stock } = this.props
+    const { isEvent, query, stock } = this.props
     const { id: stockId } = stock
     const { isDeleting } = this.state
 
@@ -49,7 +49,7 @@ class EditAndDeleteControl extends Component {
         <td colSpan="2">
           <Portal node={this.props.tbody}>
             <DeleteDialog
-              isEventStock={isEventStock}
+              isEvent={isEvent}
               onCancelDeleteClick={this.onCancelDeleteClick}
               onConfirmDeleteClick={this.onConfirmDeleteClick}
             />
@@ -91,7 +91,7 @@ class EditAndDeleteControl extends Component {
 
 EditAndDeleteControl.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  isEventStock: PropTypes.bool.isRequired,
+  isEvent: PropTypes.bool.isRequired,
   query: PropTypes.object.isRequired,
   stock: PropTypes.object.isRequired,
   formInitialValues: PropTypes.object.isRequired,

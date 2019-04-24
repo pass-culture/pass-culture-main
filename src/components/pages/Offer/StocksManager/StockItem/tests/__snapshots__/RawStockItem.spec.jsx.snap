@@ -15,7 +15,7 @@ ShallowWrapper {
             "push": [Function],
           }
     }
-    isEventStock={false}
+    isEvent={false}
     offer={null}
     query={
         Object {

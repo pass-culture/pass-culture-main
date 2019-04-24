@@ -7,8 +7,8 @@ import PropTypes from 'prop-types'
 import StockItem from './StockItem'
 import HeroSection from 'components/layout/HeroSection'
 
-const getStocksManagerButtonTitle = (isEventStock, stocks) => {
-  if (isEventStock) {
+const getStocksManagerButtonTitle = (isEvent, stocks) => {
+  if (isEvent) {
     return '+ Ajouter une date'
   }
   if (stocks.length) {
@@ -114,11 +114,11 @@ class RawStocksManager extends Component {
   }
 
   renderTableHead() {
-    const { isEventStock } = this.props
+    const { isEvent } = this.props
     return (
       <thead>
         <tr>
-          {isEventStock && (
+          {isEvent && (
             <Fragment>
               <td>Date</td>
               <td>
@@ -135,8 +135,8 @@ class RawStocksManager extends Component {
           )}
           <td>Prix</td>
           <td>Date Limite de Réservation</td>
-          <td>{isEventStock ? 'Places affectées' : 'Stock affecté'}</td>
-          <td>{isEventStock ? 'Places restantes' : 'Stock restant'}</td>
+          <td>{isEvent ? 'Places affectées' : 'Stock affecté'}</td>
+          <td>{isEvent ? 'Places restantes' : 'Stock restant'}</td>
           <td>Modifier</td>
           <td>Supprimer</td>
         </tr>
@@ -146,7 +146,7 @@ class RawStocksManager extends Component {
 
   render() {
     const {
-      isEventStock,
+      isEvent,
       offer,
       product,
       provider,
@@ -178,15 +178,13 @@ class RawStocksManager extends Component {
         <div className="stocks-table-wrapper">
           <HeroSection
             title={
-              isEventStock
-                ? 'Dates, horaires et prix'
-                : get(product, 'id') && 'Prix'
+              isEvent ? 'Dates, horaires et prix' : get(product, 'id') && 'Prix'
             }
             subtitle={get(product, 'name')}
           />
           <table
             className={classnames('table is-hoverable stocks-table', {
-              small: !isEventStock,
+              small: !isEvent,
             })}>
             {this.renderTableHead()}
             {provider ? (
@@ -215,7 +213,7 @@ class RawStocksManager extends Component {
                         query.changeToCreation(null, { key: 'stock' })
                       }
                       type="button">
-                      {getStocksManagerButtonTitle(isEventStock, stocks)}
+                      {getStocksManagerButtonTitle(isEvent, stocks)}
                     </button>
                   </td>
                 </tr>
@@ -227,7 +225,7 @@ class RawStocksManager extends Component {
                 closeInfo={this.closeInfo}
                 handleSetErrors={this.handleSetErrors}
                 isFullyEditable={!provider}
-                isEventStock={isEventStock}
+                isEvent={isEvent}
                 showInfo={this.showInfo}
               />
             )}
@@ -238,7 +236,7 @@ class RawStocksManager extends Component {
                 key={stock.id}
                 handleSetErrors={this.handleSetErrors}
                 isFullyEditable={!provider}
-                isEventStock={isEventStock}
+                isEvent={isEvent}
                 showInfo={this.showInfo}
                 stock={stock}
                 stocks={stocks}
@@ -268,6 +266,7 @@ RawStocksManager.propTypes = {
   shouldPreventCreationOfSecondStock: PropTypes.bool,
   stocks: PropTypes.array,
   query: PropTypes.object.isRequired,
+  isEvent: PropTypes.object.isRequired,
 }
 
 export default RawStocksManager

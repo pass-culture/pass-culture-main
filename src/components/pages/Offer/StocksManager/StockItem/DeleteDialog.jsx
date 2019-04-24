@@ -2,18 +2,14 @@ import React, { Component } from 'react'
 
 class DeleteDialog extends Component {
   render() {
-    const {
-      isEventStock,
-      onCancelDeleteClick,
-      onConfirmDeleteClick,
-    } = this.props
+    const { isEvent, onCancelDeleteClick, onConfirmDeleteClick } = this.props
 
     return (
       <tr>
         <td colSpan="6" className="is-size-7">
-          En confirmant l'annulation de{' '}
-          {isEventStock ? 'cette date' : 'ce stock'}, vous supprimerez aussi
-          toutes les réservations associées. {isEventStock && <br />}
+          En confirmant l'annulation de {isEvent ? 'cette date' : 'ce stock'},
+          vous supprimerez aussi toutes les réservations associées.{' '}
+          {isEvent && <br />}
           Êtes-vous sûr de vouloir continuer&nbsp;?
         </td>
 

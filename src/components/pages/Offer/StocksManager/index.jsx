@@ -1,3 +1,4 @@
+import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
@@ -21,20 +22,13 @@ function mapStateToProps(state, ownProps) {
     return {}
   }
 
-  const { productId } = offer
-  const product = selectProductById(state, productId)
-  const { durationMinutes } = product || {}
-
+  const product = selectProductById(state, get(offer, 'productId'))
   const stocks = selectStocksByOfferId(state, offerId)
-
-  const isEventStock = typeof durationMinutes !== 'undefined'
-
-  const shouldPreventCreationOfSecondStock = !isEventStock && stocks.length > 0
-
+  const shouldPreventCreationOfSecondStock = offer.isThing && stocks.length > 0
   const provider = selectProviderById(state, product && product.lastProviderId)
 
   return {
-    isEventStock,
+    isEvent: offer.isEvent,
     offer,
     product,
     provider,

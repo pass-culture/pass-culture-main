@@ -94,7 +94,7 @@ export class RawStockItem extends Component {
       dispatch,
       hasIban,
       history,
-      isEventStock,
+      isEvent,
       offer,
       query,
       showInfo,
@@ -114,7 +114,7 @@ export class RawStockItem extends Component {
         }}>
         <Form
           decorators={
-            isEventStock && [
+            isEvent && [
               selectBoundDatesFromTriggerDateNameAndTargetDateNameAndTimezoneDecorator(
                 'beginningDatetime',
                 'endDatetime',
@@ -142,7 +142,7 @@ export class RawStockItem extends Component {
             )
             return (
               <tr className="stock-item">
-                {isEventStock && (
+                {isEvent && (
                   <EventFields
                     dispatch={dispatch}
                     readOnly={readOnly}
@@ -157,7 +157,7 @@ export class RawStockItem extends Component {
                   closeInfo={closeInfo}
                   dispatch={dispatch}
                   hasIban={hasIban}
-                  isEventStock={isEventStock}
+                  isEvent={isEvent}
                   readOnly={readOnly}
                   offer={offer}
                   showInfo={showInfo}
@@ -167,7 +167,7 @@ export class RawStockItem extends Component {
                   <EditAndDeleteControl
                     dispatch={dispatch}
                     history={history}
-                    isEventStock={isEventStock}
+                    isEvent={isEvent}
                     offer={offer}
                     stock={stock}
                     tbody={tbodyElement}
@@ -205,7 +205,7 @@ RawStockItem.propTypes = {
   dispatch: PropTypes.func.isRequired,
   hasIban: PropTypes.bool.isRequired,
   history: PropTypes.object.isRequired,
-  isEventStock: PropTypes.bool.isRequired,
+  isEvent: PropTypes.bool.isRequired,
   offer: PropTypes.object,
   query: PropTypes.object.isRequired,
   stockPatch: PropTypes.object.isRequired,

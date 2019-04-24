@@ -64,20 +64,5 @@ describe.skip('src | components | pages | Offer | RawStocksManager', () => {
 
       // then
     })
-    describe('When isNew', () => {
-      it('should >>> ', () => {})
-    })
-    describe('When isEventStock', () => {
-      it('should >>> ', () => {})
-    })
-    describe('When Math.max > 12', () => {
-      it('should >>> ', () => {})
-    })
-    describe('When provider', () => {
-      it('should >>> ', () => {})
-    })
-    describe('When !isEventStock', () => {
-      it('should >>> ', () => {})
-    })
   })
 })
