@@ -18,8 +18,6 @@ depends_on = None
 
 def upgrade():
     op.add_column('venue', sa.Column('publicName', sa.VARCHAR(255), nullable=True))
-    pass
 
 def downgrade():
     op.drop_column('venue', 'publicName')
-    pass
