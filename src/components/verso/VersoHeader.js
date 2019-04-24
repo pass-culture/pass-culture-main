@@ -1,8 +1,7 @@
 /* eslint
-  semi: [2, "always"]
   react/jsx-one-expression-per-line: 0 */
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
 const VersoHeader = ({ backgroundColor, subtitle, title }) => (
   <div
@@ -24,17 +23,17 @@ const VersoHeader = ({ backgroundColor, subtitle, title }) => (
       </h2>
     )}
   </div>
-);
+)
 
 VersoHeader.defaultProps = {
   subtitle: null,
   title: null,
-};
+}
 
 VersoHeader.propTypes = {
   backgroundColor: PropTypes.string.isRequired,
   subtitle: PropTypes.string,
   title: PropTypes.string,
-};
+}
 
-export default VersoHeader;
+export default VersoHeader

@@ -17,7 +17,7 @@ ShallowWrapper {
     isTuto={false}
     mediationId="AAA"
     offerName="Offer title"
-    offerVenue="Offer subtitle"
+    offerVenueNameOrPublicName="Offer subtitle"
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

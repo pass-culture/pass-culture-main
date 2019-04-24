@@ -1,4 +1,3 @@
-// $(yarn bin)/jest --env=jsdom ./src/components/verso/tests/Verso.spec.js --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 
@@ -16,7 +15,7 @@ const props = {
   forceDetailsVisible: false,
   mediationId: 'AAA',
   offerName: 'Offer title',
-  offerVenue: 'Offer subtitle',
+  offerVenueNameOrPublicName: 'Offer subtitle',
 }
 
 describe('src | components | verso | Verso', () => {
@@ -32,7 +31,7 @@ describe('src | components | verso | Verso', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  it('should show offer view', () => {
+  it('should show offer view when is not tuto', () => {
     // given
     const cprops = { ...props, isTuto: false }
 
@@ -48,7 +47,7 @@ describe('src | components | verso | Verso', () => {
     expect(controls).toHaveLength(1)
   })
 
-  it('should show tuto view', () => {
+  it('should show tuto view when is tuto', () => {
     // given
     const cprops = { ...props, isTuto: true }
 

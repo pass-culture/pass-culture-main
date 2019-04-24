@@ -118,11 +118,6 @@ ShallowWrapper {
               <span
                 className="is-block"
               >
-                fake name
-              </span>
-              <span
-                className="is-block"
-              >
                 fake publicName
               </span>
               <span
@@ -384,11 +379,6 @@ ShallowWrapper {
                 <span
                   className="is-block"
                 >
-                  fake name
-                </span>
-                <span
-                  className="is-block"
-                >
                   fake publicName
                 </span>
                 <span
@@ -447,11 +437,6 @@ ShallowWrapper {
                   <span
                     className="is-block"
                   >
-                    fake name
-                  </span>
-                  <span
-                    className="is-block"
-                  >
                     fake publicName
                   </span>
                   <span
@@ -496,11 +481,6 @@ ShallowWrapper {
                     <span
                       className="is-block"
                     >
-                      fake name
-                    </span>,
-                    <span
-                      className="is-block"
-                    >
                       fake publicName
                     </span>,
                     <span
@@ -523,18 +503,6 @@ ShallowWrapper {
                 },
                 "ref": null,
                 "rendered": Array [
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": "fake name",
-                      "className": "is-block",
-                    },
-                    "ref": null,
-                    "rendered": "fake name",
-                    "type": "span",
-                  },
                   Object {
                     "instance": null,
                     "key": undefined,
@@ -702,11 +670,6 @@ ShallowWrapper {
               <p
                 className="address-info"
               >
-                <span
-                  className="is-block"
-                >
-                  fake name
-                </span>
                 <span
                   className="is-block"
                 >
@@ -971,11 +934,6 @@ ShallowWrapper {
                   <span
                     className="is-block"
                   >
-                    fake name
-                  </span>
-                  <span
-                    className="is-block"
-                  >
                     fake publicName
                   </span>
                   <span
@@ -1034,11 +992,6 @@ ShallowWrapper {
                     <span
                       className="is-block"
                     >
-                      fake name
-                    </span>
-                    <span
-                      className="is-block"
-                    >
                       fake publicName
                     </span>
                     <span
@@ -1083,11 +1036,6 @@ ShallowWrapper {
                       <span
                         className="is-block"
                       >
-                        fake name
-                      </span>,
-                      <span
-                        className="is-block"
-                      >
                         fake publicName
                       </span>,
                       <span
@@ -1110,18 +1058,6 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": Array [
-                    Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "host",
-                      "props": Object {
-                        "children": "fake name",
-                        "className": "is-block",
-                      },
-                      "ref": null,
-                      "rendered": "fake name",
-                      "type": "span",
-                    },
                     Object {
                       "instance": null,
                       "key": undefined,
