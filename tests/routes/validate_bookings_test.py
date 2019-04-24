@@ -172,7 +172,7 @@ class Patch:
             assert response.status_code == 403
             assert response.json()['global'] == ["Cette structure n'est pas enregistr\u00e9e chez cet utilisateur."]
             db.session.refresh(booking)
-            assert not booking.isUsed        \
+            assert not booking.isUsed
 
         @clean_database
         def when_booking_beginning_datetime_in_more_than_72_hours(self, app):

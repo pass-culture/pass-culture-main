@@ -122,14 +122,14 @@ def check_user_is_logged_in_or_email_is_provided(user, email):
 
 def check_booking_is_usable(booking: Booking):
     resource_gone_error = ResourceGoneError()
-    event_starts_in_more_than_72_hours = booking.stock.beginningDatetime and (
-                booking.stock.beginningDatetime - datetime.utcnow() > timedelta(hours=72))
     if booking.isUsed:
         resource_gone_error.addError('booking', 'Cette réservation a déjà été validée')
         raise resource_gone_error
     if booking.isCancelled:
         resource_gone_error.addError('booking', 'Cette réservation a été annulée')
         raise resource_gone_error
+    event_starts_in_more_than_72_hours = booking.stock.beginningDatetime and (
+                booking.stock.beginningDatetime - datetime.utcnow() > timedelta(hours=72))
     if event_starts_in_more_than_72_hours:
         errors = ForbiddenError()
         errors.addError('beginningDatetime',

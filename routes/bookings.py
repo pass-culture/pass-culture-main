@@ -1,10 +1,9 @@
 """ bookings routes """
-import codecs
-from datetime import timedelta, datetime
+
+from itertools import chain
 
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
-from itertools import chain
 
 from domain.bookings import generate_bookings_details_csv
 from domain.expenses import get_expenses
@@ -16,11 +15,11 @@ from models import ApiErrors, Booking, Offerer, PcObject, Stock, RightsType, Eve
 from models.pc_object import serialize
 from repository import booking_queries
 from repository.booking_queries import find_active_bookings_by_user_id, \
-                                       find_all_bookings_for_stock_and_user, \
-                                       find_offerer_bookings
+    find_all_bookings_for_stock_and_user, \
+    find_offerer_bookings
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
-from utils.includes import BOOKING_INCLUDES
 from utils.human_ids import dehumanize, humanize
+from utils.includes import BOOKING_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data
