@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 from connectors.api_demarches_simplifiees import get_all_applications_for_procedure, ApiDemarchesSimplifieesException, \
     get_application_details
 
+
 @pytest.mark.standalone
 class GetAllApplicationsForProcedureTest:
     @patch('connectors.api_demarches_simplifiees.requests.get')
@@ -20,7 +21,8 @@ class GetAllApplicationsForProcedureTest:
         applications_for_procedure = get_all_applications_for_procedure(procedure_id=procedure_id, token=token)
 
         call_args = requests_get.call_args
-        assert call_args[0] == ('https://www.demarches-simplifiees.fr/api/v1/procedures/1/dossiers?token=12345',)
+        assert call_args[0] == (
+        'https://www.demarches-simplifiees.fr/api/v1/procedures/1/dossiers?token=12345&resultats_par_page=1000',)
         assert applications_for_procedure == {'test': 'value'}
 
     @patch('connectors.api_demarches_simplifiees.requests.get')
