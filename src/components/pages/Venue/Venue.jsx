@@ -107,9 +107,9 @@ class Venue extends Component {
 
   buildNotificationMessage = (venueId, method) => {
     const { dispatch } = this.props
-    const isOfferCreated = method === 'POST'
+    const isVenueCreated = method === 'POST'
 
-    return isOfferCreated ? (
+    const venueCreatedMessage = (
       <p>
         Lieu créé. Vous pouvez maintenant y{' '}
         <NavLink
@@ -119,9 +119,10 @@ class Venue extends Component {
         </NavLink>
         , ou en importer automatiquement.
       </p>
-    ) : (
-      'Lieu modifié avec succès !'
     )
+    const venueModifiedMessage = 'Lieu modifié avec succès !'
+
+    return isVenueCreated ? venueCreatedMessage : venueModifiedMessage
   }
 
   buildRedirectUrl = (offererId, venueId, method) => {
@@ -134,15 +135,11 @@ class Venue extends Component {
     return offererPath
   }
 
-  buildBackToInfos = (offerer, offererId, venuePatch) => {
+  buildBackToInfos = (offerer, offererId) => {
     const offererName = get(offerer, 'name')
-    const venueName = get(venuePatch, 'name')
-    const isNewVenue = offererName === venueName
-
-    const backToLabel = isNewVenue ? 'STRUCTURE' : offererName
 
     return {
-      label: backToLabel,
+      label: offererName,
       path: `/structures/${offererId}`,
     }
   }
@@ -188,7 +185,7 @@ class Venue extends Component {
 
     return (
       <Main
-        backTo={this.buildBackToInfos(offerer, offererId, venuePatch)}
+        backTo={this.buildBackToInfos(offerer, offererId)}
         name="venue"
         handleDataRequest={this.handleDataRequest}>
         <HeroSection subtitle={venuePatchName} title="Lieu">

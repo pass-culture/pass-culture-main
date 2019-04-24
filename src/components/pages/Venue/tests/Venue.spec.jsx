@@ -39,6 +39,7 @@ describe('src | components | pages | Venue | Venue', () => {
       name: 'Maison de la Brique',
       offerer: {
         id: 'BQ',
+        name: 'Maison du chocolat',
       },
       user: {},
       venuePatch: {
@@ -123,7 +124,7 @@ describe('src | components | pages | Venue | Venue', () => {
 
         // then
         expect(wrapper.prop('backTo')).toEqual({
-          label: 'STRUCTURE',
+          label: 'Maison du chocolat',
           path: '/structures/APEQ',
         })
       })

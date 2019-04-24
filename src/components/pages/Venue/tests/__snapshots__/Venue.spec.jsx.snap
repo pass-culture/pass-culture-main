@@ -35,6 +35,7 @@ ShallowWrapper {
     offerer={
         Object {
             "id": "BQ",
+            "name": "Maison du chocolat",
           }
     }
     user={Object {}}
@@ -59,7 +60,7 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "backTo": Object {
-        "label": "STRUCTURE",
+        "label": "Maison du chocolat",
         "path": "/structures/APEQ",
       },
       "children": Array [
@@ -1499,7 +1500,7 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "backTo": Object {
-          "label": "STRUCTURE",
+          "label": "Maison du chocolat",
           "path": "/structures/APEQ",
         },
         "children": Array [
