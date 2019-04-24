@@ -143,6 +143,8 @@ class Post:
                 'type': 'Event',
                 'value': 'EventType.SPECTACLE_VIVANT'
             }
+            assert response.json()['isEvent'] is True
+            assert response.json()['isThing'] is False
 
             offer_id = dehumanize(response.json()['id'])
             offer = Offer.query.filter_by(id=offer_id).first()

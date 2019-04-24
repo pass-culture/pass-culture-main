@@ -67,6 +67,8 @@ OFFER_INCLUDES = [
     'isFullyBooked',
     "mediations",
     "stockAlertMessage",
+    "isEvent",
+    "isThing",
     {
         "key": "product",
         "sub_joins": [
