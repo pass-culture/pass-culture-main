@@ -23,7 +23,7 @@ export default function mapStateToProps(state, ownProps) {
   const venue = selectVenueById(state, venueId)
   const managingOffererId = venue && venue.managingOffererId
 
-  const formInitialValues = selectFormInitialValuesByStockAndOfferIdAndOffererId(
+  const stockPatch = selectFormInitialValuesByStockAndOfferIdAndOffererId(
     state,
     stock,
     offerId,
@@ -39,10 +39,10 @@ export default function mapStateToProps(state, ownProps) {
 
   return {
     hasIban,
-    formInitialValues,
     offer,
     product,
     productId,
+    stockPatch,
     stockIdOrNew,
     tz,
     venue,

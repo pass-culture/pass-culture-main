@@ -47,8 +47,8 @@ export class RawStockItem extends Component {
   }
 
   handleRequestSuccess = formResolver => () => {
-    const { query, formInitialValues } = this.props
-    const { id: stockId } = formInitialValues
+    const { query, stockPatch } = this.props
+    const { id: stockId } = stockPatch
     const nextState = { isRequestPending: false }
     this.setState(nextState, () => {
       query.changeToReadOnly(null, { id: stockId, key: 'stock' })
@@ -57,8 +57,8 @@ export class RawStockItem extends Component {
   }
 
   onFormSubmit = formValues => {
-    const { dispatch, handleSetErrors, query, formInitialValues } = this.props
-    const { id: stockId } = formInitialValues
+    const { dispatch, handleSetErrors, query, stockPatch } = this.props
+    const { id: stockId } = stockPatch
     const context = query.context({ id: stockId, key: 'stock' })
     const { method } = context
     const apiPath = `/stocks/${stockId || ''}`
@@ -99,12 +99,12 @@ export class RawStockItem extends Component {
       query,
       showInfo,
       stock,
-      formInitialValues,
+      stockPatch,
       stocks,
       tz,
     } = this.props
     const { isRequestPending, tbodyElement } = this.state
-    const { id: stockId } = formInitialValues
+    const { id: stockId } = stockPatch
     const { readOnly } = query.context({ id: stockId, key: 'stock' })
 
     return (
@@ -132,7 +132,7 @@ export class RawStockItem extends Component {
               ),
             ]
           }
-          initialValues={formInitialValues}
+          initialValues={stockPatch}
           onSubmit={this.onFormSubmit}
           render={formProps => {
             const { values, handleSubmit } = formProps
@@ -146,7 +146,7 @@ export class RawStockItem extends Component {
                   <EventFields
                     dispatch={dispatch}
                     readOnly={readOnly}
-                    formInitialValues={formInitialValues}
+                    stockPatch={stockPatch}
                     stocks={stocks}
                     tz={tz}
                     values={values}
@@ -208,7 +208,7 @@ RawStockItem.propTypes = {
   isEventStock: PropTypes.bool.isRequired,
   offer: PropTypes.object,
   query: PropTypes.object.isRequired,
-  formInitialValues: PropTypes.object.isRequired,
+  stockPatch: PropTypes.object.isRequired,
   stocks: PropTypes.arrayOf(PropTypes.object),
   showInfo: PropTypes.func.isRequired,
 }

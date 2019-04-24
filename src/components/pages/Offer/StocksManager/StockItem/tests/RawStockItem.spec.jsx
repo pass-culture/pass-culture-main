@@ -16,7 +16,7 @@ describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
         history: { push: jest.fn() },
         isEventStock: false,
         query: { context: () => ({}) },
-        formInitialValues: {},
+        stockPatch: {},
         stocks: [],
       }
 
@@ -30,7 +30,7 @@ describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
   })
   describe('functions', () => {
     describe('handleRequestSuccess', () => {
-      it('redirect to gestion at patch success', done => {
+      it('redirect to gestion at patch success', () => {
         // given
         const initialProps = {
           closeInfo: jest.fn(),
@@ -42,14 +42,14 @@ describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
             id: 'TY',
           },
           query: { changeToReadOnly: jest.fn(), context: () => ({}) },
-          formInitialValues: {
+          stockPatch: {
             id: 'DG',
           },
           stocks: [],
         }
         const wrapper = shallow(<RawStockItem {...initialProps} />)
 
-        new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
           // when
           wrapper.instance().handleRequestSuccess(resolve)()
         }).then(() => {
@@ -61,7 +61,6 @@ describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
               key: 'stock',
             }
           )
-          done()
         })
       })
     })
