@@ -26,8 +26,7 @@ fixture(`04_04 Verso partage de l'offre`).beforeEach(async t => {
 test('Je peux cliquer sur le bouton de partage', async t => {
   await t
     .click(openVersoButton)
-    .click(shareButton)
-    .wait(500)
+    .click(shareButton, { timeout: 25000 })
     .expect(sharePopin.exists)
     .ok()
 })
