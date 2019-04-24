@@ -8,7 +8,7 @@ import { ROOT_PATH } from '../src/utils/config'
 const discoverURL = `${ROOT_PATH}decouverte`
 
 const dragButton = Selector('#dragButton')
-const shareButton = Selector('#verso-share-button')
+const shareButton = Selector('#verso-share-button', { timeout: 25000 })
 const openVersoButton = Selector('#deck-open-verso-button')
 const sharePopin = Selector('#share-popin-fixed-container')
 
@@ -26,7 +26,7 @@ fixture(`04_04 Verso partage de l'offre`).beforeEach(async t => {
 test('Je peux cliquer sur le bouton de partage', async t => {
   await t
     .click(openVersoButton)
-    .click(shareButton, { timeout: 25000 })
+    .click(shareButton)
     .expect(sharePopin.exists)
     .ok()
 })
