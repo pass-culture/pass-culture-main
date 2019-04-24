@@ -6,17 +6,14 @@ from models import PcObject
 from domain.offers import add_stock_alert_message_to_offer, check_digital_offer_consistency, InconsistentOffer
 from models import Offer, Venue, Thing
 from datetime import datetime
-from tests.test_utils import API_URL, \
-    create_booking, \
+from tests.test_utils import create_booking, \
     create_deposit, \
-    create_event_offer, \
     create_event_offer, \
     create_offerer, \
     create_recommendation, \
     create_user, \
-    create_user_offerer, \
     create_stock_from_offer, \
-    create_venue, create_thing_offer, create_bank_information
+    create_venue, create_thing_offer
 
 from tests.conftest import clean_database
 
@@ -78,7 +75,7 @@ class CheckDigitalOfferConsistencyTest:
 class AddStockAlertMessageToOfferTest:
     class ThingOfferTest:
         @clean_database
-        def test_check_alert_stock_message_returned_with_empty_stock(self, app):
+        def test_check_offer_with_no_stock(self, app):
             # given
             user = create_user(email='user@test.com')
             offerer = create_offerer()
@@ -94,7 +91,7 @@ class AddStockAlertMessageToOfferTest:
             assert result.stockAlertMessage == 'pas encore de stock'
 
         @clean_database
-        def test_check_alert_stock_message_returned_all_stock_unlimited(self, app):
+        def test_check_offer_with_all_stocks_unlimited(self, app):
             # given
             user = create_user(email='user@test.com')
             user2 = create_user(email='user2@test.com')
@@ -117,7 +114,7 @@ class AddStockAlertMessageToOfferTest:
             assert result.stockAlertMessage == 'illimité'
 
         @clean_database
-        def test_check_alert_stock_message_returned_all_stock_unlimited_and_available_set_to_zero(self, app):
+        def test_check_offer_with_one_unlimited_and_one_available_zero_stock(self, app):
             # given
             user = create_user(email='user@test.com')
             user2 = create_user(email='user2@test.com')
@@ -140,7 +137,7 @@ class AddStockAlertMessageToOfferTest:
             assert result.stockAlertMessage == 'plus de stock pour 1 offre'
 
         @clean_database
-        def test_check_alert_stock_message_returned_all_empty_stock_after_booking_and_one_with_available_set_to_zero(self, app):
+        def test_check_offer_with_one_available_zero_and_one_sold_out_stock(self, app):
             # given
             user = create_user(email='user@test.com')
             user2 = create_user(email='user2@test.com')
@@ -163,7 +160,7 @@ class AddStockAlertMessageToOfferTest:
             assert result.stockAlertMessage == 'plus de stock'
 
         @clean_database
-        def test_check_alert_stock_message_returned_all_empty_stock_after_bookings(self, app):
+        def test_check_offer_with_all_sold_out_stocks(self, app):
             # given
             user = create_user(email='user@test.com')
             user2 = create_user(email='user2@test.com')
@@ -187,7 +184,7 @@ class AddStockAlertMessageToOfferTest:
             assert result.stockAlertMessage == 'plus de stock'
 
         @clean_database
-        def test_check_alert_stock_message_returned_with_stock(self, app):
+        def test_check_offer_with_all_remaining_stocks(self, app):
             # given
             user = create_user(email='user@test.com')
             user2 = create_user(email='user2@test.com')
@@ -211,7 +208,7 @@ class AddStockAlertMessageToOfferTest:
             assert result.stockAlertMessage == 'encore 137 en stock'
 
         @clean_database
-        def test_check_alert_stock_message_returned_with_at_least_one_with_no_more_stock_on_one_offer(self, app):
+        def test_check_offer_with_one_sold_out_and_one_remaining_stock(self, app):
             # given
             user = create_user(email='user@test.com')
             user2 = create_user(email='user2@test.com')
@@ -234,7 +231,7 @@ class AddStockAlertMessageToOfferTest:
             assert result.stockAlertMessage == 'plus de stock pour 1 offre'
 
         @clean_database
-        def test_check_alert_stock_message_returned_with_at_least_one_with_no_more_stock_on_two_offers_even_with_one_unlimited_stock_and_one_with_stock(self, app):
+        def test_check_offer_with_two_sold_out_one_unlimited_and_one_remaining_stocks(self, app):
             # given
             user = create_user(email='user@test.com')
             user2 = create_user(email='user2@test.com')
@@ -263,7 +260,7 @@ class AddStockAlertMessageToOfferTest:
 
     class EventOfferTest:
         @clean_database
-        def test_check_event_alert_stock_message_returned_with_empty_stock(self, app):
+        def test_check_offer_with_no_stock(self, app):
             # given
             user = create_user(email='user@test.com')
             offerer = create_offerer()
@@ -279,7 +276,7 @@ class AddStockAlertMessageToOfferTest:
             assert result.stockAlertMessage == 'pas encore de places'
 
         @clean_database
-        def test_check_event_alert_stock_message_returned_all_stock_unlimited(self, app):
+        def test_check_offer_with_all_stocks_unlimited(self, app):
             # given
             user = create_user(email='user@test.com')
             user2 = create_user(email='user2@test.com')
@@ -301,8 +298,81 @@ class AddStockAlertMessageToOfferTest:
             # then
             assert result.stockAlertMessage == 'illimité'
 
+
         @clean_database
-        def test_check_event_alert_stock_message_returned_with_stock(self, app):
+        def test_check_offer_with_one_unlimited_and_one_available_zero_stock(self, app):
+            # given
+            user = create_user(email='user@test.com')
+            user2 = create_user(email='user2@test.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_event_offer(venue)
+            recommendation = create_recommendation(offer, user)
+            stock = create_stock_from_offer(offer, available=None)
+            stock2 = create_stock_from_offer(offer, available=0)
+
+            deposit = create_deposit(user2, datetime.utcnow(), amount=500)
+            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+
+            PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+
+            # when
+            result = add_stock_alert_message_to_offer(offer)
+
+            # then
+            assert result.stockAlertMessage == 'plus de places pour 1 offre'
+
+
+        @clean_database
+        def test_check_offer_with_one_available_zero_and_one_sold_out_stock(self, app):
+            # given
+            user = create_user(email='user@test.com')
+            user2 = create_user(email='user2@test.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_event_offer(venue)
+            recommendation = create_recommendation(offer, user)
+            stock = create_stock_from_offer(offer, available=3)
+            stock2 = create_stock_from_offer(offer, available=0)
+
+            deposit = create_deposit(user2, datetime.utcnow(), amount=500)
+            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+
+            PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+
+            # when
+            result = add_stock_alert_message_to_offer(offer)
+
+            # then
+            assert result.stockAlertMessage == 'plus de places pour toutes les dates'
+
+
+        @clean_database
+        def test_check_offer_with_all_sold_out_stocks(self, app):
+            # given
+            user = create_user(email='user@test.com')
+            user2 = create_user(email='user2@test.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_event_offer(venue)
+            recommendation = create_recommendation(offer, user)
+            stock = create_stock_from_offer(offer, available=3)
+            stock2 = create_stock_from_offer(offer, available=10)
+
+            deposit = create_deposit(user2, datetime.utcnow(), amount=500)
+            booking = create_booking(user2, stock, venue, recommendation, quantity=3)
+            booking2 = create_booking(user2, stock2, venue, recommendation, quantity=10)
+
+            PcObject.check_and_save(booking, booking2, deposit, user, offer, stock, stock2, user2)
+
+            # when
+            result = add_stock_alert_message_to_offer(offer)
+
+            # then
+            assert result.stockAlertMessage == 'plus de places pour toutes les dates'
+
+        @clean_database
+        def test_check_offer_with_all_remaining_stocks(self, app):
             # given
             user = create_user(email='user@test.com')
             user2 = create_user(email='user2@test.com')
@@ -326,7 +396,7 @@ class AddStockAlertMessageToOfferTest:
             assert result.stockAlertMessage == 'encore 36 places'
 
         @clean_database
-        def test_check_event_alert_stock_message_returned_with_at_least_one_with_no_more_stock_on_one_offer(self, app):
+        def test_check_offer_with_one_sold_out_and_one_remaining_stock(self, app):
             # given
             user = create_user(email='user@test.com')
             user2 = create_user(email='user2@test.com')
@@ -349,7 +419,7 @@ class AddStockAlertMessageToOfferTest:
             assert result.stockAlertMessage == 'plus de places pour 1 offre'
 
         @clean_database
-        def test_check_event_alert_stock_message_returned_with_at_least_one_with_no_more_stock_on_two_offers_even_with_one_unlimited_stock_and_one_with_stock(self, app):
+        def test_check_offer_with_two_sold_out_one_unlimited_and_one_remaining_stocks(self, app):
             # given
             user = create_user(email='user@test.com')
             user2 = create_user(email='user2@test.com')
@@ -374,29 +444,3 @@ class AddStockAlertMessageToOfferTest:
 
             # then
             assert result.stockAlertMessage == 'plus de places pour 2 offres'
-
-
-        @clean_database
-        def test_check_event_alert_stock_message_returned_with_no_more_stock_at_all(self, app):
-            # given
-            user = create_user(email='user@test.com')
-            user2 = create_user(email='user2@test.com')
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_event_offer(venue)
-            recommendation = create_recommendation(offer, user)
-
-            stock2 = create_stock_from_offer(offer, available=5)
-            stock3 = create_stock_from_offer(offer, available=15)
-
-            deposit = create_deposit(user2, datetime.utcnow(), amount=500)
-            booking = create_booking(user2, stock2, venue, recommendation, quantity=5)
-            booking2 = create_booking(user2, stock3, venue, recommendation, quantity=15)
-
-            PcObject.check_and_save(booking, booking2, deposit, user, offer, stock2, stock3, user2)
-
-            # when
-            result = add_stock_alert_message_to_offer(offer)
-
-            # then
-            assert result.stockAlertMessage == 'plus de places pour toutes les dates'
