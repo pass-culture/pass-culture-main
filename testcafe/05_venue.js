@@ -278,10 +278,8 @@ test('Je peux revenir en arrière', async t => {
 
 test("Je peux modifier l'email de contact du lieu", async t => {
   // given
-  // const { user } = t.ctx.sandbox
   await t.wait(5000)
   await t.expect(bookingEmailInput.value).eql('fake@email.com')
-  // .eql(user.email)
 
   // when
   await t
@@ -293,7 +291,6 @@ test("Je peux modifier l'email de contact du lieu", async t => {
   await t
     .expect(bookingEmailInput.value)
     .eql('fake@email.comfake')
-    // .eql(`${user.email}fake`)
     .expect(notificationSuccess.innerText)
     .contains('Lieu modifié avec succès !')
 })
