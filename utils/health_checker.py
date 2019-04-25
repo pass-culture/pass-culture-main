@@ -1,15 +1,20 @@
 """ health_checker """
 from models.user import User
+from utils.logger import logger
 
 
-def check_database_connection():
+def check_database_connection() -> bool:
     database_working = False
     try:
         User.query.limit(1).all()
         database_working = True
-        output = "ok"
     except Exception as e:
         logger.critical(str(e))
-        output = "Database connection failed"
 
-    return database_working, output
+    return database_working
+
+
+def read_version_from_file() -> str:
+    with open('version.txt', 'r') as content_file:
+        output = content_file.read()
+    return output
