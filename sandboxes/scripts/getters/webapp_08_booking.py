@@ -76,7 +76,7 @@ def get_existing_webapp_user_can_book_thing_offer():
 
 def get_existing_webapp_user_can_book_digital_offer():
     query = filter_webapp_users(User.query)
-    query = query.filter(User.email.contains('93.has-booked-some'))
+    query = query.filter(User.email.contains('93.has-confirmed-activation'))
     user = query.first()
     return {
         "user": get_user_helper(user)
