@@ -261,7 +261,7 @@ class Delete:
 class Patch:
     class Returns200:
         @clean_database
-        def when_user_is_admin_and_stock_is_event(self, app):
+        def when_user_is_admin(self, app):
             # Given
             user = create_user(email='email@test.fr', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()

@@ -112,8 +112,11 @@ class Stock(PcObject,
         return PcObject.restize_internal_error(ie)
 
     def update_stock(self, stock_data):
-        if ProductType.is_thing(self.offer.type) and 'bookingLimitDatetime' in stock_data \
-        and stock_data.get('bookingLimitDatetime') is None:
+        is_updating_booking_limit_datetime_on_a_thing_to_unlimitted = ProductType.is_thing(self.offer.type) \
+         and 'bookingLimitDatetime' in stock_data \
+         and stock_data.get('bookingLimitDatetime') is None
+         
+        if is_updating_booking_limit_datetime_on_a_thing_to_unlimitted:
             self.populateFromDict(stock_data, skipped_keys=['bookingLimitDatetime'])
             self.bookingLimitDatetime = None
         else:
