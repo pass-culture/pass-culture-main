@@ -32,6 +32,11 @@ ShallowWrapper {
             "venueId": "CU",
           }
     }
+    venue={
+        Object {
+            "name": "Paris",
+          }
+    }
 />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -88,6 +93,7 @@ ShallowWrapper {
                               >
                                         Lieu : 
                               </span>
+                              Paris
                     </li>
           </ul>
           <ul
@@ -222,6 +228,7 @@ ShallowWrapper {
                             >
                                           Lieu : 
                             </span>
+                            Paris
               </li>
 </ul>,
             <ul
@@ -361,6 +368,7 @@ ShallowWrapper {
                   >
                                     Lieu : 
                   </span>
+                  Paris
 </li>,
               ],
               "className": "infos",
@@ -422,7 +430,7 @@ ShallowWrapper {
 >
                       Lieu : 
 </span>,
-                    undefined,
+                    "Paris",
                   ],
                 },
                 "ref": null,
@@ -439,7 +447,7 @@ ShallowWrapper {
                     "rendered": "Lieu : ",
                     "type": "span",
                   },
-                  undefined,
+                  "Paris",
                 ],
                 "type": "li",
               },
@@ -903,6 +911,7 @@ ShallowWrapper {
                                     >
                                                 Lieu : 
                                     </span>
+                                    Paris
                         </li>
             </ul>
             <ul
@@ -1037,6 +1046,7 @@ ShallowWrapper {
                                 >
                                                 Lieu : 
                                 </span>
+                                Paris
                 </li>
 </ul>,
               <ul
@@ -1176,6 +1186,7 @@ ShallowWrapper {
                     >
                                         Lieu : 
                     </span>
+                    Paris
 </li>,
                 ],
                 "className": "infos",
@@ -1237,7 +1248,7 @@ ShallowWrapper {
 >
                         Lieu : 
 </span>,
-                      undefined,
+                      "Paris",
                     ],
                   },
                   "ref": null,
@@ -1254,7 +1265,7 @@ ShallowWrapper {
                       "rendered": "Lieu : ",
                       "type": "span",
                     },
-                    undefined,
+                    "Paris",
                   ],
                   "type": "li",
                 },

@@ -20,6 +20,9 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       location: {
         search: '?orderBy=offer.id+desc',
       },
+      venue: {
+        name: 'Paris',
+      },
     }
   })
 
@@ -108,7 +111,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       expect(dotdotdotComponent.html()).toBe('<div>fake name</div>')
     })
 
-    it('should display informations of the type of offer, the offerer and the venue', () => {
+    it('should display informations of the type of offer, the offerer and the venue name when venue public name is not given', () => {
       // given
       props.offerTypeLabel = 'a thing'
       props.offerer = {
@@ -132,7 +135,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       expect(infosSubItems.at(2).text()).toEqual('Lieu : Paris')
     })
 
-    it('should display informations of the type of offer, the offerer and the venue', () => {
+    it('should display informations of the type of offer, the offerer and the venue public name when is given', () => {
       // given
       props.offerTypeLabel = 'a thing'
       props.offerer = {
@@ -140,6 +143,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       }
       props.venue = {
         name: 'Paris',
+        publicName: 'lieu de ouf',
       }
 
       // when
@@ -153,7 +157,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       expect(infosSubItems.at(0).prop('className')).toBe('is-uppercase')
       expect(infosSubItems.at(0).text()).toBe('a thing')
       expect(infosSubItems.at(1).text()).toBe('Structure : UGC')
-      expect(infosSubItems.at(2).text()).toBe('Lieu : Paris')
+      expect(infosSubItems.at(2).text()).toBe('Lieu : lieu de ouf')
     })
 
     it('should display the number of participants eligible to the offer and user picto when 1 participant', () => {

@@ -1,13 +1,13 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import { Form } from 'pass-culture-shared'
+import { Field, Form } from 'pass-culture-shared'
 
 import RawOffer from '../RawOffer'
 import MediationsManager from '../MediationsManager/index'
 
-const dispatchMock = jest.fn()
-
 describe('src | components | pages | Offer | RawOffer ', () => {
+  const dispatch = jest.fn()
+
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
@@ -28,7 +28,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
           parse: () => ({ lieu: 'AQ' }),
           translate: () => ({ venue: 'AQ ' }),
         },
-        dispatch: dispatchMock,
+        dispatch: dispatch,
         venues: [],
       }
 
@@ -62,7 +62,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
             parse: () => ({ lieu: 'AQ' }),
             translate: () => ({ venue: 'AQ ' }),
           },
-          dispatch: dispatchMock,
+          dispatch: dispatch,
           history: {},
         }
 
@@ -104,7 +104,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
             parse: () => ({ lieu: 'AQ' }),
             translate: () => ({ venue: 'AQ ' }),
           },
-          dispatch: dispatchMock,
+          dispatch: dispatch,
           history: {},
         }
 
@@ -144,7 +144,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
             parse: () => ({ lieu: 'AQ' }),
             translate: () => ({ venue: 'AQ' }),
           },
-          dispatch: dispatchMock,
+          dispatch: dispatch,
           offer: {
             bookingEmail: 'fake@email.com',
             dateCreated: '2019-03-29T15:38:23.806900Z',
@@ -194,7 +194,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
             parse: () => ({ lieu: 'AQ' }),
             translate: () => ({ venue: 'AQ' }),
           },
-          dispatch: dispatchMock,
+          dispatch: dispatch,
           venues: [],
         }
 
@@ -228,7 +228,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
             parse: () => ({ lieu: 'AQ' }),
             translate: () => ({ venue: 'AQ' }),
           },
-          dispatch: dispatchMock,
+          dispatch: dispatch,
           venues: [],
 
           selectedOfferType: {
@@ -268,7 +268,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
             parse: () => ({ lieu: 'AQ' }),
             translate: () => ({ venue: 'AQ' }),
           },
-          dispatch: dispatchMock,
+          dispatch: dispatch,
           venues: [],
           offer: {
             id: 'VAG',
@@ -306,7 +306,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
             parse: () => ({ lieu: 'AQ' }),
             translate: () => ({ venue: 'AQ' }),
           },
-          dispatch: dispatchMock,
+          dispatch: dispatch,
           venues: [],
           selectedOfferType: {
             type: 'Event',
@@ -322,6 +322,84 @@ describe('src | components | pages | Offer | RawOffer ', () => {
 
         // then
         expect(wrapper.find(Form).prop('action')).toEqual('/offers/VAG')
+      })
+    })
+
+    describe('display venue informations', () => {
+      const props = {
+        location: {
+          search: '?lieu=AQ',
+        },
+        match: {
+          params: {
+            offerId: 'creation',
+          },
+        },
+        currentUser: {
+          isAdmin: false,
+        },
+        query: {
+          change: () => {},
+          context: () => ({
+            isCreatedEntity: true,
+            isModifiedEntity: false,
+            readOnly: false,
+          }),
+          parse: () => ({ lieu: 'AQ' }),
+          translate: () => ({ venue: 'AQ' }),
+        },
+        dispatch: dispatch,
+        selectedOfferType: {},
+      }
+
+      it('should display venue name when venue publicName is not provided', () => {
+        // given
+        props.venues = [
+          { name: 'quel beau théâtre' },
+          { name: 'quel beau musée' },
+        ]
+        const expectedOptions = [
+          { name: 'quel beau théâtre' },
+          { name: 'quel beau musée' },
+        ]
+
+        // when
+        const wrapper = shallow(<RawOffer {...props} />)
+
+        // then
+        const fieldGroups = wrapper.find('.field-group')
+        const fieldGroupForUsefulInformations = fieldGroups.at(1)
+        const venueField = fieldGroupForUsefulInformations.find(Field).at(1)
+        expect(fieldGroups).toHaveLength(3)
+        expect(venueField.prop('options')).toEqual(expectedOptions)
+      })
+
+      it('should display venue public name when venue public name is provided', () => {
+        // given
+        props.venues = [
+          { name: 'quel beau théâtre', publicName: 'quel beau théâtre public' },
+          { name: 'quel beau musée', publicName: 'quel beau musée public' },
+        ]
+        const expectedOptions = [
+          {
+            name: 'quel beau théâtre public',
+            publicName: 'quel beau théâtre public',
+          },
+          {
+            name: 'quel beau musée public',
+            publicName: 'quel beau musée public',
+          },
+        ]
+
+        // when
+        const wrapper = shallow(<RawOffer {...props} />)
+
+        // then
+        const fieldGroups = wrapper.find('.field-group')
+        const fieldGroupForUsefulInformations = fieldGroups.at(1)
+        const venueField = fieldGroupForUsefulInformations.find(Field).at(1)
+        expect(fieldGroups).toHaveLength(3)
+        expect(venueField.prop('options')).toEqual(expectedOptions)
       })
     })
   })

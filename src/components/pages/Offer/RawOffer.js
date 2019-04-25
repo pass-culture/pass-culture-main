@@ -265,6 +265,14 @@ class RawOffer extends Component {
     )
   }
 
+  replaceVenueNameByPublicName = venues => {
+    return venues.map(venue => {
+      return venue.publicName
+        ? { ...venue, name: venue.publicName }
+        : { ...venue }
+    })
+  }
+
   render() {
     const {
       currentUser,
@@ -489,7 +497,7 @@ class RawOffer extends Component {
                   <Field
                     label="Lieu"
                     name="venueId"
-                    options={venues}
+                    options={this.replaceVenueNameByPublicName(venues)}
                     placeholder="Sélectionnez un lieu"
                     readOnly={isVenueSelectReadOnly}
                     required

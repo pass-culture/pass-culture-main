@@ -3,8 +3,13 @@ import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { NavLink } from 'react-router-dom'
 
+const formatVenueNameOrPublicName = value => {
+  return value ? value.toLowerCase().replace(/\s/g, '-') : ''
+}
+
 const VenueItem = ({ venue }) => {
-  const { address, city, id, managingOffererId, name, postalCode } = venue || {}
+  const { address, city, id, managingOffererId, name, postalCode, publicName } =
+    venue || {}
 
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
   return (
@@ -15,9 +20,13 @@ const VenueItem = ({ venue }) => {
       <div className="list-content">
         <p className="name">
           <NavLink
-            id={`a-${name ? name.toLowerCase().replace(/\s/g, '-') : ''}`}
+            id={`a-${
+              publicName
+                ? formatVenueNameOrPublicName(publicName)
+                : formatVenueNameOrPublicName(name)
+            }`}
             to={showPath}>
-            {name}
+            {publicName || name}
           </NavLink>
         </p>
         <ul className="actions">

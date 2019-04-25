@@ -101,7 +101,7 @@ class RawOfferItem extends Component {
             </li>
             <li>
               <span className="label">Lieu : </span>
-              {venue && venue.name}
+              {(venue && venue.publicName) || venue.name}
             </li>
           </ul>
           <ul className="infos">
