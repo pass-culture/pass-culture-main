@@ -203,7 +203,7 @@ class Get:
 
             expected_thing_type = {
                 'conditionalFields': ["author", "isbn"],
-                'label': "Livre — Édition",
+                'label': " Livre - format papier, abonnements lecture",
                 'offlineOnly': False,
                 'onlineOnly': False,
                 'sublabel': "Lire",

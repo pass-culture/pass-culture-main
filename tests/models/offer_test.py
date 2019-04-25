@@ -193,7 +193,7 @@ def test_thing_offer_offerType_returns_dict_matching_ThingType_enum():
     offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION)
     expected_value = {
         'conditionalFields': ["author", "isbn"],
-        'label': 'Livre — Édition',
+        'label': ' Livre - format papier, abonnements lecture',
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': 'Lire',

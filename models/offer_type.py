@@ -40,7 +40,7 @@ class EventType(SearchableType):
         'conditionalFields': ["author", "visa", "stageDirector"]
     }
     CONFERENCE_DEBAT_DEDICACE = {
-        'label': "Conférence — Débat — Dédicace",
+        'label': "Conférences, rencontres et découverte des métiers",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Rencontrer",
@@ -60,7 +60,7 @@ class EventType(SearchableType):
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Écouter",
-        'description': "Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?",
+        'description': "Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ? Ou pourquoi pas un livre ?",
         'conditionalFields': ["author", "musicType", "performer"]
     }
     MUSEES_PATRIMOINE = {
@@ -72,7 +72,7 @@ class EventType(SearchableType):
         'conditionalFields': []
     }
     PRATIQUE_ARTISTIQUE = {
-        'label': "Pratique Artistique (Stages ponctuels)",
+        'label': "Pratique (séances d’essai et stages ponctuels)",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Pratiquer",
@@ -147,8 +147,16 @@ class ThingType(SearchableType):
         'description': "Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?",
         'conditionalFields': []
     }
+    LIVRE_AUDIO = {
+        'label': "Livre audio numérique",
+        'offlineOnly': False,
+        'onlineOnly': True,
+        'sublabel': "Écouter",
+        'description': "Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ? Ou pourquoi pas un livre ?",
+        'conditionalFields': ["author"]
+    }
     LIVRE_EDITION = {
-        'label': "Livre — Édition",
+        'label': "Livre - format papier, abonnements lecture",
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': "Lire",
@@ -156,7 +164,7 @@ class ThingType(SearchableType):
         'conditionalFields': ["author", "isbn"]
     }
     MUSEES_PATRIMOINE_ABO = {
-        'label': "Musées — Patrimoine (Abonnements, Visites libres)",
+        'label': "Musées, arts visuels & patrimoine",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Regarder",
@@ -168,7 +176,7 @@ class ThingType(SearchableType):
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Écouter",
-        'description': "Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?",
+        'description': "Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ? Ou pourquoi pas un livre ?",
         'conditionalFields': ["musicType"]
     }
     MUSIQUE = {
@@ -176,8 +184,16 @@ class ThingType(SearchableType):
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': "Écouter",
-        'description': "Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?",
+        'description': "Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ? Ou pourquoi pas un livre ?",
         'conditionalFields': ["author", "musicType", "performer"]
+    }
+    OEUVRE_ART = {
+        'label': "Vente d'œuvres d'art",
+        'offlineOnly': False,
+        'onlineOnly': False,
+        'sublabel': "Regarder",
+        'description': "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
+        'conditionalFields': []
     }
     PRATIQUE_ARTISTIQUE_ABO = {
         'label': "Pratique Artistique (Abonnements)",
@@ -193,6 +209,14 @@ class ThingType(SearchableType):
         'onlineOnly': True,
         'sublabel': "Lire",
         'description': "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?",
+        'conditionalFields': []
+    }
+    INSTRUMENT = {
+        'label': "Vente d’instruments de musique",
+        'offlineOnly': False,
+        'onlineOnly': False,
+        'sublabel': "Pratiquer",
+        'description': "Jamais osé monter sur les planches ? Tenter d’apprendre la guitare, le piano ou la photographie ? Partir cinq jours découvrir un autre monde ? Bricoler dans un fablab, ou pourquoi pas, enregistrer votre premier titre ?",
         'conditionalFields': []
     }
 

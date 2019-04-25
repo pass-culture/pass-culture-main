@@ -37,6 +37,9 @@ class Get:
             types_values = [type['value'] for type in types]
             assert 'ThingType.ACTIVATION' not in types_values
             assert 'EventType.ACTIVATION' not in types_values
+            assert 'ThingType.OEUVRE_ART' in types_values
+            assert 'ThingType.INSTRUMENT' in types_values
+            assert 'ThingType.LIVRE_AUDIO' in types_values
 
         @clean_database
         def when_user_is_admin(self, app):
@@ -56,3 +59,28 @@ class Get:
             types_values = [type['value'] for type in types]
             assert 'ThingType.ACTIVATION' in types_values
             assert 'EventType.ACTIVATION' in types_values
+
+        @clean_database
+        def when_user_returns_types_labels(self, app):
+            # given
+            user = create_user(email='test@email.com')
+
+            PcObject.check_and_save(user)
+
+            # when
+            response = TestClient() \
+                .with_auth('test@email.com') \
+                .get(
+                API_URL + '/types/')
+            types = response.json()
+
+            # then
+            assert response.status_code == 200
+            labels_values = [type['label'] for type in types]
+            assert "Livre - format papier, abonnements lecture" in labels_values
+            assert "Conférences, rencontres et découverte des métiers" in labels_values
+            assert "Musées, arts visuels & patrimoine" in labels_values
+            assert "Pratique (séances d’essai et stages ponctuels)" in labels_values
+            assert "Livre audio numérique" in labels_values
+            assert "Vente d’instruments de musique" in labels_values
+            assert "Vente d'œuvres d'art" in labels_values
