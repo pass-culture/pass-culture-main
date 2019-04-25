@@ -15,7 +15,6 @@ const alreadyBookedOfferButton = Selector('#verso-already-booked-button')
 const bookOfferButton = Selector('#verso-booking-button')
 const bookingItem = Selector('.booking-item')
 const closeMenu = Selector('#main-menu-close-button')
-const closeBookingButton = Selector('#booking-close-button')
 const menuReservations = Selector('.navlink').withText('Mes Réservations')
 const openMenu = Selector('#deck-footer .profile-button')
 const openVerso = Selector('#deck-open-verso-button')
@@ -59,6 +58,7 @@ test(`Je peux réserver l'offre`, async t => {
     .eql(offerBookingPage)
     .expect(sendBookingButton.exists)
     .ok()
+    .click(sendBookingButton)
 })
 
 test(`Je vois l'offre dans "mes réservations" et je peux cliquer dessus pour revenir à la page booking`, async t => {
@@ -72,13 +72,4 @@ test(`Je vois l'offre dans "mes réservations" et je peux cliquer dessus pour re
     .match(/\/decouverte\/.*\/verso$/)
 })
 
-test(`Je peux cliquer sur annuler pour fermer le formulaire de réservation`, async t => {
-  await t
-    .click(openVerso)
-    .wait(500)
-    .click(bookOfferButton)
-    .expect(getPageUrl())
-    .eql(offerBookingPage)
-    .expect(closeBookingButton.exists)
-    .ok()
-})
+// TODO Ecrire un test pour l'annulation d'une réservation
