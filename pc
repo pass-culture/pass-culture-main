@@ -136,14 +136,27 @@ function update_deploy_branches {
     git fetch
     git checkout master
     git reset --hard origin/master || exit_error_restoring_branch
+    git submodule update || exit_error_restoring_branch
     git checkout staging
     git reset --hard origin/staging || exit_error_restoring_branch
+    git submodule update || exit_error_restoring_branch
     git checkout demo
     git reset --hard origin/demo || exit_error_restoring_branch
+    git submodule update || exit_error_restoring_branch
     git checkout integration
     git reset --hard origin/integration || exit_error_restoring_branch
+    git submodule update || exit_error_restoring_branch
     git checkout production
     git reset --hard origin/production || exit_error_restoring_branch
+    git submodule update || exit_error_restoring_branch
+}
+
+
+function open_build_status_page {
+   cd "$ROOT_PATH"
+   env_to_deploy="$1"
+   commit_to_deploy="$2"
+   source scripts/open_build_status_page.sh "$env_to_deploy" "$commit_to_deploy"
 }
 
 function exit_error_restoring_branch {
@@ -352,7 +365,7 @@ elif [[ "$CMD" == "tag-version-backend" ]] \
     exit_success_restoring_branch
   fi
 
-# TODO: tag with main
+# Tag new version using main repo
 elif [[ "$CMD" == "tag" ]]; then
 
   if [[ "$TAG_NAME" ]]; then
@@ -360,6 +373,10 @@ elif [[ "$CMD" == "tag" ]]; then
 
     # TAG API
     cd "$ROOT_PATH"/api
+    echo "$TAG_VERSION" > version.txt
+    git add version.txt
+    git commit -m "🚀 $TAG_VERSION"
+    git push origin "$current_branch"
     git tag "$TAG_VERSION"
     git push origin "$TAG_VERSION"
 
@@ -385,9 +402,9 @@ elif [[ "$CMD" == "tag" ]]; then
     exit_success_restoring_branch
   fi
 
-# TODO: Deploy with main
+# Deploy all components using main repo
 elif [[ "$CMD" == "deploy" ]]; then
-   ensure_remote "Deploy backend cannot be run on the local environment. Use (for example) \"pc -e staging -t X.Y.Z "$CMD"\"."
+  ensure_remote "Deploy backend cannot be run on the local environment. Use (for example) \"pc -e staging -t X.Y.Z "$CMD"\"."
 
   if [[ ! "$ENV" == 'production' ]] \
         && [[ ! "$ENV" == 'staging' ]] \
@@ -402,10 +419,8 @@ elif [[ "$CMD" == "deploy" ]]; then
     exit_error_restoring_branch
   fi
 
-  cd "$APP_PATH"
   echo "$TAG_NAME will be deployed to $ENV"
-  commit_to_deploy=$(git log -n 1 --pretty=format:%H)
-
+  cd "$ROOT_PATH"
   update_deploy_branches
 
   if [[ ! -z $(git ls-remote --tags origin refs/tags/v"$TAG_NAME") ]]; then
@@ -416,6 +431,7 @@ elif [[ "$CMD" == "deploy" ]]; then
     exit_error_restoring_branch
   fi
 
+  commit_to_deploy=$(git log -n 1 --pretty=format:%H)
   if [[ "$ENV" == "production" ]]; then
     staging_commit=$(git log -n 1 --pretty=format:%H staging)
     echo "$staging_commit"
@@ -426,6 +442,9 @@ elif [[ "$CMD" == "deploy" ]]; then
   fi
 
   git push -f origin HEAD:"$ENV"
+
+  #  Follow build status
+  open_build_status_page "$ENV" "$commit_to_deploy"
 
   if [[ "$ENV" == 'production' ]]; then
      echo -e "$ABELS_COLOR""/!\\ You just deployed to production. Was the version also delivered to integration and demo ?""${NO_COLOR}"
@@ -487,7 +506,7 @@ elif [[ "$CMD" == "deploy-backend" ]] \
 
   if [[ "$CMD" == "deploy-frontend-webapp" ]] \
      || [[ "$CMD" == "deploy-frontend-pro" ]]; then
-     rm -rf "$APP_PATH"/node_modules "$APP_PATH"/build "$APP_PATH"/public/static/fontello/.fontello.session && yarn install
+     rm -rf "$APP_PATH"/node_modules "$APP_PATH"/build "$APP_PATH"/.public/static/fontello/.fontello.session && yarn install
      (set -a; source "$APP_PATH/node_modules/pass-culture-shared/config/run_envs/$ENV" && yarn build) || exit
 
      url_is_set=$(cat build/static/js/*.js | grep -E backend.passculture*)
