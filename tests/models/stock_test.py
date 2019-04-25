@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 import pytest
-from sqlalchemy.exc import InternalError
 
 from models import Stock, ApiErrors, PcObject
 from models.db import db

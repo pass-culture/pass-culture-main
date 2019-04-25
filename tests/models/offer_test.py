@@ -4,9 +4,8 @@ import pytest
 
 from models import Offer, PcObject, ApiErrors, ThingType, EventType
 from tests.conftest import clean_database
-from tests.test_utils import create_event_offer
-from tests.test_utils import create_thing, create_thing_offer, create_offerer, create_venue, \
-    create_stock, create_booking, create_user
+from tests.test_utils import create_offer_with_event_product, create_thing_product, create_offer_with_thing_product, \
+    create_offerer, create_venue, create_stock, create_booking, create_user
 from utils.date import DateTimes
 
 now = datetime.utcnow()
@@ -35,17 +34,16 @@ class DateRangeTest:
 
     def test_is_empty_if_offer_is_on_a_thing(self):
         # given
-        offer = Offer()
-        offer.thing = Thing()
-        offer.stocks = []
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
 
         # then
         assert offer.dateRange == DateTimes()
 
     def test_matches_the_occurrence_if_only_one_occurrence(self):
         # given
-        offer = Offer()
-        offer.event = Event()
+        offer = create_offer_with_event_product()
         offer.stocks = [
             create_stock(offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now)
         ]
@@ -55,8 +53,7 @@ class DateRangeTest:
 
     def test_starts_at_first_beginning_date_time_and_ends_at_last_end_date_time(self):
         # given
-        offer = Offer()
-        offer.event = Event()
+        offer = create_offer_with_event_product()
         offer.stocks = [
             create_stock(offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now),
             create_stock(offer, beginning_datetime=four_days_ago, end_datetime=five_days_from_now),
@@ -70,8 +67,7 @@ class DateRangeTest:
 
     def test_is_empty_if_event_has_no_event_occurrences(self):
         # given
-        offer = Offer()
-        offer.event = Event()
+        offer = create_offer_with_event_product()
         offer.stocks = []
 
         # then
@@ -84,12 +80,12 @@ class CreateOfferTest:
     def test_success_when_is_digital_and_virtual_venue(self, app):
         # Given
         url = 'http://mygame.fr/offre'
-        digital_thing = create_thing(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
+        digital_thing = create_thing_product(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
         offerer = create_offerer()
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         PcObject.check_and_save(virtual_venue)
 
-        offer = create_thing_offer(virtual_venue, digital_thing)
+        offer = create_offer_with_thing_product(virtual_venue, digital_thing)
 
         # When
         PcObject.check_and_save(digital_thing, offer)
@@ -100,11 +96,11 @@ class CreateOfferTest:
     @clean_database
     def test_success_when_is_physical_and_physical_venue(self, app):
         # Given
-        physical_thing = create_thing(thing_type=ThingType.LIVRE_EDITION, url=None)
+        physical_thing = create_thing_product(thing_type=ThingType.LIVRE_EDITION, url=None)
         offerer = create_offerer()
         physical_venue = create_venue(offerer, is_virtual=False, siret=offerer.siren + '12345')
         PcObject.check_and_save(physical_venue)
-        offer = create_thing_offer(physical_venue, physical_thing)
+        offer = create_offer_with_thing_product(physical_venue, physical_thing)
 
         # When
         PcObject.check_and_save(physical_thing, offer)
@@ -115,11 +111,11 @@ class CreateOfferTest:
     @clean_database
     def test_fails_when_is_digital_but_physical_venue(self, app):
         # Given
-        digital_thing = create_thing(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
+        digital_thing = create_thing_product(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
         offerer = create_offerer()
         physical_venue = create_venue(offerer)
         PcObject.check_and_save(physical_venue)
-        offer = create_thing_offer(physical_venue, digital_thing)
+        offer = create_offer_with_thing_product(physical_venue, digital_thing)
 
         # When
         with pytest.raises(ApiErrors) as errors:
@@ -132,11 +128,11 @@ class CreateOfferTest:
     @clean_database
     def test_fails_when_is_physical_but_venue_is_virtual(self, app):
         # Given
-        physical_thing = create_thing(thing_type=ThingType.JEUX_VIDEO, url=None)
+        physical_thing = create_thing_product(thing_type=ThingType.JEUX_VIDEO, url=None)
         offerer = create_offerer()
         digital_venue = create_venue(offerer, is_virtual=True, siret=None)
         PcObject.check_and_save(digital_venue)
-        offer = create_thing_offer(digital_venue, physical_thing)
+        offer = create_offer_with_thing_product(digital_venue, physical_thing)
 
         # When
         with pytest.raises(ApiErrors) as errors:
@@ -150,27 +146,27 @@ class CreateOfferTest:
     def test_create_digital_offer_success(self, app):
         # Given
         url = 'http://mygame.fr/offre'
-        digital_thing = create_thing(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
+        digital_thing = create_thing_product(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
         offerer = create_offerer()
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         PcObject.check_and_save(virtual_venue)
 
-        offer = create_thing_offer(virtual_venue, digital_thing)
+        offer = create_offer_with_thing_product(virtual_venue, digital_thing)
 
         # When
         PcObject.check_and_save(digital_thing, offer)
 
         # Then
-        assert offer.thing.url == url
+        assert offer.product.url == url
 
     @clean_database
     def test_offer_error_when_thing_is_digital_but_venue_not_virtual(self, app):
         # Given
-        digital_thing = create_thing(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
+        digital_thing = create_thing_product(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
         offerer = create_offerer()
         physical_venue = create_venue(offerer)
         PcObject.check_and_save(physical_venue)
-        offer = create_thing_offer(physical_venue, digital_thing)
+        offer = create_offer_with_thing_product(physical_venue, digital_thing)
 
         # When
         with pytest.raises(ApiErrors) as errors:
@@ -194,7 +190,7 @@ def test_thing_offer_offerType_returns_dict_matching_ThingType_enum():
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_thing_offer(venue, thing_type=ThingType.LIVRE_EDITION)
+    offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION)
     expected_value = {
         'conditionalFields': ["author", "isbn"],
         'label': 'Livre — Édition',
@@ -221,7 +217,7 @@ def test_event_offer_offerType_returns_dict_matching_EventType_enum():
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_event_offer(venue, event_type=EventType.SPECTACLE_VIVANT)
+    offer = create_offer_with_event_product(venue, event_type=EventType.SPECTACLE_VIVANT)
     expected_value = {
         'conditionalFields': ["author", "showType", "stageDirector", "performer"],
         'label': "Spectacle vivant",
@@ -247,7 +243,7 @@ def test_thing_offer_offerType_returns_None_if_type_does_not_match_ThingType_enu
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_thing_offer(venue, thing_type='')
+    offer = create_offer_with_thing_product(venue, thing_type='')
 
     # when
     offer_type = offer.offerType
@@ -260,7 +256,7 @@ def test_event_offer_offerType_returns_None_if_type_does_not_match_EventType_enu
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
-    offer = create_event_offer(venue, event_type='Workshop')
+    offer = create_offer_with_event_product(venue, event_type='Workshop')
 
     # when
     offer_type = offer.offerType
@@ -273,8 +269,9 @@ def test_event_offer_offerType_returns_None_if_type_does_not_match_EventType_enu
 class IsFullyBookedTest:
     def test_returns_true_if_all_available_stocks_are_booked(self):
         # given
-        offer = Offer()
-        offer.thing = Thing()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
         user = create_user()
         stock1 = create_stock(available=2)
         stock2 = create_stock(available=1)
@@ -288,8 +285,9 @@ class IsFullyBookedTest:
 
     def test_returns_true_ignoring_cancelled_bookings(self):
         # given
-        offer = Offer()
-        offer.thing = Thing()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
         user = create_user()
         stock1 = create_stock(available=2)
         stock2 = create_stock(available=1)

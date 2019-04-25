@@ -8,12 +8,13 @@ from models import Offer, Venue, Product
 from datetime import datetime
 from tests.test_utils import create_booking, \
     create_deposit, \
-    create_event_offer, \
+    create_offer_with_event_product, \
+    create_offer_with_thing_product, \
     create_offerer, \
     create_recommendation, \
     create_user, \
     create_stock_from_offer, \
-    create_venue, create_thing_offer
+    create_venue
 
 from tests.conftest import clean_database
 
@@ -80,7 +81,7 @@ class AddStockAlertMessageToOfferTest:
             user = create_user(email='user@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
 
             PcObject.check_and_save(user, offer)
 
@@ -97,7 +98,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=None)
             stock2 = create_stock_from_offer(offer, available=None)
@@ -120,7 +121,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=None)
             stock2 = create_stock_from_offer(offer, available=0)
@@ -143,7 +144,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=3)
             stock2 = create_stock_from_offer(offer, available=0)
@@ -166,7 +167,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=3)
             stock2 = create_stock_from_offer(offer, available=10)
@@ -190,7 +191,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=10)
             stock2 = create_stock_from_offer(offer, available=150)
@@ -214,7 +215,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=8)
             stock2 = create_stock_from_offer(offer, available=10)
@@ -237,7 +238,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             recommendation = create_recommendation(offer, user)
 
             stock = create_stock_from_offer(offer, available=10)
@@ -265,7 +266,7 @@ class AddStockAlertMessageToOfferTest:
             user = create_user(email='user@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_offer_with_event_product(venue)
 
             PcObject.check_and_save(user, offer)
 
@@ -282,7 +283,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_offer_with_event_product(venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=None)
             stock2 = create_stock_from_offer(offer, available=None)
@@ -306,7 +307,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_offer_with_event_product(venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=None)
             stock2 = create_stock_from_offer(offer, available=0)
@@ -330,7 +331,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_offer_with_event_product(venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=3)
             stock2 = create_stock_from_offer(offer, available=0)
@@ -354,7 +355,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_offer_with_event_product(venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=3)
             stock2 = create_stock_from_offer(offer, available=10)
@@ -378,7 +379,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_offer_with_event_product(venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=10)
             stock2 = create_stock_from_offer(offer, available=40)
@@ -402,7 +403,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_offer_with_event_product(venue)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer, available=8)
             stock2 = create_stock_from_offer(offer, available=10)
@@ -425,7 +426,7 @@ class AddStockAlertMessageToOfferTest:
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_offer_with_event_product(venue)
             recommendation = create_recommendation(offer, user)
 
             stock = create_stock_from_offer(offer, available=10)

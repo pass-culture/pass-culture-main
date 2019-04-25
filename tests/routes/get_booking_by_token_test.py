@@ -174,7 +174,7 @@ class Get:
             admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            stock = create_stock_with_thing_offer(offerer, venue, product=None, price=0)
+            stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user, stock, venue=venue)
 
             PcObject.check_and_save(admin_user, booking)
@@ -229,7 +229,7 @@ class Get:
             admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            stock = create_stock_with_thing_offer(offerer, venue, product=None, price=0)
+            stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user, stock, venue=venue)
 
             PcObject.check_and_save(admin_user, booking)
@@ -323,7 +323,7 @@ class Get:
             admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            stock = create_stock_with_thing_offer(offerer, venue, product=None, price=0)
+            stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user, stock, venue=venue, is_used=True)
 
             PcObject.check_and_save(admin_user, booking)
@@ -343,7 +343,7 @@ class Get:
             admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            stock = create_stock_with_thing_offer(offerer, venue, product=None, price=0)
+            stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user, stock, venue=venue, is_cancelled=True)
 
             PcObject.check_and_save(admin_user, booking)

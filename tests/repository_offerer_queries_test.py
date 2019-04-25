@@ -793,8 +793,8 @@ def test_find_filtered_offerers_with_offer_status_with_VALID_param_return_filter
     expired_stock = create_stock_with_thing_offer(offerer_with_expired_thing, venue_with_expired_thing, expired_thing,
                                                   available=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer_with_soft_deleted_thing,
-                                                             venue_with_soft_deleted_thing,
-                                                             soft_deleted_thing, soft_deleted=True)
+                                                             venue_with_soft_deleted_thing, soft_deleted_thing,
+                                                             soft_deleted=True)
 
     expired_booking_limit_date_event_stock = create_stock_from_event_occurrence(expired_event_occurence,
                                                                                 booking_limit_date=datetime(2018, 1, 1))
@@ -878,8 +878,8 @@ def test_find_filtered_offerers_with_offer_status_with_EXPIRED_param_return_filt
     expired_stock = create_stock_with_thing_offer(offerer_with_expired_thing, venue_with_expired_thing, expired_thing,
                                                   available=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer_with_soft_deleted_thing,
-                                                             venue_with_soft_deleted_thing,
-                                                             soft_deleted_thing, soft_deleted=True)
+                                                             venue_with_soft_deleted_thing, soft_deleted_thing,
+                                                             soft_deleted=True)
 
     expired_booking_limit_date_event_stock = create_stock_from_event_occurrence(expired_event_occurence,
                                                                                 booking_limit_date=datetime(2018, 1, 1))
@@ -963,8 +963,8 @@ def test_find_filtered_offerers_with_offer_status_with_WITHOUT_param_return_filt
     expired_stock = create_stock_with_thing_offer(offerer_with_expired_thing, venue_with_expired_thing, expired_thing,
                                                   available=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer_with_soft_deleted_thing,
-                                                             venue_with_soft_deleted_thing,
-                                                             soft_deleted_thing, soft_deleted=True)
+                                                             venue_with_soft_deleted_thing, soft_deleted_thing,
+                                                             soft_deleted=True)
 
     expired_booking_limit_date_event_stock = create_stock_from_event_occurrence(expired_event_occurence,
                                                                                 booking_limit_date=datetime(2018, 1, 1))
@@ -1048,8 +1048,8 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_return_filtered
     expired_stock = create_stock_with_thing_offer(offerer_with_expired_thing, venue_with_expired_thing, expired_thing,
                                                   available=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer_with_soft_deleted_thing,
-                                                             venue_with_soft_deleted_thing,
-                                                             soft_deleted_thing, soft_deleted=True)
+                                                             venue_with_soft_deleted_thing, soft_deleted_thing,
+                                                             soft_deleted=True)
 
     expired_booking_limit_date_event_stock = create_stock_from_event_occurrence(expired_event_occurence,
                                                                                 booking_limit_date=datetime(2018, 1, 1))

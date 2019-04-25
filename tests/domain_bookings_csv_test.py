@@ -5,7 +5,7 @@ from tests.conftest import clean_database
 from domain.bookings import generate_bookings_details_csv
 from models import Booking, PcObject
 from tests.test_utils import create_booking, create_deposit, create_stock, create_user, create_offerer, create_venue, \
-    create_thing_offer, create_bank_information
+    create_offer_with_thing_product, create_bank_information
 
 
 @pytest.mark.standalone
@@ -19,7 +19,7 @@ class BookingsCSVTest:
 
         # then
         assert _count_non_empty_lines(csv) == 1
-        
+
     def test_generate_bookings_details_csv_has_human_readable_header(self):
         # given
         bookings = []
@@ -36,7 +36,7 @@ class BookingsCSVTest:
         user = create_user(email='jane.doe@test.com', idx=3)
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer)
-        offer = create_thing_offer(venue)
+        offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=12, available=5, offer=offer)
         booking = create_booking(user, stock, date_created=datetime(2010, 1, 1, 0, 0, 0, 0))
         deposit1 = create_deposit(user, datetime.utcnow(), amount=100)

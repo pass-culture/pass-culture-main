@@ -182,7 +182,7 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
-            offer = create_event_offer(venue)
+            offer = create_offer_with_event_product(venue)
             four_days_from_now = datetime.utcnow() + timedelta(days=4)
             stock = create_stock_from_offer(offer, price=0, beginning_datetime=four_days_from_now)
             booking = create_booking(user, stock, venue=venue)
@@ -208,7 +208,7 @@ class Patch:
             activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
             activation_event_occurrence = create_event_occurrence(activation_offer)
             stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
-            activation_offer = create_event_offer(venue, event_type=EventType.ACTIVATION)
+            activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
             activation_event_occurrence = create_event_occurrence(activation_offer, beginning_datetime=Patch.tomorrow,
                                                                   end_datetime=Patch.tomorrow_plus_one_hour)
             stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0,
