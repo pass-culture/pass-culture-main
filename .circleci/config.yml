@@ -13,19 +13,7 @@ jobs:
             cd pass-culture-main
             rm -rf shared
             git clone https://github.com/betagouv/pass-culture-api.git api
-            while pgrep apt-get >/dev/null 2>&1 ; do
-            echo "Waiting for apt ..."
-            sleep 2
-            done
-            wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
-            source ~/.profile
-            nvm install v8.15.1
-            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-            echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-            sudo apt-get update
-            sudo apt-get install -y yarn realpath
-            wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-            sudo dpkg -i google-chrome-stable_current_amd64.deb
+            ./install_lib_ci.sh
       - checkout:
           path: ~/pass-culture-main/webapp
       - run:
@@ -49,7 +37,6 @@ jobs:
             rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
           environment:
             DOCKERIZE_VERSION: v0.6.1
-            # TODO: replace gpg with ./pc install-private (after merge PR)
       - run:
           name: Running API server
           command: |
