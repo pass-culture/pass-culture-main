@@ -1,4 +1,5 @@
 import requests
+from requests import Response
 
 
 class ApiEntrepriseException(Exception):
@@ -15,5 +16,15 @@ def get_by_siren(siren):
 
     if response.status_code != 200:
         raise ApiEntrepriseException('Error getting API entreprise DATA for SIREN : {}'.format(siren))
+
+    return response
+
+
+def get_by_siret(siret: str) -> Response:
+    response = requests.get("https://sirene.entreprise.api.gouv.fr/v1/siret/" + siret,
+                            verify=False)  # FIXME: add root cerficate on docker image ?
+
+    if response.status_code != 200:
+        raise ApiEntrepriseException('Error getting API entreprise DATA for SIRET : {}'.format(siret))
 
     return response

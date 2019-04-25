@@ -3,23 +3,76 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-from connectors.api_entreprises import ApiEntrepriseException, get_by_offerer
+from connectors.api_entreprises import ApiEntrepriseException, get_by_offerer, get_by_siret
 from tests.test_utils import create_offerer
 
 
 @pytest.mark.standalone
-@patch('connectors.api_entreprises.requests.get')
-def test_write_object_validation_email_raises_ApiEntrepriseException_when_siren_api_does_not_respond(requests_get):
-    # Given
-    requests_get.return_value = MagicMock(status_code=400)
-    validation_token = secrets.token_urlsafe(20)
+class GetByOffererTest:
+    @patch('connectors.api_entreprises.requests.get')
+    def test_raises_ApiEntrepriseException_when_sirene_api_does_not_respond(self, requests_get):
+        # Given
+        requests_get.return_value = MagicMock(status_code=400)
+        validation_token = secrets.token_urlsafe(20)
 
-    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
-                             name='Accenture', validation_token=validation_token)
+        offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
+                                 name='Accenture', validation_token=validation_token)
 
-    #When
-    with pytest.raises(ApiEntrepriseException) as error:
-        get_by_offerer(offerer)
+        # When
+        with pytest.raises(ApiEntrepriseException) as error:
+            get_by_offerer(offerer)
 
-    #Then
-    assert 'Error getting API entreprise DATA for SIREN' in str(error)
+        # Then
+        assert 'Error getting API entreprise DATA for SIREN' in str(error)
+
+    @patch('connectors.api_entreprises.requests.get')
+    def test_returns_api_response_when_sirene_api_responds(self, requests_get):
+        # Given
+        mocked_api_response = MagicMock(status_code=200)
+        requests_get.return_value = mocked_api_response
+
+        validation_token = secrets.token_urlsafe(20)
+
+        offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
+                                 name='Accenture', validation_token=validation_token)
+
+        # When
+        response = get_by_offerer(offerer)
+
+        # Then
+        requests_get.assert_called_once_with("https://sirene.entreprise.api.gouv.fr/v1/siren/732075312",
+                                             verify=False)
+        assert response == mocked_api_response
+
+
+@pytest.mark.standalone
+class GetBySiretTest:
+    @patch('connectors.api_entreprises.requests.get')
+    def test_raises_ApiEntrepriseException_when_sirene_api_does_not_respond(self, requests_get):
+        # Given
+        requests_get.return_value = MagicMock(status_code=400)
+
+        siret = '12345678912345'
+
+        # When
+        with pytest.raises(ApiEntrepriseException) as error:
+            get_by_siret(siret)
+
+        # Then
+        assert 'Error getting API entreprise DATA for SIRET' in str(error)
+
+    @patch('connectors.api_entreprises.requests.get')
+    def test_returns_api_response_when_sirene_api_responds(self, requests_get):
+        # Given
+        mocked_api_response = MagicMock(status_code=200)
+        requests_get.return_value = mocked_api_response
+
+        siret = '12345678912345'
+
+        # When
+        response = get_by_siret(siret)
+
+        # Then
+        requests_get.assert_called_once_with("https://sirene.entreprise.api.gouv.fr/v1/siret/12345678912345",
+                                             verify=False)
+        assert response == mocked_api_response
