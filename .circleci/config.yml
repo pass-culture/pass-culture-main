@@ -144,7 +144,10 @@ jobs: # a collection of steps
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm use v8.15.1
             cd ~/pass-culture-main/webapp
+            yarn fontello
             yarn test:cafe
+      - store_artifacts:
+          path: ~/pass-culture-main/webapp/testcafe_screenshots
       - run:
           name: Notify PC Ops Bot
           when: on_fail
