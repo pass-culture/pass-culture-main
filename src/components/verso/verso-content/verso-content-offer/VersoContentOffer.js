@@ -49,7 +49,7 @@ class VersoContentOffer extends React.PureComponent {
     const duration = getDurationFromMinutes(durationMinutes)
 
     const extraData = get(product, 'extraData')
-    const label = get(product, 'offerType.label')
+    const label = get(product, 'offerType.userSeenLabel')
     const title = getWhatTitleFromLabelAndIsVirtualVenue(label, isVirtualVenue)
 
     const author = get(extraData, 'author')
