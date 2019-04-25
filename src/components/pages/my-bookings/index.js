@@ -41,6 +41,7 @@ class MyBookingsPage extends Component {
       handleFail: this.handleRequestFail,
       handleSuccess: this.handleRequestSuccess,
       normalizer: bookingNormalizer,
+      stateKey: 'bookings',
     })
   }
 
