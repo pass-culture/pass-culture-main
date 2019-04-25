@@ -185,6 +185,7 @@ def create_digital_venue(offerer):
 
 Venue.__ts_vector__ = create_tsvector(
     cast(coalesce(Venue.name, ''), TEXT),
+    cast(coalesce(Venue.publicName, ''), TEXT),
     cast(coalesce(Venue.address, ''), TEXT),
     cast(coalesce(Venue.siret, ''), TEXT)
 )

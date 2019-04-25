@@ -163,7 +163,179 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_v
 
 @pytest.mark.standalone
 @clean_database
-def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_venue_or_offerer_level(app):
+def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_venue_public_name_level(app):
+    # given
+    event = create_event()
+    thing = create_thing()
+    ok_offerer1 = create_offerer(name="La Rencontre")
+    offerer2 = create_offerer(siren='123456788')
+    offerer3 = create_offerer(siren='123456787')
+    offerer4 = create_offerer(siren='123456786')
+    ok_venue1 = create_venue(ok_offerer1, siret=ok_offerer1.siren + '54321', publicName='Un lieu trop chouette de ouf')
+    venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
+    ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis', siret=offerer3.siren + '54321', publicName='chouette endroit de ouf')
+    venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
+    ok_offer1 = create_event_offer(ok_venue1, event)
+    ko_offer2 = create_event_offer(venue2, event)
+    ok_offer3 = create_thing_offer(ok_venue1, thing)
+    ko_offer4 = create_thing_offer(venue2, thing)
+    ok_offer5 = create_event_offer(ok_venue3, event)
+    ko_offer6 = create_event_offer(venue4, event)
+    ok_offer7 = create_thing_offer(ok_venue3, thing)
+    ko_offer8 = create_thing_offer(venue4, thing)
+    PcObject.check_and_save(
+        ok_offer1, ko_offer2, ok_offer3, ko_offer4,
+        ok_offer5, ko_offer6, ok_offer7, ko_offer8
+    )
+
+    # when
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'chouette')
+
+    # then
+    found_offers = query.all()
+    found_offers_id = [found_offer.id for found_offer in found_offers]
+    assert ok_offer1.id in found_offers_id
+    assert ko_offer2.id not in found_offers_id
+    assert ok_offer3.id in found_offers_id
+    assert ko_offer4.id not in found_offers_id
+    assert ok_offer5.id in found_offers_id
+    assert ko_offer6.id not in found_offers_id
+    assert ok_offer7.id in found_offers_id
+    assert ko_offer8.id not in found_offers_id
+
+
+@pytest.mark.standalone
+@clean_database
+def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyword_at_venue_public_name_level(app):
+    # given
+    event = create_event()
+    thing = create_thing()
+    ok_offerer1 = create_offerer(name="La Rencontre")
+    offerer2 = create_offerer(siren='123456788')
+    offerer3 = create_offerer(siren='123456787')
+    offerer4 = create_offerer(siren='123456786')
+    ok_venue1 = create_venue(ok_offerer1, siret=ok_offerer1.siren + '54321', publicName='Un lieu trop chouette de ouf')
+    venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
+    ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis', siret=offerer3.siren + '54321', publicName='chouette endroit de ouf')
+    venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
+    ok_offer1 = create_event_offer(ok_venue1, event)
+    ko_offer2 = create_event_offer(venue2, event)
+    ok_offer3 = create_thing_offer(ok_venue1, thing)
+    ko_offer4 = create_thing_offer(venue2, thing)
+    ok_offer5 = create_event_offer(ok_venue3, event)
+    ko_offer6 = create_event_offer(venue4, event)
+    ok_offer7 = create_thing_offer(ok_venue3, thing)
+    ko_offer8 = create_thing_offer(venue4, thing)
+    PcObject.check_and_save(
+        ok_offer1, ko_offer2, ok_offer3, ko_offer4,
+        ok_offer5, ko_offer6, ok_offer7, ko_offer8
+    )
+
+    # when
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'chou')
+
+    # then
+    found_offers = query.all()
+    found_offers_id = [found_offer.id for found_offer in found_offers]
+    assert ok_offer1.id in found_offers_id
+    assert ko_offer2.id not in found_offers_id
+    assert ok_offer3.id in found_offers_id
+    assert ko_offer4.id not in found_offers_id
+    assert ok_offer5.id in found_offers_id
+    assert ko_offer6.id not in found_offers_id
+    assert ok_offer7.id in found_offers_id
+    assert ko_offer8.id not in found_offers_id
+
+
+@pytest.mark.standalone
+@clean_database
+def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords_at_venue_public_name_level(app):
+    # given
+    event = create_event()
+    thing = create_thing()
+    ok_offerer1 = create_offerer(name="La Rencontre")
+    offerer2 = create_offerer(siren='123456788')
+    offerer3 = create_offerer(siren='123456787')
+    offerer4 = create_offerer(siren='123456786')
+    ok_venue1 = create_venue(ok_offerer1, siret=ok_offerer1.siren + '54321', publicName='Un lieu trop chouette de ouf')
+    venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
+    ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis', siret=offerer3.siren + '54321', publicName='chouette endroit de ouf')
+    venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
+    ok_offer1 = create_event_offer(ok_venue1, event)
+    ko_offer2 = create_event_offer(venue2, event)
+    ok_offer3 = create_thing_offer(ok_venue1, thing)
+    ko_offer4 = create_thing_offer(venue2, thing)
+    ok_offer5 = create_event_offer(ok_venue3, event)
+    ko_offer6 = create_event_offer(venue4, event)
+    ok_offer7 = create_thing_offer(ok_venue3, thing)
+    ko_offer8 = create_thing_offer(venue4, thing)
+    PcObject.check_and_save(
+        ok_offer1, ko_offer2, ok_offer3, ko_offer4,
+        ok_offer5, ko_offer6, ok_offer7, ko_offer8
+    )
+
+    # when
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'chouette ouf')
+
+    # then
+    found_offers = query.all()
+    found_offers_id = [found_offer.id for found_offer in found_offers]
+    assert ok_offer1.id in found_offers_id
+    assert ko_offer2.id not in found_offers_id
+    assert ok_offer3.id in found_offers_id
+    assert ko_offer4.id not in found_offers_id
+    assert ok_offer5.id in found_offers_id
+    assert ko_offer6.id not in found_offers_id
+    assert ok_offer7.id in found_offers_id
+    assert ko_offer8.id not in found_offers_id
+
+
+@pytest.mark.standalone
+@clean_database
+def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_keywords_at_venue_public_name_level(app):
+    # given
+    event = create_event()
+    thing = create_thing()
+    ok_offerer1 = create_offerer(name="La Rencontre")
+    offerer2 = create_offerer(siren='123456788')
+    offerer3 = create_offerer(siren='123456787')
+    offerer4 = create_offerer(siren='123456786')
+    ok_venue1 = create_venue(ok_offerer1, siret=ok_offerer1.siren + '54321', publicName='Un lieu trop chouette de ouf')
+    venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
+    ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis', siret=offerer3.siren + '54321', publicName='chouette endroit de ouf')
+    venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
+    ok_offer1 = create_event_offer(ok_venue1, event)
+    ko_offer2 = create_event_offer(venue2, event)
+    ok_offer3 = create_thing_offer(ok_venue1, thing)
+    ko_offer4 = create_thing_offer(venue2, thing)
+    ok_offer5 = create_event_offer(ok_venue3, event)
+    ko_offer6 = create_event_offer(venue4, event)
+    ok_offer7 = create_thing_offer(ok_venue3, thing)
+    ko_offer8 = create_thing_offer(venue4, thing)
+    PcObject.check_and_save(
+        ok_offer1, ko_offer2, ok_offer3, ko_offer4,
+        ok_offer5, ko_offer6, ok_offer7, ko_offer8
+    )
+
+    # when
+    query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'chou ou')
+
+    # then
+    found_offers = query.all()
+    found_offers_id = [found_offer.id for found_offer in found_offers]
+    assert ok_offer1.id in found_offers_id
+    assert ko_offer2.id not in found_offers_id
+    assert ok_offer3.id in found_offers_id
+    assert ko_offer4.id not in found_offers_id
+    assert ok_offer5.id in found_offers_id
+    assert ko_offer6.id not in found_offers_id
+    assert ok_offer7.id in found_offers_id
+    assert ko_offer8.id not in found_offers_id
+
+
+@pytest.mark.standalone
+@clean_database
+def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyword_at_venue_or_offerer_level(app):
     # given
     event = create_event()
     thing = create_thing()
