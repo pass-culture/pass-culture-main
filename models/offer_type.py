@@ -25,6 +25,7 @@ class EventType(SearchableType):
 
     ACTIVATION = {
         'label': 'Pass Culture : activation évènementielle',
+        'userSeenLabel': 'Pass Culture : activation évènementielle',
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': 'Activation',
@@ -33,6 +34,7 @@ class EventType(SearchableType):
     }
     CINEMA = {
         'label': "Cinéma (Projections, Séances, Évènements)",
+        'userSeenLabel': "Projections, Séances, Évènements",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Regarder",
@@ -41,6 +43,7 @@ class EventType(SearchableType):
     }
     CONFERENCE_DEBAT_DEDICACE = {
         'label': "Conférences, rencontres et découverte des métiers",
+        'userSeenLabel': "Conférences, rencontres et découverte des métiers",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Rencontrer",
@@ -49,6 +52,7 @@ class EventType(SearchableType):
     }
     JEUX = {
         'label': "Jeux (Évenements, Rencontres, Concours)",
+        'userSeenLabel': "Évenements, Rencontres, Concours",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Jouer",
@@ -57,6 +61,7 @@ class EventType(SearchableType):
     }
     MUSIQUE = {
         'label': "Musique (Concerts, Festivals)",
+        'userSeenLabel': "Concerts, Festivals",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Écouter",
@@ -65,6 +70,7 @@ class EventType(SearchableType):
     }
     MUSEES_PATRIMOINE = {
         'label': "Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)",
+        'userSeenLabel': "Expositions, visites guidées, activités spécifiques",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Regarder",
@@ -73,6 +79,7 @@ class EventType(SearchableType):
     }
     PRATIQUE_ARTISTIQUE = {
         'label': "Pratique (séances d’essai et stages ponctuels)",
+        'userSeenLabel': "Séances d’essai et stages ponctuels",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Pratiquer",
@@ -81,6 +88,7 @@ class EventType(SearchableType):
     }
     SPECTACLE_VIVANT = {
         'label': "Spectacle vivant",
+        'userSeenLabel': "Spectacle vivant",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Applaudir",
@@ -101,6 +109,7 @@ class ThingType(SearchableType):
 
     ACTIVATION = {
         'label': 'Pass Culture : activation en ligne',
+        'userSeenLabel': 'Pass Culture : activation en ligne',
         'offlineOnly': False,
         'onlineOnly': True,
         'sublabel': 'Activation',
@@ -109,6 +118,7 @@ class ThingType(SearchableType):
     }
     AUDIOVISUEL = {
         'label': "Audiovisuel (Films sur supports physiques et VOD)",
+        'userSeenLabel': "Audiovisuel (Films sur supports physiques et VOD)",
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': "Regarder",
@@ -117,6 +127,7 @@ class ThingType(SearchableType):
     }
     CINEMA_ABO = {
         'label': "Cinéma (Abonnements)",
+        'userSeenLabel': "Cinéma (Abonnements)",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Regarder",
@@ -125,6 +136,7 @@ class ThingType(SearchableType):
     }
     JEUX_ABO = {
         'label': "Jeux (Abonnements)",
+        'userSeenLabel': "Jeux (Abonnements)",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Jouer",
@@ -133,6 +145,7 @@ class ThingType(SearchableType):
     }
     JEUX = {
         'label': "Jeux (Biens physiques)",
+        'userSeenLabel': "Jeux (Biens physiques)",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Jouer",
@@ -141,6 +154,7 @@ class ThingType(SearchableType):
     }
     JEUX_VIDEO = {
         'label': "Jeux Vidéo",
+        'userSeenLabel': "Jeux Vidéo",
         'offlineOnly': False,
         'onlineOnly': True,
         'sublabel': "Jouer",
@@ -149,6 +163,7 @@ class ThingType(SearchableType):
     }
     LIVRE_AUDIO = {
         'label': "Livre audio numérique",
+        'userSeenLabel': "Livre audio numérique",
         'offlineOnly': False,
         'onlineOnly': True,
         'sublabel': "Écouter",
@@ -157,6 +172,7 @@ class ThingType(SearchableType):
     }
     LIVRE_EDITION = {
         'label': "Livre - format papier, abonnements lecture",
+        'userSeenLabel': "Livre - format papier, abonnements lecture",
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': "Lire",
@@ -165,6 +181,7 @@ class ThingType(SearchableType):
     }
     MUSEES_PATRIMOINE_ABO = {
         'label': "Musées, arts visuels & patrimoine",
+        'userSeenLabel': "Visites libres et abonnements",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Regarder",
@@ -173,6 +190,7 @@ class ThingType(SearchableType):
     }
     MUSIQUE_ABO = {
         'label': "Musique (Abonnements concerts)",
+        'userSeenLabel': "Musique (Abonnements concerts)",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Écouter",
@@ -181,6 +199,7 @@ class ThingType(SearchableType):
     }
     MUSIQUE = {
         'label': "Musique (sur supports physiques ou en ligne)",
+        'userSeenLabel': "Musique (sur supports physiques ou en ligne)",
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': "Écouter",
@@ -189,6 +208,7 @@ class ThingType(SearchableType):
     }
     OEUVRE_ART = {
         'label': "Vente d'œuvres d'art",
+        'userSeenLabel': "Achat d'œuvres d’art",
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': "Regarder",
@@ -197,6 +217,7 @@ class ThingType(SearchableType):
     }
     PRATIQUE_ARTISTIQUE_ABO = {
         'label': "Pratique Artistique (Abonnements)",
+        'userSeenLabel': "Pratique Artistique (Abonnements)",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Pratiquer",
@@ -205,6 +226,7 @@ class ThingType(SearchableType):
     }
     PRESSE_ABO = {
         'label': "Presse (Abonnements)",
+        'userSeenLabel': "Presse (Abonnements)",
         'offlineOnly': False,
         'onlineOnly': True,
         'sublabel': "Lire",
@@ -213,6 +235,7 @@ class ThingType(SearchableType):
     }
     INSTRUMENT = {
         'label': "Vente d’instruments de musique",
+        'userSeenLabel': "Achat d’instruments de musique",
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': "Pratiquer",
