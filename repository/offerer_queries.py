@@ -8,7 +8,8 @@ from models import RightsType
 from models.db import db
 
 get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_in_any_model(
-    Offerer
+    Offerer,
+    Venue
 )
 
 

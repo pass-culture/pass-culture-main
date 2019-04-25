@@ -2,12 +2,12 @@ import pytest
 import secrets
 from datetime import datetime, timedelta
 
-from models import PcObject
+from models import PcObject, Offerer, Venue
 from repository.offerer_queries import find_all_offerers_with_managing_user_information, \
     find_all_offerers_with_managing_user_information_and_venue, \
     find_all_offerers_with_managing_user_information_and_not_virtual_venue, \
     find_all_offerers_with_venue, find_first_by_user_offerer_id, find_all_pending_validation, \
-    find_filtered_offerers
+    find_filtered_offerers, filter_offerers_with_keywords_string
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
@@ -1223,3 +1223,183 @@ def test_find_filtered_offerers_with_default_param_return_all_offerers(app):
     assert offerer_not_validated in default_query
     assert offerer_with_bank_information in default_query
     assert offerer_not_active in default_query
+
+
+@pytest.mark.standalone
+@clean_database
+def test_find_filtered_offerers_with_one_keyword_at_venue_public_name_level(
+        app):
+    # given
+    offerer_with_only_virtual_venue_with_offer = create_offerer(siren="123456785")
+    offerer_with_only_virtual_venue_without_offer = create_offerer(siren="123456786")
+    offerer_with_both_venues_none_offer = create_offerer(siren="123456781")
+    offerer_with_both_venues_offer_on_both = create_offerer(siren="123456782")
+    offerer_with_both_venues_offer_on_virtual = create_offerer(siren="123456783")
+    offerer_with_both_venues_offer_on_not_virtual = create_offerer(siren="123456784")
+
+    virtual_venue_with_offer_1 = create_venue(offerer_with_only_virtual_venue_with_offer, is_virtual=True, siret=None)
+    virtual_venue_without_offer_1 = create_venue(offerer_with_only_virtual_venue_without_offer, is_virtual=True, siret=None)
+    virtual_venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, is_virtual=True, siret=None)
+    venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, siret="12345678112345")
+    virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
+    venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345", publicName='chouette lieu de ouf')
+    virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
+    venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345", publicName='chouette lieu de ouf')
+    virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
+    venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345", publicName='chouette lieu de ouf')
+
+    offer_1 = create_thing_offer(virtual_venue_with_offer_1, url='http://url.com')
+    offer_2 = create_thing_offer(virtual_venue_with_offer_3, url='http://url.com')
+    offer_3 = create_event_offer(venue_with_offer_3)
+    offer_4 = create_thing_offer(virtual_venue_with_offer_4, url='http://url.com')
+    offer_5 = create_event_offer(venue_with_offer_5)
+
+    PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5,
+                            virtual_venue_without_offer_1, virtual_venue_without_offer_2, virtual_venue_without_offer_5,
+                            venue_without_offer_2, venue_without_offer_4)
+
+    # when
+    offerers = filter_offerers_with_keywords_string(Offerer.query.join(Venue), 'chouette')
+
+    # then
+    assert offerer_with_only_virtual_venue_with_offer not in offerers
+    assert offerer_with_only_virtual_venue_without_offer not in offerers
+    assert offerer_with_both_venues_none_offer not in offerers
+    assert offerer_with_both_venues_offer_on_both in offerers
+    assert offerer_with_both_venues_offer_on_virtual in offerers
+    assert offerer_with_both_venues_offer_on_not_virtual in offerers
+
+
+@pytest.mark.standalone
+@clean_database
+def test_find_filtered_offerers_with_one_partial_keyword_at_venue_public_name_level(
+        app):
+    # given
+    offerer_with_only_virtual_venue_with_offer = create_offerer(siren="123456785")
+    offerer_with_only_virtual_venue_without_offer = create_offerer(siren="123456786")
+    offerer_with_both_venues_none_offer = create_offerer(siren="123456781")
+    offerer_with_both_venues_offer_on_both = create_offerer(siren="123456782")
+    offerer_with_both_venues_offer_on_virtual = create_offerer(siren="123456783")
+    offerer_with_both_venues_offer_on_not_virtual = create_offerer(siren="123456784")
+
+    virtual_venue_with_offer_1 = create_venue(offerer_with_only_virtual_venue_with_offer, is_virtual=True, siret=None)
+    virtual_venue_without_offer_1 = create_venue(offerer_with_only_virtual_venue_without_offer, is_virtual=True, siret=None)
+    virtual_venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, is_virtual=True, siret=None)
+    venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, siret="12345678112345")
+    virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
+    venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345", publicName='chouette lieu de ouf')
+    virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
+    venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345", publicName='chouette lieu de ouf')
+    virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
+    venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345", publicName='chouette lieu de ouf')
+
+    offer_1 = create_thing_offer(virtual_venue_with_offer_1, url='http://url.com')
+    offer_2 = create_thing_offer(virtual_venue_with_offer_3, url='http://url.com')
+    offer_3 = create_event_offer(venue_with_offer_3)
+    offer_4 = create_thing_offer(virtual_venue_with_offer_4, url='http://url.com')
+    offer_5 = create_event_offer(venue_with_offer_5)
+
+    PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5,
+                            virtual_venue_without_offer_1, virtual_venue_without_offer_2, virtual_venue_without_offer_5,
+                            venue_without_offer_2, venue_without_offer_4)
+
+    # when
+    offerers = filter_offerers_with_keywords_string(Offerer.query.join(Venue), 'chou')
+
+    # then
+    assert offerer_with_only_virtual_venue_with_offer not in offerers
+    assert offerer_with_only_virtual_venue_without_offer not in offerers
+    assert offerer_with_both_venues_none_offer not in offerers
+    assert offerer_with_both_venues_offer_on_both in offerers
+    assert offerer_with_both_venues_offer_on_virtual in offerers
+    assert offerer_with_both_venues_offer_on_not_virtual in offerers
+
+
+@pytest.mark.standalone
+@clean_database
+def test_find_filtered_offerers_with_several_keywords_at_venue_public_name_level(
+        app):
+    # given
+    offerer_with_only_virtual_venue_with_offer = create_offerer(siren="123456785")
+    offerer_with_only_virtual_venue_without_offer = create_offerer(siren="123456786")
+    offerer_with_both_venues_none_offer = create_offerer(siren="123456781")
+    offerer_with_both_venues_offer_on_both = create_offerer(siren="123456782")
+    offerer_with_both_venues_offer_on_virtual = create_offerer(siren="123456783")
+    offerer_with_both_venues_offer_on_not_virtual = create_offerer(siren="123456784")
+
+    virtual_venue_with_offer_1 = create_venue(offerer_with_only_virtual_venue_with_offer, is_virtual=True, siret=None)
+    virtual_venue_without_offer_1 = create_venue(offerer_with_only_virtual_venue_without_offer, is_virtual=True, siret=None)
+    virtual_venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, is_virtual=True, siret=None)
+    venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, siret="12345678112345")
+    virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
+    venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345", publicName='chouette lieu de ouf')
+    virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
+    venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345", publicName='chouette lieu de ouf')
+    virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
+    venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345", publicName='chouette lieu de ouf')
+
+    offer_1 = create_thing_offer(virtual_venue_with_offer_1, url='http://url.com')
+    offer_2 = create_thing_offer(virtual_venue_with_offer_3, url='http://url.com')
+    offer_3 = create_event_offer(venue_with_offer_3)
+    offer_4 = create_thing_offer(virtual_venue_with_offer_4, url='http://url.com')
+    offer_5 = create_event_offer(venue_with_offer_5)
+
+    PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5,
+                            virtual_venue_without_offer_1, virtual_venue_without_offer_2, virtual_venue_without_offer_5,
+                            venue_without_offer_2, venue_without_offer_4)
+
+    # when
+    offerers = filter_offerers_with_keywords_string(Offerer.query.join(Venue), 'chouette ouf')
+
+    # then
+    assert offerer_with_only_virtual_venue_with_offer not in offerers
+    assert offerer_with_only_virtual_venue_without_offer not in offerers
+    assert offerer_with_both_venues_none_offer not in offerers
+    assert offerer_with_both_venues_offer_on_both in offerers
+    assert offerer_with_both_venues_offer_on_virtual in offerers
+    assert offerer_with_both_venues_offer_on_not_virtual in offerers
+
+
+@pytest.mark.standalone
+@clean_database
+def test_find_filtered_offerers_with_several_partial_keywords_at_venue_public_name_level(
+        app):
+    # given
+    offerer_with_only_virtual_venue_with_offer = create_offerer(siren="123456785")
+    offerer_with_only_virtual_venue_without_offer = create_offerer(siren="123456786")
+    offerer_with_both_venues_none_offer = create_offerer(siren="123456781")
+    offerer_with_both_venues_offer_on_both = create_offerer(siren="123456782")
+    offerer_with_both_venues_offer_on_virtual = create_offerer(siren="123456783")
+    offerer_with_both_venues_offer_on_not_virtual = create_offerer(siren="123456784")
+
+    virtual_venue_with_offer_1 = create_venue(offerer_with_only_virtual_venue_with_offer, is_virtual=True, siret=None)
+    virtual_venue_without_offer_1 = create_venue(offerer_with_only_virtual_venue_without_offer, is_virtual=True, siret=None)
+    virtual_venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, is_virtual=True, siret=None)
+    venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, siret="12345678112345")
+    virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
+    venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345", publicName='chouette lieu de ouf')
+    virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
+    venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345", publicName='chouette lieu de ouf')
+    virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
+    venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345", publicName='chouette lieu de ouf')
+
+    offer_1 = create_thing_offer(virtual_venue_with_offer_1, url='http://url.com')
+    offer_2 = create_thing_offer(virtual_venue_with_offer_3, url='http://url.com')
+    offer_3 = create_event_offer(venue_with_offer_3)
+    offer_4 = create_thing_offer(virtual_venue_with_offer_4, url='http://url.com')
+    offer_5 = create_event_offer(venue_with_offer_5)
+
+    PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5,
+                            virtual_venue_without_offer_1, virtual_venue_without_offer_2, virtual_venue_without_offer_5,
+                            venue_without_offer_2, venue_without_offer_4)
+
+    # when
+    offerers = filter_offerers_with_keywords_string(Offerer.query.join(Venue), 'chou ou')
+
+    # then
+    assert offerer_with_only_virtual_venue_with_offer not in offerers
+    assert offerer_with_only_virtual_venue_without_offer not in offerers
+    assert offerer_with_both_venues_none_offer not in offerers
+    assert offerer_with_both_venues_offer_on_both in offerers
+    assert offerer_with_both_venues_offer_on_virtual in offerers
+    assert offerer_with_both_venues_offer_on_not_virtual in offerers

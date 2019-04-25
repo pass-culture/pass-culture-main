@@ -46,7 +46,7 @@ def list_offerers():
 
     keywords = request.args.get('keywords')
     if keywords is not None:
-        query = filter_offerers_with_keywords_string(query, keywords)
+        query = filter_offerers_with_keywords_string(query.join(Venue), keywords)
 
     return handle_rest_get_list(Offerer,
                                 include=OFFERER_INCLUDES if (
