@@ -1,0 +1,612 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | MyBookingItem should match snapshot with required props 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <MyBookingItem
+    completedUrl={null}
+    date={null}
+    dateString={null}
+    isCancelled={false}
+    isEvent={false}
+    mediationId={null}
+    name={null}
+    offerId={null}
+    recommendation={Object {}}
+    timezone="Europe/Paris"
+    token={null}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        false,
+        <Link
+          to="/decouverte//verso"
+        >
+          <Thumb
+            src={null}
+            translated={false}
+            withMediation={null}
+          />
+          <div
+            className="infos"
+          >
+            <div
+              className="top"
+            >
+              <h5
+                className="fs18 is-semi-bold"
+                title={null}
+              >
+                <Dotdotdot
+                  clamp={3}
+                  tagName="div"
+                  truncationChar="…"
+                  useNativeClamp={true}
+                />
+              </h5>
+              <span
+                className="fs13"
+              >
+                permanent
+              </span>
+            </div>
+            <div
+              className="token"
+            />
+          </div>
+          <div
+            className="arrow"
+          >
+            <Icon
+              className="Suivant"
+              svg="ico-next-S"
+            />
+          </div>
+        </Link>,
+      ],
+      "className": "booking-item mb16 thing",
+      "data-booked-date": null,
+      "data-booked-timezone": "Europe/Paris",
+      "data-token": null,
+    },
+    "ref": null,
+    "rendered": Array [
+      false,
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "children": Array [
+            <Thumb
+              src={null}
+              translated={false}
+              withMediation={null}
+            />,
+            <div
+              className="infos"
+            >
+              <div
+                className="top"
+              >
+                <h5
+                  className="fs18 is-semi-bold"
+                  title={null}
+                >
+                  <Dotdotdot
+                    clamp={3}
+                    tagName="div"
+                    truncationChar="…"
+                    useNativeClamp={true}
+                  />
+                </h5>
+                <span
+                  className="fs13"
+                >
+                  permanent
+                </span>
+              </div>
+              <div
+                className="token"
+              />
+            </div>,
+            <div
+              className="arrow"
+            >
+              <Icon
+                className="Suivant"
+                svg="ico-next-S"
+              />
+            </div>,
+          ],
+          "to": "/decouverte//verso",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "src": null,
+              "translated": false,
+              "withMediation": null,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <div
+                  className="top"
+                >
+                  <h5
+                    className="fs18 is-semi-bold"
+                    title={null}
+                  >
+                    <Dotdotdot
+                      clamp={3}
+                      tagName="div"
+                      truncationChar="…"
+                      useNativeClamp={true}
+                    />
+                  </h5>
+                  <span
+                    className="fs13"
+                  >
+                    permanent
+                  </span>
+                </div>,
+                <div
+                  className="token"
+                />,
+              ],
+              "className": "infos",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <h5
+                      className="fs18 is-semi-bold"
+                      title={null}
+                    >
+                      <Dotdotdot
+                        clamp={3}
+                        tagName="div"
+                        truncationChar="…"
+                        useNativeClamp={true}
+                      />
+                    </h5>,
+                    <span
+                      className="fs13"
+                    >
+                      permanent
+                    </span>,
+                  ],
+                  "className": "top",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <Dotdotdot
+                        clamp={3}
+                        tagName="div"
+                        truncationChar="…"
+                        useNativeClamp={true}
+                      />,
+                      "className": "fs18 is-semi-bold",
+                      "title": null,
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "children": null,
+                        "clamp": 3,
+                        "tagName": "div",
+                        "truncationChar": "…",
+                        "useNativeClamp": true,
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    "type": "h5",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "permanent",
+                      "className": "fs13",
+                    },
+                    "ref": null,
+                    "rendered": "permanent",
+                    "type": "span",
+                  },
+                ],
+                "type": "div",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": null,
+                  "className": "token",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": "div",
+              },
+            ],
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <Icon
+                className="Suivant"
+                svg="ico-next-S"
+              />,
+              "className": "arrow",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "className": "Suivant",
+                "svg": "ico-next-S",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "type": "div",
+          },
+        ],
+        "type": [Function],
+      },
+    ],
+    "type": "li",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          false,
+          <Link
+            to="/decouverte//verso"
+          >
+            <Thumb
+              src={null}
+              translated={false}
+              withMediation={null}
+            />
+            <div
+              className="infos"
+            >
+              <div
+                className="top"
+              >
+                <h5
+                  className="fs18 is-semi-bold"
+                  title={null}
+                >
+                  <Dotdotdot
+                    clamp={3}
+                    tagName="div"
+                    truncationChar="…"
+                    useNativeClamp={true}
+                  />
+                </h5>
+                <span
+                  className="fs13"
+                >
+                  permanent
+                </span>
+              </div>
+              <div
+                className="token"
+              />
+            </div>
+            <div
+              className="arrow"
+            >
+              <Icon
+                className="Suivant"
+                svg="ico-next-S"
+              />
+            </div>
+          </Link>,
+        ],
+        "className": "booking-item mb16 thing",
+        "data-booked-date": null,
+        "data-booked-timezone": "Europe/Paris",
+        "data-token": null,
+      },
+      "ref": null,
+      "rendered": Array [
+        false,
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "children": Array [
+              <Thumb
+                src={null}
+                translated={false}
+                withMediation={null}
+              />,
+              <div
+                className="infos"
+              >
+                <div
+                  className="top"
+                >
+                  <h5
+                    className="fs18 is-semi-bold"
+                    title={null}
+                  >
+                    <Dotdotdot
+                      clamp={3}
+                      tagName="div"
+                      truncationChar="…"
+                      useNativeClamp={true}
+                    />
+                  </h5>
+                  <span
+                    className="fs13"
+                  >
+                    permanent
+                  </span>
+                </div>
+                <div
+                  className="token"
+                />
+              </div>,
+              <div
+                className="arrow"
+              >
+                <Icon
+                  className="Suivant"
+                  svg="ico-next-S"
+                />
+              </div>,
+            ],
+            "to": "/decouverte//verso",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "src": null,
+                "translated": false,
+                "withMediation": null,
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <div
+                    className="top"
+                  >
+                    <h5
+                      className="fs18 is-semi-bold"
+                      title={null}
+                    >
+                      <Dotdotdot
+                        clamp={3}
+                        tagName="div"
+                        truncationChar="…"
+                        useNativeClamp={true}
+                      />
+                    </h5>
+                    <span
+                      className="fs13"
+                    >
+                      permanent
+                    </span>
+                  </div>,
+                  <div
+                    className="token"
+                  />,
+                ],
+                "className": "infos",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <h5
+                        className="fs18 is-semi-bold"
+                        title={null}
+                      >
+                        <Dotdotdot
+                          clamp={3}
+                          tagName="div"
+                          truncationChar="…"
+                          useNativeClamp={true}
+                        />
+                      </h5>,
+                      <span
+                        className="fs13"
+                      >
+                        permanent
+                      </span>,
+                    ],
+                    "className": "top",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": <Dotdotdot
+                          clamp={3}
+                          tagName="div"
+                          truncationChar="…"
+                          useNativeClamp={true}
+                        />,
+                        "className": "fs18 is-semi-bold",
+                        "title": null,
+                      },
+                      "ref": null,
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "class",
+                        "props": Object {
+                          "children": null,
+                          "clamp": 3,
+                          "tagName": "div",
+                          "truncationChar": "…",
+                          "useNativeClamp": true,
+                        },
+                        "ref": null,
+                        "rendered": null,
+                        "type": [Function],
+                      },
+                      "type": "h5",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "permanent",
+                        "className": "fs13",
+                      },
+                      "ref": null,
+                      "rendered": "permanent",
+                      "type": "span",
+                    },
+                  ],
+                  "type": "div",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": null,
+                    "className": "token",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "div",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <Icon
+                  className="Suivant"
+                  svg="ico-next-S"
+                />,
+                "className": "arrow",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "className": "Suivant",
+                  "svg": "ico-next-S",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              "type": "div",
+            },
+          ],
+          "type": [Function],
+        },
+      ],
+      "type": "li",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;

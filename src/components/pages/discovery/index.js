@@ -13,7 +13,11 @@ import BackButton from '../../layout/BackButton'
 import { Loader } from '../../layout/Loader'
 import Footer from '../../layout/Footer'
 import selectCurrentRecommendation from '../../../selectors/currentRecommendation'
-import { getQueryParams, getRouterQueryByKey } from '../../../helpers'
+import {
+  getQueryParams,
+  getRouterQueryByKey,
+  shouldShowVerso,
+} from '../../../helpers'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 
 export class RawDiscoveryPage extends React.PureComponent {
@@ -126,7 +130,7 @@ export class RawDiscoveryPage extends React.PureComponent {
     const { match } = this.props
     const { hasError, isEmpty, isLoading } = this.state
 
-    const withBackButton = match.params.view === 'verso'
+    const withBackButton = shouldShowVerso(match)
 
     return (
       <Fragment>
@@ -144,7 +148,7 @@ export class RawDiscoveryPage extends React.PureComponent {
               />
               <Route
                 key="route-discovery-deck"
-                path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?"
+                path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+|verso)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?"
                 render={route => (
                   <DeckContainer
                     {...route}

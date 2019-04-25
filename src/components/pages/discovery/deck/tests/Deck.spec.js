@@ -56,47 +56,90 @@ describe('src | components | pages | discovery | deck | Deck', () => {
     })
 
     describe('componentDidMount', () => {
-      describe('Whenever', () => {
-        it('should call handleUrlFlip', async () => {
-          // given
-          const props = {
-            areDetailsVisible: false,
-            backButton: true,
-            dispatch: dispatchMock,
-            draggable: true,
-            handleDataRequest: handleDataRequestMock,
-            height: 947,
-            history: {
-              location: {
-                search: '',
-              },
+      it('should call handleUrlFlip when mediationId is not verso', () => {
+        // given
+        const props = {
+          areDetailsVisible: false,
+          backButton: true,
+          dispatch: dispatchMock,
+          draggable: true,
+          handleDataRequest: handleDataRequestMock,
+          height: 947,
+          history: {
+            location: {
+              search: '',
             },
-            isFlipDisabled: false,
-            match: {
-              params: {
-                mediationId: 'HM',
-                offerId: 'KQ',
-              },
+          },
+          isFlipDisabled: false,
+          match: {
+            params: {
+              mediationId: 'HM',
+              offerId: 'KQ',
             },
-            nextLimit: 50,
-            previousLimit: 40,
-            recommendations: [],
-            unFlippable: false,
-            width: 500,
-          }
+          },
+          nextLimit: 50,
+          previousLimit: 40,
+          recommendations: [],
+          unFlippable: false,
+          width: 500,
+        }
 
-          // when
-          const wrapper = shallow(<Deck {...props} />)
-          const wrapperInstance = wrapper.instance()
-          const spy = jest
-            .spyOn(wrapperInstance, 'handleUrlFlip')
-            .mockImplementation(() => {})
-          wrapper.setProps(props)
-          // setProps() make the componentDidMount after instanciating the spy
+        // when
+        const wrapper = shallow(<Deck {...props} />)
+        const wrapperInstance = wrapper.instance()
+        const spy = jest
+          .spyOn(wrapperInstance, 'handleUrlFlip')
+          .mockImplementation(() => {})
+        wrapper.setProps(props)
 
-          // then
-          expect(spy).toHaveBeenCalled()
-        })
+        // then
+        expect(spy).toHaveBeenCalled()
+      })
+
+      it('should not call handleUrlFlip when mediatioId equals verso', () => {
+        // given
+        const props = {
+          areDetailsVisible: false,
+          backButton: true,
+          dispatch: dispatchMock,
+          draggable: true,
+          handleDataRequest: handleDataRequestMock,
+          height: 947,
+          history: {
+            location: {
+              search: '',
+            },
+          },
+          isFlipDisabled: false,
+          match: {
+            params: {
+              mediationId: 'HM',
+              offerId: 'KQ',
+            },
+          },
+          nextLimit: 50,
+          previousLimit: 40,
+          recommendations: [],
+          unFlippable: false,
+          width: 500,
+        }
+
+        // when
+        const wrapper = shallow(<Deck {...props} />)
+        const wrapperInstance = wrapper.instance()
+        const spy = jest
+          .spyOn(wrapperInstance, 'handleUrlFlip')
+          .mockImplementation(() => {})
+        props.match = {
+          params: {
+            mediationId: 'verso',
+            offerId: 'KQ',
+          },
+        }
+        wrapper.setProps(props)
+
+        // then
+        expect(spy).not.toHaveBeenCalled()
       })
 
       describe('When there is recommendations', () => {

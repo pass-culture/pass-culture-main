@@ -1,0 +1,318 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | my-bookings | NoBookingView snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <NoBookingView />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <p
+          className="mb12"
+        >
+          <Link
+            className="is-white-text border-all border-white px24 py6"
+            to="/decouverte"
+          >
+            <span
+              className="fs22 is-medium"
+            >
+              Lancez-vous
+            </span>
+          </Link>
+        </p>,
+        <p
+          className="is-white-text text-center"
+        >
+          <span
+            className="is-block"
+          >
+            Dès que vous aurez réservé une offre,
+          </span>
+          <span
+            className="is-block"
+          >
+            vous la retrouverez ici.
+          </span>
+        </p>,
+      ],
+      "className": "is-full-layout flex-rows flex-center items-center",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <Link
+            className="is-white-text border-all border-white px24 py6"
+            to="/decouverte"
+          >
+            <span
+              className="fs22 is-medium"
+            >
+              Lancez-vous
+            </span>
+          </Link>,
+          "className": "mb12",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "children": <span
+              className="fs22 is-medium"
+            >
+              Lancez-vous
+            </span>,
+            "className": "is-white-text border-all border-white px24 py6",
+            "to": "/decouverte",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Lancez-vous",
+              "className": "fs22 is-medium",
+            },
+            "ref": null,
+            "rendered": "Lancez-vous",
+            "type": "span",
+          },
+          "type": [Function],
+        },
+        "type": "p",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <span
+              className="is-block"
+            >
+              Dès que vous aurez réservé une offre,
+            </span>,
+            <span
+              className="is-block"
+            >
+              vous la retrouverez ici.
+            </span>,
+          ],
+          "className": "is-white-text text-center",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Dès que vous aurez réservé une offre,",
+              "className": "is-block",
+            },
+            "ref": null,
+            "rendered": "Dès que vous aurez réservé une offre,",
+            "type": "span",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "vous la retrouverez ici.",
+              "className": "is-block",
+            },
+            "ref": null,
+            "rendered": "vous la retrouverez ici.",
+            "type": "span",
+          },
+        ],
+        "type": "p",
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <p
+            className="mb12"
+          >
+            <Link
+              className="is-white-text border-all border-white px24 py6"
+              to="/decouverte"
+            >
+              <span
+                className="fs22 is-medium"
+              >
+                Lancez-vous
+              </span>
+            </Link>
+          </p>,
+          <p
+            className="is-white-text text-center"
+          >
+            <span
+              className="is-block"
+            >
+              Dès que vous aurez réservé une offre,
+            </span>
+            <span
+              className="is-block"
+            >
+              vous la retrouverez ici.
+            </span>
+          </p>,
+        ],
+        "className": "is-full-layout flex-rows flex-center items-center",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <Link
+              className="is-white-text border-all border-white px24 py6"
+              to="/decouverte"
+            >
+              <span
+                className="fs22 is-medium"
+              >
+                Lancez-vous
+              </span>
+            </Link>,
+            "className": "mb12",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "children": <span
+                className="fs22 is-medium"
+              >
+                Lancez-vous
+              </span>,
+              "className": "is-white-text border-all border-white px24 py6",
+              "to": "/decouverte",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Lancez-vous",
+                "className": "fs22 is-medium",
+              },
+              "ref": null,
+              "rendered": "Lancez-vous",
+              "type": "span",
+            },
+            "type": [Function],
+          },
+          "type": "p",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <span
+                className="is-block"
+              >
+                Dès que vous aurez réservé une offre,
+              </span>,
+              <span
+                className="is-block"
+              >
+                vous la retrouverez ici.
+              </span>,
+            ],
+            "className": "is-white-text text-center",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Dès que vous aurez réservé une offre,",
+                "className": "is-block",
+              },
+              "ref": null,
+              "rendered": "Dès que vous aurez réservé une offre,",
+              "type": "span",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "vous la retrouverez ici.",
+                "className": "is-block",
+              },
+              "ref": null,
+              "rendered": "vous la retrouverez ici.",
+              "type": "span",
+            },
+          ],
+          "type": "p",
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;

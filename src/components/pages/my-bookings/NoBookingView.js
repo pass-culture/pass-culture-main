@@ -19,7 +19,5 @@ const NoBookingView = () => (
     </p>
   </div>
 )
-NoBookingView.defaultProps = {}
-NoBookingView.propTypes = {}
 
 export default NoBookingView

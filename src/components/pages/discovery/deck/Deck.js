@@ -6,6 +6,7 @@ import Draggable from 'react-draggable'
 
 import Card from '../card'
 import DeckNavigation from '../DeckNavigation'
+import { shouldShowVerso } from '../../../../helpers'
 import {
   closeCardDetails,
   flipUnflippable,
@@ -32,8 +33,8 @@ class Deck extends Component {
 
   componentDidUpdate() {
     const { match } = this.props
-    const { view } = match.params
-    const isVersoView = view === 'verso'
+    const isVersoView = shouldShowVerso(match)
+    // prevents to be called twice at Mount and at Update
     if (isVersoView) return
     this.handleUrlFlip()
   }
@@ -110,10 +111,8 @@ class Deck extends Component {
   }
 
   handleUrlFlip = () => {
-    // Quand on arrive depuis un booking vers une offre, le details doit être affiché
     const { dispatch, match } = this.props
-    const { view } = match.params
-    const isVersoView = view === 'verso'
+    const isVersoView = shouldShowVerso(match)
     if (!isVersoView) return
     dispatch(flipUnflippable())
   }
