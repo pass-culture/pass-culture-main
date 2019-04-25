@@ -276,21 +276,23 @@ test('Je peux revenir en arrière', async t => {
   await t.expect(location.pathname).match(/\/structures\/([A-Z0-9]*)$/)
 })
 
-test("Je peux modifier l'email de contact du lieu", async t => {
+test.only("Je peux modifier l'email de contact du lieu", async t => {
   // given
   await t.wait(5000)
-  await t.expect(bookingEmailInput.value).eql('fake@email.com')
+  const originalEmail = bookingEmailInput.value
 
   // when
   await t
     .click(updateAnchor)
-    .typeText(bookingEmailInput, 'fake')
+    .typeText(bookingEmailInput, 'rosa.soulot@example.net', { replace: true })
     .click(submitButton)
 
   // then
   await t
     .expect(bookingEmailInput.value)
-    .eql('fake@email.comfake')
+    .notEql(originalEmail)
+    .expect(bookingEmailInput.value)
+    .eql('rosa.soulot@example.net')
     .expect(notificationSuccess.innerText)
     .contains('Lieu modifié avec succès !')
 })
