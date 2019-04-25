@@ -14,7 +14,7 @@ jobs:
             sudo apt-get install -y realpath
             sudo ./pc symlink
       - run:
-          name: Install requirements
+          name: Run PC tests
           command: |
             cd tests
             ./run_tests.sh
@@ -28,7 +28,7 @@ jobs:
       - run: git submodule sync
       - run: git submodule update --init
       - run: ./install_lib_ci.sh
-      - run: ./install_dockerize.sh v0.6.1
+      - run: ./scripts/install_dockerize.sh v0.6.1
       - run:
           name: Running API server
           command: |
@@ -52,7 +52,7 @@ jobs:
       - run: git submodule sync
       - run: git submodule update --init
       - run: ./install_lib_ci.sh
-      - run: ./install_dockerize.sh v0.6.1
+      - run: ./scripts/install_dockerize.sh v0.6.1
       - run:
           name: Run Unit Test WEBAPP
           command: |
@@ -102,7 +102,7 @@ jobs:
       - run: git submodule sync
       - run: git submodule update --init
       - run: ./install_lib_ci.sh
-      - run: ./install_dockerize.sh v0.6.1
+      - run: ./scripts/install_dockerize.sh v0.6.1
       - run:
           name: Run Unit Test PRO
           command: |
@@ -155,15 +155,16 @@ jobs:
       - run:
           name: Deploy API
           command: |
-            export SCALINGO_APP_NAME=$(./compute_app_name.sh ${CIRCLE_BRANCH})
+            export SCALINGO_APP_NAME=$(./scripts/compute_app_name.sh ${CIRCLE_BRANCH})
             cd api
             git remote add scalingo git@scalingo.com:${SCALINGO_APP_NAME}.git
             git push scalingo master
       - run:
-          name: Check API version
+          name: Check deployed version
           command: |
-            export SCALINGO_APP_NAME=$(./compute_app_name.sh ${CIRCLE_BRANCH})
-            curl
+            export COMPONENT_URL="https://backend.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
+            ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
+
 
   deploy-pro:
     machine:
@@ -178,15 +179,16 @@ jobs:
             cd pro
             yarn install
             set -a; source ~/node_modules/pass-culture-shared/config/run_envs/${CIRCLE_BRANCH}" && yarn build
-            while set -a; source ~/node_modules/pass-culture-shared/config/run_envs/${CIRCLE_BRANCH}" && yarn build; do
-              echo "Waiting for Fontello to be nice with us :("
-              sleep 1
-            done
       - run:
           name: Deploy Pro
           command: |
             cd pro
             netlify deploy -e "${CIRCLE_BRANCH}" -t ${NETLIFY_TOKEN}
+      - run:
+          name: Check deployed version
+          command: |
+            export COMPONENT_URL="https://pro.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
+            ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
 
   deploy-webapp:
     machine:
@@ -206,13 +208,17 @@ jobs:
             source .jsenv
             cd webapp
             yarn install
-            set -a; source ~/node_modules/pass-culture-shared/config/run_envs/${CIRCLE_BRANCH}" && yarn build
+            ./scripts/build_with_fontello.sh
       - run:
           name: Deploy WEBAPP
           command: |
             cd webapp
             netlify deploy -e "${CIRCLE_BRANCH}" -t ${NETLIFY_TOKEN}
-
+      - run:
+          name: Check deployed version
+          command: |
+            export COMPONENT_URL="https://app.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
+            ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
 
 
 workflows:
@@ -224,7 +230,7 @@ workflows:
           filters:
             branches:
               only:
-                - testing
+                - master
                 - staging
                 - integration
                 - demo
@@ -233,7 +239,7 @@ workflows:
           filters:
             branches:
               only:
-                - testing
+                - master
                 - staging
                 - integration
                 - demo
@@ -242,7 +248,7 @@ workflows:
           filters:
             branches:
               only:
-                - testing
+                - master
                 - staging
                 - integration
                 - demo

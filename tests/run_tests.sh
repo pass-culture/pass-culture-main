@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-rm /tmp/bats-mock.*
+rm -f /tmp/bats-mock.*
 for filename in .;
 do
     bats "$filename"
