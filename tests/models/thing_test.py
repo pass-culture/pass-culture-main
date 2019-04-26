@@ -31,19 +31,21 @@ def test_thing_type_find_from_sub_labels_returns_nothing_if_label_is_unknown():
 @pytest.mark.standalone
 def test_thing_type_find_from_sub_labels_returns_several_types_given_several_sub_labels_ignoring_case():
     # given
-    sub_labels = ['Regarder', 'LIRE']
+    sub_labels = ['Regarder', 'LIRE', 'Pratiquer']
 
     # when
     types = ThingType.find_from_sub_labels(sub_labels)
 
     # then
-    assert len(types) == 5
+    assert len(types) == 8
     assert ThingType.AUDIOVISUEL in types
     assert ThingType.CINEMA_ABO in types
     assert ThingType.MUSEES_PATRIMOINE_ABO in types
     assert ThingType.LIVRE_EDITION in types
     assert ThingType.PRESSE_ABO in types
-
+    assert ThingType.PRATIQUE_ARTISTIQUE_ABO in types
+    assert ThingType.OEUVRE_ART in types
+    assert ThingType.INSTRUMENT in types
 
 @clean_database
 @pytest.mark.standalone
@@ -64,7 +66,8 @@ def test_thing_offerType_returns_dict_matching_ThingType_enum():
     thing_product = create_product_with_Thing_type(thing_type=ThingType.LIVRE_EDITION)
     expected_value = {
         'conditionalFields': ["author", "isbn"],
-        'label': ' Livre - format papier, abonnements lecture',
+        'label': 'Livre - format papier, abonnements lecture',
+        'userSeenLabel': 'Livres, cartes bibliothèque ou médiathèque',
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': 'Lire',

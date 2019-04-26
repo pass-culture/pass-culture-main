@@ -30,13 +30,14 @@ def test_event_type_find_from_sub_labels_returns_nothing_if_label_is_unknown():
 
 def test_event_type_find_from_sub_labels_returns_several_types_given_several_sub_labels_ignoring_case():
     # given
-    sub_labels = ['Regarder', 'appLAuDIr']
+    sub_labels = ['Activation', 'Regarder', 'appLAuDIr', 'PRATIQUER']
 
     # when
     types = EventType.find_from_sub_labels(sub_labels)
 
     # then
-    assert len(types) == 3
+    assert len(types) == 5
+    assert EventType.ACTIVATION in types
     assert EventType.CINEMA in types
     assert EventType.MUSEES_PATRIMOINE in types
     assert EventType.SPECTACLE_VIVANT in types
@@ -48,6 +49,7 @@ def test_event_offerType_returns_dict_matching_EventType_enum():
     expected_value = {
         'conditionalFields': ["author", "showType", "stageDirector", "performer"],
         'label': "Spectacle vivant",
+        'userSeenLabel': "Spectacle vivant",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Applaudir",

@@ -121,6 +121,7 @@ def test_serialize_enum_returns_dict_with_enum_value():
     assert serialized_enum == {
         'conditionalFields': [],
         'label': 'Jeux (Biens physiques)',
+        'userSeenLabel': 'Jeux (Biens physiques)',
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': 'Jouer',
