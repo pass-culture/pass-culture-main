@@ -1248,11 +1248,11 @@ def test_find_filtered_offerers_with_one_keyword_at_venue_public_name_level(
     virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
     venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345", publicName='chouette lieu de ouf')
 
-    offer_1 = create_thing_offer(virtual_venue_with_offer_1, url='http://url.com')
-    offer_2 = create_thing_offer(virtual_venue_with_offer_3, url='http://url.com')
-    offer_3 = create_event_offer(venue_with_offer_3)
-    offer_4 = create_thing_offer(virtual_venue_with_offer_4, url='http://url.com')
-    offer_5 = create_event_offer(venue_with_offer_5)
+    offer_1 = create_offer_with_thing_product(virtual_venue_with_offer_1, url='http://url.com')
+    offer_2 = create_offer_with_thing_product(virtual_venue_with_offer_3, url='http://url.com')
+    offer_3 = create_offer_with_event_product(venue_with_offer_3)
+    offer_4 = create_offer_with_thing_product(virtual_venue_with_offer_4, url='http://url.com')
+    offer_5 = create_offer_with_event_product(venue_with_offer_5)
 
     PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5,
                             virtual_venue_without_offer_1, virtual_venue_without_offer_2, virtual_venue_without_offer_5,
@@ -1293,11 +1293,11 @@ def test_find_filtered_offerers_with_one_partial_keyword_at_venue_public_name_le
     virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
     venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345", publicName='chouette lieu de ouf')
 
-    offer_1 = create_thing_offer(virtual_venue_with_offer_1, url='http://url.com')
-    offer_2 = create_thing_offer(virtual_venue_with_offer_3, url='http://url.com')
-    offer_3 = create_event_offer(venue_with_offer_3)
-    offer_4 = create_thing_offer(virtual_venue_with_offer_4, url='http://url.com')
-    offer_5 = create_event_offer(venue_with_offer_5)
+    offer_1 = create_offer_with_thing_product(virtual_venue_with_offer_1, url='http://url.com')
+    offer_2 = create_offer_with_thing_product(virtual_venue_with_offer_3, url='http://url.com')
+    offer_3 = create_offer_with_event_product(venue_with_offer_3)
+    offer_4 = create_offer_with_thing_product(virtual_venue_with_offer_4, url='http://url.com')
+    offer_5 = create_offer_with_event_product(venue_with_offer_5)
 
     PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5,
                             virtual_venue_without_offer_1, virtual_venue_without_offer_2, virtual_venue_without_offer_5,
@@ -1338,11 +1338,11 @@ def test_find_filtered_offerers_with_several_keywords_at_venue_public_name_level
     virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
     venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345", publicName='chouette lieu de ouf')
 
-    offer_1 = create_thing_offer(virtual_venue_with_offer_1, url='http://url.com')
-    offer_2 = create_thing_offer(virtual_venue_with_offer_3, url='http://url.com')
-    offer_3 = create_event_offer(venue_with_offer_3)
-    offer_4 = create_thing_offer(virtual_venue_with_offer_4, url='http://url.com')
-    offer_5 = create_event_offer(venue_with_offer_5)
+    offer_1 = create_offer_with_thing_product(virtual_venue_with_offer_1, url='http://url.com')
+    offer_2 = create_offer_with_thing_product(virtual_venue_with_offer_3, url='http://url.com')
+    offer_3 = create_offer_with_event_product(venue_with_offer_3)
+    offer_4 = create_offer_with_thing_product(virtual_venue_with_offer_4, url='http://url.com')
+    offer_5 = create_offer_with_event_product(venue_with_offer_5)
 
     PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5,
                             virtual_venue_without_offer_1, virtual_venue_without_offer_2, virtual_venue_without_offer_5,
@@ -1383,11 +1383,11 @@ def test_find_filtered_offerers_with_several_partial_keywords_at_venue_public_na
     virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
     venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345", publicName='chouette lieu de ouf')
 
-    offer_1 = create_thing_offer(virtual_venue_with_offer_1, url='http://url.com')
-    offer_2 = create_thing_offer(virtual_venue_with_offer_3, url='http://url.com')
-    offer_3 = create_event_offer(venue_with_offer_3)
-    offer_4 = create_thing_offer(virtual_venue_with_offer_4, url='http://url.com')
-    offer_5 = create_event_offer(venue_with_offer_5)
+    offer_1 = create_offer_with_thing_product(virtual_venue_with_offer_1, url='http://url.com')
+    offer_2 = create_offer_with_thing_product(virtual_venue_with_offer_3, url='http://url.com')
+    offer_3 = create_offer_with_event_product(venue_with_offer_3)
+    offer_4 = create_offer_with_thing_product(virtual_venue_with_offer_4, url='http://url.com')
+    offer_5 = create_offer_with_event_product(venue_with_offer_5)
 
     PcObject.check_and_save(offer_1, offer_2, offer_3, offer_4, offer_5,
                             virtual_venue_without_offer_1, virtual_venue_without_offer_2, virtual_venue_without_offer_5,

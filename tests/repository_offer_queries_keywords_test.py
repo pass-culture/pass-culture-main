@@ -165,8 +165,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_v
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_venue_public_name_level(app):
     # given
-    event = create_event()
-    thing = create_thing()
+    event = create_product_with_Event_type()
+    thing = create_product_with_Thing_type()
     ok_offerer1 = create_offerer(name="La Rencontre")
     offerer2 = create_offerer(siren='123456788')
     offerer3 = create_offerer(siren='123456787')
@@ -175,14 +175,14 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_v
     venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
     ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis', siret=offerer3.siren + '54321', publicName='chouette endroit de ouf')
     venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
-    ok_offer1 = create_event_offer(ok_venue1, event)
-    ko_offer2 = create_event_offer(venue2, event)
-    ok_offer3 = create_thing_offer(ok_venue1, thing)
-    ko_offer4 = create_thing_offer(venue2, thing)
-    ok_offer5 = create_event_offer(ok_venue3, event)
-    ko_offer6 = create_event_offer(venue4, event)
-    ok_offer7 = create_thing_offer(ok_venue3, thing)
-    ko_offer8 = create_thing_offer(venue4, thing)
+    ok_offer1 = create_offer_with_event_product(ok_venue1, event)
+    ko_offer2 = create_offer_with_event_product(venue2, event)
+    ok_offer3 = create_offer_with_thing_product(ok_venue1, thing)
+    ko_offer4 = create_offer_with_thing_product(venue2, thing)
+    ok_offer5 = create_offer_with_event_product(ok_venue3, event)
+    ko_offer6 = create_offer_with_event_product(venue4, event)
+    ok_offer7 = create_offer_with_thing_product(ok_venue3, thing)
+    ko_offer8 = create_offer_with_thing_product(venue4, thing)
     PcObject.check_and_save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
@@ -208,8 +208,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_v
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyword_at_venue_public_name_level(app):
     # given
-    event = create_event()
-    thing = create_thing()
+    event = create_product_with_Event_type()
+    thing = create_product_with_Thing_type()
     ok_offerer1 = create_offerer(name="La Rencontre")
     offerer2 = create_offerer(siren='123456788')
     offerer3 = create_offerer(siren='123456787')
@@ -218,14 +218,14 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
     venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
     ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis', siret=offerer3.siren + '54321', publicName='chouette endroit de ouf')
     venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
-    ok_offer1 = create_event_offer(ok_venue1, event)
-    ko_offer2 = create_event_offer(venue2, event)
-    ok_offer3 = create_thing_offer(ok_venue1, thing)
-    ko_offer4 = create_thing_offer(venue2, thing)
-    ok_offer5 = create_event_offer(ok_venue3, event)
-    ko_offer6 = create_event_offer(venue4, event)
-    ok_offer7 = create_thing_offer(ok_venue3, thing)
-    ko_offer8 = create_thing_offer(venue4, thing)
+    ok_offer1 = create_offer_with_event_product(ok_venue1, event)
+    ko_offer2 = create_offer_with_event_product(venue2, event)
+    ok_offer3 = create_offer_with_thing_product(ok_venue1, thing)
+    ko_offer4 = create_offer_with_thing_product(venue2, thing)
+    ok_offer5 = create_offer_with_event_product(ok_venue3, event)
+    ko_offer6 = create_offer_with_event_product(venue4, event)
+    ok_offer7 = create_offer_with_thing_product(ok_venue3, thing)
+    ko_offer8 = create_offer_with_thing_product(venue4, thing)
     PcObject.check_and_save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
@@ -251,8 +251,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords_at_venue_public_name_level(app):
     # given
-    event = create_event()
-    thing = create_thing()
+    event = create_product_with_Event_type()
+    thing = create_product_with_Thing_type()
     ok_offerer1 = create_offerer(name="La Rencontre")
     offerer2 = create_offerer(siren='123456788')
     offerer3 = create_offerer(siren='123456787')
@@ -261,14 +261,14 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
     ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis', siret=offerer3.siren + '54321', publicName='chouette endroit de ouf')
     venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
-    ok_offer1 = create_event_offer(ok_venue1, event)
-    ko_offer2 = create_event_offer(venue2, event)
-    ok_offer3 = create_thing_offer(ok_venue1, thing)
-    ko_offer4 = create_thing_offer(venue2, thing)
-    ok_offer5 = create_event_offer(ok_venue3, event)
-    ko_offer6 = create_event_offer(venue4, event)
-    ok_offer7 = create_thing_offer(ok_venue3, thing)
-    ko_offer8 = create_thing_offer(venue4, thing)
+    ok_offer1 = create_offer_with_event_product(ok_venue1, event)
+    ko_offer2 = create_offer_with_event_product(venue2, event)
+    ok_offer3 = create_offer_with_thing_product(ok_venue1, thing)
+    ko_offer4 = create_offer_with_thing_product(venue2, thing)
+    ok_offer5 = create_offer_with_event_product(ok_venue3, event)
+    ko_offer6 = create_offer_with_event_product(venue4, event)
+    ok_offer7 = create_offer_with_thing_product(ok_venue3, thing)
+    ko_offer8 = create_offer_with_thing_product(venue4, thing)
     PcObject.check_and_save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
@@ -294,8 +294,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_keywords_at_venue_public_name_level(app):
     # given
-    event = create_event()
-    thing = create_thing()
+    event = create_product_with_Event_type()
+    thing = create_product_with_Thing_type()
     ok_offerer1 = create_offerer(name="La Rencontre")
     offerer2 = create_offerer(siren='123456788')
     offerer3 = create_offerer(siren='123456787')
@@ -304,14 +304,14 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
     ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis', siret=offerer3.siren + '54321', publicName='chouette endroit de ouf')
     venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
-    ok_offer1 = create_event_offer(ok_venue1, event)
-    ko_offer2 = create_event_offer(venue2, event)
-    ok_offer3 = create_thing_offer(ok_venue1, thing)
-    ko_offer4 = create_thing_offer(venue2, thing)
-    ok_offer5 = create_event_offer(ok_venue3, event)
-    ko_offer6 = create_event_offer(venue4, event)
-    ok_offer7 = create_thing_offer(ok_venue3, thing)
-    ko_offer8 = create_thing_offer(venue4, thing)
+    ok_offer1 = create_offer_with_event_product(ok_venue1, event)
+    ko_offer2 = create_offer_with_event_product(venue2, event)
+    ok_offer3 = create_offer_with_thing_product(ok_venue1, thing)
+    ko_offer4 = create_offer_with_thing_product(venue2, thing)
+    ok_offer5 = create_offer_with_event_product(ok_venue3, event)
+    ko_offer6 = create_offer_with_event_product(venue4, event)
+    ok_offer7 = create_offer_with_thing_product(ok_venue3, thing)
+    ko_offer8 = create_offer_with_thing_product(venue4, thing)
     PcObject.check_and_save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
