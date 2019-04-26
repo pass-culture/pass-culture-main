@@ -13,8 +13,8 @@ from repository.offer_queries import get_active_offers_by_type
 from utils.logger import logger
 
 roundrobin_predicates = [
-    lambda offer: ProductType.is_thing(offer.type),
-    lambda offer: ProductType.is_event(offer.type)
+    lambda offer: offer.isThing,
+    lambda offer: offer.isEvent
 ]
 
 
@@ -59,9 +59,9 @@ def score_offer(offer: Offer) -> Optional[int]:
     common_score += randint(0, 10)
 
     specific_score = None
-    if ProductType.is_event(offer.type):
+    if offer.isEvent:
         specific_score = specific_score_event(offer.product)
-    elif ProductType.is_thing(offer.type):
+    elif offer.isThing:
         specific_score = specific_score_thing(offer.product)
 
     if specific_score is None:

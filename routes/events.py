@@ -7,10 +7,11 @@ from utils.rest import load_or_404, \
     login_or_api_key_required
 
 
+# FIXME Cette route est-elle utilisée ?
 @app.route('/events/<id>', methods=['GET'])
 @login_or_api_key_required
 def get_event(id):
-    event = load_or_404(Product, id)
+    event_product = load_or_404(Product, id)
     return jsonify(
-        event._asdict(include=EVENT_INCLUDES)
+        event_product._asdict(include=EVENT_INCLUDES)
     ), 200

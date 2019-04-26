@@ -10,7 +10,7 @@ from sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_DESCRIPTION, \
 from sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES, \
                                                MOCK_LAST_NAMES
 from utils.logger import logger
-from tests.test_utils import create_event_product
+from tests.test_utils import create_product_with_Event_type
 
 
 EVENT_COUNTS_PER_TYPE = 7
@@ -41,7 +41,7 @@ def create_industrial_events():
             event_type = event_type_dict['value']
 
             name = "{} / {}".format(event_type_dict['value'], MOCK_NAMES[mock_index])
-            event = create_event_product(
+            event_product = create_product_with_Event_type(
                 description=description,
                 event_name=event_name,
                 event_type=event_type,
@@ -50,7 +50,7 @@ def create_industrial_events():
 
             extraData = {}
             extra_data_index = 0
-            for conditionalField in event.offerType['conditionalFields']:
+            for conditionalField in event_product.offerType['conditionalFields']:
                 conditional_index = type_index + event_type_dict_index + extra_data_index
                 if conditionalField in ['author', 'performer', 'speaker', 'stageDirector']:
                     mock_first_name_index = conditional_index % len(MOCK_FIRST_NAMES)
@@ -76,9 +76,9 @@ def create_industrial_events():
                 elif conditionalField == "visa":
                     pass
                 extra_data_index += 1
-            event.extraData = extraData
+            event_product.extraData = extraData
 
-            events_by_name[name] = event
+            events_by_name[name] = event_product
 
         type_index += len(event_type_dicts)
 

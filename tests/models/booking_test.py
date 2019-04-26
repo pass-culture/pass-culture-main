@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import pytest
 
 from models import Booking, Offer, Stock, User, Product
+from tests.test_utils import create_product_with_Thing_type
 
 
 @pytest.mark.standalone
@@ -53,7 +54,7 @@ class BookingIsCancellableTest:
         booking = Booking()
         booking.stock = Stock()
         booking.stock.offer = Offer()
-        booking.stock.offer.thing = Product()
+        booking.stock.offer.product = create_product_with_Thing_type()
 
         # When
         is_cancellable = booking.isUserCancellable

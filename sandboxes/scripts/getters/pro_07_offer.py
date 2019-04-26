@@ -73,7 +73,7 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
         if uo.validationToken == None and uo.offerer.validationToken == None:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if ProductType.is_thing(offer.product.type):
+                    if offer.isThing:
                         return {
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),
@@ -91,7 +91,7 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
         if uo.validationToken == None and uo.offerer.validationToken == None:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if ProductType.is_event(offer.type):
+                    if offer.isEvent:
                         return {
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),

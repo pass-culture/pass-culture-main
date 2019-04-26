@@ -4,7 +4,7 @@ import pytest
 
 from models import Offer, PcObject, ApiErrors, ThingType, EventType
 from tests.conftest import clean_database
-from tests.test_utils import create_offer_with_event_product, create_thing_product, create_offer_with_thing_product, \
+from tests.test_utils import create_offer_with_event_product, create_product_with_Thing_type, create_offer_with_thing_product, \
     create_offerer, create_venue, create_stock, create_booking, create_user
 from utils.date import DateTimes
 
@@ -80,7 +80,7 @@ class CreateOfferTest:
     def test_success_when_is_digital_and_virtual_venue(self, app):
         # Given
         url = 'http://mygame.fr/offre'
-        digital_thing = create_thing_product(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
+        digital_thing = create_product_with_Thing_type(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
         offerer = create_offerer()
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         PcObject.check_and_save(virtual_venue)
@@ -96,7 +96,7 @@ class CreateOfferTest:
     @clean_database
     def test_success_when_is_physical_and_physical_venue(self, app):
         # Given
-        physical_thing = create_thing_product(thing_type=ThingType.LIVRE_EDITION, url=None)
+        physical_thing = create_product_with_Thing_type(thing_type=ThingType.LIVRE_EDITION, url=None)
         offerer = create_offerer()
         physical_venue = create_venue(offerer, is_virtual=False, siret=offerer.siren + '12345')
         PcObject.check_and_save(physical_venue)
@@ -111,7 +111,7 @@ class CreateOfferTest:
     @clean_database
     def test_fails_when_is_digital_but_physical_venue(self, app):
         # Given
-        digital_thing = create_thing_product(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
+        digital_thing = create_product_with_Thing_type(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
         offerer = create_offerer()
         physical_venue = create_venue(offerer)
         PcObject.check_and_save(physical_venue)
@@ -128,7 +128,7 @@ class CreateOfferTest:
     @clean_database
     def test_fails_when_is_physical_but_venue_is_virtual(self, app):
         # Given
-        physical_thing = create_thing_product(thing_type=ThingType.JEUX_VIDEO, url=None)
+        physical_thing = create_product_with_Thing_type(thing_type=ThingType.JEUX_VIDEO, url=None)
         offerer = create_offerer()
         digital_venue = create_venue(offerer, is_virtual=True, siret=None)
         PcObject.check_and_save(digital_venue)
@@ -146,7 +146,7 @@ class CreateOfferTest:
     def test_create_digital_offer_success(self, app):
         # Given
         url = 'http://mygame.fr/offre'
-        digital_thing = create_thing_product(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
+        digital_thing = create_product_with_Thing_type(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
         offerer = create_offerer()
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         PcObject.check_and_save(virtual_venue)
@@ -162,7 +162,7 @@ class CreateOfferTest:
     @clean_database
     def test_offer_error_when_thing_is_digital_but_venue_not_virtual(self, app):
         # Given
-        digital_thing = create_thing_product(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
+        digital_thing = create_product_with_Thing_type(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
         offerer = create_offerer()
         physical_venue = create_venue(offerer)
         PcObject.check_and_save(physical_venue)

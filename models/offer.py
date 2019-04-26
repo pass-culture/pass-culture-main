@@ -98,10 +98,10 @@ class Offer(PcObject,
                 self._get_label_from_type_string()))
         return api_errors
 
-    def updatewith_thing_or_event_data(self, thing_or_event_dict: dict):
+    def updatewith_product_data(self, product_dict: dict):
         owning_offerer = self.product.owningOfferer
         if owning_offerer and owning_offerer == self.venue.managingOfferer:
-            self.product.populateFromDict(thing_or_event_dict)
+            self.product.populateFromDict(product_dict)
 
     @property
     def dateRange(self):

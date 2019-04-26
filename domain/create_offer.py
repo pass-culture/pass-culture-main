@@ -4,27 +4,27 @@ from validation.events import check_user_can_create_activation_event
 from validation.url import is_url_safe
 
 
-def fill_offer_with_existing_data(product_id: str) -> Offer:
-    thing = thing_queries.find_by_id(product_id)
-    offer = _initialize_offer_from_thing(thing)
+def initialize_offer_from_product_id(product_id: str) -> Offer:
+    thing_product = thing_queries.find_by_id(product_id)
+    offer = initialize_offer_from_product(thing_product)
     return offer
 
 
-def fill_offer_with_new_data(thing_dict: str, user: User) -> Offer:
+def fill_offer_with_new_data(product_dict: str, user: User) -> Offer:
     product = Product()
-    url = thing_dict.get('url')
+    url = product_dict.get('url')
     if url:
         is_url_safe(url)
-        thing_dict['isNational'] = True
-    product.populateFromDict(thing_dict)
+        product_dict['isNational'] = True
+    product.populateFromDict(product_dict)
     check_user_can_create_activation_event(user, product)
     offer = Offer()
-    offer.populateFromDict(thing_dict)
+    offer.populateFromDict(product_dict)
     offer.product = product
     return offer
 
 
-def _initialize_offer_from_thing(product):
+def initialize_offer_from_product(product) -> Offer:
     offer = Offer()
     offer.product = product
     offer.type = product.type

@@ -749,30 +749,30 @@ def test_find_filtered_offerers_with_False_has_validated_user_offerer_param_retu
 def test_find_filtered_offerers_with_offer_status_with_VALID_param_return_filtered_offerers(app):
     # Given
     offerer_without_offer = create_offerer(siren="123456781")
-    offerer_with_valid_event = create_offerer(siren="123456782")
-    offerer_with_expired_event = create_offerer(siren="123456783")
-    offerer_with_valid_thing = create_offerer(siren="123456784")
-    offerer_with_expired_thing = create_offerer(siren="123456785")
-    offerer_with_soft_deleted_thing = create_offerer(siren="123456786")
-    offerer_with_soft_deleted_event = create_offerer(siren="123456787")
-    offerer_with_not_available_event = create_offerer(siren="123456788")
+    offerer_with_valid_event_product = create_offerer(siren="123456782")
+    offerer_with_expired_event_product = create_offerer(siren="123456783")
+    offerer_with_valid_thing_product = create_offerer(siren="123456784")
+    offerer_with_expired_thing_product = create_offerer(siren="123456785")
+    offerer_with_soft_deleted_thing_product = create_offerer(siren="123456786")
+    offerer_with_soft_deleted_event_product = create_offerer(siren="123456787")
+    offerer_with_not_available_event_product = create_offerer(siren="123456788")
 
     venue_without_offer = create_venue(offerer_without_offer)
-    venue_with_valid_event = create_venue(offerer_with_valid_event, siret='12345678912346')
-    venue_with_expired_event = create_venue(offerer_with_expired_event, siret='12345678912347')
-    venue_with_valid_thing = create_venue(offerer_with_valid_thing, siret='12345678912348')
-    venue_with_expired_thing = create_venue(offerer_with_expired_thing, siret='12345678912349')
-    venue_with_soft_deleted_thing = create_venue(offerer_with_soft_deleted_thing, siret='12345678912342')
-    venue_with_soft_deleted_event = create_venue(offerer_with_soft_deleted_event, siret='12345678912343')
-    venue_with_not_available_event = create_venue(offerer_with_not_available_event, siret='12345678912344')
+    venue_with_valid_event_product = create_venue(offerer_with_valid_event_product, siret='12345678912346')
+    venue_with_expired_event_product = create_venue(offerer_with_expired_event_product, siret='12345678912347')
+    venue_with_valid_thing_product = create_venue(offerer_with_valid_thing_product, siret='12345678912348')
+    venue_with_expired_thing_product = create_venue(offerer_with_expired_thing_product, siret='12345678912349')
+    venue_with_soft_deleted_thing_product = create_venue(offerer_with_soft_deleted_thing_product, siret='12345678912342')
+    venue_with_soft_deleted_event_product = create_venue(offerer_with_soft_deleted_event_product, siret='12345678912343')
+    venue_with_not_available_event_product = create_venue(offerer_with_not_available_event_product, siret='12345678912344')
 
-    valid_event = create_offer_with_event_product(venue_with_valid_event)
-    expired_event = create_offer_with_event_product(venue_with_expired_event)
-    valid_thing = create_offer_with_thing_product(venue_with_valid_thing)
-    expired_thing = create_offer_with_thing_product(venue_with_expired_thing)
-    soft_deleted_thing = create_offer_with_thing_product(venue_with_soft_deleted_thing)
-    soft_deleted_event = create_offer_with_event_product(venue_with_soft_deleted_event)
-    not_available_event = create_offer_with_event_product(venue_with_not_available_event)
+    valid_event = create_offer_with_event_product(venue_with_valid_event_product)
+    expired_event = create_offer_with_event_product(venue_with_expired_event_product)
+    valid_thing = create_offer_with_thing_product(venue_with_valid_thing_product)
+    expired_thing = create_offer_with_thing_product(venue_with_expired_thing_product)
+    soft_deleted_thing = create_offer_with_thing_product(venue_with_soft_deleted_thing_product)
+    soft_deleted_event = create_offer_with_event_product(venue_with_soft_deleted_event_product)
+    not_available_event = create_offer_with_event_product(venue_with_not_available_event_product)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
                                                      beginning_datetime=datetime.utcnow() + timedelta(days=4),
@@ -789,11 +789,11 @@ def test_find_filtered_offerers_with_offer_status_with_VALID_param_return_filter
                                                       beginning_datetime=datetime(2018, 2, 1),
                                                       end_datetime=datetime(2018, 3, 2))
 
-    valid_stock = create_stock_with_thing_offer(offerer_with_valid_thing, venue_with_valid_thing, valid_thing)
-    expired_stock = create_stock_with_thing_offer(offerer_with_expired_thing, venue_with_expired_thing, expired_thing,
+    valid_stock = create_stock_with_thing_offer(offerer_with_valid_thing_product, venue_with_valid_thing_product, valid_thing)
+    expired_stock = create_stock_with_thing_offer(offerer_with_expired_thing_product, venue_with_expired_thing_product, expired_thing,
                                                   available=0)
-    soft_deleted_thing_stock = create_stock_with_thing_offer(offerer_with_soft_deleted_thing,
-                                                             venue_with_soft_deleted_thing, soft_deleted_thing,
+    soft_deleted_thing_stock = create_stock_with_thing_offer(offerer_with_soft_deleted_thing_product,
+                                                             venue_with_soft_deleted_thing_product, soft_deleted_thing,
                                                              soft_deleted=True)
 
     expired_booking_limit_date_event_stock = create_stock_from_event_occurrence(expired_event_occurence,
@@ -820,13 +820,13 @@ def test_find_filtered_offerers_with_offer_status_with_VALID_param_return_filter
 
     # Then
     assert offerer_without_offer not in query_has_valid_offer
-    assert offerer_with_valid_event in query_has_valid_offer
-    assert offerer_with_expired_event not in query_has_valid_offer
-    assert offerer_with_valid_thing in query_has_valid_offer
-    assert offerer_with_expired_thing not in query_has_valid_offer
-    assert offerer_with_soft_deleted_thing not in query_has_valid_offer
-    assert offerer_with_soft_deleted_event not in query_has_valid_offer
-    assert offerer_with_not_available_event not in query_has_valid_offer
+    assert offerer_with_valid_event_product in query_has_valid_offer
+    assert offerer_with_expired_event_product not in query_has_valid_offer
+    assert offerer_with_valid_thing_product in query_has_valid_offer
+    assert offerer_with_expired_thing_product not in query_has_valid_offer
+    assert offerer_with_soft_deleted_thing_product not in query_has_valid_offer
+    assert offerer_with_soft_deleted_event_product not in query_has_valid_offer
+    assert offerer_with_not_available_event_product not in query_has_valid_offer
 
 
 @pytest.mark.standalone

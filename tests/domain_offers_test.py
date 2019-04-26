@@ -33,10 +33,10 @@ class CheckDigitalOfferConsistencyTest:
 
         # when
         with pytest.raises(InconsistentOffer) as e:
-            check_digital_offer_consistency(offer, venue, find_thing=find_thing)
+            check_digital_offer_consistency(offer, venue, find_thing_product=find_thing)
 
         # then
-        assert str(e.value) == 'Offer.venue is not virtual but Offer.thing has an URL'
+        assert str(e.value) == 'Offer.venue is not virtual but Offer.product has an URL'
 
     def test_does_not_raise_an_error_for_virtual_venue_and_digital_thing(self):
         # given
@@ -44,7 +44,7 @@ class CheckDigitalOfferConsistencyTest:
         find_thing.return_value = Product(from_dict={'url': 'https://zerlngzergner.fr'})
 
         # when
-        result = check_digital_offer_consistency(offer, venue, find_thing=find_thing)
+        result = check_digital_offer_consistency(offer, venue, find_thing_product=find_thing)
 
         # then
         assert result is None
@@ -56,10 +56,10 @@ class CheckDigitalOfferConsistencyTest:
 
         # when
         with pytest.raises(InconsistentOffer) as e:
-            check_digital_offer_consistency(offer, venue, find_thing=find_thing)
+            check_digital_offer_consistency(offer, venue, find_thing_product=find_thing)
 
         # then
-        assert str(e.value) == 'Offer.venue is virtual but Offer.thing does not have an URL'
+        assert str(e.value) == 'Offer.venue is virtual but Offer.product does not have an URL'
 
     def test_does_not_raise_an_error_for_physical_venue_and_physical_thing(self):
         # given
@@ -67,7 +67,7 @@ class CheckDigitalOfferConsistencyTest:
         find_thing.return_value = Product(from_dict={'url': None})
 
         # when
-        result = check_digital_offer_consistency(offer, venue, find_thing=find_thing)
+        result = check_digital_offer_consistency(offer, venue, find_thing_product=find_thing)
 
         # then
         assert result is None

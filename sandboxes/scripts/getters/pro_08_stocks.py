@@ -30,7 +30,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                 and uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if ProductType.is_event(offer.type) \
+                    if offer.isEvent \
                             and len(offer.stocks) == 0:
                         return {
                             "offer": get_offer_helper(offer),
@@ -56,7 +56,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                 and uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if ProductType.is_event(offer.type) \
+                    if offer.isEvent \
                             and offer.stocks:
                         for stock in offer.stocks:
                             if stock.beginningDatetime and stock.endDatetime:
@@ -84,7 +84,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                 and uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if ProductType.is_thing(offer.type)  \
+                    if offer.isThing  \
                             and offer.stocks:
                         return {
                             "offer": get_offer_helper(offer),
@@ -111,7 +111,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
                 and not uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if ProductType.is_thing(offer.type) and len(offer.stocks) == 0:
+                    if offer.isThing and len(offer.stocks) == 0:
                         return {
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),
@@ -135,7 +135,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
             for venue in uo.offerer.managedVenues:
                 if not venue.isVirtual:
                     for offer in venue.offers:
-                        if ProductType.is_event(offer.type):
+                        if offer.isEvent:
                             return {
                                 "offer": get_offer_helper(offer),
                                 "offerer": get_offerer_helper(uo.offerer),

@@ -5,11 +5,11 @@ from datetime import datetime, timedelta
 
 from models import Offer, PcObject, ApiErrors, ThingType, EventType, Product
 from tests.conftest import clean_database
-from tests.test_utils import create_event_occurrence, create_thing_product, create_offer_with_thing_product, \
+from tests.test_utils import create_event_occurrence, create_product_with_Thing_type, create_offer_with_thing_product, \
     create_offerer, create_venue, \
-    create_offer_with_event_product, create_event_product
+    create_offer_with_event_product, create_product_with_Event_type
 from utils.date import DateTimes
-from tests.test_utils import create_thing_product, create_offer_with_thing_product, create_offerer, create_stock, create_venue
+from tests.test_utils import create_product_with_Thing_type, create_offer_with_thing_product, create_offerer, create_stock, create_venue
 
 now = datetime.utcnow()
 two_days_ago = now - timedelta(days=2)
@@ -22,7 +22,7 @@ ten_days_from_now = now + timedelta(days=10)
 def test_date_range_is_empty_if_offer_is_on_a_thing():
     # given
     offer = Offer()
-    offer.thing = Product()
+    offer.product = create_product_with_Thing_type()
     offer.stocks = []
 
     # then
@@ -33,7 +33,7 @@ def test_date_range_is_empty_if_offer_is_on_a_thing():
 def test_date_range_matches_the_occurrence_if_only_one_occurrence():
     # given
     offer = Offer()
-    offer.event = Product()
+    offer.product = create_product_with_Event_type()
     offer.stocks = [
         create_stock(offer=offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now)
     ]
@@ -46,7 +46,7 @@ def test_date_range_matches_the_occurrence_if_only_one_occurrence():
 def test_date_range_starts_at_first_beginning_date_time_and_ends_at_last_end_date_time():
     # given
     offer = Offer()
-    offer.event = Product()
+    offer.product = create_product_with_Event_type()
     offer.stocks = [
         create_stock(offer=offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now),
         create_stock(offer=offer, beginning_datetime=four_days_ago, end_datetime=five_days_from_now),
@@ -63,7 +63,7 @@ def test_date_range_starts_at_first_beginning_date_time_and_ends_at_last_end_dat
 def test_date_range_is_empty_if_event_has_no_stocks():
     # given
     offer = Offer()
-    offer.event = Product()
+    offer.product = create_product_with_Event_type()
     offer.stocks = []
 
     # then
@@ -76,7 +76,7 @@ class CreateOfferTest:
     def test_success_when_is_digital_and_virtual_venue(self, app):
         # Given
         url = 'http://mygame.fr/offre'
-        digital_thing = create_thing_product(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
+        digital_thing = create_product_with_Thing_type(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
         offerer = create_offerer()
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         PcObject.check_and_save(virtual_venue)
@@ -92,7 +92,7 @@ class CreateOfferTest:
     @clean_database
     def test_success_when_is_physical_and_physical_venue(self, app):
         # Given
-        physical_thing = create_thing_product(thing_type=ThingType.LIVRE_EDITION, url=None)
+        physical_thing = create_product_with_Thing_type(thing_type=ThingType.LIVRE_EDITION, url=None)
         offerer = create_offerer()
         physical_venue = create_venue(offerer, is_virtual=False, siret=offerer.siren + '12345')
         PcObject.check_and_save(physical_venue)
@@ -108,7 +108,7 @@ class CreateOfferTest:
     @clean_database
     def test_fails_when_is_digital_but_physical_venue(self, app):
         # Given
-        digital_thing = create_thing_product(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
+        digital_thing = create_product_with_Thing_type(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
         offerer = create_offerer()
         physical_venue = create_venue(offerer)
         PcObject.check_and_save(physical_venue)
@@ -125,7 +125,7 @@ class CreateOfferTest:
     @clean_database
     def test_fails_when_is_physical_but_venue_is_virtual(self, app):
         # Given
-        physical_thing = create_thing_product(thing_type=ThingType.JEUX_VIDEO, url=None)
+        physical_thing = create_product_with_Thing_type(thing_type=ThingType.JEUX_VIDEO, url=None)
         offerer = create_offerer()
         digital_venue = create_venue(offerer, is_virtual=True, siret=None)
         PcObject.check_and_save(digital_venue)
@@ -141,7 +141,7 @@ class CreateOfferTest:
 
     def test_offer_is_marked_as_isevent_property(self):
         # Given
-        physical_thing = create_thing_product(thing_type=ThingType.JEUX_VIDEO, url=None)
+        physical_thing = create_product_with_Thing_type(thing_type=ThingType.JEUX_VIDEO, url=None)
         offerer = create_offerer()
         digital_venue = create_venue(offerer, is_virtual=True, siret=None)
 
@@ -155,7 +155,7 @@ class CreateOfferTest:
 
     def test_offer_is_marked_as_isthing_property(self):
         # Given
-        event_product = create_event_product(event_type=EventType.CINEMA)
+        event_product = create_product_with_Event_type(event_type=EventType.CINEMA)
         offerer = create_offerer()
         digital_venue = create_venue(offerer, is_virtual=False, siret=None)
 

@@ -68,10 +68,10 @@ class Put:
             user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
-            stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
-            mediation = create_mediation(offer_thing)
-            PcObject.check_and_save(user, stock_thing, mediation)
+            offer_with_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
+            stock_with_thing = create_stock_with_thing_offer(offerer, venue, offer_with_thing, price=0)
+            mediation = create_mediation(offer_with_thing)
+            PcObject.check_and_save(user, stock_with_thing, mediation)
             auth_request = TestClient().with_auth(user.email)
 
             # when

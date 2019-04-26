@@ -15,7 +15,7 @@ from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
 from tests.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, create_user_offerer, \
     create_offerer, create_venue, create_offer_with_thing_product, create_offer_with_event_product, create_stock_from_offer, \
-    create_stock_from_event_occurrence, create_event_occurrence, create_thing_product, create_mocked_bookings, create_email
+    create_stock_from_event_occurrence, create_event_occurrence, create_product_with_Thing_type, create_mocked_bookings, create_email
 from utils.mailing import make_user_booking_recap_email, \
     make_offerer_booking_recap_email_after_user_action, make_final_recap_email_for_stock_with_event, \
     write_object_validation_email, make_offerer_driven_cancellation_email_for_user, \
@@ -887,8 +887,8 @@ def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_ex
     offerer = create_offerer(name='Test offerer')
     venue = create_venue(offerer, name='La petite librairie', address='1 rue de la Libération', city='Montreuil',
                          postal_code='93100')
-    thing = create_thing_product(thing_name='Le récit de voyage')
-    offer = create_offer_with_thing_product(venue, thing)
+    thing_product = create_product_with_Thing_type(thing_name='Le récit de voyage')
+    offer = create_offer_with_thing_product(venue, thing_product)
     stock = create_stock_from_offer(offer, price=0, available=10)
     booking = create_booking(user, stock, token='12346')
 

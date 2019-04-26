@@ -12,8 +12,8 @@ def get_query_join_on_event(query):
   return query
 
 def get_query_join_on_thing(query):
-  join_on_thing = (Offer.id == Stock.offerId)
-  query = query.join(Stock, join_on_thing)
+  join_on_offer_id = (Offer.id == Stock.offerId)
+  query = query.join(Stock, join_on_offer_id)
   return query
 
 def get_non_free_offers_query_by_type(type):

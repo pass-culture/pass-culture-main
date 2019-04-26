@@ -7,7 +7,7 @@ from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THING
 from models.api_errors import ResourceGoneError, ForbiddenError
 from models import ApiErrors, Booking, Stock, Offer, ThingType, Product
 from utils.human_ids import humanize
-from tests.test_utils import create_booking_for_thing
+from tests.test_utils import create_booking_for_thing, create_product_with_Thing_type
 from validation.bookings import check_expenses_limits, check_booking_is_cancellable, check_booking_is_usable
 
 
@@ -128,7 +128,7 @@ class CheckBookingIsCancellableTest:
         booking = Booking()
         booking.stock = Stock()
         booking.stock.offer = Offer()
-        booking.stock.offer.thing = Product()
+        booking.stock.offer.product = create_product_with_Thing_type()
 
         # When
         with pytest.raises(ApiErrors) as e:
@@ -144,7 +144,7 @@ class CheckBookingIsCancellableTest:
         booking.isUsed = False
         booking.stock = Stock()
         booking.stock.offer = Offer()
-        booking.stock.offer.thing = Product()
+        booking.stock.offer.product = create_product_with_Thing_type()
 
         # When
         check_output = check_booking_is_cancellable(booking, is_user_cancellation=False)

@@ -32,8 +32,8 @@ def _compute_booking_expenses(bookings: List[Booking], get_bookings=lambda b: b)
 def _get_bookings_of_digital_things(bookings: List[Booking]) -> List[Booking]:
     match = []
     for booking in bookings:
-        thing_or_event = booking.stock.resolvedOffer.product
-        if is_eligible_to_digital_things_capping(thing_or_event):
+        product = booking.stock.resolvedOffer.product
+        if is_eligible_to_digital_products_capping(product):
             match.append(booking)
 
     return match
@@ -43,20 +43,20 @@ def _get_bookings_of_physical_things(bookings: List[Booking]) -> List[Booking]:
     match = []
     for booking in bookings:
         product = booking.stock.resolvedOffer.product
-        if is_eligible_to_physical_things_capping(product):
+        if is_eligible_to_physical_products_capping(product):
             match.append(booking)
 
     return match
 
 
-def is_eligible_to_digital_things_capping(product: Product) -> bool:
+def is_eligible_to_digital_products_capping(product: Product) -> bool:
     if product.isDigital and product.type in map(str, DIGITAL_EXPENSES_CAPPED_TYPES):
         return True
 
     return False
 
 
-def is_eligible_to_physical_things_capping(product: Product) -> bool:
+def is_eligible_to_physical_products_capping(product: Product) -> bool:
     if product.isDigital and product.type == str(ThingType.LIVRE_EDITION):
         return True
 

@@ -26,7 +26,7 @@ Par exemple :
 @login_or_api_key_required
 @expect_json_data
 def create_event_occurrence():
-    event = Event.query \
+    product = Product.query \
         .join(Offer) \
         .filter(Offer.id == dehumanize(request.json['offerId'])) \
         .first_or_404()

@@ -240,7 +240,7 @@ def create_stock(price=10, available=10, booking_limit_datetime=None, offer=None
 
 def create_stock_with_thing_offer(offerer, venue, offer=None, price=10, available=50,
                                   booking_email='offer.booking.email@test.com', soft_deleted=False,
-                                  booking_limit_datetime=None):
+                                  booking_limit_datetime=None) -> Stock:
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
@@ -257,8 +257,7 @@ def create_stock_with_thing_offer(offerer, venue, offer=None, price=10, availabl
     return stock
 
 
-# TODO Remplacer cette fonction par un create_product ou create_product_with_Thing_type
-def create_thing_product(
+def create_product_with_Thing_type(
         thing_name='Test Book',
         thing_type=ThingType.LIVRE_EDITION,
         author_name='Test Author',
@@ -298,7 +297,7 @@ def create_thing_product(
     return product
 
 
-def create_event_product(
+def create_product_with_Event_type(
         event_name='Test event',
         event_type=EventType.SPECTACLE_VIVANT,
         description=None,
@@ -337,9 +336,9 @@ def create_offer_with_thing_product(venue, product=None, date_created=datetime.u
         offer.isNational = product.isNational
         offer.description = product.description
     else:
-        offer.product = create_thing_product(thing_name=thing_name, thing_type=thing_type, media_urls=media_urls,
-                                             author_name=author_name, url=url, thumb_count=thumb_count,
-                                             dominant_color=dominant_color, is_national=is_national, description=description)
+        offer.product = create_product_with_Thing_type(thing_name=thing_name, thing_type=thing_type, media_urls=media_urls,
+                                                       author_name=author_name, url=url, thumb_count=thumb_count,
+                                                       dominant_color=dominant_color, is_national=is_national, description=description)
         offer.name = thing_name
         offer.type = str(thing_type)
         offer.mediaUrls = media_urls
@@ -366,8 +365,8 @@ def create_offer_with_event_product(venue=None, product=None, event_name='Test e
                                     event_type=EventType.SPECTACLE_VIVANT, is_national=False, is_active=True, idx=None) -> Offer:
     offer = Offer()
     if product is None:
-        product = create_event_product(event_name=event_name, event_type=event_type, duration_minutes=duration_minutes,
-                                       thumb_count=thumb_count, dominant_color=dominant_color, is_national=is_national)
+        product = create_product_with_Event_type(event_name=event_name, event_type=event_type, duration_minutes=duration_minutes,
+                                                 thumb_count=thumb_count, dominant_color=dominant_color, is_national=is_national)
     offer.product = product
     offer.venue = venue
     offer.name = product.name

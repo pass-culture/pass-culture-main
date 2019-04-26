@@ -8,7 +8,7 @@ from models.pc_object import PcObject
 from models.provider import Provider
 from models.venue_provider import VenueProvider
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_venue, create_thing_product, create_offer_with_thing_product, provider_test
+from tests.test_utils import create_offerer, create_venue, create_product_with_Thing_type, create_offer_with_thing_product, provider_test
 import requests
 
 savedCounts = {}
@@ -56,9 +56,9 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
         .filter_by(venueIdAtOfferProvider='77567146400110') \
         .one_or_none()
 
-    thing = create_thing_product(id_at_providers='0002730757438')
+    product = create_product_with_Thing_type(id_at_providers='0002730757438')
 
-    PcObject.check_and_save(thing)
+    PcObject.check_and_save(product)
 
     provider_test(app,
                   TiteLiveStocks,
@@ -110,10 +110,10 @@ def test_titelive_stock_provider_create_1_stock_and_do_not_create_existing_offer
         .filter_by(venueIdAtOfferProvider='77567146400110') \
         .one_or_none()
 
-    thing = create_thing_product(id_at_providers='0002730757438')
-    offer = create_offer_with_thing_product(venue, product=thing, id_at_providers='0002730757438@77567146400110')
+    product = create_product_with_Thing_type(id_at_providers='0002730757438')
+    offer = create_offer_with_thing_product(venue, product=product, id_at_providers='0002730757438@77567146400110')
 
-    PcObject.check_and_save(thing, offer)
+    PcObject.check_and_save(product, offer)
 
     provider_test(app,
                   TiteLiveStocks,
@@ -170,8 +170,8 @@ def test_titelive_stock_provider_create_2_stock_and_1_offer(get_data, app):
         .filter_by(venueIdAtOfferProvider='77567146400110') \
         .one_or_none()
 
-    thing_1 = create_thing_product(id_at_providers='0002730757438')
-    thing_2 = create_thing_product(id_at_providers='0002736409898')
+    thing_1 = create_product_with_Thing_type(id_at_providers='0002730757438')
+    thing_2 = create_product_with_Thing_type(id_at_providers='0002736409898')
     offer = create_offer_with_thing_product(venue=venue, product=thing_1)
 
     PcObject.check_and_save(thing_1, offer, thing_2)
@@ -214,10 +214,10 @@ def test_titelive_stock_provider_create_nothing_if_siret_is_not_in_titelive_data
         .filter_by(venueIdAtOfferProvider='12345678912345') \
         .one_or_none()
 
-    thing = create_thing_product(id_at_providers='0002730757438')
-    offer = create_offer_with_thing_product(venue=venue, product=thing)
+    product = create_product_with_Thing_type(id_at_providers='0002730757438')
+    offer = create_offer_with_thing_product(venue=venue, product=product)
 
-    PcObject.check_and_save(thing, offer)
+    PcObject.check_and_save(product, offer)
 
     provider_test(app,
                   TiteLiveStocks,

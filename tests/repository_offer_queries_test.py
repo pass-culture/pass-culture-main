@@ -14,12 +14,12 @@ from repository.offer_queries import department_or_national_offers, \
 
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
-    create_event_product, \
+    create_product_with_Event_type, \
     create_event_occurrence, \
     create_offer_with_event_product, \
     create_mediation, \
     create_stock_from_event_occurrence, \
-    create_thing_product, \
+    create_product_with_Thing_type, \
     create_offer_with_thing_product, \
     create_offerer, \
     create_stock_from_offer, \
@@ -36,10 +36,10 @@ class DepartmentOrNationalOffersTest:
     @clean_database
     def test_returns_national_thing_with_different_department(self, app):
         # given
-        thing = create_thing_product(thing_name='Lire un livre', is_national=True)
+        product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
-        offer = create_offer_with_thing_product(venue, thing)
+        offer = create_offer_with_thing_product(venue, product)
         PcObject.check_and_save(offer)
         query = Product.query.filter_by(name='Lire un livre')
 
@@ -47,15 +47,15 @@ class DepartmentOrNationalOffersTest:
         query = department_or_national_offers(query, ['93'])
 
         # then
-        assert thing in query.all()
+        assert product in query.all()
 
     @clean_database
     def test_returns_national_event_with_different_department(self, app):
         # given
-        event = create_event_product('Voir une pièce', is_national=True)
+        product = create_product_with_Event_type('Voir une pièce', is_national=True)
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
-        offer = create_offer_with_event_product(venue, event)
+        offer = create_offer_with_event_product(venue, product)
         PcObject.check_and_save(offer)
         query = Product.query.filter_by(name='Voir une pièce')
 
@@ -63,15 +63,15 @@ class DepartmentOrNationalOffersTest:
         query = department_or_national_offers(query, ['93'])
 
         # then
-        assert event in query.all()
+        assert product in query.all()
 
     @clean_database
     def test_returns_nothing_if_event_is_not_in_given_department_list(self, app):
         # given
-        event = create_event_product('Voir une pièce', is_national=False)
+        product = create_product_with_Event_type('Voir une pièce', is_national=False)
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
-        offer = create_offer_with_event_product(venue, event)
+        offer = create_offer_with_event_product(venue, product)
         PcObject.check_and_save(offer)
         query = Product.query.filter_by(name='Voir une pièce')
 
@@ -84,10 +84,10 @@ class DepartmentOrNationalOffersTest:
     @clean_database
     def test_returns_an_event_regardless_of_department_if_department_list_contains_00(self, app):
         # given
-        event = create_event_product('Voir une pièce', is_national=False)
+        product = create_product_with_Event_type('Voir une pièce', is_national=False)
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
-        offer = create_offer_with_event_product(venue, event)
+        offer = create_offer_with_event_product(venue, product)
         PcObject.check_and_save(offer)
         query = Product.query.filter_by(name='Voir une pièce')
 
@@ -100,10 +100,10 @@ class DepartmentOrNationalOffersTest:
     @clean_database
     def test_returns_an_event_if_it_is_given_in_department_list(self, app):
         # given
-        event = create_event_product('Voir une pièce', is_national=False)
+        product = create_product_with_Event_type('Voir une pièce', is_national=False)
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=False, postal_code='29000', departement_code='29')
-        offer = create_offer_with_event_product(venue, event)
+        offer = create_offer_with_event_product(venue, product)
         PcObject.check_and_save(offer)
         query = Product.query.filter_by(name='Voir une pièce')
 
@@ -123,9 +123,9 @@ class GetOffersForRecommendationsSearchTest:
         type_label = EventType.CONFERENCE_DEBAT_DEDICACE
         other_type_label = EventType.MUSIQUE
 
-        conference_event1 = create_event_product('Rencontre avec Franck Lepage', event_type=type_label)
-        conference_event2 = create_event_product('Conférence ouverte', event_type=type_label)
-        concert_event = create_event_product('Concert de Gael Faye', event_type=other_type_label)
+        conference_event1 = create_product_with_Event_type('Rencontre avec Franck Lepage', event_type=type_label)
+        conference_event2 = create_product_with_Event_type('Conférence ouverte', event_type=type_label)
+        concert_event = create_product_with_Event_type('Concert de Gael Faye', event_type=other_type_label)
 
         offerer = create_offerer(
             siren='507633576',
@@ -180,10 +180,10 @@ class GetOffersForRecommendationsSearchTest:
         type_label_ok = ThingType.JEUX_VIDEO
         type_label_ko = ThingType.LIVRE_EDITION
 
-        thing_ok1 = create_thing_product(thing_type=type_label_ok)
-        thing_ok2 = create_thing_product(thing_type=type_label_ok)
-        thing_ko = create_thing_product(thing_type=type_label_ko)
-        event_ko = create_event_product(event_type=EventType.CINEMA)
+        thing_ok1 = create_product_with_Thing_type(thing_type=type_label_ok)
+        thing_ok2 = create_product_with_Thing_type(thing_type=type_label_ok)
+        thing_ko = create_product_with_Thing_type(thing_type=type_label_ko)
+        event_ko = create_product_with_Event_type(event_type=EventType.CINEMA)
 
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -224,7 +224,7 @@ class GetOffersForRecommendationsSearchTest:
         ok_stock = _create_event_stock_and_offer_for_date(venue, datetime(2018, 1, 6, 12, 30))
         ko_stock_before = _create_event_stock_and_offer_for_date(venue, datetime(2018, 1, 1, 12, 30))
         ko_stock_after = _create_event_stock_and_offer_for_date(venue, datetime(2018, 1, 10, 12, 30))
-        ok_stock_thing = create_stock_with_thing_offer(offerer, venue, None)
+        ok_stock_with_thing = create_stock_with_thing_offer(offerer, venue, None)
 
         PcObject.check_and_save(ok_stock, ko_stock_before, ko_stock_after)
 
@@ -237,21 +237,21 @@ class GetOffersForRecommendationsSearchTest:
 
         # Then
         assert ok_stock.resolvedOffer in search_result_offers
-        assert ok_stock_thing.resolvedOffer in search_result_offers
+        assert ok_stock_with_thing.resolvedOffer in search_result_offers
         assert ko_stock_before.resolvedOffer not in search_result_offers
         assert ko_stock_after.resolvedOffer not in search_result_offers
 
     @clean_database
     def test_search_with_several_partial_keywords_returns_things_and_events_with_name_containing_keywords(self, app):
         # Given
-        thing_ok = create_thing_product(thing_name='Rencontre de michel')
-        thing = create_thing_product(thing_name='Rencontre avec jean-luc')
-        event = create_event_product(event_name='Rencontre avec jean-mimi chelou')
+        thing_ok = create_product_with_Thing_type(thing_name='Rencontre de michel')
+        thing_product = create_product_with_Thing_type(thing_name='Rencontre avec jean-luc')
+        event_product = create_product_with_Event_type(event_name='Rencontre avec jean-mimi chelou')
         offerer = create_offerer()
         venue = create_venue(offerer)
         thing_ok_offer = create_offer_with_thing_product(venue, thing_ok)
-        thing_ko_offer = create_offer_with_thing_product(venue, thing)
-        event_ko_offer = create_offer_with_event_product(venue, event)
+        thing_ko_offer = create_offer_with_thing_product(venue, thing_product)
+        event_ko_offer = create_offer_with_event_product(venue, event_product)
         event_ko_occurrence = create_event_occurrence(event_ko_offer)
         event_ko_stock = create_stock_from_event_occurrence(event_ko_occurrence)
         thing_ok_stock = create_stock_from_offer(thing_ok_offer)
@@ -269,10 +269,10 @@ class GetOffersForRecommendationsSearchTest:
     @clean_database
     def test_search_without_accents_matches_offer_with_accents_1(self, app):
         # Given
-        thing_ok = create_thing_product(thing_name='Nez à nez')
+        thing_product_ok = create_product_with_Thing_type(thing_name='Nez à nez')
         offerer = create_offerer()
         venue = create_venue(offerer)
-        thing_ok_offer = create_offer_with_thing_product(venue, thing_ok)
+        thing_ok_offer = create_offer_with_thing_product(venue, thing_product_ok)
         thing_ok_stock = create_stock_from_offer(thing_ok_offer)
         PcObject.check_and_save(thing_ok_stock)
 
@@ -285,7 +285,7 @@ class GetOffersForRecommendationsSearchTest:
     @clean_database
     def test_search_with_accents_matches_offer_without_accents_2(self, app):
         # Given
-        thing_ok = create_thing_product(thing_name='Déjà')
+        thing_ok = create_product_with_Thing_type(thing_name='Déjà')
         offerer = create_offerer()
         venue = create_venue(offerer)
         thing_ok_offer = create_offer_with_thing_product(venue, thing_ok)
@@ -552,21 +552,21 @@ def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_
     user_offerer1 = create_user_offerer(user, offerer1)
     user_offerer2 = create_user_offerer(user, offerer2)
 
-    ok_event1 = create_event_product(event_name='Rencontre avec Jacques Martin')
-    ok_thing = create_thing_product(thing_name='Rencontrez Jacques Chirac')
-    event2 = create_event_product(event_name='Concert de contrebasse')
-    thing1 = create_thing_product(thing_name='Jacques la fripouille')
-    thing2 = create_thing_product(thing_name='Belle du Seigneur')
+    ok_product_event = create_product_with_Event_type(event_name='Rencontre avec Jacques Martin')
+    ok_product_thing = create_product_with_Thing_type(thing_name='Rencontrez Jacques Chirac')
+    event_product2 = create_product_with_Event_type(event_name='Concert de contrebasse')
+    thing1_product = create_product_with_Thing_type(thing_name='Jacques la fripouille')
+    thing2_product = create_product_with_Thing_type(thing_name='Belle du Seigneur')
     offerer = create_offerer()
     venue1 = create_venue(offerer1, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
     venue2 = create_venue(offerer2, name='Librairie la Rencontre', city='Saint Denis', siret=offerer.siren + '54321')
     ko_venue3 = create_venue(ko_offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis',
                              siret=ko_offerer3.siren + '54321')
-    ok_offer1 = create_offer_with_event_product(venue1, ok_event1)
-    ok_offer2 = create_offer_with_thing_product(venue1, ok_thing)
-    ko_offer2 = create_offer_with_event_product(venue1, event2)
-    ko_offer3 = create_offer_with_thing_product(ko_venue3, thing1)
-    ko_offer4 = create_offer_with_thing_product(venue2, thing2)
+    ok_offer1 = create_offer_with_event_product(venue1, ok_product_event)
+    ok_offer2 = create_offer_with_thing_product(venue1, ok_product_thing)
+    ko_offer2 = create_offer_with_event_product(venue1, event_product2)
+    ko_offer3 = create_offer_with_thing_product(ko_venue3, thing1_product)
+    ko_offer4 = create_offer_with_thing_product(venue2, thing2_product)
     PcObject.check_and_save(
         user_offerer1, user_offerer2, ko_offerer3,
         ok_offer1, ko_offer2, ko_offer3, ko_offer4
@@ -638,10 +638,10 @@ def test_get_active_offers_should_not_return_activation_thing(app):
 @pytest.mark.standalone
 def test_get_active_offers_should_return_offers_with_stock(app):
     # Given
-    thing = create_thing_product(thing_name='Lire un livre', is_national=True)
+    product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
     offerer = create_offerer()
     venue = create_venue(offerer, postal_code='34000', departement_code='34')
-    offer = create_offer_with_thing_product(venue, thing)
+    offer = create_offer_with_thing_product(venue, product)
     stock = create_stock_from_offer(offer, available=2)
     booking = create_booking(create_user(), stock, venue=venue, quantity=2, is_cancelled=True)
     PcObject.check_and_save(booking)
@@ -657,10 +657,10 @@ def test_get_active_offers_should_return_offers_with_stock(app):
 @pytest.mark.standalone
 def test_get_active_offers_should_not_return_offers_with_no_stock(app):
     # Given
-    thing = create_thing_product(thing_name='Lire un livre', is_national=True)
+    product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
     offerer = create_offerer()
     venue = create_venue(offerer, postal_code='34000', departement_code='34')
-    offer = create_offer_with_thing_product(venue, thing)
+    offer = create_offer_with_thing_product(venue, product)
     stock = create_stock_from_offer(offer, available=2, price=0)
     user = create_user()
     booking1 = create_booking(user, stock, venue=venue, quantity=2, is_cancelled=True)
@@ -678,10 +678,10 @@ def test_get_active_offers_should_not_return_offers_with_no_stock(app):
 @pytest.mark.standalone
 def test_offer_remaining_stock_filter_does_not_filter_offer_with_cancelled_bookings(app):
     # Given
-    thing = create_thing_product(thing_name='Lire un livre', is_national=True)
+    product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
     offerer = create_offerer()
     venue = create_venue(offerer, postal_code='34000', departement_code='34')
-    offer = create_offer_with_thing_product(venue, thing)
+    offer = create_offer_with_thing_product(venue, product)
     stock = create_stock_from_offer(offer, available=2)
     booking = create_booking(create_user(), stock, venue=venue, quantity=2, is_cancelled=True)
     PcObject.check_and_save(booking)
@@ -700,10 +700,10 @@ def test_offer_remaining_stock_filter_does_not_filter_offer_with_cancelled_booki
 @pytest.mark.standalone
 def test_offer_remaining_stock_filter_filters_offer_with_no_remaining_stock(app):
     # Given
-    thing = create_thing_product(thing_name='Lire un livre', is_national=True)
+    product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
     offerer = create_offerer()
     venue = create_venue(offerer, postal_code='34000', departement_code='34')
-    offer = create_offer_with_thing_product(venue, thing)
+    offer = create_offer_with_thing_product(venue, product)
     stock = create_stock_from_offer(offer, available=2, price=0)
     user = create_user()
     booking1 = create_booking(user, stock, venue=venue, quantity=2, is_cancelled=True)
@@ -724,10 +724,10 @@ def test_offer_remaining_stock_filter_filters_offer_with_no_remaining_stock(app)
 @pytest.mark.standalone
 def test_offer_remaining_stock_filter_filters_offer_with_one_full_stock_and_one_empty_stock(app):
     # Given
-    thing = create_thing_product(thing_name='Lire un livre', is_national=True)
+    product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
     offerer = create_offerer()
     venue = create_venue(offerer, postal_code='34000', departement_code='34')
-    offer = create_offer_with_thing_product(venue, thing)
+    offer = create_offer_with_thing_product(venue, product)
     stock1 = create_stock_from_offer(offer, available=2, price=0)
     stock2 = create_stock_from_offer(offer, available=2, price=0)
     user = create_user()
@@ -745,8 +745,8 @@ def test_offer_remaining_stock_filter_filters_offer_with_one_full_stock_and_one_
 
 
 def _create_event_stock_and_offer_for_date(venue, date):
-    event = create_event_product()
-    offer = create_offer_with_event_product(venue, event)
+    product = create_product_with_Event_type()
+    offer = create_offer_with_event_product(venue, product)
     event_occurrence = create_event_occurrence(offer, beginning_datetime=date, end_datetime=date + timedelta(hours=1))
     stock = create_stock_from_event_occurrence(event_occurrence, booking_limit_date=date)
     return stock

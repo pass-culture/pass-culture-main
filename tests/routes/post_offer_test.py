@@ -2,8 +2,8 @@ import pytest
 
 from models import PcObject, EventType, Offer, ThingType, Product
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user, API_URL, create_offerer, create_venue, create_user_offerer, create_thing_product, \
-    create_event_product
+from tests.test_utils import create_user, API_URL, create_offerer, create_venue, create_user_offerer, create_product_with_Thing_type, \
+    create_product_with_Event_type
 from utils.human_ids import humanize, dehumanize
 
 
@@ -84,8 +84,8 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=False)
-            event = create_event_product()
-            PcObject.check_and_save(user, venue, event, user_offerer)
+            event_product = create_product_with_Event_type()
+            PcObject.check_and_save(user, venue, event_product, user_offerer)
             json = {
                 'type': '',
                 'name': 'Les lapins crétins',
@@ -151,9 +151,9 @@ class Post:
             assert offer.bookingEmail == 'offer@email.com'
             assert offer.venueId == venue.id
             event_id = dehumanize(response.json()['product']['id'])
-            event = Product.query.filter_by(id=event_id).first()
-            assert event.durationMinutes == 60
-            assert event.name == 'La pièce de théâtre'
+            event_product = Product.query.filter_by(id=event_id).first()
+            assert event_product.durationMinutes == 60
+            assert event_product.name == 'La pièce de théâtre'
             assert offer.type == str(EventType.SPECTACLE_VIVANT)
             assert offer.product.owningOfferer == offerer
 
@@ -191,8 +191,8 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=True, siret=None)
-            thing = create_thing_product()
-            PcObject.check_and_save(user, venue, thing, user_offerer)
+            thing_product = create_product_with_Thing_type()
+            PcObject.check_and_save(user, venue, thing_product, user_offerer)
             json = {
                 'type': 'ThingType.JEUX_VIDEO',
                 'name': 'Les lapins crétins',
@@ -229,14 +229,14 @@ class Post:
             assert offer.bookingEmail == 'offer@email.com'
             assert offer.venueId == venue.id
             thing_id = dehumanize(response.json()['product']['id'])
-            thing = Product.query.filter_by(id=thing_id).first()
-            assert thing.name == 'Les lapins crétins'
+            thing_product = Product.query.filter_by(id=thing_id).first()
+            assert thing_product.name == 'Les lapins crétins'
             assert offer.type == str(ThingType.JEUX_VIDEO)
-            assert thing.url == 'http://jeux.fr/offre'
+            assert thing_product.url == 'http://jeux.fr/offre'
             assert offer.url == 'http://jeux.fr/offre'
             assert offer.isDigital
             assert offer.isNational
-            assert thing.isNational
+            assert thing_product.isNational
             assert offer.product.owningOfferer == offerer
 
         @clean_database
@@ -246,12 +246,12 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            thing = create_thing_product()
-            PcObject.check_and_save(user_offerer, venue, thing)
+            thing_product = create_product_with_Thing_type()
+            PcObject.check_and_save(user_offerer, venue, thing_product)
 
             data = {
                 'venueId': humanize(venue.id),
-                'productId': humanize(thing.id)
+                'productId': humanize(thing_product.id)
             }
             auth_request = TestClient().with_auth(email='user@test.com')
 
@@ -268,12 +268,12 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            event = create_event_product()
-            PcObject.check_and_save(user_offerer, venue, event)
+            event_product = create_product_with_Event_type()
+            PcObject.check_and_save(user_offerer, venue, event_product)
 
             data = {
                 'venueId': humanize(venue.id),
-                'productId': humanize(event.id)
+                'productId': humanize(event_product.id)
             }
             auth_request = TestClient().with_auth(email='user@test.com')
 

@@ -14,14 +14,14 @@ class InconsistentOffer(Exception):
         return self.message
 
 
-def check_digital_offer_consistency(offer, venue, find_thing=thing_queries.find_by_id):
-    thing = find_thing(offer.thingId)
+def check_digital_offer_consistency(offer, venue, find_thing_product=thing_queries.find_by_id):
+    thing_product = find_thing_product(offer.thingId)
 
-    if venue.isVirtual and not thing.url:
-        raise InconsistentOffer('Offer.venue is virtual but Offer.thing does not have an URL')
+    if venue.isVirtual and not thing_product.url:
+        raise InconsistentOffer('Offer.venue is virtual but Offer.product does not have an URL')
 
-    if not venue.isVirtual and thing.url:
-        raise InconsistentOffer('Offer.venue is not virtual but Offer.thing has an URL')
+    if not venue.isVirtual and thing_product.url:
+        raise InconsistentOffer('Offer.venue is not virtual but Offer.product has an URL')
 
 
 def _filter_out_deleted_stocks(stocks: List[Stock]) -> List[Stock]:
@@ -112,7 +112,7 @@ def add_stock_alert_message_to_offer(offer: Offer) -> Offer:
     total_number_stocks = len(non_deleted_stocks)
     number_of_unlimited_places_or_stocks = len([stock for stock in non_deleted_stocks if not stock.available and stock.available is not 0])
 
-    is_thing = ProductType.is_thing(offer.type)
+    is_thing = offer.isThing
 
     if total_number_stocks == 0:
         offer.stockAlertMessage = _offer_has_no_stocks_yet_message(is_thing)

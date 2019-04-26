@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 
 from domain.admin_emails import send_offer_creation_notification_to_support
 from domain.offers import add_stock_alert_message_to_offer
-from domain.create_offer import fill_offer_with_new_data, fill_offer_with_existing_data
+from domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
 from models import Offer, PcObject, Venue, RightsType
 from models.api_errors import ResourceNotFound
 from repository import venue_queries, offer_queries
@@ -77,7 +77,7 @@ def post_offer():
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     product_id = dehumanize(request.json.get('productId'))
     if product_id:
-        offer = fill_offer_with_existing_data(product_id)
+        offer = initialize_offer_from_product_id(product_id)
 
     else:
         offer_type_name = request.json.get('type')
@@ -106,7 +106,7 @@ def patch_offer(id):
         raise ResourceNotFound
     ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
     offer.populateFromDict(request.json)
-    offer.updatewith_thing_or_event_data(thing_or_event_dict)
+    offer.updatewith_product_data(thing_or_event_dict)
     PcObject.check_and_save(offer)
     if 'isActive' in request.json and not request.json['isActive']:
         invalidate_recommendations(offer)

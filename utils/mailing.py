@@ -101,14 +101,14 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
     venue = booking.stock.resolvedOffer.venue
     user = booking.user
     stock_bookings = find_all_ongoing_bookings_by_stock(booking.stock)
-    event_or_thing = booking.stock.resolvedOffer.product
+    product = booking.stock.resolvedOffer.product
     human_offer_id = humanize(booking.stock.resolvedOffer.id)
     booking_is_on_event = booking.stock.beginningDatetime is not None
 
     if is_cancellation:
-        email_subject = f'[Réservations] Annulation de réservation pour {event_or_thing.name}'
+        email_subject = f'[Réservations] Annulation de réservation pour {product.name}'
     else:
-        email_subject = f'[Réservations {venue.departementCode}] Nouvelle réservation pour {event_or_thing.name}'
+        email_subject = f'[Réservations {venue.departementCode}] Nouvelle réservation pour {product.name}'
 
     if booking_is_on_event:
         date_in_tz = _get_event_datetime(booking.stock)
@@ -120,7 +120,7 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
                                  is_cancellation=is_cancellation,
                                  booking_is_on_event=booking_is_on_event,
                                  number_of_bookings=len(stock_bookings),
-                                 event_or_thing=event_or_thing,
+                                 event_or_thing=product,
                                  stock_date_time=formatted_datetime,
                                  venue=venue,
                                  stock_bookings=stock_bookings,

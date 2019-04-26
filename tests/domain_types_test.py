@@ -27,7 +27,7 @@ class GetFormattedEventOrThingTypesTest:
     @pytest.mark.standalone
     def test_returns_all_types_including_activations_if_user_is_admin(self):
         # given
-        activation_event = {
+        activation_event_product = {
             'conditionalFields': [],
             'offlineOnly': True,
             'onlineOnly': False,
@@ -38,7 +38,7 @@ class GetFormattedEventOrThingTypesTest:
             'label': 'Pass Culture : activation évènementielle'
         }
 
-        activation_thing = {
+        activation_thing_product = {
             'conditionalFields': [],
             'type': 'Thing',
             'value': 'ThingType.ACTIVATION',
@@ -53,8 +53,8 @@ class GetFormattedEventOrThingTypesTest:
         types = get_formatted_event_or_thing_types(with_activation_type=True)
 
         # then
-        assert activation_event in types
-        assert activation_thing in types
+        assert activation_event_product in types
+        assert activation_thing_product in types
         assert len(types) == 19
 
     @pytest.mark.standalone

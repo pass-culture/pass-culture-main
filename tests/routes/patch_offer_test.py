@@ -6,7 +6,7 @@ from models.db import db
 from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
-    create_offer_with_thing_product, API_URL, create_event_product, create_offer_with_event_product, create_thing_product, create_recommendation
+    create_offer_with_thing_product, API_URL, create_product_with_Event_type, create_offer_with_event_product, create_product_with_Thing_type, create_recommendation
 from utils.human_ids import humanize
 
 
@@ -72,8 +72,8 @@ class Patch:
             owning_offerer = create_offerer()
             user_offerer = create_user_offerer(user, owning_offerer)
             venue = create_venue(owning_offerer)
-            thing = create_thing_product(thing_name='Old Name', owning_offerer=owning_offerer)
-            offer = create_offer_with_thing_product(venue, thing)
+            product = create_product_with_Thing_type(thing_name='Old Name', owning_offerer=owning_offerer)
+            offer = create_offer_with_thing_product(venue, product)
 
             PcObject.check_and_save(offer, user_offerer)
 
@@ -89,9 +89,9 @@ class Patch:
             # Then
             assert response.status_code == 200
             db.session.refresh(offer)
-            db.session.refresh(thing)
+            db.session.refresh(product)
             assert offer.name == 'New Name'
-            assert thing.name == 'New Name'
+            assert product.name == 'New Name'
 
         @clean_database
         def when_user_updating_thing_offer_is_not_linked_to_owning_offerer(self, app):
@@ -101,8 +101,8 @@ class Patch:
             editor_offerer = create_offerer(siren='123456780')
             editor_user_offerer = create_user_offerer(user, editor_offerer)
             venue = create_venue(editor_offerer)
-            thing = create_thing_product(thing_name='Old Name', owning_offerer=owning_offerer)
-            offer = create_offer_with_thing_product(venue, thing)
+            product = create_product_with_Thing_type(thing_name='Old Name', owning_offerer=owning_offerer)
+            offer = create_offer_with_thing_product(venue, product)
 
             PcObject.check_and_save(offer, editor_user_offerer, owning_offerer)
 
@@ -118,9 +118,9 @@ class Patch:
             # Then
             assert response.status_code == 200
             db.session.refresh(offer)
-            db.session.refresh(thing)
+            db.session.refresh(product)
             assert offer.name == 'New Name'
-            assert thing.name == 'Old Name'
+            assert product.name == 'Old Name'
 
         @clean_database
         def when_user_updating_thing_offer_has_rights_on_offer_but_no_owningOfferer_for_thing(self, app):
@@ -129,8 +129,8 @@ class Patch:
             offerer = create_offerer(siren='123456780')
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            thing = create_thing_product(thing_name='Old Name', owning_offerer=None)
-            offer = create_offer_with_thing_product(venue, thing)
+            product = create_product_with_Thing_type(thing_name='Old Name', owning_offerer=None)
+            offer = create_offer_with_thing_product(venue, product)
 
             PcObject.check_and_save(offer, user_offerer)
 
@@ -146,9 +146,9 @@ class Patch:
             # Then
             assert response.status_code == 200
             db.session.refresh(offer)
-            db.session.refresh(thing)
+            db.session.refresh(product)
             assert offer.name == 'New Name'
-            assert thing.name == 'Old Name'
+            assert product.name == 'Old Name'
 
     class Returns400:
         @clean_database
@@ -158,8 +158,8 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            thing = create_thing_product(thing_name='Old Name', owning_offerer=None)
-            offer = create_offer_with_thing_product(venue, thing)
+            thing_product = create_product_with_Thing_type(thing_name='Old Name', owning_offerer=None)
+            offer = create_offer_with_thing_product(venue, thing_product)
 
             PcObject.check_and_save(offer, user, user_offerer)
 
@@ -194,11 +194,11 @@ class Patch:
             # Given
             user = create_user()
             offerer = create_offerer()
-            event = create_event_product(event_name='Old name')
+            event_product = create_product_with_Event_type(event_name='Old name')
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event)
+            offer = create_offer_with_event_product(venue, event_product)
 
-            PcObject.check_and_save(event, offer, user, venue)
+            PcObject.check_and_save(event_product, offer, user, venue)
 
             json = {
                 'name': 'New name',

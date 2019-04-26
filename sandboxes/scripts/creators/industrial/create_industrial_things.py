@@ -9,7 +9,7 @@ from sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES, \
 from utils.token import random_token
 
 from utils.logger import logger
-from tests.test_utils import create_thing_product
+from tests.test_utils import create_product_with_Thing_type
 
 THINGS_PER_TYPE = 7
 
@@ -34,7 +34,7 @@ def create_industrial_things():
             name = "{} / {}".format(thing_type_dict['value'], MOCK_NAMES[mock_index])
             is_national = True if thing_type_dict['onlineOnly'] else False
             url = 'https://ilestencoretemps.fr/' if thing_type_dict['onlineOnly'] else None
-            thing = create_thing_product(
+            thing_product = create_product_with_Thing_type(
                 author_name=MOCK_AUTHOR_NAMES[mock_index],
                 description=MOCK_DESCRIPTIONS[mock_index],
                 id_at_providers=str(id_at_providers),
@@ -46,7 +46,7 @@ def create_industrial_things():
 
             extraData = {}
             extra_data_index = 0
-            for conditionalField in thing.offerType['conditionalFields']:
+            for conditionalField in thing_product.offerType['conditionalFields']:
                 conditional_index = type_index + thing_type_dict_index + extra_data_index
                 if conditionalField in ['author', 'performer', 'speaker', 'stageDirector']:
                     mock_first_name_index = (type_index + thing_type_dict_index + extra_data_index) % len(MOCK_FIRST_NAMES)
@@ -65,9 +65,9 @@ def create_industrial_things():
                 elif conditionalField == "isbn":
                     extraData[conditionalField] = random_token(13)
                 extra_data_index += 1
-            thing.extraData = extraData
+            thing_product.extraData = extraData
 
-            things_by_name[name] = thing
+            things_by_name[name] = thing_product
 
             id_at_providers += 1
 

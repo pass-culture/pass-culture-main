@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from domain.expenses import is_eligible_to_physical_things_capping, is_eligible_to_digital_things_capping
+from domain.expenses import is_eligible_to_physical_products_capping, is_eligible_to_digital_products_capping
 from models import ApiErrors, Booking
 from models.api_errors import ResourceGoneError, ForbiddenError
 from repository.stock_queries import find_stock_by_id
@@ -95,16 +95,16 @@ def check_offer_date(stock):
 
 def check_expenses_limits(expenses: dict, booking: Booking, find_stock=find_stock_by_id):
     stock = find_stock(booking.stockId)
-    event_or_thing = stock.resolvedOffer.product
+    product = stock.resolvedOffer.product
 
-    if is_eligible_to_physical_things_capping(event_or_thing):
+    if is_eligible_to_physical_products_capping(product):
         if (expenses['physical']['actual'] + booking.value) > expenses['physical']['max']:
             raise ApiErrors(
                 {'global': ['La limite de %s € pour les biens culturels ne vous permet pas ' \
                             'de réserver' % expenses['physical']['max']]}
             )
 
-    if is_eligible_to_digital_things_capping(event_or_thing):
+    if is_eligible_to_digital_products_capping(product):
         if (expenses['digital']['actual'] + booking.value) > expenses['digital']['max']:
             raise ApiErrors(
                 {'global': ['La limite de %s € pour les offres numériques ne vous permet pas ' \

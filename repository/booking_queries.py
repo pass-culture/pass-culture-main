@@ -20,7 +20,8 @@ from models.db import db
 from utils.rest import query_with_order_by, check_order_by
 
 get_filter_matching_ts_query_for_booking = create_get_filter_matching_ts_query_in_any_model(
-    Product,Venue
+    Product,
+    Venue
 )
 
 

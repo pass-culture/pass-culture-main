@@ -96,10 +96,10 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
 
         for (offer_name, offer) in list(offers_by_name.items()):
 
-            if ProductType.is_event(offer.product.type) \
+            if offer.isEvent \
                 and offer.id not in already_recommended_event_offer_ids:
                 continue
-            elif ProductType.is_thing(offer.product.type) \
+            elif offer.isThing \
                 and offer.id not in already_recommended_thing_offer_ids:
                 continue
 

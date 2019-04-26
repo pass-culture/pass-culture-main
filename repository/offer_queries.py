@@ -41,7 +41,7 @@ def bookable_offers(query):
     beginning_date_is_in_the_future = (Stock.beginningDatetime > datetime.utcnow())
     no_beginning_date = Stock.beginningDatetime == None
     query = query.filter(beginning_date_is_in_the_future | no_beginning_date)
-    logger.debug(lambda: '(reco) future events.count ' + str(query.count()))
+    logger.debug(lambda: '(reco) offers in the future .count ' + str(query.count()))
 
     query = _filter_bookable_offers_for_discovery(query)
     logger.debug(lambda: '(reco) bookable .count ' + str(query.count()))

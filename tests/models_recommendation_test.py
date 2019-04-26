@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
 
-from tests.test_utils import create_recommendation, create_offer_with_thing_product, create_thing_product, create_venue, create_offerer, \
+from tests.test_utils import create_recommendation, create_offer_with_thing_product, create_product_with_Thing_type, create_venue, create_offerer, \
     create_mediation, create_user, create_offer_with_event_product
 
 
@@ -9,7 +9,7 @@ from tests.test_utils import create_recommendation, create_offer_with_thing_prod
 @patch('models.recommendation.get_storage_base_url', return_value='http://localhost/storage/thumbs')
 def test_model_should_have_thumbUrl_using_productId(get_storage_base_url):
     # given
-    product = create_thing_product()
+    product = create_product_with_Thing_type()
     product.id = 2
     offerer = create_offerer()
     venue = create_venue(offerer=offerer)
@@ -26,7 +26,7 @@ def test_model_should_have_thumbUrl_using_productId(get_storage_base_url):
 @patch('models.recommendation.get_storage_base_url', return_value='http://localhost/storage/thumbs')
 def test_model_should_have_thumbUrl_using_productId(get_storage_base_url):
     # given
-    product = create_thing_product()
+    product = create_product_with_Thing_type()
     product.id = 2
     offerer = create_offerer()
     venue = create_venue(offerer=offerer)

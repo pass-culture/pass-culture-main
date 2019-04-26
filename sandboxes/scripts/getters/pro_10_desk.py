@@ -26,7 +26,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_validated_user_o
             and uo.offerer.validationToken == None:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if ProductType.is_thing(offer.type):
+                    if offer.isThing:
                         for stock in offer.stocks:
                             if stock.bookings:
                                 for booking in stock.bookings:

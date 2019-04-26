@@ -22,7 +22,7 @@ def check_request_has_offer_id(request_data: dict):
 
 
 def check_dates_are_allowed_on_new_stock(request_data: dict, offer: Offer):
-    if ProductType.is_thing(offer.type):
+    if offer.isThing:
         _forbid_dates_on_stock_for_thing_offer(request_data)
     else:
         if request_data.get('endDatetime', None) is None:
@@ -33,7 +33,7 @@ def check_dates_are_allowed_on_new_stock(request_data: dict, offer: Offer):
 
 
 def check_dates_are_allowed_on_existing_stock(request_data: dict, offer: Offer):
-    if ProductType.is_thing(offer.type):
+    if offer.isThing:
         _forbid_dates_on_stock_for_thing_offer(request_data)
     else:
         if 'endDatetime' in request_data and request_data['endDatetime'] is None:
