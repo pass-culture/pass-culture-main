@@ -32,6 +32,31 @@ class Post:
             assert request.json()['venueId'] == ['Vous devez préciser un identifiant de lieu']
 
         @clean_database
+        def when_no_duration_given_for_an_event(self, app):
+            # Given
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            user_offerer = create_user_offerer(user, offerer)
+            PcObject.check_and_save(user, user_offerer, venue)
+
+            json = {
+                'bookingEmail': 'offer@email.com',
+                'name': 'Le concert de Mallory Knox',
+                'type': str(EventType.SPECTACLE_VIVANT),
+                'venueId': humanize(venue.id),
+            }
+
+            # When
+            request = TestClient().with_auth(user.email).post(
+                f'{API_URL}/offers/',
+                json=json)
+
+            # Then
+            assert request.status_code == 400
+            assert request.json()['durationMinutes'] == ['Une offre de type évènement doit avoir une durée en minute']
+
+        @clean_database
         def when_venue_is_not_found(self, app):
             # Given
             user = create_user(email='test@email.com')

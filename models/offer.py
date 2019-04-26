@@ -67,11 +67,7 @@ class Offer(PcObject,
                        nullable=False,
                        default=[])
 
-    durationMinutes = Column(Integer,
-                             # TODO Reporter cette contrainte
-                             # CheckConstraint('("eventId" IS NULL) OR ("durationMinutes" IS NOT NULL)',
-                             #                name='check_duration_minutes_not_null_for_event'),
-                             nullable=True)
+    durationMinutes = Column(Integer, nullable=True)
 
     isNational = Column(Boolean,
                         server_default=false(),
@@ -96,6 +92,10 @@ class Offer(PcObject,
         if self.isDigital and self._type_can_only_be_offline():
             api_errors.addError('url', 'Une offre de type {} ne peut pas être numérique'.format(
                 self._get_label_from_type_string()))
+
+        if self.isEvent and not self.durationMinutes:
+            api_errors.addError('durationMinutes', 'Une offre de type évènement doit avoir une durée en minute')
+
         return api_errors
 
     def updatewith_product_data(self, product_dict: dict):
