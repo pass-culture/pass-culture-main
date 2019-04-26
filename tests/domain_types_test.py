@@ -20,9 +20,10 @@ class GetFormattedEventOrThingTypesTest:
             'description': 'Action, science-fiction, documentaire ou comédie sentimentale '
                            '? En salle, en plein air ou bien au chaud chez soi ? Et si '
                            'c’était plutôt cette exposition qui allait faire son cinéma ?',
-            'label': 'Cinéma (Projections, Séances, Évènements)'
+            'label': 'Cinéma (Projections, Séances, Évènements)',
+            'userSeenLabel': 'Projections, Séances, Évènements',
         }
-        assert len(types) == 17
+        assert len(types) == 20
 
     @pytest.mark.standalone
     def test_returns_all_types_including_activations_if_user_is_admin(self):
@@ -35,7 +36,8 @@ class GetFormattedEventOrThingTypesTest:
             'type': 'Event',
             'value': 'EventType.ACTIVATION',
             'description': 'Activez votre pass Culture grâce à cette offre',
-            'label': 'Pass Culture : activation évènementielle'
+            'label': 'Pass Culture : activation évènementielle',
+            'userSeenLabel': 'Pass Culture : activation évènementielle',
         }
 
         activation_thing_product = {
@@ -43,6 +45,7 @@ class GetFormattedEventOrThingTypesTest:
             'type': 'Thing',
             'value': 'ThingType.ACTIVATION',
             'label': 'Pass Culture : activation en ligne',
+            'userSeenLabel': "Pass Culture : activation en ligne",
             'offlineOnly': False,
             'onlineOnly': True,
             'sublabel': 'Activation',
@@ -55,7 +58,7 @@ class GetFormattedEventOrThingTypesTest:
         # then
         assert activation_event_product in types
         assert activation_thing_product in types
-        assert len(types) == 19
+        assert len(types) == 22
 
     @pytest.mark.standalone
     def test_does_not_return_thing_type_jeux(self):
