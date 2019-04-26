@@ -162,6 +162,7 @@ class Post:
                                'Assister à une pièce de théâtre, '
                                'ou se laisser conter une histoire ?',
                 'label': 'Spectacle vivant',
+                'userSeenLabel': 'Spectacle vivant',
                 'offlineOnly': True,
                 'onlineOnly': False,
                 'sublabel': 'Applaudir',
@@ -243,6 +244,7 @@ class Post:
                                'Jouer en ligne entre amis ? '
                                'Découvrir cet univers étrange avec une manette ?',
                 'label': 'Jeux Vidéo',
+                'userSeenLabel': 'Jeux Vidéo',
                 'offlineOnly': False,
                 'onlineOnly': True,
                 'sublabel': 'Jouer',

@@ -203,7 +203,8 @@ class Get:
 
             expected_thing_type = {
                 'conditionalFields': ["author", "isbn"],
-                'label': " Livre - format papier, abonnements lecture",
+                'label': "Livre - format papier, abonnements lecture",
+                'userSeenLabel': 'Livres, cartes bibliothèque ou médiathèque',
                 'offlineOnly': False,
                 'onlineOnly': False,
                 'sublabel': "Lire",
@@ -214,6 +215,7 @@ class Get:
             expected_event_type = {
                 'conditionalFields': ["author", "showType", "stageDirector", "performer"],
                 'label': "Spectacle vivant",
+                'userSeenLabel': "Spectacle vivant",
                 'offlineOnly': True,
                 'onlineOnly': False,
                 'sublabel': "Applaudir",

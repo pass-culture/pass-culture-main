@@ -172,7 +172,7 @@ class ThingType(SearchableType):
     }
     LIVRE_EDITION = {
         'label': "Livre - format papier, abonnements lecture",
-        'userSeenLabel': "Livre - format papier, abonnements lecture",
+        'userSeenLabel': "Livres, cartes bibliothèque ou médiathèque",
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': "Lire",

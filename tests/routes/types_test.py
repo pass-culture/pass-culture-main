@@ -77,6 +77,8 @@ class Get:
             # then
             assert response.status_code == 200
             labels_values = [type['label'] for type in types]
+            user_seen_labels_values = [type['userSeenLabel'] for type in types]
+
             assert "Livre - format papier, abonnements lecture" in labels_values
             assert "Conférences, rencontres et découverte des métiers" in labels_values
             assert "Musées, arts visuels & patrimoine" in labels_values
@@ -84,3 +86,7 @@ class Get:
             assert "Livre audio numérique" in labels_values
             assert "Vente d’instruments de musique" in labels_values
             assert "Vente d'œuvres d'art" in labels_values
+
+            assert "Achat d'œuvres d’art" in user_seen_labels_values
+            assert "Achat d’instruments de musique" in user_seen_labels_values
+            assert "Livres, cartes bibliothèque ou médiathèque" in user_seen_labels_values
