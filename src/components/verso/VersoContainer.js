@@ -1,3 +1,5 @@
+/* eslint
+  react/jsx-one-expression-per-line: 0 */
 import get from 'lodash.get'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
