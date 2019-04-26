@@ -177,6 +177,7 @@ class Get:
                                'En salle, en plein air ou bien au chaud chez soi ? ' \
                                'Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
                 'label': 'Audiovisuel (Films sur supports physiques et VOD)',
+                'userSeenLabel': "Audiovisuel (Films sur supports physiques et VOD)",
                 'offlineOnly': False,
                 'onlineOnly': False,
                 'sublabel': 'Regarder',
@@ -190,6 +191,7 @@ class Get:
                                'En salle, en plein air ou bien au chaud chez soi ? '
                                'Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
                 'label': 'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
+                'userSeenLabel': "Expositions, visites guidées, activités spécifiques",
                 'offlineOnly': True,
                 'onlineOnly': False,
                 'sublabel': 'Regarder',
