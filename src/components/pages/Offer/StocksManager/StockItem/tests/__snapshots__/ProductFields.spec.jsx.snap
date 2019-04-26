@@ -3,30 +3,17 @@
 exports[`src | components | pages | Offer | StockItem | ProductFields snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Provider
-    store={
-        Object {
-            "clearActions": [Function],
-            "dispatch": [Function],
-            "getActions": [Function],
-            "getState": [Function],
-            "replaceReducer": [Function],
-            "subscribe": [Function],
-          }
-    }
->
-    <ProductFields
-        beginningDatetime={null}
-        closeInfo={[Function]}
-        dispatch={[Function]}
-        isEvent={true}
-        offer={null}
-        parseFormChild={[Function]}
-        readOnly={true}
-        showInfo={[Function]}
-        stock={null}
-    />
-</Provider>,
+  Symbol(enzyme.__unrendered__): <ProductFields
+    beginningDatetime={null}
+    closeInfo={[Function]}
+    dispatch={[Function]}
+    isEvent={true}
+    offer={null}
+    parseFormChild={[Function]}
+    readOnly={true}
+    showInfo={[Function]}
+    stock={null}
+/>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -39,41 +26,503 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "class",
+    "nodeType": "function",
     "props": Object {
-      "beginningDatetime": null,
-      "closeInfo": [Function],
-      "dispatch": [Function],
-      "isEvent": true,
-      "offer": null,
-      "parseFormChild": [Function],
-      "readOnly": true,
-      "showInfo": [Function],
-      "stock": null,
+      "children": Array [
+        <td
+          title="Gratuit si vide"
+>
+          <Unknown
+                    name="offerId"
+                    type="hidden"
+                    validator={[Function]}
+          />
+          <Unknown
+                    name="venueId"
+                    type="hidden"
+                    validator={[Function]}
+          />
+          <Unknown
+                    format={[Function]}
+                    name="price"
+                    onBlur={[Function]}
+                    placeholder="Gratuit"
+                    readOnly={true}
+                    title="Prix"
+          />
+</td>,
+        <td
+          title="Laissez vide si pas de limite"
+>
+          <DateField
+                    autoComplete={false}
+                    className=""
+                    clearable={false}
+                    dateFormat="DD/MM/YYYY"
+                    datePickerClassName="date"
+                    disabled={false}
+                    id={null}
+                    label=""
+                    locale="fr"
+                    maxDate={null}
+                    name="bookingLimitDatetime"
+                    placeholder="Laissez vide si pas de limite"
+                    readOnly={true}
+                    renderValue={[Function]}
+                    required={false}
+                    validate={null}
+          />
+</td>,
+        <td
+          className="tooltiped"
+>
+          <Unknown
+                    format={[Function]}
+                    name="available"
+                    placeholder="Illimité"
+                    readOnly={true}
+                    renderValue={[Function]}
+                    title="Stock[ou] Places affecté[es]"
+          />
+</td>,
+        <td
+          className="is-small remaining-stock"
+          id="remaining-stock"
+>
+          Illimité
+</td>,
+      ],
     },
     "ref": null,
-    "rendered": null,
-    "type": [Function],
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <Unknown
+              name="offerId"
+              type="hidden"
+              validator={[Function]}
+/>,
+            <Unknown
+              name="venueId"
+              type="hidden"
+              validator={[Function]}
+/>,
+            <Unknown
+              format={[Function]}
+              name="price"
+              onBlur={[Function]}
+              placeholder="Gratuit"
+              readOnly={true}
+              title="Prix"
+/>,
+          ],
+          "title": "Gratuit si vide",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "name": "offerId",
+              "type": "hidden",
+              "validator": [Function],
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "name": "venueId",
+              "type": "hidden",
+              "validator": [Function],
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "format": [Function],
+              "name": "price",
+              "onBlur": [Function],
+              "placeholder": "Gratuit",
+              "readOnly": true,
+              "title": "Prix",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+        ],
+        "type": "td",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <DateField
+            autoComplete={false}
+            className=""
+            clearable={false}
+            dateFormat="DD/MM/YYYY"
+            datePickerClassName="date"
+            disabled={false}
+            id={null}
+            label=""
+            locale="fr"
+            maxDate={null}
+            name="bookingLimitDatetime"
+            placeholder="Laissez vide si pas de limite"
+            readOnly={true}
+            renderValue={[Function]}
+            required={false}
+            validate={null}
+/>,
+          "title": "Laissez vide si pas de limite",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "autoComplete": false,
+            "className": "",
+            "clearable": false,
+            "dateFormat": "DD/MM/YYYY",
+            "datePickerClassName": "date",
+            "disabled": false,
+            "id": null,
+            "label": "",
+            "locale": "fr",
+            "maxDate": null,
+            "name": "bookingLimitDatetime",
+            "placeholder": "Laissez vide si pas de limite",
+            "readOnly": true,
+            "renderValue": [Function],
+            "required": false,
+            "validate": null,
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        "type": "td",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <Unknown
+            format={[Function]}
+            name="available"
+            placeholder="Illimité"
+            readOnly={true}
+            renderValue={[Function]}
+            title="Stock[ou] Places affecté[es]"
+/>,
+          "className": "tooltiped",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "format": [Function],
+            "name": "available",
+            "placeholder": "Illimité",
+            "readOnly": true,
+            "renderValue": [Function],
+            "title": "Stock[ou] Places affecté[es]",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        "type": "td",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Illimité",
+          "className": "is-small remaining-stock",
+          "id": "remaining-stock",
+        },
+        "ref": null,
+        "rendered": "Illimité",
+        "type": "td",
+      },
+    ],
+    "type": Symbol(react.fragment),
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "class",
+      "nodeType": "function",
       "props": Object {
-        "beginningDatetime": null,
-        "closeInfo": [Function],
-        "dispatch": [Function],
-        "isEvent": true,
-        "offer": null,
-        "parseFormChild": [Function],
-        "readOnly": true,
-        "showInfo": [Function],
-        "stock": null,
+        "children": Array [
+          <td
+            title="Gratuit si vide"
+>
+            <Unknown
+                        name="offerId"
+                        type="hidden"
+                        validator={[Function]}
+            />
+            <Unknown
+                        name="venueId"
+                        type="hidden"
+                        validator={[Function]}
+            />
+            <Unknown
+                        format={[Function]}
+                        name="price"
+                        onBlur={[Function]}
+                        placeholder="Gratuit"
+                        readOnly={true}
+                        title="Prix"
+            />
+</td>,
+          <td
+            title="Laissez vide si pas de limite"
+>
+            <DateField
+                        autoComplete={false}
+                        className=""
+                        clearable={false}
+                        dateFormat="DD/MM/YYYY"
+                        datePickerClassName="date"
+                        disabled={false}
+                        id={null}
+                        label=""
+                        locale="fr"
+                        maxDate={null}
+                        name="bookingLimitDatetime"
+                        placeholder="Laissez vide si pas de limite"
+                        readOnly={true}
+                        renderValue={[Function]}
+                        required={false}
+                        validate={null}
+            />
+</td>,
+          <td
+            className="tooltiped"
+>
+            <Unknown
+                        format={[Function]}
+                        name="available"
+                        placeholder="Illimité"
+                        readOnly={true}
+                        renderValue={[Function]}
+                        title="Stock[ou] Places affecté[es]"
+            />
+</td>,
+          <td
+            className="is-small remaining-stock"
+            id="remaining-stock"
+>
+            Illimité
+</td>,
+        ],
       },
       "ref": null,
-      "rendered": null,
-      "type": [Function],
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <Unknown
+                name="offerId"
+                type="hidden"
+                validator={[Function]}
+/>,
+              <Unknown
+                name="venueId"
+                type="hidden"
+                validator={[Function]}
+/>,
+              <Unknown
+                format={[Function]}
+                name="price"
+                onBlur={[Function]}
+                placeholder="Gratuit"
+                readOnly={true}
+                title="Prix"
+/>,
+            ],
+            "title": "Gratuit si vide",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "name": "offerId",
+                "type": "hidden",
+                "validator": [Function],
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "name": "venueId",
+                "type": "hidden",
+                "validator": [Function],
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "format": [Function],
+                "name": "price",
+                "onBlur": [Function],
+                "placeholder": "Gratuit",
+                "readOnly": true,
+                "title": "Prix",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+          ],
+          "type": "td",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <DateField
+              autoComplete={false}
+              className=""
+              clearable={false}
+              dateFormat="DD/MM/YYYY"
+              datePickerClassName="date"
+              disabled={false}
+              id={null}
+              label=""
+              locale="fr"
+              maxDate={null}
+              name="bookingLimitDatetime"
+              placeholder="Laissez vide si pas de limite"
+              readOnly={true}
+              renderValue={[Function]}
+              required={false}
+              validate={null}
+/>,
+            "title": "Laissez vide si pas de limite",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "autoComplete": false,
+              "className": "",
+              "clearable": false,
+              "dateFormat": "DD/MM/YYYY",
+              "datePickerClassName": "date",
+              "disabled": false,
+              "id": null,
+              "label": "",
+              "locale": "fr",
+              "maxDate": null,
+              "name": "bookingLimitDatetime",
+              "placeholder": "Laissez vide si pas de limite",
+              "readOnly": true,
+              "renderValue": [Function],
+              "required": false,
+              "validate": null,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          "type": "td",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <Unknown
+              format={[Function]}
+              name="available"
+              placeholder="Illimité"
+              readOnly={true}
+              renderValue={[Function]}
+              title="Stock[ou] Places affecté[es]"
+/>,
+            "className": "tooltiped",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "format": [Function],
+              "name": "available",
+              "placeholder": "Illimité",
+              "readOnly": true,
+              "renderValue": [Function],
+              "title": "Stock[ou] Places affecté[es]",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          "type": "td",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Illimité",
+            "className": "is-small remaining-stock",
+            "id": "remaining-stock",
+          },
+          "ref": null,
+          "rendered": "Illimité",
+          "type": "td",
+        },
+      ],
+      "type": Symbol(react.fragment),
     },
   ],
   Symbol(enzyme.__options__): Object {
@@ -99,16 +548,6 @@ ShallowWrapper {
       },
     },
   },
-  Symbol(enzyme.__childContext__): Object {
-    "store": Object {
-      "clearActions": [Function],
-      "dispatch": [Function],
-      "getActions": [Function],
-      "getState": [Function],
-      "replaceReducer": [Function],
-      "subscribe": [Function],
-    },
-    "storeSubscription": null,
-  },
+  Symbol(enzyme.__childContext__): null,
 }
 `;

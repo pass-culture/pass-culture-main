@@ -20,8 +20,6 @@ describe('src | components | pages | Offer | StockItem | ProductFields', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
-      const initialState = {}
-      const store = mockStore(initialState)
       const initialProps = {
         closeInfo: jest.fn(),
         dispatch: jest.fn(),
@@ -30,11 +28,7 @@ describe('src | components | pages | Offer | StockItem | ProductFields', () => {
       }
 
       // when
-      const wrapper = shallow(
-        <Provider store={store}>
-          <ProductFields {...initialProps} />
-        </Provider>
-      )
+      const wrapper = shallow(<ProductFields {...initialProps} />)
 
       // then
       expect(wrapper).toBeDefined()

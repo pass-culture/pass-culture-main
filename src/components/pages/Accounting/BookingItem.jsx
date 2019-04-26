@@ -203,11 +203,12 @@ function mapStateToProps(state, ownProps) {
   const stock = selectStockById(state, stockId)
   const offerId = get(stock, 'offerId')
   const offer = selectOfferById(state, offerId)
-  const product = selectProductById(state, get(offer, 'productId'))
+  const productId = get(offer, 'productId')
+  const product = selectProductById(state, productId)
   const venue = selectVenueById(state, get(offer, 'venueId'))
   const offerer = selectOffererById(state, get(venue, 'managingOffererId'))
   const user = selectUserById(state, ownProps.booking.userId)
-  const offerTypeLabel = getOfferTypeLabel(product, product)
+  const offerTypeLabel = getOfferTypeLabel(product)
 
   return {
     offer,
