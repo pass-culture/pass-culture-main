@@ -3,8 +3,9 @@ import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { NavLink } from 'react-router-dom'
 
-const formatVenueNameOrPublicName = value => {
-  return value ? value.toLowerCase().replace(/\s/g, '-') : ''
+const buildLinkIdFromVenue = venue => {
+  const nameToFormat = venue.publicName ? venue.publicName : venue.name
+  return nameToFormat ? nameToFormat.toLowerCase().replace(/\s/g, '-') : ''
 }
 
 const VenueItem = ({ venue }) => {
@@ -19,13 +20,7 @@ const VenueItem = ({ venue }) => {
       </div>
       <div className="list-content">
         <p className="name">
-          <NavLink
-            id={`a-${
-              publicName
-                ? formatVenueNameOrPublicName(publicName)
-                : formatVenueNameOrPublicName(name)
-            }`}
-            to={showPath}>
+          <NavLink id={`a-${buildLinkIdFromVenue(venue)}`} to={showPath}>
             {publicName || name}
           </NavLink>
         </p>
