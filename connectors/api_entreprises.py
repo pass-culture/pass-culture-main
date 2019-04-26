@@ -1,16 +1,18 @@
 import requests
 from requests import Response
 
+from models import Offerer
+
 
 class ApiEntrepriseException(Exception):
     pass
 
 
-def get_by_offerer(offerer):
+def get_by_offerer(offerer: Offerer) -> Response:
     return get_by_siren(offerer.siren)
 
 
-def get_by_siren(siren):
+def get_by_siren(siren: str) -> Response:
     response = requests.get("https://sirene.entreprise.api.gouv.fr/v1/siren/" + siren,
                             verify=False)  # FIXME: add root cerficate on docker image ?
 
