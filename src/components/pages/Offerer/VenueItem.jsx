@@ -3,8 +3,8 @@ import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { NavLink } from 'react-router-dom'
 
-const buildLinkIdFromVenue = venue => {
-  const nameToFormat = venue.publicName ? venue.publicName : venue.name
+const buildLinkIdFromVenue = ({ publicName, name }) => {
+  const nameToFormat = publicName || name
   return nameToFormat ? nameToFormat.toLowerCase().replace(/\s/g, '-') : ''
 }
 

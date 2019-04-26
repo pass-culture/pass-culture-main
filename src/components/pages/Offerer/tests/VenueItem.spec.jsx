@@ -34,8 +34,6 @@ describe('src | components | pages | Offerer | VenueItem', () => {
 
   describe('render', () => {
     it('should render component with venue name when no public name provided', () => {
-      // given
-
       // when
       const wrapper = mount(
         <Router history={history}>
