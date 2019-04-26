@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+import re
+
 from validation.headers import check_origin_header_validity
 
 
@@ -15,6 +17,7 @@ def test_is_valid_header_when_is_dev_and_header_is_local_host_for_normal_endpoin
     # Then
     assert is_valid_header
 
+
 def test_is_valid_header_when_is_testing_and_header_is_local_host_for_normal_endpoint():
     # Given
     header_origin = 'http://localhost:3000'
@@ -26,6 +29,7 @@ def test_is_valid_header_when_is_testing_and_header_is_local_host_for_normal_end
 
     # Then
     assert is_valid_header
+
 
 def test_is_not_valid_header_when_is_staging_and_header_is_local_host_for_normal_endpoint():
     # Given
@@ -165,3 +169,29 @@ def test_any_origin_header_is_valid_on_endpoint_validate_venue():
 
     # Then
     assert is_valid_header
+
+
+def test_is_valid_header_when_url_is_authorized_in_subdomain():
+    # Given
+    header_origin = 'https://poc.passculture.app'
+    endpoint = 'list_offers'
+
+    # When
+    with patch('validation.headers.ENV', 'testing'):
+        is_valid_header = check_origin_header_validity(header_origin, endpoint, '/')
+
+    # Then
+    assert is_valid_header
+
+
+def test_is_invalid_header_when_url_is_not_known():
+    # Given
+    header_origin = 'https://poc.fr'
+    endpoint = 'list_offers'
+
+    # When
+    with patch('validation.headers.ENV', 'testing'):
+        is_valid_header = check_origin_header_validity(header_origin, endpoint, '/')
+
+    # Then
+    assert not is_valid_header

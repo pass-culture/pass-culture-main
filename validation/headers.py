@@ -1,3 +1,5 @@
+import re
+
 from utils.config import API_URL, ENV
 
 
@@ -8,7 +10,8 @@ def check_origin_header_validity(header, endpoint, path):
         return True
 
     white_list = _get_origin_header_whitelist()
-    return header in white_list
+    combined_white_list = "(" + ")|(".join(white_list) + ")"
+    return re.match(combined_white_list, header) is not None
 
 
 def _get_origin_header_whitelist():
@@ -28,6 +31,7 @@ def _get_origin_header_whitelist():
     # Handle migration to Scalingo
     elif ENV == 'testing':
         valid_urls = [
+            'https://.*.passculture.app',
             'https://app-passculture-testing.scalingo.io',
             'https://passculture-team.netlify.com',
             'http://localhost:3000',
