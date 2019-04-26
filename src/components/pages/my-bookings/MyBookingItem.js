@@ -23,7 +23,7 @@ const MyBookingItem = ({
   recommendation,
   token,
 }) => {
-  const cssclass = (isEvent && 'event') || 'thing'
+  const cssClass = (isEvent && 'event') || 'thing'
   const queryURL = getQueryURL({ mediationId, offerId })
   const linkURL = `/decouverte/${queryURL}/verso`
   return (
@@ -31,7 +31,7 @@ const MyBookingItem = ({
       data-token={token}
       data-booked-date={date}
       data-booked-timezone={timezone}
-      className={`booking-item mb16 ${cssclass}`}
+      className={`booking-item mb16 ${cssClass}`}
     >
       {isCancelled && <Ribbon />}
       <Link to={linkURL}>

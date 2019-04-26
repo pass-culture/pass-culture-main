@@ -35,7 +35,7 @@ ShallowWrapper {
           "product": Object {
             "description": "fake description do not use",
           },
-          "thingId": "QE",
+          "productId": "QE",
           "venue": Object {
             "address": "72 rue Carnot",
             "city": "ROMAINVILLE",

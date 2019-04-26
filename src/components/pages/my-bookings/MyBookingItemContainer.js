@@ -33,7 +33,6 @@ export const mapStateToProps = (state, ownProps) => {
 
   const isEvent = Boolean(get(stock, 'resolvedOffer.isEvent'))
 
-  // injected
   return {
     completedUrl,
     date,

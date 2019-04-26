@@ -115,10 +115,11 @@ class VersoContentOffer extends React.PureComponent {
   renderOfferWhen() {
     const { isFinished } = this.props
     const { recommendation } = this.props
-    const renderDateInfos = (get(recommendation, 'offer.isThing')
-      ? this.renderThingOfferDateInfos
-      : this.renderEventOfferDateInfos
-    ).bind(this)
+    const isOfferAThing = get(recommendation, 'offer.isThing')
+
+    const offerDateInfos = isOfferAThing
+      ? this.renderThingOfferDateInfos()
+      : this.renderEventOfferDateInfos()
 
     return (
       <div>
@@ -127,7 +128,7 @@ class VersoContentOffer extends React.PureComponent {
           {isFinished ? (
             <li>L&apos;offre n&apos;est plus disponible.</li>
           ) : (
-            renderDateInfos()
+            offerDateInfos
           )}
         </ul>
       </div>

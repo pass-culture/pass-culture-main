@@ -23,7 +23,7 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
         product: {
           description: 'fake description do not use',
         },
-        thingId: 'QE',
+        productId: 'QE',
         venue: {
           address: '72 rue Carnot',
           city: 'ROMAINVILLE',
@@ -79,8 +79,8 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
 
   it('should render event offer infos when offer is event, not finished and booking is available', () => {
     // given
-    recommendation.offer.isEvent = true;
-    recommendation.offer.isThing = false;
+    recommendation.offer.isEvent = true
+    recommendation.offer.isThing = false
 
     const props = {
       bookables: [{ id: 1 }, { id: 2 }, { id: 3 }],

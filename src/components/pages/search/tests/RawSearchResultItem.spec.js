@@ -35,7 +35,8 @@ describe('src | components | pages | RawSearchResultItem', () => {
     let props
     let wrapper
     describe('with an event type recommendation', () => {
-      it('it should display item details', () => {
+      it('should display item details', () => {
+        // given
         props = {
           dispatch: () => {},
           history: {},
@@ -149,8 +150,11 @@ describe('src | components | pages | RawSearchResultItem', () => {
             validUntilDate: '2018-09-11T08:04:49.273248Z',
           },
         }
+
+        // when
         wrapper = shallow(<RawSearchResultItem {...props} />)
 
+        // then
         const img = wrapper.find('img').props()
         const h5 = wrapper.find('h5').props()
         const dotdotdot = wrapper.find(Dotdotdot).props()
