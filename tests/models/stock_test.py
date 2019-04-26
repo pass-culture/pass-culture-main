@@ -169,7 +169,6 @@ def test_update_stock_when_stock_is_event(app):
 
     
     data = {    
-        "dateModified": serialize(beginning_datetime),
         "beginningDatetime": serialize(beginning_datetime),
         "offerId": humanize(stock.offer.id),
         "bookingLimitDatetime": serialize(booking_limit_datetime),
@@ -182,7 +181,6 @@ def test_update_stock_when_stock_is_event(app):
     # Then
     db.session.refresh(stock)
     assert stock.price == 666
-    assert stock.dateModified == beginning_datetime
     assert stock.beginningDatetime == beginning_datetime
     assert stock.bookingLimitDatetime == booking_limit_datetime
 
@@ -191,7 +189,6 @@ def test_update_stock_when_stock_is_event(app):
 @pytest.mark.standalone
 def test_does_not_update_stock_limit_datetime_when_not_specified(app):
     # Given
-    beginning_datetime = datetime(2019, 2, 14)
     booking_limit_datetime = datetime(2019, 1, 14)
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -200,7 +197,6 @@ def test_does_not_update_stock_limit_datetime_when_not_specified(app):
 
     
     data = {    
-        "dateModified": serialize(beginning_datetime),
         "offerId": humanize(stock.offer.id),
         "price": 666
     } 
