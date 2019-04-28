@@ -7,7 +7,7 @@ import { Field } from 'react-final-form'
 import PropTypes from 'prop-types'
 import { composeValidators } from 'react-final-form-utils'
 
-import FieldError from 'components/layout/form/FieldError'
+import FieldErrors from 'components/layout/form/FieldErrors'
 import validateRequiredField from 'components/layout/form/utils/validateRequiredField'
 
 export const TextareaField = ({
@@ -85,7 +85,7 @@ export const TextareaField = ({
                   />
                 </span>
               </div>
-              <FieldError meta={meta} />
+              <FieldErrors meta={meta} />
             </div>
           </div>
         )

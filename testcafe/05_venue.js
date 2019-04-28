@@ -2,7 +2,7 @@ import { Selector } from 'testcafe'
 
 import { fetchSandbox } from './helpers/sandboxes'
 import {
-  navigateAfterSubmit,
+  navigateAfterVenueSubmit,
   navigateToNewVenueAs,
   navigateToVenueAs,
 } from './helpers/navigations'
@@ -10,21 +10,21 @@ import { getSiretRequestMockAs } from './helpers/sirenes'
 
 const form = Selector('form#venue')
 const mapMarker = Selector('.leaflet-marker-pane img')
-const adressInput = Selector('#venue-address')
+const adressInput = Selector('input[name="address"]')
 const backAnchor = Selector('a.back-button')
-const cityInput = Selector('#venue-city')
+const cityInput = Selector('input[name="city"]')
 const closeAnchor = Selector('button.close').withText('OK')
 
-const bookingEmailInput = Selector('#venue-bookingEmail')
-const latitudeInput = Selector('#venue-latitude')
-const longitudeInput = Selector('#venue-longitude')
-const nameInput = Selector('#venue-name')
-const postalCodeInput = Selector('#venue-postalCode')
+const bookingEmailInput = Selector('input[name="bookingEmail"]')
+const latitudeInput = Selector('input[name="latitude"]')
+const longitudeInput = Selector('input[name="longitude"]')
+const nameInput = Selector('input[name="name"]')
+const postalCodeInput = Selector('input[name="postalCode"]')
 const notificationError = Selector('.notification.is-danger')
 const notificationSuccess = Selector('.notification.is-success.columns')
-const siretInput = Selector('#venue-siret')
-const commentInput = Selector('#venue-comment')
-const siretInputError = Selector('#venue-siret-error')
+const siretInput = Selector('input[name="siret"]')
+const commentInput = Selector('textarea[name="comment"]')
+const siretInputError = Selector('input[name="siret"]').find('.field-errors')
 const submitButton = Selector('button.button.is-primary') //créer un lieu
 const updateAnchor = Selector('a.button.is-secondary') //modifier un lieu
 const venueMarker = Selector('img.leaflet-marker-icon')
@@ -71,7 +71,7 @@ test('Je rentre une nouveau lieu via son siret avec succès', async t => {
   await t.expect(longitudeInput.value).eql(longitude)
   const marker = `${latitude}-${longitude}`
   await t.expect(venueMarker.getAttribute('alt')).eql(marker)
-  await navigateAfterSubmit(t)
+  await navigateAfterVenueSubmit('creation')(t)
 })
 
 test('Je rentre un nouveau lieu sans siret avec succès', async t => {
@@ -110,7 +110,7 @@ test('Je rentre un nouveau lieu sans siret avec succès', async t => {
     .expect(longitudeInput.value)
     .eql(longitude)
 
-  await navigateAfterSubmit(t)
+  await navigateAfterVenueSubmit('creation')(t)
 })
 
 fixture("Venue B | Je ne peux pas créer de lieu, j'ai des erreurs").beforeEach(

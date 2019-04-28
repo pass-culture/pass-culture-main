@@ -9,7 +9,7 @@ import {
   createParseNumberValue,
 } from 'react-final-form-utils'
 
-import FieldError from 'components/layout/form/FieldError'
+import FieldErrors from 'components/layout/form/FieldErrors'
 import validateRequiredField from 'components/layout/form/utils/validateRequiredField'
 
 function getInputValue(inputType, value) {
@@ -92,7 +92,7 @@ export const TextField = ({
                 </div>
                 {renderValue()}
               </div>
-              <FieldError meta={meta} />
+              <FieldErrors meta={meta} />
             </div>
             <div />
           </div>

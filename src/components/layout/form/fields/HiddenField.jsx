@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
-import FieldError from 'components/layout/form/FieldError'
+import FieldErrors from 'components/layout/form/FieldErrors'
 
 const noop = () => {}
 
@@ -13,7 +13,7 @@ export const HiddenField = ({ name, validator }) => (
     render={({ input, meta }) => (
       <div>
         <input type="hidden" {...input} />
-        <FieldError meta={meta} />
+        <FieldErrors meta={meta} />
       </div>
     )}
   />

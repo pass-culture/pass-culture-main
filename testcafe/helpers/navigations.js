@@ -61,18 +61,22 @@ export const navigateToVenueAs = (user, offerer, venue) => async t => {
   await t.click(offererAnchor).click(venueAnchor)
 }
 
-export async function navigateAfterSubmit(t) {
+export const navigateAfterVenueSubmit = creationOrModification => async t => {
   const closeAnchor = Selector('button.close').withText('OK')
   const notificationError = Selector('.notification.is-danger')
   const notificationSuccess = Selector('.notification.is-success')
-  const submitButton = Selector('button.button.is-primary') //créer un lieu
+  const submitButton = Selector('button[type="submit"]') //créer un lieu
+  const redirectUrl =
+    creationOrModification === 'creation'
+      ? /\/structures\/([A-Z0-9]*)$/
+      : /\/structures\/([A-Z0-9]*)\/lieux\/([A-Z0-9]*)$/
 
   await t.click(submitButton)
   const location = await t.eval(() => window.location)
 
   await t
     .expect(location.pathname)
-    .match(/\/structures\/([A-Z0-9]*)\/lieux\/([A-Z0-9]*)$/)
+    .match(redirectUrl)
     .expect(notificationSuccess.innerText)
     .contains(
       'Lieu créé. Vous pouvez maintenant y créer une offre, ou en importer automatiquement.\n\nOK'

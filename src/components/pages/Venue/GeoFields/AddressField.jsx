@@ -7,7 +7,7 @@ import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
 
 import Address from './Address'
-import FieldError from 'components/layout/form/FieldError'
+import FieldErrors from 'components/layout/form/FieldErrors'
 import validateRequiredField from 'components/layout/form/utils/validateRequiredField'
 
 const createBatchGeoChanges = form => values => {
@@ -91,6 +91,7 @@ export const AddressField = ({
                     {...AddressProps}
                     className="field-input field-address"
                     disabled={disabled || readOnly}
+                    name={name}
                     onMarkerDragend={batchGeoChanges}
                     onSuggestionSelect={batchGeoChanges}
                     onTextChange={batchGeoChanges}
@@ -102,7 +103,7 @@ export const AddressField = ({
                 </div>
                 {renderValue()}
               </div>
-              <FieldError meta={meta} />
+              <FieldErrors meta={meta} />
             </div>
             <div />
           </div>

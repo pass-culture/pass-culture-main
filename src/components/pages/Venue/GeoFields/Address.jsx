@@ -171,11 +171,18 @@ class Address extends Component {
   }
 
   renderInput() {
-    const { className, id, placeholder, readOnly, required } = this.props
+    const { className, id, name, placeholder, readOnly, required } = this.props
     const { isLoading, suggestions, value } = this.state
 
     if (readOnly) {
-      return <input className={className} readOnly={readOnly} value={value} />
+      return (
+        <input
+          className={className}
+          name={name}
+          readOnly={readOnly}
+          value={value}
+        />
+      )
     }
 
     return (
@@ -191,6 +198,7 @@ class Address extends Component {
             required,
           }}
           items={suggestions}
+          name={name}
           onChange={this.onTextChange}
           onSelect={this.onSuggestionSelect}
           readOnly={readOnly}
@@ -260,6 +268,7 @@ Address.defaultProps = {
   latitude: null,
   longitude: null,
   maxSuggestions: 5,
+  name: null,
   onMarkerDragend: () => {},
   onSuggestionSelect: () => {},
   onTextChange: () => {},
@@ -278,6 +287,7 @@ Address.propTypes = {
   latitude: PropTypes.number,
   longitude: PropTypes.number,
   maxSuggestions: PropTypes.number,
+  name: PropTypes.string,
   onMarkerDragend: PropTypes.func,
   onSuggestionSelect: PropTypes.func,
   onTextChange: PropTypes.func,

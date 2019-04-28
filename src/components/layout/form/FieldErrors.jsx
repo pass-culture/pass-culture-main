@@ -10,7 +10,7 @@ import PropTypes from 'prop-types'
 // Documentation: https://reactjs.org/docs/lists-and-keys.html#keys
 const setDangerousArrayKeyIndex = index => `field_error_${index}`
 
-export const FieldError = ({ className, customMessage, meta }) => {
+export const FieldErrors = ({ className, customMessage, meta }) => {
   const showError =
     customMessage ||
     (meta &&
@@ -49,13 +49,13 @@ export const FieldError = ({ className, customMessage, meta }) => {
   )
 }
 
-FieldError.defaultProps = {
+FieldErrors.defaultProps = {
   className: '',
   customMessage: '',
   meta: null,
 }
 
-FieldError.propTypes = {
+FieldErrors.propTypes = {
   className: PropTypes.string,
   // NOTE: utile uniquement pour afficher un message custom
   // ne doit pas faire doublon avec les erreurs générées par le form
@@ -68,4 +68,4 @@ FieldError.propTypes = {
   meta: PropTypes.object,
 }
 
-export default FieldError
+export default FieldErrors
