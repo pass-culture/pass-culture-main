@@ -57,7 +57,7 @@ const GeoFields = ({
         />
         <TextField
           autoComplete="address-level2"
-          innerClassName="col-33"
+          innerClassName="col-66"
           label="Ville : "
           name="city"
           readOnly={readOnly || readOnlyFromSelectedAddressOrSiren}

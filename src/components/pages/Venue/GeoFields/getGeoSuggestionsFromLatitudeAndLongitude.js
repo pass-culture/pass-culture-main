@@ -1,20 +1,14 @@
 import createCachedSelector from 're-reselect'
 
-function mapArgsToCacheKey(address, maxSuggestions) {
-  return `${address || ''}/${maxSuggestions || ''}`
+function mapArgsToCacheKey(latitude, longitude, maxSuggestions) {
+  return `${latitude || ''}/${longitude || ''}/${maxSuggestions || ''}`
 }
 
-const getAddressSuggestions = createCachedSelector(
-  address => address,
-  (address, maxSuggestions) => maxSuggestions,
-  async (address, maxSuggestions) => {
-    const wordsCount = address.split(/\s/).filter(v => v).length
-    if (wordsCount < 2)
-      return {
-        data: [],
-      }
-
-    const addressUrl = `https://api-adresse.data.gouv.fr/search/?limit=${maxSuggestions}&q=${address}`
+const getGeoSuggestionsFromLatitudeAndLongitude = createCachedSelector(
+  latitude => latitude,
+  (latitude, longitude) => longitude,
+  async (latitude, longitude) => {
+    const addressUrl = `https://api-adresse.data.gouv.fr/reverse/?lat=${latitude}&lon=${longitude}`
 
     try {
       const response = await fetch(addressUrl)
@@ -37,10 +31,11 @@ const getAddressSuggestions = createCachedSelector(
 
       return { data }
     } catch (e) {
-      const error = "Impossible de vérifier l'adresse saisie."
+      console.log('e', e)
+      const error = 'Impossible de vérifier les latitude et longitude saisies.'
       return { error }
     }
   }
 )(mapArgsToCacheKey)
 
-export default getAddressSuggestions
+export default getGeoSuggestionsFromLatitudeAndLongitude

@@ -8,6 +8,8 @@ import BankFieldsContainer from './BankFields/BankFieldsContainer'
 import CreateOfferControl from './CreateOfferControl'
 import { FRANCE_POSITION } from './GeoFields/positions'
 import GeoFields from './GeoFields/GeoFields'
+import latitudeDecorator from './GeoFields/latitudeDecorator'
+import longitudeDecorator from './GeoFields/longitudeDecorator'
 import IdentifierFields from './IdentifierFields/IdentifierFields'
 import siretDecorator from './IdentifierFields/siretDecorator'
 import ModifyOrCancelControl from './ModifyOrCancelControl/ModifyOrCancelControl'
@@ -143,7 +145,7 @@ class Venue extends Component {
 
         {!initialIsVirtual && (
           <Form
-            decorators={[siretDecorator]}
+            decorators={[latitudeDecorator, longitudeDecorator, siretDecorator]}
             initialValues={formInitialValues}
             name="venue"
             onSubmit={this.onFormSubmit}

@@ -6,7 +6,8 @@ import React, { Component, Fragment } from 'react'
 import Autocomplete from 'react-autocomplete'
 import { Map, Marker, TileLayer } from 'react-leaflet'
 
-import getAddressSuggestions from './getAddressSuggestions'
+import getGeoSuggestionsFromAddressAndMaxSuggestions from './getGeoSuggestionsFromAddressAndMaxSuggestions'
+import getGeoSuggestionsFromLatitudeAndLongitude from './getGeoSuggestionsFromLatitudeAndLongitude'
 import sanitizeCoordinates from './sanitizeCoordinates'
 import { FRANCE_POSITION } from './positions'
 import { ROOT_PATH } from 'utils/config'
@@ -87,13 +88,36 @@ class Address extends Component {
       },
       suggestions: [],
     })
-    onMarkerDragend({
-      address: 'TBD',
-      city: 'TBD',
-      latitude: lat,
-      longitude: lng,
-      postalCode: 'TBD',
-      selectedAddress: null,
+
+    getGeoSuggestionsFromLatitudeAndLongitude(lat, lng).then(result => {
+      if (result.error) {
+        return
+      }
+
+      if (result.data.length === 0 || result.data.length > 1) {
+        this.setState({
+          isLoading: false,
+        })
+        onMarkerDragend({
+          address: null,
+          city: null,
+          latitude: lat,
+          longitude: lng,
+          postalCode: null,
+          selectedAddress: null,
+        })
+        return
+      }
+
+      const { address, city, latitude, longitude, postalCode } = result.data[0]
+      onMarkerDragend({
+        address,
+        city,
+        latitude,
+        longitude,
+        postalCode,
+        selectedAddress: address,
+      })
     })
   }
 
@@ -138,36 +162,41 @@ class Address extends Component {
     const { maxSuggestions, placeholder } = this.props
     this.setState({ isLoading: true })
 
-    getAddressSuggestions(value, maxSuggestions).then(result => {
-      if (result.error) {
-        return
-      }
+    // NOTE: CANNOT EXPRESS THIS WITH AWAIT ASYNC
+    // BECAUSE this.props cannot be found in that case...
+    // weird
+    getGeoSuggestionsFromAddressAndMaxSuggestions(value, maxSuggestions).then(
+      result => {
+        if (result.error) {
+          return
+        }
 
-      if (result.data.length === 0) {
+        if (result.data.length === 0) {
+          this.setState({
+            isLoading: false,
+          })
+          return
+        }
+
+        const dataWithSelectedAddress = result.data.map(datum =>
+          Object.assign({ selectedAddress: datum.address }, datum)
+        )
+
+        const defaultSuggestion = {
+          label: placeholder,
+          placeholder: true,
+          id: 'placeholder',
+        }
+
+        const suggestions = dataWithSelectedAddress.concat(defaultSuggestion)
+
         this.setState({
           isLoading: false,
+          selectedAddress: null,
+          suggestions,
         })
-        return
       }
-
-      const dataWithSelectedAddress = result.data.map(datum =>
-        Object.assign({ selectedAddress: datum.address }, datum)
-      )
-
-      const defaultSuggestion = {
-        label: placeholder,
-        placeholder: true,
-        id: 'placeholder',
-      }
-
-      const suggestions = dataWithSelectedAddress.concat(defaultSuggestion)
-
-      this.setState({
-        isLoading: false,
-        selectedAddress: null,
-        suggestions,
-      })
-    })
+    )
   }
 
   renderInput() {
