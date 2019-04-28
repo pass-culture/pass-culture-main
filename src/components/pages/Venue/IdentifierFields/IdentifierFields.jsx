@@ -48,7 +48,7 @@ const IdentifierFields = ({
                 <span
                   className="button"
                   data-place="bottom"
-                  data-tip="<p>Il n'est pas possible de modifier le nom, l'addresse et la géolocalisation du lieu quand un siret est rentré.</p>"
+                  data-tip="<p>Il n'est pas possible de modifier le nom, l'addresse et la géolocalisation du lieu quand un siret est renseigné.</p>"
                   data-type="info">
                   <Icon svg="picto-info" />
                 </span>
@@ -75,6 +75,7 @@ const IdentifierFields = ({
         readOnly={readOnly || fieldReadOnlyBecauseFrozenFormSiret}
         required
       />
+      <TextField label="Nom d'usage : " name="publicName" readOnly={readOnly} />
       <TextField
         innerClassName="col-75"
         label="E-mail : "
@@ -88,7 +89,7 @@ const IdentifierFields = ({
           return (
             <span
               className="button"
-              data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une autre adresse différente est saisie lors de la création d'une offre)</p>"
+              data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une adresse différente est saisie lors de la création d'une offre)</p>"
               data-place="bottom"
               data-type="info">
               <Icon svg="picto-info" />

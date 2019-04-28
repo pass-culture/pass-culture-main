@@ -14,12 +14,31 @@ import { offererNormalizer, venueNormalizer } from 'utils/normalizers'
 const mapDispatchToProps = (dispatch, ownProps) => {
   const {
     match: {
-      params: { offererId },
+      params: { offererId, venueId },
     },
     query,
-    venue,
   } = ownProps
-  const { id: venueId } = venue || {}
+  const { isCreatedEntity, method } = query.context({ id: venueId })
+
+  const buildNotificationMessage = (venueId, method) => {
+    const isVenueCreated = method === 'POST'
+    if (isVenueCreated) {
+      const createOfferPathname = `/offres/${CREATION}?lieu=${venueId}`
+      return (
+        <p>
+          Lieu créé. Vous pouvez maintenant y{' '}
+          <NavLink
+            to={createOfferPathname}
+            onClick={() => dispatch(closeNotification())}>
+            créer une offre
+          </NavLink>
+          , ou en importer automatiquement.
+        </p>
+      )
+    }
+    return 'Lieu modifié avec succès !'
+  }
+
   return {
     handleInitialRequest: () => {
       dispatch(
@@ -43,9 +62,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
 
     handleSubmitRequest: ({ formValues, handleFail, handleSuccess }) => {
-      const context = query.context({ id: venueId })
-      const { isCreatedEntity, method } = context
-      const apiPath = `/venues/${venueId || ''}`
+      const apiPath = `/venues/${isCreatedEntity ? '' : venueId}`
 
       const body = formatPatch(
         formValues,
@@ -89,26 +106,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         config: { method },
         payload: { datum },
       } = action
-      const venueId = datum.id
-      const createOfferPathname = `/offres/${CREATION}?lieu=${venueId}`
-      const text =
-        method === 'POST' ? (
-          <p>
-            Lieu créé. Vous pouvez maintenant y{' '}
-            <NavLink
-              to={createOfferPathname}
-              onClick={() => dispatch(closeNotification())}>
-              créer une offre
-            </NavLink>
-            , ou en importer automatiquement.
-          </p>
-        ) : (
-          'Lieu modifié avec succès !'
-        )
-
+      const notificationMessage = buildNotificationMessage(datum.id, method)
       dispatch(
         showNotification({
-          text,
+          text: notificationMessage,
           type: 'success',
         })
       )

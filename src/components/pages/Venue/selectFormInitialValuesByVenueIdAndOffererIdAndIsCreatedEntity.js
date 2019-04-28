@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import createCachedSelector from 're-reselect'
 
 import selectVenueById from 'selectors/selectVenueById'
@@ -11,7 +10,7 @@ const selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity = createCac
   selectVenueById,
   (state, venueId, offererId) => offererId,
   (state, venueId, offererId, isCreatedEntity) => isCreatedEntity,
-  state => get(state, 'user.email'),
+  state => state.user && state.user.email,
   (venue, offererId, isCreatedEntity, bookingEmail) => {
     const defaultData = {
       managingOffererId: offererId,

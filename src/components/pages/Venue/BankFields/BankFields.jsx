@@ -19,7 +19,7 @@ const BankFields = ({
         INFORMATIONS BANCAIRES
         <span className="is-pulled-right is-size-7 has-text-grey">
           {!adminUserOfferer &&
-            "Vous avez besoin d'être administrateur de la structure pour editer ces informations."}
+            "Vous avez besoin d'être administrateur de la structure pour éditer ces informations."}
         </span>
       </h2>
       <div className="field-group">

@@ -30,6 +30,17 @@ class Venue extends Component {
     handleInitialRequest()
   }
 
+  buildBackToInfos = (offererName, initialName, offererId) => {
+    return {
+      label: offererName === initialName ? 'STRUCTURE' : offererName,
+      path: `/structures/${offererId}`,
+    }
+  }
+
+  checkIfVenueExists = initialVenueId => {
+    return !!initialVenueId
+  }
+
   handleFormFail = formResolver => (state, action) => {
     const { handleSubmitRequestFail } = this.props
     const { payload } = action
@@ -93,6 +104,7 @@ class Venue extends Component {
     const { name: offererName } = offerer || {}
     const {
       iban: initialIban,
+      id: initialId,
       isVirtual: initialIsVirtual,
       name: initialName,
       siret: initialSiret,
@@ -105,10 +117,7 @@ class Venue extends Component {
 
     return (
       <Main
-        backTo={{
-          label: offererName === initialName ? 'STRUCTURE' : offererName,
-          path: `/structures/${offererId}`,
-        }}
+        backTo={this.buildBackToInfos(offererName, initialName, offererId)}
         name="venue"
         handleDataRequest={noop}>
         <HeroSection subtitle={initialName} title="Lieu">
@@ -116,9 +125,9 @@ class Venue extends Component {
             <p className="subtitle">Ajoutez un lieu où accéder à vos offres.</p>
           )}
 
-          {offerer && !isCreatedEntity && (
+          {this.checkIfVenueExists(initialId) && !isCreatedEntity && (
             <NavLink
-              to={`/offres/creation?lieu=${formInitialValues.id}`}
+              to={`/offres/creation?lieu=${initialId}`}
               className="cta button is-primary">
               <span className="icon">
                 <Icon svg="ico-offres-w" />

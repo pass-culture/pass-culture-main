@@ -1,5 +1,4 @@
-import React from 'react'
-import { mapStateToProps } from '../VenueContainer'
+import mapStateToProps from '../mapStateToProps'
 
 describe('src | components | pages | Venue | VenueContainer', () => {
   describe('mapStateToProps', () => {
@@ -13,15 +12,6 @@ describe('src | components | pages | Venue | VenueContainer', () => {
           ],
           venues: [],
         },
-        form: {
-          venue: {
-            geo: 40,
-            latitude: 40,
-            longitude: 40,
-            name: 'Théâtre des bois',
-            siret: 'ABC123',
-          },
-        },
         user: { email: 'john.doe@email.com' },
       }
       const props = {
@@ -31,6 +21,11 @@ describe('src | components | pages | Venue | VenueContainer', () => {
             offererId: 1,
             venueId: 1,
           },
+        },
+        query: {
+          context: () => ({
+            isCreatedEntity: true,
+          }),
         },
       }
 
@@ -44,13 +39,8 @@ describe('src | components | pages | Venue | VenueContainer', () => {
           rights: 'RightsType.admin',
           userId: 1,
         },
-        formGeo: 40,
-        formLatitude: 40,
-        formLongitude: 40,
-        formSiret: 'ABC123',
-        name: 'Théâtre des bois',
         offerer: { id: 1 },
-        venuePatch: {
+        formInitialValues: {
           bookingEmail: 'john.doe@email.com',
           managingOffererId: 1,
         },
