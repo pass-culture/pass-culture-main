@@ -11,8 +11,6 @@ import { withFrenchQueryRouter } from 'components/hocs'
 import RawOffers from '../RawOffers'
 import { mapStateToProps } from '../index'
 
-fetch.mockResponse(JSON.stringify([]), { status: 200 })
-
 const Offers = compose(
   withFrenchQueryRouter,
   connect(mapStateToProps)
