@@ -38,7 +38,7 @@ describe('src | components | verso | verso-controls | VersoControlContainer', ()
     }
   })
 
-  it('should return a booking and isFinished props', () => {
+  it('should return a booking and isFinished props when booking is not cancelled and matches stock ', () => {
     // when
     const result = mapStateToProps(state, router)
 
@@ -47,7 +47,7 @@ describe('src | components | verso | verso-controls | VersoControlContainer', ()
     expect(result.isFinished).toBe(false)
   })
 
-  it('should not return a booking if none exist on given stocks', () => {
+  it('should not return a booking if none exists on given stocks', () => {
     // given
     state.data.bookings[0].stockId = 'AB'
     state.data.recommendations[0].offer.stocks = [{ id: 'KA' }, { id: 'AK' }]
