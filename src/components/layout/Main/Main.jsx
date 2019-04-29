@@ -6,20 +6,15 @@ import {
   resetForm,
   showNotification,
   Spinner,
-  withBlock,
 } from 'pass-culture-shared'
 import React, { Component, Fragment } from 'react'
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
 import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
-import { compose } from 'redux'
-import { selectCurrentUser } from 'with-login'
 
-import Header from './Header'
-import Notification from './Notification'
+import HeaderContainer from 'components/layout/Header/HeaderContainer'
+import Notification from 'components/layout/Notification'
 
-export class RawMain extends Component {
+class Main extends Component {
   constructor() {
     super()
     this.state = {
@@ -103,7 +98,9 @@ export class RawMain extends Component {
 
     return (
       <Fragment>
-        {!fullscreen && <Header whiteHeader={whiteHeader} {...header} />}
+        {!fullscreen && (
+          <HeaderContainer whiteHeader={whiteHeader} {...header} />
+        )}
         <ReactTooltip
           className="flex-center items-center"
           delayHide={500}
@@ -156,14 +153,4 @@ export class RawMain extends Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    currentUser: selectCurrentUser(state),
-  }
-}
-
-export default compose(
-  withRouter,
-  withBlock,
-  connect(mapStateToProps)
-)(RawMain)
+export default Main

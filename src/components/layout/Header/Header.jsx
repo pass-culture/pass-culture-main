@@ -3,9 +3,9 @@ import classnames from 'classnames'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 
-import Logo from './Logo'
+import Logo from 'components/layout/Logo'
 
-class RawHeader extends Component {
+class Header extends Component {
   constructor() {
     super()
     this.state = {
@@ -111,4 +111,4 @@ class RawHeader extends Component {
   }
 }
 
-export default RawHeader
+export default Header
