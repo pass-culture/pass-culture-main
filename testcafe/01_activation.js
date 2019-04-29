@@ -28,7 +28,7 @@ test('Je suis redirigé·e vers découverte', async t => {
   await t
     .navigateTo(url)
     .expect(activationEmailSpan.innerText)
-    .eql(email, { timeout: 2000 })
+    .eql(email)
     .typeText(newPasswordInput, password)
     .typeText(newPasswordConfirm, password)
     .click(cguInput)

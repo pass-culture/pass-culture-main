@@ -55,7 +55,7 @@ test("J'ai un compte valide, je suis redirigé·e vers la page /decouverte sans 
     .expect(identifierErrors.count)
     .eql(0)
     .expect(location.pathname)
-  await t.expect(getPageUrl()).contains('/decouverte', { timeout: 1000 })
+  await t.expect(getPageUrl()).contains('/decouverte')
 })
 
 test("J'ai un identifiant invalide, je vois un messages d'erreur et je reste sur la page /connection", async t => {

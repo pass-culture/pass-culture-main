@@ -18,7 +18,7 @@ test('Je suis redirigé vers la page /connexion', async t => {
   await t.navigateTo(`${ROOT_PATH}recherche`)
 
   // then
-  await t.expect(getPageUrl()).contains('/connexion', { timeout: 500 })
+  await t.expect(getPageUrl()).contains('/connexion')
 })
 
 fixture(
@@ -85,7 +85,7 @@ test('Lorsque je clique sur la croix, je reviens à la page des offres', async t
   await t.click(closeButton).wait(500)
 
   // then
-  await t.expect(getPageUrl()).contains('/decouverte', { timeout: 3000 })
+  await t.expect(getPageUrl()).contains('/decouverte')
 })
 
 fixture(
@@ -109,7 +109,7 @@ test("Je clique sur la vignette 'Lire' et je suis redirigé vers la page de rés
   const backButton = Selector('button.back-button')
   await t
     .expect(getPageUrl())
-    .contains('/recherche/resultats/Lire', { timeout: 3000 })
+    .contains('/recherche/resultats/Lire')
 
     // Le titre du header change
     .expect(headerTitle.textContent)
@@ -127,7 +127,7 @@ test("Je clique sur la vignette 'Lire' et je suis redirigé vers la page de rés
     // Je clique sur le bouton pour revenir à la home
     .click(backButton)
     .expect(getPageUrl())
-    .eql(`${ROOT_PATH}recherche`, { timeout: 3000 })
+    .eql(`${ROOT_PATH}recherche`)
 })
 
 test('Je vois le header de la page de résultats de la catégorie Lire', async t => {
@@ -173,7 +173,7 @@ test('Je vois les résultats de la page de résultats de la catégorie Lire', as
 
     .click(linkResult)
 
-  await t.expect(getPageUrl()).contains('/item', { timeout: 500 })
+  await t.expect(getPageUrl()).contains('/item')
 })
 
 fixture(
@@ -220,9 +220,7 @@ test.skip("Je vois un titre de la section des résultats qui m'informe qu'il n'y
   // then
   await t
     .expect(getPageUrl())
-    .contains('/recherche/resultats/Fake?categories=Fake', {
-      timeout: 3000,
-    })
+    .contains('/recherche/resultats/Fake?categories=Fake')
   await t
     .expect(searchResultsTitle.innerText)
     .eql("IL N'Y A PAS D'OFFRES DANS CETTE CATÉGORIE POUR LE MOMENT.")

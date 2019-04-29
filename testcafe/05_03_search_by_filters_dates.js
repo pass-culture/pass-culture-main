@@ -95,7 +95,7 @@ test('Je ne sélectionne aucun filtre et je clique sur filtrer', async t => {
   await t.click(filterButton)
   await t
     .expect(getPageUrl())
-    .eql(`${ROOT_PATH}recherche/resultats`, { timeout: 2000 })
+    .eql(`${ROOT_PATH}recherche/resultats`)
 })
 
 test('Quand on choisit un range de date après une date précise, le date picker est réinitialisé', async t => {
@@ -139,7 +139,7 @@ test('Je sélectionne les checkboxes par range de date', async t => {
 
   await t
     .expect(getPageUrl())
-    .contains(`&jours=0-1`, { timeout: 2000 })
+    .contains(`&jours=0-1`)
 
     // Je coche toutes les options
     .wait(200)
@@ -160,7 +160,7 @@ test('Je sélectionne les checkboxes par range de date', async t => {
 
   await t
     .expect(getPageUrl())
-    .contains(`&jours=0-1%2C1-5%2C5-100000`, { timeout: 2000 })
+    .contains(`&jours=0-1%2C1-5%2C5-100000`)
 })
 
 test('Je sélectionne plusieurs date, je filtre puis je clique sur réinitialiser', async t => {
@@ -189,7 +189,7 @@ test('Je sélectionne plusieurs date, je filtre puis je clique sur réinitialise
 
   await t
     .expect(getPageUrl())
-    .contains(`/recherche/resultats`, { timeout: 2000 })
+    .contains(`/recherche/resultats`)
 })
 
 test("Je sélectionne plusieurs date puis j'utilise le date picker", async t => {
