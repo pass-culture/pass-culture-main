@@ -3,9 +3,9 @@ import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
-import BookThisButton from './BookThisButton'
-import { getPriceRangeFromStocks } from '../../../../helpers'
-import currentRecommendation from '../../../../selectors/currentRecommendation'
+import BookThis from './BookThis'
+import { getPriceRangeFromStocks } from '../../../../../helpers'
+import currentRecommendation from '../../../../../selectors/currentRecommendation'
 
 export const getLinkDestination = (url, search) => {
   const isValid = url && typeof url === 'string'
@@ -46,4 +46,4 @@ export const mapStateToProps = (state, { match, location }) => {
 export default compose(
   withRouter,
   connect(mapStateToProps)
-)(BookThisButton)
+)(BookThis)

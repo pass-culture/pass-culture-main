@@ -4,8 +4,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import Price from '../../../layout/Price'
-import VersoPriceFormatter from './VersoPriceFormatter'
+import Price from '../../../../layout/Price'
+import VersoPriceFormatter from '../verso-price-formatter/VersoPriceFormatter'
 
 export const formatOutputPrice = (prices, devise) => {
   const [startingPrice, endingPrice] = prices
@@ -18,7 +18,7 @@ export const formatOutputPrice = (prices, devise) => {
   )
 }
 
-class BookThisButton extends React.PureComponent {
+class BookThis extends React.PureComponent {
   render() {
     const { linkDestination, priceValue } = this.props
     return (
@@ -39,9 +39,9 @@ class BookThisButton extends React.PureComponent {
   }
 }
 
-BookThisButton.propTypes = {
+BookThis.propTypes = {
   linkDestination: PropTypes.string.isRequired,
   priceValue: PropTypes.array.isRequired,
 }
 
-export default BookThisButton
+export default BookThis

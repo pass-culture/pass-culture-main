@@ -1,14 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | verso | verso-controls | booking | CancelButton snapshot with required props should match snapshot 1`] = `
+exports[`src | components | verso | verso-controls | booking | CancelThis snapshot with required props should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <CancelButton
+  Symbol(enzyme.__unrendered__): <CancelThis
     booking={Object {}}
     dispatch={[MockFunction]}
     history={Object {}}
     isCancelled={false}
-    locationSearch="?astring"
     priceValue={42}
   />,
   Symbol(enzyme.__renderer__): Object {

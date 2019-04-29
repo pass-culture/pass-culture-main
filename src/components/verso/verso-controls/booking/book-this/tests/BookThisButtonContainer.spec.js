@@ -1,9 +1,5 @@
 import set from 'lodash.set'
-import {
-  getLinkDestination,
-  getPriceValue,
-  mapStateToProps,
-} from '../BookThisButtonContainer'
+import { getLinkDestination, getPriceValue, mapStateToProps, } from '../BookThisContainer'
 
 const uniqId = 'BBB'
 const offerId = 'AAA'

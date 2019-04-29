@@ -57,17 +57,17 @@ export class RawCard extends PureComponent {
     const headerColor = getHeaderColor(firstThumbDominantColor)
 
     const { index } = recommendation || {}
-    const iscurrent = position === 'current'
+    const isCurrent = position === 'current'
     const translateTo = index * width
     return (
       <div
-        className={`card ${iscurrent ? 'current' : ''}`}
+        className={`card ${isCurrent ? 'current' : ''}`}
         style={{
           backgroundColor: headerColor || '#000',
           transform: `translate(${translateTo}px, 0)`,
         }}
       >
-        {iscurrent && <Verso />}
+        {isCurrent && <Verso />}
         <Recto position={position} />
       </div>
     )

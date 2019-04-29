@@ -6,7 +6,11 @@ import Draggable from 'react-draggable'
 
 import Card from '../card'
 import DeckNavigation from '../DeckNavigation'
-import { closeCardDetails, flipUnflippable, showCardDetails, } from '../../../../reducers/card'
+import {
+  closeCardDetails,
+  flipUnflippable,
+  showCardDetails,
+} from '../../../../reducers/card'
 
 class Deck extends Component {
   constructor(props) {
@@ -55,9 +59,9 @@ class Deck extends Component {
     const index = get(currentRecommendation, 'index', 0)
     const offset = (data.x + width * index) / width
     if (draggable && data.y > height * verticalSlideRatio) {
-      this.handleClosecardDetails()
+      this.handleCloseCardDetails()
     } else if (data.y < -height * verticalSlideRatio) {
-      this.handleShowcardDetails()
+      this.handleShowCardDetails()
     } else if (offset > horizontalSlideRatio) {
       this.handleGoPrevious()
     } else if (-offset > horizontalSlideRatio) {
@@ -93,13 +97,13 @@ class Deck extends Component {
     }))
   }
 
-  handleShowcardDetails = () => {
+  handleShowCardDetails = () => {
     const { dispatch, isFlipDisabled } = this.props
     if (isFlipDisabled) return
     dispatch(showCardDetails())
   }
 
-  handleClosecardDetails = () => {
+  handleCloseCardDetails = () => {
     const { dispatch, unFlippable } = this.props
     if (unFlippable) return
     dispatch(closeCardDetails())
@@ -183,7 +187,7 @@ class Deck extends Component {
             type="button"
             className="close-button"
             id="deck-close-verso-button"
-            onClick={this.handleClosecardDetails}
+            onClick={this.handleCloseCardDetails}
             style={{ zIndex: 300 }}
           >
             <Icon svg="ico-close" alt="Fermer" />
@@ -194,7 +198,7 @@ class Deck extends Component {
           <DeckNavigation
             recommendation={currentRecommendation}
             flipHandler={
-              (!isFlipDisabled && this.handleShowcardDetails) || null
+              (!isFlipDisabled && this.handleShowCardDetails) || null
             }
             handleGoNext={(nextRecommendation && this.handleGoNext) || null}
             handleGoPrevious={

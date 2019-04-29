@@ -3,11 +3,11 @@ import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import { requestData } from 'redux-saga-data'
 
-import Price from '../../../layout/Price'
-import { openSharePopin, closeSharePopin } from '../../../../reducers/share'
+import Price from '../../../../layout/Price'
+import { closeSharePopin, openSharePopin } from '../../../../../reducers/share'
 
-class CancelButton extends React.PureComponent {
-  getButton = (label, id, onClick) => (
+class CancelThis extends React.PureComponent {
+  buildButton = (label, id, onClick) => (
     <button
       id={id}
       className="no-border no-background no-outline is-block py12 is-bold fs14"
@@ -19,31 +19,20 @@ class CancelButton extends React.PureComponent {
     </button>
   )
 
-  getBookingName = booking => booking.stock.resolvedOffer.name
+  buildUrlForRedirect = booking => {
+    const bookingId = get(booking, 'id')
+    const offerId = get(booking.recommendation, 'offerId')
 
-  getMediationId = booking => booking.recommendation.mediationId
-
-  getOfferId = booking => booking.recommendation.offerId
-
-  getCancelSuccessRedirectFromBookingAndSearch = (booking, search) => {
-    const offerId = this.getOfferId(booking)
-    const mediationId = this.getMediationId(booking)
-    const url = `/decouverte/${offerId}/${mediationId}/${search}`
-    return url
+    return `/decouverte/${offerId}/booking/${bookingId}/cancelled`
   }
 
-  onCancelSuccess = booking => {
-    const { dispatch, history, locationSearch } = this.props
+  onSuccess = booking => {
+    const { dispatch, history } = this.props
     dispatch(closeSharePopin())
-
-    const redirect = this.getCancelSuccessRedirectFromBookingAndSearch(
-      booking,
-      locationSearch
-    )
-    history.push(redirect)
+    history.push(this.buildUrlForRedirect(booking))
   }
 
-  onCancelFailure = (state, request) => {
+  onFailure = (state, request) => {
     const { dispatch } = this.props
     const message = get(request, 'errors.booking') || [
       `Une erreur inconnue s'est produite`,
@@ -51,7 +40,7 @@ class CancelButton extends React.PureComponent {
 
     const options = {
       buttons: [
-        this.getButton('OK', 'popin-cancel-booking-fail-ok', () => {
+        this.buildButton('OK', 'popin-cancel-booking-fail-ok', () => {
           dispatch(closeSharePopin())
         }),
       ],
@@ -67,8 +56,8 @@ class CancelButton extends React.PureComponent {
       requestData({
         apiPath: `/bookings/${booking.id}`,
         body: { isCancelled: true },
-        handleFail: this.onCancelFailure,
-        handleSuccess: () => this.onCancelSuccess(booking),
+        handleFail: this.onFailure,
+        handleSuccess: () => this.onSuccess(booking),
         method: 'PATCH',
       })
     )
@@ -83,21 +72,22 @@ class CancelButton extends React.PureComponent {
     const { dispatch } = this.props
     const options = {
       buttons: [
-        this.getButton(
+        this.buildButton(
           'Oui',
           'popin-cancel-booking-yes',
           this.onCancelYes(booking)
         ),
-        this.getButton('Non', 'popin-cancel-booking-no', this.onCancelNo()),
+        this.buildButton('Non', 'popin-cancel-booking-no', this.onCancelNo()),
       ],
       text: 'Souhaitez-vous réellement annuler cette réservation ?',
-      title: this.getBookingName(booking),
+      title: booking.stock.resolvedOffer.name,
     }
     dispatch(openSharePopin(options))
   }
 
   render() {
     const { booking, isCancelled, priceValue } = this.props
+
     return (
       <button
         id="verso-cancel-booking-button"
@@ -120,15 +110,14 @@ class CancelButton extends React.PureComponent {
   }
 }
 
-CancelButton.defaultProps = {}
+CancelThis.defaultProps = {}
 
-CancelButton.propTypes = {
+CancelThis.propTypes = {
   booking: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   isCancelled: PropTypes.bool.isRequired,
-  locationSearch: PropTypes.string.isRequired,
   priceValue: PropTypes.number.isRequired,
 }
 
-export default CancelButton
+export default CancelThis

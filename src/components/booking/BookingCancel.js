@@ -11,10 +11,10 @@ const BookingCancel = ({ isEvent, data }) => {
   let price = get(data, 'stock.price')
   price = getDisplayPrice(price)
   const cssClass = (isEvent && 'event') || 'thing'
+
   return (
     <div className={`booked text-center ${cssClass}`}>
       <h3 className="fs22">
-        {/* <!-- ICON --> */}
         <span
           className="is-block mb12"
           style={{ color: '#27AE60', fontSize: '4.5rem' }}

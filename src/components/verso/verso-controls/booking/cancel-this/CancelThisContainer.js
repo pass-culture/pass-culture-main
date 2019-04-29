@@ -3,17 +3,16 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
-import CancelButton from './CancelButton'
+import CancelThis from './CancelThis'
 
 export const mapStateToProps = (state, props) => {
-  const { booking, history, location } = props
-  const locationSearch = location.search
+  const { booking, history } = props
   const priceValue = get(booking, 'stock.price')
   const isCancelled = get(booking, 'isCancelled')
+
   return {
     history,
     isCancelled,
-    locationSearch,
     priceValue,
   }
 }
@@ -21,4 +20,4 @@ export const mapStateToProps = (state, props) => {
 export default compose(
   withRouter,
   connect(mapStateToProps)
-)(CancelButton)
+)(CancelThis)

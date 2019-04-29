@@ -3,8 +3,8 @@ import { shallow } from 'enzyme'
 import VersoControl from '../VersoControl'
 
 import Finishable from '../../../layout/Finishable'
-import CancelButton from '../booking/CancelButtonContainer'
-import BookThisButton from '../booking/BookThisButtonContainer'
+import CancelButton from '../booking/cancel-this/CancelThisContainer'
+import BookThisButton from '../booking/book-this/BookThisContainer'
 
 describe('src | components | verso | verso-controls | VersoControl', () => {
   it('should render component with a bookable offer', () => {

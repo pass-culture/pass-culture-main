@@ -1,26 +1,30 @@
-// $(yarn bin)/jest --env=jsdom ./src/components/verso/verso-controls/booking/tests/CancelButton.spec.js --watch
 import React from 'react'
 import { mount, shallow } from 'enzyme'
 import { Router } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
 
-import CancelButton from '../CancelButton'
-import Price from '../../../../layout/Price'
+import CancelThis from '../CancelThis'
+import Price from '../../../../../layout/Price'
 
-const defaultprops = {
-  booking: {},
-  dispatch: jest.fn(),
-  history: {},
-  isCancelled: false,
-  locationSearch: '?astring',
-  priceValue: 42,
-}
+describe('src | components | verso | verso-controls | booking | CancelThis', () => {
+  let props
+  let dispatch
 
-describe('src | components | verso | verso-controls | booking | CancelButton', () => {
+  beforeEach(() => {
+    dispatch = jest.fn()
+    props = {
+      booking: {},
+      dispatch,
+      history: {},
+      isCancelled: false,
+      priceValue: 42,
+    }
+  })
+
   describe('snapshot with required props', () => {
     it('should match snapshot', () => {
       // when
-      const wrapper = shallow(<CancelButton {...defaultprops} />)
+      const wrapper = shallow(<CancelThis {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -29,25 +33,26 @@ describe('src | components | verso | verso-controls | booking | CancelButton',
   })
 
   describe('render', () => {
-    it('contains price, check-icon, label', () => {
+    it('should display Price component, check icon, and label Annuler', () => {
       // when
-      const wrapper = shallow(<CancelButton {...defaultprops} />)
+      const wrapper = shallow(<CancelThis {...props} />)
       const price = wrapper.find(Price)
       const icon = wrapper.find('.icon-ico-check')
-      const label = wrapper.find('.pc-ticket-button-label')
+      const cancelLabel = wrapper.find('.pc-ticket-button-label')
 
       // then
       expect(icon).toHaveLength(1)
       expect(price).toHaveLength(1)
-      expect(label).toHaveLength(1)
+      expect(cancelLabel).toHaveLength(1)
+      expect(cancelLabel.text()).toBe('Annuler')
     })
 
-    it('do not contains check icon', () => {
+    it('should not contains a check icon when booking is cancelled', () => {
       // given
-      const props = { ...defaultprops, isCancelled: true }
+      props.isCancelled = true
 
       // when
-      const wrapper = shallow(<CancelButton {...props} />)
+      const wrapper = shallow(<CancelThis {...props} />)
       const icon = wrapper.find('.icon-ico-check')
 
       // then
@@ -57,22 +62,13 @@ describe('src | components | verso | verso-controls | booking | CancelButton',
     it('should open cancel popin when click on cancel button', () => {
       // given
       const history = createBrowserHistory()
-      const dispatch = jest.fn()
-      const booking = {
+      props.booking = {
         isUserCancellable: true,
         stock: {
           resolvedOffer: {
             name: 'foo',
           },
         },
-      }
-      const props = {
-        booking,
-        dispatch,
-        history,
-        isCancelled: false,
-        locationSearch: '',
-        priceValue: [12],
       }
       const anyFunction = expect.any(Function)
       const expectedOptions = {
@@ -104,7 +100,7 @@ describe('src | components | verso | verso-controls | booking | CancelButton',
       }
       const wrapper = mount(
         <Router history={history}>
-          <CancelButton {...props} />
+          <CancelThis {...props} />
         </Router>
       )
       const cancelPopin = wrapper.find('#verso-cancel-booking-button')

@@ -1,12 +1,11 @@
-// $(yarn bin)/jest --env=jsdom ./src/components/verso/verso-controls/booking/tests/BookThisButton.spec.js --watch
 import React from 'react'
 import { mount, shallow } from 'enzyme'
 import { MemoryRouter } from 'react-router-dom'
 
-import Price from '../../../../layout/Price'
-import BookThisButton, { formatOutputPrice } from '../BookThisButton'
+import Price from '../../../../../layout/Price'
+import BookThis, { formatOutputPrice } from '../BookThis'
 
-describe('src | components | verso | verso-buttons | BookThisButton', () => {
+describe('src | components | verso | verso-buttons | BookThis', () => {
   it('should match snapshot with required props', () => {
     // given
     const props = {
@@ -14,7 +13,7 @@ describe('src | components | verso | verso-buttons | BookThisButton', () => {
       priceValue: [0],
     }
     // when
-    const wrapper = shallow(<BookThisButton {...props} />)
+    const wrapper = shallow(<BookThis {...props} />)
 
     const buttonLabel = wrapper.find('.pc-ticket-button-label')
     // then
@@ -34,7 +33,7 @@ describe('src | components | verso | verso-buttons | BookThisButton', () => {
     // when
     const wrapper = mount(
       <MemoryRouter>
-        <BookThisButton {...props} />
+        <BookThis {...props} />
       </MemoryRouter>
     )
 
@@ -61,7 +60,7 @@ describe('src | components | verso | verso-buttons | BookThisButton', () => {
     // when
     const wrapper = mount(
       <MemoryRouter>
-        <BookThisButton {...props} />
+        <BookThis {...props} />
       </MemoryRouter>
     )
 

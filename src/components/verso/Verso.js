@@ -2,7 +2,7 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import VersoHeader from './VersoHeader'
+import VersoHeader from './verso-content/VersoHeader'
 import VersoControl from './verso-controls/VersoControlContainer'
 import VersoContentOfferContainer from './verso-content/verso-content-offer/VersoContentOfferContainer'
 import VersoContentTuto from './verso-content/VersoContentTuto'
