@@ -6,8 +6,12 @@ from utils.config import API_URL, ENV
 def check_origin_header_validity(header, endpoint, path):
     endpoint_exceptions = _get_endpoint_exceptions()
 
-    if endpoint in endpoint_exceptions or 'back-office' in path:
+    if endpoint in endpoint_exceptions \
+            or 'back-office' in path:
         return True
+
+    if not header:
+        return False
 
     white_list = _get_origin_header_whitelist()
     combined_white_list = "(" + ")|(".join(white_list) + ")"
@@ -50,12 +54,12 @@ def _get_origin_header_whitelist():
 
 def _get_endpoint_exceptions():
     return ['patch_booking_by_token', 'get_booking_by_token', 'send_storage_file', 'health',
-        'list_export_urls', 'export_table', 'validate', 'validate_venue',
-        'get_all_offerers_with_managing_user_information', 
-        'get_all_offerers_with_managing_user_information_and_venue',
-        'get_all_offerers_with_managing_user_information_and_not_virtual_venue',
-        'get_all_offerers_with_venue', 'get_pending_validation',
-        'get_export_venues', 'get_export_offerers', 'get_bookings_csv']
+            'list_export_urls', 'export_table', 'validate', 'validate_venue',
+            'get_all_offerers_with_managing_user_information',
+            'get_all_offerers_with_managing_user_information_and_venue',
+            'get_all_offerers_with_managing_user_information_and_not_virtual_venue',
+            'get_all_offerers_with_venue', 'get_pending_validation',
+            'get_export_venues', 'get_export_offerers', 'get_bookings_csv']
 
 
 def _get_origin_header_whitelist_for_non_dev_environments(api_url):
@@ -67,4 +71,3 @@ def _get_origin_header_whitelist_for_non_dev_environments(api_url):
         valid_urls.append(url.replace('backend', 'team'))
 
     return valid_urls
-    
