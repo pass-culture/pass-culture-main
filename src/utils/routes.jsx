@@ -5,6 +5,7 @@ import Accouting from '../components/pages/Accounting'
 import Desk from '../components/pages/Desk'
 import Home from '../components/pages/Home'
 import Mediation from '../components/pages/Mediation'
+import MonitoringContainer from '../components/pages/Monitoring/MonitoringContainer'
 import Offers from '../components/pages/Offers'
 import Offer from '../components/pages/Offer'
 import OffererContainer from '../components/pages/Offerer/OffererContainer'
@@ -87,6 +88,11 @@ const routes = [
     component: Offers,
     path: '/structures/:offererId/lieux/:venueId/offres',
     title: 'Offres',
+  },
+  {
+    component: MonitoringContainer,
+    path: '/suivi/:view(reservations|remboursements)?',
+    title: 'Suivi',
   },
   {
     component: Offers,
