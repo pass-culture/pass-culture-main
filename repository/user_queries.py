@@ -13,6 +13,10 @@ def find_user_by_email(email: str) -> User:
         .first()
 
 
+def find_by_validation_token(token):
+    return User.query.filter_by(validationToken=token).first()
+
+
 def find_user_by_reset_password_token(token: str) -> User:
     return User.query.filter_by(resetPasswordToken=token).first()
 

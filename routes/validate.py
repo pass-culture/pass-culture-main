@@ -12,7 +12,7 @@ from models import ApiErrors, \
     User, \
     PcObject, UserOfferer, Offerer, Venue
 from models.api_errors import ResourceNotFound, ForbiddenError
-from repository import user_offerer_queries, offerer_queries
+from repository import user_offerer_queries, offerer_queries, user_queries
 from repository.payment_queries import find_transaction_checksum
 from tests.validation_validate_test import check_validation_request, check_venue_found
 from utils.mailing import MailServiceException, send_raw_email
@@ -80,21 +80,17 @@ def validate_venue():
     return "Validation effectuée", 202
 
 
-@app.route("/validate/user/<token>", methods=["GET"])
+@app.route("/validate/user/<token>", methods=["PATCH"])
 def validate_user(token):
-    user_to_validate = User.query.filter_by(validationToken=token).first()
+    user_to_validate = user_queries.find_by_validation_token(token)
     check_valid_token_for_user_validation(user_to_validate)
     user_to_validate.validationToken = None
     PcObject.check_and_save(user_to_validate)
     user_offerer = user_offerer_queries.find_first_by_user_id(user_to_validate.id)
     if user_offerer:
-        offerer = offerer_queries.find_first_by_user_offerer_id(user_offerer.id)
-        try:
-            maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
-        except MailServiceException as e:
-            app.logger.error('Mail service failure', e)
+        _ask_for_offerer_validation(user_offerer)
 
-    return jsonify({}), 202
+    return '', 204
 
 
 @app.route('/validate/transaction', methods=['POST'])
@@ -116,3 +112,11 @@ def certify_transaction_file_authenticity():
         raise ApiErrors({'xml': ["L'intégrité du document n'est pas validée car la somme de contrôle est invalide : %s" % given_checksum.hex()]})
 
     return jsonify({'checksum': given_checksum.hex()}), 200
+
+
+def _ask_for_offerer_validation(user_offerer):
+    offerer = offerer_queries.find_first_by_user_offerer_id(user_offerer.id)
+    try:
+        maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
+    except MailServiceException as e:
+        app.logger.error('Mail service failure', e)

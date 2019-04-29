@@ -97,11 +97,10 @@ def test_validate_user_when_validation_token_exists_should_put_validation_token_
     PcObject.check_and_save(user)
 
     # When
-    response = req.get(API_URL + '/validate/user/' + user.validationToken, headers={'origin': 'http://localhost:3000'})
+    response = req.patch(API_URL + '/validate/user/' + user.validationToken, headers={'origin': 'http://localhost:3000'})
 
     # Then
-    assert response.status_code == 202
-    assert response.json() == {}
+    assert response.status_code == 204
     db.session.refresh(user)
     assert user.isValidated
 
@@ -113,7 +112,7 @@ def test_validate_user_when_validation_token_not_found_returns_status_code_404(a
     random_token = '0987TYGHHJMJ'
 
     # When
-    response = req.get(API_URL + '/validate/user/' + random_token, headers={'origin': 'http://localhost:3000'})
+    response = req.patch(API_URL + '/validate/user/' + random_token, headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert response.status_code == 404
