@@ -12,6 +12,49 @@ from utils.human_ids import humanize, dehumanize
 class Patch:
     class Returns200:
         @clean_database
+        def when_patch_siret_when_there_is_none_yet(self, app):
+            # Given
+            offerer = create_offerer()
+            user = create_user()
+            user_offerer = create_user_offerer(user, offerer, is_admin=True)
+            siret = offerer.siren + '11111'
+            venue = create_venue(offerer, comment="Pas de siret", siret=None)
+            PcObject.check_and_save(user_offerer, venue)
+            venue_data = {
+                'siret': siret,
+            }
+
+            auth_request = TestClient().with_auth(email=user.email)
+
+             # when
+            response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id), json=venue_data)
+
+             # Then
+            assert response.status_code == 200
+            assert response.json()['siret'] == siret
+
+        @clean_database
+        def when_patch_siret_when_there_is_one_already_but_equal(self, app):
+            # Given
+            offerer = create_offerer()
+            user = create_user()
+            user_offerer = create_user_offerer(user, offerer, is_admin=True)
+            siret = offerer.siren + '11111'
+            venue = create_venue(offerer, siret=siret)
+            PcObject.check_and_save(user_offerer, venue)
+            venue_data = {
+                'siret': siret,
+            }
+            auth_request = TestClient().with_auth(email=user.email)
+
+             # when
+            response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id), json=venue_data)
+
+             # Then
+            assert response.status_code == 200
+            assert response.json()['siret'] == siret
+
+        @clean_database
         def when_user_has_rights_on_managing_offerer(self, app):
             # given
             offerer = create_offerer()
@@ -34,6 +77,27 @@ class Patch:
             assert venue.isValidated
 
     class Returns400:
+        @clean_database
+        def when_trying_to_patch_siret_when_already_one(self, app):
+            # Given
+            offerer = create_offerer()
+            user = create_user()
+            user_offerer = create_user_offerer(user, offerer, is_admin=True)
+            siret = offerer.siren + '11111'
+            venue = create_venue(offerer, siret=siret)
+            PcObject.check_and_save(user_offerer, venue)
+            venue_data = {
+                'siret': offerer.siren + '12345',
+            }
+            auth_request = TestClient().with_auth(email=user.email)
+
+             # when
+            response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id), json=venue_data)
+
+             # Then
+            assert response.status_code == 400
+            assert response.json()['siret'] == ['Vous ne pouvez pas modifier le siret d\'un lieu']
+
         @clean_database
         def when_editing_is_virtual_and_managing_offerer_already_has_virtual_venue(self, app):
             # given

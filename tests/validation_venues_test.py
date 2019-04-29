@@ -4,7 +4,6 @@ from models import ApiErrors
 from validation.venues import validate_coordinates
 
 
-
 @pytest.mark.standalone
 def test_validate_coordinates_raises_an_api_errors_if_latitude_is_not_a_decimal():
     # when
@@ -85,4 +84,3 @@ def test_validate_coordinates_raises_an_api_errors_if_both_latitude_and_longitud
     # then
     assert e.value.errors['latitude'] == ['La latitude doit être comprise entre -90.0 et +90.0']
     assert e.value.errors['longitude'] == ['La longitude doit être comprise entre -180.0 et +180.0']
-
