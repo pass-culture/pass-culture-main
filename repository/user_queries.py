@@ -13,7 +13,7 @@ def find_user_by_email(email: str) -> User:
         .first()
 
 
-def find_by_validation_token(token):
+def find_by_validation_token(token: str) -> User:
     return User.query.filter_by(validationToken=token).first()
 
 

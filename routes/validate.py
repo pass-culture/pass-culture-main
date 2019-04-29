@@ -6,7 +6,8 @@ from lxml.etree import LxmlError
 
 import models
 from domain.admin_emails import maybe_send_offerer_validation_email
-from domain.payments import validate_transaction_file_structure, read_message_id_in_transaction_file, generate_file_checksum
+from domain.payments import validate_transaction_file_structure, read_message_id_in_transaction_file, \
+    generate_file_checksum
 from domain.user_emails import send_validation_confirmation_email, send_venue_validation_confirmation_email
 from models import ApiErrors, \
     User, \
@@ -15,6 +16,7 @@ from models.api_errors import ResourceNotFound, ForbiddenError
 from repository import user_offerer_queries, offerer_queries, user_queries
 from repository.payment_queries import find_transaction_checksum
 from tests.validation_validate_test import check_validation_request, check_venue_found
+from utils.config import IS_INTEGRATION
 from utils.mailing import MailServiceException, send_raw_email
 from validation.validate import check_valid_token_for_user_validation
 
@@ -88,7 +90,11 @@ def validate_user(token):
     PcObject.check_and_save(user_to_validate)
     user_offerer = user_offerer_queries.find_first_by_user_id(user_to_validate.id)
     if user_offerer:
-        _ask_for_offerer_validation(user_offerer)
+        offerer = offerer_queries.find_first_by_user_offerer_id(user_offerer.id)
+        if IS_INTEGRATION:
+            _validate_offerer(offerer, user_offerer)
+        else:
+            _ask_for_validation(offerer, user_offerer)
 
     return '', 204
 
@@ -109,14 +115,20 @@ def certify_transaction_file_authenticity():
     given_checksum = generate_file_checksum(xml_content)
 
     if found_checksum != given_checksum:
-        raise ApiErrors({'xml': ["L'intégrité du document n'est pas validée car la somme de contrôle est invalide : %s" % given_checksum.hex()]})
+        raise ApiErrors({'xml': [
+            "L'intégrité du document n'est pas validée car la somme de contrôle est invalide : %s" % given_checksum.hex()]})
 
     return jsonify({'checksum': given_checksum.hex()}), 200
 
 
-def _ask_for_offerer_validation(user_offerer):
-    offerer = offerer_queries.find_first_by_user_offerer_id(user_offerer.id)
+def _ask_for_validation(offerer: Offerer, user_offerer: UserOfferer):
     try:
         maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
+
+
+def _validate_offerer(offerer: Offerer, user_offerer: UserOfferer):
+    offerer.validationToken = None
+    user_offerer.validationToken = None
+    PcObject.check_and_save(offerer, user_offerer)
