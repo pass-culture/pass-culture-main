@@ -17,6 +17,7 @@ class SignupValidation extends PureComponent {
     dispatch(
       requestData({
         apiPath: `/validate/user/${token}`,
+        method: 'PATCH',
         handleSuccess: () => {
           dispatch(
             showNotification({
@@ -46,7 +47,4 @@ class SignupValidation extends PureComponent {
   }
 }
 
-export default compose(
-  withRouter,
-  connect()
-)(SignupValidation)
+export default SignupValidation
