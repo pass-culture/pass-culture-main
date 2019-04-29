@@ -1,9 +1,11 @@
 import { mapStateToProps } from '../VersoControlContainer'
 
 describe('src | components | verso | verso-controls | VersoControlContainer', () => {
-  it('should return a booking and isFinished props', () => {
-    // given
-    const state = {
+  let state
+  let router
+
+  beforeEach(() => {
+    state = {
       data: {
         bookings: [
           {
@@ -29,12 +31,14 @@ describe('src | components | verso | verso-controls | VersoControlContainer', ()
       },
       geolocation: {},
     }
-    const router = {
+    router = {
       match: {
         params: { mediationId: 'BA', offerId: 'AE' },
       },
     }
+  })
 
+  it('should return a booking and isFinished props', () => {
     // when
     const result = mapStateToProps(state, router)
 
@@ -45,37 +49,8 @@ describe('src | components | verso | verso-controls | VersoControlContainer', ()
 
   it('should not return a booking if none exist on given stocks', () => {
     // given
-    const state = {
-      data: {
-        bookings: [
-          {
-            id: 'A9',
-            isUsed: false,
-            recommendationId: 'AGQA',
-            stockId: 'AB',
-          },
-        ],
-        recommendations: [
-          {
-            bookingsIds: ['A9'],
-            id: 'AGQA',
-            mediationId: 'BA',
-            offer: {
-              isFinished: false,
-              stocks: [{ id: 'KA' }, { id: 'AK' }],
-              thingId: 'BAFA',
-            },
-            offerId: 'AE',
-          },
-        ],
-      },
-      geolocation: {},
-    }
-    const router = {
-      match: {
-        params: { mediationId: 'BA', offerId: 'AE' },
-      },
-    }
+    state.data.bookings[0].stockId = 'AB'
+    state.data.recommendations[0].offer.stocks = [{ id: 'KA' }, { id: 'AK' }]
 
     // when
     const result = mapStateToProps(state, router)
@@ -87,38 +62,7 @@ describe('src | components | verso | verso-controls | VersoControlContainer', ()
 
   it('should not return a booking if one exists on given stocks but is cancelled', () => {
     // given
-    const state = {
-      data: {
-        bookings: [
-          {
-            id: 'A9',
-            isCancelled: true,
-            isUsed: false,
-            recommendationId: 'AGQA',
-            stockId: 'AB',
-          },
-        ],
-        recommendations: [
-          {
-            bookingsIds: ['A9'],
-            id: 'AGQA',
-            mediationId: 'BA',
-            offer: {
-              isFinished: false,
-              stocks: [{ id: 'AB' }, { id: 'BA' }],
-              thingId: 'BAFA',
-            },
-            offerId: 'AE',
-          },
-        ],
-      },
-      geolocation: {},
-    }
-    const router = {
-      match: {
-        params: { mediationId: 'BA', offerId: 'AE' },
-      },
-    }
+    state.data.bookings[0].isCancelled = true
 
     // when
     const result = mapStateToProps(state, router)
