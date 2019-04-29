@@ -142,6 +142,8 @@ ShallowWrapper {
           decorators={
             Array [
               [Function],
+              [Function],
+              [Function],
             ]
           }
           initialValues={
@@ -275,6 +277,8 @@ ShallowWrapper {
         "props": Object {
           "decorators": Array [
             [Function],
+            [Function],
+            [Function],
           ],
           "initialValues": Object {
             "id": "CM",
@@ -332,6 +336,8 @@ ShallowWrapper {
           <ReactFinalForm
             decorators={
               Array [
+                [Function],
+                [Function],
                 [Function],
               ]
             }
@@ -465,6 +471,8 @@ ShallowWrapper {
           "nodeType": "class",
           "props": Object {
             "decorators": Array [
+              [Function],
+              [Function],
               [Function],
             ],
             "initialValues": Object {

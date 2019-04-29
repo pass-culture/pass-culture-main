@@ -31,7 +31,6 @@ const getGeoSuggestionsFromLatitudeAndLongitude = createCachedSelector(
 
       return { data }
     } catch (e) {
-      console.log('e', e)
       const error = 'Impossible de vérifier les latitude et longitude saisies.'
       return { error }
     }

@@ -14,6 +14,10 @@ export const latitudeDecorator = createDecorator({
       longitude
     )
 
+    if (result.error) {
+      return {}
+    }
+
     if (result.data.length === 0 || result.data.length > 1) {
       return {
         address: null,
@@ -32,7 +36,7 @@ export const latitudeDecorator = createDecorator({
       latitude,
       longitude,
       postalCode,
-      // selectedAddress: address,
+      selectedAddress: null,
     }
   },
 })

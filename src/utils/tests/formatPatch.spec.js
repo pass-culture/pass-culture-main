@@ -105,7 +105,6 @@ describe('formatPatch', () => {
       // then
       expect(result).toEqual({
         bookingEmail: 'R6465373fake674654673@email.com',
-        name: 'Cinéma de la fin',
         publicName: 'Cinéma de la fin publique',
       })
     })
