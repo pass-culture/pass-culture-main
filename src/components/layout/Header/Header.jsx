@@ -84,6 +84,12 @@ class Header extends Component {
                       <span>Délégations</span>
                     </NavLink>
                   )}
+                  <NavLink to="/suivi" className="navbar-item">
+                    <span className="icon">
+                      <Icon svg="ico-compta" />
+                    </span>
+                    <span>Suivi</span>
+                  </NavLink>
                   {false && (
                     <NavLink to="/comptabilite" className="navbar-item">
                       <span className="icon">
