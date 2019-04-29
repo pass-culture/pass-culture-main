@@ -5,13 +5,13 @@ import getGeoSuggestionsFromLatitudeAndLongitude from './getGeoSuggestionsFromLa
 export const latitudeDecorator = createDecorator({
   field: 'latitude',
   updates: async (latitude, key, values) => {
-    const longitude = values.longitude
-    if (!latitude || !longitude) {
+    if (!latitude || !values.longitude || values.address || values.siret) {
       return {}
     }
+
     const result = await getGeoSuggestionsFromLatitudeAndLongitude(
       latitude,
-      longitude
+      values.longitude
     )
 
     if (result.error) {
@@ -22,8 +22,6 @@ export const latitudeDecorator = createDecorator({
       return {
         address: null,
         city: null,
-        latitude,
-        longitude,
         postalCode: null,
         selectedAddress: null,
       }
@@ -33,8 +31,6 @@ export const latitudeDecorator = createDecorator({
     return {
       address,
       city,
-      latitude,
-      longitude,
       postalCode,
       selectedAddress: null,
     }

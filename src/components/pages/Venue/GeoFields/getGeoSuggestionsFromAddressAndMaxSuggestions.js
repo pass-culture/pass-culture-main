@@ -34,7 +34,6 @@ const getGeoSuggestionsFromAddressAndMaxSuggestions = createCachedSelector(
         label: f.properties.label,
         postalCode: f.properties.postcode,
       }))
-
       return { data }
     } catch (e) {
       const error = "Impossible de vérifier l'adresse saisie."

@@ -189,13 +189,26 @@ class Address extends Component {
         }
 
         const suggestions = dataWithSelectedAddress.concat(defaultSuggestion)
-
         this.setState({
           isLoading: false,
           selectedAddress: null,
           suggestions,
         })
       }
+    )
+  }
+
+  renderItem = ({ id, label, placeholder }, highlighted) => {
+    return (
+      <div
+        className={classnames({
+          item: true,
+          highlighted,
+          placeholder,
+        })}
+        key={id}>
+        {label}
+      </div>
     )
   }
 
@@ -222,26 +235,16 @@ class Address extends Component {
           inputProps={{
             className: className || `input`,
             id,
+            name,
             placeholder,
             readOnly,
             required,
           }}
           items={suggestions}
-          name={name}
           onChange={this.onTextChange}
           onSelect={this.onSuggestionSelect}
           readOnly={readOnly}
-          renderItem={({ id, label, placeholder }, highlighted) => (
-            <div
-              className={classnames({
-                item: true,
-                highlighted,
-                placeholder,
-              })}
-              key={id}>
-              {label}
-            </div>
-          )}
+          renderItem={this.renderItem}
           renderMenu={children => (
             <div
               className={classnames('menu', { empty: children.length === 0 })}>

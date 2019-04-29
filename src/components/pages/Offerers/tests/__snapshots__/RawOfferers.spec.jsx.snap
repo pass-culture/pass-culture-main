@@ -132,7 +132,7 @@ ShallowWrapper {
             activeClassName="active"
             aria-current="page"
             className="cta button is-primary is-outlined"
-            to="/structures/nouveau"
+            to="/structures/creation"
           >
             + Rattacher une structure supplémentaire
           </NavLink>
@@ -199,7 +199,7 @@ ShallowWrapper {
               activeClassName="active"
               aria-current="page"
               className="cta button is-primary is-outlined"
-              to="/structures/nouveau"
+              to="/structures/creation"
             >
               + Rattacher une structure supplémentaire
             </NavLink>,
@@ -263,7 +263,7 @@ ShallowWrapper {
               "aria-current": "page",
               "children": "+ Rattacher une structure supplémentaire",
               "className": "cta button is-primary is-outlined",
-              "to": "/structures/nouveau",
+              "to": "/structures/creation",
             },
             "ref": null,
             "rendered": "+ Rattacher une structure supplémentaire",
@@ -371,7 +371,7 @@ ShallowWrapper {
               activeClassName="active"
               aria-current="page"
               className="cta button is-primary is-outlined"
-              to="/structures/nouveau"
+              to="/structures/creation"
             >
               + Rattacher une structure supplémentaire
             </NavLink>
@@ -438,7 +438,7 @@ ShallowWrapper {
                 activeClassName="active"
                 aria-current="page"
                 className="cta button is-primary is-outlined"
-                to="/structures/nouveau"
+                to="/structures/creation"
               >
                 + Rattacher une structure supplémentaire
               </NavLink>,
@@ -502,7 +502,7 @@ ShallowWrapper {
                 "aria-current": "page",
                 "children": "+ Rattacher une structure supplémentaire",
                 "className": "cta button is-primary is-outlined",
-                "to": "/structures/nouveau",
+                "to": "/structures/creation",
               },
               "ref": null,
               "rendered": "+ Rattacher une structure supplémentaire",

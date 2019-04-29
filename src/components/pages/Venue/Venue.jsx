@@ -103,6 +103,7 @@ class Venue extends Component {
       query,
       offerer,
     } = this.props
+
     const { name: offererName } = offerer || {}
     const {
       iban: initialIban,
@@ -116,6 +117,13 @@ class Venue extends Component {
       id: venueId,
     })
     const { isRequestPending } = this.state
+
+    const decorators = [latitudeDecorator, longitudeDecorator]
+    if (isCreatedEntity || !initialSiret) {
+      decorators.push(siretDecorator)
+    }
+
+    const showForm = !initialIsVirtual && typeof offerer !== 'undefined'
 
     return (
       <Main
@@ -143,14 +151,15 @@ class Venue extends Component {
           <VenueProvidersManagerContainer venue={formInitialValues} />
         )}
 
-        {!initialIsVirtual && (
+        {showForm && (
           <Form
-            decorators={[latitudeDecorator, longitudeDecorator, siretDecorator]}
+            decorators={decorators}
             initialValues={formInitialValues}
             name="venue"
             onSubmit={this.onFormSubmit}
             render={formProps => {
               const canSubmit = getCanSubmit(formProps)
+
               const { form, handleSubmit, values } = formProps
               const {
                 latitude: formLatitude,
@@ -159,7 +168,9 @@ class Venue extends Component {
                 siret: formSiret,
               } = values
 
-              const siretValidOnCreation = formSiret && formSiret.length === 14
+              const siretValidOnReadOnly = formSiret && formSiret.length === 14
+
+              const siretValidOnCreation = siretValidOnReadOnly
               const fieldReadOnlyBecauseFrozenFormSiretOnCreation =
                 isCreatedEntity && siretValidOnCreation
 
@@ -173,7 +184,7 @@ class Venue extends Component {
                 fieldReadOnlyBecauseFrozenFormSiretOnModification
 
               return (
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} name="venue">
                   <IdentifierFields
                     fieldReadOnlyBecauseFrozenFormSiret={
                       fieldReadOnlyBecauseFrozenFormSiret
@@ -183,11 +194,6 @@ class Venue extends Component {
                     isCreatedEntity={isCreatedEntity}
                     isModifiedEntity={isModifiedEntity}
                     readOnly={readOnly}
-                    withComment={
-                      (isCreatedEntity && !siretValidOnCreation) ||
-                      (isModifiedEntity && !siretValidOnModification)
-                    }
-                    withSiret={isCreatedEntity || initialSiret}
                   />
                   <BankFieldsContainer
                     initialIban={initialIban}

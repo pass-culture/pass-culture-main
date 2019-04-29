@@ -8,13 +8,11 @@ import {
 } from './helpers/navigations'
 import { getSiretRequestMockAs } from './helpers/sirenes'
 
-const form = Selector('form#venue')
+const form = Selector('form[name="venue"]')
 const mapMarker = Selector('.leaflet-marker-pane img')
-const adressInput = Selector('input[name="address"]')
+const addressInput = Selector('input[name="address"]')
 const backAnchor = Selector('a.back-button')
 const cityInput = Selector('input[name="city"]')
-const closeAnchor = Selector('button.close').withText('OK')
-
 const bookingEmailInput = Selector('input[name="bookingEmail"]')
 const latitudeInput = Selector('input[name="latitude"]')
 const longitudeInput = Selector('input[name="longitude"]')
@@ -24,9 +22,11 @@ const notificationError = Selector('.notification.is-danger')
 const notificationSuccess = Selector('.notification.is-success.columns')
 const siretInput = Selector('input[name="siret"]')
 const commentInput = Selector('textarea[name="comment"]')
-const siretInputError = Selector('input[name="siret"]').find('.field-errors')
-const submitButton = Selector('button.button.is-primary') //créer un lieu
-const updateAnchor = Selector('a.button.is-secondary') //modifier un lieu
+const siretInputError = Selector('input[name="siret"]')
+  .parent('.field-control')
+  .find('.field-errors')
+const submitButton = Selector('button[type="submit"]')
+const modifyVenueButton = Selector('#modify-venue')
 const venueMarker = Selector('img.leaflet-marker-icon')
 
 fixture('Venue A | Créer un nouveau lieu avec succès').beforeEach(async t => {
@@ -64,7 +64,7 @@ test('Je rentre une nouveau lieu via son siret avec succès', async t => {
 
   // then
   await t.expect(nameInput.value).eql(venueName)
-  await t.expect(adressInput.value).eql(address)
+  await t.expect(addressInput.value).eql(address)
   await t.expect(postalCodeInput.value).eql(postalCode)
   await t.expect(cityInput.value).eql(city)
   await t.expect(latitudeInput.value).eql(latitude)
@@ -76,8 +76,7 @@ test('Je rentre une nouveau lieu via son siret avec succès', async t => {
 
 test('Je rentre un nouveau lieu sans siret avec succès', async t => {
   // given
-  const addressInput = Selector('#venue-address')
-  const addressSuggestion = Selector('.geo-input .menu .item')
+  const addressSuggestion = Selector('.address .menu .item')
   const address = '1 place du trocadéro'
   const banAddress = '1 Place du Trocadero et du 11 Novembre 75016 Paris'
   const city = 'Paris'
@@ -139,18 +138,7 @@ test('Une entrée avec cet identifiant existe déjà', async t => {
       'Une entrée avec cet identifiant existe déjà dans notre base de données'
     )
     .expect(notificationError.innerText)
-    .contains('Formulaire non validé\nOK')
-
-  // when
-  await t
-    .click(closeAnchor)
-    // please be careful, this wait prevents is necessary
-    // to pass every time, otherwise succes of this test is
-    // kind of random!
-    .wait(10000)
-
-  // then
-  await t.expect(notificationError.exists).notOk()
+    .contains('Formulaire non validé.\nOK')
 })
 
 test('Il est obligatoire de saisir le commentaire', async t => {
@@ -164,14 +152,28 @@ test('Il est obligatoire de saisir le commentaire', async t => {
   // then
   await t
     .expect(commentInput.hasAttribute('required'))
-    .notOk("Comment n'est pas requis si le SIRET est saisi")
+    .ok("Comment n'est pas requis si le SIRET saisi n'a pas la bonne longueur")
 
   // when
-  await t.selectText(siretInput).pressKey('delete')
+  await t.typeText(siretInput, '12345678912345')
   // then
   await t
     .expect(commentInput.hasAttribute('required'))
-    .ok('Comment doit être requis à nouveau si SIRET est effacé')
+    .notOk("Comment n'est pas requis si un SIRET de bonne longueur est saisi")
+
+  // when
+  // WEIRD: wish to do a
+  // t.selectText(siretInput).pressKey('delete')
+  // but error with
+  // The action element is expected to be editable !!
+  await t.typeText(siretInput, '1')
+
+  // then
+  await t
+    .expect(commentInput.hasAttribute('required'))
+    .ok(
+      "Comment doit être requis à nouveau si SIRET n'est pas de la bonne forme"
+    )
 
   // when
   await t.typeText(commentInput, 'lorem ipsum dolor sit amet')
@@ -185,7 +187,7 @@ test('Il est obligatoire de saisir le commentaire', async t => {
 
 test('Le code SIRET doit correspondre à un établissement de votre structure', async t => {
   // given
-  await t.typeText(siretInput, '492475033 00022')
+  await t.typeText(siretInput, '49247503300022')
 
   // when
   await t.click(submitButton)
@@ -197,10 +199,10 @@ test('Le code SIRET doit correspondre à un établissement de votre structure', 
       'Le code SIRET doit correspondre à un établissement de votre structure'
     )
     .expect(notificationError.innerText)
-    .contains('Formulaire non validé\nOK')
+    .contains('Formulaire non validé.\nOK')
 })
 
-test('La saisie de mauvaise coordonées géographique ne crash pas la page', async t => {
+test('La saisie de mauvaises coordonées géographique ne crash pas la page', async t => {
   // when
   await t.typeText(latitudeInput, '45')
   // then
@@ -276,23 +278,24 @@ test('Je peux revenir en arrière', async t => {
   await t.expect(location.pathname).match(/\/structures\/([A-Z0-9]*)$/)
 })
 
-test.only("Je peux modifier l'email de contact du lieu", async t => {
+test("Je peux modifier l'email de contact du lieu", async t => {
   // given
-  await t.wait(5000)
-  const originalEmail = bookingEmailInput.value
+  const { venue } = t.ctx.sandbox
+  await t.addRequestHooks(getSiretRequestMockAs(venue))
+  const { bookingEmail } = venue
+  const modifiedBookingEmail = `${bookingEmail}m`
+  await t.expect(bookingEmailInput.value).eql(bookingEmail)
 
   // when
   await t
-    .click(updateAnchor)
-    .typeText(bookingEmailInput, 'rosa.soulot@example.net', { replace: true })
+    .click(modifyVenueButton)
+    .typeText(bookingEmailInput, modifiedBookingEmail, { replace: true })
     .click(submitButton)
 
   // then
   await t
     .expect(bookingEmailInput.value)
-    .notEql(originalEmail)
-    .expect(bookingEmailInput.value)
-    .eql('rosa.soulot@example.net')
+    .eql(modifiedBookingEmail)
     .expect(notificationSuccess.innerText)
     .contains('Lieu modifié avec succès !')
 })

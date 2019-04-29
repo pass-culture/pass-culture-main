@@ -106,6 +106,14 @@ describe('formatPatch', () => {
       expect(result).toEqual({
         bookingEmail: 'R6465373fake674654673@email.com',
         publicName: 'Cinéma de la fin publique',
+
+        address: 'RUE DIDEROT',
+        city: 'Aulnay-sous-Bois',
+        latitude: 48.92071,
+        longitude: 2.48371,
+        name: 'Cinéma de la fin',
+        postalCode: '93600',
+        siret: '22222222911111',
       })
     })
   })

@@ -128,7 +128,7 @@ test("L'utilisateur a au moins un rattachement à une structure en cours de vali
     validatedOffererItem.find(
       `a[href="/structures/${
         validatedOffererWithValidatedUserOfferer.id
-      }/lieux/nouveau"]`
+      }/lieux/creation"]`
     )
   )
   await t.navigateTo('/structures')

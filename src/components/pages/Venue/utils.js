@@ -14,4 +14,15 @@ export const VENUE_CREATION_PATCH_KEYS = [
   'siret',
 ]
 
-export const VENUE_MODIFICATION_PATCH_KEYS = ['bookingEmail', 'publicName']
+export const VENUE_MODIFICATION_PATCH_KEYS = [
+  'bookingEmail',
+  'publicName',
+
+  'address',
+  'city',
+  'latitude',
+  'longitude',
+  'name',
+  'postalCode',
+  'siret',
+]

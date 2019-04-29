@@ -14,6 +14,7 @@ const ModifyOrCancelControl = ({
       {readOnly ? (
         <NavLink
           className="button is-secondary is-medium"
+          id="modify-venue"
           to={`/structures/${offererId}/lieux/${venueId}?modification`}>
           Modifier le lieu
         </NavLink>

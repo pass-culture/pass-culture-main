@@ -16,8 +16,6 @@ const IdentifierFields = ({
   initialSiret,
   isCreatedEntity,
   isModifiedEntity,
-  withComment,
-  withSiret,
   readOnly,
 }) => (
   <div className="section">
@@ -32,43 +30,41 @@ const IdentifierFields = ({
     </h2>
     <div className="field-group">
       {isCreatedEntity && <HiddenField name="managingOffererId" />}
-      {withSiret && (
-        <TextField
-          format={formatSire}
-          innerClassName="col-50"
-          label={`SIRET${isCreatedEntity ? ' (si applicable)' : ''} : `}
-          name="siret"
-          readOnly={readOnly || initialSiret}
-          renderValue={() => {
-            if (readOnly || !initialSiret) {
-              return null
-            }
-            if (fieldReadOnlyBecauseFrozenFormSiret) {
-              return (
-                <span
-                  className="button"
-                  data-place="bottom"
-                  data-tip="<p>Il n'est pas possible de modifier le nom, l'addresse et la géolocalisation du lieu quand un siret est renseigné.</p>"
-                  data-type="info">
-                  <Icon svg="picto-info" />
-                </span>
-              )
-            }
+      <TextField
+        format={formatSire}
+        innerClassName="col-50"
+        label={`SIRET${isCreatedEntity ? ' (si applicable)' : ''} : `}
+        name="siret"
+        readOnly={readOnly || initialSiret !== null}
+        renderValue={() => {
+          if (readOnly || !initialSiret) {
+            return null
+          }
+          if (fieldReadOnlyBecauseFrozenFormSiret) {
             return (
               <span
                 className="button"
                 data-place="bottom"
-                data-tip="<div><p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.</p>
-  <p>Si les informations ne correspondent pas au SIRET saisi, <a href='mailto:pass@culture.gouv.fr?subject=Question%20SIRET'> contactez notre équipe</a>.</p></div>"
+                data-tip="<p>Il n'est pas possible de modifier le nom, l'addresse et la géolocalisation du lieu quand un siret est renseigné.</p>"
                 data-type="info">
                 <Icon svg="picto-info" />
               </span>
             )
-          }}
-          type="siret"
-          validate={validateSiret}
-        />
-      )}
+          }
+          return (
+            <span
+              className="button"
+              data-place="bottom"
+              data-tip="<div><p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.</p>
+<p>Si les informations ne correspondent pas au SIRET saisi, <a href='mailto:pass@culture.gouv.fr?subject=Question%20SIRET'> contactez notre équipe</a>.</p></div>"
+              data-type="info">
+              <Icon svg="picto-info" />
+            </span>
+          )
+        }}
+        type="siret"
+        {...(initialSiret ? {} : { validate: validateSiret })}
+      />
       <TextField
         label="Nom : "
         name="name"
@@ -98,15 +94,13 @@ const IdentifierFields = ({
         }}
         type="email"
       />
-      {withComment && (
-        <TextareaField
-          label="Commentaire (si pas de SIRET) : "
-          name="comment"
-          readOnly={readOnly || isModifiedEntity}
-          required={!formSiret}
-          rows={1}
-        />
-      )}
+      <TextareaField
+        label="Commentaire (si pas de SIRET) : "
+        name="comment"
+        readOnly={readOnly}
+        required={!formSiret || formSiret.length !== 14}
+        rows={1}
+      />
     </div>
   </div>
 )
@@ -116,8 +110,6 @@ IdentifierFields.defaultProps = {
   formSiret: null,
   initialSiret: null,
   readOnly: true,
-  withComment: true,
-  withSiret: true,
 }
 
 IdentifierFields.propTypes = {
@@ -127,8 +119,6 @@ IdentifierFields.propTypes = {
   isCreatedEntity: PropTypes.bool.isRequired,
   isModifiedEntity: PropTypes.bool.isRequired,
   readOnly: PropTypes.bool,
-  withComment: PropTypes.bool,
-  withSiret: PropTypes.bool,
 }
 
 export default IdentifierFields

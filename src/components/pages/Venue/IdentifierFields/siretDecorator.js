@@ -11,7 +11,7 @@ const emptyValues = {
   postalCode: null,
 }
 
-export const siretDecorator = createDecorator({
+export const createSiretDecorator = createDecorator({
   field: 'siret',
   updates: async siret => {
     const siretInfo = await getSireInfo(siret, SIRET)
@@ -21,4 +21,4 @@ export const siretDecorator = createDecorator({
   },
 })
 
-export default siretDecorator
+export default createSiretDecorator

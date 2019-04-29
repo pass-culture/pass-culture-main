@@ -29,7 +29,8 @@ jest.mock('redux-saga-data', () => {
 
 window.scroll = () => {}
 
-const ADDRESS = "5 cité de l'enfer"
+const BOOKING_EMAIL = 'foo@mama.com'
+const ADDRESS = "5 cite de l'enfer"
 const CITY = 'Paboude'
 const LATITUDE = 48.3
 const LONGITUDE = 1.2
@@ -49,9 +50,40 @@ const mockSuccessSiretInfo = {
   },
 }
 
+const mockSuccessAddressInfo = {
+  features: [
+    {
+      geometry: {
+        coordinates: [LATITUDE, LONGITUDE],
+      },
+      properties: {
+        city: CITY,
+        id: 'OOO',
+        label: 'OOO',
+        name: ADDRESS,
+        postcode: POSTAL_CODE,
+      },
+    },
+  ],
+}
+
 global.fetch = url => {
-  if (url.includes(SIRET)) {
+  if (url.includes('api-adress') && url.includes(ADDRESS)) {
+    const response = new Response(JSON.stringify(mockSuccessAddressInfo))
+    return response
+  }
+  if (url.includes('sirene.entreprise') && url.includes(SIRET)) {
     const response = new Response(JSON.stringify(mockSuccessSiretInfo))
+    return response
+  }
+  if (url.includes('offerers')) {
+    const response = new Response(JSON.stringify({ id: MANAGING_OFFERER_ID }))
+    return response
+  }
+  if (url.includes('users')) {
+    const response = new Response(
+      JSON.stringify({ id: 'AE', email: BOOKING_EMAIL })
+    )
     return response
   }
   return new Response(JSON.stringify({}))
@@ -275,37 +307,118 @@ describe('src | components | pages | Venue', () => {
           </Router>
         </Provider>
       )
-      wrapper
-        .find("input[name='bookingEmail']")
-        .simulate('change', { target: { value: values.bookingEmail } })
-      wrapper
-        .find("input[name='siret']")
-        .simulate('change', { target: { value: values.siret } })
 
-      // then
       setTimeout(() => {
-        // when
+        // when (offerer request is done, form is now available)
         wrapper.update()
-        const submitButton = wrapper.find('button[type="submit"]')
-        expect(submitButton.props().disabled).toEqual(false)
+        wrapper
+          .find("input[name='bookingEmail']")
+          .simulate('change', { target: { value: values.bookingEmail } })
+        wrapper
+          .find("input[name='siret']")
+          .simulate('change', { target: { value: values.siret } })
 
-        // when
-        submitButton.simulate('submit')
+        setTimeout(() => {
+          // when (siret has filled other inputs, submit button is not anymore disabled)
+          wrapper.update()
+          const submitButton = wrapper.find('button[type="submit"]')
+          expect(submitButton.props().disabled).toEqual(false)
+          submitButton.simulate('submit')
 
-        // then
-        const expectedSubConfig = {
-          apiPath: '/venues/',
-          body: values,
-          method: 'POST',
-          normalizer: venueNormalizer,
-        }
-        const receivedConfig = mockRequestDataCatch.mock.calls.slice(-1)[0][0]
-        Object.keys(expectedSubConfig).forEach(key =>
-          expect(receivedConfig[key]).toEqual(expectedSubConfig[key])
-        )
+          // then
+          const expectedSubConfig = {
+            apiPath: '/venues/',
+            body: values,
+            method: 'POST',
+            normalizer: venueNormalizer,
+          }
+          const receivedConfig = mockRequestDataCatch.mock.calls.slice(-1)[0][0]
+          Object.keys(expectedSubConfig).forEach(key =>
+            expect(receivedConfig[key]).toEqual(expectedSubConfig[key])
+          )
 
-        // done
-        done()
+          // done
+          done()
+        })
+      })
+    })
+
+    it.skip('fill the form with a valid address', done => {
+      // given
+      const { store } = configureStore()
+      const history = createBrowserHistory()
+      history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
+      const values = {
+        address: ADDRESS,
+        bookingEmail: 'fifi@moc.com',
+        city: CITY,
+        latitude: LATITUDE,
+        longitude: LONGITUDE,
+        managingOffererId: MANAGING_OFFERER_ID,
+        name: NAME,
+        postalCode: POSTAL_CODE,
+        siret: SIRET,
+      }
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <Switch>
+              <Route path="/structures/:offererId/lieux/:venueId">
+                <VenueContainer />
+              </Route>
+            </Switch>
+          </Router>
+        </Provider>
+      )
+
+      setTimeout(() => {
+        // when (offerer request is done, form is now available)
+        wrapper.update()
+        wrapper
+          .find("input[name='name']")
+          .simulate('change', { target: { value: NAME } })
+        wrapper
+          .find("input[name='address']")
+          .simulate('change', { target: { value: ADDRESS } })
+
+        setTimeout(() => {
+          setTimeout(() => {
+            wrapper.update()
+
+            console.log(
+              wrapper
+                .find('.address')
+                .find('.input-wrapper')
+                .props()
+            )
+            wrapper.find('div.item').simulate('click')
+
+            setTimeout(() => {
+              // when (address has filled other inputs, submit button is not anymore disabled)
+              wrapper.update()
+              const submitButton = wrapper.find('button[type="submit"]')
+              expect(submitButton.props().disabled).toEqual(false)
+              submitButton.simulate('submit')
+
+              // then
+              const expectedSubConfig = {
+                apiPath: '/venues/',
+                body: values,
+                method: 'POST',
+                normalizer: venueNormalizer,
+              }
+              const receivedConfig = mockRequestDataCatch.mock.calls.slice(
+                -1
+              )[0][0]
+              Object.keys(expectedSubConfig).forEach(key =>
+                expect(receivedConfig[key]).toEqual(expectedSubConfig[key])
+              )
+
+              // done
+              done()
+            })
+          })
+        }, 3000)
       })
     })
   })

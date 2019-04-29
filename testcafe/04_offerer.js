@@ -24,11 +24,11 @@ fixture('Offerer A | Créer une nouvelle structure').beforeEach(async t => {
 
 test('Je peux naviguer vers une nouvelle structure et revenir aux structures', async t => {
   // given
-  const backAnchor = Selector('a.button.is-secondary')
+  const backAnchor = Selector('.back-button')
   const location = await t.eval(() => window.location)
 
   // then
-  await t.expect(location.pathname).eql('/structures/nouveau')
+  await t.expect(location.pathname).eql('/structures/creation')
 
   // when
   await t.click(backAnchor)
@@ -43,7 +43,7 @@ test('Je ne peux pas ajouter de nouvelle structure avec un siren faux', async t 
   let location = await t.eval(() => window.location)
   await t
     .expect(location.pathname)
-    .eql('/structures/nouveau')
+    .eql('/structures/creation')
     .typeText(sirenInput, '69256356275794356243264')
 
   // when
@@ -61,7 +61,7 @@ test('Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existan
   let location = await t.eval(() => window.location)
   await t
     .expect(location.pathname)
-    .eql('/structures/nouveau')
+    .eql('/structures/creation')
     .typeText(sirenInput, siren)
 
   // when
@@ -83,7 +83,7 @@ test('Je rentre une nouvelle structure via son siren', async t => {
   let location = await t.eval(() => window.location)
   await t
     .expect(location.pathname)
-    .eql('/structures/nouveau')
+    .eql('/structures/creation')
     .typeText(sirenInput, siren)
   await t.expect(nameInput.value).eql(name)
   await t.expect(addressInput.value).eql(address)

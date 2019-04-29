@@ -14,7 +14,7 @@ export const navigateToOfferersAs = user => async t => {
 
 export const navigateToNewOffererAs = user => async t => {
   const newOffererAnchor = Selector(
-    "a.button.is-primary[href='/structures/nouveau']"
+    "a.button.is-primary[href='/structures/creation']"
   )
 
   await navigateToOfferersAs(user)(t)

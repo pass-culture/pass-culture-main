@@ -138,7 +138,7 @@ class RawOfferers extends Component {
             Sans lieu, vous ne pouvez ajouter que des offres numériques.
           </p>
           <NavLink
-            to="/structures/nouveau"
+            to="/structures/creation"
             className="cta button is-primary is-outlined">
             + Rattacher une structure supplémentaire
           </NavLink>
