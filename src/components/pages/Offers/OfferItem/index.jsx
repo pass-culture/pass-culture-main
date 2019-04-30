@@ -8,7 +8,6 @@ import selectMaxDateByOfferId from 'selectors/selectMaxDateByOfferId'
 import selectMediationsByOfferId from 'selectors/selectMediationsByOfferId'
 import selectProductById from 'selectors/selectProductById'
 import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
-import selectThumbUrlByOfferIdAndProductId from 'selectors/selectThumbUrlByOfferIdAndProductId'
 import selectVenueById from 'selectors/selectVenueById'
 import offererSelector from 'selectors/selectOffererById'
 import { getOfferTypeLabel } from 'utils/offerItem'
@@ -27,7 +26,6 @@ function mapStateToProps(state, ownProps) {
     mediations: selectMediationsByOfferId(state, offerId),
     product,
     stocks: selectStocksByOfferId(state, offerId),
-    thumbUrl: selectThumbUrlByOfferIdAndProductId(state, offerId, productId),
     offerer,
     offerTypeLabel: getOfferTypeLabel(product),
     stockAlertMessage,
