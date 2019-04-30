@@ -63,7 +63,7 @@ class Post:
                 assert key in json
 
         @clean_database
-        def test_created_user_has_validation_token_and_cannot_book_free_offers(self, app):
+        def test_created_user_does_not_have_validation_token_and_cannot_book_free_offers(self, app):
             data = BASE_DATA.copy()
 
             # When
@@ -75,7 +75,7 @@ class Post:
             assert response.status_code == 201
             assert 'validationToken' not in response.json()
             created_user = User.query.filter_by(email='toto@btmx.fr').first()
-            assert created_user.validationToken is not None
+            assert created_user.validationToken is None
             assert not created_user.canBookFreeOffers
 
         @clean_database

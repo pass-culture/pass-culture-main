@@ -24,7 +24,6 @@ def signup_old():
 def signup_webapp():
     objects_to_save = []
     password = request.json.get('password')
-    app_origin_url = request.headers.get('origin')
     check_valid_signup(request)
     check_password_strength('password', password)
 
@@ -38,16 +37,11 @@ def signup_webapp():
         departement_code = _get_departement_code_when_authorized_or_error(authorized_emails, departement_codes)
         new_user.departementCode = departement_code
 
-    new_user.generate_validation_token()
     new_user.canBookFreeOffers = False
     new_user.isAdmin = False
     objects_to_save.append(new_user)
 
     PcObject.check_and_save(*objects_to_save)
-    try:
-        send_user_validation_email(new_user, send_raw_email, app_origin_url, is_webapp=True)
-    except MailServiceException as e:
-        app.logger.error('Mail service failure', e)
 
     if request.json.get('contact_ok'):
         subscribe_newsletter(new_user)
