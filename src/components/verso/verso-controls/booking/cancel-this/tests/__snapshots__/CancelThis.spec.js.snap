@@ -4,9 +4,20 @@ exports[`src | components | verso | verso-controls | booking | CancelThis snap
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <CancelThis
-    booking={Object {}}
+    booking={
+      Object {
+        "id": "AAA",
+        "recommendation": Object {
+          "offerId": "BBB",
+        },
+      }
+    }
     dispatch={[MockFunction]}
-    history={Object {}}
+    history={
+      Object {
+        "push": [MockFunction],
+      }
+    }
     isCancelled={false}
     priceValue={42}
   />,

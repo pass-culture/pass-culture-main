@@ -7,7 +7,7 @@ import { toast } from 'react-toastify'
 import { assignData, requestData } from 'redux-saga-data'
 
 import DeckContainer from './deck/DeckContainer'
-import Booking from '../../booking'
+import BookingContainer from '../../booking/BookingContainer'
 import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
 import BackButton from '../../layout/BackButton'
 import { Loader } from '../../layout/Loader'
@@ -140,7 +140,7 @@ export class RawDiscoveryPage extends React.PureComponent {
               <Route
                 key="route-discovery-booking"
                 path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:bookingId?/:view(cancelled)?/:menu(menu)?"
-                render={route => <Booking {...route} />}
+                render={route => <BookingContainer {...route} />}
               />
               <Route
                 key="route-discovery-deck"

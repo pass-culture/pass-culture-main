@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/components/booking/tests/BookingForm --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 

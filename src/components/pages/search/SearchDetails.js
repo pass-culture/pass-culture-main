@@ -5,7 +5,7 @@ import { Route, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import Booking from '../../booking'
+import BookingContainer from '../../booking/BookingContainer'
 import Recto from '../../recto/Recto'
 import Verso from '../../verso/VersoContainer'
 import currentRecommendationSelector from '../../../selectors/currentRecommendation'
@@ -68,7 +68,7 @@ class SearchDetails extends Component {
           <Route
             path="/recherche/resultats/:option?/item/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/(booking|cancelled)/:bookingId?"
             render={route => (
-              <Booking extraClassName="with-header" {...route} />
+              <BookingContainer extraClassName="with-header" {...route} />
             )}
           />
         )}

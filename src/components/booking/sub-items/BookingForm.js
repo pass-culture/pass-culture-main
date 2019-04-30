@@ -11,8 +11,8 @@ import {
   parseHoursByStockId,
   onCalendarUpdates,
   onTimeUpdates,
-} from './utils'
-import { DatePickerField, HiddenField, SelectField } from '../forms/inputs'
+} from '../utils'
+import { DatePickerField, HiddenField, SelectField } from '../../forms/inputs'
 
 const spySubscriptions = {
   // complete list of subscriptions

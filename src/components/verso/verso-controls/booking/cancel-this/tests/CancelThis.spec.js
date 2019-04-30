@@ -9,13 +9,22 @@ import Price from '../../../../../layout/Price'
 describe('src | components | verso | verso-controls | booking | CancelThis', () => {
   let props
   let dispatch
+  let push
 
   beforeEach(() => {
     dispatch = jest.fn()
+    push = jest.fn()
     props = {
-      booking: {},
+      booking: {
+        id: 'AAA',
+        recommendation: {
+          offerId: 'BBB',
+        },
+      },
       dispatch,
-      history: {},
+      history: {
+        push,
+      },
       isCancelled: false,
       priceValue: 42,
     }
@@ -111,6 +120,23 @@ describe('src | components | verso | verso-controls | booking | CancelThis', (
       // then
       expect(dispatch).toHaveBeenCalled()
       expect(dispatch.mock.calls[0][0]).toStrictEqual(expectedOptions)
+    })
+  })
+
+  describe('onSuccess', () => {
+    it('should redirect to cancelled booking page', () => {
+      // given
+      const wrapper = shallow(<CancelThis {...props} />)
+
+      // when
+      wrapper.instance().onSuccess(props.booking)
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith({
+        options: false,
+        type: 'TOGGLE_SHARE_POPIN',
+      })
+      expect(push).toHaveBeenCalledWith('/decouverte/BBB/booking/AAA/cancelled')
     })
   })
 })

@@ -1,4 +1,3 @@
-// jest ./src/components/booking/test/BookingHeader --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 

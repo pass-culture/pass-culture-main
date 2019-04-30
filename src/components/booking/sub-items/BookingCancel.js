@@ -5,7 +5,7 @@ import { Icon } from 'antd'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 
-import { getDisplayPrice } from '../../helpers'
+import { getDisplayPrice } from '../../../helpers'
 
 const BookingCancel = ({ isEvent, data }) => {
   let price = get(data, 'stock.price')
