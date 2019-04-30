@@ -70,7 +70,9 @@ class PcObject():
                 autoincrement=True)
 
     def __init__(self, **options):
-        if options and 'from_dict' in options and options['from_dict']:
+        if options and 'from_dict' in options and options['from_dict'] and 'skipped_keys' in options and options['skipped_keys']:
+            self.populateFromDict(options['from_dict'], options['skipped_keys'])
+        elif options and 'from_dict' in options and options['from_dict']:
             self.populateFromDict(options['from_dict'])
 
     def _asdict(self, **options):

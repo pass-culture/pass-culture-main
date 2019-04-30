@@ -63,6 +63,37 @@ class Post:
             stock = Stock.query.filter_by(id=dehumanize(id)).first()
             assert stock.price == 1222
 
+
+        @clean_database
+        def when_create_thing_stock_when_bookingLimitDateTime_is_none(self, app):
+            # Given
+            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_thing_offer(venue)
+            PcObject.check_and_save(user, offer)
+
+            data = {
+                'price': 0,
+                'offerId': humanize(offer.id),
+                'bookingLimitDatetime': None
+            }
+
+            # When
+            response = TestClient().with_auth(user.email) \
+                .post(API_URL + '/stocks/', json=data)
+
+            # Then
+            assert response.status_code == 201
+            assert response.json()["price"] == 0
+            assert response.json()["bookingLimitDatetime"] is None
+            
+            id = response.json()['id']            
+            stock = Stock.query.filter_by(id=dehumanize(id)).first()
+            assert stock.price == 0
+            assert stock.bookingLimitDatetime is None
+
+    
     class Returns400:
         @clean_database
         def when_missing_offer_id(self, app):
