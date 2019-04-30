@@ -98,7 +98,8 @@ export const DateField = ({
                       ...DatePickerProps,
                       ...input,
                       onChange: date => {
-                        const changedValue = date.toISOString()
+                        const changedValue = date ? date.toISOString() : null
+                        console.log('changedValue', changedValue)
                         input.onChange(changedValue)
                       },
                       value: readOnlyValue,
