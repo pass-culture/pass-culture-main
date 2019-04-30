@@ -37,7 +37,7 @@ const IdentifierFields = ({
         name="siret"
         readOnly={readOnly || initialSiret !== null}
         renderValue={() => {
-          if (readOnly || !initialSiret) {
+          if (readOnly) {
             return null
           }
           if (fieldReadOnlyBecauseFrozenFormSiret) {
@@ -79,7 +79,7 @@ const IdentifierFields = ({
         readOnly={readOnly}
         required
         renderValue={() => {
-          if (readOnly || !initialSiret) {
+          if (readOnly) {
             return null
           }
           return (
