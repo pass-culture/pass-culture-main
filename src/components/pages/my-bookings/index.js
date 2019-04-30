@@ -26,7 +26,7 @@ const renderBookingList = items => (
   </ul>
 )
 
-class MyBookingsPage extends Component {
+export class RawMyBookingsPage extends Component {
   constructor(props) {
     super(props)
     const { dispatch } = props
@@ -121,7 +121,7 @@ class MyBookingsPage extends Component {
   }
 }
 
-MyBookingsPage.propTypes = {
+RawMyBookingsPage.propTypes = {
   dispatch: PropTypes.func.isRequired,
   otherBookings: PropTypes.array.isRequired,
   soonBookings: PropTypes.array.isRequired,
@@ -130,4 +130,4 @@ MyBookingsPage.propTypes = {
 export default compose(
   withRedirectToSigninWhenNotAuthenticated,
   connect(mapStateToProps)
-)(MyBookingsPage)
+)(RawMyBookingsPage)
