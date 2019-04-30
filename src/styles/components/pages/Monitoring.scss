@@ -1,0 +1,25 @@
+.monitoring-page {
+
+  .tabs {
+    @extend .flex-columns;
+    @extend .items-center;
+    @extend .flex-around;
+
+    border-bottom: 1px solid black;
+
+    .tab {
+      @extend .title;
+
+      color: $blue;
+      margin-bottom: 0;
+
+      &:hover {
+        text-decoration: none;
+      }
+
+      &.selected {
+        color: black;
+      }
+    }
+  }
+}

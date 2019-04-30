@@ -85,6 +85,8 @@ export const mapBrowserToApi = {
   de: 'from',
   lieu: 'venueId',
   [`mots-cles`]: 'keywords',
+  remboursements: 'reimbursements',
+  reservations: 'bookings',
   structure: 'offererId',
   stock: 'stockIdOrNew',
 }
