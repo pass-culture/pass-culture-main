@@ -12,7 +12,6 @@ import { requestData } from 'redux-saga-data'
 import { resolveCurrentUser } from 'with-login'
 
 import { externalSubmitForm } from '../forms/utils'
-import BookingCancel from './BookingCancel'
 import BookingForm from './BookingForm'
 import BookingError from './BookingError'
 import BookingLoader from './BookingLoader'
@@ -20,7 +19,6 @@ import BookingHeader from './BookingHeader'
 import BookingSuccess from './BookingSuccess'
 import { priceIsDefined } from '../../helpers/getDisplayPrice'
 import { selectBookables } from '../../selectors/selectBookables'
-import { selectBookingById } from '../../selectors/selectBookings'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 import { ROOT_PATH } from '../../utils/config'
 
@@ -134,15 +132,9 @@ class Booking extends PureComponent {
     history.replace(baseurl)
   }
 
-  getBackToBookings = () => {
-    const { history } = this.props
-    history.push('/reservations')
-  }
-
   renderFormControls = () => {
     const { bookedPayload, isSubmitting, canSubmitForm } = this.state
-    const { isCancelled } = this.props
-    const showCancelButton = !isSubmitting && !bookedPayload && !isCancelled
+    const showCancelButton = !isSubmitting && !bookedPayload
     const showSubmitButton = showCancelButton && canSubmitForm
     return (
       <Fragment>
@@ -176,30 +168,13 @@ class Booking extends PureComponent {
             <b>OK</b>
           </button>
         )}
-        {isCancelled && (
-          <button
-            type="button"
-            id="booking-cancel-ok-button"
-            className="text-center my5"
-            onClick={this.getBackToBookings}
-          >
-            <b>OK</b>
-          </button>
-        )}
       </Fragment>
     )
   }
 
   render() {
     const userConnected = false
-    const {
-      bookables,
-      booking,
-      extraClassName,
-      isCancelled,
-      isEvent,
-      recommendation,
-    } = this.props
+    const { bookables, extraClassName, isEvent, recommendation } = this.props
 
     const {
       bookedPayload,
@@ -208,8 +183,7 @@ class Booking extends PureComponent {
       isSubmitting,
       mounted,
     } = this.state
-    const showForm =
-      !isSubmitting && !bookedPayload && !isErrored && !isCancelled
+    const showForm = !isSubmitting && !bookedPayload && !isErrored
     const defaultBookable = !isEvent && get(bookables, '[0]')
     //
     const isReadOnly = isEvent && bookables.length === 1
@@ -251,9 +225,6 @@ class Booking extends PureComponent {
                   {bookedPayload && (
                     <BookingSuccess isEvent={isEvent} data={bookedPayload} />
                   )}
-                  {isCancelled && (
-                    <BookingCancel isEvent={isEvent} data={booking} />
-                  )}
                   {isErrored && <BookingError errors={errors} />}
                   {showForm && (
                     <BookingForm
@@ -283,27 +254,23 @@ class Booking extends PureComponent {
 
 Booking.defaultProps = {
   bookables: null,
-  booking: null,
   extraClassName: null,
-  isCancelled: false,
   isEvent: false,
   recommendation: null,
 }
 
 Booking.propTypes = {
   bookables: PropTypes.array,
-  booking: PropTypes.object,
   dispatch: PropTypes.func.isRequired,
   extraClassName: PropTypes.string,
   history: PropTypes.object.isRequired,
-  isCancelled: PropTypes.bool,
   isEvent: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   match: PropTypes.object.isRequired,
   recommendation: PropTypes.object,
 }
 
 const mapStateToProps = (state, { match }) => {
-  const { offerId, mediationId, view, bookingId } = match.params
+  const { offerId, mediationId } = match.params
   const recommendation = currentRecommendationSelector(
     state,
     offerId,
@@ -311,12 +278,9 @@ const mapStateToProps = (state, { match }) => {
   )
   const isEvent = (get(recommendation, 'offer.eventId') && true) || false
   const bookables = selectBookables(state, recommendation, match)
-  const booking = selectBookingById(state, bookingId)
 
   return {
     bookables,
-    booking,
-    isCancelled: view === 'cancelled',
     isEvent,
     recommendation,
   }

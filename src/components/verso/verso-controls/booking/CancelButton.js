@@ -27,9 +27,8 @@ class CancelButton extends React.PureComponent {
 
   getCancelSuccessRedirectFromBookingAndSearch = (booking, search) => {
     const offerId = this.getOfferId(booking)
-    const bookingId = get(booking, 'id')
     const mediationId = this.getMediationId(booking)
-    const url = `/decouverte/${offerId}/${mediationId}/cancelled/${bookingId}${search}`
+    const url = `/decouverte/${offerId}/${mediationId}/${search}`
     return url
   }
 
