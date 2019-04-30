@@ -4,7 +4,7 @@ import { mount, shallow } from 'enzyme'
 import BookingCancel from '../sub-items/BookingCancel'
 import Booking from '../Booking'
 
-describe('src | components | pages | booking', () => {
+describe('src | components | booking', () => {
   let props
   let dispatch
   let push
@@ -42,9 +42,12 @@ describe('src | components | pages | booking', () => {
   })
 
   it('should match snapshot', () => {
-    // given
     // when
+    const wrapper = shallow(<Booking {...props} />)
+
     // then
+    expect(wrapper).toBeDefined()
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('cancel view', () => {

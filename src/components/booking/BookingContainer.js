@@ -15,11 +15,12 @@ export const mapStateToProps = (state, { match }) => {
   const isEvent = (get(recommendation, 'offer.eventId') && true) || false
   const bookables = selectBookables(state, recommendation, match)
   const booking = selectBookingById(state, bookingId)
+  const isCancelled = view === 'cancelled'
 
   return {
     bookables,
     booking,
-    isCancelled: view === 'cancelled',
+    isCancelled,
     isEvent,
     recommendation,
   }
