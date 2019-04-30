@@ -211,7 +211,7 @@ class Offerer extends Component {
               <span className="is-pulled-right is-size-7 has-text-grey">
                 {readOnly &&
                   !adminUserOfferer &&
-                  "Vous avez besoin d'être administrateur de la structure pour modificationer ces informations."}
+                  "Vous avez besoin d'être administrateur de la structure pour modifier ces informations."}
               </span>
             </h2>
             <div className="field-group">
