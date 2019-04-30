@@ -18,7 +18,7 @@ export const longitudeDecorator = createDecorator({
       return {}
     }
 
-    if (result.data.length === 0 || result.data.length > 1) {
+    if (result.data.length !== 1) {
       return {
         address: null,
         city: null,
