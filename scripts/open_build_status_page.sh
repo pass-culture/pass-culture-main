@@ -9,7 +9,7 @@ else
     exit 1
 fi
 
-build_url="https://circleci.com/api/v1.1/project/github/betagouv/pass-culture-api/tree/$environment"
+build_url="https://circleci.com/api/v1.1/project/github/betagouv/pass-culture-main/tree/$environment"
 
 counter=0
 while [ "$counter" -le 10 ]
