@@ -86,9 +86,8 @@ class Recommendation(PcObject, Model):
 
     @property
     def thumbUrl(self):
-        base_url = get_storage_base_url()
 
         if self.mediationId:
-            return '{}/mediations/{}'.format(base_url, humanize(self.mediationId))
+            return self.mediation.thumbUrl
 
-        return '{}/products/{}'.format(base_url, humanize(self.offer.productId))
+        return self.offer.product.thumbUrl

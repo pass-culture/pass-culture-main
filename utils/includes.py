@@ -49,30 +49,44 @@ EVENT_INCLUDES = [
             'venue'
         ]
     },
-    "mediations",
+    {
+        "key": "mediations",
+        "sub_joins": ["thumbUrl"]
+    },
     "offers",
     "-type",
-    "offerType"
+    "offerType",
+    "thumbUrl"
 ]
 
 THING_INCLUDES = [
-    "mediations",
+    {
+        "key": "mediations",
+        "sub_joins": ["thumbUrl"]
+    },
     "offers",
     "-type",
     "offerType"
+    "thumbUrl"
 ]
 
 OFFER_INCLUDES = [
     'isFinished',
     'isFullyBooked',
-    "mediations",
+    {
+        "key": "mediations",
+        "sub_joins": ["thumbUrl"]
+    },
     "stockAlertMessage",
     "isEvent",
     "isThing",
     {
         "key": "product",
         "sub_joins": [
-            'mediations',
+            {
+                "key": "mediations",
+                "sub_joins": ["thumbUrl"]
+            },
             'offerType',
             {
                 "key": "stock"
@@ -121,6 +135,7 @@ RECOMMENDATION_INCLUDES = [
             },
             {
                 "key": "product",
+                "sub_joins": ["thumbUrl"]
             }
         ]
     },
@@ -165,7 +180,7 @@ PRO_BOOKING_INCLUDES = [
                         'isFullyBooked',
                         {
                             "key": "product",
-                            "sub_joins": ["offerType"]
+                            "sub_joins": ["offerType", "thumbUrl"]
                         },
                     ]
                 }

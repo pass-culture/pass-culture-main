@@ -10,7 +10,8 @@ from utils.inflect_engine import inflect_engine
 from utils.logger import logger
 from utils.object_storage import delete_public_object, \
     get_public_object_date, \
-    store_public_object
+    store_public_object, get_storage_base_url
+from utils.string_processing import get_model_plural_name
 
 IDEAL_THUMB_WIDTH = 750
 
@@ -74,3 +75,8 @@ class HasThumbMixin(object):
 
         if need_save:
             PcObject.check_and_save(self)
+
+    @property
+    def thumbUrl(self):
+        base_url = get_storage_base_url()
+        return '{}/{}/{}'.format(base_url, get_model_plural_name(self), humanize(self.id))
