@@ -183,7 +183,7 @@ class Booking extends PureComponent {
         {isCancelled && (
           <button
             type="button"
-            id="booking-cancel-ok-button"
+            id="booking-cancellation-confirmation-button"
             className="text-center my5"
             onClick={this.getBackToOffer}
           >

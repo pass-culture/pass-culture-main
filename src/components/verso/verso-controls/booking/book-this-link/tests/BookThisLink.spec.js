@@ -3,9 +3,9 @@ import { mount, shallow } from 'enzyme'
 import { MemoryRouter } from 'react-router-dom'
 
 import Price from '../../../../../layout/Price'
-import BookThis, { formatOutputPrice } from '../BookThis'
+import BookThisLink, { formatOutputPrice } from '../BookThisLink'
 
-describe('src | components | verso | verso-buttons | BookThis', () => {
+describe('src | components | verso | verso-controls | booking | BookThisLink', () => {
   it('should match snapshot with required props', () => {
     // given
     const props = {
@@ -13,7 +13,7 @@ describe('src | components | verso | verso-buttons | BookThis', () => {
       priceValue: [0],
     }
     // when
-    const wrapper = shallow(<BookThis {...props} />)
+    const wrapper = shallow(<BookThisLink {...props} />)
 
     const buttonLabel = wrapper.find('.pc-ticket-button-label')
     // then
@@ -33,7 +33,7 @@ describe('src | components | verso | verso-buttons | BookThis', () => {
     // when
     const wrapper = mount(
       <MemoryRouter>
-        <BookThis {...props} />
+        <BookThisLink {...props} />
       </MemoryRouter>
     )
 
@@ -60,7 +60,7 @@ describe('src | components | verso | verso-buttons | BookThis', () => {
     // when
     const wrapper = mount(
       <MemoryRouter>
-        <BookThis {...props} />
+        <BookThisLink {...props} />
       </MemoryRouter>
     )
 

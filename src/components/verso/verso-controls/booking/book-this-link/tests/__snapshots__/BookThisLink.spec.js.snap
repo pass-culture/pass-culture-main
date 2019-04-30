@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | verso | verso-buttons | BookThis should match snapshot with required props 1`] = `
+exports[`src | components | verso | verso-controls | booking | BookThisLink should match snapshot with required props 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <BookThis
+  Symbol(enzyme.__unrendered__): <BookThisLink
     linkDestination="/path/to/page/"
     priceValue={
       Array [

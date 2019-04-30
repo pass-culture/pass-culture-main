@@ -1,5 +1,5 @@
 import set from 'lodash.set'
-import { getLinkDestination, getPriceValue, mapStateToProps, } from '../BookThisContainer'
+import { getLinkDestination, getPriceValue, mapStateToProps, } from '../BookThisLinkContainer'
 
 const uniqId = 'BBB'
 const offerId = 'AAA'
@@ -22,7 +22,7 @@ set(mockedState, 'data', {
   ],
 })
 
-describe('src | components | verso | verso-buttons | BookThisButtonContainer', () => {
+describe('src | components | verso | verso-controls | booking | BookThisLinkContainer', () => {
   describe('mapStateToProps', () => {
     it('should return an object with an url and an array of prices', () => {
       // given

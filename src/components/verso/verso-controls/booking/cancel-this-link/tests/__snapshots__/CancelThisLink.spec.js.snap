@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | verso | verso-controls | booking | CancelThis snapshot with required props should match snapshot 1`] = `
+exports[`src | components | verso | verso-controls | booking | CancelThisLink snapshot with required props should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <CancelThis
+  Symbol(enzyme.__unrendered__): <CancelThisLink
     booking={
       Object {
         "id": "AAA",

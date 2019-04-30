@@ -18,7 +18,7 @@ export const formatOutputPrice = (prices, devise) => {
   )
 }
 
-class BookThis extends React.PureComponent {
+class BookThisLink extends React.PureComponent {
   render() {
     const { linkDestination, priceValue } = this.props
     return (
@@ -39,9 +39,9 @@ class BookThis extends React.PureComponent {
   }
 }
 
-BookThis.propTypes = {
+BookThisLink.propTypes = {
   linkDestination: PropTypes.string.isRequired,
   priceValue: PropTypes.array.isRequired,
 }
 
-export default BookThis
+export default BookThisLink

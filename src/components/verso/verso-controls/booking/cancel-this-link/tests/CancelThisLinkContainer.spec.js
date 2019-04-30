@@ -1,7 +1,7 @@
-import { mapStateToProps } from '../CancelThisContainer'
+import { mapStateToProps } from '../CancelThisLinkContainer'
 
-describe('src | components | verso | verso-controls | booking | CancelThisContainer', () => {
-  it('returns a composed object', () => {
+describe('src | components | verso | verso-controls | booking | CancelThisLinkContainer', () => {
+  it('returns an object containing props', () => {
     // given
     const state = {}
     const props = {

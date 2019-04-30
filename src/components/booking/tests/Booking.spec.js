@@ -67,7 +67,7 @@ describe('src | components | booking', () => {
       // given
       props.isCancelled = true
       const wrapper = mount(<Booking {...props} />)
-      const okButton = wrapper.find('#booking-cancel-ok-button')
+      const okButton = wrapper.find('#booking-cancellation-confirmation-button')
 
       // when
       okButton.simulate('click')

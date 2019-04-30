@@ -3,7 +3,7 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
-import CancelThis from './CancelThis'
+import CancelThisLink from './CancelThisLink'
 
 export const mapStateToProps = (state, props) => {
   const { booking, history } = props
@@ -20,4 +20,4 @@ export const mapStateToProps = (state, props) => {
 export default compose(
   withRouter,
   connect(mapStateToProps)
-)(CancelThis)
+)(CancelThisLink)

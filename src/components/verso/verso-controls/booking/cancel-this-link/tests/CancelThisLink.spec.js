@@ -3,10 +3,10 @@ import { mount, shallow } from 'enzyme'
 import { Router } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
 
-import CancelThis from '../CancelThis'
+import CancelThisLink from '../CancelThisLink'
 import Price from '../../../../../layout/Price'
 
-describe('src | components | verso | verso-controls | booking | CancelThis', () => {
+describe('src | components | verso | verso-controls | booking | CancelThisLink', () => {
   let props
   let dispatch
   let push
@@ -33,7 +33,7 @@ describe('src | components | verso | verso-controls | booking | CancelThis', (
   describe('snapshot with required props', () => {
     it('should match snapshot', () => {
       // when
-      const wrapper = shallow(<CancelThis {...props} />)
+      const wrapper = shallow(<CancelThisLink {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -44,12 +44,12 @@ describe('src | components | verso | verso-controls | booking | CancelThis', (
   describe('render', () => {
     it('should display Price component, check icon, and label Annuler', () => {
       // when
-      const wrapper = shallow(<CancelThis {...props} />)
+      const wrapper = shallow(<CancelThisLink {...props} />)
+
+      // then
       const price = wrapper.find(Price)
       const icon = wrapper.find('.icon-ico-check')
       const cancelLabel = wrapper.find('.pc-ticket-button-label')
-
-      // then
       expect(icon).toHaveLength(1)
       expect(price).toHaveLength(1)
       expect(cancelLabel).toHaveLength(1)
@@ -61,7 +61,7 @@ describe('src | components | verso | verso-controls | booking | CancelThis', (
       props.isCancelled = true
 
       // when
-      const wrapper = shallow(<CancelThis {...props} />)
+      const wrapper = shallow(<CancelThisLink {...props} />)
       const icon = wrapper.find('.icon-ico-check')
 
       // then
@@ -109,7 +109,7 @@ describe('src | components | verso | verso-controls | booking | CancelThis', (
       }
       const wrapper = mount(
         <Router history={history}>
-          <CancelThis {...props} />
+          <CancelThisLink {...props} />
         </Router>
       )
       const cancelPopin = wrapper.find('#verso-cancel-booking-button')
@@ -126,7 +126,7 @@ describe('src | components | verso | verso-controls | booking | CancelThis', (
   describe('onSuccess', () => {
     it('should redirect to cancelled booking page', () => {
       // given
-      const wrapper = shallow(<CancelThis {...props} />)
+      const wrapper = shallow(<CancelThisLink {...props} />)
 
       // when
       wrapper.instance().onSuccess(props.booking)
@@ -137,6 +137,28 @@ describe('src | components | verso | verso-controls | booking | CancelThis', (
         type: 'TOGGLE_SHARE_POPIN',
       })
       expect(push).toHaveBeenCalledWith('/decouverte/BBB/booking/AAA/cancelled')
+    })
+  })
+
+  describe('onFailure', () => {
+    it('should notify user with a failing message', () => {
+      // given
+      const state = {}
+      const request = {}
+      const wrapper = shallow(<CancelThisLink {...props} />)
+
+      // when
+      wrapper.instance().onFailure(state, request)
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith({
+        options: {
+          buttons: expect.any(Array),
+          text: "Une erreur inconnue s'est produite",
+          title: "Annulation impossible"
+        },
+        type: 'TOGGLE_SHARE_POPIN'
+      })
     })
   })
 })

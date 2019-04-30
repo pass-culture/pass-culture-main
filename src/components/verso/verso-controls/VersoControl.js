@@ -7,8 +7,8 @@ import Finishable from '../../layout/Finishable'
 import { ShareButton } from '../../share/ShareButton'
 import VersoWallet from './wallet/VersoWalletContainer'
 import VersoButtonFavorite from './favorite/VersoButtonFavoriteContainer'
-import CancelThis from './booking/cancel-this/CancelThisContainer'
-import BookThis from './booking/book-this/BookThisContainer'
+import CancelThisLinkContainer from './booking/cancel-this-link/CancelThisLinkContainer'
+import BookThisLinkContainer from './booking/book-this-link/BookThisLinkContainer'
 
 const renderClickBlockerIfFinished = () => (
   <button
@@ -32,8 +32,8 @@ const VersoControl = ({ booking, isFinished }) => (
       </li>
       <li className="is-relative">
         {isFinished && renderClickBlockerIfFinished()}
-        {booking && <CancelThis booking={booking} />}
-        {!booking && <BookThis />}
+        {booking && <CancelThisLinkContainer booking={booking} />}
+        {!booking && <BookThisLinkContainer />}
       </li>
     </ul>
     <Finishable finished={isFinished} />

@@ -6,7 +6,7 @@ import { requestData } from 'redux-saga-data'
 import Price from '../../../../layout/Price'
 import { closeSharePopin, openSharePopin } from '../../../../../reducers/share'
 
-class CancelThis extends React.PureComponent {
+class CancelThisLink extends React.PureComponent {
   buildButton = (label, id, onClick) => (
     <button
       id={id}
@@ -21,7 +21,7 @@ class CancelThis extends React.PureComponent {
 
   buildUrlForRedirect = booking => {
     const bookingId = get(booking, 'id')
-    const offerId = get(booking.recommendation, 'offerId')
+    const offerId = get(booking, 'recommendation.offerId')
 
     return `/decouverte/${offerId}/booking/${bookingId}/cancelled`
   }
@@ -34,9 +34,7 @@ class CancelThis extends React.PureComponent {
 
   onFailure = (state, request) => {
     const { dispatch } = this.props
-    const message = get(request, 'errors.booking') || [
-      `Une erreur inconnue s'est produite`,
-    ]
+    const message = get(request, 'errors.booking') || [`Une erreur inconnue s'est produite`]
 
     const options = {
       buttons: [
@@ -70,6 +68,8 @@ class CancelThis extends React.PureComponent {
 
   openCancelPopin = booking => {
     const { dispatch } = this.props
+    const title = get(booking, 'stock.resolvedOffer.name')
+
     const options = {
       buttons: [
         this.buildButton(
@@ -80,7 +80,7 @@ class CancelThis extends React.PureComponent {
         this.buildButton('Non', 'popin-cancel-booking-no', this.onCancelNo()),
       ],
       text: 'Souhaitez-vous réellement annuler cette réservation ?',
-      title: booking.stock.resolvedOffer.name,
+      title,
     }
     dispatch(openSharePopin(options))
   }
@@ -110,9 +110,9 @@ class CancelThis extends React.PureComponent {
   }
 }
 
-CancelThis.defaultProps = {}
+CancelThisLink.defaultProps = {}
 
-CancelThis.propTypes = {
+CancelThisLink.propTypes = {
   booking: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
@@ -120,4 +120,4 @@ CancelThis.propTypes = {
   priceValue: PropTypes.number.isRequired,
 }
 
-export default CancelThis
+export default CancelThisLink

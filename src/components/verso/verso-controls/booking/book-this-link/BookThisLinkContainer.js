@@ -3,7 +3,7 @@ import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
-import BookThis from './BookThis'
+import BookThisLink from './BookThisLink'
 import { getPriceRangeFromStocks } from '../../../../../helpers'
 import currentRecommendation from '../../../../../selectors/currentRecommendation'
 
@@ -46,4 +46,4 @@ export const mapStateToProps = (state, { match, location }) => {
 export default compose(
   withRouter,
   connect(mapStateToProps)
-)(BookThis)
+)(BookThisLink)
