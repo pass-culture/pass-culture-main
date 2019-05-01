@@ -18,20 +18,21 @@ export const longitudeDecorator = createDecorator({
       return {}
     }
 
-    if (result.data.length !== 1) {
+    const hasSingleClearResult = result.data && result.data.length === 1
+    if (hasSingleClearResult) {
+      const { address, city, postalCode } = result.data[0]
       return {
-        address: null,
-        city: null,
-        postalCode: null,
+        address,
+        city,
+        postalCode,
         selectedAddress: null,
       }
     }
 
-    const { address, city, postalCode } = result.data[0]
     return {
-      address,
-      city,
-      postalCode,
+      address: null,
+      city: null,
+      postalCode: null,
       selectedAddress: null,
     }
   },

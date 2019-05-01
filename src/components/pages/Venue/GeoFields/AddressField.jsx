@@ -47,10 +47,12 @@ export const AddressField = ({
   validate,
   ...AddressProps
 }) => {
-  const requiredValidate =
-    required && typeof required === 'function'
-      ? required
-      : (required && validateRequiredField) || undefined
+  const isRequiredTypeOfFunction = required && typeof required === 'function'
+  const defaultRequiredValidate =
+    (required && validateRequiredField) || undefined
+  const requiredValidate = isRequiredTypeOfFunction
+    ? required
+    : defaultRequiredValidate
 
   const batchGeoChanges = createBatchGeoChanges(form)
 

@@ -94,33 +94,35 @@ class Address extends Component {
 
     getGeoSuggestionsFromLatitudeAndLongitude(latitude, longitude).then(
       result => {
+        this.setState({
+          isLoading: false,
+        })
+
         if (result.error) {
           return
         }
 
-        if (result.data.length === 0 || result.data.length > 1) {
-          this.setState({
-            isLoading: false,
-          })
+        const hasSingleClearResult = result.data && result.data.length === 1
+        if (hasSingleClearResult) {
+          const { address, city, postalCode } = result.data[0]
           onMarkerDragend({
-            address: null,
-            city: null,
+            address,
+            city,
             latitude,
             longitude,
-            postalCode: null,
-            selectedAddress: null,
+            postalCode,
+            selectedAddress: address,
           })
           return
         }
 
-        const { address, city, postalCode } = result.data[0]
         onMarkerDragend({
-          address,
-          city,
+          address: null,
+          city: null,
           latitude,
           longitude,
-          postalCode,
-          selectedAddress: address,
+          postalCode: null,
+          selectedAddress: null,
         })
       }
     )
@@ -176,7 +178,8 @@ class Address extends Component {
           return
         }
 
-        if (result.data.length === 0) {
+        const hasNoData = result.data.length === 0
+        if (hasNoData) {
           this.setState({
             isLoading: false,
           })
@@ -250,12 +253,12 @@ class Address extends Component {
           onSelect={this.onSuggestionSelect}
           readOnly={readOnly}
           renderItem={this.renderItem}
-          renderMenu={children => (
-            <div
-              className={classnames('menu', { empty: children.length === 0 })}>
-              {children}
-            </div>
-          )}
+          renderMenu={children => {
+            const empty = children.length === 0
+            return (
+              <div className={classnames('menu', { empty })}>{children}</div>
+            )
+          }}
           value={this.props.value || value}
           wrapperProps={{ className: 'input-wrapper' }}
         />
@@ -279,10 +282,7 @@ class Address extends Component {
       <div className="address">
         {this.renderInput()}
         <Map center={[latitude, longitude]} zoom={zoom} className="map">
-          <TileLayer
-            // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
-          />
+          <TileLayer url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png" />
           {marker && (
             <Marker
               draggable
