@@ -159,7 +159,6 @@ class Venue extends Component {
             onSubmit={this.onFormSubmit}
             render={formProps => {
               const canSubmit = getCanSubmit(formProps)
-
               const { form, handleSubmit, values } = formProps
               const {
                 latitude: formLatitude,

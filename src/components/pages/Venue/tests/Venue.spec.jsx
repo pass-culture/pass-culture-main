@@ -31,9 +31,10 @@ window.scroll = () => {}
 
 const BOOKING_EMAIL = 'foo@mama.com'
 const ADDRESS = "5 cite de l'enfer"
-const CITY = 'Paboude'
-const LATITUDE = 48.3
-const LONGITUDE = 1.2
+const CITY = 'Cayenne'
+const COMMENT = "C'est un lieu sans siret"
+const LATITUDE = 4.56
+const LONGITUDE = -52.19
 const MANAGING_OFFERER_ID = 'AE'
 const NAME = 'foo'
 const POSTAL_CODE = '75010'
@@ -50,26 +51,52 @@ const mockSuccessSiretInfo = {
   },
 }
 
+const MOCK_FEATURE = {
+  geometry: {
+    coordinates: [LONGITUDE, LATITUDE],
+  },
+  properties: {
+    city: CITY,
+    id: 'OOO',
+    label: 'OOO',
+    name: ADDRESS,
+    postcode: POSTAL_CODE,
+  },
+}
+
 const mockSuccessAddressInfo = {
   features: [
+    MOCK_FEATURE,
     {
       geometry: {
-        coordinates: [LATITUDE, LONGITUDE],
+        coordinates: [1, 48],
       },
       properties: {
-        city: CITY,
-        id: 'OOO',
-        label: 'OOO',
+        city: 'FooVille',
+        id: 'OO1',
+        label: 'OO1',
         name: ADDRESS,
-        postcode: POSTAL_CODE,
+        postcode: '75010',
       },
     },
   ],
 }
 
+const mockSuccessLonLatInfo = {
+  features: [MOCK_FEATURE],
+}
+
 global.fetch = url => {
   if (url.includes('api-adress') && url.includes(ADDRESS)) {
     const response = new Response(JSON.stringify(mockSuccessAddressInfo))
+    return response
+  }
+  if (
+    url.includes('api-adress') &&
+    url.includes(LATITUDE) &&
+    url.includes(LONGITUDE)
+  ) {
+    const response = new Response(JSON.stringify(mockSuccessLonLatInfo))
     return response
   }
   if (url.includes('sirene.entreprise') && url.includes(SIRET)) {
@@ -280,22 +307,11 @@ describe('src | components | pages | Venue', () => {
   })
 
   describe('Form Request', () => {
-    it('fill the form with a valid siret', done => {
+    it('fills the form with a valid siret', done => {
       // given
       const { store } = configureStore()
       const history = createBrowserHistory()
       history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
-      const values = {
-        address: ADDRESS,
-        bookingEmail: 'fifi@moc.com',
-        city: CITY,
-        latitude: LATITUDE,
-        longitude: LONGITUDE,
-        managingOffererId: MANAGING_OFFERER_ID,
-        name: NAME,
-        postalCode: POSTAL_CODE,
-        siret: SIRET,
-      }
       const wrapper = mount(
         <Provider store={store}>
           <Router history={history}>
@@ -313,10 +329,10 @@ describe('src | components | pages | Venue', () => {
         wrapper.update()
         wrapper
           .find("input[name='bookingEmail']")
-          .simulate('change', { target: { value: values.bookingEmail } })
+          .simulate('change', { target: { value: BOOKING_EMAIL } })
         wrapper
           .find("input[name='siret']")
-          .simulate('change', { target: { value: values.siret } })
+          .simulate('change', { target: { value: SIRET } })
 
         setTimeout(() => {
           // when (siret has filled other inputs, submit button is not anymore disabled)
@@ -326,9 +342,20 @@ describe('src | components | pages | Venue', () => {
           submitButton.simulate('submit')
 
           // then
+          const body = {
+            address: ADDRESS,
+            bookingEmail: BOOKING_EMAIL,
+            city: CITY,
+            latitude: LATITUDE,
+            longitude: LONGITUDE,
+            managingOffererId: MANAGING_OFFERER_ID,
+            name: NAME,
+            postalCode: POSTAL_CODE,
+            siret: SIRET,
+          }
           const expectedSubConfig = {
             apiPath: '/venues/',
-            body: values,
+            body,
             method: 'POST',
             normalizer: venueNormalizer,
           }
@@ -343,22 +370,11 @@ describe('src | components | pages | Venue', () => {
       })
     })
 
-    it.skip('fill the form with a valid address', done => {
+    it('fills the form with a valid address', done => {
       // given
       const { store } = configureStore()
       const history = createBrowserHistory()
       history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
-      const values = {
-        address: ADDRESS,
-        bookingEmail: 'fifi@moc.com',
-        city: CITY,
-        latitude: LATITUDE,
-        longitude: LONGITUDE,
-        managingOffererId: MANAGING_OFFERER_ID,
-        name: NAME,
-        postalCode: POSTAL_CODE,
-        siret: SIRET,
-      }
       const wrapper = mount(
         <Provider store={store}>
           <Router history={history}>
@@ -378,47 +394,207 @@ describe('src | components | pages | Venue', () => {
           .find("input[name='name']")
           .simulate('change', { target: { value: NAME } })
         wrapper
+          .find("textarea[name='comment']")
+          .simulate('change', { target: { value: COMMENT } })
+        wrapper
+          .find("input[name='bookingEmail']")
+          .simulate('change', { target: { value: BOOKING_EMAIL } })
+        wrapper
           .find("input[name='address']")
           .simulate('change', { target: { value: ADDRESS } })
 
         setTimeout(() => {
+          wrapper.update()
+          const { items, onSelect, value } = wrapper
+            .find('Autocomplete')
+            .props()
+          const item = items[0]
+          onSelect(value, item)
+
           setTimeout(() => {
+            // when (address has filled other inputs, submit button is not anymore disabled)
             wrapper.update()
+            const submitButton = wrapper.find('button[type="submit"]')
+            expect(submitButton.props().disabled).toEqual(false)
+            submitButton.simulate('submit')
 
-            console.log(
-              wrapper
-                .find('.address')
-                .find('.input-wrapper')
-                .props()
+            // then
+            const body = {
+              address: ADDRESS,
+              bookingEmail: BOOKING_EMAIL,
+              city: CITY,
+              comment: COMMENT,
+              latitude: LATITUDE,
+              longitude: LONGITUDE,
+              managingOffererId: MANAGING_OFFERER_ID,
+              name: NAME,
+              postalCode: POSTAL_CODE,
+            }
+            const expectedSubConfig = {
+              apiPath: '/venues/',
+              body,
+              method: 'POST',
+              normalizer: venueNormalizer,
+            }
+            const receivedConfig = mockRequestDataCatch.mock.calls.slice(
+              -1
+            )[0][0]
+            Object.keys(expectedSubConfig).forEach(key =>
+              expect(receivedConfig[key]).toEqual(expectedSubConfig[key])
             )
-            wrapper.find('div.item').simulate('click')
 
-            setTimeout(() => {
-              // when (address has filled other inputs, submit button is not anymore disabled)
-              wrapper.update()
-              const submitButton = wrapper.find('button[type="submit"]')
-              expect(submitButton.props().disabled).toEqual(false)
-              submitButton.simulate('submit')
-
-              // then
-              const expectedSubConfig = {
-                apiPath: '/venues/',
-                body: values,
-                method: 'POST',
-                normalizer: venueNormalizer,
-              }
-              const receivedConfig = mockRequestDataCatch.mock.calls.slice(
-                -1
-              )[0][0]
-              Object.keys(expectedSubConfig).forEach(key =>
-                expect(receivedConfig[key]).toEqual(expectedSubConfig[key])
-              )
-
-              // done
-              done()
-            })
+            // done
+            done()
           })
-        }, 3000)
+        }, 500)
+      })
+    })
+
+    it('fills the form with valid coordinates (even if they are negative)', done => {
+      // given
+      const { store } = configureStore()
+      const history = createBrowserHistory()
+      history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <Switch>
+              <Route path="/structures/:offererId/lieux/:venueId">
+                <VenueContainer />
+              </Route>
+            </Switch>
+          </Router>
+        </Provider>
+      )
+
+      setTimeout(() => {
+        // when (offerer request is done, form is now available)
+        wrapper.update()
+        wrapper
+          .find("input[name='name']")
+          .simulate('change', { target: { value: NAME } })
+        wrapper
+          .find("textarea[name='comment']")
+          .simulate('change', { target: { value: COMMENT } })
+        wrapper
+          .find("input[name='bookingEmail']")
+          .simulate('change', { target: { value: BOOKING_EMAIL } })
+        wrapper
+          .find("input[name='latitude']")
+          .simulate('change', { target: { value: LATITUDE } })
+        wrapper
+          .find("input[name='longitude']")
+          .simulate('change', { target: { value: LONGITUDE } })
+
+        setTimeout(() => {
+          // when (address has filled other inputs, submit button is not anymore disabled)
+          wrapper.update()
+          const submitButton = wrapper.find('button[type="submit"]')
+          expect(submitButton.props().disabled).toEqual(false)
+          submitButton.simulate('submit')
+
+          // then
+          const body = {
+            address: ADDRESS,
+            bookingEmail: BOOKING_EMAIL,
+            city: CITY,
+            comment: COMMENT,
+            latitude: LATITUDE,
+            longitude: LONGITUDE,
+            managingOffererId: MANAGING_OFFERER_ID,
+            name: NAME,
+            postalCode: POSTAL_CODE,
+          }
+          const expectedSubConfig = {
+            apiPath: '/venues/',
+            body,
+            method: 'POST',
+            normalizer: venueNormalizer,
+          }
+          const receivedConfig = mockRequestDataCatch.mock.calls.slice(-1)[0][0]
+          Object.keys(expectedSubConfig).forEach(key =>
+            expect(receivedConfig[key]).toEqual(expectedSubConfig[key])
+          )
+
+          // done
+          done()
+        })
+      })
+    })
+
+    it('fills the form with a dragging a marker', done => {
+      // given
+      const { store } = configureStore()
+      const history = createBrowserHistory()
+      history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <Switch>
+              <Route path="/structures/:offererId/lieux/:venueId">
+                <VenueContainer
+                  formInitialValues={{ latitude: 1, longitude: 45 }}
+                />
+              </Route>
+            </Switch>
+          </Router>
+        </Provider>
+      )
+
+      setTimeout(() => {
+        // when (offerer request is done, form is now available)
+        wrapper.update()
+        wrapper
+          .find("input[name='name']")
+          .simulate('change', { target: { value: NAME } })
+        wrapper
+          .find("textarea[name='comment']")
+          .simulate('change', { target: { value: COMMENT } })
+        wrapper
+          .find("input[name='bookingEmail']")
+          .simulate('change', { target: { value: BOOKING_EMAIL } })
+
+        setTimeout(() => {
+          wrapper.update()
+          const { onMarkerDragend } = wrapper.find('Address').props()
+          onMarkerDragend({ latitude: LATITUDE, longitude: LONGITUDE })
+
+          setTimeout(() => {
+            // when (address has filled other inputs, submit button is not anymore disabled)
+            wrapper.update()
+            const submitButton = wrapper.find('button[type="submit"]')
+            expect(submitButton.props().disabled).toEqual(false)
+            submitButton.simulate('submit')
+
+            // then
+            const body = {
+              address: ADDRESS,
+              bookingEmail: BOOKING_EMAIL,
+              city: CITY,
+              comment: COMMENT,
+              latitude: LATITUDE,
+              longitude: LONGITUDE,
+              managingOffererId: MANAGING_OFFERER_ID,
+              name: NAME,
+              postalCode: POSTAL_CODE,
+            }
+            const expectedSubConfig = {
+              apiPath: '/venues/',
+              body,
+              method: 'POST',
+              normalizer: venueNormalizer,
+            }
+            const receivedConfig = mockRequestDataCatch.mock.calls.slice(
+              -1
+            )[0][0]
+            Object.keys(expectedSubConfig).forEach(key =>
+              expect(receivedConfig[key]).toEqual(expectedSubConfig[key])
+            )
+
+            // done
+            done()
+          })
+        }, 500)
       })
     })
   })

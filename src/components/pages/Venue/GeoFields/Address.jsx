@@ -80,45 +80,50 @@ class Address extends Component {
 
   onMarkerDragend = () => {
     const { onMarkerDragend } = this.props
-    const { lat, lng } = this.refmarker.current.leafletElement.getLatLng()
+    const {
+      latitude,
+      longitude,
+    } = this.refmarker.current.leafletElement.getLatLng()
     this.setState({
       marker: {
-        latitude: lat,
-        longitude: lng,
+        latitude,
+        longitude,
       },
       suggestions: [],
     })
 
-    getGeoSuggestionsFromLatitudeAndLongitude(lat, lng).then(result => {
-      if (result.error) {
-        return
-      }
+    getGeoSuggestionsFromLatitudeAndLongitude(latitude, longitude).then(
+      result => {
+        if (result.error) {
+          return
+        }
 
-      if (result.data.length === 0 || result.data.length > 1) {
-        this.setState({
-          isLoading: false,
-        })
+        if (result.data.length === 0 || result.data.length > 1) {
+          this.setState({
+            isLoading: false,
+          })
+          onMarkerDragend({
+            address: null,
+            city: null,
+            latitude,
+            longitude,
+            postalCode: null,
+            selectedAddress: null,
+          })
+          return
+        }
+
+        const { address, city, postalCode } = result.data[0]
         onMarkerDragend({
-          address: null,
-          city: null,
-          latitude: lat,
-          longitude: lng,
-          postalCode: null,
-          selectedAddress: null,
+          address,
+          city,
+          latitude,
+          longitude,
+          postalCode,
+          selectedAddress: address,
         })
-        return
       }
-
-      const { address, city, latitude, longitude, postalCode } = result.data[0]
-      onMarkerDragend({
-        address,
-        city,
-        latitude,
-        longitude,
-        postalCode,
-        selectedAddress: address,
-      })
-    })
+    )
   }
 
   onTextChange = event => {
