@@ -81,9 +81,10 @@ class Address extends Component {
   onMarkerDragend = () => {
     const { onMarkerDragend } = this.props
     const {
-      latitude,
-      longitude,
+      lat: latitude,
+      lng: longitude,
     } = this.refmarker.current.leafletElement.getLatLng()
+
     this.setState({
       marker: {
         latitude,
@@ -111,7 +112,7 @@ class Address extends Component {
             latitude,
             longitude,
             postalCode,
-            selectedAddress: address,
+            selectedAddress: null,
           })
           return
         }

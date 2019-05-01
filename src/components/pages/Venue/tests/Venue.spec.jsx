@@ -325,8 +325,13 @@ describe('src | components | pages | Venue', () => {
       )
 
       setTimeout(() => {
-        // when (offerer request is done, form is now available)
+        // then (offerer request is done, form is now available)
         wrapper.update()
+        expect(
+          wrapper.find("textarea[name='comment']").props().required
+        ).toEqual(true)
+
+        // when
         wrapper
           .find("input[name='bookingEmail']")
           .simulate('change', { target: { value: BOOKING_EMAIL } })
@@ -335,6 +340,27 @@ describe('src | components | pages | Venue', () => {
           .simulate('change', { target: { value: SIRET } })
 
         setTimeout(() => {
+          // then
+          expect(
+            wrapper.find("textarea[name='comment']").props().required
+          ).toEqual(false)
+
+          expect(
+            wrapper.find("input[name='address']").props().readOnly
+          ).toEqual(true)
+          expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
+            true
+          )
+          expect(
+            wrapper.find("input[name='postalCode']").props().readOnly
+          ).toEqual(true)
+          //expect(wrapper
+          //  .find("input[name='latitude']")
+          //  .props().readOnly).toEqual(true)
+          //expect(wrapper
+          //  .find("input[name='longitude']")
+          //  .props().readOnly).toEqual(true)
+
           // when (siret has filled other inputs, submit button is not anymore disabled)
           wrapper.update()
           const submitButton = wrapper.find('button[type="submit"]')
@@ -369,6 +395,9 @@ describe('src | components | pages | Venue', () => {
         })
       })
     })
+
+    /* TODO */
+    it.skip('reputs geo fields to not readonly mode when we delete the siret', () => ({}))
 
     it('fills the form with a valid address', done => {
       // given
@@ -412,8 +441,22 @@ describe('src | components | pages | Venue', () => {
           onSelect(value, item)
 
           setTimeout(() => {
-            // when (address has filled other inputs, submit button is not anymore disabled)
+            // then (address has filled other inputs)
             wrapper.update()
+            expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
+              true
+            )
+            expect(
+              wrapper.find("input[name='postalCode']").props().readOnly
+            ).toEqual(true)
+            expect(
+              wrapper.find("input[name='latitude']").props().readOnly
+            ).toEqual(true)
+            expect(
+              wrapper.find("input[name='longitude']").props().readOnly
+            ).toEqual(true)
+
+            // when
             const submitButton = wrapper.find('button[type="submit"]')
             expect(submitButton.props().disabled).toEqual(false)
             submitButton.simulate('submit')
@@ -449,6 +492,9 @@ describe('src | components | pages | Venue', () => {
         }, 500)
       })
     })
+
+    /* TODO */
+    it.skip('reputs geo fields to not readonly mode when we delete the address', () => ({}))
 
     it('fills the form with valid coordinates (even if they are negative)', done => {
       // given
@@ -487,8 +533,25 @@ describe('src | components | pages | Venue', () => {
           .simulate('change', { target: { value: LONGITUDE } })
 
         setTimeout(() => {
-          // when (address has filled other inputs, submit button is not anymore disabled)
+          // then (address has filled other inputs, submit button is not anymore disabled)
           wrapper.update()
+          expect(
+            wrapper.find("input[name='address']").props().readOnly
+          ).toEqual(false)
+          expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
+            false
+          )
+          expect(
+            wrapper.find("input[name='postalCode']").props().readOnly
+          ).toEqual(false)
+          expect(
+            wrapper.find("input[name='latitude']").props().readOnly
+          ).toEqual(false)
+          expect(
+            wrapper.find("input[name='longitude']").props().readOnly
+          ).toEqual(false)
+
+          // when
           const submitButton = wrapper.find('button[type="submit"]')
           expect(submitButton.props().disabled).toEqual(false)
           submitButton.simulate('submit')
@@ -542,8 +605,25 @@ describe('src | components | pages | Venue', () => {
       )
 
       setTimeout(() => {
-        // when (offerer request is done, form is now available)
+        // then (address has filled other inputs, submit button is not anymore disabled)
         wrapper.update()
+        expect(wrapper.find("input[name='address']").props().readOnly).toEqual(
+          false
+        )
+        expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
+          false
+        )
+        expect(
+          wrapper.find("input[name='postalCode']").props().readOnly
+        ).toEqual(false)
+        expect(wrapper.find("input[name='latitude']").props().readOnly).toEqual(
+          false
+        )
+        expect(
+          wrapper.find("input[name='longitude']").props().readOnly
+        ).toEqual(false)
+
+        // when
         wrapper
           .find("input[name='name']")
           .simulate('change', { target: { value: NAME } })
