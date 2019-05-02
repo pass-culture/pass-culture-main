@@ -7,7 +7,6 @@ from domain.mediations import DO_NOT_CROP, standardize_image, compute_dominant_c
 from models.pc_object import PcObject
 from utils.human_ids import humanize
 from utils.inflect_engine import inflect_engine
-from utils.logger import logger
 from utils.object_storage import delete_public_object, \
     get_public_object_date, \
     store_public_object, get_storage_base_url
@@ -32,7 +31,7 @@ class HasThumbMixin(object):
     def get_thumb_storage_id(self, index):
         if self.id is None:
             raise ValueError("Trying to get thumb_storage_id for an unsaved object")
-        return inflect_engine.plural(self.__class__.__name__.lower())\
+        return inflect_engine.plural(self.__class__.__name__.lower()) \
                + "/" \
                + humanize(self.id) \
                + (('_' + str(index)) if index > 0 else '')

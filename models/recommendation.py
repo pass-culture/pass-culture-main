@@ -1,6 +1,6 @@
 """ recommendation model """
 from datetime import datetime
-from sqlalchemy.sql import expression
+
 from sqlalchemy import BigInteger, \
     Boolean, \
     Column, \
@@ -8,11 +8,10 @@ from sqlalchemy import BigInteger, \
     ForeignKey, \
     String
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import expression
 
 from models.db import Model
 from models.pc_object import PcObject
-from utils.human_ids import humanize
-from utils.object_storage import get_storage_base_url
 
 
 class Recommendation(PcObject, Model):
@@ -39,13 +38,13 @@ class Recommendation(PcObject, Model):
                              backref='recommendations')
 
     offerId = Column(BigInteger,
-                        ForeignKey('offer.id'),
-                        index=True,
-                        nullable=True)
+                     ForeignKey('offer.id'),
+                     index=True,
+                     nullable=True)
 
     offer = relationship('Offer',
-                            foreign_keys=[offerId],
-                            backref='recommendations')
+                         foreign_keys=[offerId],
+                         backref='recommendations')
 
     shareMedium = Column(String(20),
                          nullable=True)
@@ -86,7 +85,6 @@ class Recommendation(PcObject, Model):
 
     @property
     def thumbUrl(self):
-
         if self.mediationId:
             return self.mediation.thumbUrl
 
