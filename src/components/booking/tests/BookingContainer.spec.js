@@ -36,7 +36,6 @@ describe('src | components | booking', () => {
                 isActive: true,
                 lastProviderId: null,
                 modelName: 'Offer',
-                productId: 'AE',
                 product: {
                   accessibility: '\u0000',
                   ageMax: null,
@@ -57,6 +56,7 @@ describe('src | components | booking', () => {
                   thumbCount: 1,
                   type: 'EventType.CONFERENCE_DEBAT_DEDICACE',
                 },
+                productId: 'AE',
                 venue: {
                   address: '1 BD POISSONNIERE',
                   bic: null,
@@ -90,6 +90,8 @@ describe('src | components | booking', () => {
           {
             id: 'AAA',
             offer: {
+              isEvent: true,
+              productId: 'AAA',
               venue: {
                 latitude: 48.8638,
                 longitude: 2.3375,
