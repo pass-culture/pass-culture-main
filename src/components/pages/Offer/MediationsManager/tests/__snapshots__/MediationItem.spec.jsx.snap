@@ -3,7 +3,15 @@
 exports[`src | components | pages | Offer | MediationItem snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <MediationItem />,
+  Symbol(enzyme.__unrendered__): <MediationItem
+    mediation={
+        Object {
+            "id": "AE",
+            "isActive": true,
+            "thumbUrl": "http://example.com/image.jpg",
+          }
+    }
+/>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -20,12 +28,12 @@ ShallowWrapper {
     "props": Object {
       "BlockComponent": null,
       "Tag": "li",
-      "action": "/mediations/undefined",
+      "action": "/mediations/AE",
       "children": Array [
         <img
-          alt="accroche-undefined"
-          disabled={true}
-          src="http://localhost/storage/thumbs/mediations/undefined"
+          alt="accroche-AE"
+          disabled={false}
+          src="http://example.com/image.jpg"
 />,
         <br />,
         <br />,
@@ -55,12 +63,16 @@ ShallowWrapper {
       "handleSuccessNotification": null,
       "handleSuccessRedirect": null,
       "isAutoSubmit": true,
-      "name": "mediation-undefined",
+      "name": "mediation-AE",
       "normalizer": null,
       "onEnterKey": null,
       "onEscapeKey": null,
       "onSubmit": null,
-      "patch": undefined,
+      "patch": Object {
+        "id": "AE",
+        "isActive": true,
+        "thumbUrl": "http://example.com/image.jpg",
+      },
       "successNotification": "Formulaire non validé",
     },
     "ref": null,
@@ -70,9 +82,9 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "alt": "accroche-undefined",
-          "disabled": true,
-          "src": "http://localhost/storage/thumbs/mediations/undefined",
+          "alt": "accroche-AE",
+          "disabled": false,
+          "src": "http://example.com/image.jpg",
         },
         "ref": null,
         "rendered": null,
@@ -143,12 +155,12 @@ ShallowWrapper {
       "props": Object {
         "BlockComponent": null,
         "Tag": "li",
-        "action": "/mediations/undefined",
+        "action": "/mediations/AE",
         "children": Array [
           <img
-            alt="accroche-undefined"
-            disabled={true}
-            src="http://localhost/storage/thumbs/mediations/undefined"
+            alt="accroche-AE"
+            disabled={false}
+            src="http://example.com/image.jpg"
 />,
           <br />,
           <br />,
@@ -178,12 +190,16 @@ ShallowWrapper {
         "handleSuccessNotification": null,
         "handleSuccessRedirect": null,
         "isAutoSubmit": true,
-        "name": "mediation-undefined",
+        "name": "mediation-AE",
         "normalizer": null,
         "onEnterKey": null,
         "onEscapeKey": null,
         "onSubmit": null,
-        "patch": undefined,
+        "patch": Object {
+          "id": "AE",
+          "isActive": true,
+          "thumbUrl": "http://example.com/image.jpg",
+        },
         "successNotification": "Formulaire non validé",
       },
       "ref": null,
@@ -193,9 +209,9 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "alt": "accroche-undefined",
-            "disabled": true,
-            "src": "http://localhost/storage/thumbs/mediations/undefined",
+            "alt": "accroche-AE",
+            "disabled": false,
+            "src": "http://example.com/image.jpg",
           },
           "ref": null,
           "rendered": null,
