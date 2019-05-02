@@ -6,9 +6,8 @@ import Header from '../Header'
 describe('src | components | pages | search | Header', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
-      // given
       // when
-      const wrapper = shallow(<Header />)
+      const wrapper = shallow(<Header title="Fake title" />)
 
       // then
       expect(wrapper).toBeDefined()
