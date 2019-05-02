@@ -47,10 +47,10 @@ export const AddressField = ({
   validate,
   ...AddressProps
 }) => {
-  const isRequiredTypeOfFunction = required && typeof required === 'function'
+  const requiredIsAFunction = required && typeof required === 'function'
   const defaultRequiredValidate =
     (required && validateRequiredField) || undefined
-  const requiredValidate = isRequiredTypeOfFunction
+  const requiredValidate = requiredIsAFunction
     ? required
     : defaultRequiredValidate
 

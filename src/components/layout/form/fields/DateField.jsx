@@ -41,13 +41,15 @@ export const DateField = ({
   required,
   type,
   validate,
-  // github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
+  // see github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
   ...DatePickerProps
 }) => {
-  const requiredValidate =
-    required && typeof required === 'function'
-      ? required
-      : (required && validateRequiredField) || undefined
+  const requiredIsAFunction = required && typeof required === 'function'
+  const defaultRequiredValidate =
+    (required && validateRequiredField) || undefined
+  const requiredValidate = requiredIsAFunction
+    ? required
+    : defaultRequiredValidate
 
   const inputName = id || name
   const isClearable = !readOnly && clearable

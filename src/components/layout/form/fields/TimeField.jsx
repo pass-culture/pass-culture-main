@@ -25,13 +25,15 @@ export const TimeField = ({
   type,
   validate,
   tz,
-  // https://www.npmjs.com/package/react-time-input
+  // see https://www.npmjs.com/package/react-time-input
   ...ReactTimeInputProps
 }) => {
-  const requiredValidate =
-    required && typeof required === 'function'
-      ? required
-      : (required && validateRequiredField) || undefined
+  const requiredIsAFunction = required && typeof required === 'function'
+  const defaultRequiredValidate =
+    (required && validateRequiredField) || undefined
+  const requiredValidate = requiredIsAFunction
+    ? required
+    : defaultRequiredValidate
 
   return (
     <Field

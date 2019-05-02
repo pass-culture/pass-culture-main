@@ -22,13 +22,15 @@ export const TextareaField = ({
   required,
   validate,
   validating,
-  // react-autosize-textarea
+  // see https://github.com/buildo/react-autosize-textarea
   ...ReactAutosizeProps
 }) => {
-  const requiredValidate =
-    required && typeof required === 'function'
-      ? required
-      : (required && validateRequiredField) || undefined
+  const requiredIsAFunction = required && typeof required === 'function'
+  const defaultRequiredValidate =
+    (required && validateRequiredField) || undefined
+  const requiredValidate = requiredIsAFunction
+    ? required
+    : defaultRequiredValidate
 
   return (
     <Field
@@ -36,10 +38,10 @@ export const TextareaField = ({
       validate={composeValidators(validate, requiredValidate)}
       render={({ input, meta }) => {
         const valueLength = input.value.length
-        const value =
-          valueLength > maxLength - 1
-            ? input.value.slice(0, maxLength - 1)
-            : input.value
+        const valueIsTooLong = valueLength > maxLength - 1
+        const value = valueIsTooLong
+          ? input.value.slice(0, maxLength - 1)
+          : input.value
 
         return (
           <div
@@ -79,7 +81,7 @@ export const TextareaField = ({
                     id={name}
                     placeholder={readOnly ? '' : placeholder}
                     readOnly={readOnly}
-                    required={!!required} // cast to boolean
+                    required={!!required}
                     value={value}
                     {...ReactAutosizeProps}
                   />

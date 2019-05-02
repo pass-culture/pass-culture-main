@@ -1,5 +1,5 @@
 import classnames from 'classnames'
-import L from 'leaflet'
+import { Icon as LeafletIcon } from 'leaflet'
 import debounce from 'lodash.debounce'
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
@@ -12,7 +12,7 @@ import sanitizeCoordinates from './sanitizeCoordinates'
 import { FRANCE_POSITION } from './positions'
 import { ROOT_PATH } from 'utils/config'
 
-const customIcon = new L.Icon({
+const markerIcon = new LeafletIcon({
   iconUrl: `${ROOT_PATH}/icons/ico-geoloc-solid2.svg`,
   iconRetinaUrl: `${ROOT_PATH}/icons/ico-geoloc-solid2.svg`,
   iconSize: [21, 30],
@@ -43,24 +43,26 @@ class Address extends Component {
     const latitude = sanitizeCoordinates(newProps.latitude)
     const longitude = sanitizeCoordinates(newProps.longitude)
 
+    const hasCoordinates = latitude && longitude
+
     const nextPosition = {
       latitude: latitude || newProps.defaultInitialPosition.latitude,
       longitude: longitude || newProps.defaultInitialPosition.longitude,
-      zoom:
-        latitude && longitude
-          ? newProps.zoom
-          : newProps.defaultInitialPosition.zoom,
+      zoom: hasCoordinates
+        ? newProps.zoom
+        : newProps.defaultInitialPosition.zoom,
     }
+
+    const isValueEmpty = newProps.value === ''
 
     return Object.assign(
       {},
       currentState,
       {
         position: nextPosition,
-        value:
-          newProps.value === '' ? '' : newProps.value || currentState.value,
+        value: isValueEmpty ? '' : newProps.value || currentState.value,
       },
-      latitude && longitude
+      hasCoordinates
         ? {
             suggestions: currentState.selectedAddress
               ? []
@@ -105,7 +107,8 @@ class Address extends Component {
 
         const hasSingleClearResult = result.data && result.data.length === 1
         if (hasSingleClearResult) {
-          const { address, city, postalCode } = result.data[0]
+          const suggestion = result.data[0]
+          const { address, city, postalCode } = suggestion
           onMarkerDragend({
             address,
             city,
@@ -289,7 +292,7 @@ class Address extends Component {
               draggable
               onDragend={this.onMarkerDragend}
               position={[marker.latitude, marker.longitude]}
-              icon={customIcon}
+              icon={markerIcon}
               ref={this.refmarker}
               alt={[marker.latitude, marker.longitude].join('-')}
             />
