@@ -192,7 +192,7 @@ class ExpensesTest:
             def test_offline_offer_is_not_capped(self):
                 # Given
                 bookings = [
-                    create_booking_for_thing(amount=50, url=None, type=ThingType.JEUX_ABO)
+                    create_booking_for_thing(amount=50, url=None, type=ThingType.JEUX_VIDEO_ABO)
                 ]
 
                 # When

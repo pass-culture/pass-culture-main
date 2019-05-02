@@ -90,7 +90,7 @@ class Product(PcObject,
 
     def _get_label_from_type_string(self):
         matching_type_product = next(filter(lambda product_type: product_type.__str__() == self.type, ThingType))
-        return matching_type_product.value['label']
+        return matching_type_product.value['proLabel']
 
 
     def errors(self):

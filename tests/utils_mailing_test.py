@@ -465,7 +465,7 @@ def test_offerer_booking_recap_email_thing_offer_has_action_and_recap_html(app):
     assert 'Joe Dalton (test1@email.com) vient de faire une nouvelle réservation' in action_html
     assert 'Voici le récapitulatif des réservations à ce jour :' in recap_html
     assert '(total 2) pour Test Book' in recap_html
-    assert '(Audiovisuel (Films sur supports physiques et VOD))' in recap_html
+    assert '(Audiovisuel — films sur supports physiques et VOD)' in recap_html
     assert 'http://localhost:3001/offres/AE' in recap_html
     assert 'proposé par Test offerer (Adresse : 123 rue test, 93000 Test city).' in recap_html
 

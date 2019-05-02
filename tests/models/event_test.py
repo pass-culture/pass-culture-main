@@ -48,8 +48,8 @@ def test_event_offerType_returns_dict_matching_EventType_enum():
     event_product = create_product_with_Event_type(event_type=EventType.SPECTACLE_VIVANT)
     expected_value = {
         'conditionalFields': ["author", "showType", "stageDirector", "performer"],
-        'label': "Spectacle vivant",
-        'userSeenLabel': "Spectacle vivant",
+        'proLabel': "Spectacle vivant",
+        'appLabel': "Spectacle vivant",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Applaudir",

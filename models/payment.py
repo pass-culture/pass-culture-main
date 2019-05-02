@@ -117,7 +117,7 @@ class PaymentDetails:
             self.venue_name = payment.booking.stock.resolvedOffer.venue.name
             self.venue_siret = payment.booking.stock.resolvedOffer.venue.siret
             self.offer_name = payment.booking.stock.resolvedOffer.product.name
-            self.offer_type = payment.booking.stock.resolvedOffer.product.offerType['label']
+            self.offer_type = payment.booking.stock.resolvedOffer.product.offerType['proLabel']
             self.booking_date = payment.booking.dateCreated
             self.booking_amount = payment.booking.value
             self.booking_used_date = booking_used_date

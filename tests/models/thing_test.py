@@ -37,7 +37,7 @@ def test_thing_type_find_from_sub_labels_returns_several_types_given_several_sub
     types = ThingType.find_from_sub_labels(sub_labels)
 
     # then
-    assert len(types) == 8
+    assert len(types) == 9
     assert ThingType.AUDIOVISUEL in types
     assert ThingType.CINEMA_ABO in types
     assert ThingType.MUSEES_PATRIMOINE_ABO in types
@@ -58,7 +58,7 @@ def test_thing_error_when_thing_type_is_offlineOnly_but_has_url(app):
         PcObject.check_and_save(thing_product)
 
     # Then
-    assert errors.value.errors['url'] == ['Une offre de type Jeux (Biens physiques) ne peut pas être numérique']
+    assert errors.value.errors['url'] == ['Une offre de type Jeux (support physique) ne peut pas être numérique']
 
 
 def test_thing_offerType_returns_dict_matching_ThingType_enum():
@@ -66,8 +66,8 @@ def test_thing_offerType_returns_dict_matching_ThingType_enum():
     thing_product = create_product_with_Thing_type(thing_type=ThingType.LIVRE_EDITION)
     expected_value = {
         'conditionalFields': ["author", "isbn"],
-        'label': 'Livre - format papier, abonnements lecture',
-        'userSeenLabel': 'Livres, cartes bibliothèque ou médiathèque',
+        'proLabel': 'Livre - format papier ou numérique, abonnements lecture',
+        'appLabel': 'Livres, cartes bibliothèque ou médiathèque',
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': 'Lire',

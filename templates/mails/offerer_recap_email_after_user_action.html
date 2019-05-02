@@ -12,7 +12,7 @@
 
         <p id="recap">
             Voici le récapitulatif des réservations à ce jour :
-            <br/> (total {{ number_of_bookings }}) pour {{ event_or_thing.name }} ({{ event_or_thing.offerType['label'] }}) {{ pro_url }}/offres/{{ human_offer_id }}
+            <br/> (total {{ number_of_bookings }}) pour {{ event_or_thing.name }} ({{ event_or_thing.offerType['proLabel'] }}) {{ pro_url }}/offres/{{ human_offer_id }}
             {% if stock_date_time %}
                 <br/> le {{ stock_date_time }},
             {% endif %}

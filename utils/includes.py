@@ -135,7 +135,7 @@ RECOMMENDATION_INCLUDES = [
             },
             {
                 "key": "product",
-                "sub_joins": ["thumbUrl"]
+                "sub_joins": ["thumbUrl", "offerType"]
             }
         ]
     },

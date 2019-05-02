@@ -172,7 +172,7 @@ class Offer(PcObject,
 
     def _get_label_from_type_string(self):
         matching_type_thing = next(filter(lambda thing_type: str(thing_type) == self.type, ThingType))
-        return matching_type_thing.value['label']
+        return matching_type_thing.value['proLabel']
 
 
 Offer.__ts_vector__ = create_tsvector(

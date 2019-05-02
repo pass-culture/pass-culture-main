@@ -626,7 +626,7 @@ class Post:
             offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
             venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city',
                                  '93')
-            thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.JEUX_ABO)
+            thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.JEUX_VIDEO_ABO)
 
             user = create_user(email='test@email.com')
             PcObject.check_and_save(user)

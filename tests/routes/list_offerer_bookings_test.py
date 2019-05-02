@@ -176,8 +176,8 @@ class Get:
                 'description': 'Action, science-fiction, documentaire ou comédie sentimentale ? ' \
                                'En salle, en plein air ou bien au chaud chez soi ? ' \
                                'Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
-                'label': 'Audiovisuel (Films sur supports physiques et VOD)',
-                'userSeenLabel': "Audiovisuel (Films sur supports physiques et VOD)",
+                'proLabel': 'Audiovisuel — films sur supports physiques et VOD',
+                'appLabel': "Films sur supports physiques et VOD",
                 'offlineOnly': False,
                 'onlineOnly': False,
                 'sublabel': 'Regarder',
@@ -187,11 +187,9 @@ class Get:
 
             expected_musees_patrimoine_offer_type = {
                 'conditionalFields': [],
-                'description': 'Action, science-fiction, documentaire ou comédie sentimentale ? '
-                               'En salle, en plein air ou bien au chaud chez soi ? '
-                               'Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
-                'label': 'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
-                'userSeenLabel': "Expositions, visites guidées, activités spécifiques",
+                'description': 'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
+                'proLabel': 'Musées, patrimoine — expositions, visites guidées, activités spécifiques',
+                'appLabel': "Expositions, visites guidées, activités spécifiques",
                 'offlineOnly': True,
                 'onlineOnly': False,
                 'sublabel': 'Regarder',

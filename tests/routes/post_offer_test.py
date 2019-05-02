@@ -86,7 +86,7 @@ class Post:
             venue = create_venue(offerer, is_virtual=True, siret=None)
             PcObject.check_and_save(user, venue, user_offerer)
             json = {
-                'type': 'ThingType.JEUX_ABO',
+                'type': 'ThingType.JEUX',
                 'name': 'Le grand jeu',
                 "url": 'http://legrandj.eu',
                 'mediaUrls': ['http://media.url'],
@@ -100,7 +100,7 @@ class Post:
 
             # Then
             assert response.status_code == 400
-            assert response.json()['url'] == ['Une offre de type Jeux (Abonnements) ne peut pas être numérique']
+            assert response.json()['url'] == ['Une offre de type Jeux (support physique) ne peut pas être numérique']
 
         @clean_database
         def when_offer_type_is_unknown(self, app):
@@ -161,8 +161,8 @@ class Post:
                                'Rêver le temps d’un opéra ou d’un spectacle de danse ? '
                                'Assister à une pièce de théâtre, '
                                'ou se laisser conter une histoire ?',
-                'label': 'Spectacle vivant',
-                'userSeenLabel': 'Spectacle vivant',
+                'proLabel': 'Spectacle vivant',
+                'appLabel': 'Spectacle vivant',
                 'offlineOnly': True,
                 'onlineOnly': False,
                 'sublabel': 'Applaudir',
@@ -243,8 +243,8 @@ class Post:
                 'description': 'Résoudre l’énigme d’un jeu de piste dans votre ville ? '
                                'Jouer en ligne entre amis ? '
                                'Découvrir cet univers étrange avec une manette ?',
-                'label': 'Jeux Vidéo',
-                'userSeenLabel': 'Jeux Vidéo',
+                'proLabel': 'Jeux vidéo',
+                'appLabel': 'Jeux vidéo',
                 'offlineOnly': False,
                 'onlineOnly': True,
                 'sublabel': 'Jouer',

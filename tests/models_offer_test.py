@@ -231,7 +231,8 @@ def test_thing_offer_offerType_returns_dict_matching_ThingType_enum():
     offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION)
     expected_value = {
         'conditionalFields': ["author", "isbn"],
-        'label': 'Livre — Édition',
+        'proLabel': "Livre - format papier ou numérique, abonnements lecture",
+        'appLabel': "Livres, cartes bibliothèque ou médiathèque",
         'offlineOnly': False,
         'onlineOnly': False,
         'sublabel': 'Lire',
@@ -258,7 +259,8 @@ def test_event_offer_offerType_returns_dict_matching_EventType_enum():
     offer = create_offer_with_event_product(venue, event_type=EventType.SPECTACLE_VIVANT)
     expected_value = {
         'conditionalFields': ['author', 'showType', 'stageDirector', 'performer'],
-        'label': "Spectacle vivant",
+        'appLabel': "Spectacle vivant",
+        'proLabel': "Spectacle vivant",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Applaudir",
