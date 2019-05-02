@@ -1,10 +1,8 @@
 import { Field, Form } from 'pass-culture-shared'
 import React from 'react'
 
-import { THUMBS_URL } from 'utils/config'
-
 const MediationItem = ({ mediation }) => {
-  const { id, isActive } = mediation || {}
+  const { id, isActive, thumbUrl } = mediation || {}
   return (
     <Form
       action={`/mediations/${id}`}
@@ -13,11 +11,7 @@ const MediationItem = ({ mediation }) => {
       name={`mediation-${id}`}
       patch={mediation}
       Tag="li">
-      <img
-        alt={`accroche-${id}`}
-        disabled={!isActive}
-        src={`${THUMBS_URL}/mediations/${id}`}
-      />
+      <img alt={`accroche-${id}`} disabled={!isActive} src={thumbUrl} />
       <br />
       <br />
       <div className="columns is-centered">
