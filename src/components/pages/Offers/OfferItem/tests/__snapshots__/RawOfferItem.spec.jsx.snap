@@ -117,7 +117,6 @@ ShallowWrapper {
                               </NavLink>
                     </li>
                     <li />
-                    <li />
                     <li>
                               <Price
                                         Tag="span"
@@ -251,7 +250,6 @@ ShallowWrapper {
                                           0 prix
                             </NavLink>
               </li>
-              <li />
               <li />
               <li>
                             <Price
@@ -479,7 +477,6 @@ ShallowWrapper {
                   </NavLink>
 </li>,
                 <li />,
-                <li />,
                 undefined,
                 <li>
                   <Price
@@ -542,17 +539,6 @@ ShallowWrapper {
                   "rendered": "0 prix",
                   "type": [Function],
                 },
-                "type": "li",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": undefined,
-                },
-                "ref": null,
-                "rendered": null,
                 "type": "li",
               },
               Object {
@@ -931,7 +917,6 @@ ShallowWrapper {
                                     </NavLink>
                         </li>
                         <li />
-                        <li />
                         <li>
                                     <Price
                                                 Tag="span"
@@ -1065,7 +1050,6 @@ ShallowWrapper {
                                                 0 prix
                                 </NavLink>
                 </li>
-                <li />
                 <li />
                 <li>
                                 <Price
@@ -1293,7 +1277,6 @@ ShallowWrapper {
                     </NavLink>
 </li>,
                   <li />,
-                  <li />,
                   undefined,
                   <li>
                     <Price
@@ -1356,17 +1339,6 @@ ShallowWrapper {
                     "rendered": "0 prix",
                     "type": [Function],
                   },
-                  "type": "li",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": undefined,
-                  },
-                  "ref": null,
-                  "rendered": null,
                   "type": "li",
                 },
                 Object {
