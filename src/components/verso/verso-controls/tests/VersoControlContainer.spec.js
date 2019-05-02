@@ -22,8 +22,8 @@ describe('src | components | verso | verso-controls | VersoControlContainer', ()
             mediationId: 'BA',
             offer: {
               isFinished: false,
+              productId: 'BAFA',
               stocks: [{ id: 'AB' }, { id: 'BA' }],
-              thingId: 'BAFA',
             },
             offerId: 'AE',
           },
