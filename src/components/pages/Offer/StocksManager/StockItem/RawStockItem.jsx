@@ -171,7 +171,7 @@ export class RawStockItem extends Component {
                     offer={offer}
                     stock={stock}
                     tbody={tbodyElement}
-                    stockPatch={stockPatch}
+                    formInitialValues={stockPatch}
                   />
                 ) : (
                   <SubmitAndCancelControl
