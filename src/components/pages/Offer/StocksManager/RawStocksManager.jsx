@@ -266,7 +266,7 @@ RawStocksManager.propTypes = {
   shouldPreventCreationOfSecondStock: PropTypes.bool,
   stocks: PropTypes.array,
   query: PropTypes.object.isRequired,
-  isEvent: PropTypes.object.isRequired,
+  isEvent: PropTypes.bool.isRequired,
 }
 
 export default RawStocksManager
