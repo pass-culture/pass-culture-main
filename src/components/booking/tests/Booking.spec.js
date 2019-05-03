@@ -63,18 +63,58 @@ describe('src | components | booking', () => {
       expect(bookingCancel).toBeDefined()
     })
 
-    it('should redirect to offer details when clicking on OK button', () => {
-      // given
-      props.isCancelled = true
-      const wrapper = mount(<Booking {...props} />)
-      const okButton = wrapper.find('#booking-cancellation-confirmation-button')
+    describe('when clicking on OK button', () => {
+      it('should dispatch an action to show card view', () => {
+        // given
+        props.isCancelled = true
+        const wrapper = mount(<Booking {...props} />)
+        const okButton = wrapper.find(
+          '#booking-cancellation-confirmation-button'
+        )
 
-      // when
-      okButton.simulate('click')
+        // when
+        okButton.simulate('click')
 
-      // then
-      expect(dispatch).toHaveBeenCalledWith({ type: 'SHOW_DETAILS_VIEW' })
-      expect(push).toHaveBeenCalledWith('/decouverte/AAA')
+        // then
+        expect(dispatch.mock.calls[1][0]).toEqual({ type: 'SHOW_DETAILS_VIEW' })
+      })
+
+      it('should dispatch an action to update current user information', () => {
+        // given
+        props.isCancelled = true
+        const wrapper = mount(<Booking {...props} />)
+        const okButton = wrapper.find(
+          '#booking-cancellation-confirmation-button'
+        )
+
+        // when
+        okButton.simulate('click')
+
+        // then
+        expect(dispatch.mock.calls[0][0]).toEqual({
+          config: {
+            apiPath: '/users/current',
+            method: 'PATCH',
+            resolve: expect.any(Function),
+          },
+          type: 'REQUEST_DATA_PATCH_/USERS/CURRENT',
+        })
+      })
+
+      it('should redirect to offer details', () => {
+        // given
+        props.isCancelled = true
+        const wrapper = mount(<Booking {...props} />)
+        const okButton = wrapper.find(
+          '#booking-cancellation-confirmation-button'
+        )
+
+        // when
+        okButton.simulate('click')
+
+        // then
+        expect(push).toHaveBeenCalledWith('/decouverte/AAA')
+      })
     })
 
     it('should not add className items-center to the div following the BookingHeader', () => {

@@ -7,9 +7,9 @@ import PropTypes from 'prop-types'
 import { getDisplayPrice } from '../../../helpers'
 
 const BookingCancel = ({ isEvent, data }) => {
-  let price = get(data, 'stock.price')
-  price = getDisplayPrice(price)
-  const cssClass = (isEvent && 'event') || 'thing'
+  const price = get(data, 'stock.price')
+  const formattedPrice = getDisplayPrice(price)
+  const cssClass = isEvent ? 'event' : 'thing'
 
   return (
     <div className={`text-center ${cssClass}`}>
@@ -25,7 +25,7 @@ const BookingCancel = ({ isEvent, data }) => {
 
       <p className="mt40">
         <span className="is-block">
-          {price} vont être recrédités sur votre pass.
+          {formattedPrice} vont être recrédités sur votre pass.
         </span>
         <span className="is-block">
           Vous allez recevoir un e-mail de confirmation.

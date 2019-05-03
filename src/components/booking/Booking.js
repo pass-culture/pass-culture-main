@@ -136,7 +136,15 @@ class Booking extends PureComponent {
     const offerId = get(match.params, 'offerId')
     const url = `/decouverte/${offerId}`
 
+    dispatch(
+      requestData({
+        apiPath: '/users/current',
+        method: 'PATCH',
+        resolve: resolveCurrentUser,
+      })
+    )
     dispatch(showCardDetails())
+
     history.push(url)
   }
 
