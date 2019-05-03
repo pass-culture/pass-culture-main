@@ -1,78 +1,110 @@
-import pytest
 from datetime import datetime
 from decimal import Decimal
-from freezegun import freeze_time
 from unittest.mock import Mock
+
+import pytest
+from freezegun import freeze_time
 
 from models import PcObject
 from models.payment import Payment
-from models.payment_status import TransactionStatus
+from models.payment_status import TransactionStatus, PaymentStatus
 from scripts.payments import generate_new_payments, send_transactions, send_payments_details, send_wallet_balances, \
-    send_payments_report
+    send_payments_report, concatenate_payments_with_errors_and_retries
 from tests.conftest import clean_database, mocked_mail
 from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, create_stock_from_offer, \
     create_booking, create_user, create_deposit, create_payment, create_bank_information
 
 
 @pytest.mark.standalone
-@clean_database
-def test_generate_new_payments_records_new_payment_lines_in_database(app):
-    # Given
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_offer_with_thing_product(venue)
-    paying_stock = create_stock_from_offer(offer)
-    free_stock = create_stock_from_offer(offer, price=0)
-    user = create_user()
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
-    booking1 = create_booking(user, paying_stock, venue, is_used=True)
-    booking2 = create_booking(user, paying_stock, venue, is_used=True)
-    booking3 = create_booking(user, paying_stock, venue, is_used=True)
-    booking4 = create_booking(user, free_stock, venue, is_used=True)
-    payment1 = create_payment(booking2, offerer, 10, transaction_message_id="ABCD123")
+class GenerateNewPaymentsTest:
+    @clean_database
+    def test_records_new_payment_lines_in_database(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        paying_stock = create_stock_from_offer(offer)
+        free_stock = create_stock_from_offer(offer, price=0)
+        user = create_user()
+        deposit = create_deposit(user, datetime.utcnow(), amount=500)
+        booking1 = create_booking(user, paying_stock, venue, is_used=True)
+        booking2 = create_booking(user, paying_stock, venue, is_used=True)
+        booking3 = create_booking(user, paying_stock, venue, is_used=True)
+        booking4 = create_booking(user, free_stock, venue, is_used=True)
+        payment1 = create_payment(booking2, offerer, 10, transaction_message_id="ABCD123")
 
-    PcObject.check_and_save(payment1)
-    PcObject.check_and_save(deposit, booking1, booking3, booking4)
+        PcObject.check_and_save(payment1)
+        PcObject.check_and_save(deposit, booking1, booking3, booking4)
 
-    initial_payment_count = Payment.query.count()
+        initial_payment_count = Payment.query.count()
 
-    # When
-    generate_new_payments()
+        # When
+        generate_new_payments()
 
-    # Then
-    assert Payment.query.count() - initial_payment_count == 2
+        # Then
+        assert Payment.query.count() - initial_payment_count == 2
+
+    @clean_database
+    def test_returns_a_tuple_of_pending_and_not_processable_payments(self, app):
+        # Given
+        offerer1 = create_offerer(siren='123456789')
+        offerer2 = create_offerer(siren='987654321')
+        PcObject.check_and_save(offerer1)
+        bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890189',
+                                                   id_at_providers='123456789', offerer=offerer1)
+        venue1 = create_venue(offerer1, siret='12345678912345')
+        venue2 = create_venue(offerer2, siret='98765432154321')
+        offer1 = create_offer_with_thing_product(venue1)
+        offer2 = create_offer_with_thing_product(venue2)
+        paying_stock1 = create_stock_from_offer(offer1)
+        paying_stock2 = create_stock_from_offer(offer2)
+        free_stock1 = create_stock_from_offer(offer1, price=0)
+        user = create_user()
+        deposit = create_deposit(user, datetime.utcnow(), amount=500)
+        booking1 = create_booking(user, paying_stock1, venue1, is_used=True)
+        booking2 = create_booking(user, paying_stock1, venue1, is_used=True)
+        booking3 = create_booking(user, paying_stock2, venue2, is_used=True)
+        booking4 = create_booking(user, free_stock1, venue1, is_used=True)
+        PcObject.check_and_save(deposit, booking1, booking2, booking3, booking4, bank_information)
+
+        # When
+        pending, not_processable = generate_new_payments()
+
+        # Then
+        assert len(pending) == 2
+        assert len(not_processable) == 1
 
 
 @pytest.mark.standalone
-@clean_database
-def test_generate_new_payments_returns_a_tuple_of_pending_and_not_processable_payments(app):
-    # Given
-    offerer1 = create_offerer(siren='123456789')
-    offerer2 = create_offerer(siren='987654321')
-    PcObject.check_and_save(offerer1)
-    bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890189',
-                                               id_at_providers='123456789', offerer=offerer1)
-    venue1 = create_venue(offerer1, siret='12345678912345')
-    venue2 = create_venue(offerer2, siret='98765432154321')
-    offer1 = create_offer_with_thing_product(venue1)
-    offer2 = create_offer_with_thing_product(venue2)
-    paying_stock1 = create_stock_from_offer(offer1)
-    paying_stock2 = create_stock_from_offer(offer2)
-    free_stock1 = create_stock_from_offer(offer1, price=0)
-    user = create_user()
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
-    booking1 = create_booking(user, paying_stock1, venue1, is_used=True)
-    booking2 = create_booking(user, paying_stock1, venue1, is_used=True)
-    booking3 = create_booking(user, paying_stock2, venue2, is_used=True)
-    booking4 = create_booking(user, free_stock1, venue1, is_used=True)
-    PcObject.check_and_save(deposit, booking1, booking2, booking3, booking4, bank_information)
+class ConcatenatePaymentsWithErrorsAndRetriesTest:
+    @clean_database
+    def test_a_list_of_payments_is_returned_with_statuses_in_error_or_retry_or_pending(self, app):
+        # Given
+        user = create_user()
+        booking = create_booking(user)
+        deposit = create_deposit(user, datetime.utcnow())
 
-    # When
-    pending, not_processable = generate_new_payments()
+        error_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
+        retry_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
+        pending_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
 
-    # Then
-    assert len(pending) == 2
-    assert len(not_processable) == 1
+        error_status = PaymentStatus()
+        error_status.status = TransactionStatus.ERROR
+        error_payment.statuses.append(error_status)
+
+        retry_status = PaymentStatus()
+        retry_status.status = TransactionStatus.RETRY
+        retry_payment.statuses.append(retry_status)
+
+        PcObject.check_and_save(error_payment, retry_payment, pending_payment, deposit)
+
+        # When
+        payments = concatenate_payments_with_errors_and_retries([pending_payment])
+
+        # Then
+        assert len(payments) == 3
+        allowed_statuses = (TransactionStatus.RETRY, TransactionStatus.ERROR, TransactionStatus.PENDING)
+        assert all(map(lambda p: p.currentStatus.status in allowed_statuses, payments))
 
 
 @pytest.mark.standalone

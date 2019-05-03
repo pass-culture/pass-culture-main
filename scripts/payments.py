@@ -2,8 +2,6 @@ import os
 from datetime import datetime
 from typing import List, Tuple
 
-from flask import current_app as app
-
 from domain.admin_emails import send_payment_transaction_email, send_payment_details_email, send_wallet_balances_email, \
     send_payments_report_emails
 from domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking, generate_transaction_file, \
@@ -35,8 +33,8 @@ def generate_and_send_payments():
     logger.info('[BATCH][PAYMENTS] STEP 1 : generate payments')
     pending_payments, not_processable_payments = generate_new_payments()
 
-    logger.info('[BATCH][PAYMENTS] STEP 2 : collect payments in error')
-    payments_to_send = concatenate_error_payments_with(pending_payments)
+    logger.info('[BATCH][PAYMENTS] STEP 2 : collect payments in ERROR and RETRY statuses')
+    payments_to_send = concatenate_payments_with_errors_and_retries(pending_payments)
 
     try:
         logger.info('[BATCH][PAYMENTS] STEP 3 : send transactions')
@@ -65,11 +63,15 @@ def generate_and_send_payments():
         logger.error('[BATCH][PAYMENTS] STEP 6', e)
 
 
-def concatenate_error_payments_with(pending_payments: List[Payment]) -> List[Payment]:
+def concatenate_payments_with_errors_and_retries(payments: List[Payment]) -> List[Payment]:
     error_payments = payment_queries.find_error_payments()
-    payments = pending_payments + error_payments
+    retry_payments = payment_queries.find_retry_payments()
+    payments = payments + error_payments + retry_payments
+
     logger.info('[BATCH][PAYMENTS] %s Payments in status ERROR to send' % len(error_payments))
+    logger.info('[BATCH][PAYMENTS] %s Payments in status RETRY to send' % len(retry_payments))
     logger.info('[BATCH][PAYMENTS] %s Payments in total to send' % len(payments))
+
     return payments
 
 

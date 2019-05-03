@@ -4,7 +4,7 @@ import pytest
 
 from models import PcObject
 from models.payment_status import TransactionStatus, PaymentStatus
-from repository.payment_queries import find_transaction_checksum, find_error_payments
+from repository.payment_queries import find_transaction_checksum, find_error_payments, find_retry_payments
 from tests.conftest import clean_database
 from tests.test_utils import create_payment_transaction, create_payment, create_booking, create_user, create_deposit
 
@@ -65,8 +65,8 @@ class FindErrorPaymentsTest:
 
         # Then
         assert len(payments) == 2
-        for error_payment1 in payments:
-            assert sorted(error_payment1.statuses, key=lambda x: x.date)[-1].status == TransactionStatus.ERROR
+        for p in payments:
+            assert p.currentStatus.status == TransactionStatus.ERROR
 
     @clean_database
     def test_does_not_return_payment_if_has_status_error_but_not_last(self, app):
@@ -86,6 +86,57 @@ class FindErrorPaymentsTest:
 
         # When
         payments = find_error_payments()
+
+        # Then
+        assert payments == []
+
+
+@pytest.mark.standalone
+class FindRetryPaymentsTest:
+    @clean_database
+    def test_returns_payments_with_last_payment_status_retry(self, app):
+        # Given
+        user = create_user()
+        booking = create_booking(user)
+        deposit = create_deposit(user, datetime.utcnow())
+        retry_payment1 = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
+        retry_payment2 = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
+        pending_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
+        retry_status1 = PaymentStatus()
+        retry_status1.status = TransactionStatus.RETRY
+        retry_payment1.statuses.append(retry_status1)
+        retry_status2 = PaymentStatus()
+        retry_status2.status = TransactionStatus.RETRY
+        retry_payment2.statuses.append(retry_status2)
+
+        PcObject.check_and_save(retry_payment1, retry_payment2, pending_payment, deposit)
+
+        # When
+        payments = find_retry_payments()
+
+        # Then
+        assert len(payments) == 2
+        for p in payments:
+            assert p.currentStatus.status == TransactionStatus.RETRY
+
+    @clean_database
+    def test_does_not_return_payment_if_has_status_retry_but_not_last(self, app):
+        # Given
+        user = create_user()
+        booking = create_booking(user)
+        deposit = create_deposit(user, datetime.utcnow())
+        payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
+        pending_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
+        retry_status = PaymentStatus()
+        retry_status.status = TransactionStatus.RETRY
+        sent_status = PaymentStatus()
+        sent_status.status = TransactionStatus.SENT
+        payment.statuses.extend([retry_status, sent_status])
+
+        PcObject.check_and_save(payment, pending_payment, deposit)
+
+        # When
+        payments = find_retry_payments()
 
         # Then
         assert payments == []
