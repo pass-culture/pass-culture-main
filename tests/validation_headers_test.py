@@ -223,3 +223,17 @@ def test_is_invalid_header_when_malicious_url_is_used():
 
     # Then
     assert not is_valid_header
+
+
+@pytest.mark.standalone
+@patch('validation.headers.ENV', 'testing')
+def test_is_valid_header_when_url_has_dash_is_authorized_in_subdomain():
+    # Given
+    header_origin = 'https://my-poc.passculture.app'
+    endpoint = 'list_offers'
+
+    # When
+    is_valid_header = check_origin_header_validity(header_origin, endpoint, '/')
+
+    # Then
+    assert is_valid_header
