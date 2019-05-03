@@ -1,7 +1,11 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { Form } from 'react-final-form'
-import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
+import {
+  getCanSubmit,
+  parseSubmitErrors,
+  removeWhitespaces,
+} from 'react-final-form-utils'
 import { NavLink } from 'react-router-dom'
 
 import BankFieldsContainer from './BankFields/BankFieldsContainer'
@@ -167,7 +171,8 @@ class Venue extends Component {
                 siret: formSiret,
               } = values
 
-              const siretValidOnReadOnly = formSiret && formSiret.length === 14
+              const siretValidOnReadOnly =
+                formSiret && removeWhitespaces(formSiret).length === 14
 
               const siretValidOnCreation = siretValidOnReadOnly
               const fieldReadOnlyBecauseFrozenFormSiretOnCreation =

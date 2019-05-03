@@ -65,7 +65,7 @@ export const navigateAfterVenueSubmit = creationOrModification => async t => {
   const closeAnchor = Selector('button.close').withText('OK')
   const notificationError = Selector('.notification.is-danger')
   const notificationSuccess = Selector('.notification.is-success')
-  const submitButton = Selector('button[type="submit"]') //créer un lieu
+  const submitButton = Selector('button[type="submit"]')
   const redirectUrl =
     creationOrModification === 'creation'
       ? /\/structures\/([A-Z0-9]*)$/

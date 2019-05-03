@@ -54,25 +54,30 @@ class Address extends Component {
     }
 
     const isValueEmpty = newProps.value === ''
+    const nextValue = isValueEmpty ? '' : newProps.value || currentState.value
+
+    const nextStateWithPositionAndValue = {
+      position: nextPosition,
+      value: nextValue,
+    }
+
+    const nextStateWithSuggestionsAndMarker = hasCoordinates
+      ? {
+          suggestions: currentState.selectedAddress
+            ? []
+            : currentState.suggestions,
+          marker: {
+            latitude,
+            longitude,
+          },
+        }
+      : null
 
     return Object.assign(
       {},
       currentState,
-      {
-        position: nextPosition,
-        value: isValueEmpty ? '' : newProps.value || currentState.value,
-      },
-      hasCoordinates
-        ? {
-            suggestions: currentState.selectedAddress
-              ? []
-              : currentState.suggestions,
-            marker: {
-              latitude,
-              longitude,
-            },
-          }
-        : null
+      nextStateWithPositionAndValue,
+      nextStateWithSuggestionsAndMarker
     )
   }
 
@@ -81,7 +86,10 @@ class Address extends Component {
   }
 
   onMarkerDragend = () => {
-    const { onMarkerDragend } = this.props
+    const { readOnly, onMarkerDragend } = this.props
+    if (readOnly) {
+      return
+    }
     const {
       lat: latitude,
       lng: longitude,
@@ -105,8 +113,8 @@ class Address extends Component {
           return
         }
 
-        const hasSingleClearResult = result.data && result.data.length === 1
-        if (hasSingleClearResult) {
+        const hasOnlyOneSuggestion = result.data && result.data.length === 1
+        if (hasOnlyOneSuggestion) {
           const suggestion = result.data[0]
           const { address, city, postalCode } = suggestion
           onMarkerDragend({
@@ -276,7 +284,7 @@ class Address extends Component {
   }
 
   render() {
-    const { withMap } = this.props
+    const { readOnly, withMap } = this.props
     const { marker, position } = this.state
 
     if (!withMap) return this.renderInput()
@@ -289,7 +297,7 @@ class Address extends Component {
           <TileLayer url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png" />
           {marker && (
             <Marker
-              draggable
+              draggable={!readOnly}
               onDragend={this.onMarkerDragend}
               position={[marker.latitude, marker.longitude]}
               icon={markerIcon}

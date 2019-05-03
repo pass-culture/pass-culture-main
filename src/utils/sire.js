@@ -12,10 +12,17 @@ export function formatSire(string) {
   if (!value) {
     return ''
   }
+
+  if (isNaN(value)) {
+    return string.slice(0, -1)
+  }
+
   const siren = value.substring(0, 9)
   const nic = value.substring(9)
-  const formattedSiren = (siren.match(/.{1,3}/g) || []).join(' ')
-  return `${formattedSiren} ${nic}`.trim()
+  const sirenWithThreeBatchesOfThreeNumbers = (
+    siren.match(/.{1,3}/g) || []
+  ).join(' ')
+  return `${sirenWithThreeBatchesOfThreeNumbers} ${nic}`.trim()
 }
 
 function mapArgsToCacheKey(siretOrSiren, sireType) {
@@ -36,7 +43,9 @@ export const getSireInfo = createCachedSelector(
 
     const withoutWhiteSpacesSiretOrSiren = removeWhitespaces(siretOrSiren)
 
-    if (sireType === SIRET && withoutWhiteSpacesSiretOrSiren.length !== 14) {
+    const isNotValidSiret =
+      sireType === SIRET && withoutWhiteSpacesSiretOrSiren.length !== 14
+    if (isNotValidSiret) {
       if (withoutWhiteSpacesSiretOrSiren.length < 14) {
         const error = `${capitalize(sireType)} trop court`
         return { error }
@@ -47,7 +56,9 @@ export const getSireInfo = createCachedSelector(
       }
     }
 
-    if (sireType === SIREN && withoutWhiteSpacesSiretOrSiren.length !== 9) {
+    const isNotValidSiren =
+      sireType === SIREN && withoutWhiteSpacesSiretOrSiren.length !== 9
+    if (isNotValidSiren) {
       if (withoutWhiteSpacesSiretOrSiren.length < 9) {
         const error = `${capitalize(sireType)} trop court`
         return { error }
@@ -74,8 +85,6 @@ export const getSireInfo = createCachedSelector(
 
       const values = {
         address: get(body, `${dataPath}.l4_normalisee`),
-        // geo_adresse has postal code and city name which don't belong to this field
-        // address: get(body, `${dataPath}.geo_adresse`),
         city: get(body, `${dataPath}.libelle_commune`),
         latitude: parseFloat(get(body, `${dataPath}.latitude`)) || null,
         longitude: parseFloat(get(body, `${dataPath}.longitude`)) || null,

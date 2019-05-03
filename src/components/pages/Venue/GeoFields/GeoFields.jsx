@@ -21,16 +21,10 @@ const GeoFields = ({
   longitude,
   readOnly,
 }) => {
-  const latitudeReadOnlyFromSelectedAddressOrSiren =
-    formSelectedAddress !== null ||
-    (fieldReadOnlyBecauseFrozenFormSiret && formLatitude !== null)
-
-  const longitudeReadOnlyFromSelectedAddressOrSiren =
-    formSelectedAddress !== null ||
-    (fieldReadOnlyBecauseFrozenFormSiret && formLongitude !== null)
-
-  const readOnlyFromSelectedAddressOrSiren =
+  const readOnlyFromAddressOrSiren =
     formSelectedAddress !== null || fieldReadOnlyBecauseFrozenFormSiret
+
+  const fieldReadOnly = readOnly || readOnlyFromAddressOrSiren
 
   return (
     <div className="section">
@@ -52,7 +46,7 @@ const GeoFields = ({
           innerClassName="col-33"
           label="Code postal : "
           name="postalCode"
-          readOnly={readOnly || readOnlyFromSelectedAddressOrSiren}
+          readOnly={fieldReadOnly}
           required
         />
         <TextField
@@ -60,21 +54,21 @@ const GeoFields = ({
           innerClassName="col-66"
           label="Ville : "
           name="city"
-          readOnly={readOnly || readOnlyFromSelectedAddressOrSiren}
+          readOnly={fieldReadOnly}
           required
         />
         <NumberField
           innerClassName="col-33"
           label="Latitude : "
           name="latitude"
-          readOnly={readOnly || latitudeReadOnlyFromSelectedAddressOrSiren}
+          readOnly={fieldReadOnly}
           required
         />
         <NumberField
           innerClassName="col-33"
           label="Longitude : "
           name="longitude"
-          readOnly={readOnly || longitudeReadOnlyFromSelectedAddressOrSiren}
+          readOnly={fieldReadOnly}
           required
         />
       </div>

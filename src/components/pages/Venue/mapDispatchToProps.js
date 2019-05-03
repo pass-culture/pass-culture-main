@@ -113,9 +113,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           type: 'success',
         })
       )
-      // TODO: do it in the way that the notification
-      // is displayed in the next page an disappear when
-      // the user is after changing to another page
     },
   }
 }

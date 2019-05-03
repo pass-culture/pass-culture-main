@@ -101,7 +101,6 @@ export const DateField = ({
                       ...input,
                       onChange: date => {
                         const changedValue = date ? date.toISOString() : null
-                        console.log('changedValue', changedValue)
                         input.onChange(changedValue)
                       },
                       value: readOnlyValue,
