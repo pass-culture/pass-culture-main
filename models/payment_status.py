@@ -18,7 +18,7 @@ class TransactionStatus(enum.Enum):
     NOT_PROCESSABLE = 'NOT PROCESSABLE'
     SENT = 'SENT'
     ERROR = 'ERROR'
-    SUCCESS = 'SUCCESS'
+    RETRY = 'RETRY'
 
 
 class PaymentStatus(PcObject, Model):
