@@ -76,5 +76,59 @@ describe('src | components | booking', () => {
       expect(dispatch).toHaveBeenCalledWith({ type: 'SHOW_DETAILS_VIEW' })
       expect(push).toHaveBeenCalledWith('/decouverte/AAA')
     })
+
+    it('should not add className items-center to the div following the BookingHeader', () => {
+      // given
+      props.isCancelled = true
+
+      // when
+      const wrapper = mount(<Booking {...props} />)
+
+      // then
+      const mainWrapper = wrapper.find('.main.flex-rows.flex-1.scroll-y')
+      expect(
+        mainWrapper.find('.content.flex-1.flex-center.items-center')
+      ).toHaveLength(0)
+    })
+
+    it('should not add classNames for padding to the div containing Booking sub-items components', () => {
+      // given
+      props.isCancelled = true
+
+      // when
+      const wrapper = mount(<Booking {...props} />)
+
+      // then
+      const mainWrapper = wrapper.find('.main.flex-rows.flex-1.scroll-y')
+      expect(mainWrapper.find('.py36.px12.flex-rows')).toHaveLength(0)
+    })
+  })
+
+  describe('when no cancel view', () => {
+    it('should add className items-center to the div following the BookingHeader', () => {
+      // given
+      props.isCancelled = false
+
+      // when
+      const wrapper = mount(<Booking {...props} />)
+
+      // then
+      const mainWrapper = wrapper.find('.main')
+      expect(
+        mainWrapper.find('.content.flex-1.flex-center.items-center')
+      ).toHaveLength(1)
+    })
+
+    it('should add classNames for padding to the div containing Booking sub-items components', () => {
+      // given
+      props.isCancelled = false
+
+      // when
+      const wrapper = mount(<Booking {...props} />)
+
+      // then
+      const mainWrapper = wrapper.find('.main.flex-rows.flex-1.scroll-y')
+      expect(mainWrapper.find('.py36.px12.flex-rows')).toHaveLength(1)
+    })
   })
 })

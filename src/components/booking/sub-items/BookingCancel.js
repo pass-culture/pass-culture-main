@@ -1,7 +1,6 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
-import { Icon } from 'antd'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 
@@ -13,19 +12,18 @@ const BookingCancel = ({ isEvent, data }) => {
   const cssClass = (isEvent && 'event') || 'thing'
 
   return (
-    <div className={`booked text-center ${cssClass}`}>
-      <h3 className="fs22">
+    <div className={`text-center ${cssClass}`}>
+      <div>
         <span
-          className="is-block mb12"
-          style={{ color: '#27AE60', fontSize: '4.5rem' }}
+          className="is-block mt24 mb8"
+          style={{ color: '#27AE60', fontSize: '4rem' }}
         >
-          <Icon type="check-circle" />
+          <span aria-hidden className="icon-legacy-check-circled" />
         </span>
-        <span className="is-block mb36">
-          <span className="is-block">Votre réservation est annulée.</span>
-        </span>
-      </h3>
-      <p>
+        <span className="is-block fs22">Votre réservation est annulée.</span>
+      </div>
+
+      <p className="mt40">
         <span className="is-block">
           {price} vont être recrédités sur votre pass.
         </span>

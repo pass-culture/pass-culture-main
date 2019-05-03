@@ -247,10 +247,12 @@ class Booking extends PureComponent {
             <div className="main flex-rows flex-1 scroll-y">
               <BookingHeader recommendation={recommendation} />
               <div
-                className="content flex-1 flex-center items-center"
+                className={`content flex-1 flex-center ${
+                  isCancelled ? '' : 'items-center'
+                }`}
                 style={{ backgroundImage }}
               >
-                <div className="py36 px12 flex-rows">
+                <div className={`${isCancelled ? '' : 'py36 px12'} flex-rows`}>
                   {isSubmitting && <BookingLoader />}
 
                   {bookedPayload && (

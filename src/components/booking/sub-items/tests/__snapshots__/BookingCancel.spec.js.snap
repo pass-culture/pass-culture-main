@@ -1,0 +1,409 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | booking | sub-items | BookingCancel should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <BookingCancel
+    data={
+      Object {
+        "stock": Object {
+          "price": 12,
+        },
+      }
+    }
+    isEvent={true}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <div>
+          <span
+            className="is-block mt24 mb8"
+            style={
+              Object {
+                "color": "#27AE60",
+                "fontSize": "4rem",
+              }
+            }
+          >
+            <span
+              aria-hidden={true}
+              className="icon-legacy-check-circled"
+            />
+          </span>
+          <span
+            className="is-block fs22"
+          >
+            Votre réservation est annulée.
+          </span>
+        </div>,
+        <p
+          className="mt40"
+        >
+          <span
+            className="is-block"
+          >
+            12 €
+             vont être recrédités sur votre pass.
+          </span>
+          <span
+            className="is-block"
+          >
+            Vous allez recevoir un e-mail de confirmation.
+          </span>
+        </p>,
+      ],
+      "className": "text-center event",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <span
+              className="is-block mt24 mb8"
+              style={
+                Object {
+                  "color": "#27AE60",
+                  "fontSize": "4rem",
+                }
+              }
+            >
+              <span
+                aria-hidden={true}
+                className="icon-legacy-check-circled"
+              />
+            </span>,
+            <span
+              className="is-block fs22"
+            >
+              Votre réservation est annulée.
+            </span>,
+          ],
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <span
+                aria-hidden={true}
+                className="icon-legacy-check-circled"
+              />,
+              "className": "is-block mt24 mb8",
+              "style": Object {
+                "color": "#27AE60",
+                "fontSize": "4rem",
+              },
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "aria-hidden": true,
+                "className": "icon-legacy-check-circled",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": "span",
+            },
+            "type": "span",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Votre réservation est annulée.",
+              "className": "is-block fs22",
+            },
+            "ref": null,
+            "rendered": "Votre réservation est annulée.",
+            "type": "span",
+          },
+        ],
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <span
+              className="is-block"
+            >
+              12 €
+               vont être recrédités sur votre pass.
+            </span>,
+            <span
+              className="is-block"
+            >
+              Vous allez recevoir un e-mail de confirmation.
+            </span>,
+          ],
+          "className": "mt40",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                "12 €",
+                " vont être recrédités sur votre pass.",
+              ],
+              "className": "is-block",
+            },
+            "ref": null,
+            "rendered": Array [
+              "12 €",
+              " vont être recrédités sur votre pass.",
+            ],
+            "type": "span",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Vous allez recevoir un e-mail de confirmation.",
+              "className": "is-block",
+            },
+            "ref": null,
+            "rendered": "Vous allez recevoir un e-mail de confirmation.",
+            "type": "span",
+          },
+        ],
+        "type": "p",
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <div>
+            <span
+              className="is-block mt24 mb8"
+              style={
+                Object {
+                  "color": "#27AE60",
+                  "fontSize": "4rem",
+                }
+              }
+            >
+              <span
+                aria-hidden={true}
+                className="icon-legacy-check-circled"
+              />
+            </span>
+            <span
+              className="is-block fs22"
+            >
+              Votre réservation est annulée.
+            </span>
+          </div>,
+          <p
+            className="mt40"
+          >
+            <span
+              className="is-block"
+            >
+              12 €
+               vont être recrédités sur votre pass.
+            </span>
+            <span
+              className="is-block"
+            >
+              Vous allez recevoir un e-mail de confirmation.
+            </span>
+          </p>,
+        ],
+        "className": "text-center event",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <span
+                className="is-block mt24 mb8"
+                style={
+                  Object {
+                    "color": "#27AE60",
+                    "fontSize": "4rem",
+                  }
+                }
+              >
+                <span
+                  aria-hidden={true}
+                  className="icon-legacy-check-circled"
+                />
+              </span>,
+              <span
+                className="is-block fs22"
+              >
+                Votre réservation est annulée.
+              </span>,
+            ],
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <span
+                  aria-hidden={true}
+                  className="icon-legacy-check-circled"
+                />,
+                "className": "is-block mt24 mb8",
+                "style": Object {
+                  "color": "#27AE60",
+                  "fontSize": "4rem",
+                },
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "aria-hidden": true,
+                  "className": "icon-legacy-check-circled",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": "span",
+              },
+              "type": "span",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Votre réservation est annulée.",
+                "className": "is-block fs22",
+              },
+              "ref": null,
+              "rendered": "Votre réservation est annulée.",
+              "type": "span",
+            },
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <span
+                className="is-block"
+              >
+                12 €
+                 vont être recrédités sur votre pass.
+              </span>,
+              <span
+                className="is-block"
+              >
+                Vous allez recevoir un e-mail de confirmation.
+              </span>,
+            ],
+            "className": "mt40",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  "12 €",
+                  " vont être recrédités sur votre pass.",
+                ],
+                "className": "is-block",
+              },
+              "ref": null,
+              "rendered": Array [
+                "12 €",
+                " vont être recrédités sur votre pass.",
+              ],
+              "type": "span",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Vous allez recevoir un e-mail de confirmation.",
+                "className": "is-block",
+              },
+              "ref": null,
+              "rendered": "Vous allez recevoir un e-mail de confirmation.",
+              "type": "span",
+            },
+          ],
+          "type": "p",
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;
