@@ -344,7 +344,6 @@ describe('src | components | pages | Venue', () => {
           expect(
             wrapper.find("textarea[name='comment']").props().required
           ).toEqual(false)
-
           expect(
             wrapper.find("input[name='address']").props().readOnly
           ).toEqual(true)
@@ -354,12 +353,6 @@ describe('src | components | pages | Venue', () => {
           expect(
             wrapper.find("input[name='postalCode']").props().readOnly
           ).toEqual(true)
-          //expect(wrapper
-          //  .find("input[name='latitude']")
-          //  .props().readOnly).toEqual(true)
-          //expect(wrapper
-          //  .find("input[name='longitude']")
-          //  .props().readOnly).toEqual(true)
 
           // when (siret has filled other inputs, submit button is not anymore disabled)
           wrapper.update()
@@ -396,8 +389,78 @@ describe('src | components | pages | Venue', () => {
       })
     })
 
-    /* TODO */
-    it.skip('reputs geo fields to not readonly mode when we delete the siret', () => ({}))
+    it('reputs geo fields to not readonly mode when we delete the siret', done => {
+      // given
+      const { store } = configureStore()
+      const history = createBrowserHistory()
+      history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <Switch>
+              <Route path="/structures/:offererId/lieux/:venueId">
+                <VenueContainer />
+              </Route>
+            </Switch>
+          </Router>
+        </Provider>
+      )
+
+      setTimeout(() => {
+        // then (offerer request is done, form is now available)
+        wrapper.update()
+        expect(
+          wrapper.find("textarea[name='comment']").props().required
+        ).toEqual(true)
+
+        // when
+        wrapper
+          .find("input[name='bookingEmail']")
+          .simulate('change', { target: { value: BOOKING_EMAIL } })
+        wrapper
+          .find("input[name='siret']")
+          .simulate('change', { target: { value: SIRET } })
+
+        setTimeout(() => {
+          // then
+          expect(
+            wrapper.find("textarea[name='comment']").props().required
+          ).toEqual(false)
+          expect(
+            wrapper.find("input[name='address']").props().readOnly
+          ).toEqual(true)
+          expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
+            true
+          )
+          expect(
+            wrapper.find("input[name='postalCode']").props().readOnly
+          ).toEqual(true)
+
+          // when (siret has filled other inputs, submit button is not anymore disabled)
+          wrapper
+            .find("input[name='siret']")
+            .simulate('change', { target: { value: SIRET.slice(0, -1) } })
+
+          // then
+          wrapper.update()
+          expect(
+            wrapper.find("textarea[name='comment']").props().required
+          ).toEqual(true)
+          expect(
+            wrapper.find("input[name='address']").props().readOnly
+          ).toEqual(false)
+          expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
+            false
+          )
+          expect(
+            wrapper.find("input[name='postalCode']").props().readOnly
+          ).toEqual(false)
+
+          // done
+          done()
+        })
+      })
+    })
 
     it('fills the form with a valid address', done => {
       // given
@@ -493,8 +556,88 @@ describe('src | components | pages | Venue', () => {
       })
     })
 
-    /* TODO */
-    it.skip('reputs geo fields to not readonly mode when we delete the address', () => ({}))
+    it('reputs geo fields to not readonly mode when we delete the address', done => {
+      // given
+      const { store } = configureStore()
+      const history = createBrowserHistory()
+      history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <Switch>
+              <Route path="/structures/:offererId/lieux/:venueId">
+                <VenueContainer />
+              </Route>
+            </Switch>
+          </Router>
+        </Provider>
+      )
+
+      setTimeout(() => {
+        // when (offerer request is done, form is now available)
+        wrapper.update()
+        wrapper
+          .find("input[name='name']")
+          .simulate('change', { target: { value: NAME } })
+        wrapper
+          .find("textarea[name='comment']")
+          .simulate('change', { target: { value: COMMENT } })
+        wrapper
+          .find("input[name='bookingEmail']")
+          .simulate('change', { target: { value: BOOKING_EMAIL } })
+        wrapper
+          .find("input[name='address']")
+          .simulate('change', { target: { value: ADDRESS } })
+
+        setTimeout(() => {
+          wrapper.update()
+          const { items, onSelect, value } = wrapper
+            .find('Autocomplete')
+            .props()
+          const item = items[0]
+          onSelect(value, item)
+
+          setTimeout(() => {
+            // then (address has filled other inputs)
+            wrapper.update()
+            expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
+              true
+            )
+            expect(
+              wrapper.find("input[name='postalCode']").props().readOnly
+            ).toEqual(true)
+            expect(
+              wrapper.find("input[name='latitude']").props().readOnly
+            ).toEqual(true)
+            expect(
+              wrapper.find("input[name='longitude']").props().readOnly
+            ).toEqual(true)
+
+            // when
+            wrapper
+              .find("input[name='address']")
+              .simulate('change', { target: { value: ADDRESS.slice(0, -1) } })
+
+            // then
+            expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
+              false
+            )
+            expect(
+              wrapper.find("input[name='postalCode']").props().readOnly
+            ).toEqual(false)
+            expect(
+              wrapper.find("input[name='latitude']").props().readOnly
+            ).toEqual(false)
+            expect(
+              wrapper.find("input[name='longitude']").props().readOnly
+            ).toEqual(false)
+
+            // done
+            done()
+          })
+        }, 500)
+      })
+    })
 
     it('fills the form with valid coordinates (even if they are negative)', done => {
       // given
