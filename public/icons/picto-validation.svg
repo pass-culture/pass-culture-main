@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="72px" height="72px" viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: sketchtool 49.2 (51160) - http://www.bohemiancoding.com/sketch -->
-    <title>46425F1F-E4F6-45D9-824A-4BECBBA4CA6D</title>
-    <desc>Created with sketchtool.</desc>
-    <defs></defs>
-    <g id="Écrans" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="PassCulture-v0rc-tunnel3-conf-MVP" transform="translate(-151.000000, -184.000000)">
+<svg width="74px" height="74px" viewBox="0 0 74 74" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>PICTOS/picto-validation</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Tunnel" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="PassCulture-v0rc-tunnel3-conf" transform="translate(-150.000000, -183.000000)" fill="#27AE60">
             <g id="box" transform="translate(-176.000000, -232.000000)">
-                <g id="picto-validation" transform="translate(327.000000, 416.000000)">
-                    <circle id="Oval" fill="#27AE60" cx="36" cy="36" r="36"></circle>
-                    <polyline id="Stroke-3" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="22 37.9318118 34.8818258 50.809814 54 22"></polyline>
+                <g id="Content-[36v-c]" transform="translate(200.000000, 407.000000)">
+                    <g id="Group">
+                        <g id="PICTOS/picto-validation" transform="translate(118.000000, 0.000000)">
+                            <path d="M45,81.8181818 C24.6658797,81.8181818 8.18181818,65.3341203 8.18181818,45 C8.18181818,24.6658797 24.6658797,8.18181818 45,8.18181818 C65.3341203,8.18181818 81.8181818,24.6658797 81.8181818,45 C81.8181818,65.3341203 65.3341203,81.8181818 45,81.8181818 Z M59.6743919,29.5284157 L41.4926336,56.1569643 L30.0617384,45.0506773 C29.2515174,44.2634645 27.9565416,44.2821164 27.1693288,45.0923373 C26.3821161,45.9025583 26.4007679,47.1975341 27.2109889,47.9847469 L40.3855834,60.7852166 C41.2961433,61.6699189 42.7843082,61.5200655 43.5002027,60.4715843 L63.0528809,31.8352207 C63.6898875,30.9022767 63.4499828,29.6295803 62.5170389,28.9925737 C61.5840949,28.3555671 60.3113985,28.5954717 59.6743919,29.5284157 Z" id="Combined-Shape"></path>
+                        </g>
+                    </g>
                 </g>
             </g>
         </g>

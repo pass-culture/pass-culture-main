@@ -38,9 +38,8 @@ ShallowWrapper {
               }
             }
           >
-            <span
-              aria-hidden={true}
-              className="icon-legacy-check-circled"
+            <Icon
+              svg="picto-validation"
             />
           </span>
           <span
@@ -84,9 +83,8 @@ ShallowWrapper {
                 }
               }
             >
-              <span
-                aria-hidden={true}
-                className="icon-legacy-check-circled"
+              <Icon
+                svg="picto-validation"
               />
             </span>,
             <span
@@ -103,9 +101,8 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": <span
-                aria-hidden={true}
-                className="icon-legacy-check-circled"
+              "children": <Icon
+                svg="picto-validation"
               />,
               "className": "is-block mt24 mb8",
               "style": Object {
@@ -117,14 +114,13 @@ ShallowWrapper {
             "rendered": Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "host",
+              "nodeType": "function",
               "props": Object {
-                "aria-hidden": true,
-                "className": "icon-legacy-check-circled",
+                "svg": "picto-validation",
               },
               "ref": null,
               "rendered": null,
-              "type": "span",
+              "type": [Function],
             },
             "type": "span",
           },
@@ -218,9 +214,8 @@ ShallowWrapper {
                 }
               }
             >
-              <span
-                aria-hidden={true}
-                className="icon-legacy-check-circled"
+              <Icon
+                svg="picto-validation"
               />
             </span>
             <span
@@ -264,9 +259,8 @@ ShallowWrapper {
                   }
                 }
               >
-                <span
-                  aria-hidden={true}
-                  className="icon-legacy-check-circled"
+                <Icon
+                  svg="picto-validation"
                 />
               </span>,
               <span
@@ -283,9 +277,8 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": <span
-                  aria-hidden={true}
-                  className="icon-legacy-check-circled"
+                "children": <Icon
+                  svg="picto-validation"
                 />,
                 "className": "is-block mt24 mb8",
                 "style": Object {
@@ -297,14 +290,13 @@ ShallowWrapper {
               "rendered": Object {
                 "instance": null,
                 "key": undefined,
-                "nodeType": "host",
+                "nodeType": "function",
                 "props": Object {
-                  "aria-hidden": true,
-                  "className": "icon-legacy-check-circled",
+                  "svg": "picto-validation",
                 },
                 "ref": null,
                 "rendered": null,
-                "type": "span",
+                "type": [Function],
               },
               "type": "span",
             },
