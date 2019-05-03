@@ -17,7 +17,7 @@ class RawMediationsManager extends Component {
             children: <a> Pourquoi ? </a>,
             place: 'bottom',
             tip:
-              "<div><p>Pour que votre offre s'affiche dans l'application du Pass Culture, vous devez:</p><p>- ajoutez une ou plusieurs accroches.</p></div>",
+              "<div><p>Pour que votre offre s'affiche dans l'application du Pass Culture, vous devez:</p><p>- ajouter une ou plusieurs accroches.</p></div>",
             type: 'info',
           },
           type: 'warning',
