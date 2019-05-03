@@ -12,6 +12,7 @@ from utils.human_ids import dehumanize
 from utils.logger import logger
 from utils.rest import ensure_current_user_has_rights, load_or_404, expect_json_data
 from utils.thumb import has_thumb, get_crop, read_thumb
+from utils.includes import MEDIATION_INCLUDES
 
 
 @app.route('/mediations', methods=['POST'])
@@ -66,4 +67,4 @@ def update_mediation(mediation_id):
     mediation.populateFromDict(data)
     invalidate_recommendations_if_deactivating_object(data, mediation.recommendations)
     PcObject.check_and_save(mediation)
-    return jsonify(mediation._asdict()), 200
+    return jsonify(mediation._asdict(include=MEDIATION_INCLUDES)), 200

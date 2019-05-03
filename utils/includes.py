@@ -269,3 +269,7 @@ OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
         })
     }
 ]
+
+MEDIATION_INCLUDES = [
+    "thumbUrl"
+]
