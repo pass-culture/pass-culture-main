@@ -99,9 +99,10 @@ class FindRetryPaymentsTest:
         user = create_user()
         booking = create_booking(user)
         deposit = create_deposit(user, datetime.utcnow())
-        retry_payment1 = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
-        retry_payment2 = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
-        pending_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
+        offerer = booking.stock.resolvedOffer.venue.managingOfferer
+        retry_payment1 = create_payment(booking, offerer, 10)
+        retry_payment2 = create_payment(booking, offerer, 10)
+        pending_payment = create_payment(booking, offerer, 10, status=TransactionStatus.PENDING)
         retry_status1 = PaymentStatus()
         retry_status1.status = TransactionStatus.RETRY
         retry_payment1.statuses.append(retry_status1)

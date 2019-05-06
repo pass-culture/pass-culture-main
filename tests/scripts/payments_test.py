@@ -83,10 +83,12 @@ class ConcatenatePaymentsWithErrorsAndRetriesTest:
         user = create_user()
         booking = create_booking(user)
         deposit = create_deposit(user, datetime.utcnow())
+        offerer = booking.stock.resolvedOffer.venue.managingOfferer
 
-        error_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
-        retry_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
-        pending_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
+        error_payment = create_payment(booking, offerer, 10)
+        retry_payment = create_payment(booking, offerer, 10)
+        pending_payment = create_payment(booking, offerer, 10)
+        not_processable_payment = create_payment(booking, offerer, 10)
 
         error_status = PaymentStatus()
         error_status.status = TransactionStatus.ERROR
@@ -95,6 +97,10 @@ class ConcatenatePaymentsWithErrorsAndRetriesTest:
         retry_status = PaymentStatus()
         retry_status.status = TransactionStatus.RETRY
         retry_payment.statuses.append(retry_status)
+
+        not_processable_status = PaymentStatus()
+        not_processable_status.status = TransactionStatus.NOT_PROCESSABLE
+        not_processable_payment.statuses.append(not_processable_status)
 
         PcObject.check_and_save(error_payment, retry_payment, pending_payment, deposit)
 
