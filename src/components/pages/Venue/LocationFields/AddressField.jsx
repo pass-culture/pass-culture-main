@@ -4,24 +4,28 @@ import classnames from 'classnames'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
-import {
-  composeValidators,
-  createParseNumberValue,
-} from 'react-final-form-utils'
+import { composeValidators } from 'react-final-form-utils'
 
+import LocationViewer from './LocationViewer'
 import FieldErrors from 'components/layout/form/FieldErrors'
 import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
 
-function getInputValue(inputType, value) {
-  if (!value || (inputType === 'number' && typeof value === 'string')) {
-    return ''
-  }
-  return value
+const createBatchLocationChanges = (form, isLocationFrozen) => location => {
+  form.batch(() => {
+    const { address, city, latitude, longitude, postalCode } = location
+    form.change('address', address)
+    form.change('city', city)
+    form.change('isLocationFrozen', isLocationFrozen)
+    form.change('latitude', latitude)
+    form.change('longitude', longitude)
+    form.change('postalCode', postalCode)
+  })
 }
 
-export const TextField = ({
+export const AddressField = ({
   className,
   disabled,
+  form,
   format,
   id,
   innerClassName,
@@ -33,18 +37,14 @@ export const TextField = ({
   renderInner,
   renderValue,
   required,
-  type,
   validate,
-  ...inputProps
+  ...AddressProps
 }) => (
   <Field
     format={format}
     name={name}
     validate={composeValidators(validate, getRequiredValidate(required))}
-    parse={parse || createParseNumberValue(type)}
     render={({ input, meta }) => {
-      const inputType = readOnly ? 'text' : type
-      const inputValue = getInputValue(inputType, input.value)
       return (
         <div
           className={classnames('field text-field', className, {
@@ -71,20 +71,20 @@ export const TextField = ({
                   'field-inner flex-columns items-center',
                   innerClassName
                 )}>
-                <input
+                <LocationViewer
                   {...input}
-                  {...inputProps}
-                  className={`field-input field-${type}`}
+                  {...AddressProps}
+                  className="field-input field-address"
                   disabled={disabled || readOnly}
+                  name={name}
+                  onMarkerDragend={createBatchLocationChanges(form, false)}
+                  onSuggestionSelect={createBatchLocationChanges(form, true)}
+                  onTextChange={createBatchLocationChanges(form, false)}
                   placeholder={readOnly ? '' : placeholder}
                   readOnly={readOnly}
                   required={!!required}
-                  type={inputType}
-                  value={inputValue}
                 />
-                {renderInner()}
               </div>
-              {renderValue()}
             </div>
             <FieldErrors meta={meta} />
           </div>
@@ -95,7 +95,7 @@ export const TextField = ({
   />
 )
 
-TextField.defaultProps = {
+AddressField.defaultProps = {
   className: '',
   disabled: false,
   format: null,
@@ -105,16 +105,16 @@ TextField.defaultProps = {
   parse: null,
   placeholder: '',
   readOnly: false,
-  renderInner: () => null,
-  renderValue: () => null,
   required: false,
   type: 'text',
   validate: null,
 }
 
-TextField.propTypes = {
+AddressField.propTypes = {
+  autoComplete: PropTypes.string,
   className: PropTypes.string,
   disabled: PropTypes.bool,
+  form: PropTypes.object.isRequired,
   format: PropTypes.func,
   id: PropTypes.string,
   innerClassName: PropTypes.string,
@@ -126,8 +126,7 @@ TextField.propTypes = {
   renderInner: PropTypes.func,
   renderValue: PropTypes.func,
   required: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
-  type: PropTypes.string,
   validate: PropTypes.func,
 }
 
-export default TextField
+export default AddressField

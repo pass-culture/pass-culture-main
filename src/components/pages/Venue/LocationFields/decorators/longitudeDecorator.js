@@ -1,6 +1,6 @@
 import createDecorator from 'final-form-calculate'
 
-import getGeoSuggestionsFromLatitudeAndLongitude from './getGeoSuggestionsFromLatitudeAndLongitude'
+import getSuggestionsFromLatitudeAndLongitude from '../utils/getSuggestionsFromLatitudeAndLongitude'
 
 export const longitudeDecorator = createDecorator({
   field: 'longitude',
@@ -9,7 +9,7 @@ export const longitudeDecorator = createDecorator({
       return {}
     }
 
-    const result = await getGeoSuggestionsFromLatitudeAndLongitude(
+    const result = await getSuggestionsFromLatitudeAndLongitude(
       values.latitude,
       longitude
     )
@@ -24,16 +24,16 @@ export const longitudeDecorator = createDecorator({
       return {
         address,
         city,
+        isLocationFrozen: false,
         postalCode,
-        selectedAddress: null,
       }
     }
 
     return {
       address: null,
       city: null,
+      isLocationFrozen: false,
       postalCode: null,
-      selectedAddress: null,
     }
   },
 })

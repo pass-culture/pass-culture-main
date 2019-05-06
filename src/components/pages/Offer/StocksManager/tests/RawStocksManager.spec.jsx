@@ -33,6 +33,7 @@ describe.skip('src | components | pages | Offer | RawStocksManager', () => {
           state: undefined,
           key: '4c2v7m',
         },
+        query: {},
         stocks: [mockedStock],
       }
 
@@ -56,6 +57,7 @@ describe.skip('src | components | pages | Offer | RawStocksManager', () => {
           state: undefined,
           key: '4c2v7m',
         },
+        query: {},
         stocks: [mockedStock],
       }
 

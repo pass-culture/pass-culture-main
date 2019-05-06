@@ -7,7 +7,7 @@ import capitalize from './capitalize'
 export const SIRET = 'siret'
 export const SIREN = 'siren'
 
-export function formatSire(string) {
+export function formatSirenOrSiret(string) {
   const value = removeWhitespaces(string)
   if (!value) {
     return ''

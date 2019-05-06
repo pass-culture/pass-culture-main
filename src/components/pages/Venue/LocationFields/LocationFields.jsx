@@ -8,21 +8,16 @@ import {
   TextField,
 } from 'components/layout/form/fields'
 
-const GeoFields = ({
+const LocationFields = ({
   fieldReadOnlyBecauseFrozenFormSiret,
   form,
   formLatitude,
   formLongitude,
-  formSelectedAddress,
-  formSiret,
-  initialSiret,
-  isModifiedEntity,
-  latitude,
-  longitude,
+  formIsLocationFrozen,
   readOnly,
 }) => {
   const readOnlyFromAddressOrSiren =
-    formSelectedAddress !== null || fieldReadOnlyBecauseFrozenFormSiret
+    formIsLocationFrozen || fieldReadOnlyBecauseFrozenFormSiret
 
   const fieldReadOnly = readOnly || readOnlyFromAddressOrSiren
 
@@ -30,7 +25,7 @@ const GeoFields = ({
     <div className="section">
       <h2 className="main-list-title">ADRESSE</h2>
       <div className="field-group">
-        <HiddenField name="selectedAddress" />
+        <HiddenField name="isLocationFrozen" />
         <AddressField
           form={form}
           label="Numéro et voie : "
@@ -76,24 +71,21 @@ const GeoFields = ({
   )
 }
 
-GeoFields.defaultProps = {
+LocationFields.defaultProps = {
   fieldReadOnlyBecauseFrozenFormSiret: false,
+  formIsLocationFrozen: false,
   formLatitude: null,
   formLongitude: null,
-  formSelectedAddress: null,
-  formSiret: null,
   readOnly: true,
 }
 
-GeoFields.propTypes = {
+LocationFields.propTypes = {
   fieldReadOnlyBecauseFrozenFormSiret: PropTypes.bool,
   form: PropTypes.object.isRequired,
+  formIsLocationFrozen: PropTypes.bool,
   formLatitude: PropTypes.number,
   formLongitude: PropTypes.number,
-  formSelectedAddress: PropTypes.string,
-  formSiret: PropTypes.string,
-  isModifiedEntity: PropTypes.bool.isRequired,
   readOnly: PropTypes.bool,
 }
 
-export default GeoFields
+export default LocationFields

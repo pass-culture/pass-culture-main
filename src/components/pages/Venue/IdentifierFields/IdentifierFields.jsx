@@ -1,14 +1,19 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import validateSiret from './validateSiret'
+import siretValidate from './siretValidate'
 import { Icon } from 'components/layout/Icon'
 import {
   HiddenField,
   TextareaField,
   TextField,
 } from 'components/layout/form/fields'
-import { formatSire } from 'utils/sire'
+import { formatSirenOrSiret } from 'utils/siren'
+
+const getIsCommentRequired = formSiret => !formSiret || formSiret.length !== 14
+
+const buildSiretLabel = isCreatedEntity =>
+  `SIRET${isCreatedEntity ? ' (si applicable)' : ''} : `
 
 const IdentifierFields = ({
   fieldReadOnlyBecauseFrozenFormSiret,
@@ -31,9 +36,9 @@ const IdentifierFields = ({
     <div className="field-group">
       {isCreatedEntity && <HiddenField name="managingOffererId" />}
       <TextField
-        format={formatSire}
+        format={formatSirenOrSiret}
         innerClassName="col-50"
-        label={`SIRET${isCreatedEntity ? ' (si applicable)' : ''} : `}
+        label={buildSiretLabel(isCreatedEntity)}
         name="siret"
         readOnly={readOnly || initialSiret !== null}
         renderValue={() => {
@@ -63,7 +68,7 @@ const IdentifierFields = ({
           )
         }}
         type="siret"
-        {...(initialSiret ? {} : { validate: validateSiret })}
+        {...(initialSiret ? {} : { validate: siretValidate })}
       />
       <TextField
         label="Nom : "
@@ -98,7 +103,7 @@ const IdentifierFields = ({
         label="Commentaire (si pas de SIRET) : "
         name="comment"
         readOnly={readOnly}
-        required={!formSiret || formSiret.length !== 14}
+        required={getIsCommentRequired(formSiret)}
         rows={1}
       />
     </div>

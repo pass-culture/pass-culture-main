@@ -4,7 +4,7 @@ import { Field } from 'react-final-form'
 
 import FieldErrors from 'components/layout/form/FieldErrors'
 
-const noop = () => {}
+const noOperation = () => {}
 
 export const HiddenField = ({ name, validator }) => (
   <Field
@@ -20,7 +20,7 @@ export const HiddenField = ({ name, validator }) => (
 )
 
 HiddenField.defaultProps = {
-  validator: noop,
+  validator: noOperation,
 }
 
 HiddenField.propTypes = {

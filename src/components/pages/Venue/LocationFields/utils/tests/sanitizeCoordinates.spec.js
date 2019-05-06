@@ -54,4 +54,22 @@ describe('components | pages | Venue | GeoFields | sanitizeCoordinates', () => 
     expect(result).toEqual(322)
     expect(typeof result).toBe('number')
   })
+  it('should return negative value for negative string value with dot', () => {
+    // given
+    let input = '-32.2'
+    // when
+    let result = sanitizeCoordinates(input)
+    // then
+    expect(result).toEqual(-32.2)
+    expect(typeof result).toBe('number')
+  })
+  it('should return negative value for negative string value with comma', () => {
+    // given
+    let input = '-32,2'
+    // when
+    let result = sanitizeCoordinates(input)
+    // then
+    expect(result).toEqual(-32.2)
+    expect(typeof result).toBe('number')
+  })
 })

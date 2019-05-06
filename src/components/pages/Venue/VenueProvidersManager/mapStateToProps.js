@@ -3,10 +3,10 @@ import { selectCurrentUser } from 'with-login'
 
 import selectProviderById from 'selectors/selectProviderById'
 import selectProviders from 'selectors/selectProviders'
-import selectVenueProviderByVenueIdAndVenueProviderId from 'selectors/selectVenueProviderByVenueIdAndVenueProviderId'
-import selectVenueProvidersByVenueId from 'selectors/selectVenueProvidersByVenueId'
+import selectVenueProviderByVenueIdAndVenueProviderId from './selectVenueProviderByVenueIdAndVenueProviderId'
+import selectVenueProvidersByVenueId from './selectVenueProvidersByVenueId'
 
-function mapStateToProps(state, ownProps) {
+const mapStateToProps = (state, ownProps) => {
   const { venue } = ownProps
   const { id: venueId } = venue || {}
   const providers = selectProviders(state)

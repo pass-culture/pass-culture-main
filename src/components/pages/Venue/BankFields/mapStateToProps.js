@@ -2,7 +2,7 @@ import { selectCurrentUser } from 'with-login'
 
 import selectUserOffererByOffererIdAndUserIdAndRightsType from 'selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
 
-function mapStateToProps(state, ownProps) {
+const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const {
     params: { offererId },

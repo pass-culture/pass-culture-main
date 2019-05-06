@@ -9,7 +9,7 @@ import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
 
 import Icon from 'components/layout/Icon'
-import validateRequiredField from 'components/layout/form/utils/validateRequiredField'
+import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
 
 const renderReadOnlyInput = readOnlyValue => (
   <input className="field-input field-date" readOnly value={readOnlyValue} />
@@ -22,6 +22,11 @@ const renderDateInput = DatePickerProps => (
     <Icon alt="Horaires" svg="ico-calendar" />
   </div>
 )
+
+const createOnDateChange = input => date => {
+  const changedValue = date ? date.toISOString() : null
+  input.onChange(changedValue)
+}
 
 export const DateField = ({
   autoComplete,
@@ -44,20 +49,12 @@ export const DateField = ({
   // see github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
   ...DatePickerProps
 }) => {
-  const requiredIsAFunction = required && typeof required === 'function'
-  const defaultRequiredValidate =
-    (required && validateRequiredField) || undefined
-  const requiredValidate = requiredIsAFunction
-    ? required
-    : defaultRequiredValidate
-
   const inputName = id || name
   const isClearable = !readOnly && clearable
-
   return (
     <Field
       name={name}
-      validate={composeValidators(validate, requiredValidate)}
+      validate={composeValidators(validate, getRequiredValidate(required))}
       render={({ input, meta }) => {
         let readOnlyValue
         let selected
@@ -65,6 +62,22 @@ export const DateField = ({
           selected = moment(input.value)
           readOnlyValue = selected.format(dateFormat)
         }
+
+        const dateInputProps = {
+          className: 'date',
+          dateFormat,
+          id: inputName,
+          isClearable,
+          locale,
+          placeholderText: placeholder,
+          shouldCloseOnSelect: true,
+          selected,
+          ...DatePickerProps,
+          ...input,
+          onChange: createOnDateChange(input),
+          value: readOnlyValue,
+        }
+
         return (
           <div
             className={classnames('field date-field', className, {
@@ -86,25 +99,9 @@ export const DateField = ({
             <div className="field-control">
               <div className="field-value flex-columns items-center">
                 <div className="field-inner flex-columns items-center">
-                  {readOnly && renderReadOnlyInput(readOnlyValue)}
-                  {!readOnly &&
-                    renderDateInput({
-                      className: 'date',
-                      dateFormat,
-                      id: inputName,
-                      isClearable,
-                      locale,
-                      placeholderText: placeholder,
-                      shouldCloseOnSelect: true,
-                      selected,
-                      ...DatePickerProps,
-                      ...input,
-                      onChange: date => {
-                        const changedValue = date ? date.toISOString() : null
-                        input.onChange(changedValue)
-                      },
-                      value: readOnlyValue,
-                    })}
+                  {readOnly
+                    ? renderReadOnlyInput(readOnlyValue)
+                    : renderDateInput(dateInputProps)}
                 </div>
                 {renderValue()}
               </div>

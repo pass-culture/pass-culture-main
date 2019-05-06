@@ -2,7 +2,7 @@ import selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity from './se
 import selectOffererById from 'selectors/selectOffererById'
 import selectUserOffererByOffererIdAndUserIdAndRightsType from 'selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
 
-function mapStateToProps(state, ownProps) {
+const mapStateToProps = (state, ownProps) => {
   const {
     currentUser,
     match: {

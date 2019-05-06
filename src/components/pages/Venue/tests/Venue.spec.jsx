@@ -791,7 +791,7 @@ describe('src | components | pages | Venue', () => {
 
         setTimeout(() => {
           wrapper.update()
-          const { onMarkerDragend } = wrapper.find('Address').props()
+          const { onMarkerDragend } = wrapper.find('LocationViewer').props()
           onMarkerDragend({ latitude: LATITUDE, longitude: LONGITUDE })
 
           setTimeout(() => {

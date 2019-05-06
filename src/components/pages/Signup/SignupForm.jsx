@@ -7,7 +7,7 @@ import get from 'lodash.get'
 
 class SignupForm extends PureComponent {
   render() {
-    const { errors, patch, sirenName } = this.props
+    const { errors, patch, offererName } = this.props
     return (
       <section>
         <div className="hero-body">
@@ -82,7 +82,7 @@ class SignupForm extends PureComponent {
                 required
               />
               <Field
-                disabling={() => !sirenName}
+                disabling={() => !offererName}
                 label="SIREN"
                 name="siren"
                 placeholder="123 456 789"
@@ -139,7 +139,7 @@ class SignupForm extends PureComponent {
 
 function mapStateToProps(state) {
   return {
-    sirenName: get(state, `form.user.name`),
+    offererName: get(state, `form.user.name`),
   }
 }
 

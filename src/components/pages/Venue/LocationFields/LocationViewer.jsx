@@ -6,10 +6,10 @@ import React, { Component, Fragment } from 'react'
 import Autocomplete from 'react-autocomplete'
 import { Map, Marker, TileLayer } from 'react-leaflet'
 
-import getGeoSuggestionsFromAddressAndMaxSuggestions from './getGeoSuggestionsFromAddressAndMaxSuggestions'
-import getGeoSuggestionsFromLatitudeAndLongitude from './getGeoSuggestionsFromLatitudeAndLongitude'
-import sanitizeCoordinates from './sanitizeCoordinates'
-import { FRANCE_POSITION } from './positions'
+import getSuggestionsFromAddressAndMaxSuggestions from './utils/getSuggestionsFromAddressAndMaxSuggestions'
+import getSuggestionsFromLatitudeAndLongitude from './utils/getSuggestionsFromLatitudeAndLongitude'
+import sanitizeCoordinates from './utils/sanitizeCoordinates'
+import { FRANCE_POSITION } from './utils/positions'
 import { ROOT_PATH } from 'utils/config'
 
 const markerIcon = new LeafletIcon({
@@ -20,7 +20,7 @@ const markerIcon = new LeafletIcon({
   popupAnchor: null,
 })
 
-class Address extends Component {
+class LocationViewer extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -28,9 +28,8 @@ class Address extends Component {
       isLoading: false,
       marker: null,
       position: props.initialPosition,
-      value: '',
-      selectedAddress: null,
       suggestions: [],
+      value: '',
     }
     this.refmarker = React.createRef()
     this.onDebouncedFetchSuggestions = debounce(
@@ -52,10 +51,8 @@ class Address extends Component {
         ? newProps.zoom
         : newProps.defaultInitialPosition.zoom,
     }
-
     const isValueEmpty = newProps.value === ''
     const nextValue = isValueEmpty ? '' : newProps.value || currentState.value
-
     const nextStateWithPositionAndValue = {
       position: nextPosition,
       value: nextValue,
@@ -63,7 +60,7 @@ class Address extends Component {
 
     const nextStateWithSuggestionsAndMarker = hasCoordinates
       ? {
-          suggestions: currentState.selectedAddress
+          suggestions: currentState.selectedValue
             ? []
             : currentState.suggestions,
           marker: {
@@ -103,88 +100,88 @@ class Address extends Component {
       suggestions: [],
     })
 
-    getGeoSuggestionsFromLatitudeAndLongitude(latitude, longitude).then(
-      result => {
-        this.setState({
-          isLoading: false,
-        })
+    getSuggestionsFromLatitudeAndLongitude(latitude, longitude).then(result => {
+      this.setState({
+        isLoading: false,
+      })
 
-        if (result.error) {
-          return
-        }
+      if (result.error) {
+        return
+      }
 
-        const hasOnlyOneSuggestion = result.data && result.data.length === 1
-        if (hasOnlyOneSuggestion) {
-          const suggestion = result.data[0]
-          const { address, city, postalCode } = suggestion
-          onMarkerDragend({
-            address,
-            city,
-            latitude,
-            longitude,
-            postalCode,
-            selectedAddress: null,
-          })
-          return
-        }
+      const hasOnlyOneSuggestion = result.data && result.data.length === 1
+      if (hasOnlyOneSuggestion) {
+        const suggestion = result.data[0]
+        const { address, city, postalCode } = suggestion
 
-        onMarkerDragend({
-          address: null,
-          city: null,
+        const location = {
+          address,
+          city,
           latitude,
           longitude,
-          postalCode: null,
-          selectedAddress: null,
-        })
+          postalCode,
+        }
+
+        onMarkerDragend(location)
+        return
       }
-    )
+
+      const location = {
+        address: null,
+        city: null,
+        latitude,
+        longitude,
+        postalCode: null,
+      }
+
+      onMarkerDragend(location)
+    })
   }
 
   onTextChange = event => {
-    const { onTextChange } = this.props
-    const value = event.target.value
-    this.setState({ value })
+    const { onTextChange: onTextChangeFromProps } = this.props
+    const address = event.target.value
+    this.setState({ value: address })
 
-    const values = {
-      address: value,
+    const location = {
+      address,
       city: null,
       latitude: null,
       longitude: null,
       postalCode: null,
-      selectedAddress: null,
     }
 
-    onTextChange(values)
-    this.onDebouncedFetchSuggestions(value)
+    onTextChangeFromProps(location)
+    this.onDebouncedFetchSuggestions(address)
   }
 
-  onSuggestionSelect = (value, item) => {
-    const { onSuggestionSelect, zoom } = this.props
-    if (item.placeholder) return
+  onSuggestionSelect = (address, location) => {
+    const { onSuggestionSelect: onSuggestionSelectFromProps, zoom } = this.props
+    const { latitude, longitude, placeholder } = location
+    if (placeholder) return
     this.setState({
-      value,
+      value: address,
       position: {
-        latitude: item.latitude,
-        longitude: item.longitude,
+        latitude,
+        longitude,
         zoom,
       },
       marker: {
-        latitude: item.latitude,
-        longitude: item.longitude,
+        latitude,
+        longitude,
       },
-      selectedAddress: value,
     })
-    onSuggestionSelect(item)
+    onSuggestionSelectFromProps(location)
   }
 
-  fetchSuggestions = value => {
+  fetchSuggestions = address => {
     const { maxSuggestions, placeholder } = this.props
     this.setState({ isLoading: true })
 
     // NOTE: CANNOT EXPRESS THIS WITH AWAIT ASYNC
     // BECAUSE this.props cannot be found in that case...
     // weird
-    getGeoSuggestionsFromAddressAndMaxSuggestions(value, maxSuggestions).then(
+    getSuggestionsFromAddressAndMaxSuggestions(address, maxSuggestions).then(
       result => {
         if (result.error) {
           return
@@ -198,39 +195,37 @@ class Address extends Component {
           return
         }
 
-        const dataWithSelectedAddress = result.data.map(datum =>
-          Object.assign({ selectedAddress: datum.address }, datum)
-        )
-
         const defaultSuggestion = {
           label: placeholder,
           placeholder: true,
           id: 'placeholder',
         }
 
-        const suggestions = dataWithSelectedAddress.concat(defaultSuggestion)
+        const suggestions = result.data.concat(defaultSuggestion)
         this.setState({
           isLoading: false,
-          selectedAddress: null,
           suggestions,
         })
       }
     )
   }
 
-  renderItem = ({ id, label, placeholder }, highlighted) => {
-    return (
-      <div
-        className={classnames({
-          item: true,
-          highlighted,
-          placeholder,
-        })}
-        key={id}>
-        {label}
-      </div>
-    )
+  renderSuggestionsMenu = children => {
+    const empty = children.length === 0
+    return <div className={classnames('menu', { empty })}>{children}</div>
   }
+
+  renderSuggestion = ({ id, label, placeholder }, highlighted) => (
+    <div
+      className={classnames({
+        item: true,
+        highlighted,
+        placeholder,
+      })}
+      key={id}>
+      {label}
+    </div>
+  )
 
   renderInput() {
     const { className, id, name, placeholder, readOnly, required } = this.props
@@ -264,13 +259,8 @@ class Address extends Component {
           onChange={this.onTextChange}
           onSelect={this.onSuggestionSelect}
           readOnly={readOnly}
-          renderItem={this.renderItem}
-          renderMenu={children => {
-            const empty = children.length === 0
-            return (
-              <div className={classnames('menu', { empty })}>{children}</div>
-            )
-          }}
+          renderItem={this.renderSuggestion}
+          renderMenu={this.renderSuggestionsMenu}
           value={this.props.value || value}
           wrapperProps={{ className: 'input-wrapper' }}
         />
@@ -311,7 +301,7 @@ class Address extends Component {
   }
 }
 
-Address.defaultProps = {
+LocationViewer.defaultProps = {
   debounceTimeout: 300,
   defaultInitialPosition: FRANCE_POSITION,
   latitude: null,
@@ -326,7 +316,7 @@ Address.defaultProps = {
   zoom: 15,
 }
 
-Address.propTypes = {
+LocationViewer.propTypes = {
   debounceTimeout: PropTypes.number,
   defaultInitialPosition: PropTypes.shape({
     latitude: PropTypes.number,
@@ -345,4 +335,4 @@ Address.propTypes = {
   zoom: PropTypes.number,
 }
 
-export default Address
+export default LocationViewer

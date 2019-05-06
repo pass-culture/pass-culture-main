@@ -10,14 +10,16 @@ import { NavLink } from 'react-router-dom'
 
 import BankFieldsContainer from './BankFields/BankFieldsContainer'
 import CreateOfferControl from './CreateOfferControl'
-import { FRANCE_POSITION } from './GeoFields/positions'
-import GeoFields from './GeoFields/GeoFields'
-import latitudeDecorator from './GeoFields/latitudeDecorator'
-import longitudeDecorator from './GeoFields/longitudeDecorator'
+import LocationFields from './LocationFields/LocationFields'
+import {
+  latitudeDecorator,
+  longitudeDecorator,
+} from './LocationFields/decorators'
+import { FRANCE_POSITION } from './LocationFields/utils/positions'
 import IdentifierFields from './IdentifierFields/IdentifierFields'
-import siretDecorator from './IdentifierFields/siretDecorator'
-import ModifyOrCancelControl from './ModifyOrCancelControl/ModifyOrCancelControl'
-import ReturnOrSubmitControl from './ReturnOrSubmitControl/ReturnOrSubmitControl'
+import { siretDecorator } from './IdentifierFields/decorators'
+import ModifyOrCancelControl from './controls/ModifyOrCancelControl/ModifyOrCancelControl'
+import ReturnOrSubmitControl from './controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
 import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
 import HeroSection from 'components/layout/HeroSection'
 import Icon from 'components/layout/Icon'
@@ -165,9 +167,9 @@ class Venue extends Component {
               const canSubmit = getCanSubmit(formProps)
               const { form, handleSubmit, values } = formProps
               const {
+                isLocationFrozen: formIsLocationFrozen,
                 latitude: formLatitude,
                 longitude: formLongitude,
-                selectedAddress: formSelectedAddress,
                 siret: formSiret,
               } = values
 
@@ -204,12 +206,12 @@ class Venue extends Component {
                     initialThumbCount={initialThumbCount}
                     readOnly={readOnly}
                   />
-                  <GeoFields
+                  <LocationFields
                     fieldReadOnlyBecauseFrozenFormSiret={
                       fieldReadOnlyBecauseFrozenFormSiret
                     }
-                    initialSiret={initialSiret}
                     form={form}
+                    formIsLocationFrozen={formIsLocationFrozen}
                     formLatitude={
                       formLatitude === ''
                         ? FRANCE_POSITION.latitude
@@ -220,9 +222,6 @@ class Venue extends Component {
                         ? FRANCE_POSITION.longitude
                         : formLongitude
                     }
-                    formSelectedAddress={formSelectedAddress}
-                    formSiret={formSiret}
-                    isModifiedEntity={isModifiedEntity}
                     readOnly={readOnly}
                   />
                   <hr />

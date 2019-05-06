@@ -19,7 +19,7 @@ function mapStateToProps(state, ownProps) {
       'admin'
     ),
     offerer: selectOffererById(state, offererId),
-    sirenName: get(state, 'form.offerer.name'),
+    offererName: get(state, 'form.offerer.name'),
     venues: selectPhysicalVenuesByOffererId(state, offererId),
   }
 }

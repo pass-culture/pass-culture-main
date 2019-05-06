@@ -7,7 +7,7 @@ import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
 import ReactTimeInput from 'react-time-input'
 
-import validateRequiredField from 'components/layout/form/utils/validateRequiredField'
+import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
 
 export const TimeField = ({
   autoComplete,
@@ -27,65 +27,56 @@ export const TimeField = ({
   tz,
   // see https://www.npmjs.com/package/react-time-input
   ...ReactTimeInputProps
-}) => {
-  const requiredIsAFunction = required && typeof required === 'function'
-  const defaultRequiredValidate =
-    (required && validateRequiredField) || undefined
-  const requiredValidate = requiredIsAFunction
-    ? required
-    : defaultRequiredValidate
-
-  return (
-    <Field
-      name={name}
-      validate={composeValidators(validate, requiredValidate)}
-      render={({ input, meta }) => {
-        return (
-          <div
-            className={classnames('field time-field', className, {
-              'is-read-only': readOnly,
-            })}
-            id={id}>
-            <label
-              htmlFor={name}
-              className={classnames('field-label', { empty: !label })}>
-              {label && (
-                <span>
-                  <span>{label}</span>
-                  {required && !readOnly && (
-                    <span className="field-asterisk">*</span>
-                  )}
-                </span>
-              )}
-            </label>
-            <div className="field-control">
-              <div className="field-value flex-columns items-center">
-                <div className="field-inner flex-columns items-center">
-                  {readOnly ? (
-                    <input
-                      className="field-input field-time"
-                      readOnly
-                      value={input.value}
-                    />
-                  ) : (
-                    <ReactTimeInput
-                      className="field-input field-time"
-                      initTime={input.value}
-                      {...input}
-                      {...ReactTimeInputProps}
-                      onTimeChange={time => input.onChange(time)}
-                    />
-                  )}
-                </div>
-                {renderValue()}
+}) => (
+  <Field
+    name={name}
+    validate={composeValidators(validate, getRequiredValidate(required))}
+    render={({ input, meta }) => {
+      return (
+        <div
+          className={classnames('field time-field', className, {
+            'is-read-only': readOnly,
+          })}
+          id={id}>
+          <label
+            htmlFor={name}
+            className={classnames('field-label', { empty: !label })}>
+            {label && (
+              <span>
+                <span>{label}</span>
+                {required && !readOnly && (
+                  <span className="field-asterisk">*</span>
+                )}
+              </span>
+            )}
+          </label>
+          <div className="field-control">
+            <div className="field-value flex-columns items-center">
+              <div className="field-inner flex-columns items-center">
+                {readOnly ? (
+                  <input
+                    className="field-input field-time"
+                    readOnly
+                    value={input.value}
+                  />
+                ) : (
+                  <ReactTimeInput
+                    className="field-input field-time"
+                    initTime={input.value}
+                    {...input}
+                    {...ReactTimeInputProps}
+                    onTimeChange={time => input.onChange(time)}
+                  />
+                )}
               </div>
+              {renderValue()}
             </div>
           </div>
-        )
-      }}
-    />
-  )
-}
+        </div>
+      )
+    }}
+  />
+)
 
 TimeField.defaultProps = {
   autoComplete: false,
