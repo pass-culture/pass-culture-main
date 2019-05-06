@@ -19,6 +19,7 @@ class TransactionStatus(enum.Enum):
     SENT = 'SENT'
     ERROR = 'ERROR'
     RETRY = 'RETRY'
+    BANNED = 'BANNED'
 
 
 class PaymentStatus(PcObject, Model):
