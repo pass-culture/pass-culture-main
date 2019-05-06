@@ -119,7 +119,7 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
         validate_transaction_file_structure(xml_file)
     except DocumentInvalid as e:
         for payment in payments:
-            payment.setStatus(TransactionStatus.ERROR, detail=str(e))
+            payment.setStatus(TransactionStatus.NOT_PROCESSABLE, detail=str(e))
         PcObject.check_and_save(*payments)
         raise
 

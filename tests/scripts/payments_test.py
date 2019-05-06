@@ -354,7 +354,7 @@ def test_send_transactions_with_malformed_iban_on_payments_gives_them_an_error_s
     updated_payments = Payment.query.all()
     for payment in updated_payments:
         assert len(payment.statuses) == 2
-        assert payment.currentStatus.status == TransactionStatus.ERROR
+        assert payment.currentStatus.status == TransactionStatus.NOT_PROCESSABLE
         assert payment.currentStatus.detail == "Element '{urn:iso:std:iso:20022:tech:xsd:pain.001.001.03}IBAN': " \
                                                "[facet 'pattern'] The value 'CF  13QSDFGH45 qbc //' is not accepted " \
                                                "by the pattern '[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}'., line 76"
