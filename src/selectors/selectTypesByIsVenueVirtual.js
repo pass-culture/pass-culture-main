@@ -12,7 +12,7 @@ export const selectTypesByIsVenueVirtual = createSelector(
         filteredTypes = filteredTypes.filter(t => !t.onlineOnly)
       }
     }
-    filteredTypes.sort((t1, t2) => t1.label.localeCompare(t2.label))
+    filteredTypes.sort((t1, t2) => t1.proLabel.localeCompare(t2.proLabel))
     return filteredTypes
   }
 )

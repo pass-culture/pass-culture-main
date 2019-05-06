@@ -4,27 +4,26 @@ import state from './mockState'
 describe('selectOffererById', () => {
   it('should select the global state', () => {
     const expected = {
-      id: 'AE',
-      address: '41 Boulevard de Strasbourg',
-      city: 'AULNAY SOUS BOIS',
-      dateCreated: '2018-06-29T11:44:01.308417Z',
-      dateModifiedAtLastProvider: '2018-02-01T14:47:00Z',
-      dehumanizedId: 1,
-      dehumanizedLastProviderId: 7,
+      address: 'RUE DES SAPOTILLES',
+      bic: 'QSDFGH8Z566',
+      city: 'Cayenne',
+      dateCreated: '2019-05-06T09:12:46.278743Z',
+      dateModifiedAtLastProvider: '2019-05-06T09:13:08.458343Z',
       firstThumbDominantColor: null,
-      idAtProviders: '2949',
+      iban: 'FR7630001007941234567890185',
+      id: '4Q',
+      idAtProviders: null,
       isActive: true,
       isValidated: true,
-      lastProviderId: 'A4',
+      lastProviderId: null,
       modelName: 'Offerer',
-      nOffers: 188,
-      name: "Folies d'encre Aulnay-sous-Bois",
-      postalCode: '93600',
-      siren: '302559178',
+      nOffers: 5,
+      name: 'Bar des amis',
+      postalCode: '97300',
+      siren: '222222233',
       thumbCount: 0,
-      managedVenuesIds: ['BQ', 'AE'],
     }
-    const offererId = 'AE'
+    const offererId = '4Q'
     expect(selectOffererById(state, offererId)).toEqual(expected)
   })
 })

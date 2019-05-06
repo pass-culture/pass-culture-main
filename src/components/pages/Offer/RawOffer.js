@@ -363,7 +363,7 @@ class RawOffer extends Component {
               <Field
                 label="Type"
                 name="type"
-                optionLabel="label"
+                optionLabel="proLabel"
                 optionValue="value"
                 options={types}
                 placeholder={

@@ -108,7 +108,7 @@ ShallowWrapper {
                                 label="Type"
                                 layout="horizontal"
                                 name="type"
-                                optionLabel="label"
+                                optionLabel="proLabel"
                                 optionValue="value"
                                 options={undefined}
                                 placeholder="Sélectionnez un type d'offre"
@@ -296,7 +296,7 @@ ShallowWrapper {
                                     label="Type"
                                     layout="horizontal"
                                     name="type"
-                                    optionLabel="label"
+                                    optionLabel="proLabel"
                                     optionValue="value"
                                     options={undefined}
                                     placeholder="Sélectionnez un type d'offre"
@@ -477,7 +477,7 @@ ShallowWrapper {
                                 label="Type"
                                 layout="horizontal"
                                 name="type"
-                                optionLabel="label"
+                                optionLabel="proLabel"
                                 optionValue="value"
                                 options={undefined}
                                 placeholder="Sélectionnez un type d'offre"
@@ -646,7 +646,7 @@ ShallowWrapper {
                     label="Type"
                     layout="horizontal"
                     name="type"
-                    optionLabel="label"
+                    optionLabel="proLabel"
                     optionValue="value"
                     options={undefined}
                     placeholder="Sélectionnez un type d'offre"
@@ -694,7 +694,7 @@ ShallowWrapper {
                     "label": "Type",
                     "layout": "horizontal",
                     "name": "type",
-                    "optionLabel": "label",
+                    "optionLabel": "proLabel",
                     "optionValue": "value",
                     "options": undefined,
                     "placeholder": "Sélectionnez un type d'offre",
@@ -1216,7 +1216,7 @@ ShallowWrapper {
                                         label="Type"
                                         layout="horizontal"
                                         name="type"
-                                        optionLabel="label"
+                                        optionLabel="proLabel"
                                         optionValue="value"
                                         options={undefined}
                                         placeholder="Sélectionnez un type d'offre"
@@ -1404,7 +1404,7 @@ ShallowWrapper {
                                           label="Type"
                                           layout="horizontal"
                                           name="type"
-                                          optionLabel="label"
+                                          optionLabel="proLabel"
                                           optionValue="value"
                                           options={undefined}
                                           placeholder="Sélectionnez un type d'offre"
@@ -1585,7 +1585,7 @@ ShallowWrapper {
                                     label="Type"
                                     layout="horizontal"
                                     name="type"
-                                    optionLabel="label"
+                                    optionLabel="proLabel"
                                     optionValue="value"
                                     options={undefined}
                                     placeholder="Sélectionnez un type d'offre"
@@ -1754,7 +1754,7 @@ ShallowWrapper {
                       label="Type"
                       layout="horizontal"
                       name="type"
-                      optionLabel="label"
+                      optionLabel="proLabel"
                       optionValue="value"
                       options={undefined}
                       placeholder="Sélectionnez un type d'offre"
@@ -1802,7 +1802,7 @@ ShallowWrapper {
                       "label": "Type",
                       "layout": "horizontal",
                       "name": "type",
-                      "optionLabel": "label",
+                      "optionLabel": "proLabel",
                       "optionValue": "value",
                       "options": undefined,
                       "placeholder": "Sélectionnez un type d'offre",

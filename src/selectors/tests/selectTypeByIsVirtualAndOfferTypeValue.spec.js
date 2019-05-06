@@ -17,12 +17,14 @@ describe('selectTypeByIsVenueVirtualAndOfferTypeValue', () => {
 
       // then
       expect(result).toEqual({
-        id: 15,
+        appLabel: 'Supports physiques ou en ligne',
+        conditionalFields: ['author', 'musicType', 'performer'],
         description:
           'Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?',
-        label: 'Musique (sur supports physiques ou en ligne)',
+        id: 15,
         offlineOnly: false,
         onlineOnly: false,
+        proLabel: 'Musique (sur supports physiques ou en ligne)',
         sublabel: 'Écouter',
         type: 'Thing',
         value: 'ThingType.MUSIQUE',
