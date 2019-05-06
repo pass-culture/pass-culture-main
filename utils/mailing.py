@@ -24,6 +24,7 @@ from utils.human_ids import humanize
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
 MAILJET_API_SECRET = os.environ.get('MAILJET_API_SECRET')
 OBJECT_STORAGE_URL = os.environ.get('OBJECT_STORAGE_URL')
+SUPPORT_EMAIL_ADDRESS = "support@passculture.app"
 
 if MAILJET_API_KEY is None or MAILJET_API_KEY == '':
     raise ValueError("Missing environment variable MAILJET_API_KEY")
@@ -67,7 +68,7 @@ def make_batch_cancellation_email(bookings, cancellation_case):
     email_subject = 'Annulation de réservations pour %s' % offer_name
     return {
         'FromName': 'pass Culture pro',
-        'FromEmail': 'support.passculture@beta.gouv.fr',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'Subject': email_subject,
         'Html-part': email_html,
     }
@@ -91,7 +92,7 @@ def make_final_recap_email_for_stock_with_event(stock):
 
     return {
         'FromName': 'Pass Culture',
-        'FromEmail': 'support.passculture@beta.gouv.fr',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'Subject': email_subject,
         'Html-part': email_html,
     }
@@ -130,7 +131,7 @@ def make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=
 
     return {
         'FromName': 'Pass Culture',
-        'FromEmail': 'support.passculture@beta.gouv.fr',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'Subject': email_subject,
         'Html-part': email_html,
     }
@@ -152,7 +153,7 @@ def write_object_validation_email(offerer, user_offerer, get_by_siren=api_entrep
 
     return {
         'FromName': 'Pass Culture',
-        'FromEmail': 'support.passculture@beta.gouv.fr',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'Subject': "%s - inscription / rattachement PRO à valider : %s" % (
             user_offerer.user.departementCode, offerer.name),
         'Html-part': email_html
@@ -184,7 +185,7 @@ def make_offerer_driven_cancellation_email_for_user(booking):
 
     return {
         'FromName': 'Pass Culture',
-        'FromEmail': 'support.passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
         'Subject': email_subject,
         'Html-part': email_html,
     }
@@ -215,7 +216,7 @@ def make_offerer_driven_cancellation_email_for_offerer(booking):
                                  )
     return {
         'FromName': 'Pass Culture',
-        'FromEmail': 'support.passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
         'Subject': email_subject,
         'Html-part': email_html,
     }
@@ -232,7 +233,7 @@ def make_user_booking_recap_email(booking, is_cancellation=False):
 
     return {
         'FromName': 'Pass Culture',
-        'FromEmail': 'support.passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
         'Subject': email_subject,
         'Html-part': email_html,
     }
@@ -247,7 +248,7 @@ def make_reset_password_email(user, app_origin_url):
 
     return {
         'FromName': 'Pass Culture',
-        'FromEmail': 'support.passculture@beta.gouv.fr',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'Subject': 'Réinitialisation de votre mot de passe',
         'Html-part': email_html,
     }
@@ -276,7 +277,7 @@ def make_validation_confirmation_email(user_offerer, offerer):
         subject = 'Validation de votre structure'
     return {
         'FromName': 'pass Culture pro',
-        'FromEmail': 'support.passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr',
         'Subject': subject,
         'Html-part': email_html,
     }
@@ -285,7 +286,7 @@ def make_validation_confirmation_email(user_offerer, offerer):
 def make_venue_validation_email(venue):
     html = render_template('mails/venue_validation_email.html', venue=venue, api_url=API_URL)
     return {
-        'FromEmail': 'support.passculture@beta.gouv.fr',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'FromName': 'pass Culture',
         'Subject': '{} - rattachement de lieu pro à valider : {}'.format(venue.departementCode, venue.name),
         'Html-part': html
@@ -297,7 +298,7 @@ def make_activation_notification_email(user: User) -> dict:
     set_password_url = generate_set_password_url(WEBAPP_URL, user)
 
     return {
-        'FromEmail': 'support.passculture@beta.gouv.fr',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'FromName': 'Équipe pass Culture',
         'Subject': 'Votre pass Culture est disponible',
         'Text-Part': _make_activation_notification_email_as_plain_text(first_name, set_password_url),
@@ -372,7 +373,7 @@ def _make_activation_notification_email_as_plain_text(first_name: str, set_passw
     Snapchat : https://www.snapchat.com/add/pass.culture
     Twitter : https://twitter.com/pass_culture
 
-    support.passculture@beta.gouv.fr • pass.culture.fr
+    support@passculture.app • pass.culture.fr
     """
 
 
@@ -388,7 +389,7 @@ def make_user_validation_email(user, app_origin_url, is_webapp):
             'To': user.email,
             'Subject': 'Validation de votre adresse email pour le pass Culture',
             'FromName': from_name,
-            'FromEmail': 'support.passculture@beta.gouv.fr' if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr'}
+            'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else 'passculture-dev@beta.gouv.fr'}
 
 
 def get_contact(user):
@@ -436,7 +437,7 @@ def make_payment_transaction_email(xml: str, checksum: bytes) -> dict:
     file_name = "transaction_banque_de_france_{}.xml".format(datetime.strftime(now, "%Y%m%d"))
 
     return {
-        'FromEmail': 'support.passculture@beta.gouv.fr',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'FromName': "pass Culture Pro",
         'Subject': "Virements XML pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
         'Attachments': [{"ContentType": "text/xml",
@@ -450,7 +451,7 @@ def make_payment_details_email(csv: str) -> dict:
     now = datetime.utcnow()
     csv_b64encode = base64.b64encode(csv.encode('utf-8')).decode()
     return {
-        'FromEmail': 'support.passculture@beta.gouv.fr',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'FromName': "pass Culture Pro",
         'Subject': "Détails des paiements pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
         'Attachments': [{"ContentType": "text/csv",
@@ -470,7 +471,7 @@ def make_payments_report_email(not_processable_csv: str, error_csv: str, grouped
 
     return {
         'Subject': "Récapitulatif des paiements pass Culture Pro - {}".format(formatted_date),
-        "FromEmail": 'support.passculture@beta.gouv.fr',
+        "FromEmail": SUPPORT_EMAIL_ADDRESS,
         "FromName": "pass Culture Pro",
         'Attachments': [
             {
@@ -497,7 +498,7 @@ def make_wallet_balances_email(csv: str) -> dict:
     now = datetime.utcnow()
     csv_b64encode = base64.b64encode(csv.encode('utf-8')).decode()
     return {
-        'FromEmail': 'support.passculture@beta.gouv.fr',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'FromName': "pass Culture Pro",
         'Subject': "Soldes des utilisateurs pass Culture - {}".format(datetime.strftime(now, "%Y-%m-%d")),
         'Attachments': [{"ContentType": "text/csv",
@@ -511,7 +512,7 @@ def make_activation_users_email(csv: str) -> dict:
     now = datetime.utcnow()
     csv_b64encode = base64.b64encode(csv.encode('utf-8')).decode()
     return {
-        'FromEmail': 'support.passculture@beta.gouv.fr',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'FromName': "pass Culture Pro",
         'Subject': "Liste des utilisateurs créés pour l'activation du pass Culture - {}".format(
             datetime.strftime(now, "%Y-%m-%d")),
@@ -527,7 +528,7 @@ def make_venue_validation_confirmation_email(venue):
     return {
         'Subject': 'Validation du rattachement du lieu "{}" à votre structure "{}"'.format(venue.name,
                                                                                            venue.managingOfferer.name),
-        'FromEmail': 'support.passculture@beta.gouv.fr',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'FromName': "pass Culture pro",
         'Html-part': html
     }
@@ -564,8 +565,8 @@ def make_offer_creation_notification_email(offer: Offer, author: User, pro_origi
                            link_to_offer=link_to_offer)
     location_information = offer.venue.departementCode or 'numérique'
     return {'Html-part': html,
-            'To': ['support.passculture@beta.gouv.fr'],
-            'FromEmail': 'support.passculture@beta.gouv.fr',
+            'To': [SUPPORT_EMAIL_ADDRESS],
+            'FromEmail': SUPPORT_EMAIL_ADDRESS,
             'FromName': 'pass Culture',
             'Subject': f'[Création d’offre - {location_information}] {offer.product.name}'}
 

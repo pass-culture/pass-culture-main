@@ -10,7 +10,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_offerer_driven_cancellation_email_for_offerer, make_final_recap_email_for_stock_with_event, \
     make_reset_password_email, make_validation_confirmation_email, make_batch_cancellation_email, \
     make_user_validation_email, make_venue_validation_confirmation_email, compute_email_html_part_and_recipients, \
-    make_activation_notification_email
+    make_activation_notification_email, SUPPORT_EMAIL_ADDRESS
 
 
 def send_final_booking_recap_email(stock: Stock, send_email: Callable[..., bool]) -> bool:
@@ -19,7 +19,7 @@ def send_final_booking_recap_email(stock: Stock, send_email: Callable[..., bool]
         logger.info("Not sending recap for  " + str(stock) + " as it has no bookings")
     email = make_final_recap_email_for_stock_with_event(stock)
 
-    recipients = ['support.passculture@beta.gouv.fr']
+    recipients = [SUPPORT_EMAIL_ADDRESS]
     if stock.resolvedOffer.bookingEmail:
         recipients.append(stock.resolvedOffer.bookingEmail)
 
@@ -34,7 +34,7 @@ def send_final_booking_recap_email(stock: Stock, send_email: Callable[..., bool]
 def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool]) -> bool:
     email = make_offerer_booking_recap_email_after_user_action(booking)
 
-    recipients = ['support.passculture@beta.gouv.fr']
+    recipients = [SUPPORT_EMAIL_ADDRESS]
     if booking.stock.resolvedOffer.bookingEmail:
         recipients.append(booking.stock.resolvedOffer.bookingEmail)
 
@@ -68,7 +68,7 @@ def send_user_driven_cancellation_email_to_offerer(booking: Booking, send_email:
     offerer_booking_email = booking.stock.resolvedOffer.bookingEmail
     if offerer_booking_email:
         recipients.append(offerer_booking_email)
-    recipients.append('support.passculture@beta.gouv.fr')
+    recipients.append(SUPPORT_EMAIL_ADDRESS)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)
 
@@ -85,7 +85,7 @@ def send_offerer_driven_cancellation_email_to_offerer(booking: Booking, send_ema
     recipients = []
     if offerer_email:
         recipients.append(offerer_email)
-    recipients.append('support.passculture@beta.gouv.fr')
+    recipients.append(SUPPORT_EMAIL_ADDRESS)
     email = make_offerer_driven_cancellation_email_for_offerer(booking)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)
@@ -119,7 +119,7 @@ def send_batch_cancellation_email_to_offerer(bookings: List[Booking], cancellati
     recipients = []
     if offerer_email:
         recipients.append(offerer_email)
-    recipients.append('support.passculture@beta.gouv.fr')
+    recipients.append(SUPPORT_EMAIL_ADDRESS)
     email = make_batch_cancellation_email(bookings, cancellation_case)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)

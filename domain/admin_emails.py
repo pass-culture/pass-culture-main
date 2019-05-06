@@ -4,7 +4,7 @@ from models import Offer, User, Offerer, UserOfferer, Venue
 from utils.mailing import write_object_validation_email, make_payment_transaction_email, \
     make_venue_validation_email, compute_email_html_part_and_recipients, make_payment_details_email, \
     make_payments_report_email, make_wallet_balances_email, make_offer_creation_notification_email, \
-    make_activation_users_email
+    make_activation_users_email, SUPPORT_EMAIL_ADDRESS
 
 
 def send_dev_email(subject: str, html_text: str, send_email: Callable[[dict], bool]) -> bool:
@@ -23,7 +23,7 @@ def maybe_send_offerer_validation_email(offerer: Offerer, user_offerer: UserOffe
     if offerer.isValidated and user_offerer.isValidated:
         return
     email = write_object_validation_email(offerer, user_offerer)
-    recipients = ['support.passculture@beta.gouv.fr']
+    recipients = [SUPPORT_EMAIL_ADDRESS]
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)
 
@@ -62,7 +62,7 @@ def send_payments_report_emails(not_processable_payments_csv: str, error_payment
 
 def send_venue_validation_email(venue: Venue, send_email: Callable[[dict], bool]) -> bool:
     email = make_venue_validation_email(venue)
-    recipients = ['support.passculture@beta.gouv.fr']
+    recipients = [SUPPORT_EMAIL_ADDRESS]
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)
 

@@ -85,7 +85,7 @@ class SendUserDrivenCancellationEmailToOffererTest:
             make_offerer_recap_email.assert_called_once_with(booking, is_cancellation=True)
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'offer@email.fr, support.passculture@beta.gouv.fr'
+        assert args[1]['data']['To'] == 'offer@email.fr, support@passculture.app'
 
     def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_support(self, app):
         # Given
@@ -110,7 +110,7 @@ class SendUserDrivenCancellationEmailToOffererTest:
             make_offerer_recap_email.assert_called_once_with(booking, is_cancellation=True)
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'support.passculture@beta.gouv.fr'
+        assert args[1]['data']['To'] == 'support@passculture.app'
 
     def when_feature_send_mail_to_users_disabled_sends_to_pass_culture_dev(self, app):
         # Given
@@ -188,7 +188,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
             make_cancellation_email.assert_called_once_with(booking)
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'offer@email.com, support.passculture@beta.gouv.fr'
+        assert args[1]['data']['To'] == 'offer@email.com, support@passculture.app'
 
     def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_support(
             self, app):
@@ -214,7 +214,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
             make_cancellation_email.assert_called_once_with(booking)
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'support.passculture@beta.gouv.fr'
+        assert args[1]['data']['To'] == 'support@passculture.app'
 
 
 @pytest.mark.standalone
@@ -293,7 +293,7 @@ class SendBookingRecapEmailsTest:
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         assert 'offer.booking.email@test.com' in args[1]['data']['To']
-        assert 'support.passculture@beta.gouv.fr' in args[1]['data']['To']
+        assert 'support@passculture.app' in args[1]['data']['To']
 
     def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_support(
             self, app):
@@ -317,7 +317,7 @@ class SendBookingRecapEmailsTest:
         # then
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'support.passculture@beta.gouv.fr'
+        assert args[1]['data']['To'] == 'support@passculture.app'
 
 
 @pytest.mark.standalone
@@ -364,7 +364,7 @@ class SendFinalBookingRecapEmailTest:
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         assert 'offer.booking.email@test.com' in args[1]['data']['To']
-        assert 'support.passculture@beta.gouv.fr' in args[1]['data']['To']
+        assert 'support@passculture.app' in args[1]['data']['To']
         set_booking_recap_sent_and_save.assert_called_once_with(stock)
 
     def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_support(
@@ -387,7 +387,7 @@ class SendFinalBookingRecapEmailTest:
             # then
             mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'support.passculture@beta.gouv.fr'
+        assert args[1]['data']['To'] == 'support@passculture.app'
         set_booking_recap_sent_and_save.assert_called_once_with(stock)
 
 
@@ -467,7 +467,7 @@ class SendBatchCancellationEmailToOffererTest:
 
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'offerer@email.com, support.passculture@beta.gouv.fr'
+        assert args[1]['data']['To'] == 'offerer@email.com, support@passculture.app'
 
     def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_support_event_occurrence_case(
             self):
@@ -491,7 +491,7 @@ class SendBatchCancellationEmailToOffererTest:
 
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'offerer@email.com, support.passculture@beta.gouv.fr'
+        assert args[1]['data']['To'] == 'offerer@email.com, support@passculture.app'
 
     def when_feature_send_mail_to_users_disabled_sends_email_to_pass_culture_dev(self):
         # Given
@@ -536,7 +536,7 @@ class SendBatchCancellationEmailToOffererTest:
 
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'support.passculture@beta.gouv.fr'
+        assert args[1]['data']['To'] == 'support@passculture.app'
 
 
 @pytest.mark.standalone
@@ -631,7 +631,7 @@ class SendResetPasswordEmailTest:
         args = mocked_send_email.call_args
         data = args[1]['data']
         assert data['FromName'] == 'Pass Culture'
-        assert data['FromEmail'] == 'support.passculture@beta.gouv.fr'
+        assert data['FromEmail'] == 'support@passculture.app'
         assert data['Subject'] == 'Réinitialisation de votre mot de passe'
         assert data['To'] == 'bobby@test.com'
 

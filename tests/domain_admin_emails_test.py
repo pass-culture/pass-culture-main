@@ -34,7 +34,7 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
     mocked_send_email.assert_called_once()
     args = mocked_send_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'support.passculture@beta.gouv.fr'
+    assert email['To'] == 'support@passculture.app'
     assert 'This is a test' not in email['Html-part']
 
 
@@ -112,7 +112,7 @@ def test_send_venue_validation_email_when_mailjet_status_code_200_sends_email_to
     mocked_send_email.assert_called_once()
     args = mocked_send_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'support.passculture@beta.gouv.fr'
+    assert email['To'] == 'support@passculture.app'
     assert 'This is a test' not in email['Html-part']
 
 
@@ -302,7 +302,7 @@ class SendOfferCreationNotificationToSupportTest:
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         email = args[1]['data']
-        assert email['To'] == 'support.passculture@beta.gouv.fr'
+        assert email['To'] == 'support@passculture.app'
 
     def test_when_send_email_disabled_has_pass_culture_dev_as_recipient(self, app):
         # Given
