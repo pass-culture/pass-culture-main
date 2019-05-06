@@ -15,7 +15,8 @@ from tests.test_utils import create_booking, \
     create_stock_with_event_offer, \
     create_stock_with_thing_offer, \
     create_user, \
-    create_venue, create_stock_from_event_occurrence, create_event_occurrence, create_offer_with_thing_product, create_offer_with_event_product, \
+    create_venue, create_stock_from_event_occurrence, create_event_occurrence, create_offer_with_thing_product, \
+    create_offer_with_event_product, \
     create_booking_activity, save_all_activities, create_stock_from_offer
 
 
@@ -45,6 +46,41 @@ def test_find_all_by_offerer_with_event_and_things(app):
     assert booking1 in bookings
     assert booking2 in bookings
     assert booking3 not in bookings
+
+
+@clean_database
+@pytest.mark.standalone
+def test_find_all_bookings_by_offerer_in_a_not_search_context_returns_all_results(app):
+    # given
+    user = create_user()
+    now = datetime.utcnow()
+    create_deposit(user, now, amount=1600)
+    offerer1 = create_offerer(siren='123456789')
+    offerer2 = create_offerer(siren='987654321')
+    venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
+    venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
+    stock1 = create_stock_with_event_offer(offerer1, venue1, price=2, available=100)
+    stock2 = create_stock_with_thing_offer(offerer1, venue1, price=3, available=100)
+    booking1 = create_booking(user, stock1, venue1, recommendation=None, quantity=2)
+    booking2 = create_booking(user, stock2, venue1, recommendation=None, quantity=1)
+    booking3 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
+    booking4 = create_booking(user, stock1, venue1, recommendation=None, quantity=2)
+    booking5 = create_booking(user, stock2, venue1, recommendation=None, quantity=1)
+    booking6 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
+    booking7 = create_booking(user, stock1, venue1, recommendation=None, quantity=2)
+    booking8 = create_booking(user, stock2, venue1, recommendation=None, quantity=1)
+    booking9 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
+    booking10 = create_booking(user, stock1, venue2, recommendation=None, quantity=2)
+    booking11 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
+    booking12 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
+    PcObject.check_and_save(booking1, booking2, booking3, booking4, booking5, booking6,
+                            booking6, booking7, booking8, booking9, booking10, booking11, booking12)
+
+    # when
+    bookings = find_offerer_bookings(offerer1.id)
+
+    # then
+    assert len(bookings) == 12
 
 
 @clean_database

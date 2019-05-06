@@ -49,7 +49,7 @@ def filter_bookings_with_keywords_string(query, keywords_string):
     return query
 
 
-def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
+def find_offerer_bookings(offerer_id, search=None, order_by=None, page=None):
     query = Booking.query.join(Stock) \
         .join(Offer) \
         .join(Venue) \
@@ -64,8 +64,11 @@ def find_offerer_bookings(offerer_id, search=None, order_by=None, page=1):
         check_order_by(order_by)
         query = query_with_order_by(query, order_by)
 
-    bookings = query.paginate(int(page), per_page=10, error_out=False) \
-        .items
+    if page:
+        bookings = query.paginate(int(page), per_page=10, error_out=False) \
+            .items
+    else:
+        bookings = query.all()
 
     return bookings
 
