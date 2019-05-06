@@ -227,9 +227,9 @@ def test_booking_recap_email_html_should_have_unsubscribe_option(app):
         'p', {'id': 'unsubscribe-option'}).text
     assert 'Si vous ne souhaitez plus recevoir de notifications de réservations par e-mail, cliquez ici : ne plus recevoir les notifications de réservations.' in recap_email_soup.find(
         'p', {'id': 'unsubscribe-option'}).text
-    assert 'mailto:support.passculture@beta.gouv.fr?subject=Changer%20l%27adresse%20e-mail%20de%20notification%20des%20r%C3%A9servations' == \
+    assert 'mailto:support@passculture.app?subject=Changer%20l%27adresse%20e-mail%20de%20notification%20des%20r%C3%A9servations' == \
            recap_email_soup.find('a', {'id': 'change-email'})['href']
-    assert 'mailto:support.passculture@beta.gouv.fr?subject=Ne%20plus%20recevoir%20les%20notifications%20de%20r%C3%A9servations' == \
+    assert 'mailto:support@passculture.app?subject=Ne%20plus%20recevoir%20les%20notifications%20de%20r%C3%A9servations' == \
            recap_email_soup.find('a', {'id': 'remove-email'})['href']
 
 
@@ -393,9 +393,9 @@ def test_offerer_recap_email_has_unsubscribe_options(app):
         'p', {'id': 'unsubscribe-option'}).text
     assert 'Si vous ne souhaitez plus recevoir de notifications de réservations par e-mail, cliquez ici : ne plus recevoir les notifications de réservations.' in recap_email_soup.find(
         'p', {'id': 'unsubscribe-option'}).text
-    assert 'mailto:support.passculture@beta.gouv.fr?subject=Changer%20l%27adresse%20e-mail%20de%20notification%20des%20r%C3%A9servations' == \
+    assert 'mailto:support@passculture.app?subject=Changer%20l%27adresse%20e-mail%20de%20notification%20des%20r%C3%A9servations' == \
            recap_email_soup.find('a', {'id': 'change-email'})['href']
-    assert 'mailto:support.passculture@beta.gouv.fr?subject=Ne%20plus%20recevoir%20les%20notifications%20de%20r%C3%A9servations' == \
+    assert 'mailto:support@passculture.app?subject=Ne%20plus%20recevoir%20les%20notifications%20de%20r%C3%A9servations' == \
            recap_email_soup.find('a', {'id': 'remove-email'})['href']
 
 
@@ -741,9 +741,9 @@ def test_make_offerer_booking_recap_email_after_user_cancellation_should_have_un
         'p', {'id': 'unsubscribe-option'}).text
     assert 'Si vous ne souhaitez plus recevoir de notifications de réservations par e-mail, cliquez ici : ne plus recevoir les notifications de réservations.' in recap_email_soup.find(
         'p', {'id': 'unsubscribe-option'}).text
-    assert 'mailto:support.passculture@beta.gouv.fr?subject=Changer%20l%27adresse%20e-mail%20de%20notification%20des%20r%C3%A9servations' == \
+    assert 'mailto:support@passculture.app?subject=Changer%20l%27adresse%20e-mail%20de%20notification%20des%20r%C3%A9servations' == \
            recap_email_soup.find('a', {'id': 'change-email'})['href']
-    assert 'mailto:support.passculture@beta.gouv.fr?subject=Ne%20plus%20recevoir%20les%20notifications%20de%20r%C3%A9servations' == \
+    assert 'mailto:support@passculture.app?subject=Ne%20plus%20recevoir%20les%20notifications%20de%20r%C3%A9servations' == \
            recap_email_soup.find('a', {'id': 'remove-email'})['href']
 
 
