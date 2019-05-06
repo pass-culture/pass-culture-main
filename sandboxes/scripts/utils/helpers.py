@@ -1,3 +1,5 @@
+from utils.includes import RECOMMENDATION_INCLUDES
+
 def get_booking_helper(booking):
     return dict(booking._asdict(), **{
         "eventOrThingName": booking.recommendation.offer.product.name,
@@ -65,3 +67,6 @@ def get_user_helper(user):
 
 def get_venue_helper(venue):
     return venue._asdict()
+
+def get_recommendation_helper(recommendation):
+    return recommendation._asdict(include=RECOMMENDATION_INCLUDES)
