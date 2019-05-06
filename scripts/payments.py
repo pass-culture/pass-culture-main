@@ -115,7 +115,6 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
                                          pass_culture_remittance_code)
 
     try:
-
         validate_transaction_file_structure(xml_file)
     except DocumentInvalid as e:
         for payment in payments:

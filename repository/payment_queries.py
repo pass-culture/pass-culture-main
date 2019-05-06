@@ -22,3 +22,11 @@ def find_retry_payments() -> List[Payment]:
     query = render_template('sql/find_payment_ids_with_last_status.sql', status='RETRY')
     retry_payment_ids = db.session.query(PaymentStatus.paymentId).from_statement(text(query)).all()
     return Payment.query.filter(Payment.id.in_(retry_payment_ids)).all()
+
+
+def find_payments_by_transaction_and_message(transaction_id: str, message_id: str) -> List[Payment]:
+    return Payment.query \
+        .join(PaymentTransaction) \
+        .filter(Payment.transactionEndToEndId == transaction_id) \
+        .filter(PaymentTransaction.messageId == message_id) \
+        .all()
