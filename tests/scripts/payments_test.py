@@ -4,6 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 from freezegun import freeze_time
+from lxml.etree import DocumentInvalid
 
 from models import PcObject
 from models.payment import Payment
@@ -132,7 +133,8 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_miss
     ]
 
     # when
-    send_transactions(payments, None, 'AZERTY9Q666', '0000', ['comptable@test.com'])
+    with pytest.raises(Exception) as e:
+        send_transactions(payments, None, 'AZERTY9Q666', '0000', ['comptable@test.com'])
 
     # then
     app.mailjet_client.send.create.assert_not_called()
@@ -157,7 +159,8 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_bic_is_missi
     ]
 
     # when
-    send_transactions(payments, 'BD12AZERTY123456', None, '0000', ['comptable@test.com'])
+    with pytest.raises(Exception):
+        send_transactions(payments, 'BD12AZERTY123456', None, '0000', ['comptable@test.com'])
 
     # then
     app.mailjet_client.send.create.assert_not_called()
@@ -182,7 +185,8 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_id_is_missin
     ]
 
     # when
-    send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', None, ['comptable@test.com'])
+    with pytest.raises(Exception):
+        send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', None, ['comptable@test.com'])
 
     # then
     app.mailjet_client.send.create.assert_not_called()
@@ -326,6 +330,39 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
 @pytest.mark.standalone
 @clean_database
 @mocked_mail
+def test_send_transactions_with_malformed_iban_on_payments_gives_them_an_error_status_with_a_cause(
+        app):
+    # given
+    offerer = create_offerer(name='first offerer')
+    user = create_user()
+    venue = create_venue(offerer)
+    stock = create_stock_from_offer(create_offer_with_thing_product(venue))
+    booking = create_booking(user, stock)
+    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+    payments = [
+        create_payment(booking, offerer, Decimal(10), iban='CF  13QSDFGH45 qbc //', bic='QSDFGH8Z555'),
+    ]
+
+    PcObject.check_and_save(deposit, *payments)
+    app.mailjet_client.send.create.return_value = Mock(status_code=400)
+
+    # when
+    with pytest.raises(DocumentInvalid):
+        send_transactions(payments, 'BD12AZERTY123456', 'AZERTY9Q666', '0000', ['comptable@test.com'])
+
+    # then
+    updated_payments = Payment.query.all()
+    for payment in updated_payments:
+        assert len(payment.statuses) == 2
+        assert payment.currentStatus.status == TransactionStatus.ERROR
+        assert payment.currentStatus.detail == "Element '{urn:iso:std:iso:20022:tech:xsd:pain.001.001.03}IBAN': " \
+                                               "[facet 'pattern'] The value 'CF  13QSDFGH45 qbc //' is not accepted " \
+                                               "by the pattern '[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}'., line 76"
+
+
+@pytest.mark.standalone
+@clean_database
+@mocked_mail
 def test_send_payment_details_sends_a_csv_attachment(app):
     # given
     offerer1 = create_offerer(name='first offerer')
@@ -392,7 +429,8 @@ def test_send_payment_details_does_not_send_anything_if_recipients_are_missing(a
     payments = []
 
     # when
-    send_payments_details(payments, None)
+    with pytest.raises(Exception):
+        send_payments_details(payments, None)
 
     # then
     app.mailjet_client.send.create.assert_not_called()
@@ -419,7 +457,8 @@ def test_send_wallet_balances_sends_a_csv_attachment(app):
 @mocked_mail
 def test_send_wallet_balances_does_not_send_anything_if_recipients_are_missing(app):
     # when
-    send_wallet_balances(None)
+    with pytest.raises(Exception):
+        send_wallet_balances(None)
 
     # then
     app.mailjet_client.send.create.assert_not_called()

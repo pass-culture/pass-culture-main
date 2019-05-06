@@ -2,6 +2,8 @@ import os
 from datetime import datetime
 from typing import List, Tuple
 
+from lxml.etree import DocumentInvalid
+
 from domain.admin_emails import send_payment_transaction_email, send_payment_details_email, send_wallet_balances_email, \
     send_payments_report_emails
 from domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking, generate_transaction_file, \
@@ -104,37 +106,47 @@ def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
 def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str,
                       pass_culture_remittance_code: str, recipients: List[str]) -> None:
     if not pass_culture_iban or not pass_culture_bic or not pass_culture_remittance_code:
-        logger.error(
+        raise Exception(
             '[BATCH][PAYMENTS] Missing PASS_CULTURE_IBAN[%s], PASS_CULTURE_BIC[%s] or PASS_CULTURE_REMITTANCE_CODE[%s] in environment variables' % (
                 pass_culture_iban, pass_culture_bic, pass_culture_remittance_code))
-    else:
-        message_id = 'passCulture-SCT-%s' % datetime.strftime(datetime.utcnow(), "%Y%m%d-%H%M%S")
-        xml_file = generate_transaction_file(payments, pass_culture_iban, pass_culture_bic, message_id,
-                                             pass_culture_remittance_code)
+
+    message_id = 'passCulture-SCT-%s' % datetime.strftime(datetime.utcnow(), "%Y%m%d-%H%M%S")
+    xml_file = generate_transaction_file(payments, pass_culture_iban, pass_culture_bic, message_id,
+                                         pass_culture_remittance_code)
+
+    try:
+
         validate_transaction_file_structure(xml_file)
-        checksum = generate_file_checksum(xml_file)
-        transaction = generate_payment_transaction(message_id, checksum, payments)
+    except DocumentInvalid as e:
+        for payment in payments:
+            payment.setStatus(TransactionStatus.ERROR, detail=str(e))
+        PcObject.check_and_save(*payments)
+        raise
 
-        logger.info(
-            '[BATCH][PAYMENTS] Sending file with message ID [%s] and checksum [%s]' %
-            (transaction.messageId, transaction.checksum.hex())
-        )
-        logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
+    checksum = generate_file_checksum(xml_file)
+    transaction = generate_payment_transaction(message_id, checksum, payments)
 
-        successfully_sent_payments = send_payment_transaction_email(xml_file, checksum, recipients, send_raw_email)
-        if successfully_sent_payments:
-            for payment in payments:
-                payment.setStatus(TransactionStatus.SENT)
-        else:
-            for payment in payments:
-                payment.setStatus(TransactionStatus.ERROR, detail="Erreur d'envoi à MailJet")
-        PcObject.check_and_save(transaction, *payments)
+    logger.info(
+        '[BATCH][PAYMENTS] Sending file with message ID [%s] and checksum [%s]' %
+        (transaction.messageId, transaction.checksum.hex())
+    )
+    logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
+
+    successfully_sent_payments = send_payment_transaction_email(xml_file, checksum, recipients, send_raw_email)
+    if successfully_sent_payments:
+        for payment in payments:
+            payment.setStatus(TransactionStatus.SENT)
+    else:
+        for payment in payments:
+            payment.setStatus(TransactionStatus.ERROR, detail="Erreur d'envoi à MailJet")
+    PcObject.check_and_save(transaction, *payments)
 
 
 def send_payments_details(payments: List[Payment], recipients: List[str]) -> None:
     if not recipients:
-        logger.error('[BATCH][PAYMENTS] Missing PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS in environment variables')
-    elif all(map(lambda x: x.currentStatus.status == TransactionStatus.ERROR, payments)):
+        raise Exception('[BATCH][PAYMENTS] Missing PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS in environment variables')
+
+    if all(map(lambda x: x.currentStatus.status == TransactionStatus.ERROR, payments)):
         logger.warning('[BATCH][PAYMENTS] Not sending payments details as all payments have an ERROR status')
     else:
         details = create_all_payments_details(payments)
@@ -149,38 +161,39 @@ def send_payments_details(payments: List[Payment], recipients: List[str]) -> Non
 
 def send_wallet_balances(recipients: List[str]) -> None:
     if not recipients:
-        logger.error('[BATCH][PAYMENTS] Missing PASS_CULTURE_WALLET_BALANCES_RECIPIENTS in environment variables')
-    else:
-        balances = get_all_users_wallet_balances()
-        csv = generate_wallet_balances_csv(balances)
-        logger.info('[BATCH][PAYMENTS] Sending %s wallet balances' % len(balances))
-        logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
-        try:
-            send_wallet_balances_email(csv, recipients, send_raw_email)
-        except MailServiceException as e:
-            logger.error('[BATCH][PAYMENTS] Error while sending users wallet balances email to MailJet', e)
+        raise Exception('[BATCH][PAYMENTS] Missing PASS_CULTURE_WALLET_BALANCES_RECIPIENTS in environment variables')
+
+    balances = get_all_users_wallet_balances()
+    csv = generate_wallet_balances_csv(balances)
+    logger.info('[BATCH][PAYMENTS] Sending %s wallet balances' % len(balances))
+    logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
+    try:
+        send_wallet_balances_email(csv, recipients, send_raw_email)
+    except MailServiceException as e:
+        logger.error('[BATCH][PAYMENTS] Error while sending users wallet balances email to MailJet', e)
 
 
 def send_payments_report(payments: List[Payment], recipients: List[str]) -> None:
-    if payments:
-        groups = group_payments_by_status(payments)
-
-        payments_error_details = create_all_payments_details(groups['ERROR']) if 'ERROR' in groups else []
-        error_csv = generate_payment_details_csv(payments_error_details)
-
-        payments_not_processable_details = create_all_payments_details(
-            groups['NOT_PROCESSABLE']) if 'NOT_PROCESSABLE' in groups else []
-        not_processable_csv = generate_payment_details_csv(payments_not_processable_details)
-
-        logger.info(
-            '[BATCH][PAYMENTS] Sending report on %s payment in ERROR and %s payment NOT_PROCESSABLE'
-            % (len(payments_error_details), len(payments_not_processable_details))
-        )
-        logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
-
-        try:
-            send_payments_report_emails(not_processable_csv, error_csv, groups, recipients, send_raw_email)
-        except MailServiceException as e:
-            logger.error('[BATCH][PAYMENTS] Error while sending payments reports to MailJet', e)
-    else:
+    if not payments:
         logger.info('[BATCH][PAYMENTS] No payments to report to the pass Culture team')
+        return
+
+    groups = group_payments_by_status(payments)
+
+    payments_error_details = create_all_payments_details(groups['ERROR']) if 'ERROR' in groups else []
+    error_csv = generate_payment_details_csv(payments_error_details)
+
+    payments_not_processable_details = create_all_payments_details(
+        groups['NOT_PROCESSABLE']) if 'NOT_PROCESSABLE' in groups else []
+    not_processable_csv = generate_payment_details_csv(payments_not_processable_details)
+
+    logger.info(
+        '[BATCH][PAYMENTS] Sending report on %s payment in ERROR and %s payment NOT_PROCESSABLE'
+        % (len(payments_error_details), len(payments_not_processable_details))
+    )
+    logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
+
+    try:
+        send_payments_report_emails(not_processable_csv, error_csv, groups, recipients, send_raw_email)
+    except MailServiceException as e:
+        logger.error('[BATCH][PAYMENTS] Error while sending payments reports to MailJet', e)
