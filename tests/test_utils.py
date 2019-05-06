@@ -640,6 +640,7 @@ def create_payment_details(
         payment_iban='FR7630001007941234567890185',
         transaction_message_id='AZERTY123456',
         transaction_end_to_end_id=uuid.uuid4(),
+        payment_id=123,
         reimbursement_rate=Decimal(0.5),
         reimbursed_amount=Decimal(7.5)
 ):
@@ -658,6 +659,7 @@ def create_payment_details(
     details.payment_iban = payment_iban
     details.transaction_message_id = transaction_message_id
     details.transaction_end_to_end_id = transaction_end_to_end_id
+    details.payment_id= payment_id
     details.reimbursement_rate = reimbursement_rate
     details.reimbursed_amount = reimbursed_amount
     return details

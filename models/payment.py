@@ -104,6 +104,7 @@ class PaymentDetails:
         "IBAN",
         "Message ID",
         "Transaction ID",
+        "Paiement ID",
         "Taux de remboursement",
         "Montant remboursé à l'offreur",
     ]
@@ -124,6 +125,7 @@ class PaymentDetails:
             self.payment_iban = payment.iban
             self.transaction_message_id = payment.transactionMessageId
             self.transaction_end_to_end_id = payment.transactionEndToEndId
+            self.payment_id = payment.id
             self.reimbursement_rate = payment.reimbursementRate
             self.reimbursed_amount = payment.amount
 
@@ -143,6 +145,7 @@ class PaymentDetails:
             self.payment_iban,
             self.transaction_message_id,
             str(self.transaction_end_to_end_id),
+            str(self.payment_id),
             str(self.reimbursement_rate),
             str(self.reimbursed_amount)
         ]

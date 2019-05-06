@@ -26,7 +26,7 @@ class PaymentDetailsCSVTest:
                                    '"Raison sociale du lieu","SIRET",' \
                                    '"Nom de l\'offre","Type de l\'offre",' \
                                    '"Date de la réservation","Prix de la réservation","Date de validation",' \
-                                   '"IBAN","Message ID","Transaction ID",' \
+                                   '"IBAN","Message ID","Transaction ID","Paiement ID",' \
                                    '"Taux de remboursement","Montant remboursé à l\'offreur"\r'
 
     def test_generate_payment_details_csv_with_headers_and_three_payment_details_lines(self):
