@@ -1,0 +1,49 @@
+---
+config:
+  plugins:
+    metrics-by-endpoint: {}
+  defaults:
+    headers:
+      Origin: "https://app.passculture-pc-epe.beta.gouv.fr"
+      Content-Type: "application/json"
+  phases:
+    - duration: 60
+      arrivalRate: 0
+      rampTo: 15
+      name: "Warm up the application"
+    - duration: 300
+      arrivalRate: 15
+      name: "Sustained max load"
+    - duration: 60
+      arrivalRate: 15
+      rampTo: 0
+      name: "Cool down the application"
+  target: "https://pass-culture-dev-perf.scalingo.io"
+  payload:
+    path: "user_list"  # Needs to contains valid users
+    fields:
+      - "id"
+      - "lastName"
+      - "firstName"
+      - "email"
+      - "phoneNumber"
+      - "city"
+      - "zipCode"
+      - "birthDate"
+      - "password"
+    order: sequence
+scenarios:
+  - flow:
+      - post:
+          json:
+            identifier: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            json: "id"
+            as: "id"
+          url: "/users/signin"
+      - put:
+          url: "/recommendations"
+          ifTrue: "id"
+          json:
+            seenRecommendationIds: []
