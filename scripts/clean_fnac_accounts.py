@@ -1,6 +1,6 @@
 from typing import List
 
-from models import User, Offerer, PcObject, UserOfferer
+from models import User, Offerer, PcObject, Offer
 
 
 def find_all_fnac_users():
@@ -26,3 +26,14 @@ def clear_all_existing_user_offerers(siren: str):
     offerer = Offerer.query.filter_by(siren=siren).one()
     offerer.users = []
     PcObject.check_and_save(offerer)
+
+
+def move_offers_from_one_venue_to_another(origin_venue_id: str, target_venue_id: str):
+    offers = Offer.query.filter_by(venueId=origin_venue_id).all()
+    offers = [_change_venue_id(offer, target_venue_id) for offer in offers]
+    PcObject.check_and_save(*offers)
+
+
+def _change_venue_id(offer: Offer, target_venue_id: str):
+    offer.venueId = target_venue_id
+    return offer

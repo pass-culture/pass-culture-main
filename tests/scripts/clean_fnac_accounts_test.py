@@ -1,12 +1,14 @@
 import pytest
 
-from models import PcObject, UserOfferer
+from models import PcObject, UserOfferer, Offer, Venue
 from scripts.clean_fnac_accounts import find_all_fnac_users, find_all_fnac_offerers, create_all_possible_user_offerers, \
-    clear_all_existing_user_offerers
+    clear_all_existing_user_offerers, move_offers_from_one_venue_to_another
 from tests.conftest import clean_database
-from tests.test_utils import create_user, create_offerer, create_user_offerer
+from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
+    create_offer_with_thing_product, create_offer_with_event_product
 
 ALL_FNAC_SIREN = ['350127460', '434001954', '334473352', '343282380']
+
 
 @pytest.mark.standalone
 class FindAllFnacUsersTest:
@@ -90,3 +92,28 @@ class ClearAllExistingUserOfferersTest:
         assert len(user_offerers) == 1
         assert user_offerers[0].offerer.siren != '123456789'
 
+
+@pytest.mark.standalone
+class MoveOffersFromOneVenueToAnotherTest:
+    @clean_database
+    def test_(self, app):
+        # Given
+        origin_offerer = create_offerer(siren='123456789')
+        target_offerer = create_offerer(siren='987654321')
+        other_offerer = create_offerer('123456788')
+
+        origin_venue = create_venue(origin_offerer, siret=origin_offerer.siren + '12345')
+        target_venue = create_venue(target_offerer, siret=target_offerer.siren + '12345')
+        other_venue = create_venue(other_offerer, siret=other_offerer.siren + '12345')
+
+        origin_offer1 = create_offer_with_thing_product(origin_venue)
+        origin_offer2 = create_offer_with_event_product(origin_venue)
+        other_offer = create_offer_with_event_product(other_venue)
+        PcObject.check_and_save(origin_offer1, origin_offer2, target_venue, other_offer)
+
+        # When
+        move_offers_from_one_venue_to_another(origin_venue.id, target_venue.id)
+
+        # Then
+        assert Offer.query.join(Venue).filter_by(id=target_venue.id).count() == 2
+        assert Offer.query.join(Venue).filter_by(id=origin_venue.id).count() == 0
