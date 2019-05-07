@@ -2,14 +2,14 @@ import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import RawStocksManager from './RawStocksManager'
+import StocksManager from './StocksManager'
 import { withFrenchQueryRouter } from 'components/hocs'
 import selectOfferById from 'selectors/selectOfferById'
 import selectProductById from 'selectors/selectProductById'
 import selectProviderById from 'selectors/selectProviderById'
 import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
 
-function mapStateToProps(state, ownProps) {
+export const mapStateToProps = (state, ownProps) => {
   const {
     match: {
       params: { offerId },
@@ -40,4 +40,4 @@ function mapStateToProps(state, ownProps) {
 export default compose(
   withFrenchQueryRouter,
   connect(mapStateToProps)
-)(RawStocksManager)
+)(StocksManager)

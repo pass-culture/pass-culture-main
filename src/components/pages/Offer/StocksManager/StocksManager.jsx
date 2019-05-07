@@ -7,19 +7,9 @@ import PropTypes from 'prop-types'
 import StockItem from './StockItem'
 import HeroSection from 'components/layout/HeroSection'
 
-const getStocksManagerButtonTitle = (isEvent, stocks) => {
-  if (isEvent) {
-    return '+ Ajouter une date'
-  }
-  if (stocks.length) {
-    return ''
-  }
-  return 'Renseigner le stock'
-}
-
-class RawStocksManager extends Component {
-  constructor() {
-    super()
+class StocksManager extends Component {
+  constructor(props) {
+    super(props)
     this.state = {
       errors: null,
       info: null,
@@ -42,19 +32,6 @@ class RawStocksManager extends Component {
 
   componentWillUnmount() {
     document.removeEventListener('keydown', this.onKeydown)
-  }
-
-  handleShouldPreventCreationOfSecondNotEventStock = () => {
-    const { shouldPreventCreationOfSecondStock, query } = this.props
-    const { isCreatedEntity } = query.context({ key: 'stock' })
-
-    if (!shouldPreventCreationOfSecondStock) {
-      return
-    }
-
-    if (isCreatedEntity) {
-      query.changeToReadOnly(null, { key: 'stock' })
-    }
   }
 
   handleEscKey() {
@@ -87,6 +64,19 @@ class RawStocksManager extends Component {
     }
   }
 
+  handleShouldPreventCreationOfSecondNotEventStock = () => {
+    const { shouldPreventCreationOfSecondStock, query } = this.props
+    const { isCreatedEntity } = query.context({ key: 'stock' })
+
+    if (!shouldPreventCreationOfSecondStock) {
+      return
+    }
+
+    if (isCreatedEntity) {
+      query.changeToReadOnly(null, { key: 'stock' })
+    }
+  }
+
   handleSetErrors = errors => {
     this.setState({ errors })
   }
@@ -111,6 +101,16 @@ class RawStocksManager extends Component {
     } else if (event.key === 'Escape') {
       this.handleEscKey()
     }
+  }
+
+  getStocksManagerButtonTitle = (isEvent, stocks) => {
+    if (isEvent) {
+      return '+ Ajouter une date'
+    }
+    if (stocks.length) {
+      return ''
+    }
+    return 'Renseigner le stock'
   }
 
   renderTableHead() {
@@ -213,7 +213,7 @@ class RawStocksManager extends Component {
                         query.changeToCreation(null, { key: 'stock' })
                       }
                       type="button">
-                      {getStocksManagerButtonTitle(isEvent, stocks)}
+                      {this.getStocksManagerButtonTitle(isEvent, stocks)}
                     </button>
                   </td>
                 </tr>
@@ -257,16 +257,16 @@ class RawStocksManager extends Component {
   }
 }
 
-RawStocksManager.defaultProps = {
+StocksManager.defaultProps = {
   shouldPreventCreationOfSecondStock: false,
   stocks: [],
 }
 
-RawStocksManager.propTypes = {
+StocksManager.propTypes = {
   shouldPreventCreationOfSecondStock: PropTypes.bool,
   stocks: PropTypes.array,
   query: PropTypes.object.isRequired,
   isEvent: PropTypes.bool.isRequired,
 }
 
-export default RawStocksManager
+export default StocksManager
