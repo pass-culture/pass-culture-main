@@ -4,7 +4,7 @@ import selectOffererById from 'selectors/selectOffererById'
 import selectUserOffererByOffererIdAndUserIdAndRightsType from 'selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
 import selectPhysicalVenuesByOffererId from 'selectors/selectPhysicalVenuesByOffererId'
 
-function mapStateToProps(state, ownProps) {
+const mapStateToProps = (state, ownProps) => {
   const { currentUser, match } = ownProps
   const {
     params: { offererId },

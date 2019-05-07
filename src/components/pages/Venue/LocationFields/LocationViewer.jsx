@@ -25,11 +25,12 @@ class LocationViewer extends Component {
     super(props)
     this.state = {
       draggable: true,
+      inputValue: '',
       isLoading: false,
+      hasSelectedSuggestion: false,
       marker: null,
       position: props.initialPosition,
       suggestions: [],
-      value: '',
     }
     this.refmarker = React.createRef()
     this.onDebouncedFetchSuggestions = debounce(
@@ -51,16 +52,18 @@ class LocationViewer extends Component {
         ? newProps.zoom
         : newProps.defaultInitialPosition.zoom,
     }
-    const isValueEmpty = newProps.value === ''
-    const nextValue = isValueEmpty ? '' : newProps.value || currentState.value
-    const nextStateWithPositionAndValue = {
+    const isInputValueEmpty = newProps.value === ''
+    const nextInputValue = isInputValueEmpty
+      ? ''
+      : newProps.value || currentState.inputValue
+    const nextStateWithPositionAndInputValue = {
+      inputValue: nextInputValue,
       position: nextPosition,
-      value: nextValue,
     }
 
     const nextStateWithSuggestionsAndMarker = hasCoordinates
       ? {
-          suggestions: currentState.selectedValue
+          suggestions: currentState.hasSelectedSuggestion
             ? []
             : currentState.suggestions,
           marker: {
@@ -73,7 +76,7 @@ class LocationViewer extends Component {
     return Object.assign(
       {},
       currentState,
-      nextStateWithPositionAndValue,
+      nextStateWithPositionAndInputValue,
       nextStateWithSuggestionsAndMarker
     )
   }
@@ -141,7 +144,10 @@ class LocationViewer extends Component {
   onTextChange = event => {
     const { onTextChange: onTextChangeFromProps } = this.props
     const address = event.target.value
-    this.setState({ value: address })
+    this.setState({
+      hasSelectedSuggestion: false,
+      inputValue: address,
+    })
 
     const location = {
       address,
@@ -160,7 +166,8 @@ class LocationViewer extends Component {
     const { latitude, longitude, placeholder } = location
     if (placeholder) return
     this.setState({
-      value: address,
+      hasSelectedSuggestion: true,
+      inputValue: address,
       position: {
         latitude,
         longitude,
@@ -228,8 +235,16 @@ class LocationViewer extends Component {
   )
 
   renderInput() {
-    const { className, id, name, placeholder, readOnly, required } = this.props
-    const { isLoading, suggestions, value } = this.state
+    const {
+      className,
+      id,
+      name,
+      placeholder,
+      readOnly,
+      required,
+      value,
+    } = this.props
+    const { inputValue, isLoading, suggestions } = this.state
 
     if (readOnly) {
       return (
@@ -237,7 +252,7 @@ class LocationViewer extends Component {
           className={className}
           name={name}
           readOnly={readOnly}
-          value={value}
+          value={inputValue}
         />
       )
     }
@@ -261,7 +276,7 @@ class LocationViewer extends Component {
           readOnly={readOnly}
           renderItem={this.renderSuggestion}
           renderMenu={this.renderSuggestionsMenu}
-          value={this.props.value || value}
+          value={value || inputValue}
           wrapperProps={{ className: 'input-wrapper' }}
         />
         <button
@@ -281,7 +296,7 @@ class LocationViewer extends Component {
     const { latitude, longitude, zoom } = position
 
     return (
-      <div className="address">
+      <div className="location-viewer">
         {this.renderInput()}
         <Map center={[latitude, longitude]} zoom={zoom} className="map">
           <TileLayer url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png" />

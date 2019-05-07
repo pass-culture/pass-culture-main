@@ -4,8 +4,8 @@ import { Field, Form, showNotification } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { requestData } from 'redux-saga-data'
 
-import CreationControl from './CreationControl'
-import ModificationControl from './ModificationControl'
+import CreationControl from './controls/CreationControl'
+import ModificationControl from './controls/ModificationControl'
 import {
   OFFERER_CREATION_PATCH_KEYS,
   OFFERER_MODIFICATION_PATCH_KEYS,

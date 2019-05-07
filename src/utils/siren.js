@@ -25,16 +25,16 @@ export function formatSirenOrSiret(string) {
   return `${sirenWithThreeBatchesOfThreeNumbers} ${nic}`.trim()
 }
 
-function mapArgsToCacheKey(siretOrSiren, sireType) {
-  return `${siretOrSiren || ''}/${sireType || ''}`
+function mapArgsToCacheKey(siretOrSiren, type) {
+  return `${siretOrSiren || ''}/${type || ''}`
 }
 
 export const getSireInfo = createCachedSelector(
   siretOrSiren => siretOrSiren,
-  (siretOrSiren, sireType) => sireType,
-  async (siretOrSiren, sireType) => {
-    if (!sireType) {
-      throw Error('You need to specify a sireType')
+  (siretOrSiren, type) => type,
+  async (siretOrSiren, type) => {
+    if (!type) {
+      throw Error(`You need to specify a type : ${SIREN} or ${SIRET}`)
     }
 
     if (!siretOrSiren) {
@@ -44,44 +44,44 @@ export const getSireInfo = createCachedSelector(
     const withoutWhiteSpacesSiretOrSiren = removeWhitespaces(siretOrSiren)
 
     const isNotValidSiret =
-      sireType === SIRET && withoutWhiteSpacesSiretOrSiren.length !== 14
+      type === SIRET && withoutWhiteSpacesSiretOrSiren.length !== 14
     if (isNotValidSiret) {
       if (withoutWhiteSpacesSiretOrSiren.length < 14) {
-        const error = `${capitalize(sireType)} trop court`
+        const error = `${capitalize(type)} trop court`
         return { error }
       }
       if (withoutWhiteSpacesSiretOrSiren.length > 14) {
-        const error = `${capitalize(sireType)} trop long`
+        const error = `${capitalize(type)} trop long`
         return { error }
       }
     }
 
     const isNotValidSiren =
-      sireType === SIREN && withoutWhiteSpacesSiretOrSiren.length !== 9
+      type === SIREN && withoutWhiteSpacesSiretOrSiren.length !== 9
     if (isNotValidSiren) {
       if (withoutWhiteSpacesSiretOrSiren.length < 9) {
-        const error = `${capitalize(sireType)} trop court`
+        const error = `${capitalize(type)} trop court`
         return { error }
       }
       if (withoutWhiteSpacesSiretOrSiren.length > 9) {
-        const error = `${capitalize(sireType)} trop long`
+        const error = `${capitalize(type)} trop long`
         return { error }
       }
     }
 
     try {
-      const sireUrl = `https://sirene.entreprise.api.gouv.fr/v1/${sireType}/${siretOrSiren}`
+      const sireneUrl = `https://sirene.entreprise.api.gouv.fr/v1/${type}/${siretOrSiren}`
 
-      const response = await fetch(sireUrl)
+      const response = await fetch(sireneUrl)
 
       if (response.status === 404) {
-        const error = `${capitalize(sireType)} invalide`
+        const error = `${capitalize(type)} invalide`
         return { error }
       }
 
       const body = await response.json()
-      const dataPath = sireType === SIREN ? 'siege_social' : 'etablissement'
-      const sire = get(body, `${dataPath}.${sireType}`)
+      const dataPath = type === SIREN ? 'siege_social' : 'etablissement'
+      const sirenOrSiret = get(body, `${dataPath}.${type}`)
 
       const values = {
         address: get(body, `${dataPath}.l4_normalisee`),
@@ -93,13 +93,13 @@ export const getSireInfo = createCachedSelector(
           get(body, `${dataPath}.l1_declaree`) ||
           '',
         postalCode: get(body, `${dataPath}.code_postal`),
-        [sireType]: sire,
-        sire,
+        [type]: sirenOrSiret,
+        sire: sirenOrSiret,
       }
 
       return { values }
     } catch (e) {
-      const error = `Impossible de vérifier le ${capitalize(sireType)} saisi.`
+      const error = `Impossible de vérifier le ${capitalize(type)} saisi.`
       return { error }
     }
   }

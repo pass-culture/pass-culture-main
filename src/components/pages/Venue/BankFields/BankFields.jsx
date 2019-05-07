@@ -11,8 +11,6 @@ const BankFields = ({
 }) => {
   const areBankInfosReadOnly = readOnly || !adminUserOfferer
 
-  const hasAlreadyRibUploaded = initialIban && initialThumbCount
-
   return (
     <div className="section">
       <h2 className="main-list-title">
@@ -34,7 +32,6 @@ const BankFields = ({
             label="Justificatif"
             name="rib"
             readOnly={readOnly || areBankInfosReadOnly}
-            uploaded={hasAlreadyRibUploaded}
             type="file"
           />
         )}

@@ -1,14 +1,20 @@
 import get from 'lodash.get'
-import { CancelButton, SubmitButton } from 'pass-culture-shared'
+import { CancelButton, recursiveMap, SubmitButton } from 'pass-culture-shared'
 import React, { Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
 
 import VenueItem from './VenueItem'
 
-const ModificationControl = ({ adminUserOfferer, offerer, query, venues }) => {
+const ModificationControl = ({
+  adminUserOfferer,
+  parseFormChild,
+  offerer,
+  query,
+  venues,
+}) => {
   const { readOnly } = query.context()
   const { id } = offerer || {}
-  return (
+  return recursiveMap(
     <Fragment>
       <div className="control">
         {readOnly ? (
@@ -54,8 +60,11 @@ const ModificationControl = ({ adminUserOfferer, offerer, query, venues }) => {
           </NavLink>
         </div>
       </div>
-    </Fragment>
+    </Fragment>,
+    parseFormChild
   )
 }
+
+ModificationControl.isParsedByForm = true
 
 export default ModificationControl
