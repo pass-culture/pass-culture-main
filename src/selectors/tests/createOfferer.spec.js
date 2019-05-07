@@ -2,7 +2,8 @@ import selectOffererById from '../selectOffererById'
 import state from './mockState'
 
 describe('selectOffererById', () => {
-  it('should select the global state', () => {
+  it('should retrieve offerer from state when id is given', () => {
+    // given
     const expected = {
       address: 'RUE DES SAPOTILLES',
       bic: 'QSDFGH8Z566',
@@ -24,6 +25,11 @@ describe('selectOffererById', () => {
       thumbCount: 0,
     }
     const offererId = '4Q'
-    expect(selectOffererById(state, offererId)).toEqual(expected)
+
+    // when
+    const result = selectOffererById(state, offererId)
+
+    // then
+    expect(result).toEqual(expected)
   })
 })
