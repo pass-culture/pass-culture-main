@@ -76,7 +76,7 @@ test('Je rentre une nouveau lieu via son siret avec succès', async t => {
 
 test('Je rentre un nouveau lieu sans siret avec succès', async t => {
   // given
-  const addressSuggestion = Selector('.address .menu .item')
+  const addressSuggestion = Selector('.location-viewer .menu .item')
   const address = '1 place du trocadéro'
   const banAddress = '1 Place du Trocadero et du 11 Novembre 75016 Paris'
   const city = 'Paris'
