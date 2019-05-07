@@ -172,7 +172,7 @@ class FindPaymentByTransactionAndMessageTest:
         PcObject.check_and_save(deposit, *payments)
 
         # when
-        matching_payments = find_payments_by_transaction_and_message(uuid1.hex, 'XML1')
+        matching_payments = find_payments_by_transaction_and_message('XML1', uuid1.hex)
 
         # then
         assert len(matching_payments) == 2
@@ -203,7 +203,7 @@ class FindPaymentByTransactionAndMessageTest:
         PcObject.check_and_save(deposit, *payments)
 
         # when
-        matching_payments = find_payments_by_transaction_and_message(uuid1.hex, 'unknown message')
+        matching_payments = find_payments_by_transaction_and_message('unknown message', uuid1.hex)
 
         # then
         assert matching_payments == []
@@ -232,7 +232,7 @@ class FindPaymentByTransactionAndMessageTest:
         unknown_transaction = uuid.uuid4()
 
         # when
-        matching_payments = find_payments_by_transaction_and_message(unknown_transaction.hex, 'XML1')
+        matching_payments = find_payments_by_transaction_and_message('XML1', unknown_transaction.hex)
 
         # then
         assert matching_payments == []
