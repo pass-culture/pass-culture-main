@@ -118,7 +118,7 @@ test('Je peux créer une offre événement', async t => {
   ].join('')
   const eventDurationMinutes = '120'
   const eventName = 'Rencontre avec Franck Lepage'
-  const eventType = 'Conférence — Débat — Dédicace'
+  const eventType = 'Conférences, rencontres et découverte des métiers'
   const { name: offererName } = offerer
   const { name: venueName } = venue
 
@@ -152,7 +152,7 @@ test('Je peux créer une offre numérique', async t => {
 
   // when
   await t.typeText(nameInput, 'Jeux vidéo abonnement de test')
-  await t.click(typeInput).click(typeOption.withText('Jeux Vidéo'))
+  await t.click(typeInput).click(typeOption.withText('Jeux vidéo'))
   await t.click(offererInput).click(offererOption.withText(offererName))
   await t.click(venueInput).click(venueOption.withText(venueName))
   await t.typeText(urlInput, 'http://www.example.com')
@@ -182,7 +182,7 @@ test('Créer des offres avec des sous-types', async t => {
     'Venez re découvrir PNL en accoustique, sans auto-tune'
   const eventDurationMinutes = '90'
   const eventName = 'Concert de PNL Unplugged'
-  const eventType = 'Musique (Concerts, Festivals)'
+  const eventType = 'Musique — concerts, festivals'
   const eventMusicType = 'Hip-Hop/Rap'
   const eventMusicSubType = 'Rap Alternatif'
   const { name: offererName } = offerer
