@@ -38,3 +38,4 @@ def install_scripts():
     import scripts.init_titelive.import_thumbs
     import scripts.init_titelive.init_titelive
     import scripts.install_data
+    import scripts.migrate_images_for_event_and_thing_merge
