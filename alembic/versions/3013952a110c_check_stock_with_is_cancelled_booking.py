@@ -1,4 +1,4 @@
-""" check stock with is_cancelled booking
+""" check stock without cancelled bookings
 
 Revision ID: 3013952a110c
 Revises: f9361bb484a1
