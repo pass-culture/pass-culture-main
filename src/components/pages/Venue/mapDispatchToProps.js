@@ -45,7 +45,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         requestData({
           apiPath: `/offerers/${offererId}`,
           handleSuccess: () => {
-            if (!venueId) {
+            if (!venueId || venueId === CREATION) {
               return
             }
             dispatch(

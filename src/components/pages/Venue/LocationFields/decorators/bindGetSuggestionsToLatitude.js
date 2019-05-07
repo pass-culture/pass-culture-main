@@ -2,7 +2,7 @@ import createDecorator from 'final-form-calculate'
 
 import getSuggestionsFromLatitudeAndLongitude from '../utils/getSuggestionsFromLatitudeAndLongitude'
 
-export const latitudeDecorator = createDecorator({
+export const bindGetSuggestionsToLatitude = createDecorator({
   field: 'latitude',
   updates: async (latitude, key, values) => {
     if (!latitude || !values.longitude || values.address || values.siret) {
@@ -38,4 +38,4 @@ export const latitudeDecorator = createDecorator({
   },
 })
 
-export default latitudeDecorator
+export default bindGetSuggestionsToLatitude

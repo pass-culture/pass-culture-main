@@ -1,2 +1,2 @@
-export * from './latitudeDecorator'
-export * from './longitudeDecorator'
+export * from './bindGetSuggestionsToLatitude'
+export * from './bindGetSuggestionsToLongitude'

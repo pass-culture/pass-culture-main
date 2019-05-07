@@ -1,7 +1,7 @@
-import { getSireInfo, SIRET } from 'utils/siren'
+import { getSirenOrSiretInfo, SIRET } from 'utils/siren'
 
 export const siretValidate = async siret => {
-  const siretInfo = await getSireInfo(siret, SIRET)
+  const siretInfo = await getSirenOrSiretInfo(siret, SIRET)
   if (!siretInfo || !siretInfo.error) return undefined
   return siretInfo.error
 }

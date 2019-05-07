@@ -1,1 +1,1 @@
-export * from './siretDecorator'
+export * from './bindGetSiretInfoToSiret'

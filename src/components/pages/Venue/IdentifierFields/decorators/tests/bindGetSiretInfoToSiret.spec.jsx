@@ -3,7 +3,7 @@ import { mount } from 'enzyme'
 import React from 'react'
 import { Field, Form } from 'react-final-form'
 
-import siretDecorator from '../siretDecorator'
+import bindGetSiretInfoToSiret from '../bindGetSiretInfoToSiret'
 
 const NAME = 'foo'
 const SIRET = '12345678912345'
@@ -26,7 +26,7 @@ global.fetch = url => {
   }
 }
 
-describe('src | components | pages | Venue | IdentifierFields | siretDecorator', () => {
+describe('src | components | pages | Venue | IdentifierFields | bindGetSiretInfoToSiret', () => {
   it('should update the form with siret info', () => {
     // given
     const initialValues = {
@@ -35,7 +35,7 @@ describe('src | components | pages | Venue | IdentifierFields | siretDecorator',
     }
     const wrapper = mount(
       <Form
-        decorators={[siretDecorator]}
+        decorators={[bindGetSiretInfoToSiret]}
         initialValues={initialValues}
         onSubmit={onSubmit}
         render={({ handleSubmit }) => (

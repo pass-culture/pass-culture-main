@@ -12,12 +12,12 @@ import BankFieldsContainer from './BankFields/BankFieldsContainer'
 import CreateOfferControl from './CreateOfferControl'
 import LocationFields from './LocationFields/LocationFields'
 import {
-  latitudeDecorator,
-  longitudeDecorator,
+  bindGetSuggestionsToLatitude,
+  bindGetSuggestionsToLongitude,
 } from './LocationFields/decorators'
 import { FRANCE_POSITION } from './LocationFields/utils/positions'
 import IdentifierFields from './IdentifierFields/IdentifierFields'
-import { siretDecorator } from './IdentifierFields/decorators'
+import { bindGetSiretInfoToSiret } from './IdentifierFields/decorators'
 import ModifyOrCancelControl from './controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from './controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
 import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
@@ -124,9 +124,12 @@ class Venue extends Component {
     })
     const { isRequestPending } = this.state
 
-    const decorators = [latitudeDecorator, longitudeDecorator]
+    const decorators = [
+      bindGetSuggestionsToLatitude,
+      bindGetSuggestionsToLongitude,
+    ]
     if (isCreatedEntity || !initialSiret) {
-      decorators.push(siretDecorator)
+      decorators.push(bindGetSiretInfoToSiret)
     }
 
     const showForm = !initialIsVirtual && typeof offerer !== 'undefined'

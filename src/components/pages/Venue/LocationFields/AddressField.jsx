@@ -10,7 +10,7 @@ import LocationViewer from './LocationViewer'
 import FieldErrors from 'components/layout/form/FieldErrors'
 import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
 
-const createBatchLocationChanges = (form, isLocationFrozen) => location => {
+const updateLocationFields = (form, { isLocationFrozen }) => location => {
   form.batch(() => {
     const { address, city, latitude, longitude, postalCode } = location
     form.change('address', address)
@@ -77,9 +77,15 @@ export const AddressField = ({
                   className="field-input field-address"
                   disabled={disabled || readOnly}
                   name={name}
-                  onMarkerDragend={createBatchLocationChanges(form, false)}
-                  onSuggestionSelect={createBatchLocationChanges(form, true)}
-                  onTextChange={createBatchLocationChanges(form, false)}
+                  onMarkerDragend={updateLocationFields(form, {
+                    isLocationFrozen: false,
+                  })}
+                  onSuggestionSelect={updateLocationFields(form, {
+                    isLocationFrozen: true,
+                  })}
+                  onTextChange={updateLocationFields(form, {
+                    isLocationFrozen: false,
+                  })}
                   placeholder={readOnly ? '' : placeholder}
                   readOnly={readOnly}
                   required={!!required}

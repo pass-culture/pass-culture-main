@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import siretValidate from './siretValidate'
+import { siretValidate } from './validators'
 import { Icon } from 'components/layout/Icon'
 import {
   HiddenField,

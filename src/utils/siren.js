@@ -25,23 +25,23 @@ export function formatSirenOrSiret(string) {
   return `${sirenWithThreeBatchesOfThreeNumbers} ${nic}`.trim()
 }
 
-function mapArgsToCacheKey(siretOrSiren, type) {
-  return `${siretOrSiren || ''}/${type || ''}`
+function mapArgsToCacheKey(sirenOrSiret, type) {
+  return `${sirenOrSiret || ''}/${type || ''}`
 }
 
-export const getSireInfo = createCachedSelector(
-  siretOrSiren => siretOrSiren,
-  (siretOrSiren, type) => type,
-  async (siretOrSiren, type) => {
+export const getSirenOrSiretInfo = createCachedSelector(
+  sirenOrSiret => sirenOrSiret,
+  (sirenOrSiret, type) => type,
+  async (sirenOrSiret, type) => {
     if (!type) {
       throw Error(`You need to specify a type : ${SIREN} or ${SIRET}`)
     }
 
-    if (!siretOrSiren) {
+    if (!sirenOrSiret) {
       return
     }
 
-    const withoutWhiteSpacesSiretOrSiren = removeWhitespaces(siretOrSiren)
+    const withoutWhiteSpacesSiretOrSiren = removeWhitespaces(sirenOrSiret)
 
     const isNotValidSiret =
       type === SIRET && withoutWhiteSpacesSiretOrSiren.length !== 14
@@ -70,7 +70,7 @@ export const getSireInfo = createCachedSelector(
     }
 
     try {
-      const sireneUrl = `https://sirene.entreprise.api.gouv.fr/v1/${type}/${siretOrSiren}`
+      const sireneUrl = `https://sirene.entreprise.api.gouv.fr/v1/${type}/${sirenOrSiret}`
 
       const response = await fetch(sireneUrl)
 
@@ -81,7 +81,6 @@ export const getSireInfo = createCachedSelector(
 
       const body = await response.json()
       const dataPath = type === SIREN ? 'siege_social' : 'etablissement'
-      const sirenOrSiret = get(body, `${dataPath}.${type}`)
 
       const values = {
         address: get(body, `${dataPath}.l4_normalisee`),
@@ -93,8 +92,8 @@ export const getSireInfo = createCachedSelector(
           get(body, `${dataPath}.l1_declaree`) ||
           '',
         postalCode: get(body, `${dataPath}.code_postal`),
-        [type]: sirenOrSiret,
-        sire: sirenOrSiret,
+        [type]: get(body, `${dataPath}.${type}`),
+        sire: get(body, `${dataPath}.${type}`),
       }
 
       return { values }

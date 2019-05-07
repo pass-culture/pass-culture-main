@@ -217,9 +217,11 @@ class LocationViewer extends Component {
     )
   }
 
-  renderSuggestionsMenu = children => {
-    const empty = children.length === 0
-    return <div className={classnames('menu', { empty })}>{children}</div>
+  renderSuggestionsMenu = suggestionElements => {
+    const empty = suggestionElements.length === 0
+    return (
+      <div className={classnames('menu', { empty })}>{suggestionElements}</div>
+    )
   }
 
   renderSuggestion = ({ id, label, placeholder }, highlighted) => (
