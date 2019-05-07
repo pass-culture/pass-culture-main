@@ -20,10 +20,10 @@ from utils import logger
 from utils.config import API_URL, ENV, WEBAPP_URL, PRO_URL
 from utils.date import format_datetime, utc_datetime_to_dept_timezone
 from utils.human_ids import humanize
+from utils.object_storage import get_storage_base_url
 
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
 MAILJET_API_SECRET = os.environ.get('MAILJET_API_SECRET')
-OBJECT_STORAGE_URL = os.environ.get('OBJECT_STORAGE_URL')
 SUPPORT_EMAIL_ADDRESS = "support@passculture.app"
 
 if MAILJET_API_KEY is None or MAILJET_API_KEY == '':
@@ -306,7 +306,7 @@ def make_activation_notification_email(user: User) -> dict:
             'mails/activation_notification_email.html',
             first_name=first_name,
             set_password_link=set_password_url,
-            object_storage_url=OBJECT_STORAGE_URL
+            object_storage_url=get_storage_base_url()
         )
     }
 

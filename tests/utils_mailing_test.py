@@ -1381,7 +1381,8 @@ def test_make_venue_validation_email(app):
 
 
 @pytest.mark.standalone
-def test_make_activation_notification_email(app):
+@patch('utils.mailing.get_storage_base_url', return_value='http://localhost/storage')
+def test_make_activation_notification_email(get_storage_base_url, app):
     # Given
     user = create_user(first_name='ISIDORE', reset_password_token='ABCD123')
 
@@ -1397,6 +1398,8 @@ def test_make_activation_notification_email(app):
     assert parsed_email.find('strong', {'id': 'user-first-name'}).text == 'Bonjour Isidore,'
     assert parsed_email.find('a', {'id': 'set-password-link'}).get('href') == \
            'http://localhost:3000/activation/ABCD123?email=john.doe%40test.com'
+    assert parsed_email.find('a', {'id': 'installation-how-to'}).img.get('src') == \
+           'http://localhost/storage/mailing/header.jpg'
 
 
 @pytest.mark.standalone

@@ -78,4 +78,5 @@ class HasThumbMixin(object):
     @property
     def thumbUrl(self):
         base_url = get_storage_base_url()
-        return '{}/{}/{}'.format(base_url, get_model_plural_name(self), humanize(self.id))
+        thumb_url = base_url + "/thumbs"
+        return '{}/{}/{}'.format(thumb_url, get_model_plural_name(self), humanize(self.id))
