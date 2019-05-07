@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 from models import PcObject, ThingType, Booking
 from models.api_errors import ResourceNotFound, ApiErrors
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
-    find_offerer_bookings, find_all_bookings_for_stock, \
+    find_offerer_bookings_paginated, find_all_bookings_for_stock, \
     find_final_offerer_bookings, find_date_used, find_user_activation_booking, get_existing_tokens, \
-    find_active_bookings_by_user_id, find_by
+    find_active_bookings_by_user_id, find_by, find_all_offerer_bookings
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -40,7 +40,7 @@ def test_find_all_by_offerer_with_event_and_things(app):
     PcObject.check_and_save(booking1, booking2, booking3)
 
     # when
-    bookings = find_offerer_bookings(offerer1.id)
+    bookings = find_offerer_bookings_paginated(offerer1.id)
 
     # then
     assert booking1 in bookings
@@ -77,7 +77,7 @@ def test_find_all_bookings_by_offerer_in_a_not_search_context_returns_all_result
                             booking6, booking7, booking8, booking9, booking10, booking11, booking12)
 
     # when
-    bookings = find_offerer_bookings(offerer1.id)
+    bookings = find_all_offerer_bookings(offerer1.id)
 
     # then
     assert len(bookings) == 12

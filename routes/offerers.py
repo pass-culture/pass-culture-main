@@ -6,7 +6,7 @@ from domain.discard_pc_objects import invalidate_recommendations_if_deactivating
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject, RightsType, Venue
 from models.venue import create_digital_venue
-from repository.booking_queries import find_offerer_bookings
+from repository.booking_queries import find_offerer_bookings_paginated
 from repository.offerer_queries import find_all_recommendations_for_offerer,\
                                        filter_offerers_with_keywords_string
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_not_validated, \
@@ -72,7 +72,7 @@ def get_offerer_bookings(id):
     order_by_key = request.args.get('order_by_column')
     order = request.args.get('order')
     order_by = _generate_orderby_criterium(order, order_by_key)
-    bookings = find_offerer_bookings(
+    bookings = find_offerer_bookings_paginated(
         dehumanize(id),
         search=request.args.get('search'),
         order_by=order_by,

@@ -17,7 +17,7 @@ from models.pc_object import serialize
 from repository import booking_queries
 from repository.booking_queries import find_active_bookings_by_user_id, \
     find_all_bookings_for_stock_and_user, \
-    find_offerer_bookings
+    find_all_offerer_bookings
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.human_ids import dehumanize, humanize
 from utils.includes import BOOKING_INCLUDES
@@ -46,7 +46,7 @@ from validation.bookings import check_booking_is_usable, \
 def get_bookings_csv():
     query = filter_query_where_user_is_user_offerer_and_is_validated(Offerer.query,
                                                                      current_user)
-    bookings = chain(*list(map(lambda o: find_offerer_bookings(o.id),
+    bookings = chain(*list(map(lambda o: find_all_offerer_bookings(o.id),
                                query)))
 
     bookings_csv = generate_bookings_details_csv(bookings)

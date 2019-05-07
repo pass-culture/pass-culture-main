@@ -7,9 +7,7 @@ from sqlalchemy.orm import aliased
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
-from models import ApiErrors, \
-    Booking, \
-    PcObject, \
+from models import Booking, \
     Offer, \
     Stock, \
     User, \
@@ -49,13 +47,18 @@ def filter_bookings_with_keywords_string(query, keywords_string):
     return query
 
 
-def find_offerer_bookings(offerer_id, search=None, order_by=None, page=None):
+def filter_bookings_by_offerer_id(offerer_id):
     query = Booking.query.join(Stock) \
         .join(Offer) \
         .join(Venue) \
         .outerjoin(Product, and_(Offer.productId == Product.id)) \
         .filter(Venue.managingOffererId == offerer_id) \
         .reset_joinpoint()
+    return query
+
+
+def find_offerer_bookings_paginated(offerer_id, search=None, order_by=None, page=1):
+    query = filter_bookings_by_offerer_id(offerer_id)
 
     if search:
         query = filter_bookings_with_keywords_string(query, search)
@@ -64,11 +67,16 @@ def find_offerer_bookings(offerer_id, search=None, order_by=None, page=None):
         check_order_by(order_by)
         query = query_with_order_by(query, order_by)
 
-    if page:
-        bookings = query.paginate(int(page), per_page=10, error_out=False) \
-            .items
-    else:
-        bookings = query.all()
+    bookings = query.paginate(int(page), per_page=10, error_out=False)\
+        .items
+
+    return bookings
+
+
+def find_all_offerer_bookings(offerer_id):
+    query = filter_bookings_by_offerer_id(offerer_id)
+
+    bookings = query.all()
 
     return bookings
 
