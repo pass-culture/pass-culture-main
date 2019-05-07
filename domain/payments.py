@@ -1,15 +1,15 @@
-import itertools
-
 import csv
+import itertools
 import uuid
 from datetime import datetime, timedelta
 from decimal import Decimal
-from flask import render_template
 from hashlib import sha256
 from io import BytesIO, StringIO
-from lxml import etree
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from uuid import UUID
+
+from flask import render_template
+from lxml import etree
 
 from domain.bank_account import format_raw_iban_or_bic
 from domain.reimbursement import BookingReimbursement
@@ -181,6 +181,21 @@ def group_payments_by_status(payments: List[Payment]) -> Dict:
         else:
             groups[status_name] = [p]
     return groups
+
+
+def apply_banishment(payments: List[Payment], ids_to_ban: List[int]) -> Tuple[List[Payment], List[Payment]]:
+    if not ids_to_ban:
+        return [], []
+
+    banned_payments = [p for p in payments if p.id in ids_to_ban]
+    for p in banned_payments:
+        p.setStatus(TransactionStatus.BANNED)
+
+    retry_payments = [p for p in payments if p.id not in ids_to_ban]
+    for p in retry_payments:
+        p.setStatus(TransactionStatus.RETRY)
+
+    return banned_payments, retry_payments
 
 
 def _group_payments_into_transactions(payments: List[Payment]) -> List[Transaction]:

@@ -1,16 +1,17 @@
-import pytest
 import uuid
 from datetime import datetime
 from decimal import Decimal
-from freezegun import freeze_time
 from pprint import pprint
 from unittest.mock import Mock
 
+import pytest
+from freezegun import freeze_time
+
 from domain.payments import create_payment_for_booking, filter_out_already_paid_for_bookings, create_payment_details, \
     create_all_payments_details, make_custom_message, group_payments_by_status, \
-    filter_out_bookings_without_cost, keep_only_pending_payments, keep_only_not_processable_payments
+    filter_out_bookings_without_cost, keep_only_pending_payments, keep_only_not_processable_payments, apply_banishment
 from domain.reimbursement import BookingReimbursement, ReimbursementRules
-from models import Offer, Venue, Booking
+from models import Offer, Venue, Booking, Offerer
 from models.payment import Payment
 from models.payment_status import TransactionStatus
 from tests.test_utils import create_booking, create_stock, create_user, create_offerer, create_venue, create_payment, \
@@ -517,3 +518,74 @@ class GroupPaymentsByStatusTest:
         assert len(groups['SENT']) == 1
         assert len(groups['NOT_PROCESSABLE']) == 1
         assert len(groups['ERROR']) == 2
+
+
+@pytest.mark.standalone
+class ApplyBanishmentTest:
+    def test_payments_matching_given_ids_must_be_banned(self):
+        # given
+        payments = [
+            create_payment(Booking(), Offerer(), 10, idx=111),
+            create_payment(Booking(), Offerer(), 10, idx=222),
+            create_payment(Booking(), Offerer(), 10, idx=333),
+            create_payment(Booking(), Offerer(), 10, idx=444)
+        ]
+        ids_to_ban = [222, 333]
+
+        # when
+        banned_payments, retry_payments = apply_banishment(payments, ids_to_ban)
+
+        # then
+        assert len(banned_payments) == 2
+        for p in banned_payments:
+            assert p.currentStatus.status == TransactionStatus.BANNED
+            assert p.id in ids_to_ban
+
+    def test_payments_not_matching_given_ids_must_be_retried(self):
+        # given
+        payments = [
+            create_payment(Booking(), Offerer(), 10, idx=111),
+            create_payment(Booking(), Offerer(), 10, idx=222),
+            create_payment(Booking(), Offerer(), 10, idx=333),
+            create_payment(Booking(), Offerer(), 10, idx=444)
+        ]
+        ids_to_ban = [222, 333]
+
+        # when
+        banned_payments, retry_payments = apply_banishment(payments, ids_to_ban)
+
+        # then
+        assert len(retry_payments) == 2
+        for p in retry_payments:
+            assert p.currentStatus.status == TransactionStatus.RETRY
+            assert p.id not in ids_to_ban
+
+    def test_no_payments_to_retry_if_all_are_banned(self):
+        # given
+        payments = [
+            create_payment(Booking(), Offerer(), 10, idx=111),
+            create_payment(Booking(), Offerer(), 10, idx=222)
+        ]
+        ids_to_ban = [111, 222]
+
+        # when
+        banned_payments, retry_payments = apply_banishment(payments, ids_to_ban)
+
+        # then
+        assert len(banned_payments) == 2
+        assert retry_payments == []
+
+    def test_no_payments_are_returned_if_no_ids_are_provided(self):
+        # given
+        payments = [
+            create_payment(Booking(), Offerer(), 10, idx=111),
+            create_payment(Booking(), Offerer(), 10, idx=222)
+        ]
+        ids_to_ban = []
+
+        # when
+        banned_payments, retry_payments = apply_banishment(payments, ids_to_ban)
+
+        # then
+        assert banned_payments == []
+        assert retry_payments == []
