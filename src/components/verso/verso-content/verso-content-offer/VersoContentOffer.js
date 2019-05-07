@@ -6,10 +6,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Icon } from '../../../layout/Icon'
 
-import {
-  getDurationFromMinutes,
-  getWhatTitleFromLabelAndIsVirtualVenue,
-} from './utils'
+import { getDurationFromMinutes } from './utils'
 import { navigationLink } from '../../../../utils/geolocation'
 import VersoActionsBar from '../VersoActionsBar'
 
@@ -26,7 +23,9 @@ class VersoContentOffer extends React.PureComponent {
     return (
       <div>
         <h3>Et en détails ?</h3>
-        <pre className="is-raw-description">{description}</pre>
+        <pre className="is-raw-description" id="verso-offer-description">
+          {description}
+        </pre>
       </div>
     )
   }
@@ -41,16 +40,12 @@ class VersoContentOffer extends React.PureComponent {
     } = this.props
     const offer = get(recommendation, 'offer')
 
-    const venue = get(offer, 'venue')
-    const isVirtualVenue = get(venue, 'isVirtual')
-
     const product = get(offer, 'product')
     const durationMinutes = get(product, 'durationMinutes')
     const duration = getDurationFromMinutes(durationMinutes)
 
     const extraData = get(product, 'extraData')
-    const label = get(product, 'offerType.appLabel')
-    const title = getWhatTitleFromLabelAndIsVirtualVenue(label, isVirtualVenue)
+    const prolabel = get(product, 'offerType.appLabel')
 
     const author = get(extraData, 'author')
     const performer = get(extraData, 'performer')
@@ -62,19 +57,29 @@ class VersoContentOffer extends React.PureComponent {
       <div>
         <h3>Quoi ?</h3>
         <div>
-          <span className="is-bold">{title}</span>
-          {durationMinutes && <span> - Durée {duration}</span>}
+          <span id="verso-offer-label" className="is-bold">
+            {prolabel}
+          </span>
+          {durationMinutes && (
+            <span id="verso-offer-duration"> - Durée {duration}</span>
+          )}
         </div>
         {type && (
-          <div>
+          <div id="verso-offer-type">
             Genre : {type}
             {subType && `/ ${subType}`}
           </div>
         )}
-        {author && <div>Auteur : {author}</div>}
-        {performer && <div>Interprète : {performer}</div>}
-        {speaker && <div>Intervenant : {speaker}</div>}
-        {stageDirector && <div>Metteur en scène : {stageDirector}</div>}
+        {author && <div id="verso-offer-author">Auteur : {author}</div>}
+        {performer && (
+          <div id="verso-offer-performer">Interprète : {performer}</div>
+        )}
+        {speaker && <div id="verso-offer-speaker">Intervenant : {speaker}</div>}
+        {stageDirector && (
+          <div id="verso-offer-director">
+            Metteur en scène : {stageDirector}
+          </div>
+        )}
       </div>
     )
   }
@@ -87,13 +92,15 @@ class VersoContentOffer extends React.PureComponent {
     return (
       <React.Fragment>
         {sliced.map(obj => (
-          <li key={obj.id}>
+          <li key={obj.id} id="verso-offer-reserved">
             {capitalize(obj.humanBeginningDate)}
             {obj.userAsAlreadyReservedThisDate && ' (réservé)'}
           </li>
         ))}
         {hasMoreBookables && (
-          <li>{'Cliquez sur "j\'y vais" pour voir plus de dates.'}</li>
+          <li id="erso-offer-has-more-bookables">
+            {'Cliquez sur "j\'y vais" pour voir plus de dates.'}
+          </li>
         )}
       </React.Fragment>
     )
@@ -104,7 +111,7 @@ class VersoContentOffer extends React.PureComponent {
     const limitDatetime = get(bookables, '[0].bookinglimitDatetime')
     return (
       <React.Fragment>
-        <li>
+        <li id="verso-offer-limit-date-time">
           Dès maintenant
           {limitDatetime && ` et jusqu&apos;au ${limitDatetime}`}{' '}
         </li>
@@ -124,7 +131,7 @@ class VersoContentOffer extends React.PureComponent {
     return (
       <div>
         <h3>Quand ?</h3>
-        <ul className="dates-info">
+        <ul className="dates-info" id="verso-offer-when">
           {isFinished ? (
             <li>L&apos;offre n&apos;est plus disponible.</li>
           ) : (
@@ -148,13 +155,25 @@ class VersoContentOffer extends React.PureComponent {
         <div className="flex-columns flex-between">
           <p className="address-info">
             <span className="is-block">{publicName || name}</span>
-            {address && <span className="is-block">{address}</span>}
-            {postalCode && <span className="is-block">{postalCode}</span>}
-            {city && <span className="is-block">{city}</span>}
+            {address && (
+              <span className="is-block" id="verso-offer-adress">
+                {address}
+              </span>
+            )}
+            {postalCode && (
+              <span className="is-block" id="verso-offer-postal-code">
+                {postalCode}
+              </span>
+            )}
+            {city && (
+              <span className="is-block" id="verso-offer-city">
+                {city}
+              </span>
+            )}
           </p>
           {latitude && longitude && (
             <a className="distance" href={navigationLink(latitude, longitude)}>
-              <span>{distance}&nbsp;</span>
+              <span id="verso-offer-distance">{distance}&nbsp;</span>
               <Icon
                 svg="ico-geoloc-solid2"
                 alt="Géolocalisation dans Open Street Map"

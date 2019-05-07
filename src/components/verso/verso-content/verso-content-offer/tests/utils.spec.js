@@ -1,9 +1,6 @@
 import 'moment-duration-format'
 
-import {
-  getDurationFromMinutes,
-  getWhatTitleFromLabelAndIsVirtualVenue,
-} from '../utils'
+import { getDurationFromMinutes } from '../utils'
 
 describe('src | components | verso | verso-content | verso-content-offer | utils', () => {
   describe('getDurationFromMinutes', () => {
@@ -38,38 +35,6 @@ describe('src | components | verso | verso-content | verso-content-offer | utils
 
       // then
       expect(duration).toEqual('2h03')
-    })
-  })
-
-  describe('getWhatTitleFromLabelAndIsVirtualVenue', () => {
-    it('pour une venue physique', () => {
-      // given
-      const label = 'Musique (sur supports physiques ou en ligne)'
-      const isVirtualVenue = false
-
-      // when
-      const title = getWhatTitleFromLabelAndIsVirtualVenue(
-        label,
-        isVirtualVenue
-      )
-
-      // then
-      expect(title).toEqual('Musique (sur supports physiques)')
-    })
-
-    it('pour une venue virtuelle', () => {
-      // given
-      const label = 'Musique (sur supports physiques ou en ligne)'
-      const isVirtualVenue = true
-
-      // when
-      const title = getWhatTitleFromLabelAndIsVirtualVenue(
-        label,
-        isVirtualVenue
-      )
-
-      // then
-      expect(title).toEqual('Musique (en ligne)')
     })
   })
 })

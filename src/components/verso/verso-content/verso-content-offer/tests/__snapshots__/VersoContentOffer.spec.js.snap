@@ -76,9 +76,8 @@ ShallowWrapper {
           <div>
             <span
               className="is-bold"
-            >
-              
-            </span>
+              id="verso-offer-label"
+            />
           </div>
         </div>,
         <div>
@@ -87,6 +86,7 @@ ShallowWrapper {
           </h3>
           <pre
             className="is-raw-description"
+            id="verso-offer-description"
           >
             fake description
           </pre>
@@ -97,6 +97,7 @@ ShallowWrapper {
           </h3>
           <ul
             className="dates-info"
+            id="verso-offer-when"
           >
             <React.Fragment />
           </ul>
@@ -118,16 +119,19 @@ ShallowWrapper {
               </span>
               <span
                 className="is-block"
+                id="verso-offer-adress"
               >
                 72 rue Carnot
               </span>
               <span
                 className="is-block"
+                id="verso-offer-postal-code"
               >
                 93230
               </span>
               <span
                 className="is-block"
+                id="verso-offer-city"
               >
                 ROMAINVILLE
               </span>
@@ -135,7 +139,9 @@ ShallowWrapper {
             <a
               className="distance"
             >
-              <span>
+              <span
+                id="verso-offer-distance"
+              >
                 1
                  
               </span>
@@ -164,9 +170,8 @@ ShallowWrapper {
             <div>
               <span
                 className="is-bold"
-              >
-                
-              </span>
+                id="verso-offer-label"
+              />
             </div>,
             undefined,
             undefined,
@@ -196,9 +201,8 @@ ShallowWrapper {
               "children": Array [
                 <span
                   className="is-bold"
-                >
-                  
-                </span>,
+                  id="verso-offer-label"
+                />,
                 undefined,
               ],
             },
@@ -209,11 +213,12 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "",
+                  "children": undefined,
                   "className": "is-bold",
+                  "id": "verso-offer-label",
                 },
                 "ref": null,
-                "rendered": "",
+                "rendered": null,
                 "type": "span",
               },
               undefined,
@@ -239,6 +244,7 @@ ShallowWrapper {
             </h3>,
             <pre
               className="is-raw-description"
+              id="verso-offer-description"
             >
               fake description
             </pre>,
@@ -264,6 +270,7 @@ ShallowWrapper {
             "props": Object {
               "children": "fake description",
               "className": "is-raw-description",
+              "id": "verso-offer-description",
             },
             "ref": null,
             "rendered": "fake description",
@@ -283,6 +290,7 @@ ShallowWrapper {
             </h3>,
             <ul
               className="dates-info"
+              id="verso-offer-when"
             >
               <React.Fragment />
             </ul>,
@@ -308,6 +316,7 @@ ShallowWrapper {
             "props": Object {
               "children": <React.Fragment />,
               "className": "dates-info",
+              "id": "verso-offer-when",
             },
             "ref": null,
             "rendered": Object {
@@ -353,16 +362,19 @@ ShallowWrapper {
                 </span>
                 <span
                   className="is-block"
+                  id="verso-offer-adress"
                 >
                   72 rue Carnot
                 </span>
                 <span
                   className="is-block"
+                  id="verso-offer-postal-code"
                 >
                   93230
                 </span>
                 <span
                   className="is-block"
+                  id="verso-offer-city"
                 >
                   ROMAINVILLE
                 </span>
@@ -370,7 +382,9 @@ ShallowWrapper {
               <a
                 className="distance"
               >
-                <span>
+                <span
+                  id="verso-offer-distance"
+                >
                   1
                    
                 </span>
@@ -411,16 +425,19 @@ ShallowWrapper {
                   </span>
                   <span
                     className="is-block"
+                    id="verso-offer-adress"
                   >
                     72 rue Carnot
                   </span>
                   <span
                     className="is-block"
+                    id="verso-offer-postal-code"
                   >
                     93230
                   </span>
                   <span
                     className="is-block"
+                    id="verso-offer-city"
                   >
                     ROMAINVILLE
                   </span>
@@ -428,7 +445,9 @@ ShallowWrapper {
                 <a
                   className="distance"
                 >
-                  <span>
+                  <span
+                    id="verso-offer-distance"
+                  >
                     1
                      
                   </span>
@@ -455,16 +474,19 @@ ShallowWrapper {
                     </span>,
                     <span
                       className="is-block"
+                      id="verso-offer-adress"
                     >
                       72 rue Carnot
                     </span>,
                     <span
                       className="is-block"
+                      id="verso-offer-postal-code"
                     >
                       93230
                     </span>,
                     <span
                       className="is-block"
+                      id="verso-offer-city"
                     >
                       ROMAINVILLE
                     </span>,
@@ -492,6 +514,7 @@ ShallowWrapper {
                     "props": Object {
                       "children": "72 rue Carnot",
                       "className": "is-block",
+                      "id": "verso-offer-adress",
                     },
                     "ref": null,
                     "rendered": "72 rue Carnot",
@@ -504,6 +527,7 @@ ShallowWrapper {
                     "props": Object {
                       "children": "93230",
                       "className": "is-block",
+                      "id": "verso-offer-postal-code",
                     },
                     "ref": null,
                     "rendered": "93230",
@@ -516,6 +540,7 @@ ShallowWrapper {
                     "props": Object {
                       "children": "ROMAINVILLE",
                       "className": "is-block",
+                      "id": "verso-offer-city",
                     },
                     "ref": null,
                     "rendered": "ROMAINVILLE",
@@ -530,7 +555,9 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": Array [
-                    <span>
+                    <span
+                      id="verso-offer-distance"
+                    >
                       1
                        
                     </span>,
@@ -553,6 +580,7 @@ ShallowWrapper {
                         1,
                         " ",
                       ],
+                      "id": "verso-offer-distance",
                     },
                     "ref": null,
                     "rendered": Array [
@@ -600,9 +628,8 @@ ShallowWrapper {
             <div>
               <span
                 className="is-bold"
-              >
-                
-              </span>
+                id="verso-offer-label"
+              />
             </div>
           </div>,
           <div>
@@ -611,6 +638,7 @@ ShallowWrapper {
             </h3>
             <pre
               className="is-raw-description"
+              id="verso-offer-description"
             >
               fake description
             </pre>
@@ -621,6 +649,7 @@ ShallowWrapper {
             </h3>
             <ul
               className="dates-info"
+              id="verso-offer-when"
             >
               <React.Fragment />
             </ul>
@@ -642,16 +671,19 @@ ShallowWrapper {
                 </span>
                 <span
                   className="is-block"
+                  id="verso-offer-adress"
                 >
                   72 rue Carnot
                 </span>
                 <span
                   className="is-block"
+                  id="verso-offer-postal-code"
                 >
                   93230
                 </span>
                 <span
                   className="is-block"
+                  id="verso-offer-city"
                 >
                   ROMAINVILLE
                 </span>
@@ -659,7 +691,9 @@ ShallowWrapper {
               <a
                 className="distance"
               >
-                <span>
+                <span
+                  id="verso-offer-distance"
+                >
                   1
                    
                 </span>
@@ -688,9 +722,8 @@ ShallowWrapper {
               <div>
                 <span
                   className="is-bold"
-                >
-                  
-                </span>
+                  id="verso-offer-label"
+                />
               </div>,
               undefined,
               undefined,
@@ -720,9 +753,8 @@ ShallowWrapper {
                 "children": Array [
                   <span
                     className="is-bold"
-                  >
-                    
-                  </span>,
+                    id="verso-offer-label"
+                  />,
                   undefined,
                 ],
               },
@@ -733,11 +765,12 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": "",
+                    "children": undefined,
                     "className": "is-bold",
+                    "id": "verso-offer-label",
                   },
                   "ref": null,
-                  "rendered": "",
+                  "rendered": null,
                   "type": "span",
                 },
                 undefined,
@@ -763,6 +796,7 @@ ShallowWrapper {
               </h3>,
               <pre
                 className="is-raw-description"
+                id="verso-offer-description"
               >
                 fake description
               </pre>,
@@ -788,6 +822,7 @@ ShallowWrapper {
               "props": Object {
                 "children": "fake description",
                 "className": "is-raw-description",
+                "id": "verso-offer-description",
               },
               "ref": null,
               "rendered": "fake description",
@@ -807,6 +842,7 @@ ShallowWrapper {
               </h3>,
               <ul
                 className="dates-info"
+                id="verso-offer-when"
               >
                 <React.Fragment />
               </ul>,
@@ -832,6 +868,7 @@ ShallowWrapper {
               "props": Object {
                 "children": <React.Fragment />,
                 "className": "dates-info",
+                "id": "verso-offer-when",
               },
               "ref": null,
               "rendered": Object {
@@ -877,16 +914,19 @@ ShallowWrapper {
                   </span>
                   <span
                     className="is-block"
+                    id="verso-offer-adress"
                   >
                     72 rue Carnot
                   </span>
                   <span
                     className="is-block"
+                    id="verso-offer-postal-code"
                   >
                     93230
                   </span>
                   <span
                     className="is-block"
+                    id="verso-offer-city"
                   >
                     ROMAINVILLE
                   </span>
@@ -894,7 +934,9 @@ ShallowWrapper {
                 <a
                   className="distance"
                 >
-                  <span>
+                  <span
+                    id="verso-offer-distance"
+                  >
                     1
                      
                   </span>
@@ -935,16 +977,19 @@ ShallowWrapper {
                     </span>
                     <span
                       className="is-block"
+                      id="verso-offer-adress"
                     >
                       72 rue Carnot
                     </span>
                     <span
                       className="is-block"
+                      id="verso-offer-postal-code"
                     >
                       93230
                     </span>
                     <span
                       className="is-block"
+                      id="verso-offer-city"
                     >
                       ROMAINVILLE
                     </span>
@@ -952,7 +997,9 @@ ShallowWrapper {
                   <a
                     className="distance"
                   >
-                    <span>
+                    <span
+                      id="verso-offer-distance"
+                    >
                       1
                        
                     </span>
@@ -979,16 +1026,19 @@ ShallowWrapper {
                       </span>,
                       <span
                         className="is-block"
+                        id="verso-offer-adress"
                       >
                         72 rue Carnot
                       </span>,
                       <span
                         className="is-block"
+                        id="verso-offer-postal-code"
                       >
                         93230
                       </span>,
                       <span
                         className="is-block"
+                        id="verso-offer-city"
                       >
                         ROMAINVILLE
                       </span>,
@@ -1016,6 +1066,7 @@ ShallowWrapper {
                       "props": Object {
                         "children": "72 rue Carnot",
                         "className": "is-block",
+                        "id": "verso-offer-adress",
                       },
                       "ref": null,
                       "rendered": "72 rue Carnot",
@@ -1028,6 +1079,7 @@ ShallowWrapper {
                       "props": Object {
                         "children": "93230",
                         "className": "is-block",
+                        "id": "verso-offer-postal-code",
                       },
                       "ref": null,
                       "rendered": "93230",
@@ -1040,6 +1092,7 @@ ShallowWrapper {
                       "props": Object {
                         "children": "ROMAINVILLE",
                         "className": "is-block",
+                        "id": "verso-offer-city",
                       },
                       "ref": null,
                       "rendered": "ROMAINVILLE",
@@ -1054,7 +1107,9 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": Array [
-                      <span>
+                      <span
+                        id="verso-offer-distance"
+                      >
                         1
                          
                       </span>,
@@ -1077,6 +1132,7 @@ ShallowWrapper {
                           1,
                           " ",
                         ],
+                        "id": "verso-offer-distance",
                       },
                       "ref": null,
                       "rendered": Array [

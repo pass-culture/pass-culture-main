@@ -101,11 +101,6 @@ test('Je peux passer de carte en carte en glissant les cartes vers les cotés', 
   await t.expect(getPageUrl()).notEql(urlAtStart)
 })
 
-test.skip("*TODO* Je vois les informations de l'accroche du recto", async t => {
-  await t
-  // TODO
-})
-
 test('Je peux afficher le verso des cartes en cliquant sur le bouton "haut"', async t => {
   await t.click(showVerso)
   await t.expect(versoDiv.hasClass('flipped')).ok()

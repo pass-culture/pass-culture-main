@@ -49,7 +49,7 @@ test("Je fais une recherche par mots-clés et j'ai plusieurs résultats", async 
     .wait(500)
 
   // then
-  const expected = `"${keywordUpper}" : 4 RÉSULTATS`
+  const expected = `"${keywordUpper}" : 2 RÉSULTATS`
   await t.expect(resultsTitle.innerText).eql(expected)
 })
 
