@@ -128,6 +128,8 @@ class Booking(PcObject,
             return "Réservation annulée"
         elif self.isUsed:
             return "Contremarque validée"
+        elif self.stock.offer.isEvent and (self.stock.beginningDatetime is not None and self.stock.beginningDatetime >= datetime.utcnow()):
+            return "Validé"
         else:
             return "En attente"
 
