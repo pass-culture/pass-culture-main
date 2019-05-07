@@ -43,7 +43,6 @@ test('Le titre et le nom du lieu sont affichés', async t => {
   await dragButton.with({ visibilityCheck: true })()
   const offerTitle = recommendation.offer.name
   const offerVenue = recommendation.offer.venue.name
-  const offerDescription = recommendation.offer.description
   const offerDate = 'Dès maintenant '
   const offerType = recommendation.offer.product.offerType.appLabel
 
@@ -61,8 +60,9 @@ test('Le titre et le nom du lieu sont affichés', async t => {
     .eql(offerVenue)
 
     // Détails
-    .expect(versoOfferDescription.textContent)
-    .eql(offerDescription)
+
+    .expect(versoOfferDescription.exists)
+    .notOk()
 
     // Quoi ?
     .expect(versoOfferAuthor.exists)

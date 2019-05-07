@@ -41,12 +41,13 @@ fixture(`08_04 Réservation d'une offre type digitale`).beforeEach(async t => {
     'webapp_08_booking',
     'get_non_free_digital_offer'
   )
+
   offerPage = `${discoverURL}/${offer.id}`
   offerBookingPage = `${offerPage}/booking`
   await t.useRole(createUserRole(user)).navigateTo(offerPage)
 })
 
-test(`Il s'agit d'une offre en ligne n'est pas terminée`, async t => {
+test(`Il s'agit d'une offre en ligne qui n'est pas terminée`, async t => {
   await dragButton.with({ visibilityCheck: true })()
   await t
     .expect(onlineOfferLabel.nth(1).textContent)
@@ -55,7 +56,7 @@ test(`Il s'agit d'une offre en ligne n'est pas terminée`, async t => {
     .notOk()
 })
 
-test(`Le formulaire de réservation ne contient pas de selecteur de date ou d'horaire`, async t => {
+test(`Le formulaire de réservation ne contient pas de sélecteur de date ou d'horaire`, async t => {
   await t
     .click(openVerso)
     .wait(500)
@@ -118,7 +119,6 @@ test(`Parcours complet de réservation d'une offre digitale`, async t => {
     .expect(bookedOffer.exists)
     .ok()
     .click(bookedOffer)
-    .click(openVerso)
     .expect(onlineBookedOfferButton.textContent)
     .eql(`Accéder`)
 })
@@ -132,7 +132,6 @@ test(`Je vérifie mes réservations après reconnexion`, async t => {
     .expect(bookedOffer.exists)
     .ok()
     .click(bookedOffer)
-    .click(openVerso)
     .expect(onlineBookedOfferButton.textContent)
     .eql(`Accéder`)
     .click(onlineBookedOfferButton)
