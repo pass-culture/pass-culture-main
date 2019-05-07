@@ -64,7 +64,6 @@ class RawOfferItem extends Component {
       offer,
       product,
       stocks,
-      thumbUrl,
       offerTypeLabel,
       offerer,
       stockAlertMessage,
@@ -75,6 +74,7 @@ class RawOfferItem extends Component {
     const { groupSizeMin, groupSizeMax, priceMin, priceMax } =
       aggregatedStock || {}
     const { name } = product || {}
+    const thumbUrl = get(offer, 'thumbUrl')
 
     const numberOfMediations = get(mediations, 'length')
     const remainingStockQuantity = get(stocks, 'length')
