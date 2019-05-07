@@ -1,5 +1,6 @@
 from models.booking import Booking
 from models.recommendation import Recommendation
+from models.offer import Offer
 from models.user import User
 from repository.user_queries import filter_webapp_users
 from sandboxes.scripts.utils.helpers import get_user_helper, get_recommendation_helper
@@ -19,17 +20,13 @@ def get_existing_webapp_user_with_no_date_read():
     }
 
 def get_existing_webapp_user_with_at_least_one_recommendation():
-    query = filter_webapp_users(User.query)
-    query = query.filter(
-        User.recommendations.any()
-    )
-    user = query.first()
-    recommendation = user.recommendations[0]
+    query = Recommendation.query.join(User)
+    query = filter_webapp_users(query)
+    query = query.reset_joinpoint().join(Offer)
 
-
-
+    recommendation = query.first()
     return {
-        "user": get_user_helper(user),
+        "user": get_user_helper(recommendation.user),
         "recommendation": get_recommendation_helper(recommendation)
     }
 
