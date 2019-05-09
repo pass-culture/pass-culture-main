@@ -57,12 +57,9 @@ class RawOfferItem extends Component {
 
   getThumbUrl(mediations) {
     const emptyUrl = ''
+    const hasMediations = mediations && mediations.length > 0
 
-    return mediations
-      ? mediations.length > 0
-        ? mediations[0].thumbUrl
-        : emptyUrl
-      : emptyUrl
+    return hasMediations ? mediations[0].thumbUrl : emptyUrl
   }
 
   render() {
