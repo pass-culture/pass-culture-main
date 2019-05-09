@@ -13,6 +13,7 @@ ShallowWrapper {
     readOnly={true}
     showInfo={[MockFunction]}
     stock={null}
+    timezone={null}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -70,6 +71,7 @@ ShallowWrapper {
             readOnly={true}
             renderValue={[Function]}
             required={false}
+            timezone={null}
             validate={null}
           />
         </td>,
@@ -190,6 +192,7 @@ ShallowWrapper {
             readOnly={true}
             renderValue={[Function]}
             required={false}
+            timezone={null}
             validate={null}
           />,
           "title": "Laissez vide si pas de limite",
@@ -215,6 +218,7 @@ ShallowWrapper {
             "readOnly": true,
             "renderValue": [Function],
             "required": false,
+            "timezone": null,
             "validate": null,
           },
           "ref": null,
@@ -321,6 +325,7 @@ ShallowWrapper {
               readOnly={true}
               renderValue={[Function]}
               required={false}
+              timezone={null}
               validate={null}
             />
           </td>,
@@ -441,6 +446,7 @@ ShallowWrapper {
               readOnly={true}
               renderValue={[Function]}
               required={false}
+              timezone={null}
               validate={null}
             />,
             "title": "Laissez vide si pas de limite",
@@ -466,6 +472,7 @@ ShallowWrapper {
               "readOnly": true,
               "renderValue": [Function],
               "required": false,
+              "timezone": null,
               "validate": null,
             },
             "ref": null,

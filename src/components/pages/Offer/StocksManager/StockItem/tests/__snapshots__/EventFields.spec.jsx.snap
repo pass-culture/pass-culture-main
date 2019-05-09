@@ -7,7 +7,9 @@ ShallowWrapper {
     beginningMinDate="2019-03-29T01:56:55.610Z"
     dispatch={[MockFunction]}
     parseFormChild={[MockFunction]}
+    readOnly={true}
     stocks={null}
+    timezone={null}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -39,9 +41,10 @@ ShallowWrapper {
             minDate="2019-03-29T01:56:55.610Z"
             name="beginningDatetime"
             placeholder="Please enter a value"
-            readOnly={false}
+            readOnly={true}
             renderValue={[Function]}
             required={true}
+            timezone={null}
             title="Date"
             validate={null}
           />
@@ -57,7 +60,7 @@ ShallowWrapper {
             name="beginningTime"
             patchKey="beginningDatetime"
             placeholder="Please enter a value"
-            readOnly={false}
+            readOnly={true}
             renderValue={[Function]}
             required={true}
             title="Heure"
@@ -79,7 +82,7 @@ ShallowWrapper {
             name="endTime"
             patchKey="endDatetime"
             placeholder="Please enter a value"
-            readOnly={false}
+            readOnly={true}
             renderValue={[Function]}
             required={true}
             title="Heure de fin"
@@ -109,9 +112,10 @@ ShallowWrapper {
             minDate="2019-03-29T01:56:55.610Z"
             name="beginningDatetime"
             placeholder="Please enter a value"
-            readOnly={false}
+            readOnly={true}
             renderValue={[Function]}
             required={true}
+            timezone={null}
             title="Date"
             validate={null}
           />,
@@ -135,9 +139,10 @@ ShallowWrapper {
             "minDate": "2019-03-29T01:56:55.610Z",
             "name": "beginningDatetime",
             "placeholder": "Please enter a value",
-            "readOnly": false,
+            "readOnly": true,
             "renderValue": [Function],
             "required": true,
+            "timezone": null,
             "title": "Date",
             "validate": null,
           },
@@ -162,7 +167,7 @@ ShallowWrapper {
             name="beginningTime"
             patchKey="beginningDatetime"
             placeholder="Please enter a value"
-            readOnly={false}
+            readOnly={true}
             renderValue={[Function]}
             required={true}
             title="Heure"
@@ -184,11 +189,10 @@ ShallowWrapper {
             "name": "beginningTime",
             "patchKey": "beginningDatetime",
             "placeholder": "Please enter a value",
-            "readOnly": false,
+            "readOnly": true,
             "renderValue": [Function],
             "required": true,
             "title": "Heure",
-            "tz": undefined,
             "validate": null,
           },
           "ref": null,
@@ -217,7 +221,7 @@ ShallowWrapper {
               name="endTime"
               patchKey="endDatetime"
               placeholder="Please enter a value"
-              readOnly={false}
+              readOnly={true}
               renderValue={[Function]}
               required={true}
               title="Heure de fin"
@@ -253,11 +257,10 @@ ShallowWrapper {
               "name": "endTime",
               "patchKey": "endDatetime",
               "placeholder": "Please enter a value",
-              "readOnly": false,
+              "readOnly": true,
               "renderValue": [Function],
               "required": true,
               "title": "Heure de fin",
-              "tz": undefined,
               "validate": null,
             },
             "ref": null,
@@ -292,9 +295,10 @@ ShallowWrapper {
               minDate="2019-03-29T01:56:55.610Z"
               name="beginningDatetime"
               placeholder="Please enter a value"
-              readOnly={false}
+              readOnly={true}
               renderValue={[Function]}
               required={true}
+              timezone={null}
               title="Date"
               validate={null}
             />
@@ -310,7 +314,7 @@ ShallowWrapper {
               name="beginningTime"
               patchKey="beginningDatetime"
               placeholder="Please enter a value"
-              readOnly={false}
+              readOnly={true}
               renderValue={[Function]}
               required={true}
               title="Heure"
@@ -332,7 +336,7 @@ ShallowWrapper {
               name="endTime"
               patchKey="endDatetime"
               placeholder="Please enter a value"
-              readOnly={false}
+              readOnly={true}
               renderValue={[Function]}
               required={true}
               title="Heure de fin"
@@ -362,9 +366,10 @@ ShallowWrapper {
               minDate="2019-03-29T01:56:55.610Z"
               name="beginningDatetime"
               placeholder="Please enter a value"
-              readOnly={false}
+              readOnly={true}
               renderValue={[Function]}
               required={true}
+              timezone={null}
               title="Date"
               validate={null}
             />,
@@ -388,9 +393,10 @@ ShallowWrapper {
               "minDate": "2019-03-29T01:56:55.610Z",
               "name": "beginningDatetime",
               "placeholder": "Please enter a value",
-              "readOnly": false,
+              "readOnly": true,
               "renderValue": [Function],
               "required": true,
+              "timezone": null,
               "title": "Date",
               "validate": null,
             },
@@ -415,7 +421,7 @@ ShallowWrapper {
               name="beginningTime"
               patchKey="beginningDatetime"
               placeholder="Please enter a value"
-              readOnly={false}
+              readOnly={true}
               renderValue={[Function]}
               required={true}
               title="Heure"
@@ -437,11 +443,10 @@ ShallowWrapper {
               "name": "beginningTime",
               "patchKey": "beginningDatetime",
               "placeholder": "Please enter a value",
-              "readOnly": false,
+              "readOnly": true,
               "renderValue": [Function],
               "required": true,
               "title": "Heure",
-              "tz": undefined,
               "validate": null,
             },
             "ref": null,
@@ -470,7 +475,7 @@ ShallowWrapper {
                 name="endTime"
                 patchKey="endDatetime"
                 placeholder="Please enter a value"
-                readOnly={false}
+                readOnly={true}
                 renderValue={[Function]}
                 required={true}
                 title="Heure de fin"
@@ -506,11 +511,10 @@ ShallowWrapper {
                 "name": "endTime",
                 "patchKey": "endDatetime",
                 "placeholder": "Please enter a value",
-                "readOnly": false,
+                "readOnly": true,
                 "renderValue": [Function],
                 "required": true,
                 "title": "Heure de fin",
-                "tz": undefined,
                 "validate": null,
               },
               "ref": null,

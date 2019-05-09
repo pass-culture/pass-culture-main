@@ -25,6 +25,7 @@ ShallowWrapper {
     showInfo={[Function]}
     stockPatch={Object {}}
     stocks={Array []}
+    timezone={null}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

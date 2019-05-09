@@ -42,6 +42,7 @@ ShallowWrapper {
           readOnly={false}
           renderValue={[Function]}
           required={false}
+          timezone={null}
           validate={null}
         />
         <TimeField
@@ -107,6 +108,7 @@ ShallowWrapper {
             readOnly={false}
             renderValue={[Function]}
             required={false}
+            timezone={null}
             validate={null}
           />,
           <TimeField
@@ -152,6 +154,7 @@ ShallowWrapper {
             "readOnly": false,
             "renderValue": [Function],
             "required": false,
+            "timezone": null,
             "validate": null,
           },
           "ref": null,
@@ -237,6 +240,7 @@ ShallowWrapper {
             readOnly={false}
             renderValue={[Function]}
             required={false}
+            timezone={null}
             validate={null}
           />
           <TimeField
@@ -302,6 +306,7 @@ ShallowWrapper {
               readOnly={false}
               renderValue={[Function]}
               required={false}
+              timezone={null}
               validate={null}
             />,
             <TimeField
@@ -347,6 +352,7 @@ ShallowWrapper {
               "readOnly": false,
               "renderValue": [Function],
               "required": false,
+              "timezone": null,
               "validate": null,
             },
             "ref": null,

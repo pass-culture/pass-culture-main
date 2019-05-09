@@ -11,8 +11,13 @@ import { composeValidators } from 'react-final-form-utils'
 import Icon from 'components/layout/Icon'
 import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
 
-const renderReadOnlyInput = readOnlyValue => (
-  <input className="field-input field-date" readOnly value={readOnlyValue} />
+const renderReadOnlyInput = ({ name, readOnlyValue }) => (
+  <input
+    className="field-input field-date"
+    name={name}
+    readOnly
+    value={readOnlyValue}
+  />
 )
 
 const renderDateInput = DatePickerProps => (
@@ -60,7 +65,10 @@ export const DateField = ({
         let readOnlyValue
         let selected
         if (input.value) {
-          selected = moment(input.value).tz(timezone)
+          selected = moment(input.value)
+          if (timezone) {
+            selected = selected.tz(timezone)
+          }
           readOnlyValue = selected.format(dateFormat)
         }
 
@@ -101,7 +109,7 @@ export const DateField = ({
               <div className="field-value flex-columns items-center">
                 <div className="field-inner flex-columns items-center">
                   {readOnly
-                    ? renderReadOnlyInput(readOnlyValue)
+                    ? renderReadOnlyInput({ name, readOnlyValue })
                     : renderDateInput(dateInputProps)}
                 </div>
                 {renderValue()}

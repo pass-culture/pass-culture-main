@@ -71,4 +71,35 @@ describe('src | components | layout | form | DateField', () => {
       done()
     }
   })
+
+  it('should display the date taking in account the timezone', () => {
+    // given
+    const initialValues = {
+      myDate: '2019-04-27T02:00:00Z',
+    }
+
+    // when
+    const wrapper = mount(
+      <Form
+        initialValues={initialValues}
+        onSubmit={() => null}
+        render={({ handleSubmit }) => (
+          <form>
+            <DateField name="myDate" readOnly timezone="America/Cayenne" />
+            <button onClick={handleSubmit} type="submit">
+              Submit
+            </button>
+          </form>
+        )}
+      />
+    )
+
+    // when
+    expect(
+      wrapper
+        .find(DateField)
+        .find('input[name="myDate"]')
+        .props().value
+    ).toEqual('26/04/2019')
+  })
 })
