@@ -5,7 +5,7 @@ import selectProductById from 'selectors/selectProductById'
 import selectProviderById from 'selectors/selectProviderById'
 import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
 
-function mapStateToProps(state, ownProps) {
+const mapStateToProps = (state, ownProps) => {
   const {
     match: {
       params: { offerId },
