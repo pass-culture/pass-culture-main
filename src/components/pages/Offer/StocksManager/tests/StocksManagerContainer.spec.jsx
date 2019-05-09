@@ -2,7 +2,7 @@ import React from 'react'
 
 import { mapStateToProps } from '../StocksManagerContainer'
 
-describe('src | components | pages | Offer | StocksManager | StocksManagerContainer ', () => {
+describe('src | components | pages | Offer | StocksManagerContainer | StocksManagerContainer ', () => {
   let state
   let props
 

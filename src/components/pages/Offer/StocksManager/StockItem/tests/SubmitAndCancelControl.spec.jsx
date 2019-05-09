@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 
 import SubmitAndCancelControl from '../index'
 
-describe('src | components | pages | Offer | StocksManager | StockItem | SubmitAndCancelControl ', () => {
+describe('src | components | pages | Offer | StocksManagerContainer | StockItem | SubmitAndCancelControl ', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
