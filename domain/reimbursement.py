@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from decimal import Decimal
 from enum import Enum
 
-from models import Booking, ThingType
+from models import Booking, Reimbursement, ThingType
 
 MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
 MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
@@ -120,3 +120,11 @@ def _find_potential_rules(booking, cumulative_bookings_value):
             reimbursed_amount = rule.value.apply(booking)
             relevant_rules.append({'rule': rule, 'amount': reimbursed_amount})
     return relevant_rules
+
+def generate_reimbursements_csv(reimbursements):
+    output = StringIO()
+    csv_lines = [reimbursement.as_csv_row() for reimbursement in reimbursements]
+    writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+    writer.writerow(Reimbursement.CSV_HEADER)
+    writer.writerows(csv_lines)
+    return output.getvalue()

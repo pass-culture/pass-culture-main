@@ -24,6 +24,7 @@ from models.product import BookFormat
 from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
 from models.recommendation import Recommendation
+from models.reimbursement import Reimbursement
 from models.user import User
 from models.user_offerer import RightsType
 from models.user_offerer import UserOfferer
