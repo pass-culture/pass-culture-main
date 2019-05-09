@@ -45,7 +45,7 @@ class VersoContentOffer extends React.PureComponent {
     const duration = getDurationFromMinutes(durationMinutes)
 
     const extraData = get(product, 'extraData')
-    const prolabel = get(product, 'offerType.appLabel')
+    const appLabel = get(product, 'offerType.appLabel')
 
     const author = get(extraData, 'author')
     const performer = get(extraData, 'performer')
@@ -58,7 +58,7 @@ class VersoContentOffer extends React.PureComponent {
         <h3>Quoi ?</h3>
         <div>
           <span id="verso-offer-label" className="is-bold">
-            {prolabel}
+            {appLabel}
           </span>
           {durationMinutes && (
             <span id="verso-offer-duration"> - Durée {duration}</span>

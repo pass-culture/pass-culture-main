@@ -22,6 +22,9 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
         isThing: true,
         product: {
           description: 'fake description do not use',
+          offerType: {
+            appLabel: 'Presse — Abonnements',
+          },
         },
         productId: 'QE',
         venue: {
@@ -75,6 +78,25 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
 
     // then
     expect(wrapper.find('.is-raw-description').text()).toBe('fake description')
+  })
+
+  it('should render offer "label" when appLabel is given', () => {
+    // given
+    const props = {
+      bookables: [],
+      handleRequestMusicAndShowTypes: jest.fn(),
+      isFinished: false,
+      maxShownDates: 7,
+      recommendation,
+    }
+
+    // when
+    const wrapper = shallow(<VersoContentOffer {...props} />)
+
+    // then
+    expect(wrapper.find('#verso-offer-label').text()).toBe(
+      'Presse — Abonnements'
+    )
   })
 
   it('should render event offer infos when offer is event, not finished and booking is available', () => {
