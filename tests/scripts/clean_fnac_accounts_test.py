@@ -3,7 +3,7 @@ import pytest
 from models import PcObject, UserOfferer, Offer, Venue, RightsType
 from scripts.clean_fnac_accounts import find_all_fnac_users, find_all_OK_fnac_offerers, \
     create_all_possible_user_offerers, \
-    clear_all_existing_user_offerers, move_offers_from_one_venue_to_another, delete_all_managed_venues
+    clear_all_existing_user_offerers, move_offers_from_one_venue_to_another, delete_all_physical_managed_venues
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
     create_offer_with_thing_product, create_offer_with_event_product
@@ -139,9 +139,9 @@ class MoveOffersFromOneVenueToAnotherTest:
 
 
 @pytest.mark.standalone
-class DeleteAllManagedVenuesTest:
+class DeleteAllPhysicalManagedVenuesTest:
     @clean_database
-    def test_(self, app):
+    def test_removes_all_physical_venues(self, app):
         # Given
         offerer = create_offerer()
         other_offerer = create_offerer(siren='987654321')
@@ -152,9 +152,24 @@ class DeleteAllManagedVenuesTest:
         PcObject.check_and_save(venue1, venue2, other_venue)
 
         # When
-        delete_all_managed_venues(offerer.id)
+        delete_all_physical_managed_venues(offerer.id)
 
         # Then
         venues = Venue.query.all()
         assert len(venues) == 1
         assert venues[0].managingOfferer.siren == '987654321'
+
+    @clean_database
+    def test_keeps_virtual_venues(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer, siret=None, comment=None, is_virtual=True)
+
+        PcObject.check_and_save(venue)
+
+        # When
+        delete_all_physical_managed_venues(offerer.id)
+
+        # Then
+        venues = Venue.query.all()
+        assert len(venues) == 1

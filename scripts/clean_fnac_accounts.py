@@ -37,10 +37,11 @@ def move_offers_from_one_venue_to_another(origin_venue_id: int, target_venue_id:
         PcObject.check_and_save(*offers)
 
 
-def delete_all_managed_venues(offerer_id: int):
+def delete_all_physical_managed_venues(offerer_id: int):
     fnac_live = Offerer.query.filter_by(id=offerer_id).one()
     for venue in fnac_live.managedVenues:
-        db.session.delete(venue)
+        if not venue.isVirtual:
+            db.session.delete(venue)
     db.session.commit()
 
 
@@ -67,8 +68,8 @@ def clean_fnac_accounts():
     move_offers_from_one_venue_to_another(fnac_rosny['id_ko'], fnac_rosny['id_ok'])
     move_offers_from_one_venue_to_another(fnac_quimper['id_ko'], fnac_quimper['id_ok'])
 
-    delete_all_managed_venues(fnac_live_id)
-    delete_all_managed_venues(fnac_darty_participations_et_services_id)
+    delete_all_physical_managed_venues(fnac_live_id)
+    delete_all_physical_managed_venues(fnac_darty_participations_et_services_id)
 
 
 def _change_venue(offer: Offer, target_venue_id: int) -> Offer:
