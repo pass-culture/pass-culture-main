@@ -151,7 +151,7 @@ export class StockItem extends Component {
           initialValues={stockPatch}
           onSubmit={this.onFormSubmit}
           render={formProps => {
-            const { values, handleSubmit } = formProps
+            const { form, values, handleSubmit } = formProps
             const { beginningDatetime } = values
             const canSubmit = getCanSubmit(
               Object.assign({}, formProps, { pristine: false })
@@ -195,6 +195,7 @@ export class StockItem extends Component {
                 ) : (
                   <SubmitAndCancelControl
                     canSubmit={canSubmit}
+                    form={form}
                     handleSubmit={handleSubmit}
                     isRequestPending={isRequestPending}
                     stockId={stockId}

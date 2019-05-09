@@ -6,6 +6,7 @@ import { withFrenchQueryRouter } from 'components/hocs'
 
 const SubmitAndCancelControl = ({
   canSubmit,
+  form,
   handleSubmit,
   isRequestPending,
   query,
@@ -26,9 +27,10 @@ const SubmitAndCancelControl = ({
     <td className="is-clipped">
       <button
         className="button is-secondary is-small cancel-step"
-        onClick={() =>
+        onClick={() => {
+          form.reset()
           query.changeToReadOnly(null, { id: stockId, key: 'stock' })
-        }>
+        }}>
         Annuler
       </button>
     </td>
@@ -42,6 +44,7 @@ SubmitAndCancelControl.defaultProps = {
 
 SubmitAndCancelControl.propTypes = {
   canSubmit: PropTypes.bool,
+  form: PropTypes.object.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   isRequestPending: PropTypes.bool.isRequired,
   query: PropTypes.object.isRequired,
