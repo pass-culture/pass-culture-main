@@ -1,6 +1,6 @@
 import React from 'react'
 
-import DownloadButton from 'components/layout/DownloadButton'
+import DownloadButtonContainer from 'components/layout/DownloadButton/DownloadButtonContainer'
 import Main from 'components/layout/Main'
 import HeroSection from 'components/layout/HeroSection'
 import { API_URL } from 'utils/config'
@@ -19,9 +19,11 @@ const Reimbursements = () => (
     </HeroSection>
     <hr />
     <div className="control flex-columns items-center flex-end">
-      <DownloadButton fileType="text/csv" href={`${API_URL}/booking_csv`}>
+      <DownloadButtonContainer
+        fileType="text/csv"
+        href={`${API_URL}/reimbursements/csv`}>
         Télécharger la liste des remboursements
-      </DownloadButton>
+      </DownloadButtonContainer>
     </div>
   </Main>
 )
