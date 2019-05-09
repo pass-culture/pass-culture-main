@@ -38,10 +38,9 @@
       text-align: left !important;
     }
 
-    position: relative;
     max-height: 60vh;
     min-height: 500px;
-    overflow-y: auto;
+    overflow: auto;
 
     table.stocks-table {
       &.small {
