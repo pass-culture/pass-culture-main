@@ -70,7 +70,7 @@ class Post:
             user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_thing_offer(venue)
+            offer = create_offer_with_thing_product(venue)
             PcObject.check_and_save(user, offer)
 
             data = {

@@ -12,6 +12,7 @@ from models.stock import Stock
 from models.user_offerer import RightsType
 from models.venue import Venue
 from models.offer import Offer
+from models.offer_type import ProductType
 from repository import booking_queries, offerer_queries
 from repository.offer_queries import find_offer_by_id
 from repository.stock_queries import find_stocks_with_possible_filters
@@ -74,7 +75,7 @@ def create_stock():
     offerer = offerer_queries.get_by_offer_id(offer_id)
     ensure_current_user_has_rights(RightsType.editor, offerer.id)
  
-    isThing = offer.thing
+    isThing = ProductType.is_thing(offer.type)
     is_creating_booking_limit_datetime_on_a_thing_to_none = isThing \
      and 'bookingLimitDatetime' in request_data \
      and request_data.get('bookingLimitDatetime') is None
