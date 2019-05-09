@@ -5,12 +5,12 @@ import Accouting from '../components/pages/Accounting'
 import Desk from '../components/pages/Desk'
 import Home from '../components/pages/Home'
 import Mediation from '../components/pages/Mediation'
-import MonitoringContainer from '../components/pages/Monitoring/MonitoringContainer'
 import Offers from '../components/pages/Offers'
 import Offer from '../components/pages/Offer'
 import OffererContainer from '../components/pages/Offerer/OffererContainer'
 import Offerers from '../components/pages/Offerers'
 import Profile from '../components/pages/Profile'
+import ReimbursementsContainer from '../components/pages/Reimbursements/ReimbursementsContainer'
 import Signin from '../components/pages/Signin'
 import Signup from '../components/pages/Signup'
 import Terms from '../components/pages/Terms'
@@ -90,9 +90,9 @@ const routes = [
     title: 'Offres',
   },
   {
-    component: MonitoringContainer,
-    path: '/suivi/:view(reservations|remboursements)?',
-    title: 'Suivi',
+    component: ReimbursementsContainer,
+    path: '/remboursements',
+    title: 'Remboursements',
   },
   {
     component: Offers,
