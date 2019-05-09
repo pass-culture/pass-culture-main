@@ -9,6 +9,7 @@ import { requestData } from 'redux-saga-data'
 import Price from 'components/layout/Price'
 import Thumb from 'components/layout/Thumb'
 import { offerNormalizer } from 'utils/normalizers'
+import getThumbUrl from './utils/getThumbUrl'
 
 class RawOfferItem extends Component {
   onDeactivateClick = () => {
@@ -55,13 +56,6 @@ class RawOfferItem extends Component {
     }
   }
 
-  getThumbUrl(mediations) {
-    const emptyUrl = ''
-    const hasMediations = mediations && mediations.length > 0
-
-    return hasMediations ? mediations[0].thumbUrl : emptyUrl
-  }
-
   render() {
     const {
       aggregatedStock,
@@ -81,7 +75,7 @@ class RawOfferItem extends Component {
     const { groupSizeMin, groupSizeMax, priceMin, priceMax } =
       aggregatedStock || {}
     const { name } = product || {}
-    const thumbUrl = this.getThumbUrl(mediations)
+    const thumbUrl = getThumbUrl(mediations)
 
     const numberOfMediations = get(mediations, 'length')
     const remainingStockQuantity = get(stocks, 'length')
