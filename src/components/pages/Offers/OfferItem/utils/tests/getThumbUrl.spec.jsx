@@ -23,7 +23,7 @@ describe('getThumbUrl', () => {
     expect(result).toBe('')
   })
 
-  it('should return url of thumb when mediations are given and contains at least one mediation', () => {
+  it('should return url of thumb when mediations are given', () => {
     // given
     const mediations = [{ thumbUrl: 'fake url' }]
 
