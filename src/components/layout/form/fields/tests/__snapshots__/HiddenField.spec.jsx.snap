@@ -5,14 +5,14 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <ReactFinalForm
     initialValues={
-      Object {
-        "subtitle": "Mais jamais sans mon cadis.",
-        "title": "J'irai droit au Conforama",
-      }
+        Object {
+            "subtitle": "Mais jamais sans mon cadis.",
+            "title": "J'irai droit au Conforama",
+          }
     }
     onSubmit={[Function]}
     render={[Function]}
-  />,
+/>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -29,33 +29,33 @@ ShallowWrapper {
     "props": Object {
       "children": <form>
         <TextField
-          className=""
-          disabled={false}
-          format={null}
-          id={null}
-          innerClassName={null}
-          label=""
-          name="title"
-          parse={null}
-          placeholder=""
-          readOnly={false}
-          renderInner={[Function]}
-          renderValue={[Function]}
-          required={false}
-          type="text"
-          validate={null}
+                className=""
+                disabled={false}
+                format={null}
+                id={null}
+                innerClassName={null}
+                label=""
+                name="title"
+                parse={null}
+                placeholder=""
+                readOnly={false}
+                renderInner={[Function]}
+                renderValue={[Function]}
+                required={false}
+                type="text"
+                validate={null}
         />
         <Unknown
-          name="subtitle"
-          validator={[Function]}
+                name="subtitle"
+                validator={[Function]}
         />
         <button
-          onClick={[Function]}
-          type="submit"
+                onClick={[Function]}
+                type="submit"
         >
-          Submit
+                Submit
         </button>
-      </form>,
+</form>,
       "value": Object {
         "batch": [Function],
         "blur": [Function],
@@ -99,17 +99,17 @@ ShallowWrapper {
             required={false}
             type="text"
             validate={null}
-          />,
+/>,
           <Unknown
             name="subtitle"
             validator={[Function]}
-          />,
+/>,
           <button
             onClick={[Function]}
             type="submit"
-          >
+>
             Submit
-          </button>,
+</button>,
         ],
       },
       "ref": null,
@@ -194,33 +194,33 @@ ShallowWrapper {
       "props": Object {
         "children": <form>
           <TextField
-            className=""
-            disabled={false}
-            format={null}
-            id={null}
-            innerClassName={null}
-            label=""
-            name="title"
-            parse={null}
-            placeholder=""
-            readOnly={false}
-            renderInner={[Function]}
-            renderValue={[Function]}
-            required={false}
-            type="text"
-            validate={null}
+                    className=""
+                    disabled={false}
+                    format={null}
+                    id={null}
+                    innerClassName={null}
+                    label=""
+                    name="title"
+                    parse={null}
+                    placeholder=""
+                    readOnly={false}
+                    renderInner={[Function]}
+                    renderValue={[Function]}
+                    required={false}
+                    type="text"
+                    validate={null}
           />
           <Unknown
-            name="subtitle"
-            validator={[Function]}
+                    name="subtitle"
+                    validator={[Function]}
           />
           <button
-            onClick={[Function]}
-            type="submit"
+                    onClick={[Function]}
+                    type="submit"
           >
-            Submit
+                    Submit
           </button>
-        </form>,
+</form>,
         "value": Object {
           "batch": [Function],
           "blur": [Function],
@@ -264,17 +264,17 @@ ShallowWrapper {
               required={false}
               type="text"
               validate={null}
-            />,
+/>,
             <Unknown
               name="subtitle"
               validator={[Function]}
-            />,
+/>,
             <button
               onClick={[Function]}
               type="submit"
-            >
+>
               Submit
-            </button>,
+</button>,
           ],
         },
         "ref": null,
@@ -364,7 +364,6 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
-          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },

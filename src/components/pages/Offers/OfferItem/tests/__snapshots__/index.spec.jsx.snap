@@ -5,48 +5,48 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Provider
     store={
-      Object {
-        "clearActions": [Function],
-        "dispatch": [Function],
-        "getActions": [Function],
-        "getState": [Function],
-        "replaceReducer": [Function],
-        "subscribe": [Function],
-      }
+        Object {
+            "clearActions": [Function],
+            "dispatch": [Function],
+            "getActions": [Function],
+            "getState": [Function],
+            "replaceReducer": [Function],
+            "subscribe": [Function],
+          }
     }
-  >
+>
     <RawOfferItem
-      dispatch={[MockFunction]}
-      location={
-        Object {
-          "search": "?orderBy=offer.id+desc",
+        dispatch={[Function]}
+        location={
+            Object {
+                "search": "?orderBy=offer.id+desc",
+              }
         }
-      }
-      maxDescriptionLength={300}
-      offer={
-        Object {
-          "bookingEmail": "booking.email@test.com",
-          "dateCreated": "2019-02-25T09:50:10.735519Z",
-          "dateModifiedAtLastProvider": "2019-02-25T09:50:31.881297Z",
-          "id": "M4",
-          "idAtProviders": null,
-          "isActive": true,
-          "isEvent": false,
-          "isThing": true,
-          "lastProviderId": null,
-          "mediationsIds": Array [
-            "HA",
-          ],
-          "modelName": "Offer",
-          "productId": "EY",
-          "stocksIds": Array [
-            "MQ",
-          ],
-          "venueId": "CU",
+        maxDescriptionLength={300}
+        offer={
+            Object {
+                "bookingEmail": "booking.email@test.com",
+                "dateCreated": "2019-02-25T09:50:10.735519Z",
+                "dateModifiedAtLastProvider": "2019-02-25T09:50:31.881297Z",
+                "id": "M4",
+                "idAtProviders": null,
+                "isActive": true,
+                "isEvent": false,
+                "isThing": true,
+                "lastProviderId": null,
+                "mediationsIds": Array [
+                  "HA",
+                ],
+                "modelName": "Offer",
+                "productId": "EY",
+                "stocksIds": Array [
+                  "MQ",
+                ],
+                "venueId": "CU",
+              }
         }
-      }
     />
-  </Provider>,
+</Provider>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -61,7 +61,7 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "class",
     "props": Object {
-      "dispatch": [MockFunction],
+      "dispatch": [Function],
       "location": Object {
         "search": "?orderBy=offer.id+desc",
       },
@@ -97,7 +97,7 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "class",
       "props": Object {
-        "dispatch": [MockFunction],
+        "dispatch": [Function],
         "location": Object {
           "search": "?orderBy=offer.id+desc",
         },
@@ -140,7 +140,6 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
-          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },

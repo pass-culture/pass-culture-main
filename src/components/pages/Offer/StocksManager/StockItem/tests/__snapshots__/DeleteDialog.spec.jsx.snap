@@ -5,7 +5,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <DeleteDialog
     isEvent={false}
-  />,
+/>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -24,27 +24,29 @@ ShallowWrapper {
         <td
           className="is-size-7"
           colSpan="6"
-        >
+>
           En confirmant l'annulation de 
           ce stock
           , vous supprimerez aussi toutes les réservations associées.
            
           Êtes-vous sûr de vouloir continuer ?
-        </td>,
+</td>,
         <td>
           <button
-            className="button is-primary"
+                    className="button is-primary"
+                    onClick={undefined}
           >
-            Oui
+                    Oui
           </button>
-        </td>,
+</td>,
         <td>
           <button
-            className="button is-primary"
+                    className="button is-primary"
+                    onClick={undefined}
           >
-            Non
+                    Non
           </button>
-        </td>,
+</td>,
       ],
     },
     "ref": null,
@@ -83,9 +85,10 @@ ShallowWrapper {
         "props": Object {
           "children": <button
             className="button is-primary"
-          >
+            onClick={undefined}
+>
             Oui
-          </button>,
+</button>,
         },
         "ref": null,
         "rendered": Object {
@@ -110,9 +113,10 @@ ShallowWrapper {
         "props": Object {
           "children": <button
             className="button is-primary"
-          >
+            onClick={undefined}
+>
             Non
-          </button>,
+</button>,
         },
         "ref": null,
         "rendered": Object {
@@ -143,27 +147,29 @@ ShallowWrapper {
           <td
             className="is-size-7"
             colSpan="6"
-          >
+>
             En confirmant l'annulation de 
             ce stock
             , vous supprimerez aussi toutes les réservations associées.
              
             Êtes-vous sûr de vouloir continuer ?
-          </td>,
+</td>,
           <td>
             <button
-              className="button is-primary"
+                        className="button is-primary"
+                        onClick={undefined}
             >
-              Oui
+                        Oui
             </button>
-          </td>,
+</td>,
           <td>
             <button
-              className="button is-primary"
+                        className="button is-primary"
+                        onClick={undefined}
             >
-              Non
+                        Non
             </button>
-          </td>,
+</td>,
         ],
       },
       "ref": null,
@@ -202,9 +208,10 @@ ShallowWrapper {
           "props": Object {
             "children": <button
               className="button is-primary"
-            >
+              onClick={undefined}
+>
               Oui
-            </button>,
+</button>,
           },
           "ref": null,
           "rendered": Object {
@@ -229,9 +236,10 @@ ShallowWrapper {
           "props": Object {
             "children": <button
               className="button is-primary"
-            >
+              onClick={undefined}
+>
               Non
-            </button>,
+</button>,
           },
           "ref": null,
           "rendered": Object {
@@ -265,7 +273,6 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
-          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },
@@ -286,7 +293,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <DeleteDialog
     isEvent={true}
-  />,
+/>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -305,28 +312,30 @@ ShallowWrapper {
         <td
           className="is-size-7"
           colSpan="6"
-        >
+>
           En confirmant l'annulation de 
           cette date
           , vous supprimerez aussi toutes les réservations associées.
            
           <br />
           Êtes-vous sûr de vouloir continuer ?
-        </td>,
+</td>,
         <td>
           <button
-            className="button is-primary"
+                    className="button is-primary"
+                    onClick={undefined}
           >
-            Oui
+                    Oui
           </button>
-        </td>,
+</td>,
         <td>
           <button
-            className="button is-primary"
+                    className="button is-primary"
+                    onClick={undefined}
           >
-            Non
+                    Non
           </button>
-        </td>,
+</td>,
       ],
     },
     "ref": null,
@@ -373,9 +382,10 @@ ShallowWrapper {
         "props": Object {
           "children": <button
             className="button is-primary"
-          >
+            onClick={undefined}
+>
             Oui
-          </button>,
+</button>,
         },
         "ref": null,
         "rendered": Object {
@@ -400,9 +410,10 @@ ShallowWrapper {
         "props": Object {
           "children": <button
             className="button is-primary"
-          >
+            onClick={undefined}
+>
             Non
-          </button>,
+</button>,
         },
         "ref": null,
         "rendered": Object {
@@ -433,28 +444,30 @@ ShallowWrapper {
           <td
             className="is-size-7"
             colSpan="6"
-          >
+>
             En confirmant l'annulation de 
             cette date
             , vous supprimerez aussi toutes les réservations associées.
              
             <br />
             Êtes-vous sûr de vouloir continuer ?
-          </td>,
+</td>,
           <td>
             <button
-              className="button is-primary"
+                        className="button is-primary"
+                        onClick={undefined}
             >
-              Oui
+                        Oui
             </button>
-          </td>,
+</td>,
           <td>
             <button
-              className="button is-primary"
+                        className="button is-primary"
+                        onClick={undefined}
             >
-              Non
+                        Non
             </button>
-          </td>,
+</td>,
         ],
       },
       "ref": null,
@@ -501,9 +514,10 @@ ShallowWrapper {
           "props": Object {
             "children": <button
               className="button is-primary"
-            >
+              onClick={undefined}
+>
               Oui
-            </button>,
+</button>,
           },
           "ref": null,
           "rendered": Object {
@@ -528,9 +542,10 @@ ShallowWrapper {
           "props": Object {
             "children": <button
               className="button is-primary"
-            >
+              onClick={undefined}
+>
               Non
-            </button>,
+</button>,
           },
           "ref": null,
           "rendered": Object {
@@ -564,7 +579,6 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
-          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },

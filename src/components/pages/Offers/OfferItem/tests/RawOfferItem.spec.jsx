@@ -17,6 +17,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
     props = {
       dispatch: dispatch,
       offer: offersMock[0],
+      mediations: [],
       location: {
         search: '?orderBy=offer.id+desc',
       },
@@ -73,18 +74,51 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
   })
 
   describe('render offer item', () => {
-    it('should contain a Thumb Component with the right props', () => {
-      // given
-      props.thumbUrl = 'fake url'
+    describe('Thumb Component', () => {
+      it('should render a Thumb Component with the given url when mediations are given and contains at least one mediation', () => {
+        // given
+        const mediation = {
+          thumbUrl: 'fake url',
+        }
+        props.mediations.push(mediation)
 
-      // when
-      const wrapper = shallow(<RawOfferItem {...props} />)
+        // when
+        const wrapper = shallow(<RawOfferItem {...props} />)
 
-      // then
-      const thumbComponent = wrapper.find(Thumb)
-      expect(thumbComponent).toBeDefined()
-      expect(thumbComponent.prop('alt')).toBe('offre')
-      expect(thumbComponent.prop('src')).toBe('fake url')
+        // then
+        const thumbComponent = wrapper.find(Thumb)
+        expect(thumbComponent).toBeDefined()
+        expect(thumbComponent.prop('alt')).toBe('offre')
+        expect(thumbComponent.prop('src')).toBe('fake url')
+      })
+
+      it('should render a Thumb Component with an empty url when mediations are empty', () => {
+        // given
+        props.mediations = []
+
+        // when
+        const wrapper = shallow(<RawOfferItem {...props} />)
+
+        // then
+        const thumbComponent = wrapper.find(Thumb)
+        expect(thumbComponent).toBeDefined()
+        expect(thumbComponent.prop('alt')).toBe('offre')
+        expect(thumbComponent.prop('src')).toBe('')
+      })
+
+      it('should render a Thumb Component with an empty url when no mediations are given', () => {
+        // given
+        props.mediations = null
+
+        // when
+        const wrapper = shallow(<RawOfferItem {...props} />)
+
+        // then
+        const thumbComponent = wrapper.find(Thumb)
+        expect(thumbComponent).toBeDefined()
+        expect(thumbComponent.prop('alt')).toBe('offre')
+        expect(thumbComponent.prop('src')).toBe('')
+      })
     })
 
     it('should contain a Navlink Component with the right props and containing a DotDotDot component', () => {

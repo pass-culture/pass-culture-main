@@ -5,15 +5,15 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <RawMain
     Tag="main"
-    dispatch={[MockFunction]}
+    dispatch={[Function]}
     history={Object {}}
     location={Object {}}
     name="foo"
-  >
+>
     <div>
-      foo
+        foo
     </div>
-  </RawMain>,
+</RawMain>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -29,7 +29,9 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": Array [
-        <withRouter(Connect(RawHeader)) />,
+        <withRouter(Connect(RawHeader))
+          whiteHeader={undefined}
+/>,
         <ReactTooltip
           className="flex-center items-center"
           clickable={false}
@@ -39,31 +41,31 @@ ShallowWrapper {
           insecure={true}
           resizeHide={true}
           wrapper="div"
-        />,
+/>,
         <main
           className="page foo-page container"
-        >
+>
           <div
-            className="columns is-gapless"
+                    className="columns is-gapless"
           >
-            <div
-              className="page-content column is-10 is-offset-1"
-            >
-              <Connect(Notification) />
-              <div
-                className="after-notification-content"
-              >
-                <div
-                  className="main-content"
-                >
-                  <div>
-                    foo
-                  </div>
-                </div>
-              </div>
-            </div>
+                    <div
+                              className="page-content column is-10 is-offset-1"
+                    >
+                              <Connect(Notification) />
+                              <div
+                                        className="after-notification-content"
+                              >
+                                        <div
+                                                  className="main-content"
+                                        >
+                                                  <div>
+                                                            foo
+                                                  </div>
+                                        </div>
+                              </div>
+                    </div>
           </div>
-        </main>,
+</main>,
         <withRouter(Connect(Modal)) />,
       ],
     },
@@ -106,24 +108,24 @@ ShallowWrapper {
           "children": Array [
             <div
               className="columns is-gapless"
-            >
+>
               <div
-                className="page-content column is-10 is-offset-1"
+                            className="page-content column is-10 is-offset-1"
               >
-                <Connect(Notification) />
-                <div
-                  className="after-notification-content"
-                >
-                  <div
-                    className="main-content"
-                  >
-                    <div>
-                      foo
-                    </div>
-                  </div>
-                </div>
+                            <Connect(Notification) />
+                            <div
+                                          className="after-notification-content"
+                            >
+                                          <div
+                                                        className="main-content"
+                                          >
+                                                        <div>
+                                                                      foo
+                                                        </div>
+                                          </div>
+                            </div>
               </div>
-            </div>,
+</div>,
             undefined,
           ],
           "className": "page foo-page container",
@@ -137,20 +139,20 @@ ShallowWrapper {
             "props": Object {
               "children": <div
                 className="page-content column is-10 is-offset-1"
-              >
+>
                 <Connect(Notification) />
                 <div
-                  className="after-notification-content"
+                                className="after-notification-content"
                 >
-                  <div
-                    className="main-content"
-                  >
-                    <div>
-                      foo
-                    </div>
-                  </div>
+                                <div
+                                                className="main-content"
+                                >
+                                                <div>
+                                                                foo
+                                                </div>
+                                </div>
                 </div>
-              </div>,
+</div>,
               "className": "columns is-gapless",
             },
             "ref": null,
@@ -163,15 +165,15 @@ ShallowWrapper {
                   <Connect(Notification) />,
                   <div
                     className="after-notification-content"
-                  >
+>
                     <div
-                      className="main-content"
+                                        className="main-content"
                     >
-                      <div>
-                        foo
-                      </div>
+                                        <div>
+                                                            foo
+                                        </div>
                     </div>
-                  </div>,
+</div>,
                 ],
                 "className": "page-content column is-10 is-offset-1",
               },
@@ -195,11 +197,11 @@ ShallowWrapper {
                       undefined,
                       <div
                         className="main-content"
-                      >
+>
                         <div>
-                          foo
+                                                foo
                         </div>
-                      </div>,
+</div>,
                       undefined,
                     ],
                     "className": "after-notification-content",
@@ -215,7 +217,7 @@ ShallowWrapper {
                         "children": Array [
                           <div>
                             foo
-                          </div>,
+</div>,
                         ],
                         "className": "main-content",
                       },
@@ -267,7 +269,9 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": Array [
-          <withRouter(Connect(RawHeader)) />,
+          <withRouter(Connect(RawHeader))
+            whiteHeader={undefined}
+/>,
           <ReactTooltip
             className="flex-center items-center"
             clickable={false}
@@ -277,31 +281,31 @@ ShallowWrapper {
             insecure={true}
             resizeHide={true}
             wrapper="div"
-          />,
+/>,
           <main
             className="page foo-page container"
-          >
+>
             <div
-              className="columns is-gapless"
+                        className="columns is-gapless"
             >
-              <div
-                className="page-content column is-10 is-offset-1"
-              >
-                <Connect(Notification) />
-                <div
-                  className="after-notification-content"
-                >
-                  <div
-                    className="main-content"
-                  >
-                    <div>
-                      foo
-                    </div>
-                  </div>
-                </div>
-              </div>
+                        <div
+                                    className="page-content column is-10 is-offset-1"
+                        >
+                                    <Connect(Notification) />
+                                    <div
+                                                className="after-notification-content"
+                                    >
+                                                <div
+                                                            className="main-content"
+                                                >
+                                                            <div>
+                                                                        foo
+                                                            </div>
+                                                </div>
+                                    </div>
+                        </div>
             </div>
-          </main>,
+</main>,
           <withRouter(Connect(Modal)) />,
         ],
       },
@@ -344,24 +348,24 @@ ShallowWrapper {
             "children": Array [
               <div
                 className="columns is-gapless"
-              >
+>
                 <div
-                  className="page-content column is-10 is-offset-1"
+                                className="page-content column is-10 is-offset-1"
                 >
-                  <Connect(Notification) />
-                  <div
-                    className="after-notification-content"
-                  >
-                    <div
-                      className="main-content"
-                    >
-                      <div>
-                        foo
-                      </div>
-                    </div>
-                  </div>
+                                <Connect(Notification) />
+                                <div
+                                                className="after-notification-content"
+                                >
+                                                <div
+                                                                className="main-content"
+                                                >
+                                                                <div>
+                                                                                foo
+                                                                </div>
+                                                </div>
+                                </div>
                 </div>
-              </div>,
+</div>,
               undefined,
             ],
             "className": "page foo-page container",
@@ -375,20 +379,20 @@ ShallowWrapper {
               "props": Object {
                 "children": <div
                   className="page-content column is-10 is-offset-1"
-                >
+>
                   <Connect(Notification) />
                   <div
-                    className="after-notification-content"
+                                    className="after-notification-content"
                   >
-                    <div
-                      className="main-content"
-                    >
-                      <div>
-                        foo
-                      </div>
-                    </div>
+                                    <div
+                                                      className="main-content"
+                                    >
+                                                      <div>
+                                                                        foo
+                                                      </div>
+                                    </div>
                   </div>
-                </div>,
+</div>,
                 "className": "columns is-gapless",
               },
               "ref": null,
@@ -401,15 +405,15 @@ ShallowWrapper {
                     <Connect(Notification) />,
                     <div
                       className="after-notification-content"
-                    >
+>
                       <div
-                        className="main-content"
+                                            className="main-content"
                       >
-                        <div>
-                          foo
-                        </div>
+                                            <div>
+                                                                  foo
+                                            </div>
                       </div>
-                    </div>,
+</div>,
                   ],
                   "className": "page-content column is-10 is-offset-1",
                 },
@@ -433,11 +437,11 @@ ShallowWrapper {
                         undefined,
                         <div
                           className="main-content"
-                        >
+>
                           <div>
-                            foo
+                                                    foo
                           </div>
-                        </div>,
+</div>,
                         undefined,
                       ],
                       "className": "after-notification-content",
@@ -453,7 +457,7 @@ ShallowWrapper {
                           "children": Array [
                             <div>
                               foo
-                            </div>,
+</div>,
                           ],
                           "className": "main-content",
                         },
@@ -511,7 +515,6 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
-          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },

@@ -5,10 +5,10 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <EventFields
     beginningMinDate="2019-03-29T01:56:55.610Z"
-    dispatch={[MockFunction]}
-    parseFormChild={[MockFunction]}
+    dispatch={[Function]}
+    parseFormChild={[Function]}
     stocks={null}
-  />,
+/>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -26,66 +26,68 @@ ShallowWrapper {
       "children": Array [
         <td>
           <DateField
-            autoComplete={false}
-            className=""
-            clearable={false}
-            dateFormat="DD/MM/YYYY"
-            datePickerClassName="date"
-            disabled={false}
-            highlightDates={Array []}
-            id={null}
-            label=""
-            locale="fr"
-            minDate="2019-03-29T01:56:55.610Z"
-            name="beginningDatetime"
-            placeholder="Please enter a value"
-            readOnly={false}
-            renderValue={[Function]}
-            required={true}
-            title="Date"
-            validate={null}
+                    autoComplete={false}
+                    className=""
+                    clearable={false}
+                    dateFormat="DD/MM/YYYY"
+                    datePickerClassName="date"
+                    disabled={false}
+                    highlightDates={Array []}
+                    id={null}
+                    label=""
+                    locale="fr"
+                    minDate="2019-03-29T01:56:55.610Z"
+                    name="beginningDatetime"
+                    placeholder="Please enter a value"
+                    readOnly={false}
+                    renderValue={[Function]}
+                    required={true}
+                    title="Date"
+                    validate={null}
           />
-        </td>,
+</td>,
         <td>
           <TimeField
-            autoComplete={false}
-            className=""
-            disabled={false}
-            id={null}
-            label=""
-            locale="fr"
-            name="beginningTime"
-            patchKey="beginningDatetime"
-            placeholder="Please enter a value"
-            readOnly={false}
-            renderValue={[Function]}
-            required={true}
-            title="Heure"
-            validate={null}
+                    autoComplete={false}
+                    className=""
+                    disabled={false}
+                    id={null}
+                    label=""
+                    locale="fr"
+                    name="beginningTime"
+                    patchKey="beginningDatetime"
+                    placeholder="Please enter a value"
+                    readOnly={false}
+                    renderValue={[Function]}
+                    required={true}
+                    title="Heure"
+                    tz={undefined}
+                    validate={null}
           />
-        </td>,
+</td>,
         <td>
           <Unknown
-            name="endDatetime"
-            validator={[Function]}
+                    name="endDatetime"
+                    validator={[Function]}
           />
           <TimeField
-            autoComplete={false}
-            className=""
-            disabled={false}
-            id={null}
-            label=""
-            locale="fr"
-            name="endTime"
-            patchKey="endDatetime"
-            placeholder="Please enter a value"
-            readOnly={false}
-            renderValue={[Function]}
-            required={true}
-            title="Heure de fin"
-            validate={null}
+                    autoComplete={false}
+                    className=""
+                    disabled={false}
+                    id={null}
+                    label=""
+                    locale="fr"
+                    name="endTime"
+                    patchKey="endDatetime"
+                    placeholder="Please enter a value"
+                    readOnly={false}
+                    renderValue={[Function]}
+                    required={true}
+                    title="Heure de fin"
+                    tz={undefined}
+                    validate={null}
           />
-        </td>,
+</td>,
       ],
     },
     "ref": null,
@@ -114,7 +116,7 @@ ShallowWrapper {
             required={true}
             title="Date"
             validate={null}
-          />,
+/>,
         },
         "ref": null,
         "rendered": Object {
@@ -166,8 +168,9 @@ ShallowWrapper {
             renderValue={[Function]}
             required={true}
             title="Heure"
+            tz={undefined}
             validate={null}
-          />,
+/>,
         },
         "ref": null,
         "rendered": Object {
@@ -206,7 +209,7 @@ ShallowWrapper {
             <Unknown
               name="endDatetime"
               validator={[Function]}
-            />,
+/>,
             <TimeField
               autoComplete={false}
               className=""
@@ -221,8 +224,9 @@ ShallowWrapper {
               renderValue={[Function]}
               required={true}
               title="Heure de fin"
+              tz={undefined}
               validate={null}
-            />,
+/>,
           ],
         },
         "ref": null,
@@ -279,66 +283,68 @@ ShallowWrapper {
         "children": Array [
           <td>
             <DateField
-              autoComplete={false}
-              className=""
-              clearable={false}
-              dateFormat="DD/MM/YYYY"
-              datePickerClassName="date"
-              disabled={false}
-              highlightDates={Array []}
-              id={null}
-              label=""
-              locale="fr"
-              minDate="2019-03-29T01:56:55.610Z"
-              name="beginningDatetime"
-              placeholder="Please enter a value"
-              readOnly={false}
-              renderValue={[Function]}
-              required={true}
-              title="Date"
-              validate={null}
+                        autoComplete={false}
+                        className=""
+                        clearable={false}
+                        dateFormat="DD/MM/YYYY"
+                        datePickerClassName="date"
+                        disabled={false}
+                        highlightDates={Array []}
+                        id={null}
+                        label=""
+                        locale="fr"
+                        minDate="2019-03-29T01:56:55.610Z"
+                        name="beginningDatetime"
+                        placeholder="Please enter a value"
+                        readOnly={false}
+                        renderValue={[Function]}
+                        required={true}
+                        title="Date"
+                        validate={null}
             />
-          </td>,
+</td>,
           <td>
             <TimeField
-              autoComplete={false}
-              className=""
-              disabled={false}
-              id={null}
-              label=""
-              locale="fr"
-              name="beginningTime"
-              patchKey="beginningDatetime"
-              placeholder="Please enter a value"
-              readOnly={false}
-              renderValue={[Function]}
-              required={true}
-              title="Heure"
-              validate={null}
+                        autoComplete={false}
+                        className=""
+                        disabled={false}
+                        id={null}
+                        label=""
+                        locale="fr"
+                        name="beginningTime"
+                        patchKey="beginningDatetime"
+                        placeholder="Please enter a value"
+                        readOnly={false}
+                        renderValue={[Function]}
+                        required={true}
+                        title="Heure"
+                        tz={undefined}
+                        validate={null}
             />
-          </td>,
+</td>,
           <td>
             <Unknown
-              name="endDatetime"
-              validator={[Function]}
+                        name="endDatetime"
+                        validator={[Function]}
             />
             <TimeField
-              autoComplete={false}
-              className=""
-              disabled={false}
-              id={null}
-              label=""
-              locale="fr"
-              name="endTime"
-              patchKey="endDatetime"
-              placeholder="Please enter a value"
-              readOnly={false}
-              renderValue={[Function]}
-              required={true}
-              title="Heure de fin"
-              validate={null}
+                        autoComplete={false}
+                        className=""
+                        disabled={false}
+                        id={null}
+                        label=""
+                        locale="fr"
+                        name="endTime"
+                        patchKey="endDatetime"
+                        placeholder="Please enter a value"
+                        readOnly={false}
+                        renderValue={[Function]}
+                        required={true}
+                        title="Heure de fin"
+                        tz={undefined}
+                        validate={null}
             />
-          </td>,
+</td>,
         ],
       },
       "ref": null,
@@ -367,7 +373,7 @@ ShallowWrapper {
               required={true}
               title="Date"
               validate={null}
-            />,
+/>,
           },
           "ref": null,
           "rendered": Object {
@@ -419,8 +425,9 @@ ShallowWrapper {
               renderValue={[Function]}
               required={true}
               title="Heure"
+              tz={undefined}
               validate={null}
-            />,
+/>,
           },
           "ref": null,
           "rendered": Object {
@@ -459,7 +466,7 @@ ShallowWrapper {
               <Unknown
                 name="endDatetime"
                 validator={[Function]}
-              />,
+/>,
               <TimeField
                 autoComplete={false}
                 className=""
@@ -474,8 +481,9 @@ ShallowWrapper {
                 renderValue={[Function]}
                 required={true}
                 title="Heure de fin"
+                tz={undefined}
                 validate={null}
-              />,
+/>,
             ],
           },
           "ref": null,
@@ -536,7 +544,6 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
-          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },

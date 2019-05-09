@@ -55,6 +55,16 @@ class RawOfferItem extends Component {
     }
   }
 
+  getThumbUrl(mediations) {
+    const emptyUrl = ''
+
+    return mediations
+      ? mediations.length > 0
+        ? mediations[0].thumbUrl
+        : emptyUrl
+      : emptyUrl
+  }
+
   render() {
     const {
       aggregatedStock,
@@ -74,7 +84,7 @@ class RawOfferItem extends Component {
     const { groupSizeMin, groupSizeMax, priceMin, priceMax } =
       aggregatedStock || {}
     const { name } = product || {}
-    const thumbUrl = get(offer, 'thumbUrl')
+    const thumbUrl = this.getThumbUrl(mediations)
 
     const numberOfMediations = get(mediations, 'length')
     const remainingStockQuantity = get(stocks, 'length')

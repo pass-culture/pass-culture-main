@@ -4,42 +4,43 @@ exports[`src | components | pages | Offers | RawOfferItem snapshot should match 
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <RawOfferItem
-    dispatch={[MockFunction]}
+    dispatch={[Function]}
     location={
-      Object {
-        "search": "?orderBy=offer.id+desc",
-      }
+        Object {
+            "search": "?orderBy=offer.id+desc",
+          }
     }
     maxDescriptionLength={300}
+    mediations={Array []}
     offer={
-      Object {
-        "bookingEmail": "booking.email@test.com",
-        "dateCreated": "2019-02-25T09:50:10.735519Z",
-        "dateModifiedAtLastProvider": "2019-02-25T09:50:31.881297Z",
-        "id": "M4",
-        "idAtProviders": null,
-        "isActive": true,
-        "isEvent": false,
-        "isThing": true,
-        "lastProviderId": null,
-        "mediationsIds": Array [
-          "HA",
-        ],
-        "modelName": "Offer",
-        "productId": "EY",
-        "stocksIds": Array [
-          "MQ",
-        ],
-        "venueId": "CU",
-      }
+        Object {
+            "bookingEmail": "booking.email@test.com",
+            "dateCreated": "2019-02-25T09:50:10.735519Z",
+            "dateModifiedAtLastProvider": "2019-02-25T09:50:31.881297Z",
+            "id": "M4",
+            "idAtProviders": null,
+            "isActive": true,
+            "isEvent": false,
+            "isThing": true,
+            "lastProviderId": null,
+            "mediationsIds": Array [
+              "HA",
+            ],
+            "modelName": "Offer",
+            "productId": "EY",
+            "stocksIds": Array [
+              "MQ",
+            ],
+            "venueId": "CU",
+          }
     }
     stocks={Array []}
     venue={
-      Object {
-        "name": "Paris",
-      }
+        Object {
+            "name": "Paris",
+          }
     }
-  />,
+/>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -57,118 +58,122 @@ ShallowWrapper {
       "children": Array [
         <Thumb
           alt="offre"
-        />,
+          src=""
+/>,
         <div
           className="list-content"
-        >
+>
           <NavLink
-            activeClassName="active"
-            aria-current="page"
-            className="name"
-            to="/offres/M4?orderBy=offer.id+desc"
+                    activeClassName="active"
+                    aria-current="page"
+                    className="name"
+                    title={undefined}
+                    to="/offres/M4?orderBy=offer.id+desc"
           >
-            <Dotdotdot
-              clamp={1}
-              tagName="div"
-              truncationChar="…"
-              useNativeClamp={false}
-            />
+                    <Dotdotdot
+                              clamp={1}
+                              tagName="div"
+                              truncationChar="…"
+                              useNativeClamp={true}
+                    />
           </NavLink>
           <ul
-            className="infos"
+                    className="infos"
           >
-            <li
-              className="is-uppercase"
-            />
-            <li>
-              <span
-                className="label"
-              >
-                Structure : 
-              </span>
-            </li>
-            <li>
-              <span
-                className="label"
-              >
-                Lieu : 
-              </span>
-              Paris
-            </li>
+                    <li
+                              className="is-uppercase"
+                    />
+                    <li>
+                              <span
+                                        className="label"
+                              >
+                                        Structure : 
+                              </span>
+                    </li>
+                    <li>
+                              <span
+                                        className="label"
+                              >
+                                        Lieu : 
+                              </span>
+                              Paris
+                    </li>
           </ul>
           <ul
-            className="infos"
+                    className="infos"
           >
-            <li
-              title={null}
-            />
-            <li>
-              <NavLink
-                activeClassName="active"
-                aria-current="page"
-                className="has-text-primary"
-                to="/offres/M4?gestion"
-              >
-                0 prix
-              </NavLink>
-            </li>
-            <li />
-            <li>
-              <Price
-                Tag="span"
-                free="Gratuit"
-                value={0}
-              />
-            </li>
+                    <li
+                              title={null}
+                    >
+                              
+                    </li>
+                    <li>
+                              <NavLink
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="has-text-primary"
+                                        to="/offres/M4?gestion"
+                              >
+                                        0 prix
+                              </NavLink>
+                    </li>
+                    <li />
+                    <li>
+                              <Price
+                                        Tag="span"
+                                        free="Gratuit"
+                                        value={0}
+                              />
+                    </li>
           </ul>
           <ul
-            className="actions"
+                    className="actions"
           >
-            <li>
-              <NavLink
-                activeClassName="active"
-                aria-current="page"
-                className="button addMediations is-small is-primary is-outlined"
-                to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
-              >
-                <span
-                  className="icon"
-                >
-                  <Icon
-                    svg="ico-stars"
-                  />
-                </span>
-                <span>
-                  Ajouter une Accroche
-                </span>
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                activeClassName="active"
-                aria-current="page"
-                className="button is-secondary is-small edit-link"
-                to="/offres/M4"
-              >
-                <Icon
-                  svg="ico-pen-r"
-                />
-                Modifier
-              </NavLink>
-              <button
-                className="button is-secondary is-small activ-switch"
-                onClick={[Function]}
-              >
-                <span>
-                  <Icon
-                    svg="ico-close-r"
-                  />
-                  Désactiver
-                </span>
-              </button>
-            </li>
+                    <li>
+                              <NavLink
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="button addMediations is-small is-primary is-outlined"
+                                        to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                              >
+                                        <span
+                                                  className="icon"
+                                        >
+                                                  <Icon
+                                                            svg="ico-stars"
+                                                  />
+                                        </span>
+                                        <span>
+                                                  Ajouter une Accroche
+                                        </span>
+                              </NavLink>
+                    </li>
+                    <li>
+                              <NavLink
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="button is-secondary is-small edit-link"
+                                        to="/offres/M4"
+                              >
+                                        <Icon
+                                                  svg="ico-pen-r"
+                                        />
+                                        Modifier
+                              </NavLink>
+                              <button
+                                        className="button is-secondary is-small activ-switch"
+                                        onClick={[Function]}
+                              >
+                                        <span>
+                                                  <Icon
+                                                            svg="ico-close-r"
+                                                  />
+                                                  Désactiver
+                                        </span>
+                              </button>
+                    </li>
           </ul>
-        </div>,
+</div>,
       ],
       "className": "offer-item active",
     },
@@ -180,7 +185,7 @@ ShallowWrapper {
         "nodeType": "function",
         "props": Object {
           "alt": "offre",
-          "src": undefined,
+          "src": "",
         },
         "ref": null,
         "rendered": null,
@@ -196,109 +201,112 @@ ShallowWrapper {
               activeClassName="active"
               aria-current="page"
               className="name"
+              title={undefined}
               to="/offres/M4?orderBy=offer.id+desc"
-            >
+>
               <Dotdotdot
-                clamp={1}
-                tagName="div"
-                truncationChar="…"
-                useNativeClamp={false}
+                            clamp={1}
+                            tagName="div"
+                            truncationChar="…"
+                            useNativeClamp={true}
               />
-            </NavLink>,
+</NavLink>,
             <ul
               className="infos"
-            >
+>
               <li
-                className="is-uppercase"
+                            className="is-uppercase"
               />
               <li>
-                <span
-                  className="label"
-                >
-                  Structure : 
-                </span>
+                            <span
+                                          className="label"
+                            >
+                                          Structure : 
+                            </span>
               </li>
               <li>
-                <span
-                  className="label"
-                >
-                  Lieu : 
-                </span>
-                Paris
+                            <span
+                                          className="label"
+                            >
+                                          Lieu : 
+                            </span>
+                            Paris
               </li>
-            </ul>,
+</ul>,
             <ul
               className="infos"
-            >
+>
               <li
-                title={null}
-              />
+                            title={null}
+              >
+                            
+              </li>
               <li>
-                <NavLink
-                  activeClassName="active"
-                  aria-current="page"
-                  className="has-text-primary"
-                  to="/offres/M4?gestion"
-                >
-                  0 prix
-                </NavLink>
+                            <NavLink
+                                          activeClassName="active"
+                                          aria-current="page"
+                                          className="has-text-primary"
+                                          to="/offres/M4?gestion"
+                            >
+                                          0 prix
+                            </NavLink>
               </li>
               <li />
               <li>
-                <Price
-                  Tag="span"
-                  free="Gratuit"
-                  value={0}
-                />
+                            <Price
+                                          Tag="span"
+                                          free="Gratuit"
+                                          value={0}
+                            />
               </li>
-            </ul>,
+</ul>,
             <ul
               className="actions"
-            >
+>
               <li>
-                <NavLink
-                  activeClassName="active"
-                  aria-current="page"
-                  className="button addMediations is-small is-primary is-outlined"
-                  to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
-                >
-                  <span
-                    className="icon"
-                  >
-                    <Icon
-                      svg="ico-stars"
-                    />
-                  </span>
-                  <span>
-                    Ajouter une Accroche
-                  </span>
-                </NavLink>
+                            <NavLink
+                                          activeClassName="active"
+                                          aria-current="page"
+                                          className="button addMediations is-small is-primary is-outlined"
+                                          to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                            >
+                                          <span
+                                                        className="icon"
+                                          >
+                                                        <Icon
+                                                                      svg="ico-stars"
+                                                        />
+                                          </span>
+                                          <span>
+                                                        Ajouter une Accroche
+                                          </span>
+                            </NavLink>
               </li>
               <li>
-                <NavLink
-                  activeClassName="active"
-                  aria-current="page"
-                  className="button is-secondary is-small edit-link"
-                  to="/offres/M4"
-                >
-                  <Icon
-                    svg="ico-pen-r"
-                  />
-                  Modifier
-                </NavLink>
-                <button
-                  className="button is-secondary is-small activ-switch"
-                  onClick={[Function]}
-                >
-                  <span>
-                    <Icon
-                      svg="ico-close-r"
-                    />
-                    Désactiver
-                  </span>
-                </button>
+                            <NavLink
+                                          activeClassName="active"
+                                          aria-current="page"
+                                          className="button is-secondary is-small edit-link"
+                                          to="/offres/M4"
+                            >
+                                          <Icon
+                                                        svg="ico-pen-r"
+                                          />
+                                          Modifier
+                            </NavLink>
+                            <button
+                                          className="button is-secondary is-small activ-switch"
+                                          onClick={[Function]}
+                            >
+                                          <span>
+                                                        <Icon
+                                                                      svg="ico-close-r"
+                                                        />
+                                                        Désactiver
+                                          </span>
+                            </button>
               </li>
-            </ul>,
+</ul>,
           ],
           "className": "list-content",
         },
@@ -315,8 +323,8 @@ ShallowWrapper {
                 clamp={1}
                 tagName="div"
                 truncationChar="…"
-                useNativeClamp={false}
-              />,
+                useNativeClamp={true}
+/>,
               "className": "name",
               "title": undefined,
               "to": "/offres/M4?orderBy=offer.id+desc",
@@ -331,7 +339,7 @@ ShallowWrapper {
                 "clamp": 1,
                 "tagName": "div",
                 "truncationChar": "…",
-                "useNativeClamp": false,
+                "useNativeClamp": true,
               },
               "ref": null,
               "rendered": null,
@@ -347,22 +355,22 @@ ShallowWrapper {
               "children": Array [
                 <li
                   className="is-uppercase"
-                />,
+/>,
                 <li>
                   <span
-                    className="label"
+                                    className="label"
                   >
-                    Structure : 
+                                    Structure : 
                   </span>
-                </li>,
+</li>,
                 <li>
                   <span
-                    className="label"
+                                    className="label"
                   >
-                    Lieu : 
+                                    Lieu : 
                   </span>
                   Paris
-                </li>,
+</li>,
               ],
               "className": "infos",
             },
@@ -388,9 +396,9 @@ ShallowWrapper {
                   "children": Array [
                     <span
                       className="label"
-                    >
+>
                       Structure : 
-                    </span>,
+</span>,
                     undefined,
                   ],
                 },
@@ -420,9 +428,9 @@ ShallowWrapper {
                   "children": Array [
                     <span
                       className="label"
-                    >
+>
                       Lieu : 
-                    </span>,
+</span>,
                     "Paris",
                   ],
                 },
@@ -456,26 +464,28 @@ ShallowWrapper {
                 undefined,
                 <li
                   title={null}
-                />,
+>
+                  
+</li>,
                 <li>
                   <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    className="has-text-primary"
-                    to="/offres/M4?gestion"
+                                    activeClassName="active"
+                                    aria-current="page"
+                                    className="has-text-primary"
+                                    to="/offres/M4?gestion"
                   >
-                    0 prix
+                                    0 prix
                   </NavLink>
-                </li>,
+</li>,
                 <li />,
                 undefined,
                 <li>
                   <Price
-                    Tag="span"
-                    free="Gratuit"
-                    value={0}
+                                    Tag="span"
+                                    free="Gratuit"
+                                    value={0}
                   />
-                </li>,
+</li>,
               ],
               "className": "infos",
             },
@@ -510,9 +520,9 @@ ShallowWrapper {
                     aria-current="page"
                     className="has-text-primary"
                     to="/offres/M4?gestion"
-                  >
+>
                     0 prix
-                  </NavLink>,
+</NavLink>,
                 },
                 "ref": null,
                 "rendered": Object {
@@ -553,7 +563,7 @@ ShallowWrapper {
                     Tag="span"
                     free="Gratuit"
                     value={0}
-                  />,
+/>,
                 },
                 "ref": null,
                 "rendered": Object {
@@ -582,47 +592,47 @@ ShallowWrapper {
               "children": Array [
                 <li>
                   <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    className="button addMediations is-small is-primary is-outlined"
-                    to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                                    activeClassName="active"
+                                    aria-current="page"
+                                    className="button addMediations is-small is-primary is-outlined"
+                                    to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
                   >
-                    <span
-                      className="icon"
-                    >
-                      <Icon
-                        svg="ico-stars"
-                      />
-                    </span>
-                    <span>
-                      Ajouter une Accroche
-                    </span>
+                                    <span
+                                                      className="icon"
+                                    >
+                                                      <Icon
+                                                                        svg="ico-stars"
+                                                      />
+                                    </span>
+                                    <span>
+                                                      Ajouter une Accroche
+                                    </span>
                   </NavLink>
-                </li>,
+</li>,
                 <li>
                   <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    className="button is-secondary is-small edit-link"
-                    to="/offres/M4"
+                                    activeClassName="active"
+                                    aria-current="page"
+                                    className="button is-secondary is-small edit-link"
+                                    to="/offres/M4"
                   >
-                    <Icon
-                      svg="ico-pen-r"
-                    />
-                    Modifier
+                                    <Icon
+                                                      svg="ico-pen-r"
+                                    />
+                                    Modifier
                   </NavLink>
                   <button
-                    className="button is-secondary is-small activ-switch"
-                    onClick={[Function]}
+                                    className="button is-secondary is-small activ-switch"
+                                    onClick={[Function]}
                   >
-                    <span>
-                      <Icon
-                        svg="ico-close-r"
-                      />
-                      Désactiver
-                    </span>
+                                    <span>
+                                                      <Icon
+                                                                        svg="ico-close-r"
+                                                      />
+                                                      Désactiver
+                                    </span>
                   </button>
-                </li>,
+</li>,
               ],
               "className": "actions",
             },
@@ -638,18 +648,18 @@ ShallowWrapper {
                     aria-current="page"
                     className="button addMediations is-small is-primary is-outlined"
                     to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
-                  >
+>
                     <span
-                      className="icon"
+                                        className="icon"
                     >
-                      <Icon
-                        svg="ico-stars"
-                      />
+                                        <Icon
+                                                            svg="ico-stars"
+                                        />
                     </span>
                     <span>
-                      Ajouter une Accroche
+                                        Ajouter une Accroche
                     </span>
-                  </NavLink>,
+</NavLink>,
                 },
                 "ref": null,
                 "rendered": Object {
@@ -662,14 +672,14 @@ ShallowWrapper {
                     "children": Array [
                       <span
                         className="icon"
-                      >
+>
                         <Icon
-                          svg="ico-stars"
+                                                svg="ico-stars"
                         />
-                      </span>,
+</span>,
                       <span>
                         Ajouter une Accroche
-                      </span>,
+</span>,
                     ],
                     "className": "button addMediations is-small is-primary is-outlined",
                     "to": "/offres/M4/accroches/nouveau?orderBy=offer.id+desc",
@@ -683,7 +693,7 @@ ShallowWrapper {
                       "props": Object {
                         "children": <Icon
                           svg="ico-stars"
-                        />,
+/>,
                         "className": "icon",
                       },
                       "ref": null,
@@ -727,23 +737,23 @@ ShallowWrapper {
                       aria-current="page"
                       className="button is-secondary is-small edit-link"
                       to="/offres/M4"
-                    >
+>
                       <Icon
-                        svg="ico-pen-r"
+                                            svg="ico-pen-r"
                       />
                       Modifier
-                    </NavLink>,
+</NavLink>,
                     <button
                       className="button is-secondary is-small activ-switch"
                       onClick={[Function]}
-                    >
+>
                       <span>
-                        <Icon
-                          svg="ico-close-r"
-                        />
-                        Désactiver
+                                            <Icon
+                                                                  svg="ico-close-r"
+                                            />
+                                            Désactiver
                       </span>
-                    </button>,
+</button>,
                   ],
                 },
                 "ref": null,
@@ -758,7 +768,7 @@ ShallowWrapper {
                       "children": Array [
                         <Icon
                           svg="ico-pen-r"
-                        />,
+/>,
                         "Modifier",
                       ],
                       "className": "button is-secondary is-small edit-link",
@@ -788,10 +798,10 @@ ShallowWrapper {
                     "props": Object {
                       "children": <span>
                         <Icon
-                          svg="ico-close-r"
+                                                svg="ico-close-r"
                         />
                         Désactiver
-                      </span>,
+</span>,
                       "className": "button is-secondary is-small activ-switch",
                       "onClick": [Function],
                     },
@@ -804,7 +814,7 @@ ShallowWrapper {
                         "children": Array [
                           <Icon
                             svg="ico-close-r"
-                          />,
+/>,
                           "Désactiver",
                         ],
                       },
@@ -848,118 +858,122 @@ ShallowWrapper {
         "children": Array [
           <Thumb
             alt="offre"
-          />,
+            src=""
+/>,
           <div
             className="list-content"
-          >
+>
             <NavLink
-              activeClassName="active"
-              aria-current="page"
-              className="name"
-              to="/offres/M4?orderBy=offer.id+desc"
+                        activeClassName="active"
+                        aria-current="page"
+                        className="name"
+                        title={undefined}
+                        to="/offres/M4?orderBy=offer.id+desc"
             >
-              <Dotdotdot
-                clamp={1}
-                tagName="div"
-                truncationChar="…"
-                useNativeClamp={false}
-              />
+                        <Dotdotdot
+                                    clamp={1}
+                                    tagName="div"
+                                    truncationChar="…"
+                                    useNativeClamp={true}
+                        />
             </NavLink>
             <ul
-              className="infos"
+                        className="infos"
             >
-              <li
-                className="is-uppercase"
-              />
-              <li>
-                <span
-                  className="label"
-                >
-                  Structure : 
-                </span>
-              </li>
-              <li>
-                <span
-                  className="label"
-                >
-                  Lieu : 
-                </span>
-                Paris
-              </li>
+                        <li
+                                    className="is-uppercase"
+                        />
+                        <li>
+                                    <span
+                                                className="label"
+                                    >
+                                                Structure : 
+                                    </span>
+                        </li>
+                        <li>
+                                    <span
+                                                className="label"
+                                    >
+                                                Lieu : 
+                                    </span>
+                                    Paris
+                        </li>
             </ul>
             <ul
-              className="infos"
+                        className="infos"
             >
-              <li
-                title={null}
-              />
-              <li>
-                <NavLink
-                  activeClassName="active"
-                  aria-current="page"
-                  className="has-text-primary"
-                  to="/offres/M4?gestion"
-                >
-                  0 prix
-                </NavLink>
-              </li>
-              <li />
-              <li>
-                <Price
-                  Tag="span"
-                  free="Gratuit"
-                  value={0}
-                />
-              </li>
+                        <li
+                                    title={null}
+                        >
+                                    
+                        </li>
+                        <li>
+                                    <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="has-text-primary"
+                                                to="/offres/M4?gestion"
+                                    >
+                                                0 prix
+                                    </NavLink>
+                        </li>
+                        <li />
+                        <li>
+                                    <Price
+                                                Tag="span"
+                                                free="Gratuit"
+                                                value={0}
+                                    />
+                        </li>
             </ul>
             <ul
-              className="actions"
+                        className="actions"
             >
-              <li>
-                <NavLink
-                  activeClassName="active"
-                  aria-current="page"
-                  className="button addMediations is-small is-primary is-outlined"
-                  to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
-                >
-                  <span
-                    className="icon"
-                  >
-                    <Icon
-                      svg="ico-stars"
-                    />
-                  </span>
-                  <span>
-                    Ajouter une Accroche
-                  </span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  activeClassName="active"
-                  aria-current="page"
-                  className="button is-secondary is-small edit-link"
-                  to="/offres/M4"
-                >
-                  <Icon
-                    svg="ico-pen-r"
-                  />
-                  Modifier
-                </NavLink>
-                <button
-                  className="button is-secondary is-small activ-switch"
-                  onClick={[Function]}
-                >
-                  <span>
-                    <Icon
-                      svg="ico-close-r"
-                    />
-                    Désactiver
-                  </span>
-                </button>
-              </li>
+                        <li>
+                                    <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="button addMediations is-small is-primary is-outlined"
+                                                to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                                    >
+                                                <span
+                                                            className="icon"
+                                                >
+                                                            <Icon
+                                                                        svg="ico-stars"
+                                                            />
+                                                </span>
+                                                <span>
+                                                            Ajouter une Accroche
+                                                </span>
+                                    </NavLink>
+                        </li>
+                        <li>
+                                    <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="button is-secondary is-small edit-link"
+                                                to="/offres/M4"
+                                    >
+                                                <Icon
+                                                            svg="ico-pen-r"
+                                                />
+                                                Modifier
+                                    </NavLink>
+                                    <button
+                                                className="button is-secondary is-small activ-switch"
+                                                onClick={[Function]}
+                                    >
+                                                <span>
+                                                            <Icon
+                                                                        svg="ico-close-r"
+                                                            />
+                                                            Désactiver
+                                                </span>
+                                    </button>
+                        </li>
             </ul>
-          </div>,
+</div>,
         ],
         "className": "offer-item active",
       },
@@ -971,7 +985,7 @@ ShallowWrapper {
           "nodeType": "function",
           "props": Object {
             "alt": "offre",
-            "src": undefined,
+            "src": "",
           },
           "ref": null,
           "rendered": null,
@@ -987,109 +1001,112 @@ ShallowWrapper {
                 activeClassName="active"
                 aria-current="page"
                 className="name"
+                title={undefined}
                 to="/offres/M4?orderBy=offer.id+desc"
-              >
+>
                 <Dotdotdot
-                  clamp={1}
-                  tagName="div"
-                  truncationChar="…"
-                  useNativeClamp={false}
+                                clamp={1}
+                                tagName="div"
+                                truncationChar="…"
+                                useNativeClamp={true}
                 />
-              </NavLink>,
+</NavLink>,
               <ul
                 className="infos"
-              >
+>
                 <li
-                  className="is-uppercase"
+                                className="is-uppercase"
                 />
                 <li>
-                  <span
-                    className="label"
-                  >
-                    Structure : 
-                  </span>
+                                <span
+                                                className="label"
+                                >
+                                                Structure : 
+                                </span>
                 </li>
                 <li>
-                  <span
-                    className="label"
-                  >
-                    Lieu : 
-                  </span>
-                  Paris
+                                <span
+                                                className="label"
+                                >
+                                                Lieu : 
+                                </span>
+                                Paris
                 </li>
-              </ul>,
+</ul>,
               <ul
                 className="infos"
-              >
+>
                 <li
-                  title={null}
-                />
+                                title={null}
+                >
+                                
+                </li>
                 <li>
-                  <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    className="has-text-primary"
-                    to="/offres/M4?gestion"
-                  >
-                    0 prix
-                  </NavLink>
+                                <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="has-text-primary"
+                                                to="/offres/M4?gestion"
+                                >
+                                                0 prix
+                                </NavLink>
                 </li>
                 <li />
                 <li>
-                  <Price
-                    Tag="span"
-                    free="Gratuit"
-                    value={0}
-                  />
+                                <Price
+                                                Tag="span"
+                                                free="Gratuit"
+                                                value={0}
+                                />
                 </li>
-              </ul>,
+</ul>,
               <ul
                 className="actions"
-              >
+>
                 <li>
-                  <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    className="button addMediations is-small is-primary is-outlined"
-                    to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
-                  >
-                    <span
-                      className="icon"
-                    >
-                      <Icon
-                        svg="ico-stars"
-                      />
-                    </span>
-                    <span>
-                      Ajouter une Accroche
-                    </span>
-                  </NavLink>
+                                <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="button addMediations is-small is-primary is-outlined"
+                                                to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                                >
+                                                <span
+                                                                className="icon"
+                                                >
+                                                                <Icon
+                                                                                svg="ico-stars"
+                                                                />
+                                                </span>
+                                                <span>
+                                                                Ajouter une Accroche
+                                                </span>
+                                </NavLink>
                 </li>
                 <li>
-                  <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    className="button is-secondary is-small edit-link"
-                    to="/offres/M4"
-                  >
-                    <Icon
-                      svg="ico-pen-r"
-                    />
-                    Modifier
-                  </NavLink>
-                  <button
-                    className="button is-secondary is-small activ-switch"
-                    onClick={[Function]}
-                  >
-                    <span>
-                      <Icon
-                        svg="ico-close-r"
-                      />
-                      Désactiver
-                    </span>
-                  </button>
+                                <NavLink
+                                                activeClassName="active"
+                                                aria-current="page"
+                                                className="button is-secondary is-small edit-link"
+                                                to="/offres/M4"
+                                >
+                                                <Icon
+                                                                svg="ico-pen-r"
+                                                />
+                                                Modifier
+                                </NavLink>
+                                <button
+                                                className="button is-secondary is-small activ-switch"
+                                                onClick={[Function]}
+                                >
+                                                <span>
+                                                                <Icon
+                                                                                svg="ico-close-r"
+                                                                />
+                                                                Désactiver
+                                                </span>
+                                </button>
                 </li>
-              </ul>,
+</ul>,
             ],
             "className": "list-content",
           },
@@ -1106,8 +1123,8 @@ ShallowWrapper {
                   clamp={1}
                   tagName="div"
                   truncationChar="…"
-                  useNativeClamp={false}
-                />,
+                  useNativeClamp={true}
+/>,
                 "className": "name",
                 "title": undefined,
                 "to": "/offres/M4?orderBy=offer.id+desc",
@@ -1122,7 +1139,7 @@ ShallowWrapper {
                   "clamp": 1,
                   "tagName": "div",
                   "truncationChar": "…",
-                  "useNativeClamp": false,
+                  "useNativeClamp": true,
                 },
                 "ref": null,
                 "rendered": null,
@@ -1138,22 +1155,22 @@ ShallowWrapper {
                 "children": Array [
                   <li
                     className="is-uppercase"
-                  />,
+/>,
                   <li>
                     <span
-                      className="label"
+                                        className="label"
                     >
-                      Structure : 
+                                        Structure : 
                     </span>
-                  </li>,
+</li>,
                   <li>
                     <span
-                      className="label"
+                                        className="label"
                     >
-                      Lieu : 
+                                        Lieu : 
                     </span>
                     Paris
-                  </li>,
+</li>,
                 ],
                 "className": "infos",
               },
@@ -1179,9 +1196,9 @@ ShallowWrapper {
                     "children": Array [
                       <span
                         className="label"
-                      >
+>
                         Structure : 
-                      </span>,
+</span>,
                       undefined,
                     ],
                   },
@@ -1211,9 +1228,9 @@ ShallowWrapper {
                     "children": Array [
                       <span
                         className="label"
-                      >
+>
                         Lieu : 
-                      </span>,
+</span>,
                       "Paris",
                     ],
                   },
@@ -1247,26 +1264,28 @@ ShallowWrapper {
                   undefined,
                   <li
                     title={null}
-                  />,
+>
+                    
+</li>,
                   <li>
                     <NavLink
-                      activeClassName="active"
-                      aria-current="page"
-                      className="has-text-primary"
-                      to="/offres/M4?gestion"
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="has-text-primary"
+                                        to="/offres/M4?gestion"
                     >
-                      0 prix
+                                        0 prix
                     </NavLink>
-                  </li>,
+</li>,
                   <li />,
                   undefined,
                   <li>
                     <Price
-                      Tag="span"
-                      free="Gratuit"
-                      value={0}
+                                        Tag="span"
+                                        free="Gratuit"
+                                        value={0}
                     />
-                  </li>,
+</li>,
                 ],
                 "className": "infos",
               },
@@ -1301,9 +1320,9 @@ ShallowWrapper {
                       aria-current="page"
                       className="has-text-primary"
                       to="/offres/M4?gestion"
-                    >
+>
                       0 prix
-                    </NavLink>,
+</NavLink>,
                   },
                   "ref": null,
                   "rendered": Object {
@@ -1344,7 +1363,7 @@ ShallowWrapper {
                       Tag="span"
                       free="Gratuit"
                       value={0}
-                    />,
+/>,
                   },
                   "ref": null,
                   "rendered": Object {
@@ -1373,47 +1392,47 @@ ShallowWrapper {
                 "children": Array [
                   <li>
                     <NavLink
-                      activeClassName="active"
-                      aria-current="page"
-                      className="button addMediations is-small is-primary is-outlined"
-                      to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="button addMediations is-small is-primary is-outlined"
+                                        to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
                     >
-                      <span
-                        className="icon"
-                      >
-                        <Icon
-                          svg="ico-stars"
-                        />
-                      </span>
-                      <span>
-                        Ajouter une Accroche
-                      </span>
+                                        <span
+                                                            className="icon"
+                                        >
+                                                            <Icon
+                                                                                svg="ico-stars"
+                                                            />
+                                        </span>
+                                        <span>
+                                                            Ajouter une Accroche
+                                        </span>
                     </NavLink>
-                  </li>,
+</li>,
                   <li>
                     <NavLink
-                      activeClassName="active"
-                      aria-current="page"
-                      className="button is-secondary is-small edit-link"
-                      to="/offres/M4"
+                                        activeClassName="active"
+                                        aria-current="page"
+                                        className="button is-secondary is-small edit-link"
+                                        to="/offres/M4"
                     >
-                      <Icon
-                        svg="ico-pen-r"
-                      />
-                      Modifier
+                                        <Icon
+                                                            svg="ico-pen-r"
+                                        />
+                                        Modifier
                     </NavLink>
                     <button
-                      className="button is-secondary is-small activ-switch"
-                      onClick={[Function]}
+                                        className="button is-secondary is-small activ-switch"
+                                        onClick={[Function]}
                     >
-                      <span>
-                        <Icon
-                          svg="ico-close-r"
-                        />
-                        Désactiver
-                      </span>
+                                        <span>
+                                                            <Icon
+                                                                                svg="ico-close-r"
+                                                            />
+                                                            Désactiver
+                                        </span>
                     </button>
-                  </li>,
+</li>,
                 ],
                 "className": "actions",
               },
@@ -1429,18 +1448,18 @@ ShallowWrapper {
                       aria-current="page"
                       className="button addMediations is-small is-primary is-outlined"
                       to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
-                    >
+>
                       <span
-                        className="icon"
+                                            className="icon"
                       >
-                        <Icon
-                          svg="ico-stars"
-                        />
+                                            <Icon
+                                                                  svg="ico-stars"
+                                            />
                       </span>
                       <span>
-                        Ajouter une Accroche
+                                            Ajouter une Accroche
                       </span>
-                    </NavLink>,
+</NavLink>,
                   },
                   "ref": null,
                   "rendered": Object {
@@ -1453,14 +1472,14 @@ ShallowWrapper {
                       "children": Array [
                         <span
                           className="icon"
-                        >
+>
                           <Icon
-                            svg="ico-stars"
+                                                    svg="ico-stars"
                           />
-                        </span>,
+</span>,
                         <span>
                           Ajouter une Accroche
-                        </span>,
+</span>,
                       ],
                       "className": "button addMediations is-small is-primary is-outlined",
                       "to": "/offres/M4/accroches/nouveau?orderBy=offer.id+desc",
@@ -1474,7 +1493,7 @@ ShallowWrapper {
                         "props": Object {
                           "children": <Icon
                             svg="ico-stars"
-                          />,
+/>,
                           "className": "icon",
                         },
                         "ref": null,
@@ -1518,23 +1537,23 @@ ShallowWrapper {
                         aria-current="page"
                         className="button is-secondary is-small edit-link"
                         to="/offres/M4"
-                      >
+>
                         <Icon
-                          svg="ico-pen-r"
+                                                svg="ico-pen-r"
                         />
                         Modifier
-                      </NavLink>,
+</NavLink>,
                       <button
                         className="button is-secondary is-small activ-switch"
                         onClick={[Function]}
-                      >
+>
                         <span>
-                          <Icon
-                            svg="ico-close-r"
-                          />
-                          Désactiver
+                                                <Icon
+                                                                        svg="ico-close-r"
+                                                />
+                                                Désactiver
                         </span>
-                      </button>,
+</button>,
                     ],
                   },
                   "ref": null,
@@ -1549,7 +1568,7 @@ ShallowWrapper {
                         "children": Array [
                           <Icon
                             svg="ico-pen-r"
-                          />,
+/>,
                           "Modifier",
                         ],
                         "className": "button is-secondary is-small edit-link",
@@ -1579,10 +1598,10 @@ ShallowWrapper {
                       "props": Object {
                         "children": <span>
                           <Icon
-                            svg="ico-close-r"
+                                                    svg="ico-close-r"
                           />
                           Désactiver
-                        </span>,
+</span>,
                         "className": "button is-secondary is-small activ-switch",
                         "onClick": [Function],
                       },
@@ -1595,7 +1614,7 @@ ShallowWrapper {
                           "children": Array [
                             <Icon
                               svg="ico-close-r"
-                            />,
+/>,
                             "Désactiver",
                           ],
                         },
@@ -1643,7 +1662,6 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
-          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },
