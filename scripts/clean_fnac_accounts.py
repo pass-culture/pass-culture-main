@@ -2,6 +2,7 @@ from typing import List
 
 from models import User, Offerer, PcObject, Offer, Venue
 from models.db import db
+from tests.test_utils import create_user_offerer
 
 
 def find_all_fnac_users():
@@ -19,7 +20,7 @@ def create_all_possible_user_offerers(users: List[User], offerers: List[Offerer]
     for user in users:
         for offerer in offerers:
             if offerer not in user.offerers:
-                user.offerers.append(offerer)
+                create_user_offerer(user, offerer)
     PcObject.check_and_save(*users)
 
 
@@ -32,7 +33,8 @@ def clear_all_existing_user_offerers(id: int):
 def move_offers_from_one_venue_to_another(origin_venue_id: int, target_venue_id: int):
     offers = Offer.query.filter_by(venueId=origin_venue_id).all()
     offers = [_change_venue(offer, target_venue_id) for offer in offers]
-    PcObject.check_and_save(*offers)
+    if offers:
+        PcObject.check_and_save(*offers)
 
 
 def delete_all_managed_venues(offerer_id: int):
@@ -54,7 +56,6 @@ def clean_fnac_accounts():
 
     all_fnac_users = find_all_fnac_users()
     all_ok_fnac_offerers = find_all_OK_fnac_offerers()
-    print(all_fnac_users)
     create_all_possible_user_offerers(all_fnac_users, all_ok_fnac_offerers)
     clear_all_existing_user_offerers(fnac_live_id)
     clear_all_existing_user_offerers(fnac_darty_participations_et_services_id)

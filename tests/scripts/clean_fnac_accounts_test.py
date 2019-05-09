@@ -1,6 +1,6 @@
 import pytest
 
-from models import PcObject, UserOfferer, Offer, Venue
+from models import PcObject, UserOfferer, Offer, Venue, RightsType
 from scripts.clean_fnac_accounts import find_all_fnac_users, find_all_OK_fnac_offerers, \
     create_all_possible_user_offerers, \
     clear_all_existing_user_offerers, move_offers_from_one_venue_to_another, delete_all_managed_venues
@@ -66,6 +66,7 @@ class CreateAllPossibleUserOfferersTest:
         for user_offerer in user_offerers:
             assert user_offerer.user in users
             assert user_offerer.offerer in offerers
+            assert user_offerer.rights == RightsType.editor
 
 
 @pytest.mark.standalone
@@ -118,6 +119,23 @@ class MoveOffersFromOneVenueToAnotherTest:
         # Then
         assert Offer.query.join(Venue).filter_by(id=target_venue.id).count() == 2
         assert Offer.query.join(Venue).filter_by(id=origin_venue.id).count() == 0
+
+    @clean_database
+    def test_should_not_raise_error_when_no_offers_linked_to_venue(self, app):
+        # Given
+        origin_offerer = create_offerer(siren='123456789')
+        target_offerer = create_offerer(siren='987654321')
+
+        origin_venue = create_venue(origin_offerer, siret=origin_offerer.siren + '12345')
+        target_venue = create_venue(target_offerer, siret=target_offerer.siren + '12345')
+        PcObject.check_and_save(origin_venue, target_venue)
+
+        try:
+            # When
+            move_offers_from_one_venue_to_another(origin_venue.id, target_venue.id)
+        # Then
+        except ValueError:
+            assert False
 
 
 @pytest.mark.standalone
