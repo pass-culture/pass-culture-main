@@ -111,6 +111,14 @@ class Booking(PcObject,
                                 "Le solde de votre pass n'est pas suffisant pour effectuer cette réservation."]
         return PcObject.restize_integrity_error(ie)
 
+    @property
+    def isEventExpired(self):
+        if self.stock.beginningDatetime:
+            event_start_time_is_over = self.stock.beginningDatetime <= datetime.utcnow()
+            return event_start_time_is_over
+        else:
+            return False
+
     CSV_HEADER = [
         "Raison sociale du lieu",
         "Nom de l'offre",
@@ -128,7 +136,7 @@ class Booking(PcObject,
             return "Réservation annulée"
         elif self.isUsed:
             return "Contremarque validée"
-        elif self.stock.offer.isEvent and (self.stock.beginningDatetime is not None and self.stock.beginningDatetime >= datetime.utcnow()):
+        elif self.isEventExpired:
             return "Validé"
         else:
             return "En attente"
