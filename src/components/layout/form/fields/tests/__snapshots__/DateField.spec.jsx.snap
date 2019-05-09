@@ -5,13 +5,13 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <ReactFinalForm
     initialValues={
-        Object {
-            "myDate": "2019-04-27T20:00:00Z",
-          }
+      Object {
+        "myDate": "2019-04-27T20:00:00Z",
+      }
     }
     onSubmit={[Function]}
     render={[Function]}
-/>,
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -28,29 +28,29 @@ ShallowWrapper {
     "props": Object {
       "children": <form>
         <DateField
-                autoComplete={false}
-                className=""
-                clearable={false}
-                dateFormat="DD/MM/YYYY"
-                datePickerClassName="date"
-                disabled={false}
-                id={null}
-                label=""
-                locale="fr"
-                name="myDate"
-                placeholder="Please enter a value"
-                readOnly={false}
-                renderValue={[Function]}
-                required={false}
-                validate={null}
+          autoComplete={false}
+          className=""
+          clearable={false}
+          dateFormat="DD/MM/YYYY"
+          datePickerClassName="date"
+          disabled={false}
+          id={null}
+          label=""
+          locale="fr"
+          name="myDate"
+          placeholder="Please enter a value"
+          readOnly={false}
+          renderValue={[Function]}
+          required={false}
+          validate={null}
         />
         <button
-                onClick={[Function]}
-                type="submit"
+          onClick={[Function]}
+          type="submit"
         >
-                Submit
+          Submit
         </button>
-</form>,
+      </form>,
       "value": Object {
         "batch": [Function],
         "blur": [Function],
@@ -94,13 +94,13 @@ ShallowWrapper {
             renderValue={[Function]}
             required={false}
             validate={null}
-/>,
+          />,
           <button
             onClick={[Function]}
             type="submit"
->
+          >
             Submit
-</button>,
+          </button>,
         ],
       },
       "ref": null,
@@ -173,29 +173,29 @@ ShallowWrapper {
       "props": Object {
         "children": <form>
           <DateField
-                    autoComplete={false}
-                    className=""
-                    clearable={false}
-                    dateFormat="DD/MM/YYYY"
-                    datePickerClassName="date"
-                    disabled={false}
-                    id={null}
-                    label=""
-                    locale="fr"
-                    name="myDate"
-                    placeholder="Please enter a value"
-                    readOnly={false}
-                    renderValue={[Function]}
-                    required={false}
-                    validate={null}
+            autoComplete={false}
+            className=""
+            clearable={false}
+            dateFormat="DD/MM/YYYY"
+            datePickerClassName="date"
+            disabled={false}
+            id={null}
+            label=""
+            locale="fr"
+            name="myDate"
+            placeholder="Please enter a value"
+            readOnly={false}
+            renderValue={[Function]}
+            required={false}
+            validate={null}
           />
           <button
-                    onClick={[Function]}
-                    type="submit"
+            onClick={[Function]}
+            type="submit"
           >
-                    Submit
+            Submit
           </button>
-</form>,
+        </form>,
         "value": Object {
           "batch": [Function],
           "blur": [Function],
@@ -239,13 +239,13 @@ ShallowWrapper {
               renderValue={[Function]}
               required={false}
               validate={null}
-/>,
+            />,
             <button
               onClick={[Function]}
               type="submit"
->
+            >
               Submit
-</button>,
+            </button>,
           ],
         },
         "ref": null,
@@ -323,6 +323,7 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
+          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },

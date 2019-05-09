@@ -5,32 +5,153 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <RawOffers
     currentUser={Object {}}
-    dispatch={[Function]}
+    dispatch={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            Object {
+              "patch": Object {
+                "offers": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {
+                "apiPath": "/types",
+                "method": "GET",
+              },
+              "type": "REQUEST_DATA_GET_/TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {
+                "apiPath": "/offers?orderBy=offer.id%20desc",
+                "handleFail": [Function],
+                "handleSuccess": [Function],
+                "method": "GET",
+                "normalizer": Object {
+                  "mediations": "mediations",
+                  "product": Object {
+                    "normalizer": Object {
+                      "offers": "offers",
+                    },
+                    "stateKey": "products",
+                  },
+                  "stocks": "stocks",
+                  "venue": Object {
+                    "normalizer": Object {
+                      "managingOfferer": "offerers",
+                    },
+                    "stateKey": "venues",
+                  },
+                },
+                "resolve": [Function],
+              },
+              "type": "REQUEST_DATA_GET_/OFFERS?ORDERBY=OFFER.ID%20DESC",
+            },
+          ],
+          Array [
+            Object {
+              "patch": Object {
+                "offers": Array [],
+              },
+              "type": "ASSIGN_DATA",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {
+                "apiPath": "/types",
+                "method": "GET",
+              },
+              "type": "REQUEST_DATA_GET_/TYPES",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {
+                "apiPath": "/offers?orderBy=offer.id%20desc",
+                "handleFail": [Function],
+                "handleSuccess": [Function],
+                "method": "GET",
+                "normalizer": Object {
+                  "mediations": "mediations",
+                  "product": Object {
+                    "normalizer": Object {
+                      "offers": "offers",
+                    },
+                    "stateKey": "products",
+                  },
+                  "stocks": "stocks",
+                  "venue": Object {
+                    "normalizer": Object {
+                      "managingOfferer": "offerers",
+                    },
+                    "stateKey": "venues",
+                  },
+                },
+                "resolve": [Function],
+              },
+              "type": "REQUEST_DATA_GET_/OFFERS?ORDERBY=OFFER.ID%20DESC",
+            },
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
     location={
-        Object {
-            "pathname": "/offres",
-          }
+      Object {
+        "pathname": "/offres",
+      }
     }
     offers={Array []}
     pagination={
-        Object {
-            "apiQuery": Object {
-              "keywords": null,
-              "offererId": null,
-              "orderBy": "offer.id+desc",
-              "venueId": null,
-            },
-          }
+      Object {
+        "apiQuery": Object {
+          "keywords": null,
+          "offererId": null,
+          "orderBy": "offer.id+desc",
+          "venueId": null,
+        },
+      }
     }
     query={
-        Object {
-            "change": [Function],
-            "parse": [Function],
-          }
+      Object {
+        "change": [MockFunction],
+        "parse": [Function],
+      }
     }
     search=""
     types={Array []}
-/>,
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -48,97 +169,94 @@ ShallowWrapper {
       "children": Array [
         <HeroSection
           title="Vos offres"
->
+        >
           <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    className="cta button is-primary"
-                    to="/offres/creation"
+            activeClassName="active"
+            aria-current="page"
+            className="cta button is-primary"
+            to="/offres/creation"
           >
-                    <span
-                              className="icon"
-                    >
-                              <Icon
-                                        svg="ico-offres-w"
-                              />
-                    </span>
-                    <span>
-                              Créer une offre
-                    </span>
+            <span
+              className="icon"
+            >
+              <Icon
+                svg="ico-offres-w"
+              />
+            </span>
+            <span>
+              Créer une offre
+            </span>
           </NavLink>
-</HeroSection>,
+        </HeroSection>,
         <form
           className="section"
           onSubmit={[Function]}
->
+        >
           <label
-                    className="label"
+            className="label"
           >
-                    Rechercher une offre :
+            Rechercher une offre :
           </label>
           <div
-                    className="field is-grouped"
+            className="field is-grouped"
           >
-                    <p
-                              className="control is-expanded"
-                    >
-                              <input
-                                        className="input"
-                                        defaultValue={undefined}
-                                        id="search"
-                                        placeholder="Saisissez un ou plusieurs mots complets"
-                                        type="text"
-                              />
-                    </p>
-                    <p
-                              className="control"
-                    >
-                              <button
-                                        className="button is-primary is-outlined"
-                                        id="search-button"
-                                        type="submit"
-                              >
-                                        OK
-                              </button>
-                               
-                              <button
-                                        className="button is-secondary"
-                                        disabled={true}
-                              >
-                                         
-                                        <Icon
-                                                  svg="ico-filter"
-                                        />
-                                         
-                              </button>
-                    </p>
+            <p
+              className="control is-expanded"
+            >
+              <input
+                className="input"
+                id="search"
+                placeholder="Saisissez un ou plusieurs mots complets"
+                type="text"
+              />
+            </p>
+            <p
+              className="control"
+            >
+              <button
+                className="button is-primary is-outlined"
+                id="search-button"
+                type="submit"
+              >
+                OK
+              </button>
+               
+              <button
+                className="button is-secondary"
+                disabled={true}
+              >
+                 
+                <Icon
+                  svg="ico-filter"
+                />
+                 
+              </button>
+            </p>
           </div>
-</form>,
+        </form>,
         <ul
           className="section"
-/>,
+        />,
         <div
           className="section"
->
+        >
           <withRouter(_withQueryRouter)
-                    className="offers-list main-list"
-                    element="ul"
-                    hasMore={false}
-                    isLoading={true}
-                    loader={
-                              <Spinner
-                                        Tag="div"
-                                        className={null}
-                                        dotFrequency={500}
-                                        label="Chargement"
-                                        style={null}
-                              />
-                    }
-                    useWindow={true}
-          >
-                    
-          </withRouter(_withQueryRouter)>
-</div>,
+            className="offers-list main-list"
+            element="ul"
+            hasMore={false}
+            isLoading={true}
+            loader={
+              <Spinner
+                Tag="div"
+                className={null}
+                dotFrequency={500}
+                label="Chargement"
+                style={null}
+              />
+            }
+            useWindow={true}
+          />
+        </div>,
       ],
       "handleRequestData": [Function],
       "name": "offers",
@@ -155,18 +273,18 @@ ShallowWrapper {
             aria-current="page"
             className="cta button is-primary"
             to="/offres/creation"
->
+          >
             <span
-                        className="icon"
+              className="icon"
             >
-                        <Icon
-                                    svg="ico-offres-w"
-                        />
+              <Icon
+                svg="ico-offres-w"
+              />
             </span>
             <span>
-                        Créer une offre
+              Créer une offre
             </span>
-</NavLink>,
+          </NavLink>,
           "title": "Vos offres",
         },
         "ref": null,
@@ -180,14 +298,14 @@ ShallowWrapper {
             "children": Array [
               <span
                 className="icon"
->
+              >
                 <Icon
-                                svg="ico-offres-w"
+                  svg="ico-offres-w"
                 />
-</span>,
+              </span>,
               <span>
                 Créer une offre
-</span>,
+              </span>,
             ],
             "className": "cta button is-primary",
             "to": "/offres/creation",
@@ -201,7 +319,7 @@ ShallowWrapper {
               "props": Object {
                 "children": <Icon
                   svg="ico-offres-w"
-/>,
+                />,
                 "className": "icon",
               },
               "ref": null,
@@ -242,46 +360,45 @@ ShallowWrapper {
           "children": Array [
             <label
               className="label"
->
+            >
               Rechercher une offre :
-</label>,
+            </label>,
             <div
               className="field is-grouped"
->
+            >
               <p
-                            className="control is-expanded"
+                className="control is-expanded"
               >
-                            <input
-                                          className="input"
-                                          defaultValue={undefined}
-                                          id="search"
-                                          placeholder="Saisissez un ou plusieurs mots complets"
-                                          type="text"
-                            />
+                <input
+                  className="input"
+                  id="search"
+                  placeholder="Saisissez un ou plusieurs mots complets"
+                  type="text"
+                />
               </p>
               <p
-                            className="control"
+                className="control"
               >
-                            <button
-                                          className="button is-primary is-outlined"
-                                          id="search-button"
-                                          type="submit"
-                            >
-                                          OK
-                            </button>
-                             
-                            <button
-                                          className="button is-secondary"
-                                          disabled={true}
-                            >
-                                           
-                                          <Icon
-                                                        svg="ico-filter"
-                                          />
-                                           
-                            </button>
+                <button
+                  className="button is-primary is-outlined"
+                  id="search-button"
+                  type="submit"
+                >
+                  OK
+                </button>
+                 
+                <button
+                  className="button is-secondary"
+                  disabled={true}
+                >
+                   
+                  <Icon
+                    svg="ico-filter"
+                  />
+                   
+                </button>
               </p>
-</div>,
+            </div>,
           ],
           "className": "section",
           "onSubmit": [Function],
@@ -308,37 +425,36 @@ ShallowWrapper {
               "children": Array [
                 <p
                   className="control is-expanded"
->
+                >
                   <input
-                                    className="input"
-                                    defaultValue={undefined}
-                                    id="search"
-                                    placeholder="Saisissez un ou plusieurs mots complets"
-                                    type="text"
+                    className="input"
+                    id="search"
+                    placeholder="Saisissez un ou plusieurs mots complets"
+                    type="text"
                   />
-</p>,
+                </p>,
                 <p
                   className="control"
->
+                >
                   <button
-                                    className="button is-primary is-outlined"
-                                    id="search-button"
-                                    type="submit"
+                    className="button is-primary is-outlined"
+                    id="search-button"
+                    type="submit"
                   >
-                                    OK
+                    OK
                   </button>
                    
                   <button
-                                    className="button is-secondary"
-                                    disabled={true}
+                    className="button is-secondary"
+                    disabled={true}
                   >
-                                     
-                                    <Icon
-                                                      svg="ico-filter"
-                                    />
-                                     
+                     
+                    <Icon
+                      svg="ico-filter"
+                    />
+                     
                   </button>
-</p>,
+                </p>,
               ],
               "className": "field is-grouped",
             },
@@ -351,11 +467,10 @@ ShallowWrapper {
                 "props": Object {
                   "children": <input
                     className="input"
-                    defaultValue={undefined}
                     id="search"
                     placeholder="Saisissez un ou plusieurs mots complets"
                     type="text"
-/>,
+                  />,
                   "className": "control is-expanded",
                 },
                 "ref": null,
@@ -386,20 +501,20 @@ ShallowWrapper {
                       className="button is-primary is-outlined"
                       id="search-button"
                       type="submit"
->
+                    >
                       OK
-</button>,
+                    </button>,
                     " ",
                     <button
                       className="button is-secondary"
                       disabled={true}
->
+                    >
                        
                       <Icon
-                                            svg="ico-filter"
+                        svg="ico-filter"
                       />
                        
-</button>,
+                    </button>,
                   ],
                   "className": "control",
                 },
@@ -429,7 +544,7 @@ ShallowWrapper {
                         " ",
                         <Icon
                           svg="ico-filter"
-/>,
+                        />,
                         " ",
                       ],
                       "className": "button is-secondary",
@@ -487,18 +602,16 @@ ShallowWrapper {
               hasMore={false}
               isLoading={true}
               loader={
-                            <Spinner
-                                          Tag="div"
-                                          className={null}
-                                          dotFrequency={500}
-                                          label="Chargement"
-                                          style={null}
-                            />
+                <Spinner
+                  Tag="div"
+                  className={null}
+                  dotFrequency={500}
+                  label="Chargement"
+                  style={null}
+                />
               }
               useWindow={true}
->
-              
-</withRouter(_withQueryRouter)>,
+            />,
           ],
           "className": "section",
         },
@@ -521,7 +634,7 @@ ShallowWrapper {
                 dotFrequency={500}
                 label="Chargement"
                 style={null}
-/>,
+              />,
               "useWindow": true,
             },
             "ref": null,
@@ -543,97 +656,94 @@ ShallowWrapper {
         "children": Array [
           <HeroSection
             title="Vos offres"
->
+          >
             <NavLink
-                        activeClassName="active"
-                        aria-current="page"
-                        className="cta button is-primary"
-                        to="/offres/creation"
+              activeClassName="active"
+              aria-current="page"
+              className="cta button is-primary"
+              to="/offres/creation"
             >
-                        <span
-                                    className="icon"
-                        >
-                                    <Icon
-                                                svg="ico-offres-w"
-                                    />
-                        </span>
-                        <span>
-                                    Créer une offre
-                        </span>
+              <span
+                className="icon"
+              >
+                <Icon
+                  svg="ico-offres-w"
+                />
+              </span>
+              <span>
+                Créer une offre
+              </span>
             </NavLink>
-</HeroSection>,
+          </HeroSection>,
           <form
             className="section"
             onSubmit={[Function]}
->
+          >
             <label
-                        className="label"
+              className="label"
             >
-                        Rechercher une offre :
+              Rechercher une offre :
             </label>
             <div
-                        className="field is-grouped"
+              className="field is-grouped"
             >
-                        <p
-                                    className="control is-expanded"
-                        >
-                                    <input
-                                                className="input"
-                                                defaultValue={undefined}
-                                                id="search"
-                                                placeholder="Saisissez un ou plusieurs mots complets"
-                                                type="text"
-                                    />
-                        </p>
-                        <p
-                                    className="control"
-                        >
-                                    <button
-                                                className="button is-primary is-outlined"
-                                                id="search-button"
-                                                type="submit"
-                                    >
-                                                OK
-                                    </button>
-                                     
-                                    <button
-                                                className="button is-secondary"
-                                                disabled={true}
-                                    >
-                                                 
-                                                <Icon
-                                                            svg="ico-filter"
-                                                />
-                                                 
-                                    </button>
-                        </p>
+              <p
+                className="control is-expanded"
+              >
+                <input
+                  className="input"
+                  id="search"
+                  placeholder="Saisissez un ou plusieurs mots complets"
+                  type="text"
+                />
+              </p>
+              <p
+                className="control"
+              >
+                <button
+                  className="button is-primary is-outlined"
+                  id="search-button"
+                  type="submit"
+                >
+                  OK
+                </button>
+                 
+                <button
+                  className="button is-secondary"
+                  disabled={true}
+                >
+                   
+                  <Icon
+                    svg="ico-filter"
+                  />
+                   
+                </button>
+              </p>
             </div>
-</form>,
+          </form>,
           <ul
             className="section"
-/>,
+          />,
           <div
             className="section"
->
+          >
             <withRouter(_withQueryRouter)
-                        className="offers-list main-list"
-                        element="ul"
-                        hasMore={false}
-                        isLoading={true}
-                        loader={
-                                    <Spinner
-                                                Tag="div"
-                                                className={null}
-                                                dotFrequency={500}
-                                                label="Chargement"
-                                                style={null}
-                                    />
-                        }
-                        useWindow={true}
-            >
-                        
-            </withRouter(_withQueryRouter)>
-</div>,
+              className="offers-list main-list"
+              element="ul"
+              hasMore={false}
+              isLoading={true}
+              loader={
+                <Spinner
+                  Tag="div"
+                  className={null}
+                  dotFrequency={500}
+                  label="Chargement"
+                  style={null}
+                />
+              }
+              useWindow={true}
+            />
+          </div>,
         ],
         "handleRequestData": [Function],
         "name": "offers",
@@ -650,18 +760,18 @@ ShallowWrapper {
               aria-current="page"
               className="cta button is-primary"
               to="/offres/creation"
->
+            >
               <span
-                            className="icon"
+                className="icon"
               >
-                            <Icon
-                                          svg="ico-offres-w"
-                            />
+                <Icon
+                  svg="ico-offres-w"
+                />
               </span>
               <span>
-                            Créer une offre
+                Créer une offre
               </span>
-</NavLink>,
+            </NavLink>,
             "title": "Vos offres",
           },
           "ref": null,
@@ -675,14 +785,14 @@ ShallowWrapper {
               "children": Array [
                 <span
                   className="icon"
->
+                >
                   <Icon
-                                    svg="ico-offres-w"
+                    svg="ico-offres-w"
                   />
-</span>,
+                </span>,
                 <span>
                   Créer une offre
-</span>,
+                </span>,
               ],
               "className": "cta button is-primary",
               "to": "/offres/creation",
@@ -696,7 +806,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": <Icon
                     svg="ico-offres-w"
-/>,
+                  />,
                   "className": "icon",
                 },
                 "ref": null,
@@ -737,46 +847,45 @@ ShallowWrapper {
             "children": Array [
               <label
                 className="label"
->
+              >
                 Rechercher une offre :
-</label>,
+              </label>,
               <div
                 className="field is-grouped"
->
+              >
                 <p
-                                className="control is-expanded"
+                  className="control is-expanded"
                 >
-                                <input
-                                                className="input"
-                                                defaultValue={undefined}
-                                                id="search"
-                                                placeholder="Saisissez un ou plusieurs mots complets"
-                                                type="text"
-                                />
+                  <input
+                    className="input"
+                    id="search"
+                    placeholder="Saisissez un ou plusieurs mots complets"
+                    type="text"
+                  />
                 </p>
                 <p
-                                className="control"
+                  className="control"
                 >
-                                <button
-                                                className="button is-primary is-outlined"
-                                                id="search-button"
-                                                type="submit"
-                                >
-                                                OK
-                                </button>
-                                 
-                                <button
-                                                className="button is-secondary"
-                                                disabled={true}
-                                >
-                                                 
-                                                <Icon
-                                                                svg="ico-filter"
-                                                />
-                                                 
-                                </button>
+                  <button
+                    className="button is-primary is-outlined"
+                    id="search-button"
+                    type="submit"
+                  >
+                    OK
+                  </button>
+                   
+                  <button
+                    className="button is-secondary"
+                    disabled={true}
+                  >
+                     
+                    <Icon
+                      svg="ico-filter"
+                    />
+                     
+                  </button>
                 </p>
-</div>,
+              </div>,
             ],
             "className": "section",
             "onSubmit": [Function],
@@ -803,37 +912,36 @@ ShallowWrapper {
                 "children": Array [
                   <p
                     className="control is-expanded"
->
+                  >
                     <input
-                                        className="input"
-                                        defaultValue={undefined}
-                                        id="search"
-                                        placeholder="Saisissez un ou plusieurs mots complets"
-                                        type="text"
+                      className="input"
+                      id="search"
+                      placeholder="Saisissez un ou plusieurs mots complets"
+                      type="text"
                     />
-</p>,
+                  </p>,
                   <p
                     className="control"
->
+                  >
                     <button
-                                        className="button is-primary is-outlined"
-                                        id="search-button"
-                                        type="submit"
+                      className="button is-primary is-outlined"
+                      id="search-button"
+                      type="submit"
                     >
-                                        OK
+                      OK
                     </button>
                      
                     <button
-                                        className="button is-secondary"
-                                        disabled={true}
+                      className="button is-secondary"
+                      disabled={true}
                     >
-                                         
-                                        <Icon
-                                                            svg="ico-filter"
-                                        />
-                                         
+                       
+                      <Icon
+                        svg="ico-filter"
+                      />
+                       
                     </button>
-</p>,
+                  </p>,
                 ],
                 "className": "field is-grouped",
               },
@@ -846,11 +954,10 @@ ShallowWrapper {
                   "props": Object {
                     "children": <input
                       className="input"
-                      defaultValue={undefined}
                       id="search"
                       placeholder="Saisissez un ou plusieurs mots complets"
                       type="text"
-/>,
+                    />,
                     "className": "control is-expanded",
                   },
                   "ref": null,
@@ -881,20 +988,20 @@ ShallowWrapper {
                         className="button is-primary is-outlined"
                         id="search-button"
                         type="submit"
->
+                      >
                         OK
-</button>,
+                      </button>,
                       " ",
                       <button
                         className="button is-secondary"
                         disabled={true}
->
+                      >
                          
                         <Icon
-                                                svg="ico-filter"
+                          svg="ico-filter"
                         />
                          
-</button>,
+                      </button>,
                     ],
                     "className": "control",
                   },
@@ -924,7 +1031,7 @@ ShallowWrapper {
                           " ",
                           <Icon
                             svg="ico-filter"
-/>,
+                          />,
                           " ",
                         ],
                         "className": "button is-secondary",
@@ -982,18 +1089,16 @@ ShallowWrapper {
                 hasMore={false}
                 isLoading={true}
                 loader={
-                                <Spinner
-                                                Tag="div"
-                                                className={null}
-                                                dotFrequency={500}
-                                                label="Chargement"
-                                                style={null}
-                                />
+                  <Spinner
+                    Tag="div"
+                    className={null}
+                    dotFrequency={500}
+                    label="Chargement"
+                    style={null}
+                  />
                 }
                 useWindow={true}
->
-                
-</withRouter(_withQueryRouter)>,
+              />,
             ],
             "className": "section",
           },
@@ -1016,7 +1121,7 @@ ShallowWrapper {
                   dotFrequency={500}
                   label="Chargement"
                   style={null}
-/>,
+                />,
                 "useWindow": true,
               },
               "ref": null,
@@ -1042,6 +1147,7 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
+          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },

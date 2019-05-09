@@ -5,14 +5,14 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <ReactFinalForm
     initialValues={
-        Object {
-            "bar": 3,
-            "foo": 5.6,
-          }
+      Object {
+        "bar": 3,
+        "foo": 5.6,
+      }
     }
     onSubmit={[Function]}
     render={[Function]}
-/>,
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -29,18 +29,18 @@ ShallowWrapper {
     "props": Object {
       "children": <form>
         <Unknown
-                name="foo"
+          name="foo"
         />
         <Unknown
-                name="bar"
+          name="bar"
         />
         <button
-                onClick={[Function]}
-                type="submit"
+          onClick={[Function]}
+          type="submit"
         >
-                Submit
+          Submit
         </button>
-</form>,
+      </form>,
       "value": Object {
         "batch": [Function],
         "blur": [Function],
@@ -70,16 +70,16 @@ ShallowWrapper {
         "children": Array [
           <Unknown
             name="foo"
-/>,
+          />,
           <Unknown
             name="bar"
-/>,
+          />,
           <button
             onClick={[Function]}
             type="submit"
->
+          >
             Submit
-</button>,
+          </button>,
         ],
       },
       "ref": null,
@@ -149,18 +149,18 @@ ShallowWrapper {
       "props": Object {
         "children": <form>
           <Unknown
-                    name="foo"
+            name="foo"
           />
           <Unknown
-                    name="bar"
+            name="bar"
           />
           <button
-                    onClick={[Function]}
-                    type="submit"
+            onClick={[Function]}
+            type="submit"
           >
-                    Submit
+            Submit
           </button>
-</form>,
+        </form>,
         "value": Object {
           "batch": [Function],
           "blur": [Function],
@@ -190,16 +190,16 @@ ShallowWrapper {
           "children": Array [
             <Unknown
               name="foo"
-/>,
+            />,
             <Unknown
               name="bar"
-/>,
+            />,
             <button
               onClick={[Function]}
               type="submit"
->
+            >
               Submit
-</button>,
+            </button>,
           ],
         },
         "ref": null,
@@ -274,6 +274,7 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
+          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },

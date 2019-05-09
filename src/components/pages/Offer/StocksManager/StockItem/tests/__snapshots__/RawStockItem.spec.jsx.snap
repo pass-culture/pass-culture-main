@@ -4,28 +4,28 @@ exports[`src | components | pages | Offer | StockItem | RawStockItem  snapshot s
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <RawStockItem
-    closeInfo={[Function]}
-    dispatch={[Function]}
+    closeInfo={[MockFunction]}
+    dispatch={[MockFunction]}
     formBeginningDatetime={null}
     formBookingLimitDatetime={null}
     formEndDatetime={null}
     hasIban={false}
     history={
-        Object {
-            "push": [Function],
-          }
+      Object {
+        "push": [MockFunction],
+      }
     }
     isEvent={false}
     offer={null}
     query={
-        Object {
-            "context": [Function],
-          }
+      Object {
+        "context": [Function],
+      }
     }
     showInfo={[Function]}
     stockPatch={Object {}}
     stocks={Array []}
-/>,
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -45,7 +45,7 @@ ShallowWrapper {
         initialValues={Object {}}
         onSubmit={[Function]}
         render={[Function]}
-/>,
+      />,
     },
     "ref": [Function],
     "rendered": Object {
@@ -75,7 +75,7 @@ ShallowWrapper {
           initialValues={Object {}}
           onSubmit={[Function]}
           render={[Function]}
-/>,
+        />,
       },
       "ref": [Function],
       "rendered": Object {
@@ -107,6 +107,7 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
+          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },

@@ -5,15 +5,15 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <ProductFields
     beginningDatetime={null}
-    closeInfo={[Function]}
-    dispatch={[Function]}
+    closeInfo={[MockFunction]}
+    dispatch={[MockFunction]}
     isEvent={true}
     offer={null}
-    parseFormChild={[Function]}
+    parseFormChild={[MockFunction]}
     readOnly={true}
-    showInfo={[Function]}
+    showInfo={[MockFunction]}
     stock={null}
-/>,
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -31,66 +31,66 @@ ShallowWrapper {
       "children": Array [
         <td
           title="Gratuit si vide"
->
+        >
           <Unknown
-                    name="offerId"
-                    type="hidden"
-                    validator={[Function]}
+            name="offerId"
+            type="hidden"
+            validator={[Function]}
           />
           <Unknown
-                    name="venueId"
-                    type="hidden"
-                    validator={[Function]}
+            name="venueId"
+            type="hidden"
+            validator={[Function]}
           />
           <Unknown
-                    format={[Function]}
-                    name="price"
-                    onBlur={[Function]}
-                    placeholder="Gratuit"
-                    readOnly={true}
-                    title="Prix"
+            format={[Function]}
+            name="price"
+            onBlur={[Function]}
+            placeholder="Gratuit"
+            readOnly={true}
+            title="Prix"
           />
-</td>,
+        </td>,
         <td
           title="Laissez vide si pas de limite"
->
+        >
           <DateField
-                    autoComplete={false}
-                    className=""
-                    clearable={false}
-                    dateFormat="DD/MM/YYYY"
-                    datePickerClassName="date"
-                    disabled={false}
-                    id={null}
-                    label=""
-                    locale="fr"
-                    maxDate={null}
-                    name="bookingLimitDatetime"
-                    placeholder="Laissez vide si pas de limite"
-                    readOnly={true}
-                    renderValue={[Function]}
-                    required={false}
-                    validate={null}
+            autoComplete={false}
+            className=""
+            clearable={false}
+            dateFormat="DD/MM/YYYY"
+            datePickerClassName="date"
+            disabled={false}
+            id={null}
+            label=""
+            locale="fr"
+            maxDate={null}
+            name="bookingLimitDatetime"
+            placeholder="Laissez vide si pas de limite"
+            readOnly={true}
+            renderValue={[Function]}
+            required={false}
+            validate={null}
           />
-</td>,
+        </td>,
         <td
           className="tooltiped"
->
+        >
           <Unknown
-                    format={[Function]}
-                    name="available"
-                    placeholder="Illimité"
-                    readOnly={true}
-                    renderValue={[Function]}
-                    title="Stock[ou] Places affecté[es]"
+            format={[Function]}
+            name="available"
+            placeholder="Illimité"
+            readOnly={true}
+            renderValue={[Function]}
+            title="Stock[ou] Places affecté[es]"
           />
-</td>,
+        </td>,
         <td
           className="is-small remaining-stock"
           id="remaining-stock"
->
+        >
           Illimité
-</td>,
+        </td>,
       ],
     },
     "ref": null,
@@ -105,12 +105,12 @@ ShallowWrapper {
               name="offerId"
               type="hidden"
               validator={[Function]}
-/>,
+            />,
             <Unknown
               name="venueId"
               type="hidden"
               validator={[Function]}
-/>,
+            />,
             <Unknown
               format={[Function]}
               name="price"
@@ -118,7 +118,7 @@ ShallowWrapper {
               placeholder="Gratuit"
               readOnly={true}
               title="Prix"
-/>,
+            />,
           ],
           "title": "Gratuit si vide",
         },
@@ -191,7 +191,7 @@ ShallowWrapper {
             renderValue={[Function]}
             required={false}
             validate={null}
-/>,
+          />,
           "title": "Laissez vide si pas de limite",
         },
         "ref": null,
@@ -235,7 +235,7 @@ ShallowWrapper {
             readOnly={true}
             renderValue={[Function]}
             title="Stock[ou] Places affecté[es]"
-/>,
+          />,
           "className": "tooltiped",
         },
         "ref": null,
@@ -282,66 +282,66 @@ ShallowWrapper {
         "children": Array [
           <td
             title="Gratuit si vide"
->
+          >
             <Unknown
-                        name="offerId"
-                        type="hidden"
-                        validator={[Function]}
+              name="offerId"
+              type="hidden"
+              validator={[Function]}
             />
             <Unknown
-                        name="venueId"
-                        type="hidden"
-                        validator={[Function]}
+              name="venueId"
+              type="hidden"
+              validator={[Function]}
             />
             <Unknown
-                        format={[Function]}
-                        name="price"
-                        onBlur={[Function]}
-                        placeholder="Gratuit"
-                        readOnly={true}
-                        title="Prix"
+              format={[Function]}
+              name="price"
+              onBlur={[Function]}
+              placeholder="Gratuit"
+              readOnly={true}
+              title="Prix"
             />
-</td>,
+          </td>,
           <td
             title="Laissez vide si pas de limite"
->
+          >
             <DateField
-                        autoComplete={false}
-                        className=""
-                        clearable={false}
-                        dateFormat="DD/MM/YYYY"
-                        datePickerClassName="date"
-                        disabled={false}
-                        id={null}
-                        label=""
-                        locale="fr"
-                        maxDate={null}
-                        name="bookingLimitDatetime"
-                        placeholder="Laissez vide si pas de limite"
-                        readOnly={true}
-                        renderValue={[Function]}
-                        required={false}
-                        validate={null}
+              autoComplete={false}
+              className=""
+              clearable={false}
+              dateFormat="DD/MM/YYYY"
+              datePickerClassName="date"
+              disabled={false}
+              id={null}
+              label=""
+              locale="fr"
+              maxDate={null}
+              name="bookingLimitDatetime"
+              placeholder="Laissez vide si pas de limite"
+              readOnly={true}
+              renderValue={[Function]}
+              required={false}
+              validate={null}
             />
-</td>,
+          </td>,
           <td
             className="tooltiped"
->
+          >
             <Unknown
-                        format={[Function]}
-                        name="available"
-                        placeholder="Illimité"
-                        readOnly={true}
-                        renderValue={[Function]}
-                        title="Stock[ou] Places affecté[es]"
+              format={[Function]}
+              name="available"
+              placeholder="Illimité"
+              readOnly={true}
+              renderValue={[Function]}
+              title="Stock[ou] Places affecté[es]"
             />
-</td>,
+          </td>,
           <td
             className="is-small remaining-stock"
             id="remaining-stock"
->
+          >
             Illimité
-</td>,
+          </td>,
         ],
       },
       "ref": null,
@@ -356,12 +356,12 @@ ShallowWrapper {
                 name="offerId"
                 type="hidden"
                 validator={[Function]}
-/>,
+              />,
               <Unknown
                 name="venueId"
                 type="hidden"
                 validator={[Function]}
-/>,
+              />,
               <Unknown
                 format={[Function]}
                 name="price"
@@ -369,7 +369,7 @@ ShallowWrapper {
                 placeholder="Gratuit"
                 readOnly={true}
                 title="Prix"
-/>,
+              />,
             ],
             "title": "Gratuit si vide",
           },
@@ -442,7 +442,7 @@ ShallowWrapper {
               renderValue={[Function]}
               required={false}
               validate={null}
-/>,
+            />,
             "title": "Laissez vide si pas de limite",
           },
           "ref": null,
@@ -486,7 +486,7 @@ ShallowWrapper {
               readOnly={true}
               renderValue={[Function]}
               title="Stock[ou] Places affecté[es]"
-/>,
+            />,
             "className": "tooltiped",
           },
           "ref": null,
@@ -537,6 +537,7 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
+          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },

@@ -5,14 +5,14 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <VenueItem
     venue={
-        Object {
-            "id": "AAA",
-            "managingOffererId": "ABC",
-            "name": "fake name",
-            "publicName": null,
-          }
+      Object {
+        "id": "AAA",
+        "managingOffererId": "ABC",
+        "name": "fake name",
+        "publicName": null,
+      }
     }
-/>,
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -30,72 +30,72 @@ ShallowWrapper {
       "children": Array [
         <div
           className="picto"
->
+        >
           <Icon
-                    svg="ico-venue"
+            svg="ico-venue"
           />
-</div>,
+        </div>,
         <div
           className="list-content"
->
+        >
           <p
-                    className="name"
+            className="name"
           >
-                    <NavLink
-                              activeClassName="active"
-                              aria-current="page"
-                              id="a-fake-name"
-                              to="/structures/ABC/lieux/AAA"
-                    >
-                              fake name
-                    </NavLink>
+            <NavLink
+              activeClassName="active"
+              aria-current="page"
+              id="a-fake-name"
+              to="/structures/ABC/lieux/AAA"
+            >
+              fake name
+            </NavLink>
           </p>
           <ul
-                    className="actions"
+            className="actions"
           >
-                    <li>
-                              <NavLink
-                                        activeClassName="active"
-                                        aria-current="page"
-                                        className="has-text-primary"
-                                        to="/offres/creation?lieu=AAA"
-                              >
-                                        <Icon
-                                                  svg="ico-offres-r"
-                                        />
-                                         Créer une offre
-                              </NavLink>
-                    </li>
-                    <li>
-                              0 offre
-                    </li>
-                    <li>
-                              <Dotdotdot
-                                        clamp={2}
-                                        className="has-text-grey"
-                                        tagName="div"
-                                        truncationChar="…"
-                                        useNativeClamp={true}
-                              >
-                                         
-                                         
-                              </Dotdotdot>
-                    </li>
+            <li>
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="has-text-primary"
+                to="/offres/creation?lieu=AAA"
+              >
+                <Icon
+                  svg="ico-offres-r"
+                />
+                 Créer une offre
+              </NavLink>
+            </li>
+            <li>
+              0 offre
+            </li>
+            <li>
+              <Dotdotdot
+                clamp={2}
+                className="has-text-grey"
+                tagName="div"
+                truncationChar="…"
+                useNativeClamp={false}
+              >
+                 
+                 
+              </Dotdotdot>
+            </li>
           </ul>
-</div>,
+        </div>,
         <div
           className="caret"
->
+        >
           <NavLink
-                    activeClassName="active"
-                    aria-current="page"
-                    to="/structures/ABC/lieux/AAA"
+            activeClassName="active"
+            aria-current="page"
+            to="/structures/ABC/lieux/AAA"
           >
-                    <Icon
-                              svg="ico-next-S"
-                    />
+            <Icon
+              svg="ico-next-S"
+            />
           </NavLink>
-</div>,
+        </div>,
       ],
       "className": "venue-item",
     },
@@ -108,7 +108,7 @@ ShallowWrapper {
         "props": Object {
           "children": <Icon
             svg="ico-venue"
-/>,
+          />,
           "className": "picto",
         },
         "ref": null,
@@ -133,48 +133,48 @@ ShallowWrapper {
           "children": Array [
             <p
               className="name"
->
+            >
               <NavLink
-                            activeClassName="active"
-                            aria-current="page"
-                            id="a-fake-name"
-                            to="/structures/ABC/lieux/AAA"
+                activeClassName="active"
+                aria-current="page"
+                id="a-fake-name"
+                to="/structures/ABC/lieux/AAA"
               >
-                            fake name
+                fake name
               </NavLink>
-</p>,
+            </p>,
             <ul
               className="actions"
->
+            >
               <li>
-                            <NavLink
-                                          activeClassName="active"
-                                          aria-current="page"
-                                          className="has-text-primary"
-                                          to="/offres/creation?lieu=AAA"
-                            >
-                                          <Icon
-                                                        svg="ico-offres-r"
-                                          />
-                                           Créer une offre
-                            </NavLink>
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="has-text-primary"
+                  to="/offres/creation?lieu=AAA"
+                >
+                  <Icon
+                    svg="ico-offres-r"
+                  />
+                   Créer une offre
+                </NavLink>
               </li>
               <li>
-                            0 offre
+                0 offre
               </li>
               <li>
-                            <Dotdotdot
-                                          clamp={2}
-                                          className="has-text-grey"
-                                          tagName="div"
-                                          truncationChar="…"
-                                          useNativeClamp={true}
-                            >
-                                           
-                                           
-                            </Dotdotdot>
+                <Dotdotdot
+                  clamp={2}
+                  className="has-text-grey"
+                  tagName="div"
+                  truncationChar="…"
+                  useNativeClamp={false}
+                >
+                   
+                   
+                </Dotdotdot>
               </li>
-</ul>,
+            </ul>,
           ],
           "className": "list-content",
         },
@@ -190,9 +190,9 @@ ShallowWrapper {
                 aria-current="page"
                 id="a-fake-name"
                 to="/structures/ABC/lieux/AAA"
->
+              >
                 fake name
-</NavLink>,
+              </NavLink>,
               "className": "name",
             },
             "ref": null,
@@ -221,32 +221,32 @@ ShallowWrapper {
               "children": Array [
                 <li>
                   <NavLink
-                                    activeClassName="active"
-                                    aria-current="page"
-                                    className="has-text-primary"
-                                    to="/offres/creation?lieu=AAA"
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/offres/creation?lieu=AAA"
                   >
-                                    <Icon
-                                                      svg="ico-offres-r"
-                                    />
-                                     Créer une offre
+                    <Icon
+                      svg="ico-offres-r"
+                    />
+                     Créer une offre
                   </NavLink>
-</li>,
+                </li>,
                 <li>
                   0 offre
-</li>,
+                </li>,
                 <li>
                   <Dotdotdot
-                                    clamp={2}
-                                    className="has-text-grey"
-                                    tagName="div"
-                                    truncationChar="…"
-                                    useNativeClamp={true}
+                    clamp={2}
+                    className="has-text-grey"
+                    tagName="div"
+                    truncationChar="…"
+                    useNativeClamp={false}
                   >
-                                     
-                                     
+                     
+                     
                   </Dotdotdot>
-</li>,
+                </li>,
               ],
               "className": "actions",
             },
@@ -262,12 +262,12 @@ ShallowWrapper {
                     aria-current="page"
                     className="has-text-primary"
                     to="/offres/creation?lieu=AAA"
->
+                  >
                     <Icon
-                                        svg="ico-offres-r"
+                      svg="ico-offres-r"
                     />
                      Créer une offre
-</NavLink>,
+                  </NavLink>,
                 },
                 "ref": null,
                 "rendered": Object {
@@ -280,7 +280,7 @@ ShallowWrapper {
                     "children": Array [
                       <Icon
                         svg="ico-offres-r"
-/>,
+                      />,
                       " Créer une offre",
                     ],
                     "className": "has-text-primary",
@@ -326,11 +326,11 @@ ShallowWrapper {
                     className="has-text-grey"
                     tagName="div"
                     truncationChar="…"
-                    useNativeClamp={true}
->
+                    useNativeClamp={false}
+                  >
                      
                      
-</Dotdotdot>,
+                  </Dotdotdot>,
                 },
                 "ref": null,
                 "rendered": Object {
@@ -349,7 +349,7 @@ ShallowWrapper {
                     "className": "has-text-grey",
                     "tagName": "div",
                     "truncationChar": "…",
-                    "useNativeClamp": true,
+                    "useNativeClamp": false,
                   },
                   "ref": null,
                   "rendered": Array [
@@ -378,11 +378,11 @@ ShallowWrapper {
             activeClassName="active"
             aria-current="page"
             to="/structures/ABC/lieux/AAA"
->
+          >
             <Icon
-                        svg="ico-next-S"
+              svg="ico-next-S"
             />
-</NavLink>,
+          </NavLink>,
           "className": "caret",
         },
         "ref": null,
@@ -395,7 +395,7 @@ ShallowWrapper {
             "aria-current": "page",
             "children": <Icon
               svg="ico-next-S"
-/>,
+            />,
             "to": "/structures/ABC/lieux/AAA",
           },
           "ref": null,
@@ -426,72 +426,72 @@ ShallowWrapper {
         "children": Array [
           <div
             className="picto"
->
+          >
             <Icon
-                        svg="ico-venue"
+              svg="ico-venue"
             />
-</div>,
+          </div>,
           <div
             className="list-content"
->
+          >
             <p
-                        className="name"
+              className="name"
             >
-                        <NavLink
-                                    activeClassName="active"
-                                    aria-current="page"
-                                    id="a-fake-name"
-                                    to="/structures/ABC/lieux/AAA"
-                        >
-                                    fake name
-                        </NavLink>
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                id="a-fake-name"
+                to="/structures/ABC/lieux/AAA"
+              >
+                fake name
+              </NavLink>
             </p>
             <ul
-                        className="actions"
+              className="actions"
             >
-                        <li>
-                                    <NavLink
-                                                activeClassName="active"
-                                                aria-current="page"
-                                                className="has-text-primary"
-                                                to="/offres/creation?lieu=AAA"
-                                    >
-                                                <Icon
-                                                            svg="ico-offres-r"
-                                                />
-                                                 Créer une offre
-                                    </NavLink>
-                        </li>
-                        <li>
-                                    0 offre
-                        </li>
-                        <li>
-                                    <Dotdotdot
-                                                clamp={2}
-                                                className="has-text-grey"
-                                                tagName="div"
-                                                truncationChar="…"
-                                                useNativeClamp={true}
-                                    >
-                                                 
-                                                 
-                                    </Dotdotdot>
-                        </li>
+              <li>
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="has-text-primary"
+                  to="/offres/creation?lieu=AAA"
+                >
+                  <Icon
+                    svg="ico-offres-r"
+                  />
+                   Créer une offre
+                </NavLink>
+              </li>
+              <li>
+                0 offre
+              </li>
+              <li>
+                <Dotdotdot
+                  clamp={2}
+                  className="has-text-grey"
+                  tagName="div"
+                  truncationChar="…"
+                  useNativeClamp={false}
+                >
+                   
+                   
+                </Dotdotdot>
+              </li>
             </ul>
-</div>,
+          </div>,
           <div
             className="caret"
->
+          >
             <NavLink
-                        activeClassName="active"
-                        aria-current="page"
-                        to="/structures/ABC/lieux/AAA"
+              activeClassName="active"
+              aria-current="page"
+              to="/structures/ABC/lieux/AAA"
             >
-                        <Icon
-                                    svg="ico-next-S"
-                        />
+              <Icon
+                svg="ico-next-S"
+              />
             </NavLink>
-</div>,
+          </div>,
         ],
         "className": "venue-item",
       },
@@ -504,7 +504,7 @@ ShallowWrapper {
           "props": Object {
             "children": <Icon
               svg="ico-venue"
-/>,
+            />,
             "className": "picto",
           },
           "ref": null,
@@ -529,48 +529,48 @@ ShallowWrapper {
             "children": Array [
               <p
                 className="name"
->
+              >
                 <NavLink
-                                activeClassName="active"
-                                aria-current="page"
-                                id="a-fake-name"
-                                to="/structures/ABC/lieux/AAA"
+                  activeClassName="active"
+                  aria-current="page"
+                  id="a-fake-name"
+                  to="/structures/ABC/lieux/AAA"
                 >
-                                fake name
+                  fake name
                 </NavLink>
-</p>,
+              </p>,
               <ul
                 className="actions"
->
+              >
                 <li>
-                                <NavLink
-                                                activeClassName="active"
-                                                aria-current="page"
-                                                className="has-text-primary"
-                                                to="/offres/creation?lieu=AAA"
-                                >
-                                                <Icon
-                                                                svg="ico-offres-r"
-                                                />
-                                                 Créer une offre
-                                </NavLink>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/offres/creation?lieu=AAA"
+                  >
+                    <Icon
+                      svg="ico-offres-r"
+                    />
+                     Créer une offre
+                  </NavLink>
                 </li>
                 <li>
-                                0 offre
+                  0 offre
                 </li>
                 <li>
-                                <Dotdotdot
-                                                clamp={2}
-                                                className="has-text-grey"
-                                                tagName="div"
-                                                truncationChar="…"
-                                                useNativeClamp={true}
-                                >
-                                                 
-                                                 
-                                </Dotdotdot>
+                  <Dotdotdot
+                    clamp={2}
+                    className="has-text-grey"
+                    tagName="div"
+                    truncationChar="…"
+                    useNativeClamp={false}
+                  >
+                     
+                     
+                  </Dotdotdot>
                 </li>
-</ul>,
+              </ul>,
             ],
             "className": "list-content",
           },
@@ -586,9 +586,9 @@ ShallowWrapper {
                   aria-current="page"
                   id="a-fake-name"
                   to="/structures/ABC/lieux/AAA"
->
+                >
                   fake name
-</NavLink>,
+                </NavLink>,
                 "className": "name",
               },
               "ref": null,
@@ -617,32 +617,32 @@ ShallowWrapper {
                 "children": Array [
                   <li>
                     <NavLink
-                                        activeClassName="active"
-                                        aria-current="page"
-                                        className="has-text-primary"
-                                        to="/offres/creation?lieu=AAA"
+                      activeClassName="active"
+                      aria-current="page"
+                      className="has-text-primary"
+                      to="/offres/creation?lieu=AAA"
                     >
-                                        <Icon
-                                                            svg="ico-offres-r"
-                                        />
-                                         Créer une offre
+                      <Icon
+                        svg="ico-offres-r"
+                      />
+                       Créer une offre
                     </NavLink>
-</li>,
+                  </li>,
                   <li>
                     0 offre
-</li>,
+                  </li>,
                   <li>
                     <Dotdotdot
-                                        clamp={2}
-                                        className="has-text-grey"
-                                        tagName="div"
-                                        truncationChar="…"
-                                        useNativeClamp={true}
+                      clamp={2}
+                      className="has-text-grey"
+                      tagName="div"
+                      truncationChar="…"
+                      useNativeClamp={false}
                     >
-                                         
-                                         
+                       
+                       
                     </Dotdotdot>
-</li>,
+                  </li>,
                 ],
                 "className": "actions",
               },
@@ -658,12 +658,12 @@ ShallowWrapper {
                       aria-current="page"
                       className="has-text-primary"
                       to="/offres/creation?lieu=AAA"
->
+                    >
                       <Icon
-                                            svg="ico-offres-r"
+                        svg="ico-offres-r"
                       />
                        Créer une offre
-</NavLink>,
+                    </NavLink>,
                   },
                   "ref": null,
                   "rendered": Object {
@@ -676,7 +676,7 @@ ShallowWrapper {
                       "children": Array [
                         <Icon
                           svg="ico-offres-r"
-/>,
+                        />,
                         " Créer une offre",
                       ],
                       "className": "has-text-primary",
@@ -722,11 +722,11 @@ ShallowWrapper {
                       className="has-text-grey"
                       tagName="div"
                       truncationChar="…"
-                      useNativeClamp={true}
->
+                      useNativeClamp={false}
+                    >
                        
                        
-</Dotdotdot>,
+                    </Dotdotdot>,
                   },
                   "ref": null,
                   "rendered": Object {
@@ -745,7 +745,7 @@ ShallowWrapper {
                       "className": "has-text-grey",
                       "tagName": "div",
                       "truncationChar": "…",
-                      "useNativeClamp": true,
+                      "useNativeClamp": false,
                     },
                     "ref": null,
                     "rendered": Array [
@@ -774,11 +774,11 @@ ShallowWrapper {
               activeClassName="active"
               aria-current="page"
               to="/structures/ABC/lieux/AAA"
->
+            >
               <Icon
-                            svg="ico-next-S"
+                svg="ico-next-S"
               />
-</NavLink>,
+            </NavLink>,
             "className": "caret",
           },
           "ref": null,
@@ -791,7 +791,7 @@ ShallowWrapper {
               "aria-current": "page",
               "children": <Icon
                 svg="ico-next-S"
-/>,
+              />,
               "to": "/structures/ABC/lieux/AAA",
             },
             "ref": null,
@@ -826,6 +826,7 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
+          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },
