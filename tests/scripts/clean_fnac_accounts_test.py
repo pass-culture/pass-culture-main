@@ -1,17 +1,18 @@
 import pytest
 
 from models import PcObject, UserOfferer, Offer, Venue
-from scripts.clean_fnac_accounts import find_all_fnac_users, find_all_fnac_offerers, create_all_possible_user_offerers, \
-    clear_all_existing_user_offerers, move_offers_from_one_venue_to_another
+from scripts.clean_fnac_accounts import find_all_fnac_users, find_all_OK_fnac_offerers, \
+    create_all_possible_user_offerers, \
+    clear_all_existing_user_offerers, move_offers_from_one_venue_to_another, delete_all_managed_venues
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
     create_offer_with_thing_product, create_offer_with_event_product
 
-ALL_FNAC_SIREN = ['350127460', '434001954', '334473352', '343282380']
+ALL_OK_FNAC_SIREN = ['350127460', '434001954', '334473352', '343282380']
 
 
 @pytest.mark.standalone
-class FindAllFnacUsersTest:
+class FindAllOKFnacUsersTest:
     @clean_database
     def test_retrieves_users_with_email_ending_with_fnac_dot_com_and_fnacdarty_dot_com_only(self, app):
         # Given
@@ -34,12 +35,12 @@ class FindAllFnacStructuresTest:
     @clean_database
     def test_only_retrieves_offerers_with_fnac_siren(self, app):
         # Given
-        fnac_offerers = [create_offerer(siren=siren) for siren in ALL_FNAC_SIREN]
+        fnac_offerers = [create_offerer(siren=siren) for siren in ALL_OK_FNAC_SIREN]
         other_offerer = create_offerer(siren='123456789')
         PcObject.check_and_save(*(fnac_offerers + [other_offerer]))
 
         # When
-        offerers = find_all_fnac_offerers()
+        offerers = find_all_OK_fnac_offerers()
 
         # Then
         assert len(offerers) == 4
@@ -85,7 +86,7 @@ class ClearAllExistingUserOfferersTest:
         PcObject.check_and_save(user_offerer1, user_offerer2, other_user_offerer)
 
         # When
-        clear_all_existing_user_offerers('123456789')
+        clear_all_existing_user_offerers(offerer.id)
 
         # Then
         user_offerers = UserOfferer.query.all()
@@ -96,7 +97,7 @@ class ClearAllExistingUserOfferersTest:
 @pytest.mark.standalone
 class MoveOffersFromOneVenueToAnotherTest:
     @clean_database
-    def test_(self, app):
+    def test_unlinks_offers_from_origin_venue_and_links_it_to_target(self, app):
         # Given
         origin_offerer = create_offerer(siren='123456789')
         target_offerer = create_offerer(siren='987654321')
@@ -117,3 +118,25 @@ class MoveOffersFromOneVenueToAnotherTest:
         # Then
         assert Offer.query.join(Venue).filter_by(id=target_venue.id).count() == 2
         assert Offer.query.join(Venue).filter_by(id=origin_venue.id).count() == 0
+
+
+@pytest.mark.standalone
+class DeleteAllManagedVenuesTest:
+    @clean_database
+    def test_(self, app):
+        # Given
+        offerer = create_offerer()
+        other_offerer = create_offerer(siren='987654321')
+        venue1 = create_venue(offerer, siret=offerer.siren + '00001')
+        venue2 = create_venue(offerer, siret=offerer.siren + '00002')
+        other_venue = create_venue(other_offerer, siret=other_offerer.siren + '00001')
+
+        PcObject.check_and_save(venue1, venue2, other_venue)
+
+        # When
+        delete_all_managed_venues(offerer.id)
+
+        # Then
+        venues = Venue.query.all()
+        assert len(venues) == 1
+        assert venues[0].managingOfferer.siren == '987654321'
