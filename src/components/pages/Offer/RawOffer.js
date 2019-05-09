@@ -22,6 +22,7 @@ import HeroSection from 'components/layout/HeroSection'
 import Main from 'components/layout/Main'
 import { musicOptions, showOptions } from 'utils/edd'
 import { offerNormalizer } from 'utils/normalizers'
+import getDurationInHours, { getDurationInMinutes } from './utils/duration'
 
 const CONDITIONAL_FIELDS = {
   speaker: [
@@ -73,7 +74,7 @@ class RawOffer extends Component {
         requestData({
           apiPath: `/offers/${offerId}`,
           normalizer: offerNormalizer,
-          stateKey: 'offers',
+          stateKey: 'offer',
         })
       )
     } else if (venueId) {
@@ -525,10 +526,12 @@ class RawOffer extends Component {
                   )}
                   {isEventType && (
                     <Field
-                      label="Durée en minutes"
+                      label="Durée"
+                      placeholder="HH:MM"
                       name="durationMinutes"
-                      required
-                      type="number"
+                      type="duration"
+                      getDurationInHours={getDurationInHours}
+                      getDurationInMinutes={getDurationInMinutes}
                     />
                   )}
                   <Field

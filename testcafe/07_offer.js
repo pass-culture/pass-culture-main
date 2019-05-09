@@ -143,7 +143,7 @@ test('Je peux créer une offre événement', async t => {
     "Atelier d'initiation pour reconnaître tout ce qui est du pipotron dans vos lectures de tous les jours. ",
     "Suivi d'une séance de dédicaces.",
   ].join('')
-  const eventDurationMinutes = '120'
+  const eventDurationMinutes = '02:00'
   const eventName = 'Rencontre avec Franck Lepage'
   const eventType = 'Conférences, rencontres et découverte des métiers'
   const { name: offererName } = offerer
@@ -201,7 +201,7 @@ test('Je peux créer des offres avec des sous-types', async t => {
   const musicSubTypeOption = Selector('#offer-musicSubType option')
   const eventDescription =
     'Venez re découvrir PNL en accoustique, sans auto-tune'
-  const eventDurationMinutes = '90'
+  const eventDurationMinutes = '01:30'
   const eventName = 'Concert de PNL Unplugged'
   const eventType = 'Musique — concerts, festivals'
   const eventMusicType = 'Hip-Hop/Rap'
