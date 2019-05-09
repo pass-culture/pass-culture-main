@@ -103,6 +103,7 @@ class Venue extends Component {
   render() {
     const {
       formInitialValues,
+      history,
       match: {
         params: { offererId, venueId },
       },
@@ -232,6 +233,8 @@ class Venue extends Component {
                     className="field is-grouped is-grouped-centered"
                     style={{ justifyContent: 'space-between' }}>
                     <ModifyOrCancelControl
+                      form={form}
+                      history={history}
                       isCreatedEntity={isCreatedEntity}
                       offererId={offererId}
                       venueId={venueId}

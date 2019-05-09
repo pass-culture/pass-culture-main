@@ -4,6 +4,8 @@ import { NavLink } from 'react-router-dom'
 
 const ModifyOrCancelControl = ({
   isCreatedEntity,
+  form,
+  history,
   offererId,
   query,
   venueId,
@@ -19,15 +21,18 @@ const ModifyOrCancelControl = ({
           Modifier le lieu
         </NavLink>
       ) : (
-        <NavLink
+        <button
           className="button is-secondary is-medium"
-          to={
-            isCreatedEntity
+          onClick={() => {
+            form.reset()
+            const next = isCreatedEntity
               ? `/structures/${offererId}`
               : `/structures/${offererId}/lieux/${venueId}`
-          }>
+            history.push(next)
+          }}
+          type="button">
           Annuler
-        </NavLink>
+        </button>
       )}
     </div>
   )
@@ -38,6 +43,8 @@ ModifyOrCancelControl.defaultProps = {
 }
 
 ModifyOrCancelControl.propTypes = {
+  form: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
   isCreatedEntity: PropTypes.bool.isRequired,
   offererId: PropTypes.string.isRequired,
   venueId: PropTypes.string,
