@@ -31,7 +31,7 @@ def test_save_industrial_sandbox(app):
         Product=147,
         Recommendation=117,
         Stock=101,
-        User=49,
+        User=51,
         UserOfferer=125,
     )
 

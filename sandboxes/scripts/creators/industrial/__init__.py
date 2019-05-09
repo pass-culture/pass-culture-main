@@ -12,6 +12,7 @@ from sandboxes.scripts.creators.industrial.create_industrial_things import *
 from sandboxes.scripts.creators.industrial.create_industrial_offerers_with_pro_users import *
 from sandboxes.scripts.creators.industrial.create_industrial_venues import *
 from sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
+from sandboxes.scripts.creators.industrial.create_industrial_pro_users import *
 from sandboxes.scripts.creators.industrial.create_industrial_webapp_users import *
 
 def save_industrial_sandbox():
@@ -23,6 +24,7 @@ def save_industrial_sandbox():
     ) = create_industrial_offerers_with_pro_users()
 
     admin_users_by_name = create_industrial_admin_users()
+    pro_users_by_name = create_industrial_pro_users()
     webapp_users_by_name = create_industrial_webapp_users()
 
     users_by_name = dict(
@@ -31,7 +33,7 @@ def save_industrial_sandbox():
     )
 
     create_industrial_deposits(users_by_name)
-    
+
     venues_by_name = create_industrial_venues(offerers_by_name)
 
     events_by_name = create_industrial_events()
