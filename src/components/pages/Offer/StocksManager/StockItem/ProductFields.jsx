@@ -75,7 +75,7 @@ export class ProductFields extends Component {
   }
 
   render() {
-    const { beginningDatetime, isEvent, readOnly, stock } = this.props
+    const { beginningDatetime, isEvent, readOnly, stock, timezone } = this.props
     const { available, bookings } = stock || {}
     const remainingStocksCount = getRemainingStocksCount(
       available,
@@ -102,6 +102,7 @@ export class ProductFields extends Component {
             name="bookingLimitDatetime"
             placeholder="Laissez vide si pas de limite"
             readOnly={readOnly}
+            timezone={timezone}
           />
         </td>
         <td className="tooltiped">
@@ -142,6 +143,7 @@ ProductFields.defaultProps = {
   isEvent: true,
   offer: null,
   stock: null,
+  timezone: null,
 }
 
 ProductFields.propTypes = {
@@ -154,6 +156,7 @@ ProductFields.propTypes = {
   readOnly: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   showInfo: PropTypes.func.isRequired,
   stock: PropTypes.object,
+  timezone: PropTypes.string,
 }
 
 export default ProductFields

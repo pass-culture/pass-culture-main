@@ -101,7 +101,7 @@ export class RawStockItem extends Component {
       stock,
       stockPatch,
       stocks,
-      tz,
+      timezone,
     } = this.props
     const { isRequestPending, tbodyElement } = this.state
     const { id: stockId } = stockPatch
@@ -118,17 +118,17 @@ export class RawStockItem extends Component {
               selectBoundDatesFromTriggerDateNameAndTargetDateNameAndTimezoneDecorator(
                 'beginningDatetime',
                 'endDatetime',
-                tz
+                timezone
               ),
               selectTimeDecoratorFromTimeNameAndDateNameAndTimezoneDecorator(
                 'beginningTime',
                 'beginningDatetime',
-                tz
+                timezone
               ),
               selectTimeDecoratorFromTimeNameAndDateNameAndTimezoneDecorator(
                 'endTime',
                 'endDatetime',
-                tz
+                timezone
               ),
             ]
           }
@@ -148,7 +148,7 @@ export class RawStockItem extends Component {
                     readOnly={readOnly}
                     stockPatch={stockPatch}
                     stocks={stocks}
-                    tz={tz}
+                    timezone={timezone}
                     values={values}
                   />
                 )}
@@ -162,6 +162,7 @@ export class RawStockItem extends Component {
                   offer={offer}
                   showInfo={showInfo}
                   stock={stock}
+                  timezone={timezone}
                 />
                 {readOnly ? (
                   <EditAndDeleteControl
@@ -198,6 +199,7 @@ RawStockItem.defaultProps = {
   offer: null,
   showInfo: PropTypes.func.isRequired,
   stocks: null,
+  timezone: null,
 }
 
 RawStockItem.propTypes = {
@@ -211,6 +213,7 @@ RawStockItem.propTypes = {
   stockPatch: PropTypes.object.isRequired,
   stocks: PropTypes.arrayOf(PropTypes.object),
   showInfo: PropTypes.func.isRequired,
+  timezone: PropTypes.string,
 }
 
 export default RawStockItem

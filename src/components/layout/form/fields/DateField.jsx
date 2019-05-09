@@ -44,6 +44,7 @@ export const DateField = ({
   renderInner,
   renderValue,
   required,
+  timezone,
   type,
   validate,
   // see github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
@@ -59,7 +60,7 @@ export const DateField = ({
         let readOnlyValue
         let selected
         if (input.value) {
-          selected = moment(input.value)
+          selected = moment(input.value).tz(timezone)
           readOnlyValue = selected.format(dateFormat)
         }
 
@@ -127,6 +128,7 @@ DateField.defaultProps = {
   readOnly: false,
   renderValue: () => null,
   required: false,
+  timezone: null,
   validate: null,
 }
 
@@ -145,6 +147,7 @@ DateField.propTypes = {
   readOnly: PropTypes.bool,
   renderValue: PropTypes.func,
   required: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
+  timezone: PropTypes.string,
   validate: PropTypes.func,
 }
 

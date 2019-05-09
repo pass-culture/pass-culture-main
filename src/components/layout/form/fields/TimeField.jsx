@@ -24,7 +24,6 @@ export const TimeField = ({
   required,
   type,
   validate,
-  tz,
   // see https://www.npmjs.com/package/react-time-input
   ...ReactTimeInputProps
 }) => (

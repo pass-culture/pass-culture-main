@@ -10,7 +10,7 @@ import {
 
 export class EventFields extends Component {
   render() {
-    const { beginningMinDate, readOnly, stocks, tz } = this.props
+    const { beginningMinDate, readOnly, stocks, timezone } = this.props
     const highlightDates = (stocks || []).map(stock => stock.beginningDatetime)
 
     return (
@@ -22,6 +22,7 @@ export class EventFields extends Component {
             name="beginningDatetime"
             readOnly={readOnly}
             required
+            timezone={timezone}
             title="Date"
           />
         </td>
@@ -32,7 +33,6 @@ export class EventFields extends Component {
             readOnly={readOnly}
             required
             title="Heure"
-            tz={tz}
           />
         </td>
         <td>
@@ -43,7 +43,6 @@ export class EventFields extends Component {
             readOnly={readOnly}
             required
             title="Heure de fin"
-            tz={tz}
           />
         </td>
       </Fragment>
@@ -53,12 +52,16 @@ export class EventFields extends Component {
 
 EventFields.defaultProps = {
   beginningMinDate: null,
+  readOnly: true,
+  timezone: null,
   stocks: null,
 }
 
 EventFields.propTypes = {
   beginningMinDate: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
+  readOnly: PropTypes.bool,
+  timezone: PropTypes.string,
   stocks: PropTypes.array,
 }
 

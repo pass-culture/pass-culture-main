@@ -35,7 +35,7 @@ export default function mapStateToProps(state, ownProps) {
     (venue && typeof venue.iban !== 'undefined') ||
     (offerer && typeof offerer.iban !== 'undefined')
 
-  const tz = selectTimezoneByVenueId(state, venueId)
+  const timezone = selectTimezoneByVenueId(state, venueId)
 
   return {
     hasIban,
@@ -44,7 +44,7 @@ export default function mapStateToProps(state, ownProps) {
     productId,
     stockPatch,
     stockIdOrNew,
-    tz,
+    timezone,
     venue,
     venueId,
   }
