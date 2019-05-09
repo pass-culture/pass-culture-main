@@ -24,9 +24,8 @@ def find_retry_payments() -> List[Payment]:
     return Payment.query.filter(Payment.id.in_(retry_payment_ids)).all()
 
 
-def find_payments_by_transaction_and_message(message_id: str, transaction_id: str) -> List[Payment]:
+def find_payments_by_message(message_id: str) -> List[Payment]:
     return Payment.query \
         .join(PaymentTransaction) \
-        .filter(Payment.transactionEndToEndId == transaction_id) \
         .filter(PaymentTransaction.messageId == message_id) \
         .all()

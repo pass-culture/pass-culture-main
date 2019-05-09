@@ -55,15 +55,39 @@ class DoBanPaymentsTest:
         payment6 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, transaction=transaction1)
 
         PcObject.check_and_save(deposit, payment1, payment2, payment3, payment4, payment5, payment6)
-        print(uuid1.hex)
 
         # when
-        do_ban_payments('XML1', uuid1.hex, [payment1.id, payment5.id])
+        do_ban_payments('XML1', [payment1.id, payment5.id])
 
         # then
         assert payment1.currentStatus.status == TransactionStatus.BANNED
         assert payment2.currentStatus.status == TransactionStatus.PENDING
         assert payment3.currentStatus.status == TransactionStatus.PENDING
-        assert payment4.currentStatus.status == TransactionStatus.PENDING
+        assert payment4.currentStatus.status == TransactionStatus.RETRY
         assert payment5.currentStatus.status == TransactionStatus.BANNED
         assert payment6.currentStatus.status == TransactionStatus.RETRY
+
+    @clean_database
+    def test_does_not_modify_statuses_on_given_payments_if_a_payment_id_is_not_found(self, app):
+        # given
+        user = create_user()
+        booking = create_booking(user)
+        deposit = create_deposit(user, datetime.utcnow())
+        offerer = booking.stock.resolvedOffer.venue.managingOfferer
+
+        transaction1 = create_payment_transaction(transaction_message_id='XML1')
+        transaction2 = create_payment_transaction(transaction_message_id='XML2')
+
+        uuid1, uuid2 = uuid.uuid4(), uuid.uuid4()
+
+        payment1 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, transaction=transaction1)
+        payment2 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid2, transaction=transaction2)
+
+        PcObject.check_and_save(deposit, payment1, payment2)
+
+        # when
+        do_ban_payments('XML1', [payment1.id, 123456])
+
+        # then
+        assert payment1.currentStatus.status == TransactionStatus.PENDING
+        assert payment2.currentStatus.status == TransactionStatus.PENDING

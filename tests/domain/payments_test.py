@@ -9,7 +9,8 @@ from freezegun import freeze_time
 
 from domain.payments import create_payment_for_booking, filter_out_already_paid_for_bookings, create_payment_details, \
     create_all_payments_details, make_custom_message, group_payments_by_status, \
-    filter_out_bookings_without_cost, keep_only_pending_payments, keep_only_not_processable_payments, apply_banishment
+    filter_out_bookings_without_cost, keep_only_pending_payments, keep_only_not_processable_payments, apply_banishment, \
+    UnmatchedPayments
 from domain.reimbursement import BookingReimbursement, ReimbursementRules
 from models import Offer, Venue, Booking, Offerer
 from models.payment import Payment
@@ -589,3 +590,18 @@ class ApplyBanishmentTest:
         # then
         assert banned_payments == []
         assert retry_payments == []
+
+    def test_value_error_is_raised_if_payments_ids_do_not_match_payments(self):
+        # given
+        payments = [
+            create_payment(Booking(), Offerer(), 10, idx=111),
+            create_payment(Booking(), Offerer(), 10, idx=222)
+        ]
+        ids_to_ban = [222, 333]
+
+        # when
+        with pytest.raises(UnmatchedPayments) as e:
+            apply_banishment(payments, ids_to_ban)
+
+        # then
+        assert e.value.payment_ids == {333}

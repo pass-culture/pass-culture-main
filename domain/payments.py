@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from hashlib import sha256
 from io import BytesIO, StringIO
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Set
 from uuid import UUID
 
 from flask import render_template
@@ -24,6 +24,11 @@ XML_NAMESPACE = {'ns': 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.03'}
 
 class InvalidTransactionXML(Exception):
     pass
+
+
+class UnmatchedPayments(Exception):
+    def __init__(self, payment_ids: Set[int]):
+        self.payment_ids = payment_ids
 
 
 class Transaction:
@@ -183,9 +188,14 @@ def group_payments_by_status(payments: List[Payment]) -> Dict:
     return groups
 
 
+
 def apply_banishment(payments: List[Payment], ids_to_ban: List[int]) -> Tuple[List[Payment], List[Payment]]:
     if not ids_to_ban:
         return [], []
+
+    unmatched_ids = set(ids_to_ban) - {p.id for p in payments}
+    if unmatched_ids:
+       raise UnmatchedPayments(unmatched_ids)
 
     banned_payments = [p for p in payments if p.id in ids_to_ban]
     for p in banned_payments:
