@@ -111,18 +111,20 @@ class Stock(PcObject,
                 logger.error("Unexpected error in patch stocks: " + pformat(ie))
         return PcObject.restize_internal_error(ie)
 
+
     def update_stock(self, stock_data):
-        is_updating_booking_limit_datetime_on_a_thing_to_unlimited = ProductType.is_thing(self.offer.type) \
-         and 'bookingLimitDatetime' in stock_data \
+        is_thing = ProductType.is_thing(self.offer.type)
+        is_unlimitted_booking_limit_datetime = 'bookingLimitDatetime' in stock_data \
          and stock_data.get('bookingLimitDatetime') is None
-         
-        if is_updating_booking_limit_datetime_on_a_thing_to_unlimited:
+ 
+        if is_thing and is_unlimitted_booking_limit_datetime:
             self.populateFromDict(stock_data, skipped_keys=['bookingLimitDatetime'])
             self.bookingLimitDatetime = None
         else:
             self.populateFromDict(stock_data)
 
         PcObject.check_and_save(self)
+
 
 
 @event.listens_for(Stock, 'before_insert')

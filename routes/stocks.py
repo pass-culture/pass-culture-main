@@ -75,12 +75,11 @@ def create_stock():
     offerer = offerer_queries.get_by_offer_id(offer_id)
     ensure_current_user_has_rights(RightsType.editor, offerer.id)
  
-    isThing = ProductType.is_thing(offer.type)
-    is_creating_booking_limit_datetime_on_a_thing_to_none = isThing \
-     and 'bookingLimitDatetime' in request_data \
+    is_thing = ProductType.is_thing(offer.type)
+    is_unlimitted_booking_limit_datetime = 'bookingLimitDatetime' in request_data \
      and request_data.get('bookingLimitDatetime') is None
      
-    if is_creating_booking_limit_datetime_on_a_thing_to_none:
+    if is_thing and is_unlimitted_booking_limit_datetime:
         new_stock = Stock(from_dict=request_data, skipped_keys="bookingLimitDatetime" )
         new_stock.bookingLimitDatetime = None
     else:

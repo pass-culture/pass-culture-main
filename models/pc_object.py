@@ -70,10 +70,12 @@ class PcObject():
                 autoincrement=True)
 
     def __init__(self, **options):
-        if options and 'from_dict' in options and options['from_dict'] and 'skipped_keys' in options and options['skipped_keys']:
-            self.populateFromDict(options['from_dict'], options['skipped_keys'])
-        elif options and 'from_dict' in options and options['from_dict']:
-            self.populateFromDict(options['from_dict'])
+        from_dict = options.get('from_dict')
+        skipped_keys = options.get('skipped_keys')
+        if from_dict and skipped_keys:
+            self.populateFromDict(from_dict, skipped_keys)
+        elif from_dict:
+            self.populateFromDict(from_dict)
 
     def _asdict(self, **options):
         result = OrderedDict()
