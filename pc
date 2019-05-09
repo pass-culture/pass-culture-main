@@ -486,7 +486,7 @@ elif [[ "$CMD" == "logs" ]]; then
 	exit
   fi
 
-# Connect to Postgresql database in command line
+# Connect to Postgresql database in command line using psql
 elif [[ "$CMD" == "psql" ]]; then
 	COLUMNS=${COLUMNS:-''};
 	if [[ "$ENV" == "development" ]]; then
@@ -495,6 +495,17 @@ elif [[ "$CMD" == "psql" ]]; then
 		scalingo -a "$SCALINGO_APP" pgsql-console
 		exit
 	fi
+
+# Connect to Postgresql database in command line using pgcli
+elif [[ "$CMD" == "pgcli" ]]; then
+	COLUMNS=${COLUMNS:-''};
+	if [[ "$ENV" == "development" ]]; then
+		RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" pgcli -U pass_culture pass_culture $*"'
+	else
+		scalingo -a "$SCALINGO_APP" pgsql-console
+		exit
+	fi
+
 
 # Open a python prompt in the specified environment
 elif [[ "$CMD" == "python" ]]; then
