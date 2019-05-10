@@ -161,12 +161,21 @@ email: pctest.jeune93.has-booked-some@btmx.fr
 password: pctest0.Jeune93.has-booked-some
 ```
 
-Pour l'application pro, vous pouvez naviguer en tant qu'admin avec:
+Pour l'application PRO, vous pouvez naviguer en tant qu'admin avec:
 
 ```
 email: pctest.admin93.0@btmx.fr
 password: pctest0.Admin93.0
 ```
+
+Ou en tant qu'user avec :
+
+```
+email: pctest.pro93.0@btmx.fr
+password: pctest.pro93.0
+```
+
+(Ces deux utilisateurs existent également pour le 97, pour les utiliser, il suffit de remplacer 93 par 97)
 
 ## Tagging des versions
 
