@@ -141,7 +141,7 @@ def patch_booking(booking_id):
     booking = booking_queries.find_by_id(dehumanize(booking_id))
 
     is_user_cancellation = booking.user == current_user
-    check_booking_is_cancellable(booking, False)
+    check_booking_is_cancellable(booking, is_user_cancellation)
     booking_offerer = booking.stock.resolvedOffer.venue.managingOffererId
     is_offerer_cancellation = current_user.hasRights(RightsType.editor, booking_offerer)
 

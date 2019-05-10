@@ -100,7 +100,7 @@ class Booking(PcObject,
                 hours=72)
             return event_starts_in_more_than_72_hours
         else:
-            return False
+            return True
 
     @staticmethod
     def restize_internal_error(ie):

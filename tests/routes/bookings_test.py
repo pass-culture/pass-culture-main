@@ -770,7 +770,6 @@ class PatchBookingTest:
         deposit = create_deposit(user, deposit_date, amount=500)
         booking = create_booking(user, is_used=True)
         PcObject.check_and_save(user, deposit, booking)
-        url = API_URL + '/bookings/' + humanize(booking.id)
 
         # When
         response = TestClient().with_auth(user.email) \
@@ -843,6 +842,31 @@ class PatchBookingTest:
         assert response.status_code == 200
         db.session.refresh(booking)
         assert booking.isCancelled
+
+    @clean_database
+    def test_returns_400_and_does_not_cancel_booking_when_beginning_date_time_in_less_than_72_hours(self, app):
+        # Given
+        in_five_days = datetime.utcnow() + timedelta(days=5)
+        in_one_days = datetime.utcnow() + timedelta(days=1)
+        user = create_user(email='test@email.com')
+        deposit_date = datetime.utcnow() - timedelta(minutes=2)
+        deposit = create_deposit(user, deposit_date, amount=500)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        event_occurrence = create_event_occurrence(offer, beginning_datetime=in_one_days, end_datetime=in_five_days)
+        stock = create_stock_from_event_occurrence(event_occurrence)
+        booking = create_booking(user, stock, venue)
+        PcObject.check_and_save(user, deposit, booking)
+
+        # When
+        response = TestClient().with_auth(user.email) \
+            .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": True})
+
+        # Then
+        assert response.status_code == 400
+        db.session.refresh(booking)
+        assert booking.isCancelled is False
 
     @clean_database
     def test_returns_404_if_booking_does_not_exist(self, app):
