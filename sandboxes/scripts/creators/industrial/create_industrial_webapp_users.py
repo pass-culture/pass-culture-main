@@ -21,7 +21,6 @@ def create_industrial_webapp_users():
     validation_prefix, validation_suffix = 'AZERTY', 123
     validation_suffix += 1
 
-    # loop on department and tags
     for departement_code in departement_codeS:
 
         for tag in WEBAPP_TAGS:

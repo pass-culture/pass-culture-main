@@ -11,7 +11,6 @@ def create_industrial_pro_users():
 
     users_by_name = {}
 
-    # loop on department and tags
     for departement_code in departement_codes:
 
         for pro_count in range(PROS_COUNT):

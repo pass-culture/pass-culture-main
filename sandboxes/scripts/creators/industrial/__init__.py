@@ -27,10 +27,7 @@ def save_industrial_sandbox():
     pro_users_by_name = create_industrial_pro_users()
     webapp_users_by_name = create_industrial_webapp_users()
 
-    users_by_name = dict(
-        pro_users_by_name,
-        **dict(admin_users_by_name, **webapp_users_by_name)
-    )
+    users_by_name = dict(dict(admin_users_by_name, **pro_users_by_name), **webapp_users_by_name)
 
     create_industrial_deposits(users_by_name)
 

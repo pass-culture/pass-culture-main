@@ -32,7 +32,6 @@ def create_industrial_users():
     )
     validation_suffix += 1
 
-    # loop on department and tags
     for departement_code in DEPARTMENT_CODES:
 
         for admin_count in range(ADMINS_COUNT):

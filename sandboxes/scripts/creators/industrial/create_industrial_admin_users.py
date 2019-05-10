@@ -11,7 +11,6 @@ def create_industrial_admin_users():
 
     users_by_name = {}
 
-    # loop on department and tags
     for departement_code in departement_codeS:
 
         for admin_count in range(ADMINS_COUNT):
