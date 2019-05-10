@@ -49,7 +49,7 @@ class BookingIsCancellableTest:
         # Then
         assert is_cancellable
 
-    def test_booking_on_thing_is_not_cancellable(self):
+    def test_booking_on_thing_is_cancellable(self):
         # Given
         booking = Booking()
         booking.stock = Stock()
@@ -60,7 +60,7 @@ class BookingIsCancellableTest:
         is_cancellable = booking.isUserCancellable
 
         # Then
-        assert is_cancellable == False
+        assert is_cancellable == True
 
     def test_booking_on_event_is_not_cancellable_if_begining_date_time_before_72_hours(self):
         # Given
