@@ -21,7 +21,8 @@ class FillUserFromTest:
             '0123456789',
             'Buckinghamshire (22)',
             '22850',
-            '1923-03-15'
+            '1923-03-15',
+            'super_secure_password'
         ]
 
     def test_returns_an_user_with_data_from_csv_row(self):
@@ -37,6 +38,7 @@ class FillUserFromTest:
         assert user.departementCode == '22'
         assert user.postalCode == '22850'
         assert user.dateOfBirth == datetime(1923, 3, 15)
+        assert user.password == 'super_secure_password'
 
     def test_returns_a_formatted_phone_number(self):
         # given
@@ -98,6 +100,18 @@ class FillUserFromTest:
         assert user.password != ''
         assert user.resetPasswordToken is not None
         assert user.resetPasswordTokenValidityLimit is not None
+
+    def test_returns_an_user_with_computed_password(self):
+        # given
+        data = list(self.csv_row)
+        print(self.csv_row)
+        del data[8]
+
+        # when
+        user = fill_user_from(data, User())
+
+        # then
+        assert len(user.password) == 12
 
 
 @pytest.mark.standalone

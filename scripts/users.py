@@ -24,6 +24,7 @@ PHONE_COLUMN_INDEX = 4
 DEPARTMENT_COLUMN_INDEX = 5
 POSTAL_CODE_COLUMN_INDEX = 6
 BIRTHDATE_COLUMN_INDEX = 7
+PASSWORD_INDEX = 8
 
 CHUNK_SIZE = 250
 THIRTY_DAYS_IN_HOURS = 30 * 24
@@ -80,7 +81,7 @@ def fill_user_from(csv_row: List[str], user: User) -> User:
     user.departementCode = _extract_departement_code(csv_row[DEPARTMENT_COLUMN_INDEX])
     user.postalCode = csv_row[POSTAL_CODE_COLUMN_INDEX]
     user.canBookFreeOffers = False
-    user.password = random_token(length=12).encode('utf-8')
+    user.password = _compute_password_if_absent(csv_row)
     generate_reset_token(user, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
     return user
 
@@ -177,3 +178,11 @@ def _is_header_or_blank_line(line: str) -> bool:
 
 def _extract_departement_code(plain_department: str) -> str:
     return re.search('\((.*?)\)$', plain_department).group()[1:-1]
+
+
+def _compute_password_if_absent(csv_raw: List[List[str]]) -> str:
+    print(csv_raw)
+    if len(csv_raw) - 1 == PASSWORD_INDEX:
+        return csv_raw[PASSWORD_INDEX]
+    else:
+        return random_token(length=12).encode('utf-8')
