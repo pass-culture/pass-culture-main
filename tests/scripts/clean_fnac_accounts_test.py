@@ -102,7 +102,7 @@ class MoveOffersFromOneVenueToAnotherTest:
         # Given
         origin_offerer = create_offerer(siren='123456789')
         target_offerer = create_offerer(siren='987654321')
-        other_offerer = create_offerer('123456788')
+        other_offerer = create_offerer(siren='123456788')
 
         origin_venue = create_venue(origin_offerer, siret=origin_offerer.siren + '12345')
         target_venue = create_venue(target_offerer, siret=target_offerer.siren + '12345')
@@ -145,9 +145,9 @@ class DeleteAllPhysicalManagedVenuesTest:
         # Given
         offerer = create_offerer()
         other_offerer = create_offerer(siren='987654321')
-        venue1 = create_venue(offerer, siret=offerer.siren + '00001')
-        venue2 = create_venue(offerer, siret=offerer.siren + '00002')
-        other_venue = create_venue(other_offerer, siret=other_offerer.siren + '00001')
+        venue1 = create_venue(offerer, siret=offerer.siren + '00001', is_virtual=False)
+        venue2 = create_venue(offerer, siret=offerer.siren + '00002', is_virtual=False)
+        other_venue = create_venue(other_offerer, siret=other_offerer.siren + '00001', is_virtual=False)
 
         PcObject.check_and_save(venue1, venue2, other_venue)
 
@@ -163,7 +163,7 @@ class DeleteAllPhysicalManagedVenuesTest:
     def test_keeps_virtual_venues(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, siret=None, comment=None, is_virtual=True)
+        venue = create_venue(offerer, siret=None, is_virtual=True)
 
         PcObject.check_and_save(venue)
 

@@ -38,8 +38,8 @@ def move_offers_from_one_venue_to_another(origin_venue_id: int, target_venue_id:
 
 
 def delete_all_physical_managed_venues(offerer_id: int):
-    fnac_live = Offerer.query.filter_by(id=offerer_id).one()
-    for venue in fnac_live.managedVenues:
+    offerer = Offerer.query.filter_by(id=offerer_id).one()
+    for venue in offerer.managedVenues:
         if not venue.isVirtual:
             db.session.delete(venue)
     db.session.commit()
