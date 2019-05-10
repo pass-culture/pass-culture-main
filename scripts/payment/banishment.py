@@ -6,7 +6,7 @@ from repository.payment_queries import find_payments_by_message
 from utils.logger import logger
 
 
-def parse_raw_payments_ids(raw_ids: str):
+def parse_raw_payments_ids(raw_ids: str) -> List[int]:
     return list(map(lambda id: int(id), raw_ids.split(',')))
 
 
