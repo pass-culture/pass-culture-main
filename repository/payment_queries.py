@@ -3,7 +3,7 @@ from typing import List
 from flask import render_template
 from sqlalchemy import text
 
-from models import PaymentTransaction, Payment, PaymentStatus
+from models import PaymentTransaction, Payment, PaymentStatus, Booking, Stock, Offer, Venue, BankInformation
 from models.db import db
 
 
@@ -28,4 +28,15 @@ def find_payments_by_message(message_id: str) -> List[Payment]:
     return Payment.query \
         .join(PaymentTransaction) \
         .filter(PaymentTransaction.messageId == message_id) \
+        .all()
+
+
+def find_all_for_bank_information(id: str) -> List[Payment]:
+    return Payment.query\
+        .join(Booking)\
+        .join(Stock)\
+        .join(Offer)\
+        .join(Venue)\
+        .join(BankInformation)\
+        .filter_by(id=id)\
         .all()
