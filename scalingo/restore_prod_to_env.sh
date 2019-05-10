@@ -3,12 +3,13 @@
 set -o nounset
 
 if [ -z ${1:-} ] || [ "$1" == "-h" ]; then
-    echo "$(basename "$0") [-h] [-a s1 -b s2 -l] -- program to restore a backup file on Scalingo database
+    echo "$(basename "$0") [-h] [-a s1 -b s2 -l -z] -- program to restore a backup file on Scalingo database
 where:
     -h  show this help text
     -a  Scalingo app name (required)
     -b  path to backup file (required)
-    -l  get last prod backup (only work on OVH server)"
+    -l  get last prod backup (only work on OVH server)
+    -z  anonymize the backup"
     exit 0
 fi
 
@@ -37,6 +38,7 @@ if [[ $# -gt 1 ]] && [[ "$1" == "-b" ]]; then
 elif [[ "$*" == *"-l"* ]]; then
   DUMP_DIRECTORY=~/pass-culture-main/db_prod_dumps
   BACKUP_FILE=$(cd "$DUMP_DIRECTORY" && find -L . ! -size 0 -type f -printf "%T@ %p\n" | sort -n  | tail -1 | cut -d' ' -f 2)
+  shift 1
 else
   echo "You must provide a existing backup file to restore."
   exit 1
@@ -86,6 +88,14 @@ PGPASSWORD="$PG_PASSWORD" pg_restore --host 127.0.0.1 \
                                          "$DUMP_DIRECTORY"/"$BACKUP_FILE" 2>&1 | grep -v 'must be owner of extension' \
                                           | grep -v 'must be owner of schema public' \
                                           | grep -v ' ERROR:  schema "public" already exists' > restore_"$APP_NAME"_error.log
+
+
+if [[ $# -gt 0 ]] && [[ "$1" == "-z" ]]; then
+  echo "Start anonymization"
+  bash ~/pass-culture-main/anonymize_database.sh -a "$APP_NAME"
+  echo "Anonymization success."
+  shift 2
+fi
 
 echo "Backup restored."
 sudo kill -9 "$DB_TUNNEL_PID"
