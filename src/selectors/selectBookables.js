@@ -43,13 +43,13 @@ export const humanizeBeginningDate = () => items => {
   })
 }
 
-export const markAsReserved = bookings => {
+export const markAsBooked = bookings => {
   const bookingsStockIds = bookings.map(({ stockId }) => stockId)
   return items =>
     items.map(obj => {
-      const isReserved = (bookingsStockIds || []).includes(obj.id)
+      const isBooked = (bookingsStockIds || []).includes(obj.id)
       return Object.assign({}, obj, {
-        userAsAlreadyReservedThisDate: isReserved,
+        userAsAlreadyBookedThisDate: isBooked,
       })
     })
 }
@@ -78,7 +78,7 @@ export const selectBookables = createCachedSelector(
       filterAvailableStocks,
       setTimezoneOnBeginningDatetime(tz),
       humanizeBeginningDate(),
-      markAsReserved(bookings),
+      markAsBooked(bookings),
       addModifierString(),
       sortByDate()
     )(stocks)

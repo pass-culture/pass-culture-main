@@ -2,7 +2,11 @@
 import moment from 'moment'
 import 'moment-timezone'
 
-import { addModifierString, humanizeBeginningDate, setTimezoneOnBeginningDatetime} from '../selectBookables'
+import {
+  addModifierString,
+  humanizeBeginningDate,
+  setTimezoneOnBeginningDatetime,
+} from '../selectBookables'
 import { stockWithDates, stockWithoutDates } from './data/selectBookables'
 
 const format = 'dddd DD/MM/YYYY à HH:mm'
@@ -86,12 +90,14 @@ describe('src | selectors| selectBookables', () => {
       const results = setTimezoneOnBeginningDatetime(timezone)(items)
 
       // then
-      expect(results[0].offerId).toBe("BYAQ")
-      expect(results[0].beginningDatetime.format()).toBe("2019-04-19T20:30:00+02:00")
-      expect(results[0].endDatetime).toBe("2019-04-20T20:00:00Z")
+      expect(results[0].offerId).toBe('BYAQ')
+      expect(results[0].beginningDatetime.format()).toBe(
+        '2019-04-19T20:30:00+02:00'
+      )
+      expect(results[0].endDatetime).toBe('2019-04-20T20:00:00Z')
     })
   })
-  xdescribe('markAsReserved', () => {})
+  xdescribe('markAsBooked', () => {})
   xdescribe('sortByDate', () => {})
   xdescribe('selectBookables', () => {})
 })

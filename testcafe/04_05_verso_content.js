@@ -1,4 +1,3 @@
-// $(yarn bin)/testcafe chrome ./testcafe/04_04_verso_with_share.js
 import { Selector } from 'testcafe'
 
 import { createUserRole } from './helpers/roles'
