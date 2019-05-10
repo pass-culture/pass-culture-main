@@ -77,7 +77,7 @@ class BookingIsCancellableTest:
 
 @pytest.mark.standalone
 class StatusLabelTest:
-    def test_is_cancelled_label_is_returned_if_event_has_been_cancelled(self):
+    def test_is_cancelled_label_when_booking_is_cancelled(self):
         # Given
         booking = Booking()
         booking.stock = Stock()
@@ -89,7 +89,7 @@ class StatusLabelTest:
         # Then
         assert statusLabel == "Réservation annulée"
 
-    def test_is_countermak_validated_label_is_returned_if_event_has_been_used(self):
+    def test_is_countermak_validated_label_when_booking_is_used(self):
         # Given
         booking = Booking()
         booking.stock = Stock()
@@ -101,7 +101,7 @@ class StatusLabelTest:
         # Then
         assert statusLabel == 'Contremarque validée'
 
-    def test_validated_label_is_returned_if_event_is_expired(self):
+    def test_validated_label_when_event_is_expired(self):
         # Given
         booking = Booking()
         booking.stock = Stock()
