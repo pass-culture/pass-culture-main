@@ -32,8 +32,7 @@ class UpdateEmailsWithNewSenderEmailTest:
         email1 = create_email(email_content1, status='ERROR', time=datetime(2018, 12, 1, 12, 0, 0))
         email2 = create_email(email_content2, status='ERROR', time=datetime(2018, 12, 1, 12, 0, 0))
 
-        PcObject.check_and_save(email1)
-        PcObject.check_and_save(email2)
+        PcObject.check_and_save(email1, email2)
 
         # When
         update_emails_with_new_sender_email()
