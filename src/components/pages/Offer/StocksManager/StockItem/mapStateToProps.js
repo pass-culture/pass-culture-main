@@ -1,9 +1,9 @@
-import selectFormInitialValuesByStockAndOfferIdAndOffererId from './selectFormInitialValuesByStockAndOfferIdAndOffererId'
+import selectFormInitialValuesByStockAndOfferIdAndOffererId from './selectors/selectFormInitialValuesByStockAndOfferIdAndOffererId'
 import selectOfferById from 'selectors/selectOfferById'
 import selectOffererById from 'selectors/selectOffererById'
 import selectProductById from 'selectors/selectProductById'
 import selectVenueById from 'selectors/selectVenueById'
-import selectTimezoneByVenueId from 'selectors/selectTimezoneByVenueId'
+import selectTimezoneByVenueIdAndOffererId from 'selectors/selectTimezoneByVenueIdAndOffererId'
 import { translateQueryParamsToApiParams } from 'utils/translate'
 
 export default function mapStateToProps(state, ownProps) {
@@ -35,7 +35,11 @@ export default function mapStateToProps(state, ownProps) {
     (venue && typeof venue.iban !== 'undefined') ||
     (offerer && typeof offerer.iban !== 'undefined')
 
-  const timezone = selectTimezoneByVenueId(state, venueId)
+  const timezone = selectTimezoneByVenueIdAndOffererId(
+    state,
+    venueId,
+    managingOffererId
+  )
 
   return {
     hasIban,

@@ -4,12 +4,28 @@ import { closeModal } from 'pass-culture-shared'
 import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 
-import StockItem from './StockItem'
+import StockItemContainer from './StockItem/StockItemContainer'
 import HeroSection from 'components/layout/HeroSection'
 
+<<<<<<< HEAD:src/components/pages/Offer/StocksManager/StocksManager.jsx
 class StocksManager extends Component {
   constructor(props) {
     super(props)
+=======
+const getStocksManagerButtonTitle = (isEvent, stocks) => {
+  if (isEvent) {
+    return '+ Ajouter une date'
+  }
+  if (stocks.length) {
+    return ''
+  }
+  return 'Renseigner le stock'
+}
+
+class StocksManager extends Component {
+  constructor() {
+    super()
+>>>>>>> (pC-1876) changes given review:src/components/pages/Offer/StocksManager/StocksManager.jsx
     this.state = {
       errors: null,
       info: null,
@@ -221,7 +237,7 @@ class StocksManager extends Component {
             )}
 
             {isCreatedEntity && offer && (
-              <StockItem
+              <StockItemContainer
                 closeInfo={this.closeInfo}
                 handleSetErrors={this.handleSetErrors}
                 isFullyEditable={!provider}
@@ -231,7 +247,7 @@ class StocksManager extends Component {
             )}
 
             {stocks.map(stock => (
-              <StockItem
+              <StockItemContainer
                 closeInfo={this.closeInfo}
                 key={stock.id}
                 handleSetErrors={this.handleSetErrors}
@@ -266,7 +282,7 @@ StocksManager.propTypes = {
   shouldPreventCreationOfSecondStock: PropTypes.bool,
   stocks: PropTypes.array,
   query: PropTypes.object.isRequired,
-  isEvent: PropTypes.bool.isRequired,
+  isEvent: PropTypes.bool,
 }
 
 export default StocksManager

@@ -14,7 +14,7 @@ import ProductFields from './ProductFields'
 import SubmitAndCancelControl from './SubmitAndCancelControl'
 import { errorKeyToFrenchKey } from './utils'
 
-export class RawStockItem extends Component {
+export class StockItem extends Component {
   constructor() {
     super()
     this.state = {
@@ -191,7 +191,7 @@ export class RawStockItem extends Component {
   }
 }
 
-RawStockItem.defaultProps = {
+StockItem.defaultProps = {
   closeInfo: PropTypes.func.isRequired,
   formBeginningDatetime: null,
   formBookingLimitDatetime: null,
@@ -202,7 +202,7 @@ RawStockItem.defaultProps = {
   timezone: null,
 }
 
-RawStockItem.propTypes = {
+StockItem.propTypes = {
   closeInfo: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
   hasIban: PropTypes.bool.isRequired,
@@ -216,4 +216,4 @@ RawStockItem.propTypes = {
   timezone: PropTypes.string,
 }
 
-export default RawStockItem
+export default StockItem

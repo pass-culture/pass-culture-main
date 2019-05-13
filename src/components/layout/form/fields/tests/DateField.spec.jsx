@@ -72,7 +72,7 @@ describe('src | components | layout | form | DateField', () => {
     }
   })
 
-  it('should display the date taking in account the timezone', () => {
+  it('should display the date taking into account the timezone', () => {
     // given
     const initialValues = {
       myDate: '2019-04-27T02:00:00Z',

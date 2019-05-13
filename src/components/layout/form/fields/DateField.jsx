@@ -11,18 +11,18 @@ import { composeValidators } from 'react-final-form-utils'
 import Icon from 'components/layout/Icon'
 import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
 
-const renderReadOnlyInput = ({ name, readOnlyValue }) => (
+const renderReadOnlyDateInput = ({ formattedSelectedDatetime, name }) => (
   <input
     className="field-input field-date"
     name={name}
     readOnly
-    value={readOnlyValue}
+    value={formattedSelectedDatetime}
   />
 )
 
-const renderDateInput = DatePickerProps => (
+const renderDateInput = dateInputProps => (
   <div className="flex-columns items-center field-input field-date">
-    <DatePicker {...DatePickerProps} />
+    <DatePicker {...dateInputProps} />
     <div className="flex-auto" />
     <Icon alt="Horaires" svg="ico-calendar" />
   </div>
@@ -62,14 +62,14 @@ export const DateField = ({
       name={name}
       validate={composeValidators(validate, getRequiredValidate(required))}
       render={({ input, meta }) => {
-        let readOnlyValue
-        let selected
+        let formattedSelectedDatetime
+        let selectedDatetime
         if (input.value) {
-          selected = moment(input.value)
+          selectedDatetime = moment(input.value)
           if (timezone) {
-            selected = selected.tz(timezone)
+            selectedDatetime = selectedDatetime.tz(timezone)
           }
-          readOnlyValue = selected.format(dateFormat)
+          formattedSelectedDatetime = selectedDatetime.format(dateFormat)
         }
 
         const dateInputProps = {
@@ -79,12 +79,12 @@ export const DateField = ({
           isClearable,
           locale,
           placeholderText: placeholder,
+          selected: selectedDatetime,
           shouldCloseOnSelect: true,
-          selected,
           ...DatePickerProps,
           ...input,
           onChange: createOnDateChange(input),
-          value: readOnlyValue,
+          value: formattedSelectedDatetime,
         }
 
         return (
@@ -109,7 +109,10 @@ export const DateField = ({
               <div className="field-value flex-columns items-center">
                 <div className="field-inner flex-columns items-center">
                   {readOnly
-                    ? renderReadOnlyInput({ name, readOnlyValue })
+                    ? renderReadOnlyDateInput({
+                        formattedSelectedDatetime,
+                        name,
+                      })
                     : renderDateInput(dateInputProps)}
                 </div>
                 {renderValue()}

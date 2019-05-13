@@ -1,14 +1,12 @@
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { mount, shallow } from 'enzyme'
+import { Field } from 'pass-culture-shared'
 import configureStore from 'redux-mock-store'
 import { Provider } from 'react-redux'
 import { Route, Router } from 'react-router-dom'
 
-import { Field } from 'pass-culture-shared'
-
 import ProductFields from '../ProductFields'
-
 import mockedState from './mockedState'
 const middlewares = []
 const mockStore = configureStore(middlewares)

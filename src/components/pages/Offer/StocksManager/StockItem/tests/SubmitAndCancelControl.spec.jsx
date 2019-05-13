@@ -1,7 +1,7 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import SubmitAndCancelControl from '../index'
+import SubmitAndCancelControl from '../SubmitAndCancelControl'
 
 describe('src | components | pages | Offer | StocksManagerContainer | StockItem | SubmitAndCancelControl ', () => {
   describe('snapshot', () => {

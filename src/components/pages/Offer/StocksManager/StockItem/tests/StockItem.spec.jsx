@@ -1,11 +1,11 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import RawStockItem from '../RawStockItem'
+import StockItem from '../StockItem'
 
 const dispatchMock = jest.fn()
 
-describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
+describe('src | components | pages | Offer | StockItem | StockItem ', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
@@ -21,7 +21,7 @@ describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
       }
 
       // when
-      const wrapper = shallow(<RawStockItem {...initialProps} />)
+      const wrapper = shallow(<StockItem {...initialProps} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -47,7 +47,7 @@ describe('src | components | pages | Offer | StockItem | RawStockItem ', () => {
           },
           stocks: [],
         }
-        const wrapper = shallow(<RawStockItem {...initialProps} />)
+        const wrapper = shallow(<StockItem {...initialProps} />)
 
         return new Promise((resolve, reject) => {
           // when

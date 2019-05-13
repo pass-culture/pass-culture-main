@@ -1,5 +1,6 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
+
 import DeleteDialog from '../DeleteDialog'
 
 describe('src | components | pages | Offer | StockItem | DeleteDialog', () => {
