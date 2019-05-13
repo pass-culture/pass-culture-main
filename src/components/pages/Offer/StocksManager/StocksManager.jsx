@@ -7,11 +7,6 @@ import PropTypes from 'prop-types'
 import StockItemContainer from './StockItem/StockItemContainer'
 import HeroSection from 'components/layout/HeroSection'
 
-<<<<<<< HEAD:src/components/pages/Offer/StocksManager/StocksManager.jsx
-class StocksManager extends Component {
-  constructor(props) {
-    super(props)
-=======
 const getStocksManagerButtonTitle = (isEvent, stocks) => {
   if (isEvent) {
     return '+ Ajouter une date'
@@ -25,7 +20,6 @@ const getStocksManagerButtonTitle = (isEvent, stocks) => {
 class StocksManager extends Component {
   constructor() {
     super()
->>>>>>> (pC-1876) changes given review:src/components/pages/Offer/StocksManager/StocksManager.jsx
     this.state = {
       errors: null,
       info: null,
@@ -117,16 +111,6 @@ class StocksManager extends Component {
     } else if (event.key === 'Escape') {
       this.handleEscKey()
     }
-  }
-
-  getStocksManagerButtonTitle = (isEvent, stocks) => {
-    if (isEvent) {
-      return '+ Ajouter une date'
-    }
-    if (stocks.length) {
-      return ''
-    }
-    return 'Renseigner le stock'
   }
 
   renderTableHead() {
@@ -229,7 +213,7 @@ class StocksManager extends Component {
                         query.changeToCreation(null, { key: 'stock' })
                       }
                       type="button">
-                      {this.getStocksManagerButtonTitle(isEvent, stocks)}
+                      {getStocksManagerButtonTitle(isEvent, stocks)}
                     </button>
                   </td>
                 </tr>
