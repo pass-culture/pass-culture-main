@@ -2,7 +2,7 @@
 import os
 import pytest
 from datetime import datetime
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from local_providers import BankInformationProvider
 from local_providers.demarches_simplifiees_bank_information import UnknownRibAffiliation
@@ -1199,7 +1199,7 @@ class RetrieveBankInformationTest:
 @pytest.mark.standalone
 class BankInformationProviderRetryLinkedPaymentsTest:
     @clean_database
-    def test_(self, app):
+    def test_changes_transaction_status_to_retry_when_finds_relevant_payments(self, app):
         # Given
         offerer = create_offerer()
         other_offerer = create_offerer(siren='987654321')
@@ -1232,4 +1232,27 @@ class BankInformationProviderRetryLinkedPaymentsTest:
         assert len(payments) == 2
         for payment in payments:
             assert payment.currentStatus.status == TransactionStatus.RETRY
+
+    @clean_database
+    def test_does_not_call_check_and_save_if_no_relevant_payments(self, app):
+        # Given
+        offerer = create_offerer()
+        other_offerer = create_offerer(siren='987654321')
+        venue = create_venue(offerer, siret=offerer.siren + '12345')
+        other_venue = create_venue(other_offerer, siret=other_offerer.siren + '12345')
+        bank_information_list = [
+            create_bank_information(offerer=offerer, id_at_providers=offerer.siren),
+            create_bank_information(venue=other_venue, id_at_providers=other_venue.siret)
+        ]
+
+
+        PcObject.check_and_save(*bank_information_list)
+
+        try:
+            # When
+            BankInformationProvider.retry_linked_payments(bank_information_list)
+
+        # Then
+        except ValueError:
+            assert pytest.fail("Should not try to save empty list")
 

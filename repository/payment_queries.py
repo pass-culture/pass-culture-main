@@ -32,11 +32,10 @@ def find_payments_by_message(message_id: str) -> List[Payment]:
         .all()
 
 
-def find_all_with_status_not_processable_for_bank_information(bank_information_id: str) -> List[Payment]:
+def find_all_with_status_not_processable_for_bank_information(bank_information: BankInformation) -> List[Payment]:
+    bank_information_id = bank_information.id
     predicate_matches_venue_or_offerer = (Venue.id == BankInformation.venueId) | (
                 Offerer.id == BankInformation.offererId)
-
-    bank_information = BankInformation.query.filter_by(id=bank_information_id).one()
 
     query = Payment.query \
         .join(Booking) \
@@ -49,7 +48,7 @@ def find_all_with_status_not_processable_for_bank_information(bank_information_i
         .join(PaymentStatus, PaymentStatus.paymentId == Payment.id) \
         .filter_by(status=TransactionStatus.NOT_PROCESSABLE)
 
-    if bank_information.offerer:
+    if bank_information.offererId:
         query = _keep_only_venues_with_no_bank_information(query)
 
     return query.all()

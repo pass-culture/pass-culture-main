@@ -235,7 +235,7 @@ class FindAllWithStatusNotProcessableForBankInformationTest:
         PcObject.check_and_save(payment, other_payment)
 
         # When
-        payments = find_all_with_status_not_processable_for_bank_information(bank_information.id)
+        payments = find_all_with_status_not_processable_for_bank_information(bank_information)
 
         # Then
         assert len(payments) == 1
@@ -264,7 +264,7 @@ class FindAllWithStatusNotProcessableForBankInformationTest:
         PcObject.check_and_save(payment, other_payment)
 
         # When
-        payments = find_all_with_status_not_processable_for_bank_information(bank_information.id)
+        payments = find_all_with_status_not_processable_for_bank_information(bank_information)
 
         # Then
         assert len(payments) == 1
@@ -289,7 +289,7 @@ class FindAllWithStatusNotProcessableForBankInformationTest:
         PcObject.check_and_save(payment, other_payment)
 
         # When
-        payments = find_all_with_status_not_processable_for_bank_information(bank_information.id)
+        payments = find_all_with_status_not_processable_for_bank_information(bank_information)
 
         # Then
         assert len(payments) == 1
@@ -311,7 +311,7 @@ class FindAllWithStatusNotProcessableForBankInformationTest:
         PcObject.check_and_save(payment)
 
         # When
-        payments = find_all_with_status_not_processable_for_bank_information(offerer_bank_information.id)
+        payments = find_all_with_status_not_processable_for_bank_information(offerer_bank_information)
 
         # Then
         assert len(payments) == 0

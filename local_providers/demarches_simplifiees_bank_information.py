@@ -59,18 +59,19 @@ class BankInformationProvider(LocalProvider):
 
     def save_chunks(self, chunk_to_insert: Dict[str, BankInformation], chunk_to_update: Dict[str, BankInformation],
                     providable_info: ProvidableInfo):
-        super(BankInformation, self).save_chunks(chunk_to_insert, chunk_to_update, providable_info)
-        BankInformationProvider.retry_linked_payments(chunk_to_insert.values() + chunk_to_update.values())
+        super(BankInformationProvider, self).save_chunks(chunk_to_insert, chunk_to_update, providable_info)
+        bank_information_list = list(chunk_to_insert.values()) + list(chunk_to_update.values())
+        BankInformationProvider.retry_linked_payments(bank_information_list)
 
     @staticmethod
     def retry_linked_payments(bank_information_list: List[BankInformation]):
-        bank_information_ids = [bi.id for bi in bank_information_list]
         payments = []
-        for id in bank_information_ids:
-            payments += payment_queries.find_all_with_status_not_processable_for_bank_information(id)
+        for bank_information in bank_information_list:
+            payments += payment_queries.find_all_with_status_not_processable_for_bank_information(bank_information)
         for payment in payments:
             payment.setStatus(TransactionStatus.RETRY)
-        PcObject.check_and_save(*payments)
+        if payments:
+            PcObject.check_and_save(*payments)
 
     def retrieve_providable_info(self):
         providable_info = ProvidableInfo()
