@@ -1,6 +1,9 @@
-from models import Booking, Mediation, Offer, Stock, User, Product
+from models import Mediation, Offer, Stock, User, Product
 from repository.user_queries import keep_only_webapp_users
 from sandboxes.scripts.utils.helpers import get_mediation_helper, get_offer_helper, get_user_helper
+from sandboxes.scripts.utils.bookings import filter_booking_by_offer_id, \
+                                             get_cancellable_bookings_for_user, \
+                                             get_not_cancellable_bookings_for_user
 
 
 def get_existing_webapp_hnmm_user(return_as_dict=False):
@@ -23,31 +26,7 @@ def get_existing_webapp_hbs_user():
     }
 
 
-def filter_booking_by_offer_id(bookings, offers):
-    selected = None
-    for offer in offers:
-        for booking in bookings:
-            if booking.stockId == offer.id:
-                selected = offer.Offer
-                break
-    return selected
-
-def get_cancellable_bookings_for_user(user):
-    query = Booking.query.filter_by(
-        userId=user.id
-    )
-    bookings = [b for b in query.all() if b.isUserCancellable]
-    return bookings
-
-def get_not_cancellable_bookings_for_user(user):
-    query = Booking.query.filter_by(
-        userId=user.id
-    )
-    bookings = [b for b in query.all() if not b.isUserCancellable]
-    return bookings
-
-
-def get_event_offer_with_active_mediation_already_booked_but_cancellable_and_user_hnmm_93():
+def get_existing_event_offer_with_active_mediation_already_booked_but_cancellable_and_user_hnmm_93():
     offers = Offer.query \
         .filter(Offer.mediations.any(Mediation.isActive == True)) \
         .join(Stock) \
@@ -67,9 +46,9 @@ def get_event_offer_with_active_mediation_already_booked_but_cancellable_and_use
             }
 
 
-def get_digital_offer_with_active_mediation_already_booked_and_user_hnmm_93():
+def get_existing_digital_offer_with_active_mediation_already_booked_and_user_hnmm_93():
     offers = Offer.query.outerjoin(Product) \
-        .filter(Offer.mediations.any(Mediation.isActive == True)) \
+        .filter(Offer.mediations.any(Mediation.isActive)) \
         .filter(Product.url != None) \
         .join(Stock, (Offer.id == Stock.offerId)) \
         .add_columns(Stock.id) \
