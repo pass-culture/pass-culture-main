@@ -7,6 +7,7 @@ jobs:
     working_directory: ~/pass-culture
     steps:
       - checkout
+      - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
       - run:
           name: Install requirements
           command: |
@@ -28,6 +29,7 @@ jobs:
       - run: git submodule sync
       - run: git submodule update --init
       - run: ./install_lib_ci.sh
+      - run: sudo ./pc symlink
       - run: ./scripts/install_dockerize.sh v0.6.1
       - run:
           name: Running API server
@@ -35,13 +37,13 @@ jobs:
             cd api
             gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
             tar xf private.tar.gz
-            ../pc start-backend
+            pc start-backend
           background: true
       - run:
           name: Running API tests
           command: |
             dockerize -wait http://localhost/health -timeout 4m -wait-retry-interval 2s
-            echo 'y' | ./pc test-backend
+            echo 'y' | pc test-backend
 
   tests-webapp:
     machine:
@@ -52,6 +54,7 @@ jobs:
       - run: git submodule sync
       - run: git submodule update --init
       - run: ./install_lib_ci.sh
+      - run: sudo ./pc symlink
       - run: ./scripts/install_dockerize.sh v0.6.1
       - run:
           name: Run Unit Test WEBAPP
@@ -68,7 +71,7 @@ jobs:
             cd api
             gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
             tar xf private.tar.gz
-            ../pc start-backend
+            pc start-backend
           background: true
       - run:
           name: Run Frontend WEBAPP
@@ -83,7 +86,7 @@ jobs:
           name: Running Sandbox
           command: |
             dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
-            ./pc sandbox --name=industrial
+            pc sandbox --name=industrial
       - run:
           name: Running functional tests WEBAPP
           command: |
@@ -108,6 +111,7 @@ jobs:
       - run: git submodule sync
       - run: git submodule update --init
       - run: ./install_lib_ci.sh
+      - run: sudo ./pc symlink
       - run: ./scripts/install_dockerize.sh v0.6.1
       - run:
           name: Run Unit Test PRO
@@ -124,7 +128,7 @@ jobs:
             cd api
             gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
             tar xf private.tar.gz
-            ../pc start-backend
+            pc start-backend
           background: true
       - run:
           name: Run Frontend PRO
@@ -139,7 +143,7 @@ jobs:
           name: Running Sandbox
           command: |
             dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
-            ./pc sandbox --name=industrial
+            pc sandbox --name=industrial
       - run:
           name: Running functional tests PRO
           command: |
