@@ -19,9 +19,11 @@
       }
     }
 
-
-    .qty-info {
-      margin-left: 1px!important;
+    .tooltip {
+      &.tooltip-info {
+        background-color: transparent;
+        margin-left: 1px!important;
+      }
     }
   }
 

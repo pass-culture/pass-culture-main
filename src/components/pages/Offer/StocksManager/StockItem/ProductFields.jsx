@@ -103,7 +103,7 @@ export class ProductFields extends Component {
             title="Prix"
           />
         </td>
-        <td title="Laissez vide si pas de limite">
+        <td className="tooltiped" title="Laissez vide si pas de limite">
           <DateField
             maxDate={isEvent ? moment(beginningDatetime) : undefined}
             name="bookingLimitDatetime"
@@ -115,14 +115,14 @@ export class ProductFields extends Component {
               }
 
               let tip =
-                "L'heure de cette limite est fixée à 20h et ne peut pas être changée."
-              if (!venue || !venue.isVirtual) {
-                tip = `${tip}\n. Vous être sur une offre numérique, la zone horaire de cette date correspond à celle de votre structure.`
+                "L'heure limite de réservation est à 23h59 de ce jour et ne peut pas être changée."
+              if (venue && venue.isVirtual) {
+                tip = `${tip}.<br /><br /> Vous être sur une offre numérique, la zone horaire de cette date correspond à celle de votre structure.`
               }
 
               return (
                 <span
-                  className="button tooltip qty-info"
+                  className="button tooltip tooltip-info"
                   data-place="bottom"
                   data-tip={`<p>${tip}</p>`}
                   data-type="info">
@@ -145,7 +145,7 @@ export class ProductFields extends Component {
               }
               return (
                 <span
-                  className="button tooltip qty-info"
+                  className="button tooltip tooltip-info"
                   data-place="bottom"
                   data-tip="<p>Laissez ce champ vide pour un nombre de places ou stock illimité.</p>"
                   data-type="info">
