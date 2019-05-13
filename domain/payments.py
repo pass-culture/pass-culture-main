@@ -92,7 +92,7 @@ def keep_only_not_processable_payments(payments: List[Payment]) -> List[Payment]
     return list(filter(lambda x: x.currentStatus.status == TransactionStatus.NOT_PROCESSABLE, payments))
 
 
-def generate_message_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str, message_id: str,
+def generate_message_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str, message_name: str,
                           remittance_code: str) -> str:
     transactions = _group_payments_into_transactions(payments)
     total_amount = sum([transaction.amount for transaction in transactions])
@@ -100,7 +100,7 @@ def generate_message_file(payments: List[Payment], pass_culture_iban: str, pass_
 
     return render_template(
         'transactions/transaction_banque_de_france.xml',
-        message_id=message_id,
+        message_name=message_name,
         creation_datetime=now.isoformat(),
         requested_execution_datetime=datetime.strftime(now + timedelta(days=7), "%Y-%m-%d"),
         transactions=transactions,

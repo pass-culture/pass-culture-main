@@ -65,7 +65,7 @@ class Payment(PcObject, Model):
 
     @property
     def paymentMessageName(self):
-        return self.paymentMessage.messageId if self.paymentMessage else None
+        return self.paymentMessage.name if self.paymentMessage else None
 
     @property
     def paymentMessageChecksum(self):

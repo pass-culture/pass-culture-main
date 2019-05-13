@@ -2,7 +2,7 @@
 <Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
     <CstmrCdtTrfInitn>
         <GrpHdr>
-            <MsgId>{{ message_id }}</MsgId>
+            <MsgId>{{ message_name }}</MsgId>
             <CreDtTm>{{ creation_datetime }}</CreDtTm>
             <NbOfTxs>{{ number_of_transactions }}</NbOfTxs>
             <CtrlSum>{{ total_amount }}</CtrlSum>
@@ -18,7 +18,7 @@
             </InitgPty>
         </GrpHdr>
         <PmtInf>
-            <PmtInfId>{{ message_id }}</PmtInfId>
+            <PmtInfId>{{ message_name }}</PmtInfId>
             <PmtMtd>TRF</PmtMtd>
             <NbOfTxs>{{ number_of_transactions }}</NbOfTxs>
             <CtrlSum>{{ total_amount }}</CtrlSum>

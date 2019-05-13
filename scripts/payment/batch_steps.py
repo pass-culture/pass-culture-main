@@ -67,8 +67,8 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
             '[BATCH][PAYMENTS] Missing PASS_CULTURE_IBAN[%s], PASS_CULTURE_BIC[%s] or PASS_CULTURE_REMITTANCE_CODE[%s] in environment variables' % (
                 pass_culture_iban, pass_culture_bic, pass_culture_remittance_code))
 
-    message_id = 'passCulture-SCT-%s' % datetime.strftime(datetime.utcnow(), "%Y%m%d-%H%M%S")
-    xml_file = generate_message_file(payments, pass_culture_iban, pass_culture_bic, message_id,
+    message_name = 'passCulture-SCT-%s' % datetime.strftime(datetime.utcnow(), "%Y%m%d-%H%M%S")
+    xml_file = generate_message_file(payments, pass_culture_iban, pass_culture_bic, message_name,
                                      pass_culture_remittance_code)
 
     try:
@@ -80,11 +80,11 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
         raise
 
     checksum = generate_file_checksum(xml_file)
-    transaction = generate_payment_message(message_id, checksum, payments)
+    message = generate_payment_message(message_name, checksum, payments)
 
     logger.info(
         '[BATCH][PAYMENTS] Sending file with message ID [%s] and checksum [%s]' %
-        (transaction.messageId, transaction.checksum.hex())
+        (message.name, message.checksum.hex())
     )
     logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
 
@@ -95,7 +95,7 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
     else:
         for payment in payments:
             payment.setStatus(TransactionStatus.ERROR, detail="Erreur d'envoi à MailJet")
-    PcObject.check_and_save(transaction, *payments)
+    PcObject.check_and_save(message, *payments)
 
 
 def send_payments_details(payments: List[Payment], recipients: List[str]) -> None:

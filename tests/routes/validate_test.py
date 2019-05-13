@@ -135,7 +135,7 @@ class CertifyMessageFileAuthenticityTest:
 
         # when
         response = auth_request.post(
-            API_URL + '/validate/transaction/',
+            API_URL + '/validate/message/',
             data={},
             files={'file': ('transaction.xml', VALID_TRANSACTION)}
         )
@@ -158,7 +158,7 @@ class CertifyMessageFileAuthenticityTest:
 
         # when
         response = auth_request.post(
-            API_URL + '/validate/transaction/',
+            API_URL + '/validate/message/',
             data={},
             files={'file': ('transaction.xml', VALID_TRANSACTION)}
         )
@@ -174,7 +174,7 @@ class CertifyMessageFileAuthenticityTest:
     def test_returns_unauthorized_if_user_is_not_logged_in(self, app):
         # when
         response = req.post(
-            API_URL + '/validate/transaction/',
+            API_URL + '/validate/message/',
             data={},
             files={'file': ('transaction.xml', VALID_TRANSACTION)},
             headers={'origin': 'http://localhost:3000'}
@@ -197,7 +197,7 @@ class CertifyMessageFileAuthenticityTest:
 
         # when
         response = auth_request.post(
-            API_URL + '/validate/transaction/',
+            API_URL + '/validate/message/',
             data={},
             files={'file': ('transaction.xml', VALID_TRANSACTION)}
         )
@@ -215,7 +215,7 @@ class CertifyMessageFileAuthenticityTest:
 
         # when
         response = auth_request.post(
-            API_URL + '/validate/transaction/',
+            API_URL + '/validate/message/',
             data={},
             files={'file': ('transaction.xml', VALID_TRANSACTION)}
         )
