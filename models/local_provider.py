@@ -1,19 +1,21 @@
 """ local provider """
-from sqlalchemy.sql import select
 import traceback
 from abc import abstractmethod
 from collections import Iterator
 from datetime import datetime
 from pprint import pprint
-from sqlalchemy import text
+from typing import Dict
+
 from postgresql_audit.flask import versioning_manager
+from sqlalchemy import text
+from sqlalchemy.sql import select
 
-from models import HasThumbMixin
-from models.product import Product
 from models.db import db
-
+from models.has_thumb_mixin import HasThumbMixin
 from models.local_provider_event import LocalProviderEvent, LocalProviderEventType
 from models.pc_object import PcObject
+from models.product import Product
+from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
 from utils.date import read_json_date
 from utils.human_ids import humanize
@@ -341,7 +343,8 @@ class LocalProvider(Iterator):
         else:
             return object_in_current_chunk
 
-    def save_chunks(self, chunk_to_insert, chunk_to_update, providable_info):
+    def save_chunks(self, chunk_to_insert: Dict[str, ProvidableMixin], chunk_to_update: Dict[str, ProvidableMixin],
+                    providable_info: ProvidableInfo):
         if len(chunk_to_insert) > 0:
             db.session.bulk_save_objects(chunk_to_insert.values())
             db.session.commit()

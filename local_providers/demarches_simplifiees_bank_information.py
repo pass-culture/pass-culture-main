@@ -1,12 +1,14 @@
 import os
 from datetime import datetime
+from typing import Dict, List
 
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.bank_account import get_all_application_ids_from_demarches_simplifiees_procedure, format_raw_iban_or_bic
-from models import BankInformation
+from models import BankInformation, PcObject
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
-from repository import offerer_queries, venue_queries
+from models.payment_status import TransactionStatus
+from repository import offerer_queries, venue_queries, payment_queries
 from repository.bank_information_queries import get_last_update_from_bank_information
 from utils.date import DATE_ISO_FORMAT
 
@@ -54,6 +56,21 @@ class BankInformationProvider(LocalProvider):
         bank_information.applicationId = self.bank_information_dict['applicationId']
         bank_information.offererId = self.bank_information_dict.get('offererId', None)
         bank_information.venueId = self.bank_information_dict.get('venueId', None)
+
+    def save_chunks(self, chunk_to_insert: Dict[str, BankInformation], chunk_to_update: Dict[str, BankInformation],
+                    providable_info: ProvidableInfo):
+        super(BankInformation, self).save_chunks(chunk_to_insert, chunk_to_update, providable_info)
+        BankInformationProvider.retry_linked_payments(chunk_to_insert.values() + chunk_to_update.values())
+
+    @staticmethod
+    def retry_linked_payments(bank_information_list: List[BankInformation]):
+        bank_information_ids = [bi.id for bi in bank_information_list]
+        payments = []
+        for id in bank_information_ids:
+            payments += payment_queries.find_all_with_status_not_processable_for_bank_information(id)
+        for payment in payments:
+            payment.setStatus(TransactionStatus.RETRY)
+        PcObject.check_and_save(*payments)
 
     def retrieve_providable_info(self):
         providable_info = ProvidableInfo()

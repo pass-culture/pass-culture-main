@@ -188,14 +188,13 @@ def group_payments_by_status(payments: List[Payment]) -> Dict:
     return groups
 
 
-
 def apply_banishment(payments: List[Payment], ids_to_ban: List[int]) -> Tuple[List[Payment], List[Payment]]:
     if not ids_to_ban:
         return [], []
 
     unmatched_ids = set(ids_to_ban) - {p.id for p in payments}
     if unmatched_ids:
-       raise UnmatchedPayments(unmatched_ids)
+        raise UnmatchedPayments(unmatched_ids)
 
     banned_payments = [p for p in payments if p.id in ids_to_ban]
     for p in banned_payments:
