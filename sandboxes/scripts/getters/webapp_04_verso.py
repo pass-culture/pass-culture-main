@@ -1,7 +1,7 @@
 from models import Mediation, Offer, Stock, User, Product
 from repository.user_queries import keep_only_webapp_users
 from sandboxes.scripts.utils.helpers import get_mediation_helper, get_offer_helper, get_user_helper
-from sandboxes.scripts.utils.bookings import filter_booking_by_offer_id, \
+from sandboxes.scripts.utils.bookings import find_offer_compatible_with_bookings, \
                                              get_cancellable_bookings_for_user, \
                                              get_not_cancellable_bookings_for_user
 
@@ -27,15 +27,17 @@ def get_existing_webapp_hbs_user():
 
 
 def get_existing_event_offer_with_active_mediation_already_booked_but_cancellable_and_user_hnmm_93():
-    offers = Offer.query \
-        .filter(Offer.mediations.any(Mediation.isActive == True)) \
+    offer_with_stock_id_tuples = Offer.query \
+        .filter(Offer.mediations.any(Mediation.isActive)) \
         .join(Stock) \
         .filter(Stock.beginningDatetime != None) \
         .add_columns(Stock.id) \
         .all()
     user = get_existing_webapp_hnmm_user()
     bookings = get_cancellable_bookings_for_user(user)
-    offer = filter_booking_by_offer_id(bookings, offers)
+    print(offer_with_stock_id_tuples)
+    print(bookings)
+    offer = find_offer_compatible_with_bookings(offer_with_stock_id_tuples, bookings)
 
     for mediation in offer.mediations:
         if mediation.isActive:
@@ -47,7 +49,7 @@ def get_existing_event_offer_with_active_mediation_already_booked_but_cancellabl
 
 
 def get_existing_digital_offer_with_active_mediation_already_booked_and_user_hnmm_93():
-    offers = Offer.query.outerjoin(Product) \
+    offer_with_stock_id_tuples = Offer.query.outerjoin(Product) \
         .filter(Offer.mediations.any(Mediation.isActive)) \
         .filter(Product.url != None) \
         .join(Stock, (Offer.id == Stock.offerId)) \
@@ -55,7 +57,7 @@ def get_existing_digital_offer_with_active_mediation_already_booked_and_user_hnm
         .all()
     user = get_existing_webapp_hnmm_user()
     bookings = get_cancellable_bookings_for_user(user)
-    offer = filter_booking_by_offer_id(bookings, offers)
+    offer = find_offer_compatible_with_bookings(offer_with_stock_id_tuples, bookings)
 
     for mediation in offer.mediations:
         if mediation.isActive:
