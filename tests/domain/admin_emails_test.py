@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 
 from domain.admin_emails import maybe_send_offerer_validation_email, send_venue_validation_email, \
     send_payment_details_email, send_wallet_balances_email, send_payments_report_emails, \
-    send_offer_creation_notification_to_support, send_payment_transaction_email
+    send_offer_creation_notification_to_support, send_payment_message_email
 from tests.test_utils import create_offerer, create_user, \
     create_user_offerer, create_venue, create_offer_with_thing_product
 from utils.mailing import MailServiceException
@@ -325,7 +325,8 @@ class SendOfferCreationNotificationToSupportTest:
         assert email['To'] == 'passculture-dev@beta.gouv.fr'
 
 
-class SendPaymentTransactionEmailTest:
+@pytest.mark.standalone
+class SendPaymentMessageEmailTest:
     @patch('domain.admin_emails.make_payment_transaction_email', return_value={'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'})
     def test_returns_true_if_email_was_sent(self, make_payment_transaction_email):
         # given
@@ -335,7 +336,7 @@ class SendPaymentTransactionEmailTest:
         mocked_send_email = Mock()
         mocked_send_email.return_value = True
         # when
-        successfully_sent = send_payment_transaction_email(xml, checksum, recipients, mocked_send_email)
+        successfully_sent = send_payment_message_email(xml, checksum, recipients, mocked_send_email)
 
         # then
         assert successfully_sent
@@ -349,7 +350,7 @@ class SendPaymentTransactionEmailTest:
         mocked_send_email = Mock()
         mocked_send_email.return_value = False
         # when
-        successfully_sent = send_payment_transaction_email(xml, checksum, recipients, mocked_send_email)
+        successfully_sent = send_payment_message_email(xml, checksum, recipients, mocked_send_email)
 
         # then
         assert not successfully_sent

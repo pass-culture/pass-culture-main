@@ -3,10 +3,10 @@ from typing import List, Tuple
 
 from lxml.etree import DocumentInvalid
 
-from domain.admin_emails import send_payment_transaction_email, send_payment_details_email, send_wallet_balances_email, \
+from domain.admin_emails import send_payment_message_email, send_payment_details_email, send_wallet_balances_email, \
     send_payments_report_emails
-from domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking, generate_transaction_file, \
-    validate_transaction_file_structure, create_all_payments_details, generate_payment_details_csv, \
+from domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking, generate_message_file, \
+    validate_message_file_structure, create_all_payments_details, generate_payment_details_csv, \
     generate_wallet_balances_csv, \
     generate_payment_message, generate_file_checksum, group_payments_by_status, filter_out_bookings_without_cost, \
     keep_only_pending_payments, keep_only_not_processable_payments
@@ -68,11 +68,11 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
                 pass_culture_iban, pass_culture_bic, pass_culture_remittance_code))
 
     message_id = 'passCulture-SCT-%s' % datetime.strftime(datetime.utcnow(), "%Y%m%d-%H%M%S")
-    xml_file = generate_transaction_file(payments, pass_culture_iban, pass_culture_bic, message_id,
-                                         pass_culture_remittance_code)
+    xml_file = generate_message_file(payments, pass_culture_iban, pass_culture_bic, message_id,
+                                     pass_culture_remittance_code)
 
     try:
-        validate_transaction_file_structure(xml_file)
+        validate_message_file_structure(xml_file)
     except DocumentInvalid as e:
         for payment in payments:
             payment.setStatus(TransactionStatus.NOT_PROCESSABLE, detail=str(e))
@@ -88,7 +88,7 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
     )
     logger.info('[BATCH][PAYMENTS] Recipients of email : %s' % recipients)
 
-    successfully_sent_payments = send_payment_transaction_email(xml_file, checksum, recipients, send_raw_email)
+    successfully_sent_payments = send_payment_message_email(xml_file, checksum, recipients, send_raw_email)
     if successfully_sent_payments:
         for payment in payments:
             payment.setStatus(TransactionStatus.SENT)

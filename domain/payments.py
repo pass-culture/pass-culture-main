@@ -92,8 +92,8 @@ def keep_only_not_processable_payments(payments: List[Payment]) -> List[Payment]
     return list(filter(lambda x: x.currentStatus.status == TransactionStatus.NOT_PROCESSABLE, payments))
 
 
-def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str, message_id: str,
-                              remittance_code: str) -> str:
+def generate_message_file(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str, message_id: str,
+                          remittance_code: str) -> str:
     transactions = _group_payments_into_transactions(payments)
     total_amount = sum([transaction.amount for transaction in transactions])
     now = datetime.utcnow()
@@ -112,7 +112,7 @@ def generate_transaction_file(payments: List[Payment], pass_culture_iban: str, p
     )
 
 
-def validate_transaction_file_structure(transaction_file: str):
+def validate_message_file_structure(transaction_file: str):
     xsd = render_template('transactions/transaction_banque_de_france.xsd')
     xsd_doc = etree.parse(BytesIO(xsd.encode()))
     xsd_schema = etree.XMLSchema(xsd_doc)

@@ -28,8 +28,8 @@ def maybe_send_offerer_validation_email(offerer: Offerer, user_offerer: UserOffe
     return send_email(data=email)
 
 
-def send_payment_transaction_email(xml_attachment: str, checksum: bytes, recipients: List[str],
-                                   send_email: Callable[[dict], bool]) -> bool:
+def send_payment_message_email(xml_attachment: str, checksum: bytes, recipients: List[str],
+                               send_email: Callable[[dict], bool]) -> bool:
     email = make_payment_transaction_email(xml_attachment, checksum)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)

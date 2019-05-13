@@ -6,7 +6,7 @@ from lxml.etree import LxmlError
 
 import models
 from domain.admin_emails import maybe_send_offerer_validation_email
-from domain.payments import validate_transaction_file_structure, read_message_name_in_message_file, \
+from domain.payments import validate_message_file_structure, read_message_name_in_message_file, \
     generate_file_checksum
 from domain.user_emails import send_validation_confirmation_email, send_venue_validation_confirmation_email
 from models import ApiErrors, \
