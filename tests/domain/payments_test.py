@@ -347,7 +347,7 @@ class CreatePaymentDetailsTest:
 
         # then
         assert details.payment_iban == '123456789'
-        assert details.transaction_message_id == '1234'
+        assert details.payment_message_name == '1234'
         assert details.transaction_end_to_end_id == payment.transactionEndToEndId
         assert details.reimbursed_amount == 35
         assert details.reimbursement_rate == 0.5

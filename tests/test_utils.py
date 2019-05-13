@@ -640,7 +640,7 @@ def create_payment_details(
         booking_amount=15,
         booking_used_date=datetime.utcnow() - timedelta(days=5),
         payment_iban='FR7630001007941234567890185',
-        transaction_message_id='AZERTY123456',
+        payment_message_name='AZERTY123456',
         transaction_end_to_end_id=uuid.uuid4(),
         payment_id=123,
         reimbursement_rate=Decimal(0.5),
@@ -659,7 +659,7 @@ def create_payment_details(
     details.booking_amount = booking_amount
     details.booking_used_date = booking_used_date
     details.payment_iban = payment_iban
-    details.transaction_message_id = transaction_message_id
+    details.payment_message_name = payment_message_name
     details.transaction_end_to_end_id = transaction_end_to_end_id
     details.payment_id= payment_id
     details.reimbursement_rate = reimbursement_rate
