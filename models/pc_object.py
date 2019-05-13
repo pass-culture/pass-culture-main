@@ -71,10 +71,7 @@ class PcObject():
 
     def __init__(self, **options):
         from_dict = options.get('from_dict')
-        skipped_keys = options.get('skipped_keys')
-        if from_dict and skipped_keys:
-            self.populateFromDict(from_dict, skipped_keys)
-        elif from_dict:
+        if from_dict:
             self.populateFromDict(from_dict)
 
     def _asdict(self, **options):
@@ -368,6 +365,9 @@ class PcObject():
                              id)
 
     def _deserialize_datetime(self, key, value):
+        if value is None:
+            return None
+
         valid_patterns = ['%Y-%m-%dT%H:%M:%S.%fZ', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%dT%H:%M:%SZ']
         datetime_value = None
 

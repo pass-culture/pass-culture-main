@@ -8,7 +8,8 @@ from models.pc_object import PcObject, serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_user, create_offerer, create_venue, \
     create_stock_with_event_offer, create_booking, create_offer_with_event_product, create_user_offerer, create_event_occurrence, \
-    create_recommendation, create_stock_from_event_occurrence, create_offer_with_thing_product
+    create_recommendation, create_stock_from_event_occurrence, create_stock_with_event_offer, create_stock_with_thing_offer, \
+    create_offer_with_thing_product
 from utils.human_ids import dehumanize, humanize
 
 
@@ -65,7 +66,7 @@ class Post:
 
 
         @clean_database
-        def when_create_thing_stock_when_bookingLimitDateTime_is_none(self, app):
+        def when_booking_limit_datetime_is_none_for_thing(self, app):
             # Given
             user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
@@ -163,6 +164,34 @@ class Post:
             # Then
             assert response.status_code == 400
             assert response.json()["bookingLimitDatetime"] == ["Format de date invalide"]
+
+
+        @clean_database
+        def when_booking_limit_datetime_is_none_for_event(self, app):
+            # Given
+            beginningDatetime = datetime(2019, 2, 14)
+            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue)
+            PcObject.check_and_save(user, offer)
+
+            data = {
+                'price': 0,
+                'offerId': humanize(offer.id),
+                'bookingLimitDatetime': None,
+                'beginningDatetime': serialize(beginningDatetime),
+                'endDatetime': serialize(beginningDatetime + timedelta(days=1)),
+            }
+
+            # When
+            response = TestClient().with_auth(user.email) \
+                .post(API_URL + '/stocks/', json=data)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json()["bookingLimitDatetime"] == ['Ce paramètre est obligatoire']
+
 
         @clean_database
         def when_setting_beginning_and_end_datetimes_on_offer_with_thing(self, app):
@@ -322,6 +351,56 @@ class Patch:
             assert response.status_code == 200
             db.session.refresh(stock)
             assert stock.price == 666
+
+
+        @clean_database
+        def when_booking_limit_datetime_is_none_for_thing(self, app):
+            # Given
+            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_thing_offer(offerer, venue)
+            PcObject.check_and_save(user, stock)
+
+            data = {
+                'price': 120,
+                'offerId': humanize(stock.offer.id),
+                'bookingLimitDatetime': None
+            }
+
+            # When
+            response = TestClient().with_auth(user.email) \
+                .patch(API_URL + '/stocks/' + humanize(stock.id), json=data)
+
+            # Then
+            assert response.status_code == 200
+            db.session.refresh(stock)
+            assert stock.price == 120
+
+
+    class Returns400:
+        @clean_database
+        def when_booking_limit_datetime_is_none_for_event(self, app):
+            # Given
+            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue)
+            PcObject.check_and_save(user, stock)
+
+            data = {
+                'price': 0,
+                'offerId': humanize(stock.offer.id),
+                'bookingLimitDatetime': None
+            }
+
+            # When
+            response = TestClient().with_auth(user.email) \
+                .patch(API_URL + '/stocks/' + humanize(stock.id), json=data)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json()["bookingLimitDatetime"] == ['Ce paramètre est obligatoire']
 
 
     class Returns403:

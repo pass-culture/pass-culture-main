@@ -11,8 +11,6 @@ from models.stock import Stock
 
 from models.user_offerer import RightsType
 from models.venue import Venue
-from models.offer import Offer
-from models.offer_type import ProductType
 from repository import booking_queries, offerer_queries
 from repository.offer_queries import find_offer_by_id
 from repository.stock_queries import find_stocks_with_possible_filters
@@ -75,17 +73,9 @@ def create_stock():
     offerer = offerer_queries.get_by_offer_id(offer_id)
     ensure_current_user_has_rights(RightsType.editor, offerer.id)
  
-    is_thing = ProductType.is_thing(offer.type)
-    is_unlimitted_booking_limit_datetime = 'bookingLimitDatetime' in request_data \
-     and request_data.get('bookingLimitDatetime') is None
-     
-    if is_thing and is_unlimitted_booking_limit_datetime:
-        new_stock = Stock(from_dict=request_data, skipped_keys="bookingLimitDatetime" )
-        new_stock.bookingLimitDatetime = None
-    else:
-        new_stock = Stock(from_dict=request_data)
-
+    new_stock = Stock(from_dict=request_data)
     PcObject.check_and_save(new_stock)
+
     return jsonify(new_stock._asdict()), 201
 
 
@@ -102,7 +92,9 @@ def edit_stock(stock_id):
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
     
-    stock.update_stock(stock_data)
+    stock.populateFromDict(stock_data)
+    PcObject.check_and_save(stock)
+
     return jsonify(stock._asdict()), 200
 
 
@@ -126,3 +118,5 @@ def delete_stock(id):
     PcObject.check_and_save(stock, *bookings)
 
     return jsonify(stock._asdict()), 200
+
+

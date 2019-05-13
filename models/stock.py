@@ -11,14 +11,12 @@ from sqlalchemy import BigInteger, \
     Integer, \
     Numeric
 from sqlalchemy.orm import relationship
-
 from models.db import Model
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.soft_deletable_mixin import SoftDeletableMixin
 from utils.logger import logger
 from models.versioned_mixin import VersionedMixin
-from models.offer_type import ProductType
 
 
 class Stock(PcObject,
@@ -82,6 +80,7 @@ class Stock(PcObject,
            and self.beginningDatetime \
            and self.endDatetime <= self.beginningDatetime:
             api_errors.addError('endDatetime', 'La date de fin de l\'événement doit être postérieure à la date de début')
+
         return api_errors
 
     @property
@@ -110,21 +109,6 @@ class Stock(PcObject,
             else:
                 logger.error("Unexpected error in patch stocks: " + pformat(ie))
         return PcObject.restize_internal_error(ie)
-
-
-    def update_stock(self, stock_data):
-        is_thing = ProductType.is_thing(self.offer.type)
-        is_unlimitted_booking_limit_datetime = 'bookingLimitDatetime' in stock_data \
-         and stock_data.get('bookingLimitDatetime') is None
- 
-        if is_thing and is_unlimitted_booking_limit_datetime:
-            self.populateFromDict(stock_data, skipped_keys=['bookingLimitDatetime'])
-            self.bookingLimitDatetime = None
-        else:
-            self.populateFromDict(stock_data)
-
-        PcObject.check_and_save(self)
-
 
 
 @event.listens_for(Stock, 'before_insert')

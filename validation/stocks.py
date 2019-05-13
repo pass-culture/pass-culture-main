@@ -1,5 +1,4 @@
 from models import ApiErrors, Offer
-from models.offer_type import ProductType
 
 
 def check_offer_offerer_exists(offerer):
@@ -31,6 +30,9 @@ def check_dates_are_allowed_on_new_stock(request_data: dict, offer: Offer):
         if request_data.get('beginningDatetime', None) is None:
             raise ApiErrors({'beginningDatetime': ['Ce paramètre est obligatoire']})
 
+        if request_data.get('bookingLimitDatetime', None) is None:
+            raise ApiErrors({'bookingLimitDatetime': ['Ce paramètre est obligatoire']})
+
 
 def check_dates_are_allowed_on_existing_stock(request_data: dict, offer: Offer):
     if offer.isThing:
@@ -42,6 +44,9 @@ def check_dates_are_allowed_on_existing_stock(request_data: dict, offer: Offer):
         if 'beginningDatetime' in request_data and request_data['beginningDatetime'] is None:
             raise ApiErrors({'beginningDatetime': ['Ce paramètre est obligatoire']})
 
+        if 'bookingLimitDatetime' in request_data and request_data['bookingLimitDatetime'] is None:
+            raise ApiErrors({'bookingLimitDatetime': ['Ce paramètre est obligatoire']})
+
 
 def _forbid_dates_on_stock_for_thing_offer(request_data):
     if 'beginningDatetime' in request_data or 'endDatetime' in request_data:
@@ -49,3 +54,4 @@ def _forbid_dates_on_stock_for_thing_offer(request_data):
             {'global': [
                 'Impossible de mettre des dates de début et fin si l\'offre ne porte pas sur un évenement'
             ]})
+
