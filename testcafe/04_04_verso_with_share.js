@@ -1,4 +1,3 @@
-// $(yarn bin)/testcafe chrome ./testcafe/04_04_verso_with_share.js
 import { Selector } from 'testcafe'
 
 import { createUserRole } from './helpers/roles'
@@ -10,16 +9,22 @@ const discoverURL = `${ROOT_PATH}decouverte`
 const dragButton = Selector('#dragButton')
 const shareButton = Selector('#verso-share-button', { timeout: 25000 })
 const openVersoButton = Selector('#deck-open-verso-button')
-const sharePopin = Selector('#share-popin-fixed-container')
+const sharePopIn = Selector('#share-popin-fixed-container')
 
+let userRole
 fixture(`04_04 Verso partage de l'offre`).beforeEach(async t => {
   // given
   const { offer, user } = await fetchSandbox(
     'webapp_04_verso',
     'get_existing_digital_offer_with_active_mediation_already_booked_and_user_hnmm_93'
   )
+
+  if (!userRole) {
+    userRole = createUserRole(user)
+  }
+
   const offerURL = `${discoverURL}/${offer.id}`
-  await t.useRole(createUserRole(user)).navigateTo(offerURL)
+  await t.useRole(userRole).navigateTo(offerURL)
   await dragButton.with({ visibilityCheck: true })()
 })
 
@@ -27,6 +32,6 @@ test('Je peux cliquer sur le bouton de partage', async t => {
   await t
     .click(openVersoButton)
     .click(shareButton)
-    .expect(sharePopin.exists)
+    .expect(sharePopIn.exists)
     .ok()
 })

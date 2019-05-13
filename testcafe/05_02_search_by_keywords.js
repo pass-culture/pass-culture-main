@@ -10,13 +10,18 @@ const keywordsSearchButton = Selector('#keywords-search-button')
 const resultsTitle = Selector('#results-title')
 const baseUrl = `${ROOT_PATH}recherche`
 
+let userRole
+
 fixture("O5_02_01 Recherche | J'effectue une recherche par mot-clé").beforeEach(
   async t => {
-    const { user } = await fetchSandbox(
-      'webapp_05_search',
-      'get_existing_webapp_validated_user'
-    )
-    await t.useRole(createUserRole(user)).navigateTo(baseUrl)
+    if (!userRole) {
+      const { user } = await fetchSandbox(
+        'webapp_05_search',
+        'get_existing_webapp_validated_user'
+      )
+      userRole = createUserRole(user)
+    }
+    await t.useRole(userRole).navigateTo(baseUrl)
   }
 )
 

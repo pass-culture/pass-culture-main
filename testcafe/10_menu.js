@@ -3,25 +3,28 @@ import { ClientFunction, Selector } from 'testcafe'
 import { fetchSandbox } from './helpers/sandboxes'
 import { createUserRole } from './helpers/roles'
 import { ROOT_PATH, SUPPORT_EMAIL } from '../src/utils/config'
-import getPageUrl from './helpers/getPageUrl'
+import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 
 const menuButton = Selector('#open-menu-button')
 const mainMenu = Selector('#main-menu')
 
-fixture('10_01 Menu - Affichage de la modale').beforeEach(async t => {
-  const { user } = await fetchSandbox(
-    'webapp_10_menu',
-    'get_existing_webapp_validated_user'
-  )
+let userRole
+fixture('10_01 Menu - Affichage de la modal').beforeEach(async t => {
+  if (!userRole) {
+    userRole = await createUserRoleFromUserSandbox(
+      'webapp_10_menu',
+      'get_existing_webapp_validated_user'
+    )
+  }
   await t
-    .useRole(createUserRole(user))
+    .useRole(userRole)
     .navigateTo(`${ROOT_PATH}profil`)
     .wait(500)
     .click(menuButton)
     .wait(100)
 })
 
-test("Lorsque je clique sur l'icône profil, la modale s'affiche", async t => {
+test("Lorsque je clique sur l'icône profil, la modal s'affiche", async t => {
   await t
     .expect(mainMenu.visible)
     .ok()
@@ -29,7 +32,7 @@ test("Lorsque je clique sur l'icône profil, la modale s'affiche", async t => {
     .ok()
 })
 
-test('Lorsque je clique sur la croix, la modale se referme', async t => {
+test('Lorsque je clique sur la croix, la modal se referme', async t => {
   const closeButton = Selector('#main-menu-close-button')
   await t
     .wait(500)
@@ -46,7 +49,7 @@ test('Je vois le montant de mon pass dans le header', async t => {
   await t.expect(Selector('#main-menu-header-wallet-value').exists).ok()
 })
 
-fixture('10_02 Modale Menu - Liens vers pages').beforeEach(async t => {
+fixture('10_02 Modal Menu - Liens vers pages').beforeEach(async t => {
   const { user } = await fetchSandbox(
     'webapp_10_menu',
     'get_existing_webapp_validated_user'
@@ -85,7 +88,6 @@ test('Menu | Liens | Recherche', async t => {
 test('Menu | Liens | Mes réservations', async t => {
   const menuReservations = Selector('.navlink').withText('Mes Réservations')
   await t
-
     .expect(menuReservations.exists)
     .ok()
     .click(menuReservations)
@@ -101,10 +103,6 @@ test('Menu | Liens | Mes préférés', async t => {
     .ok()
     .expect(menuFavoris.hasAttribute('disabled'))
     .ok()
-  // .click(menuFavoris)
-  // .wait(100)
-  // const location = await t.eval(() => window.location)
-  // await t.expect(location.pathname).eql('/favoris')
 })
 
 test('Menu | Liens | Mon profil', async t => {
@@ -127,11 +125,12 @@ test('Menu | Liens | Nous contacter', async t => {
 
 test('Menu | Liens | Mentions légales', async t => {
   const menuMentionsLegales = Selector('.navlink').withText('Mentions Légales')
+  await t.expect(menuMentionsLegales.exists).ok()
   await t
-    .expect(menuMentionsLegales.exists)
-    .ok()
-  await t.expect(menuMentionsLegales.getAttribute('href'))
-         .eql('https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture');
+    .expect(menuMentionsLegales.getAttribute('href'))
+    .eql(
+      'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture'
+    )
 })
 
 test('Menu | Liens | Déconnexion', async t => {
@@ -148,13 +147,9 @@ test('Menu | Liens | Déconnexion', async t => {
   await t.expect(location.pathname).eql('/connexion')
 })
 
-fixture("10_03 Modale Menu - gestion de l'historique").beforeEach(async t => {
-  const { user } = await fetchSandbox(
-    'webapp_10_menu',
-    'get_existing_webapp_validated_user'
-  )
+fixture("10_03 Modal Menu - gestion de l'historique").beforeEach(async t => {
   await t
-    .useRole(createUserRole(user))
+    .useRole(userRole)
     .navigateTo(`${ROOT_PATH}profil`)
     .wait(500)
     .click(menuButton)
@@ -162,10 +157,10 @@ fixture("10_03 Modale Menu - gestion de l'historique").beforeEach(async t => {
 })
 
 test('Menu | Back button ferme le menu', async t => {
-  // When
+  // when
   const goBack = ClientFunction(() => window.history.back())
   await goBack()
-  // Then
+  // then
   await t.expect(mainMenu.exists).notOk()
 })
 

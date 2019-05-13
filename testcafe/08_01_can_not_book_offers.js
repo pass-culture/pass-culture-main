@@ -3,7 +3,7 @@ import { Selector } from 'testcafe'
 import { fetchSandbox } from './helpers/sandboxes'
 import { getVersoWalletValue } from './helpers/getVersoWallet'
 import { ROOT_PATH } from '../src/utils/config'
-import { createUserRole } from './helpers/roles'
+import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 
 const discoverURL = `${ROOT_PATH}decouverte`
 
@@ -13,22 +13,23 @@ const bookingErrorReasons = Selector('#booking-error-reasons p')
 const openVerso = Selector('#deck-open-verso-button')
 const sendBookingButton = Selector('#booking-validation-button')
 
-fixture(`08_01 L'utilisateur ne peut pas réserver`)
+let userRole
 
-test(`Je n'ai plus d'argent`, async t => {
-  const { user } = await fetchSandbox(
+fixture(`08_01 L'utilisateur ne peut pas réserver`).beforeEach(async t => {
+  userRole = await createUserRoleFromUserSandbox(
     'webapp_08_booking',
     'get_existing_webapp_user_has_no_more_money'
   )
+  await t.useRole(userRole)
+})
+
+test(`Je n'ai plus d'argent`, async t => {
   const { mediationId, offer } = await fetchSandbox(
     'webapp_08_booking',
     'get_non_free_thing_offer_with_active_mediation'
   )
   const offerPage = `${discoverURL}/${offer.id}/${mediationId}`
-  await t
-    .useRole(createUserRole(user))
-    .navigateTo(offerPage)
-    .click(openVerso)
+  await t.navigateTo(offerPage).click(openVerso)
   const versoWalletValue = await getVersoWalletValue()
   await t
     .expect(versoWalletValue)

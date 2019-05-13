@@ -1,10 +1,8 @@
-// $(yarn bin)/testcafe chrome:headless ./testcafe/04_03_verso_user_with_money.js
 import { Selector } from 'testcafe'
-
-import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
 import { getVersoWallet, getVersoWalletValue } from './helpers/getVersoWallet'
 import { ROOT_PATH } from '../src/utils/config'
+import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 
 let offerTitle = null
 let offerSubTitle = null
@@ -17,13 +15,18 @@ const closeVersoButton = Selector('#deck-close-verso-button')
 const openVersoButton = Selector('#deck-open-verso-button')
 const alreadyBookedOfferButton = Selector('#verso-already-booked-button')
 
+let userRole
+
 fixture(`04_03 Verso l'user peut réserver l'offre payante`).beforeEach(
   async t => {
     // given
-    const { user } = await fetchSandbox(
-      'webapp_04_verso',
-      'get_existing_webapp_hbs_user'
-    )
+    if (!userRole) {
+      userRole = await createUserRoleFromUserSandbox(
+        'webapp_04_verso',
+        'get_existing_webapp_hbs_user'
+      )
+    }
+
     const { mediationId, offer } = await fetchSandbox(
       'webapp_08_booking',
       'get_non_free_thing_offer_with_active_mediation'
@@ -31,7 +34,7 @@ fixture(`04_03 Verso l'user peut réserver l'offre payante`).beforeEach(
     offerTitle = offer.thingName
     offerSubTitle = offer.venueName
     const offerURL = `${discoverURL}/${offer.id}/${mediationId}`
-    await t.useRole(createUserRole(user)).navigateTo(offerURL)
+    await t.useRole(userRole).navigateTo(offerURL)
     await dragButton.with({ visibilityCheck: true })()
   }
 )

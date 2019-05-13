@@ -11,7 +11,6 @@ const userIdentifier = Selector(userId)
 const passwordError = Selector(`${passId}-error`).find(errorClass)
 const identifierErrors = Selector(`${userId}-error`).find(errorClass)
 const signInButton = Selector('#signin-submit-button')
-// const signUpButton = Selector('#signin-signup-button')
 
 fixture("02_01 SignInPage Component | J'ai un compte et je me connecte")
   .page(`${ROOT_PATH}connexion`)
@@ -21,12 +20,6 @@ fixture("02_01 SignInPage Component | J'ai un compte et je me connecte")
       'get_existing_webapp_validated_user'
     )
   })
-
-// test('Je peux cliquer sur lien /inscription', async t => {
-//   await t.click(signUpButton)
-//   const location = await t.eval(() => window.location)
-//   await t.expect(location.pathname).eql('/inscription')
-// })
 
 test("Lorsque l'un des deux champs est manquant, le bouton connexion est désactivé", async t => {
   // given
@@ -58,7 +51,7 @@ test("J'ai un compte valide, je suis redirigé·e vers la page /decouverte sans 
   await t.expect(getPageUrl()).contains('/decouverte')
 })
 
-test("J'ai un identifiant invalide, je vois un messages d'erreur et je reste sur la page /connection", async t => {
+test("J'ai un identifiant invalide, je vois un message d'erreur et je reste sur la page /connexion", async t => {
   // given
   const { user } = t.ctx.sandbox
   const { password } = user
@@ -80,23 +73,17 @@ test("J'ai un identifiant invalide, je vois un messages d'erreur et je reste sur
     .eql('/connexion')
 })
 
-test("J'ai un mot de passe vide, avant envoi à l'API, je vois un message d'erreur et je reste sur la page /connection", async t => {
+test("J'ai un mot de passe vide, avant envoi à l'API, je vois un message d'erreur et je reste sur la page /connexion", async t => {
   // given
   const { user } = t.ctx.sandbox
   const { email, password } = user
 
   // when
   await t
-    // saisi du mot de passe
     .typeText(userPassword, password)
-    // puis on l'efface
-    // - prevent testcafe de warn sur une valeur vide
-    // TODO -> trouver une solution pour Blue le password input
-    // faire plus propre
     .selectText(userPassword)
     .pressKey('delete')
     .typeText(userIdentifier, email)
-    // .click(signInButton)
     .wait(1000)
 
   // then
@@ -110,7 +97,7 @@ test("J'ai un mot de passe vide, avant envoi à l'API, je vois un message d'erre
     .eql('/connexion')
 })
 
-test("J'ai un mot de passe invalide, je vois un message d'erreur et je reste sur la page /connection", async t => {
+test("J'ai un mot de passe invalide, je vois un message d'erreur et je reste sur la page /connexion", async t => {
   // given
   const { user } = t.ctx.sandbox
   const { email } = user
@@ -132,7 +119,3 @@ test("J'ai un mot de passe invalide, je vois un message d'erreur et je reste sur
     .expect(location.pathname)
     .eql('/connexion')
 })
-
-// TODO
-// 1 Quand on clique sur l'icone 'eye' on peut lire le mot de userPasswordError
-// 2 Texte de présentation (Identifiez-vous, etc.)

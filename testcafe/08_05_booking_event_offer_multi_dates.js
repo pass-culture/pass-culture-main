@@ -1,4 +1,3 @@
-// $(yarn bin)/testcafe chrome:headless ./testcafe/08_05_booking_event_offer_multi_dates.js
 import moment from 'moment-timezone'
 import { Selector } from 'testcafe'
 
@@ -6,7 +5,7 @@ import { fetchSandbox } from './helpers/sandboxes'
 import getMenuWalletValue from './helpers/getMenuWalletValue'
 import getPageUrl from './helpers/getPageUrl'
 import { ROOT_PATH } from '../src/utils/config'
-import { createUserRole } from './helpers/roles'
+import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 
 let offerPage = null
 let offerPageVerso = null
@@ -38,12 +37,16 @@ const selectableDates = pickerPopper.find(
 )
 const selectedTime = timeSelectBox.find('.ant-select-selection-selected-value')
 
+let userRole
+
 fixture(`08_05 Réservation d'une offre type event à dates multiple`).beforeEach(
   async t => {
-    const { user } = await fetchSandbox(
-      'webapp_08_booking',
-      'get_existing_webapp_user_can_book_multidates'
-    )
+    if (!userRole) {
+      userRole = await createUserRoleFromUserSandbox(
+        'webapp_08_booking',
+        'get_existing_webapp_user_can_book_multidates'
+      )
+    }
     const { offer } = await fetchSandbox(
       'webapp_08_booking',
       'get_non_free_event_offer'
@@ -52,7 +55,7 @@ fixture(`08_05 Réservation d'une offre type event à dates multiple`).beforeEac
     offerPageVerso = new RegExp(`${offerPage}(/[A-Z0-9]*)?/verso`)
     offerBookingPage = `${offerPage}/booking`
     await t
-      .useRole(createUserRole(user))
+      .useRole(userRole)
       .navigateTo(offerPage)
       .click(openVerso)
   }
@@ -71,8 +74,7 @@ test(`Le formulaire de réservation contient un selecteur de date et d'horaire`,
     .ok()
 })
 
-// FIXME -> gerer la requete dans la sandbox,
-// quand on saute de mois
+// FIXME -> gerer la requete dans la sandbox, quand on saute de mois
 test.skip(`Le formulaire de réservation contient de multiple dates`, async t => {
   await t
     .click(bookOfferButton)
@@ -83,7 +85,7 @@ test.skip(`Le formulaire de réservation contient de multiple dates`, async t =>
     .gt(1)
 })
 
-test(`Je selectionne la premiere date, le champs de date se met à jour, une horaire est selectionée`, async t => {
+test(`Je sélectionne la première date, le champs de date se met à jour, une horaire est sélectionée`, async t => {
   await t
     .click(bookOfferButton)
     .expect(dateSelectBox.exists)
@@ -148,8 +150,6 @@ test(`Parcours complet de réservation d'une offre event à date unique`, async 
     .expect(checkReversedIcon.exists)
     .ok()
 })
-
-// test(`Parcours complet de réservation d'une offre digitale`)
 
 test(`Je vérifie mes réservations, après reconnexion`, async t => {
   // FIXME: currentBookedToken devrait provenir d'une valeur

@@ -4,7 +4,7 @@ import { fetchSandbox } from './helpers/sandboxes'
 import getMenuWalletValue from './helpers/getMenuWalletValue'
 import getPageUrl from './helpers/getPageUrl'
 import { ROOT_PATH } from '../src/utils/config'
-import { createUserRole } from './helpers/roles'
+import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 
 let offerPage = null
 let offerBookingPage = null
@@ -32,11 +32,14 @@ const sendBookingButton = Selector('#booking-validation-button')
 const myBookingsMenuButton = Selector('#main-menu-reservations-button')
 const profileWalletAllValue = Selector('#profile-wallet-balance-value')
 
+let userRole
 fixture(`08_04 Réservation d'une offre type digitale`).beforeEach(async t => {
-  const { user } = await fetchSandbox(
-    'webapp_08_booking',
-    'get_existing_webapp_user_can_book_digital_offer'
-  )
+  if (!userRole) {
+    userRole = await createUserRoleFromUserSandbox(
+      'webapp_08_booking',
+      'get_existing_webapp_user_can_book_digital_offer'
+    )
+  }
   const { offer } = await fetchSandbox(
     'webapp_08_booking',
     'get_non_free_digital_offer'
@@ -44,7 +47,7 @@ fixture(`08_04 Réservation d'une offre type digitale`).beforeEach(async t => {
 
   offerPage = `${discoverURL}/${offer.id}`
   offerBookingPage = `${offerPage}/booking`
-  await t.useRole(createUserRole(user)).navigateTo(offerPage)
+  await t.useRole(userRole).navigateTo(offerPage)
 })
 
 test(`Il s'agit d'une offre en ligne qui n'est pas terminée`, async t => {

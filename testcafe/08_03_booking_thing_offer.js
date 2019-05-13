@@ -1,11 +1,10 @@
-// $(yarn bin)/testcafe chrome ./testcafe/08_03_booking_thing_offer.js
 import { Selector } from 'testcafe'
 
 import { fetchSandbox } from './helpers/sandboxes'
 import getMenuWalletValue from './helpers/getMenuWalletValue'
 import getPageUrl from './helpers/getPageUrl'
 import { ROOT_PATH } from '../src/utils/config'
-import { createUserRole } from './helpers/roles'
+import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 
 let offerPage = null
 let offerPageVerso = null
@@ -14,8 +13,6 @@ let currentBookedToken = null
 let previousWalletValue = null
 const myProfileURL = `${ROOT_PATH}profil`
 const discoverURL = `${ROOT_PATH}decouverte`
-const myBookingsURL = `${ROOT_PATH}reservations`
-
 const bookingToken = Selector('#booking-booked-token')
 const bookOfferButton = Selector('#verso-booking-button')
 const checkReversedIcon = Selector('#verso-cancel-booking-button-reserved')
@@ -31,11 +28,15 @@ const sendBookingButton = Selector('#booking-validation-button')
 const myBookingMenuButton = Selector('#main-menu-reservations-button')
 const profileWalletAllValue = Selector('#profile-wallet-balance-value')
 
+let userRole
+
 fixture(`08_03 Réservation d'une offre type thing`).beforeEach(async t => {
-  const { user } = await fetchSandbox(
-    'webapp_08_booking',
-    'get_existing_webapp_user_can_book_thing_offer'
-  )
+  if (!userRole) {
+    userRole = await createUserRoleFromUserSandbox(
+      'webapp_08_booking',
+      'get_existing_webapp_user_can_book_thing_offer'
+    )
+  }
   const { mediationId, offer } = await fetchSandbox(
     'webapp_08_booking',
     'get_non_free_thing_offer_with_active_mediation'
@@ -43,10 +44,11 @@ fixture(`08_03 Réservation d'une offre type thing`).beforeEach(async t => {
   offerPage = `${discoverURL}/${offer.id}/${mediationId}`
   offerPageVerso = `${offerPage}/verso`
   offerBookingPage = `${offerPage}/booking`
-  await t.useRole(createUserRole(user)).navigateTo(offerPage)
+
+  await t.useRole(userRole).navigateTo(offerPage)
 })
 
-test(`Le formulaire de réservation ne contient pas de selecteur de date ou d'horaire`, async t => {
+test(`Le formulaire de réservation ne contient pas de sélecteur de date ou d'horaire`, async t => {
   await t
     .click(openVerso)
     .wait(500)
@@ -111,23 +113,6 @@ test(`Parcours complet de réservation d'une offre thing`, async t => {
     .eql(offerPageVerso)
     .expect(checkReversedIcon.exists)
     .ok()
-})
-
-test.skip(`Je vérifie mes réservations après reconnexion`, async t => {
-  const bookedOffer = Selector(
-    `.booking-item[data-token="${currentBookedToken}"]`
-  )
-  await t
-    .navigateTo(myBookingsURL)
-    .expect(bookedOffer.exists)
-    .ok()
-    .click(bookedOffer)
-    .wait(1000)
-    .expect(checkReversedIcon.exists)
-    .ok()
-    .click(checkReversedIcon)
-    .expect(getPageUrl())
-    .eql(myBookingsURL)
 })
 
 test(`Je vérifie le montant de mon pass`, async t => {

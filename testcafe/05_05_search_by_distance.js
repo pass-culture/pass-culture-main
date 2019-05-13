@@ -1,33 +1,35 @@
 import { ClientFunction, Selector } from 'testcafe'
-
-import { createUserRole } from './helpers/roles'
-import { fetchSandbox } from './helpers/sandboxes'
 import { ROOT_PATH } from '../src/utils/config'
 
 import distanceOptions from '../src/helpers/search/distanceOptions'
-
-const distanceOption = Selector('#filter-by-distance option')
+import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 
 const getPageUrl = ClientFunction(() => window.location.href.toString())
 
+const distanceOption = Selector('#filter-by-distance option')
 const filterButton = Selector('#filter-button')
 const toogleFilterButton = Selector('#search-filter-menu-toggle-button').find(
   'img'
 )
 
+let userRole
+
 fixture(
   '05_05_01 Recherche par distance | Je me suis connecté·e | Je ne suis pas géolocalisé·e'
 ).beforeEach(async t => {
-  const { user } = await fetchSandbox(
-    'webapp_05_search',
-    'get_existing_webapp_validated_user'
-  )
-  await t.useRole(createUserRole(user)).navigateTo(`${ROOT_PATH}recherche`)
+  if (!userRole) {
+    userRole = await createUserRoleFromUserSandbox(
+      'webapp_05_search',
+      'get_existing_webapp_validated_user'
+    )
+  }
+
+  await t.useRole(userRole).navigateTo(`${ROOT_PATH}recherche`)
+
   const location = await t.eval(() => window.location)
   await t
     .expect(location.pathname)
     .eql('/recherche')
-    // ouverture du filtre
     .click(toogleFilterButton)
 })
 
@@ -36,7 +38,7 @@ test('Je vois le titre de la recherche par distance', async t => {
   await t.expect(title.innerText).eql('OÙ')
 })
 
-test('Par défaut, le selecteur est Toutes distances', async t => {
+test('Par défaut, le sélecteur est Toutes distances', async t => {
   await t.expect(
     distanceOption.withText(distanceOptions[0].label).hasAttribute('selected')
       .ok
@@ -45,9 +47,7 @@ test('Par défaut, le selecteur est Toutes distances', async t => {
 
 test('Je ne sélectionne aucun filtre et je clique sur filtrer', async t => {
   await t.click(filterButton)
-  await t
-    .expect(getPageUrl())
-    .contains(`${ROOT_PATH}recherche/resultats`)
+  await t.expect(getPageUrl()).contains(`${ROOT_PATH}recherche/resultats`)
 })
 
 test('Je sélectionne toutes distances et je clique sur filtrer', async t => {
@@ -111,7 +111,6 @@ test('Je fais une recherche, je retourne sur la home, je réouvre la fenêtre de
     .click(filterButton)
     .expect(getPageUrl())
     .contains(`${ROOT_PATH}recherche/resultats?distance=10`)
-
     .click(Selector('button.back-button'))
     .expect(getPageUrl())
     .contains(`${ROOT_PATH}recherche`)

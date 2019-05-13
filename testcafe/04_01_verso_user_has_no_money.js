@@ -1,19 +1,18 @@
-// $(yarn bin)/testcafe chrome:headless ./testcafe/04_01_verso_user_has_no_money.js
 import { Selector } from 'testcafe'
-
-import { createUserRole } from './helpers/roles'
-import { fetchSandbox } from './helpers/sandboxes'
 import { getVersoWallet, getVersoWalletValue } from './helpers/getVersoWallet'
+import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 
 const openVersoButton = Selector('#deck-open-verso-button')
 
+let userRole
+
 fixture(`04_01 Verso`).beforeEach(async t => {
   // given
-  const { user } = await fetchSandbox(
+  userRole = await createUserRoleFromUserSandbox(
     'webapp_04_verso',
     'get_existing_digital_offer_with_active_mediation_already_booked_and_user_hnmm_93'
   )
-  await t.useRole(createUserRole(user))
+  await t.useRole(userRole)
 })
 
 test(`L'user n'a plus d'argent sur son compte`, async t => {

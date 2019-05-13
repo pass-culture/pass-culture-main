@@ -1,4 +1,3 @@
-// $(yarn bin)/testcafe chrome:headless ./testcafe/04_02_verso_user_already_booked.js
 import { Selector } from 'testcafe'
 
 import { createUserRole } from './helpers/roles'
@@ -47,6 +46,7 @@ test(`L'user ne peut plus réserver une offre digitale déjà réservée`, async
   await dragButton.with({ visibilityCheck: true })()
 })
 
+// FIXME: the sandbox getter is not working
 fixture.skip(`04_02 Verso annulation d'un réservation`).beforeEach(async t => {
   // given
   const { mediation, offer, user } = await fetchSandbox(
@@ -108,7 +108,7 @@ test(`Parcours d'annulation d'une réservation`, async t => {
     .notEql('Annulation impossible')
 })
 
-test(`Apres reservation, la coche de réservation a disparu, le bouton affiche toujours annuler`, async t => {
+test(`Après reservation, la coche de réservation a disparu, le bouton affiche toujours annuler`, async t => {
   await t
     .click(openVersoButton)
     .expect(bookingCheckIcon.exists)

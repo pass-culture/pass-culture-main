@@ -1,4 +1,3 @@
-// $(yarn bin)/testcafe chrome:headless ./testcafe/01_activation.js
 import { Selector } from 'testcafe'
 
 import getPageUrl from './helpers/getPageUrl'
