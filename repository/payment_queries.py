@@ -3,8 +3,9 @@ from typing import List
 from flask import render_template
 from sqlalchemy import text
 
-from models import PaymentTransaction, Payment, PaymentStatus, Booking, Stock, Offer, Venue, BankInformation
+from models import PaymentTransaction, Payment, PaymentStatus, Booking, Stock, Offer, Venue, BankInformation, Offerer
 from models.db import db
+from models.payment_status import TransactionStatus
 
 
 def find_transaction_checksum(message_id: str) -> str:
@@ -31,12 +32,30 @@ def find_payments_by_message(message_id: str) -> List[Payment]:
         .all()
 
 
-def find_all_for_bank_information(id: str) -> List[Payment]:
-    return Payment.query\
-        .join(Booking)\
-        .join(Stock)\
-        .join(Offer)\
-        .join(Venue)\
-        .join(BankInformation)\
-        .filter_by(id=id)\
-        .all()
+def find_all_with_status_not_processable_for_bank_information(bank_information_id: str) -> List[Payment]:
+    predicate_matches_venue_or_offerer = (Venue.id == BankInformation.venueId) | (
+                Offerer.id == BankInformation.offererId)
+
+    bank_information = BankInformation.query.filter_by(id=bank_information_id).one()
+
+    query = Payment.query \
+        .join(Booking) \
+        .join(Stock) \
+        .join(Offer) \
+        .join(Venue) \
+        .join(Offerer) \
+        .join(BankInformation, predicate_matches_venue_or_offerer) \
+        .filter_by(id=bank_information_id) \
+        .join(PaymentStatus, PaymentStatus.paymentId == Payment.id) \
+        .filter_by(status=TransactionStatus.NOT_PROCESSABLE)
+
+    if bank_information.offerer:
+        query = _keep_only_venues_with_no_bank_information(query)
+
+    return query.all()
+
+
+def _keep_only_venues_with_no_bank_information(query):
+    predicate_only_venues_with_no_bank_information = Venue.bankInformation == None
+    query = query.filter(predicate_only_venues_with_no_bank_information)
+    return query

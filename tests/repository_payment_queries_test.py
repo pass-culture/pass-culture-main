@@ -6,7 +6,7 @@ import pytest
 from models import PcObject
 from models.payment_status import TransactionStatus, PaymentStatus
 from repository.payment_queries import find_transaction_checksum, find_error_payments, find_retry_payments, \
-    find_payments_by_message, find_all_for_bank_information
+    find_payments_by_message, find_all_with_status_not_processable_for_bank_information
 from tests.conftest import clean_database
 from tests.test_utils import create_payment_transaction, create_payment, create_booking, create_user, create_deposit, \
     create_bank_information, create_venue, create_offerer, create_stock, create_offer_with_thing_product
@@ -210,9 +210,9 @@ class FindPaymentByTransactionAndMessageTest:
 
 
 @pytest.mark.standalone
-class FindAllForBankInformationTest:
+class FindAllWithStatusNotProcessableForBankInformationTest:
     @clean_database
-    def test_finds_all_payments_with_status_retry_linked_to_venue(self, app):
+    def test_finds_all_payments_linked_to_venue(self, app):
         # Given
         offerer = create_offerer()
         other_offerer = create_offerer(siren='987654321')
@@ -235,7 +235,83 @@ class FindAllForBankInformationTest:
         PcObject.check_and_save(payment, other_payment)
 
         # When
-        payments = find_all_for_bank_information(bank_information.id)
+        payments = find_all_with_status_not_processable_for_bank_information(bank_information.id)
 
         # Then
         assert len(payments) == 1
+
+    @clean_database
+    def test_finds_all_payments_linked_to_offerer(self, app):
+        # Given
+        offerer = create_offerer()
+        other_offerer = create_offerer(siren='987654321')
+        venue = create_venue(offerer)
+        other_venue = create_venue(other_offerer, siret=other_offerer.siren + '12345')
+        bank_information = create_bank_information(offerer=offerer, id_at_providers=offerer.siren)
+        other_bank_information = create_bank_information(offerer=other_offerer, id_at_providers=other_venue.siret)
+        user = create_user()
+        offer = create_offer_with_thing_product(venue)
+        other_offer = create_offer_with_thing_product(other_venue)
+        stock = create_stock(offer=offer, price=0)
+        other_stock = create_stock(offer=other_offer, price=0)
+        booking = create_booking(user, stock, venue)
+        other_booking = create_booking(user, other_stock, other_venue)
+        payment = create_payment(booking, offerer, 10)
+        other_payment = create_payment(other_booking, other_offerer, 10)
+        payment.setStatus(TransactionStatus.NOT_PROCESSABLE)
+        other_payment.setStatus(TransactionStatus.NOT_PROCESSABLE)
+
+        PcObject.check_and_save(payment, other_payment)
+
+        # When
+        payments = find_all_with_status_not_processable_for_bank_information(bank_information.id)
+
+        # Then
+        assert len(payments) == 1
+
+    @clean_database
+    def test_only_retrieves_payments_with_status_not_processable(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        bank_information = create_bank_information(offerer=offerer, id_at_providers=offerer.siren)
+        user = create_user(email='1@email.com')
+        other_user = create_user(email='2@email.com')
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        booking = create_booking(user, stock, venue)
+        other_booking = create_booking(other_user, stock, venue)
+        payment = create_payment(booking, offerer, 10)
+        other_payment = create_payment(other_booking, offerer, 10)
+        payment.setStatus(TransactionStatus.NOT_PROCESSABLE)
+        other_payment.setStatus(TransactionStatus.SENT)
+
+        PcObject.check_and_save(payment, other_payment)
+
+        # When
+        payments = find_all_with_status_not_processable_for_bank_information(bank_information.id)
+
+        # Then
+        assert len(payments) == 1
+
+    @clean_database
+    def test_does_not_retrive_payments_linked_to_venue_with_bank_information_if_bank_information_linked_to_offerer(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offerer_bank_information = create_bank_information(offerer=offerer, id_at_providers=offerer.siren)
+        venue_bank_information = create_bank_information(venue=venue, id_at_providers=venue.siret)
+        user = create_user(email='1@email.com')
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        booking = create_booking(user, stock, venue)
+        payment = create_payment(booking, offerer, 10)
+        payment.setStatus(TransactionStatus.NOT_PROCESSABLE)
+
+        PcObject.check_and_save(payment)
+
+        # When
+        payments = find_all_with_status_not_processable_for_bank_information(offerer_bank_information.id)
+
+        # Then
+        assert len(payments) == 0
