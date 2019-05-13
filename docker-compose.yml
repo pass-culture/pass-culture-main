@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:10.1
     volumes:
-      - "./api/postgres_data:/var/lib/postgresql/data"
+      - "postgres_data:/var/lib/postgresql/data"
     env_file:
       - env_file
     networks:
