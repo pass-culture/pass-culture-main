@@ -1,10 +1,10 @@
 from models import Booking, Mediation, Offer, Stock, User, Product
-from repository.user_queries import filter_webapp_users
+from repository.user_queries import keep_only_webapp_users
 from sandboxes.scripts.utils.helpers import get_mediation_helper, get_offer_helper, get_user_helper
 
 
 def get_existing_webapp_hnmm_user(return_as_dict=False):
-    query = filter_webapp_users(User.query)
+    query = keep_only_webapp_users(User.query)
     query = query.filter(User.email.contains('93.has-no-more-money'))
     user = query.first()
     if return_as_dict == False:
@@ -15,7 +15,7 @@ def get_existing_webapp_hnmm_user(return_as_dict=False):
 
 
 def get_existing_webapp_hbs_user():
-    query = filter_webapp_users(User.query)
+    query = keep_only_webapp_users(User.query)
     query = query.filter(User.email.contains('has-booked-some'))
     user = query.first()
     return {

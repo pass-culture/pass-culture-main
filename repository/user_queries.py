@@ -79,7 +79,7 @@ def filter_users_with_at_least_one_not_validated_offerer_validated_user_offerer(
                 )
     return query
 
-def filter_webapp_users(query):
+def keep_only_webapp_users(query):
     query = query.filter(
         (~User.UserOfferers.any()) &\
         (User.isAdmin == False)
