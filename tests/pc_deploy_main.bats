@@ -81,7 +81,7 @@ teardown(){
 
 @test "Deploy should not be run if current ENV is development" {
     # Given
-    expected_output='Deploy backend cannot be run on the local environment. Use (for example) "pc -e staging -t X.Y.Z deploy".'
+    expected_output='Deploy cannot be run on the local environment. Use (for example) "pc -e staging -t X.Y.Z deploy".'
 
     # When
     run pc deploy
@@ -98,7 +98,7 @@ teardown(){
 @test "Deploy on unknown environment is not allowed" {
     # Given
     environment='unexisting-env'
-    expected_output='Can only deploy-backend in staging, demo, integration and production'
+    expected_output='Can only deploy in staging, demo, integration and production'
 
     # When
     run pc -e "$environment" deploy

@@ -78,7 +78,7 @@ fi
 # =============================================
 RED='\033[0;31m'
 ORANGE='\033[0;33m'
-ABELS_COLOR='\e[38;5;197m'
+WARNING_COLOR='\e[38;5;197m'
 NO_COLOR='\033[0m'
 
 PRG="$BASH_SOURCE"
@@ -151,6 +151,15 @@ function update_deploy_branches {
     git submodule update || exit_error_restoring_branch
 }
 
+function tag_frontend_component {
+    component="$1"
+    tag_name="$2"
+    tag_version="v$tag_name"
+    cd "$ROOT_PATH"/"$component"
+    yarn version --new-version "$tag_name"
+    git push origin "$current_branch"
+    git push origin "$tag_version"
+}
 
 function open_build_status_page {
    cd "$ROOT_PATH"
@@ -381,16 +390,10 @@ elif [[ "$CMD" == "tag" ]]; then
     git push origin "$TAG_VERSION"
 
     # TAG WEBAPP
-    cd "$ROOT_PATH"/webapp
-    yarn version --new-version "$TAG_NAME"
-    git push origin "$current_branch"
-    git push origin "$TAG_VERSION"
+    tag_frontend_component webapp "$TAG_NAME"
 
     # TAG PRO
-    cd "$ROOT_PATH"/pro
-    yarn version --new-version "$TAG_NAME"
-    git push origin "$current_branch"
-    git push origin "$TAG_VERSION"
+    tag_frontend_component pro "$TAG_NAME"
 
     # TAG MAIN
     cd "$ROOT_PATH"
@@ -404,13 +407,13 @@ elif [[ "$CMD" == "tag" ]]; then
 
 # Deploy all components using main repo
 elif [[ "$CMD" == "deploy" ]]; then
-  ensure_remote "Deploy backend cannot be run on the local environment. Use (for example) \"pc -e staging -t X.Y.Z "$CMD"\"."
+  ensure_remote "Deploy cannot be run on the local environment. Use (for example) \"pc -e staging -t X.Y.Z "$CMD"\"."
 
   if [[ ! "$ENV" == 'production' ]] \
         && [[ ! "$ENV" == 'staging' ]] \
         && [[ ! "$ENV" == 'demo' ]] \
         && [[ ! "$ENV" == 'integration' ]]; then
-     echo_error "Can only deploy-backend in staging, demo, integration and production"
+     echo_error "Can only deploy in staging, demo, integration and production"
      exit 1
   fi
 
@@ -447,7 +450,7 @@ elif [[ "$CMD" == "deploy" ]]; then
   open_build_status_page "$ENV" "$commit_to_deploy"
 
   if [[ "$ENV" == 'production' ]]; then
-     echo -e "$ABELS_COLOR""/!\\ You just deployed to production. Was the version also delivered to integration and demo ?""${NO_COLOR}"
+     echo -e "$WARNING_COLOR""/!\\ You just deployed to production. Was the version also delivered to integration and demo ?""${NO_COLOR}"
   fi
 
   exit_success_restoring_branch
@@ -518,7 +521,7 @@ elif [[ "$CMD" == "deploy-backend" ]] \
   fi
 
   if [[ "$ENV" == 'production' ]]; then
-     echo -e "$ABELS_COLOR""/!\\ You just deployed to production. Was the version also delivered to integration ?""${NO_COLOR}"
+     echo -e "$WARNING_COLOR""/!\\ You just deployed to production. Was the version also delivered to integration ?""${NO_COLOR}"
   fi
 
   exit_success_restoring_branch
