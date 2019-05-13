@@ -54,7 +54,7 @@ def get_existing_digital_offer_with_active_mediation_already_booked_and_user_hnm
         .add_columns(Stock.id) \
         .all()
     user = get_existing_webapp_hnmm_user()
-    bookings = get_not_cancellable_bookings_for_user(user)
+    bookings = get_cancellable_bookings_for_user(user)
     offer = filter_booking_by_offer_id(bookings, offers)
 
     for mediation in offer.mediations:
