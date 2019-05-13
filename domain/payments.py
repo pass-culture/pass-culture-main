@@ -13,7 +13,7 @@ from lxml import etree
 
 from domain.bank_account import format_raw_iban_or_bic
 from domain.reimbursement import BookingReimbursement
-from models import PaymentTransaction
+from models import PaymentMessage
 from models.payment import Payment, PaymentDetails
 from models.payment_status import TransactionStatus
 from models.user import WalletBalance
@@ -161,15 +161,15 @@ def make_custom_message(date: datetime.date) -> str:
     return 'pass Culture Pro - remboursement %s quinzaine %s' % (period, month_and_year)
 
 
-def generate_payment_transaction(message_id: str, checksum: str, payments: List[Payment]) -> PaymentTransaction:
-    payment_transaction = PaymentTransaction()
-    payment_transaction.messageId = message_id
-    payment_transaction.checksum = checksum
-    payment_transaction.payments = payments
-    return payment_transaction
+def generate_payment_message(name: str, checksum: str, payments: List[Payment]) -> PaymentMessage:
+    payment_message = PaymentMessage()
+    payment_message.name = name
+    payment_message.checksum = checksum
+    payment_message.payments = payments
+    return payment_message
 
 
-def read_message_id_in_transaction_file(xml_file: str) -> str:
+def read_message_name_in_message_file(xml_file: str) -> str:
     xml = BytesIO(xml_file.encode())
     tree = etree.parse(xml, etree.XMLParser())
     node = tree.find('//ns:GrpHdr/ns:MsgId', namespaces=XML_NAMESPACE)

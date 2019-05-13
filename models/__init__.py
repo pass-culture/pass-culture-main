@@ -17,7 +17,7 @@ from models.offer_type import ThingType, EventType
 from models.offerer import Offerer
 from models.payment import Payment
 from models.payment_status import PaymentStatus
-from models.payment_transaction import PaymentTransaction
+from models.payment_message import PaymentMessage
 from models.pc_object import PcObject
 from models.product import Product
 from models.product import BookFormat
@@ -59,7 +59,7 @@ __all__ = (
     'Offer',
     'Payment',
     'PaymentStatus',
-    'PaymentTransaction',
+    'PaymentMessage',
     'Provider',
     'Product',
     'Recommendation',

@@ -14,7 +14,7 @@ from models import Booking, \
     UserOfferer, \
     UserSession, \
     Venue, \
-    VenueProvider, PaymentTransaction, BankInformation, LocalProviderEvent
+    VenueProvider, PaymentMessage, BankInformation, LocalProviderEvent
 from models.email import Email
 
 
@@ -25,7 +25,7 @@ def clean_all_database(*args, **kwargs):
     VenueProvider.query.delete()
     PaymentStatus.query.delete()
     Payment.query.delete()
-    PaymentTransaction.query.delete()
+    PaymentMessage.query.delete()
     Booking.query.delete()
     Stock.query.delete()
     Recommendation.query.delete()

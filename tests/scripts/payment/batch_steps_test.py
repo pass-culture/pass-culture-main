@@ -33,7 +33,7 @@ class GenerateNewPaymentsTest:
         booking2 = create_booking(user, paying_stock, venue, is_used=True)
         booking3 = create_booking(user, paying_stock, venue, is_used=True)
         booking4 = create_booking(user, free_stock, venue, is_used=True)
-        payment1 = create_payment(booking2, offerer, 10, transaction_message_id="ABCD123")
+        payment1 = create_payment(booking2, offerer, 10, payment_message_name="ABCD123")
 
         PcObject.check_and_save(payment1)
         PcObject.check_and_save(deposit, booking1, booking3, booking4)
@@ -254,8 +254,8 @@ def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_p
 
     # then
     updated_payments = Payment.query.all()
-    assert all(p.transactionMessageId == 'passCulture-SCT-20181015-092134' for p in updated_payments)
-    assert all(p.transactionChecksum == payments[0].transactionChecksum for p in updated_payments)
+    assert all(p.paymentMessageName == 'passCulture-SCT-20181015-092134' for p in updated_payments)
+    assert all(p.paymentMessageChecksum == payments[0].paymentMessageChecksum for p in updated_payments)
 
 
 @pytest.mark.standalone

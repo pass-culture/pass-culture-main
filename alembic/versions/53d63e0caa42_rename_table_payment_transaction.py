@@ -21,6 +21,7 @@ def upgrade():
     op.execute('ALTER INDEX payment_transaction_checksum_key RENAME TO payment_message_checksum_key')
     op.execute('ALTER INDEX "payment_transaction_messageId_key" RENAME TO "payment_message_messageId_key"')
     op.execute('ALTER TABLE payment RENAME CONSTRAINT "payment_transactionId_fkey" TO "payment_messageId_fkey"')
+    op.alter_column('payment_message', 'messageId', new_column_name='name')
 
 
 def downgrade():
@@ -30,3 +31,4 @@ def downgrade():
     op.execute('ALTER INDEX payment_message_checksum_key RENAME TO payment_transaction_checksum_key')
     op.execute('ALTER INDEX "payment_message_messageId_key" RENAME TO "payment_transaction_messageId_key"')
     op.execute('ALTER TABLE payment RENAME CONSTRAINT "payment_messageId_fkey" TO "payment_transactionId_fkey"')
+    op.alter_column('payment_transaction', 'name', new_column_name='messageId')

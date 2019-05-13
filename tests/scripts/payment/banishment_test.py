@@ -7,7 +7,7 @@ from models import PcObject
 from models.payment_status import TransactionStatus
 from scripts.payment.banishment import do_ban_payments, parse_raw_payments_ids
 from tests.conftest import clean_database
-from tests.test_utils import create_payment, create_payment_transaction, create_deposit, create_booking, create_user
+from tests.test_utils import create_payment, create_payment_message, create_deposit, create_booking, create_user
 
 
 @pytest.mark.standalone
@@ -41,18 +41,18 @@ class DoBanPaymentsTest:
         deposit = create_deposit(user, datetime.utcnow())
         offerer = booking.stock.resolvedOffer.venue.managingOfferer
 
-        transaction1 = create_payment_transaction(transaction_message_id='XML1')
-        transaction2 = create_payment_transaction(transaction_message_id='XML2')
-        transaction3 = create_payment_transaction(transaction_message_id='XML3')
+        transaction1 = create_payment_message(name='XML1')
+        transaction2 = create_payment_message(name='XML2')
+        transaction3 = create_payment_message(name='XML3')
 
         uuid1, uuid2, uuid3 = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
 
-        payment1 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, transaction=transaction1)
-        payment2 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid2, transaction=transaction2)
-        payment3 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, transaction=transaction3)
-        payment4 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid3, transaction=transaction1)
-        payment5 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, transaction=transaction1)
-        payment6 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, transaction=transaction1)
+        payment1 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction1)
+        payment2 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid2, payment_message=transaction2)
+        payment3 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction3)
+        payment4 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid3, payment_message=transaction1)
+        payment5 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction1)
+        payment6 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction1)
 
         PcObject.check_and_save(deposit, payment1, payment2, payment3, payment4, payment5, payment6)
 
@@ -75,13 +75,13 @@ class DoBanPaymentsTest:
         deposit = create_deposit(user, datetime.utcnow())
         offerer = booking.stock.resolvedOffer.venue.managingOfferer
 
-        transaction1 = create_payment_transaction(transaction_message_id='XML1')
-        transaction2 = create_payment_transaction(transaction_message_id='XML2')
+        transaction1 = create_payment_message(name='XML1')
+        transaction2 = create_payment_message(name='XML2')
 
         uuid1, uuid2 = uuid.uuid4(), uuid.uuid4()
 
-        payment1 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, transaction=transaction1)
-        payment2 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid2, transaction=transaction2)
+        payment1 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction1)
+        payment2 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid2, payment_message=transaction2)
 
         PcObject.check_and_save(deposit, payment1, payment2)
 

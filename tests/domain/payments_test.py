@@ -339,7 +339,7 @@ class CreatePaymentDetailsTest:
         user = create_user()
         booking = create_booking(user)
         offerer = create_offerer()
-        payment = create_payment(booking, offerer, 35, transaction_message_id='1234',
+        payment = create_payment(booking, offerer, 35, payment_message_name='1234',
                                  transaction_end_ot_end_id=uuid.uuid4(), iban='123456789')
 
         # when

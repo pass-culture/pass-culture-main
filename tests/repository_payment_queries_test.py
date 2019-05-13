@@ -5,39 +5,41 @@ import pytest
 
 from models import PcObject
 from models.payment_status import TransactionStatus, PaymentStatus
-from repository.payment_queries import find_transaction_checksum, find_error_payments, find_retry_payments, \
-    find_payments_by_message, find_all_with_status_not_processable_for_bank_information
+from repository.payment_queries import find_all_with_status_not_processable_for_bank_information
+from repository.payment_queries import find_message_checksum, find_error_payments, find_retry_payments, \
+    find_payments_by_message
 from tests.conftest import clean_database
-from tests.test_utils import create_payment_transaction, create_payment, create_booking, create_user, create_deposit, \
-    create_bank_information, create_venue, create_offerer, create_stock, create_offer_with_thing_product
+from tests.test_utils import create_bank_information, create_venue, create_offerer, create_stock, \
+    create_offer_with_thing_product
+from tests.test_utils import create_payment_message, create_payment, create_booking, create_user, create_deposit
 
 
 @pytest.mark.standalone
-class FindTransactionChecksumTest:
+class FindMessageChecksumTest:
     @clean_database
     def test_returns_a_checksum_if_message_id_is_known(self, app):
         pass
         # given
         message_id = 'ABCD1234'
-        transaction = create_payment_transaction(transaction_message_id=message_id)
-        PcObject.check_and_save(transaction)
+        message = create_payment_message(name=message_id)
+        PcObject.check_and_save(message)
 
         # when
-        checksum = find_transaction_checksum(message_id)
+        checksum = find_message_checksum(message_id)
 
         # then
-        assert checksum == transaction.checksum
+        assert checksum == message.checksum
 
     @clean_database
     def test_returns_none_is_message_id_is_unknown(self, app):
         pass
         # given
         message_id = 'ABCD1234'
-        transaction = create_payment_transaction(transaction_message_id=message_id)
-        PcObject.check_and_save(transaction)
+        message = create_payment_message(name=message_id)
+        PcObject.check_and_save(message)
 
         # when
-        checksum = find_transaction_checksum('EFGH5678')
+        checksum = find_message_checksum('EFGH5678')
 
         # then
         assert checksum is None
@@ -130,6 +132,7 @@ class FindRetryPaymentsTest:
         booking = create_booking(user)
         deposit = create_deposit(user, datetime.utcnow())
         payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
+        payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
         pending_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
         retry_status = PaymentStatus()
         retry_status.status = TransactionStatus.RETRY
@@ -147,27 +150,27 @@ class FindRetryPaymentsTest:
 
 
 @pytest.mark.standalone
-class FindPaymentByTransactionAndMessageTest:
+class FindPaymentsByMessageTest:
     @clean_database
-    def test_returns_payments_matching_transaction_and_message(self, app):
+    def test_returns_payments_matching_message(self, app):
         # given
         user = create_user()
         booking = create_booking(user)
         deposit = create_deposit(user, datetime.utcnow())
         offerer = booking.stock.resolvedOffer.venue.managingOfferer
 
-        transaction1 = create_payment_transaction(transaction_message_id='XML1')
-        transaction2 = create_payment_transaction(transaction_message_id='XML2')
-        transaction3 = create_payment_transaction(transaction_message_id='XML3')
+        transaction1 = create_payment_message(name='XML1')
+        transaction2 = create_payment_message(name='XML2')
+        transaction3 = create_payment_message(name='XML3')
 
         uuid1, uuid2, uuid3 = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
 
         payments = [
-            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, transaction=transaction1),
-            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid2, transaction=transaction2),
-            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, transaction=transaction3),
-            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid3, transaction=transaction1),
-            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, transaction=transaction1)
+            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction1),
+            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid2, payment_message=transaction2),
+            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction3),
+            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid3, payment_message=transaction1),
+            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction1)
         ]
 
         PcObject.check_and_save(deposit, *payments)
@@ -178,7 +181,7 @@ class FindPaymentByTransactionAndMessageTest:
         # then
         assert len(matching_payments) == 3
         for p in matching_payments:
-            assert p.transactionMessageId == 'XML1'
+            assert p.paymentMessageName == 'XML1'
 
     @clean_database
     def test_returns_nothing_if_message_is_not_matched(self, app):
@@ -188,16 +191,16 @@ class FindPaymentByTransactionAndMessageTest:
         deposit = create_deposit(user, datetime.utcnow())
         offerer = booking.stock.resolvedOffer.venue.managingOfferer
 
-        transaction1 = create_payment_transaction(transaction_message_id='XML1')
-        transaction2 = create_payment_transaction(transaction_message_id='XML2')
-        transaction3 = create_payment_transaction(transaction_message_id='XML3')
+        message1 = create_payment_message(name='XML1')
+        message2 = create_payment_message(name='XML2')
+        message3 = create_payment_message(name='XML3')
 
         uuid1, uuid2, uuid3 = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
 
         payments = [
-            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, transaction=transaction1),
-            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid2, transaction=transaction2),
-            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid3, transaction=transaction3)
+            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=message1),
+            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid2, payment_message=message2),
+            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid3, payment_message=message3)
         ]
 
         PcObject.check_and_save(deposit, *payments)

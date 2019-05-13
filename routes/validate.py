@@ -6,7 +6,7 @@ from lxml.etree import LxmlError
 
 import models
 from domain.admin_emails import maybe_send_offerer_validation_email
-from domain.payments import validate_transaction_file_structure, read_message_id_in_transaction_file, \
+from domain.payments import validate_transaction_file_structure, read_message_name_in_message_file, \
     generate_file_checksum
 from domain.user_emails import send_validation_confirmation_email, send_venue_validation_confirmation_email
 from models import ApiErrors, \
@@ -14,7 +14,7 @@ from models import ApiErrors, \
     PcObject, UserOfferer, Offerer, Venue
 from models.api_errors import ResourceNotFound, ForbiddenError
 from repository import user_offerer_queries, offerer_queries, user_queries
-from repository.payment_queries import find_transaction_checksum
+from repository.payment_queries import find_message_checksum
 from tests.validation_validate_test import check_validation_request, check_venue_found
 from utils.config import IS_INTEGRATION
 from utils.mailing import MailServiceException, send_raw_email
@@ -99,15 +99,15 @@ def validate_user(token):
     return '', 204
 
 
-@app.route('/validate/transaction', methods=['POST'])
+@app.route('/validate/payment_message', methods=['POST'])
 @login_required
-def certify_transaction_file_authenticity():
+def certify_message_file_authenticity():
     if not current_user.isAdmin:
         raise ForbiddenError()
 
     xml_content = request.files['file'].read().decode('utf-8')
-    message_id = read_message_id_in_transaction_file(xml_content)
-    found_checksum = find_transaction_checksum(message_id)
+    message_id = read_message_name_in_message_file(xml_content)
+    found_checksum = find_message_checksum(message_id)
 
     if not found_checksum:
         raise ResourceNotFound({'xml': ["L'identifiant du document XML 'MsgId' est inconnu"]})

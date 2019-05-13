@@ -8,7 +8,7 @@ from domain.admin_emails import send_payment_transaction_email, send_payment_det
 from domain.payments import filter_out_already_paid_for_bookings, create_payment_for_booking, generate_transaction_file, \
     validate_transaction_file_structure, create_all_payments_details, generate_payment_details_csv, \
     generate_wallet_balances_csv, \
-    generate_payment_transaction, generate_file_checksum, group_payments_by_status, filter_out_bookings_without_cost, \
+    generate_payment_message, generate_file_checksum, group_payments_by_status, filter_out_bookings_without_cost, \
     keep_only_pending_payments, keep_only_not_processable_payments
 from domain.reimbursement import find_all_booking_reimbursement
 from models import Offerer, PcObject
@@ -80,7 +80,7 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
         raise
 
     checksum = generate_file_checksum(xml_file)
-    transaction = generate_payment_transaction(message_id, checksum, payments)
+    transaction = generate_payment_message(message_id, checksum, payments)
 
     logger.info(
         '[BATCH][PAYMENTS] Sending file with message ID [%s] and checksum [%s]' %

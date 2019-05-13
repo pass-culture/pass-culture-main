@@ -3,14 +3,14 @@ from typing import List
 from flask import render_template
 from sqlalchemy import text
 
-from models import PaymentTransaction, Payment, PaymentStatus, Booking, Stock, Offer, Venue, BankInformation, Offerer
+from models import Booking, Stock, Offer, Venue, BankInformation, Offerer, PaymentMessage, Payment, PaymentStatus
 from models.db import db
 from models.payment_status import TransactionStatus
 
 
-def find_transaction_checksum(message_id: str) -> str:
-    transaction = PaymentTransaction.query.filter_by(messageId=message_id).first()
-    return transaction.checksum if transaction else None
+def find_message_checksum(message_name: str) -> str:
+    message = PaymentMessage.query.filter_by(name=message_name).first()
+    return message.checksum if message else None
 
 
 def find_error_payments() -> List[Payment]:
@@ -25,10 +25,10 @@ def find_retry_payments() -> List[Payment]:
     return Payment.query.filter(Payment.id.in_(retry_payment_ids)).all()
 
 
-def find_payments_by_message(message_id: str) -> List[Payment]:
+def find_payments_by_message(message_name: str) -> List[Payment]:
     return Payment.query \
-        .join(PaymentTransaction) \
-        .filter(PaymentTransaction.messageId == message_id) \
+        .join(PaymentMessage) \
+        .filter(PaymentMessage.name == message_name) \
         .all()
 
 

@@ -54,22 +54,22 @@ class Payment(PcObject, Model):
 
     customMessage = Column(String(140), nullable=True)
 
-    transactionId = Column(BigInteger,
-                           ForeignKey('payment_transaction.id'),
+    paymentMessageId = Column(BigInteger,
+                           ForeignKey('payment_message.id'),
                            index=True,
                            nullable=True)
 
-    transaction = relationship('PaymentTransaction',
-                               foreign_keys=[transactionId],
+    paymentMessage = relationship('PaymentMessage',
+                               foreign_keys=[paymentMessageId],
                                backref=backref("payments"))
 
     @property
-    def transactionMessageId(self):
-        return self.transaction.messageId if self.transaction else None
+    def paymentMessageName(self):
+        return self.paymentMessage.messageId if self.paymentMessage else None
 
     @property
-    def transactionChecksum(self):
-        return self.transaction.checksum if self.transaction else None
+    def paymentMessageChecksum(self):
+        return self.paymentMessage.checksum if self.paymentMessage else None
 
     @property
     def currentStatus(self):
@@ -102,7 +102,7 @@ class PaymentDetails:
         "Prix de la réservation",
         "Date de validation",
         "IBAN",
-        "Message ID",
+        "Message Name",
         "Transaction ID",
         "Paiement ID",
         "Taux de remboursement",
@@ -123,7 +123,7 @@ class PaymentDetails:
             self.booking_amount = payment.booking.value
             self.booking_used_date = booking_used_date
             self.payment_iban = payment.iban
-            self.transaction_message_id = payment.transactionMessageId
+            self.payment_message_name = payment.paymentMessageName
             self.transaction_end_to_end_id = payment.transactionEndToEndId
             self.payment_id = payment.id
             self.reimbursement_rate = payment.reimbursementRate
@@ -143,7 +143,7 @@ class PaymentDetails:
             str(self.booking_amount),
             str(self.booking_used_date),
             self.payment_iban,
-            self.transaction_message_id,
+            self.payment_message_name,
             str(self.transaction_end_to_end_id),
             str(self.payment_id),
             str(self.reimbursement_rate),

@@ -8,7 +8,7 @@ from unittest.mock import patch
 from uuid import UUID
 
 from domain.payments import validate_transaction_file_structure, generate_transaction_file, \
-    read_message_id_in_transaction_file, \
+    read_message_name_in_message_file, \
     generate_file_checksum
 from tests.test_utils import create_payment, create_offerer, create_user, create_venue, create_stock_from_offer, \
     create_booking, create_offer_with_thing_product, create_bank_information
@@ -615,7 +615,7 @@ def test_validate_transaction_file_structure_raises_a_document_invalid_exception
 
 
 @pytest.mark.standalone
-def test_read_message_id_in_transaction_file_returns_the_content_of_message_id_tag(app):
+def test_read_message_name_in_message_file_returns_the_content_of_message_id_tag(app):
     # given
     offerer = create_offerer()
     user = create_user()
@@ -629,7 +629,7 @@ def test_read_message_id_in_transaction_file_returns_the_content_of_message_id_t
     xml_file = generate_transaction_file(payments, 'BD12AZERTY123456', 'AZERTY9Q666', MESSAGE_ID, '0000')
 
     # when
-    message_id = read_message_id_in_transaction_file(xml_file)
+    message_id = read_message_name_in_message_file(xml_file)
 
     # then
     assert message_id == MESSAGE_ID
