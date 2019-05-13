@@ -35,8 +35,6 @@ def get_existing_event_offer_with_active_mediation_already_booked_but_cancellabl
         .all()
     user = get_existing_webapp_hnmm_user()
     bookings = get_cancellable_bookings_for_user(user)
-    print(offer_with_stock_id_tuples)
-    print(bookings)
     offer = find_offer_compatible_with_bookings(offer_with_stock_id_tuples, bookings)
 
     for mediation in offer.mediations:

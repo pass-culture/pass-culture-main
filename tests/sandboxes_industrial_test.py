@@ -23,9 +23,9 @@ def test_save_industrial_sandbox(app):
 
     # then
     assertCreatedCounts(
-        Booking=46,
+        Booking=58,
         Deposit=6,
-        Mediation=55,
+        Mediation=86,
         Offer=105,
         Offerer=13,
         Product=147,

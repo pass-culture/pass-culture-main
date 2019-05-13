@@ -107,9 +107,9 @@ def get_existing_webapp_user_reach_digital_limit():
     }
 
 def get_existing_webapp_user_reach_physical_limit():
-  query = keep_only_webapp_users(User.query)
-  query = query.filter(User.email.contains('93.has-booked-some'))
-  user = query.first()
-  return {
-      "user": get_user_helper(user)
-  }
+    query = keep_only_webapp_users(User.query)
+    query = query.filter(User.email.contains('93.has-booked-some'))
+    user = query.first()
+    return {
+        "user": get_user_helper(user)
+    }

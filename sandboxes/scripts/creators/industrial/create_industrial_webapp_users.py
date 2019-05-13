@@ -33,6 +33,7 @@ def create_industrial_webapp_users():
                 reset_password_token = None
 
             email = "pctest.jeune{}.{}@btmx.fr".format(departement_code, tag)
+
             users_by_name['jeune{} {}'.format(departement_code, tag)] = create_user(
                 departement_code=str(departement_code),
                 email=email,

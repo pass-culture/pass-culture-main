@@ -22,8 +22,6 @@ def create_industrial_bookings(
 
     token = 100000
 
-    stocks = stocks_by_name.values()
-
     recommendation_items = recommendations_by_name.items()
 
     recommendation_items_with_booking = remove_every(
