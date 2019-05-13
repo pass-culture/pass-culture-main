@@ -865,8 +865,6 @@ class PatchBookingTest:
 
         # Then
         assert response.status_code == 400
-        db.session.refresh(booking)
-        assert booking.isCancelled is False
 
     @clean_database
     def test_returns_404_if_booking_does_not_exist(self, app):

@@ -146,10 +146,9 @@ def check_booking_is_cancellable(booking, is_user_cancellation):
 
     if is_user_cancellation:
         if not booking.isUserCancellable:
-            if booking.stock.beginningDatetime:
-                api_errors.addError('booking',
-                                    "Impossible d\'annuler une réservation moins de 72h avant le début de l'évènement")
-                raise api_errors
+            api_errors.addError('booking',
+                                "Impossible d\'annuler une réservation moins de 72h avant le début de l'évènement")
+            raise api_errors
 
 
 def check_email_and_offer_id_for_anonymous_user(email, offer_id):
