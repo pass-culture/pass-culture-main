@@ -1,15 +1,15 @@
 import os
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict
 
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.bank_account import get_all_application_ids_from_demarches_simplifiees_procedure, format_raw_iban_or_bic
-from models import BankInformation, PcObject
+from models import BankInformation
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
-from models.payment_status import TransactionStatus
-from repository import offerer_queries, venue_queries, payment_queries
+from repository import offerer_queries, venue_queries
 from repository.bank_information_queries import get_last_update_from_bank_information
+from scripts.payment.bank_information_retrial import retry_linked_payments
 from utils.date import DATE_ISO_FORMAT
 
 
@@ -61,17 +61,7 @@ class BankInformationProvider(LocalProvider):
                     providable_info: ProvidableInfo):
         super(BankInformationProvider, self).save_chunks(chunk_to_insert, chunk_to_update, providable_info)
         bank_information_list = list(chunk_to_insert.values()) + list(chunk_to_update.values())
-        BankInformationProvider.retry_linked_payments(bank_information_list)
-
-    @staticmethod
-    def retry_linked_payments(bank_information_list: List[BankInformation]):
-        payments = []
-        for bank_information in bank_information_list:
-            payments += payment_queries.find_all_with_status_not_processable_for_bank_information(bank_information)
-        for payment in payments:
-            payment.setStatus(TransactionStatus.RETRY)
-        if payments:
-            PcObject.check_and_save(*payments)
+        retry_linked_payments(bank_information_list)
 
     def retrieve_providable_info(self):
         providable_info = ProvidableInfo()
