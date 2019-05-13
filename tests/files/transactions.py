@@ -1,4 +1,4 @@
-VALID_TRANSACTION = """<?xml version="1.0" encoding="UTF-8"?>
+VALID_MESSAGE = """<?xml version="1.0" encoding="UTF-8"?>
 <Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03">
     <CstmrCdtTrfInitn>
         <GrpHdr>

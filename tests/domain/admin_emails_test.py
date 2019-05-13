@@ -327,7 +327,7 @@ class SendOfferCreationNotificationToSupportTest:
 
 @pytest.mark.standalone
 class SendPaymentMessageEmailTest:
-    @patch('domain.admin_emails.make_payment_transaction_email', return_value={'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'})
+    @patch('domain.admin_emails.make_payment_message_email', return_value={'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'})
     def test_returns_true_if_email_was_sent(self, make_payment_transaction_email):
         # given
         xml = '<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"></Document>'
@@ -341,7 +341,7 @@ class SendPaymentMessageEmailTest:
         # then
         assert successfully_sent
 
-    @patch('domain.admin_emails.make_payment_transaction_email', return_value={'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'})
+    @patch('domain.admin_emails.make_payment_message_email', return_value={'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'})
     def test_returns_false_if_not_email_was_sent(self, make_payment_transaction_email):
         # given
         xml = '<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"></Document>'

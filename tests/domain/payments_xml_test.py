@@ -451,11 +451,11 @@ class GenerateMessageFileTest:
 
         payments = [
             create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555',
-                           custom_message='remboursement 1ère quinzaine 09-2018'),
+                           transaction_label='remboursement 1ère quinzaine 09-2018'),
             create_payment(booking2, offerer2, Decimal(20), iban='FR14WXCVBN123456', bic='WXCVBN7B444',
-                           custom_message='remboursement 1ère quinzaine 09-2018'),
+                           transaction_label='remboursement 1ère quinzaine 09-2018'),
             create_payment(booking3, offerer3, Decimal(20), iban=None, bic=None,
-                           custom_message='remboursement 1ère quinzaine 09-2018')
+                           transaction_label='remboursement 1ère quinzaine 09-2018')
         ]
 
         # When

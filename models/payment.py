@@ -52,7 +52,7 @@ class Payment(PcObject, Model):
 
     transactionEndToEndId = Column(UUID(as_uuid=True), nullable=True)
 
-    customMessage = Column(String(140), nullable=True)
+    transactionLabel = Column(String(140), nullable=True)
 
     paymentMessageId = Column(BigInteger,
                            ForeignKey('payment_message.id'),

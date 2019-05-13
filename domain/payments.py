@@ -52,7 +52,7 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     payment.reimbursementRule = booking_reimbursement.reimbursement.value.description
     payment.reimbursementRate = booking_reimbursement.reimbursement.value.rate
     payment.author = 'batch'
-    payment.customMessage = make_custom_message(datetime.utcnow())
+    payment.transactionLabel = make_transaction_label(datetime.utcnow())
 
     if venue.iban:
         payment.iban = format_raw_iban_or_bic(venue.iban)
@@ -155,7 +155,7 @@ def generate_wallet_balances_csv(wallet_balances: List[WalletBalance]) -> str:
     return output.getvalue()
 
 
-def make_custom_message(date: datetime.date) -> str:
+def make_transaction_label(date: datetime.date) -> str:
     month_and_year = date.strftime('%m-%Y')
     period = '1ère' if date.day < 15 else '2nde'
     return 'pass Culture Pro - remboursement %s quinzaine %s' % (period, month_and_year)
@@ -222,5 +222,5 @@ def _group_payments_into_transactions(payments: List[Payment]) -> List[Transacti
 
         transactions.append(
             Transaction(iban, bic, payments_of_iban[0].recipientName, payments_of_iban[0].recipientSiren, end_to_end_id,
-                        amount, payments_of_iban[0].customMessage))
+                        amount, payments_of_iban[0].transactionLabel))
     return transactions

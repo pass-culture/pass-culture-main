@@ -1,7 +1,7 @@
 from typing import Dict, List, Callable
 
 from models import Offer, User, Offerer, UserOfferer, Venue
-from utils.mailing import write_object_validation_email, make_payment_transaction_email, \
+from utils.mailing import write_object_validation_email, make_payment_message_email, \
     make_venue_validation_email, compute_email_html_part_and_recipients, make_payment_details_email, \
     make_payments_report_email, make_wallet_balances_email, make_offer_creation_notification_email, \
     make_activation_users_email, SUPPORT_EMAIL_ADDRESS
@@ -30,7 +30,7 @@ def maybe_send_offerer_validation_email(offerer: Offerer, user_offerer: UserOffe
 
 def send_payment_message_email(xml_attachment: str, checksum: bytes, recipients: List[str],
                                send_email: Callable[[dict], bool]) -> bool:
-    email = make_payment_transaction_email(xml_attachment, checksum)
+    email = make_payment_message_email(xml_attachment, checksum)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)
 

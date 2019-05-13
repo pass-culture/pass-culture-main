@@ -589,7 +589,7 @@ def create_mocked_bookings(num_bookings, venue_email, name='Offer name'):
 
 def create_payment(booking, offerer, amount, author='test author', reimbursement_rule='remboursement à 100%',
                    reimbursement_rate=Decimal(0.5), payment_message=None, payment_message_name=None, transaction_end_ot_end_id=None,
-                   custom_message='pass Culture Pro - remboursement 2nde quinzaine 07-2018',
+                   transaction_label='pass Culture Pro - remboursement 2nde quinzaine 07-2018',
                    status=TransactionStatus.PENDING, idx=None, iban='FR7630007000111234567890144', bic='BDFEFR2LCCB'):
     payment = Payment()
     payment.booking = booking
@@ -612,19 +612,19 @@ def create_payment(booking, offerer, amount, author='test author', reimbursement
         payment.paymentMessage = payment_message
 
     payment.transactionEndToEndId = transaction_end_ot_end_id
-    payment.customMessage = custom_message
+    payment.transactionLabel = transaction_label
     payment.id = idx
     return payment
 
 
 def create_payment_message(name="ABCD123", checksum=None):
-    transaction = PaymentMessage()
-    transaction.name = name
+    message = PaymentMessage()
+    message.name = name
     if checksum:
-        transaction.checksum = checksum
+        message.checksum = checksum
     else:
-        transaction.checksum = sha256(name.encode('utf-8')).digest()
-    return transaction
+        message.checksum = sha256(name.encode('utf-8')).digest()
+    return message
 
 
 def create_payment_details(

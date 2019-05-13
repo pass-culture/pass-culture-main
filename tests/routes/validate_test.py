@@ -5,7 +5,7 @@ import pytest
 from models import Offerer, PcObject
 from models.db import db
 from tests.conftest import clean_database
-from tests.files.transactions import VALID_TRANSACTION
+from tests.files.transactions import VALID_MESSAGE
 from tests.test_utils import req, create_user, req_with_auth, API_URL, create_offerer, create_user_offerer, \
     create_venue, create_payment_message
 
@@ -137,7 +137,7 @@ class CertifyMessageFileAuthenticityTest:
         response = auth_request.post(
             API_URL + '/validate/payment_message/',
             data={},
-            files={'file': ('transaction.xml', VALID_TRANSACTION)}
+            files={'file': ('message.xml', VALID_MESSAGE)}
         )
 
         # then
@@ -160,7 +160,7 @@ class CertifyMessageFileAuthenticityTest:
         response = auth_request.post(
             API_URL + '/validate/payment_message/',
             data={},
-            files={'file': ('transaction.xml', VALID_TRANSACTION)}
+            files={'file': ('message.xml', VALID_MESSAGE)}
         )
 
         # then
@@ -176,7 +176,7 @@ class CertifyMessageFileAuthenticityTest:
         response = req.post(
             API_URL + '/validate/payment_message/',
             data={},
-            files={'file': ('transaction.xml', VALID_TRANSACTION)},
+            files={'file': ('message.xml', VALID_MESSAGE)},
             headers={'origin': 'http://localhost:3000'}
         )
 
@@ -187,11 +187,11 @@ class CertifyMessageFileAuthenticityTest:
     def test_returns_forbidden_if_current_user_is_not_admin(self, app):
         # given
         user = create_user(can_book_free_offers=True, is_admin=False)
-        transaction = create_payment_message(
+        message = create_payment_message(
             name='passCulture-SCT-20181015-114356',
             checksum=b'\x86\x05[(j\xfd\x111l\xd7\xca\xcd\x00\xe6\x104\xfd\xde\xdd\xa5\x0c#L\x01W\xa8\xf0\xdan0\x93\x1e'
         )
-        PcObject.check_and_save(user, transaction)
+        PcObject.check_and_save(user, message)
 
         auth_request = req_with_auth(email=user.email)
 
@@ -199,7 +199,7 @@ class CertifyMessageFileAuthenticityTest:
         response = auth_request.post(
             API_URL + '/validate/payment_message/',
             data={},
-            files={'file': ('transaction.xml', VALID_TRANSACTION)}
+            files={'file': ('message.xml', VALID_MESSAGE)}
         )
 
         # then
@@ -217,7 +217,7 @@ class CertifyMessageFileAuthenticityTest:
         response = auth_request.post(
             API_URL + '/validate/payment_message/',
             data={},
-            files={'file': ('transaction.xml', VALID_TRANSACTION)}
+            files={'file': ('message.xml', VALID_MESSAGE)}
         )
 
         # then

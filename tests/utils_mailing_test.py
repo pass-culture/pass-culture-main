@@ -23,7 +23,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_offerer_driven_cancellation_email_for_offerer, make_validation_confirmation_email, \
     make_venue_validation_email, \
     make_venue_validation_confirmation_email, \
-    make_batch_cancellation_email, make_payment_transaction_email, make_user_validation_email, \
+    make_batch_cancellation_email, make_payment_message_email, make_user_validation_email, \
     make_payment_details_email, make_wallet_balances_email, make_payments_report_email, parse_email_addresses, \
     make_activation_notification_email, make_offer_creation_notification_email, \
     send_raw_email, resend_email
@@ -1181,25 +1181,25 @@ def test_make_offerer_booking_user_cancellation_has_recap_information_but_no_tok
 
 @pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
-def test_make_payment_transaction_email_sends_a_xml_file_with_its_checksum_in_email_body(app):
+def test_make_payment_message_email_sends_a_xml_file_with_its_checksum_in_email_body(app):
     # Given
     xml = '<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"></Document>'
     checksum = b'\x16\x91\x0c\x11~Hs\xc5\x1a\xa3W1\x13\xbf!jq@\xea  <h&\xef\x1f\xaf\xfc\x7fO\xc8\x82'
 
     # When
-    email = make_payment_transaction_email(xml, checksum)
+    email = make_payment_message_email(xml, checksum)
 
     # Then
     assert email["FromEmail"] == 'support@passculture.app'
     assert email["FromName"] == "pass Culture Pro"
     assert email["Subject"] == "Virements XML pass Culture Pro - 2018-10-15"
     assert email["Attachments"] == [{"ContentType": "text/xml",
-                                     "Filename": "transaction_banque_de_france_20181015.xml",
+                                     "Filename": "message_banque_de_france_20181015.xml",
                                      "Content": 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48RG9j'
                                                 'dW1lbnQgeG1sbnM9InVybjppc286c3RkOmlzbzoyMDAyMjp0ZWNoOnhz'
                                                 'ZDpwYWluLjAwMS4wMDEuMDMiPjwvRG9jdW1lbnQ+'}]
     email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-    assert 'transaction_banque_de_france_20181015.xml' in email_html.find('p', {'id': 'file_name'}).find('strong').text
+    assert 'message_banque_de_france_20181015.xml' in email_html.find('p', {'id': 'file_name'}).find('strong').text
     assert '16910c117e4873c51aa3573113bf216a7140ea20203c6826ef1faffc7f4fc882' \
            in email_html.find('p', {'id': 'checksum'}).find('strong').text
 
