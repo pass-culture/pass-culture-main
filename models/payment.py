@@ -102,7 +102,7 @@ class PaymentDetails:
         "Prix de la réservation",
         "Date de validation",
         "IBAN",
-        "Message Name",
+        "Payment Message Name",
         "Transaction ID",
         "Paiement ID",
         "Taux de remboursement",
