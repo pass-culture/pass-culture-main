@@ -75,7 +75,14 @@ export class ProductFields extends Component {
   }
 
   render() {
-    const { beginningDatetime, isEvent, readOnly, stock, timezone } = this.props
+    const {
+      beginningDatetime,
+      isEvent,
+      readOnly,
+      stock,
+      timezone,
+      venue,
+    } = this.props
     const { available, bookings } = stock || {}
     const remainingStocksCount = getRemainingStocksCount(
       available,
@@ -102,6 +109,27 @@ export class ProductFields extends Component {
             name="bookingLimitDatetime"
             placeholder="Laissez vide si pas de limite"
             readOnly={readOnly}
+            renderValue={() => {
+              if (readOnly) {
+                return null
+              }
+
+              let tip =
+                "L'heure de cette limite est fixée à 20h et ne peut pas être changée."
+              if (!venue || !venue.isVirtual) {
+                tip = `${tip}\n. Vous être sur une offre numérique, la zone horaire de cette date correspond à celle de votre structure.`
+              }
+
+              return (
+                <span
+                  className="button tooltip qty-info"
+                  data-place="bottom"
+                  data-tip={`<p>${tip}</p>`}
+                  data-type="info">
+                  <Icon svg="picto-info" />
+                </span>
+              )
+            }}
             timezone={timezone}
           />
         </td>
@@ -151,12 +179,13 @@ ProductFields.propTypes = {
   closeInfo: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
   isEvent: PropTypes.bool,
-  offer: PropTypes.object,
+  offer: PropTypes.shape(),
   parseFormChild: PropTypes.func,
   readOnly: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   showInfo: PropTypes.func.isRequired,
-  stock: PropTypes.object,
+  stock: PropTypes.shape(),
   timezone: PropTypes.string,
+  venue: PropTypes.shape(),
 }
 
 export default ProductFields

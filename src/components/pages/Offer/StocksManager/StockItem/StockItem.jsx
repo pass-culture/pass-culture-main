@@ -102,6 +102,7 @@ export class StockItem extends Component {
       stockPatch,
       stocks,
       timezone,
+      venue,
     } = this.props
     const { isRequestPending, tbodyElement } = this.state
     const { id: stockId } = stockPatch
@@ -163,16 +164,17 @@ export class StockItem extends Component {
                   showInfo={showInfo}
                   stock={stock}
                   timezone={timezone}
+                  venue={venue}
                 />
                 {readOnly ? (
                   <EditAndDeleteControl
                     dispatch={dispatch}
+                    formInitialValues={stockPatch}
                     history={history}
                     isEvent={isEvent}
                     offer={offer}
                     stock={stock}
                     tbody={tbodyElement}
-                    formInitialValues={stockPatch}
                   />
                 ) : (
                   <SubmitAndCancelControl
@@ -206,14 +208,15 @@ StockItem.propTypes = {
   closeInfo: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
   hasIban: PropTypes.bool.isRequired,
-  history: PropTypes.object.isRequired,
+  history: PropTypes.shape().isRequired,
   isEvent: PropTypes.bool.isRequired,
-  offer: PropTypes.object,
-  query: PropTypes.object.isRequired,
-  stockPatch: PropTypes.object.isRequired,
+  offer: PropTypes.shape(),
+  query: PropTypes.shape().isRequired,
+  stockPatch: PropTypes.shape().isRequired,
   stocks: PropTypes.arrayOf(PropTypes.object),
   showInfo: PropTypes.func.isRequired,
   timezone: PropTypes.string,
+  venue: PropTypes.shape(),
 }
 
 export default StockItem
