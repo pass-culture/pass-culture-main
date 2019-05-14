@@ -1,3 +1,5 @@
+import bcrypt
+
 import csv
 import os
 import re
@@ -181,8 +183,7 @@ def _extract_departement_code(plain_department: str) -> str:
 
 
 def _compute_password_if_absent(csv_raw: List[List[str]]) -> str:
-    print(csv_raw)
     if len(csv_raw) - 1 == PASSWORD_INDEX:
-        return csv_raw[PASSWORD_INDEX]
+        return bcrypt.hashpw(csv_raw[PASSWORD_INDEX].encode('utf-8'), bcrypt.gensalt())
     else:
-        return random_token(length=12).encode('utf-8')
+        return bcrypt.hashpw(random_token(length=12).encode('utf-8'), bcrypt.gensalt())

@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from unittest.mock import Mock
+from unittest.mock import Mock, patch, ANY
 
 import pytest
 
@@ -25,7 +25,8 @@ class FillUserFromTest:
             'super_secure_password'
         ]
 
-    def test_returns_an_user_with_data_from_csv_row(self):
+    @patch('bcrypt.hashpw')
+    def test_returns_an_user_with_data_from_csv_row(self, hashpw):
         # when
         user = fill_user_from(self.csv_row, User())
 
@@ -38,7 +39,7 @@ class FillUserFromTest:
         assert user.departementCode == '22'
         assert user.postalCode == '22850'
         assert user.dateOfBirth == datetime(1923, 3, 15)
-        assert user.password == 'super_secure_password'
+        hashpw.assert_called_with('super_secure_password'.encode('utf-8'), ANY)
 
     def test_returns_a_formatted_phone_number(self):
         # given
@@ -101,17 +102,21 @@ class FillUserFromTest:
         assert user.resetPasswordToken is not None
         assert user.resetPasswordTokenValidityLimit is not None
 
-    def test_returns_an_user_with_computed_password(self):
+
+    @patch('scripts.users.random_token')
+    @patch('bcrypt.hashpw')
+    def test_returns_an_user_with_computed_password(self, hashpw, random_token):
         # given
+        random_token.return_value = "random_string"
         data = list(self.csv_row)
-        print(self.csv_row)
         del data[8]
 
         # when
-        user = fill_user_from(data, User())
+        fill_user_from(data, User())
 
         # then
-        assert len(user.password) == 12
+        hashpw.assert_called_with('random_string'.encode('utf-8'), ANY)
+
 
 
 @pytest.mark.standalone
