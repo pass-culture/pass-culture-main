@@ -4,9 +4,11 @@ import createCachedSelector from 're-reselect'
 import selectOfferById from 'selectors/selectOfferById'
 import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
 import {
+  BOOKING_LIMIT_DATETIME_HOURS,
+  BOOKING_LIMIT_DATETIME_MINUTES,
   getDatetimeOneDayAfter,
   getDatetimeOneHourAfter,
-  getDatetimeTwoDaysBefore,
+  getDatetimeTwoDaysBeforeAtSpecificHoursAndMinutes,
 } from '../utils'
 
 function mapArgsToCacheKey(state, stock, offerId, offererId) {
@@ -52,8 +54,12 @@ export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCached
         : getDatetimeOneHourAfter(beginningDatetime)
     }
 
-    if (!bookingLimitDatetime) {
-      bookingLimitDatetime = getDatetimeTwoDaysBefore(beginningDatetime)
+    if (beginningDatetime && !bookingLimitDatetime) {
+      bookingLimitDatetime = getDatetimeTwoDaysBeforeAtSpecificHoursAndMinutes(
+        beginningDatetime,
+        BOOKING_LIMIT_DATETIME_HOURS,
+        BOOKING_LIMIT_DATETIME_MINUTES
+      )
     }
 
     if (typeof price === 'undefined') {

@@ -14,6 +14,9 @@ export const getRemainingStocksCount = (available, bookings) => {
 
 export const FLOATSEP = ','
 
+export const BOOKING_LIMIT_DATETIME_HOURS = 23
+export const BOOKING_LIMIT_DATETIME_MINUTES = 59
+
 export function getDatetimeOneDayAfter(datetime) {
   return moment(datetime)
     .add(1, 'day')
@@ -26,9 +29,15 @@ export function getDatetimeOneHourAfter(datetime) {
     .toISOString()
 }
 
-export function getDatetimeTwoDaysBefore(datetime) {
+export function getDatetimeTwoDaysBeforeAtSpecificHoursAndMinutes(
+  datetime,
+  hours,
+  minutes
+) {
   return moment(datetime)
     .subtract(2, 'day')
+    .hours(hours)
+    .minutes(minutes)
     .toISOString()
 }
 

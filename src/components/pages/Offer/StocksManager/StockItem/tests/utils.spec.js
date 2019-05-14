@@ -1,7 +1,11 @@
+import moment from 'moment'
+import 'moment/locale/fr'
+import 'moment-timezone'
+
 import {
   getDatetimeOneDayAfter,
   getDatetimeOneHourAfter,
-  getDatetimeTwoDaysBefore,
+  getDatetimeTwoDaysBeforeAtSpecificHoursAndMinutes,
   getRemainingStocksCount,
 } from '../utils'
 
@@ -171,15 +175,19 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
       // then
       expect(nextDatetime).toEqual('2019-04-27T20:00:00.000Z')
     })
-    it('should getDatetimeTwoDaysBefore', () => {
+    it('should getDatetimeTwoDaysBeforeAtSpecificHoursAndMinutes', () => {
       // given
-      const datetime = '2019-04-27T19:00:00Z'
+      const datetime = moment('2019-04-27T19:00:00Z').tz('Europe/Paris')
 
       // when
-      const nextDatetime = getDatetimeTwoDaysBefore(datetime)
+      const nextDatetime = getDatetimeTwoDaysBeforeAtSpecificHoursAndMinutes(
+        datetime,
+        23,
+        59
+      )
 
       // then
-      expect(nextDatetime).toEqual('2019-04-25T19:00:00.000Z')
+      expect(nextDatetime).toEqual('2019-04-25T21:59:00.000Z')
     })
   })
 })

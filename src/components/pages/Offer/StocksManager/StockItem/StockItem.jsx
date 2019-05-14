@@ -13,7 +13,11 @@ import EventFields from './EventFields'
 import ProductFields from './ProductFields'
 import SubmitAndCancelControl from './SubmitAndCancelControl'
 import forceDateAtSpecificHoursAndMinutes from './decorators/forceDateAtSpecificHoursAndMinutes'
-import { errorKeyToFrenchKey } from './utils'
+import {
+  BOOKING_LIMIT_DATETIME_HOURS,
+  BOOKING_LIMIT_DATETIME_MINUTES,
+  errorKeyToFrenchKey,
+} from './utils'
 
 export class StockItem extends Component {
   constructor() {
@@ -112,8 +116,8 @@ export class StockItem extends Component {
     let decorators = [
       forceDateAtSpecificHoursAndMinutes({
         dateName: 'bookingLimitDatetime',
-        hours: 23,
-        minutes: 59,
+        hours: BOOKING_LIMIT_DATETIME_HOURS,
+        minutes: BOOKING_LIMIT_DATETIME_MINUTES,
         timezone,
       }),
     ]
