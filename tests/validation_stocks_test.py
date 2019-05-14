@@ -91,7 +91,7 @@ class CheckDatesAreAllowedOnNewStockTest:
                 # Then
                 assert pytest.fail("Should not fail with valid params")
 
-        def test_doesnt_raise_with_none_booking_limit_datetime(self):
+        def test_doesnt_raise_error_with_none_booking_limit_datetime(self):
             # Given
             offer = create_offer_with_thing_product(Venue())
             data = {
@@ -285,7 +285,7 @@ class CheckDatesAreAllowedOnExistingStockTest:
                 assert pytest.fail("Should not fail with valid params")
 
 
-        def test_doesnt_raise_with_none_booking_limit_datetime(self):
+        def test_doesnt_raise_error_with_none_booking_limit_datetime(self):
             # Given
             offer = create_offer_with_thing_product(Venue())
             data = {
