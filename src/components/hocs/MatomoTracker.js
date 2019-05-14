@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import { withRouter } from 'react-router'
 import { Component } from 'react'
 
-export class Matomo extends Component {
+export class MatomoTracker extends Component {
   render() {
     const { children, location } = this.props
 
@@ -19,13 +19,13 @@ export class Matomo extends Component {
   }
 }
 
-Matomo.propTypes = {
+MatomoTracker.propTypes = {
   children: PropTypes.node.isRequired,
   location: PropTypes.shape(),
 }
 
-Matomo.defaultProps = {
+MatomoTracker.defaultProps = {
   location: null,
 }
 
-export default withRouter(Matomo)
+export default withRouter(MatomoTracker)

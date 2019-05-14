@@ -8,7 +8,7 @@ import routes from './utils/routes'
 import { configureStore } from './utils/store'
 import NotMatch from './components/pages/NotMatch'
 import { getReactRoutes } from './utils/routes-utils'
-import { Matomo } from './components/hocs/Matomo'
+import Matomo from './components/hocs/MatomoTracker'
 
 const approutes = getReactRoutes(routes)
 const { store, persistor } = configureStore()

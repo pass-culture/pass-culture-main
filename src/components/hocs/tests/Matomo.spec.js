@@ -1,8 +1,8 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import { Matomo } from '../Matomo'
+import { MatomoTracker } from '../MatomoTracker'
 
-describe('src | components | hocs | Matomo', () => {
+describe('src | components | hocs | MatomoTracker', () => {
   it('should dispatch a new page displayed event', () => {
     // given
     const fakeMatomoTracker = {
@@ -16,9 +16,9 @@ describe('src | components | hocs | Matomo', () => {
 
     // when
     shallow(
-      <Matomo location={location}>
+      <MatomoTracker location={location}>
         <div>Children</div>
-      </Matomo>
+      </MatomoTracker>
     )
 
     // then
@@ -43,9 +43,9 @@ describe('src | components | hocs | Matomo', () => {
 
     // when
     shallow(
-      <Matomo location={location}>
+      <MatomoTracker location={location}>
         <div>Children</div>
-      </Matomo>
+      </MatomoTracker>
     )
 
     // then
@@ -63,9 +63,9 @@ describe('src | components | hocs | Matomo', () => {
 
     // when
     const wrapper = shallow(
-      <Matomo location={location}>
+      <MatomoTracker location={location}>
         <div>Empty</div>
-      </Matomo>
+      </MatomoTracker>
     )
     wrapper.setProps({ children: <div>Children</div> })
 
@@ -85,9 +85,9 @@ describe('src | components | hocs | Matomo', () => {
 
       // when
       shallow(
-        <Matomo location={location}>
+        <MatomoTracker location={location}>
           <div>Children</div>
-        </Matomo>
+        </MatomoTracker>
       )
 
       // then
