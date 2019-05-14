@@ -1,3 +1,4 @@
+from sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
 from sandboxes.scripts.creators.industrial.create_industrial_bookings import *
 from sandboxes.scripts.creators.industrial.create_industrial_deposits import *
 from sandboxes.scripts.creators.industrial.create_industrial_events import *
@@ -5,14 +6,14 @@ from sandboxes.scripts.creators.industrial.create_industrial_event_occurrences i
 from sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_stocks import *
 from sandboxes.scripts.creators.industrial.create_industrial_mediations import *
+from sandboxes.scripts.creators.industrial.create_industrial_offerers_with_pro_users import *
+from sandboxes.scripts.creators.industrial.create_industrial_payments import *
+from sandboxes.scripts.creators.industrial.create_industrial_pro_users import *
 from sandboxes.scripts.creators.industrial.create_industrial_recommendations import *
 from sandboxes.scripts.creators.industrial.create_industrial_thing_offers import *
 from sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import *
 from sandboxes.scripts.creators.industrial.create_industrial_things import *
-from sandboxes.scripts.creators.industrial.create_industrial_offerers_with_pro_users import *
 from sandboxes.scripts.creators.industrial.create_industrial_venues import *
-from sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
-from sandboxes.scripts.creators.industrial.create_industrial_pro_users import *
 from sandboxes.scripts.creators.industrial.create_industrial_webapp_users import *
 
 def save_industrial_sandbox():
@@ -72,4 +73,6 @@ def save_industrial_sandbox():
         users_by_name
     )
 
-    create_industrial_bookings(recommendations_by_name, stocks_by_name)
+    bookings_by_name = create_industrial_bookings(recommendations_by_name, stocks_by_name)
+
+    create_industrial_payments(bookings_by_name)

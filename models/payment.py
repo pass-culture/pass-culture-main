@@ -91,7 +91,7 @@ class Payment(PcObject, Model):
 class PaymentDetails:
     CSV_HEADER = [
         "ID de l'utilisateur",
-        "Email de l'utlisateur",
+        "Email de l'utilisateur",
         "Raison social de la structure",
         "SIREN",
         "Raison sociale du lieu",

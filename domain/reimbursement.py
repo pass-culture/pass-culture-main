@@ -1,13 +1,15 @@
+import csv
 import datetime
 from abc import ABC, abstractmethod
 from decimal import Decimal
 from enum import Enum
+from io import StringIO
+from typing import List
 
-from models import Booking, Reimbursement, ThingType
+from models import Booking, ThingType
 
 MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
 MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
-
 
 class ReimbursementRule(ABC):
     def is_active(self, booking: Booking):
@@ -97,8 +99,63 @@ class BookingReimbursement:
         dict_booking['reimbursement_rule'] = self.reimbursement.value.description
         return dict_booking
 
+class ReimbursementDetails:
+    CSV_HEADER = [
+        "Virement",
+        "Créditeur",
+        "SIRET créditeur",
+        "Adresse créditeur",
+        "IBAN",
+        "Raison sociale du lieu",
+        "Nom de l'offre",
+        "Nom utilisateur",
+        "Prénom utilisateur",
+        "Contremarque",
+        "Date de validation de la réservation",
+        "Montant remboursé"
+    ]
 
-def find_all_booking_reimbursement(bookings):
+    def __init__(self, booking_reimbursement: BookingReimbursement = None, booking_used_date: datetime = None):
+        if booking_reimbursement is not None:
+            booking = booking_reimbursement.booking
+            user = booking.user
+            offer = booking.stock.resolvedOffer
+            venue = offer.venue
+            offerer = venue.managingOfferer
+            payment = booking.payments[0]
+
+            print("payment", payment, payment.amount, booking.isUsed, booking_used_date)
+
+            self.payment_message_name = payment.paymentMessageName
+            self.venue_name = venue.name
+            self.venue_siret = venue.siret
+            self.venue_address = venue.address or offerer.address
+            self.payment_iban = payment.iban
+            self.venue_name = venue.name
+            self.offer_name = offer.name
+            self.user_last_name = user.lastName
+            self.user_first_name = user.firstName
+            self.booking_token = booking.token
+            self.booking_used_date = booking_used_date
+            self.reimbursed_amount = booking_reimbursement.reimbursed_amount
+
+    def as_csv_row(self):
+        return [
+            self.payment_message_name,
+            self.venue_name,
+            str(self.venue_siret),
+            self.venue_address,
+            self.payment_iban,
+            self.venue_name,
+            self.offer_name,
+            self.user_last_name,
+            self.user_first_name,
+            self.booking_token,
+            self.booking_used_date,
+            str(self.reimbursed_amount)
+        ]
+
+def find_all_booking_reimbursements(bookings):
     reimbursements = []
     cumulative_bookings_value = 0
 
@@ -121,10 +178,13 @@ def _find_potential_rules(booking, cumulative_bookings_value):
             relevant_rules.append({'rule': rule, 'amount': reimbursed_amount})
     return relevant_rules
 
-def generate_reimbursements_csv(reimbursements):
+def generate_reimbursement_details_csv(reimbursement_details: List[ReimbursementDetails]):
     output = StringIO()
-    csv_lines = [reimbursement.as_csv_row() for reimbursement in reimbursements]
+    csv_lines = [
+        reimbursement_detail.as_csv_row()
+        for reimbursement_detail in reimbursement_details
+    ]
     writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(Reimbursement.CSV_HEADER)
+    writer.writerow(ReimbursementDetails.CSV_HEADER)
     writer.writerows(csv_lines)
     return output.getvalue()

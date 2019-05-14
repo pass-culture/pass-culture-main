@@ -83,19 +83,29 @@ def create_industrial_bookings(
 
             booking = create_booking(
                 user,
-                is_used=is_used,
                 recommendation=recommendation,
                 stock=stock,
                 token=str(token),
                 venue=recommendation.offer.venue,
-                amount=booking_amount
+                amount=booking_amount,
+                is_used=is_used
             )
 
             token += 1
 
             bookings_by_name[booking_name] = booking
 
-    PcObject.check_and_save(*bookings_by_name.values())
+    bookings = bookings_by_name.values()
+
+    PcObject.check_and_save(*bookings)
+
+    used_bookings = [b for b in bookings if b.isUsed]
+    for used_booking in used_bookings:
+        used_booking.isUsed = False
+    PcObject.check_and_save(*used_bookings)
+    for used_booking in used_bookings:
+        used_booking.isUsed = True
+    PcObject.check_and_save(*used_bookings)
 
     logger.info('created {} bookings'.format(len(bookings_by_name)))
 

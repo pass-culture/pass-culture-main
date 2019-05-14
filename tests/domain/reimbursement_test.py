@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from domain.reimbursement import ReimbursementRules, find_all_booking_reimbursement, ReimbursementRule
+from domain.reimbursement import ReimbursementRules, find_all_booking_reimbursements, ReimbursementRule
 from models import Booking, ThingType
 from tests.test_utils import create_booking_for_thing, create_booking_for_event
 
@@ -297,7 +297,7 @@ class FindAllBookingsReimbursementsTest:
         bookings = [booking1, booking2, booking3]
 
         # when
-        booking_reimbursements = find_all_booking_reimbursement(bookings)
+        booking_reimbursements = find_all_booking_reimbursements(bookings)
 
         # then
         assert_total_reimbursement(booking_reimbursements[0], booking1)
@@ -312,7 +312,7 @@ class FindAllBookingsReimbursementsTest:
         bookings = [booking1, booking2, booking3]
 
         # when
-        booking_reimbursements = find_all_booking_reimbursement(bookings)
+        booking_reimbursements = find_all_booking_reimbursements(bookings)
 
         # then
         assert_total_reimbursement(booking_reimbursements[0], booking1)
@@ -330,7 +330,7 @@ class FindAllBookingsReimbursementsTest:
         ReimbursementRules.MAX_REIMBURSEMENT.value.valid_until = now + timedelta(weeks=5)
 
         # when
-        booking_reimbursements = find_all_booking_reimbursement(bookings)
+        booking_reimbursements = find_all_booking_reimbursements(bookings)
 
         # then
         assert_total_reimbursement(booking_reimbursements[0], booking1)
@@ -349,7 +349,7 @@ class FindAllBookingsReimbursementsTest:
         bookings = [booking1, booking2, booking3]
 
         # when
-        booking_reimbursements = find_all_booking_reimbursement(bookings)
+        booking_reimbursements = find_all_booking_reimbursements(bookings)
 
         # then
         assert_total_reimbursement(booking_reimbursements[0], booking1)

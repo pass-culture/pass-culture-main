@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 
 from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.discard_pc_objects import invalidate_recommendations_if_deactivating_object
-from domain.reimbursement import find_all_booking_reimbursement
+from domain.reimbursement import find_all_booking_reimbursements
 from models import Offerer, PcObject, RightsType, Venue
 from models.venue import create_digital_venue
 from repository.booking_queries import find_offerer_bookings_paginated
@@ -79,7 +79,7 @@ def get_offerer_bookings(id):
         page=request.args.get('page', 1)
     )
 
-    bookings_reimbursements = find_all_booking_reimbursement(bookings)
+    bookings_reimbursements = find_all_booking_reimbursements(bookings)
 
     return jsonify([b.as_dict(include=PRO_BOOKING_INCLUDES) for b in bookings_reimbursements]), 200
 

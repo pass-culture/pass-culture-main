@@ -10,7 +10,7 @@ from domain.payments import filter_out_already_paid_for_bookings, create_payment
     generate_wallet_balances_csv, \
     generate_payment_message, generate_file_checksum, group_payments_by_status, filter_out_bookings_without_cost, \
     keep_only_pending_payments, keep_only_not_processable_payments
-from domain.reimbursement import find_all_booking_reimbursement
+from domain.reimbursement import find_all_booking_reimbursements
 from models import Offerer, PcObject
 from models.db import db
 from models.payment import Payment
@@ -40,7 +40,7 @@ def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
 
     for offerer in offerers:
         final_offerer_bookings = find_final_offerer_bookings(offerer.id)
-        booking_reimbursements = find_all_booking_reimbursement(final_offerer_bookings)
+        booking_reimbursements = find_all_booking_reimbursements(final_offerer_bookings)
         booking_reimbursements_to_pay = filter_out_already_paid_for_bookings(
             filter_out_bookings_without_cost(booking_reimbursements)
         )
