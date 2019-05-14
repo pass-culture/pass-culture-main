@@ -8,6 +8,7 @@ import routes from './utils/routes'
 import { configureStore } from './utils/store'
 import NotMatch from './components/pages/NotMatch'
 import { getReactRoutes } from './utils/routes-utils'
+import { Matomo } from './components/hocs/Matomo'
 
 const approutes = getReactRoutes(routes)
 const { store, persistor } = configureStore()
@@ -16,13 +17,15 @@ const Root = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <BrowserRouter>
-        <App>
-          <Switch>
-            {approutes &&
-              approutes.map(obj => obj && <Route {...obj} key={obj.path} />)}
-            <Route component={NotMatch} />
-          </Switch>
-        </App>
+        <Matomo>
+          <App>
+            <Switch>
+              {approutes &&
+                approutes.map(obj => obj && <Route {...obj} key={obj.path} />)}
+              <Route component={NotMatch} />
+            </Switch>
+          </App>
+        </Matomo>
       </BrowserRouter>
     </PersistGate>
   </Provider>
