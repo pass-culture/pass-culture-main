@@ -9,9 +9,11 @@ export class Matomo extends Component {
     // eslint-disable-next-line
     const matomoTracker = window._paq || []
 
-    matomoTracker.push(['setCustomUrl', location.pathname])
-    matomoTracker.push(['setDocumentTitle', document.title])
-    matomoTracker.push(['trackPageView'])
+    if (location) {
+      matomoTracker.push(['setCustomUrl', location.pathname])
+      matomoTracker.push(['setDocumentTitle', document.title])
+      matomoTracker.push(['trackPageView'])
+    }
 
     return children
   }
@@ -19,7 +21,11 @@ export class Matomo extends Component {
 
 Matomo.propTypes = {
   children: PropTypes.node.isRequired,
-  location: PropTypes.shape().isRequired,
+  location: PropTypes.shape(),
+}
+
+Matomo.defaultProps = {
+  location: null,
 }
 
 export default withRouter(Matomo)

@@ -72,4 +72,26 @@ describe('src | components | hocs | Matomo', () => {
     // then
     expect(wrapper.html()).toEqual('<div>Children</div>')
   })
+
+  describe('when the location is not precised', () => {
+    it('should not dispatch any event', () => {
+      // given
+      const fakeMatomoTracker = {
+        push: jest.fn(),
+      }
+      // eslint-disable-next-line
+      window._paq = fakeMatomoTracker
+      const location = undefined
+
+      // when
+      shallow(
+        <Matomo location={location}>
+          <div>Children</div>
+        </Matomo>
+      )
+
+      // then
+      expect(fakeMatomoTracker.push).not.toHaveBeenCalled()
+    })
+  })
 })
