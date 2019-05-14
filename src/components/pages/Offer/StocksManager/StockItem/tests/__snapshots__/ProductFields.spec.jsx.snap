@@ -53,6 +53,7 @@ ShallowWrapper {
           />
         </td>,
         <td
+          className="tooltiped"
           title="Laissez vide si pas de limite"
         >
           <DateField
@@ -195,6 +196,7 @@ ShallowWrapper {
             timezone={null}
             validate={null}
           />,
+          "className": "tooltiped",
           "title": "Laissez vide si pas de limite",
         },
         "ref": null,
@@ -307,6 +309,7 @@ ShallowWrapper {
             />
           </td>,
           <td
+            className="tooltiped"
             title="Laissez vide si pas de limite"
           >
             <DateField
@@ -449,6 +452,7 @@ ShallowWrapper {
               timezone={null}
               validate={null}
             />,
+            "className": "tooltiped",
             "title": "Laissez vide si pas de limite",
           },
           "ref": null,

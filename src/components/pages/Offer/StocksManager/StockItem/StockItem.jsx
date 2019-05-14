@@ -2,9 +2,9 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { Form } from 'react-final-form'
 import {
+  bindTimeFieldWithDateField,
   getCanSubmit,
-  selectBoundDatesFromTriggerDateNameAndTargetDateNameAndTimezoneDecorator,
-  selectTimeDecoratorFromTimeNameAndDateNameAndTimezoneDecorator,
+  triggerDateFieldChangeSetsSameHoursAndMinutesToTargetDateField,
 } from 'react-final-form-utils'
 import { requestData } from 'redux-saga-data'
 
@@ -12,6 +12,7 @@ import EditAndDeleteControl from './EditAndDeleteControl'
 import EventFields from './EventFields'
 import ProductFields from './ProductFields'
 import SubmitAndCancelControl from './SubmitAndCancelControl'
+import forceDateAtSpecificHoursAndMinutes from './decorators/forceDateAtSpecificHoursAndMinutes'
 import { errorKeyToFrenchKey } from './utils'
 
 export class StockItem extends Component {
@@ -108,31 +109,42 @@ export class StockItem extends Component {
     const { id: stockId } = stockPatch
     const { readOnly } = query.context({ id: stockId, key: 'stock' })
 
+    let decorators = [
+      forceDateAtSpecificHoursAndMinutes({
+        dateName: 'bookingLimitDatetime',
+        hours: 23,
+        minutes: 59,
+        timezone,
+      }),
+    ]
+    if (isEvent) {
+      decorators = decorators.concat([
+        triggerDateFieldChangeSetsSameHoursAndMinutesToTargetDateField({
+          triggerDateName: 'beginningDatetime',
+          targetDateName: 'endDatetime',
+          timezone,
+        }),
+        bindTimeFieldWithDateField({
+          dateName: 'beginningDatetime',
+          timeName: 'beginningTime',
+
+          timezone,
+        }),
+        bindTimeFieldWithDateField({
+          dateName: 'endDatetime',
+          timeName: 'endTime',
+          timezone,
+        }),
+      ])
+    }
+
     return (
       <tbody
         ref={_element => {
           this.tbodyElement = _element
         }}>
         <Form
-          decorators={
-            isEvent && [
-              selectBoundDatesFromTriggerDateNameAndTargetDateNameAndTimezoneDecorator(
-                'beginningDatetime',
-                'endDatetime',
-                timezone
-              ),
-              selectTimeDecoratorFromTimeNameAndDateNameAndTimezoneDecorator(
-                'beginningTime',
-                'beginningDatetime',
-                timezone
-              ),
-              selectTimeDecoratorFromTimeNameAndDateNameAndTimezoneDecorator(
-                'endTime',
-                'endDatetime',
-                timezone
-              ),
-            ]
-          }
+          decorators={decorators}
           initialValues={stockPatch}
           onSubmit={this.onFormSubmit}
           render={formProps => {
@@ -141,6 +153,7 @@ export class StockItem extends Component {
             const canSubmit = getCanSubmit(
               Object.assign({}, formProps, { pristine: false })
             )
+
             return (
               <tr className="stock-item">
                 {isEvent && (

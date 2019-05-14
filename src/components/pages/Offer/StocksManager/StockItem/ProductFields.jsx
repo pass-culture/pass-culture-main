@@ -117,7 +117,7 @@ export class ProductFields extends Component {
               let tip =
                 "L'heure limite de réservation est à 23h59 de ce jour et ne peut pas être changée."
               if (venue && venue.isVirtual) {
-                tip = `${tip}.<br /><br /> Vous être sur une offre numérique, la zone horaire de cette date correspond à celle de votre structure.`
+                tip = `${tip}<br /><br /> Vous être sur une offre numérique, la zone horaire de cette date correspond à celle de votre structure.`
               }
 
               return (

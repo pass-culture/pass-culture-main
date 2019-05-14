@@ -3,7 +3,7 @@
 exports[`src | components | pages | Offer | StockItem | StockItem  snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawStockItem
+  Symbol(enzyme.__unrendered__): <StockItem
     closeInfo={[MockFunction]}
     dispatch={[MockFunction]}
     formBeginningDatetime={null}
@@ -42,7 +42,11 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": <ReactFinalForm
-        decorators={false}
+        decorators={
+          Array [
+            [Function],
+          ]
+        }
         initialValues={Object {}}
         onSubmit={[Function]}
         render={[Function]}
@@ -54,7 +58,9 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "class",
       "props": Object {
-        "decorators": false,
+        "decorators": Array [
+          [Function],
+        ],
         "initialValues": Object {},
         "onSubmit": [Function],
         "render": [Function],
@@ -72,7 +78,11 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": <ReactFinalForm
-          decorators={false}
+          decorators={
+            Array [
+              [Function],
+            ]
+          }
           initialValues={Object {}}
           onSubmit={[Function]}
           render={[Function]}
@@ -84,7 +94,9 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "class",
         "props": Object {
-          "decorators": false,
+          "decorators": Array [
+            [Function],
+          ],
           "initialValues": Object {},
           "onSubmit": [Function],
           "render": [Function],

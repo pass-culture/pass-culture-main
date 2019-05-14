@@ -64,6 +64,7 @@ export const DateField = ({
       render={({ input, meta }) => {
         let formattedSelectedDatetime
         let selectedDatetime
+
         if (input.value) {
           selectedDatetime = moment(input.value)
           if (timezone) {
