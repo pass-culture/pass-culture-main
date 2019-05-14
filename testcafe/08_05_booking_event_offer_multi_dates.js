@@ -49,7 +49,7 @@ fixture(`08_05 Réservation d'une offre type event à dates multiple`).beforeEac
       'get_non_free_event_offer'
     )
     offerPage = `${discoverURL}/${offer.id}`
-    offerPageVerso = `${offerPage}/verso`
+    offerPageVerso = new RegExp(`${offerPage}(/[A-Z0-9]*)?/verso`)
     offerBookingPage = `${offerPage}/booking`
     await t
       .useRole(createUserRole(user))
@@ -144,7 +144,7 @@ test(`Parcours complet de réservation d'une offre event à date unique`, async 
     .ok()
     .click(bookedOffer)
     .expect(getPageUrl())
-    .eql(offerPageVerso)
+    .match(offerPageVerso)
     .expect(checkReversedIcon.exists)
     .ok()
 })
@@ -152,6 +152,10 @@ test(`Parcours complet de réservation d'une offre event à date unique`, async 
 // test(`Parcours complet de réservation d'une offre digitale`)
 
 test(`Je vérifie mes réservations, après reconnexion`, async t => {
+  // FIXME: currentBookedToken devrait provenir d'une valeur
+  // de la sandbox (ie que le fetch sandbox devrait aussi retourner un
+  // objet booking) car sinon on ne peut pas
+  // runner ce test de maniere standalone
   const bookedOffer = Selector(
     `.booking-item[data-token="${currentBookedToken}"]`
   )
@@ -174,7 +178,6 @@ test(`Je vérifie mes réservations, après reconnexion`, async t => {
     .expect(bookedDate)
     .eql(date)
     .click(bookedOffer)
-    .click(openVerso)
     .expect(checkReversedIcon.exists)
     .ok()
 })
