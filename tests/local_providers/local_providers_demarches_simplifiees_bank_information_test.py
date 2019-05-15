@@ -1,7 +1,6 @@
 """ local providers BankInformation test """
-import os
 from datetime import datetime
-from unittest.mock import patch
+from unittest.mock import patch, ANY
 
 import pytest
 
@@ -11,6 +10,15 @@ from models import BankInformation, PcObject, LocalProviderEvent
 from models.local_provider_event import LocalProviderEventType
 from tests.conftest import clean_database
 from tests.test_utils import provider_test, create_venue, create_offerer, create_bank_information
+
+
+class TestableBankInformationProvider(BankInformationProvider):
+    def __init__(self):
+        """
+        Empty constructor that makes this class testable :
+        no API call is made at instantiation time
+        """
+        pass
 
 
 @pytest.mark.standalone
@@ -907,9 +915,7 @@ class BankInformationProviderProviderTest:
         bank_information_provider.updateObjects()
 
         # then
-        PROCEDURE_ID = os.environ['DEMARCHES_SIMPLIFIEES_PROCEDURE_ID']
-        TOKEN = os.environ['DEMARCHES_SIMPLIFIEES_TOKEN']
-        get_all_application_ids_from_demarches_simplifiees_procedure.assert_called_with(PROCEDURE_ID, TOKEN,
+        get_all_application_ids_from_demarches_simplifiees_procedure.assert_called_with(ANY, ANY,
                                                                                         datetime(1900, 1, 1))
 
     @patch(
@@ -991,9 +997,7 @@ class BankInformationProviderProviderTest:
         bank_information_provider.updateObjects()
 
         # then
-        PROCEDURE_ID = os.environ['DEMARCHES_SIMPLIFIEES_PROCEDURE_ID']
-        TOKEN = os.environ['DEMARCHES_SIMPLIFIEES_TOKEN']
-        get_all_application_ids_from_demarches_simplifiees_procedure.assert_called_with(PROCEDURE_ID, TOKEN,
+        get_all_application_ids_from_demarches_simplifiees_procedure.assert_called_with(ANY, ANY,
                                                                                         datetime(2019, 1, 1))
 
     @patch(
@@ -1127,7 +1131,8 @@ class RetrieveBankInformationTest:
         venue = create_venue(offerer, siret="79387501900056")
         PcObject.check_and_save(venue)
         venue_id = venue.id
-        bank_information_provider = BankInformationProvider()
+
+        bank_information_provider = TestableBankInformationProvider()
 
         # When
         bank_information_dict = bank_information_provider.retrieve_bank_information(application_details)
@@ -1182,7 +1187,7 @@ class RetrieveBankInformationTest:
         offerer = create_offerer(siren="793875019")
         PcObject.check_and_save(offerer)
         offerer_id = offerer.id
-        bank_information_provider = BankInformationProvider()
+        bank_information_provider = TestableBankInformationProvider()
 
         # When
         bank_information_dict = bank_information_provider.retrieve_bank_information(application_details)
