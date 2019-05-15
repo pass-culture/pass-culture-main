@@ -115,7 +115,6 @@ class ReimbursementDetails:
         "Montant remboursé"
     ]
 
-    # def __init__(self, booking_reimbursement: BookingReimbursement = None, booking_used_date: datetime = None):
     def __init__(self, payment: Payment = None, booking_used_date: datetime = None):
         if payment is not None:
             booking = payment.booking

@@ -92,7 +92,7 @@ class PaymentDetails:
     CSV_HEADER = [
         "ID de l'utilisateur",
         "Email de l'utilisateur",
-        "Raison social de la structure",
+        "Raison sociale de la structure",
         "SIREN",
         "Raison sociale du lieu",
         "SIRET",

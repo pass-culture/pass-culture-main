@@ -22,7 +22,7 @@ class PaymentDetailsCSVTest:
 
         # then
         assert _get_header(csv) == '"ID de l\'utilisateur","Email de l\'utilisateur",' \
-                                   '"Raison social de la structure","SIREN",' \
+                                   '"Raison sociale de la structure","SIREN",' \
                                    '"Raison sociale du lieu","SIRET",' \
                                    '"Nom de l\'offre","Type de l\'offre",' \
                                    '"Date de la réservation","Prix de la réservation","Date de validation",' \
