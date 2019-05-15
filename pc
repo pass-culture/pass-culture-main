@@ -500,9 +500,10 @@ elif [[ "$CMD" == "psql" ]]; then
 elif [[ "$CMD" == "pgcli" ]]; then
 	COLUMNS=${COLUMNS:-''};
 	if [[ "$ENV" == "development" ]]; then
-		RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" pgcli -U pass_culture pass_culture $*"'
+	    source "$ROOT_PATH"/env_file
+	    RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "pgcli $DATABASE_URL"'
 	else
-		scalingo -a "$SCALINGO_APP" pgsql-console
+		scalingo -a "$SCALINGO_APP" run 'pgcli $DATABASE_URL'
 		exit
 	fi
 
