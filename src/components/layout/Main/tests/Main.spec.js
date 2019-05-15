@@ -1,7 +1,7 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import { RawMain } from '../Main'
+import Main from '../Main'
 
 describe('src | components | layout | Main', () => {
   describe('snapshot', () => {
@@ -16,9 +16,9 @@ describe('src | components | layout | Main', () => {
 
       // when
       const wrapper = shallow(
-        <RawMain {...props}>
+        <Main {...props}>
           <div>foo</div>
-        </RawMain>
+        </Main>
       )
 
       // then

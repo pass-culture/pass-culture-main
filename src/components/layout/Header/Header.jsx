@@ -1,8 +1,9 @@
-import { Icon, SignoutButton } from 'pass-culture-shared'
 import classnames from 'classnames'
+import { SignoutButton } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 
+import { Icon } from 'components/layout/Icon'
 import Logo from 'components/layout/Logo'
 
 class Header extends Component {

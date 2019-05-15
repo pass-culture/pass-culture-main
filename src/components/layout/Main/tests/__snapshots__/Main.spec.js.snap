@@ -3,7 +3,7 @@
 exports[`src | components | layout | Main snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawMain
+  Symbol(enzyme.__unrendered__): <Main
     Tag="main"
     dispatch={[MockFunction]}
     history={Object {}}
@@ -13,7 +13,7 @@ ShallowWrapper {
     <div>
       foo
     </div>
-  </RawMain>,
+  </Main>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -29,7 +29,7 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": Array [
-        <withRouter(Connect(RawHeader)) />,
+        <withRouter(Connect(Header)) />,
         <ReactTooltip
           className="flex-center items-center"
           clickable={false}
@@ -267,7 +267,7 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": Array [
-          <withRouter(Connect(RawHeader)) />,
+          <withRouter(Connect(Header)) />,
           <ReactTooltip
             className="flex-center items-center"
             clickable={false}

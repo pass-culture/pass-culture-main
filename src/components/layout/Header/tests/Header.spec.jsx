@@ -1,9 +1,9 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import RawHeader from '../RawHeader'
+import Header from '../Header'
 
-describe('src | components | Layout | RawHeader', () => {
+describe('src | components | Layout | Header', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
@@ -13,7 +13,7 @@ describe('src | components | Layout | RawHeader', () => {
       }
 
       // when
-      const wrapper = shallow(<RawHeader {...props} />)
+      const wrapper = shallow(<Header {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -29,17 +29,17 @@ describe('src | components | Layout | RawHeader', () => {
         }
 
         // when
-        const wrapper = shallow(<RawHeader {...props} />)
+        const wrapper = shallow(<Header {...props} />)
         const navLinks = wrapper.find('NavLink')
 
         const linkTitle = navLinks
-          .at(4)
+          .at(5)
           .childAt(1)
           .props().children
 
         // then
-        expect(navLinks).toHaveLength(5)
-        expect(linkTitle).toEqual('Votre structure juridique')
+        expect(navLinks).toHaveLength(6)
+        expect(linkTitle).toEqual('Suivi des remboursements')
       })
       it('should display Vos structures when many offerers', () => {
         // given
@@ -48,17 +48,17 @@ describe('src | components | Layout | RawHeader', () => {
         }
 
         // when
-        const wrapper = shallow(<RawHeader {...props} />)
+        const wrapper = shallow(<Header {...props} />)
         const navLinks = wrapper.find('NavLink')
 
         const linkTitle = navLinks
-          .at(4)
+          .at(5)
           .childAt(1)
           .props().children
 
         // then
-        expect(navLinks).toHaveLength(5)
-        expect(linkTitle).toEqual('Vos structures juridiques')
+        expect(navLinks).toHaveLength(6)
+        expect(linkTitle).toEqual('Suivi des remboursements')
       })
     })
   })

@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | Layout | RawHeader snapshot should match snapshot 1`] = `
+exports[`src | components | Layout | Header snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawHeader
+  Symbol(enzyme.__unrendered__): <Header
     name="Fake Name"
     offerers={
       Array [
@@ -138,6 +138,23 @@ ShallowWrapper {
                   </span>
                   <span>
                     Votre structure juridique
+                  </span>
+                </NavLink>
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="navbar-item"
+                  to="/remboursements"
+                >
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-compta"
+                    />
+                  </span>
+                  <span>
+                    Suivi des remboursements
                   </span>
                 </NavLink>
                 <withRouter(Connect(SignoutButton))
@@ -280,6 +297,23 @@ ShallowWrapper {
                     </span>
                     <span>
                       Votre structure juridique
+                    </span>
+                  </NavLink>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-item"
+                    to="/remboursements"
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-compta"
+                      />
+                    </span>
+                    <span>
+                      Suivi des remboursements
                     </span>
                   </NavLink>
                   <withRouter(Connect(SignoutButton))
@@ -488,6 +522,23 @@ ShallowWrapper {
                       Votre structure juridique
                     </span>
                   </NavLink>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-item"
+                    to="/remboursements"
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-compta"
+                      />
+                    </span>
+                    <span>
+                      Suivi des remboursements
+                    </span>
+                  </NavLink>
                   <withRouter(Connect(SignoutButton))
                     Tag="a"
                     className="navbar-item"
@@ -605,6 +656,23 @@ ShallowWrapper {
                       </span>
                       <span>
                         Votre structure juridique
+                      </span>
+                    </NavLink>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="navbar-item"
+                      to="/remboursements"
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-compta"
+                        />
+                      </span>
+                      <span>
+                        Suivi des remboursements
                       </span>
                     </NavLink>
                     <withRouter(Connect(SignoutButton))
@@ -814,6 +882,23 @@ ShallowWrapper {
                           Votre structure juridique
                         </span>
                       </NavLink>
+                      <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="navbar-item"
+                        to="/remboursements"
+                      >
+                        <span
+                          className="icon"
+                        >
+                          <Icon
+                            svg="ico-compta"
+                          />
+                        </span>
+                        <span>
+                          Suivi des remboursements
+                        </span>
+                      </NavLink>
                       <withRouter(Connect(SignoutButton))
                         Tag="a"
                         className="navbar-item"
@@ -939,6 +1024,23 @@ ShallowWrapper {
                           </span>
                         </NavLink>,
                         false,
+                        <NavLink
+                          activeClassName="active"
+                          aria-current="page"
+                          className="navbar-item"
+                          to="/remboursements"
+                        >
+                          <span
+                            className="icon"
+                          >
+                            <Icon
+                              svg="ico-compta"
+                            />
+                          </span>
+                          <span>
+                            Suivi des remboursements
+                          </span>
+                        </NavLink>,
                         false,
                         <withRouter(Connect(SignoutButton))
                           Tag="a"
@@ -1086,6 +1188,68 @@ ShallowWrapper {
                         "type": [Function],
                       },
                       false,
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "activeClassName": "active",
+                          "aria-current": "page",
+                          "children": Array [
+                            <span
+                              className="icon"
+                            >
+                              <Icon
+                                svg="ico-compta"
+                              />
+                            </span>,
+                            <span>
+                              Suivi des remboursements
+                            </span>,
+                          ],
+                          "className": "navbar-item",
+                          "to": "/remboursements",
+                        },
+                        "ref": null,
+                        "rendered": Array [
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "host",
+                            "props": Object {
+                              "children": <Icon
+                                svg="ico-compta"
+                              />,
+                              "className": "icon",
+                            },
+                            "ref": null,
+                            "rendered": Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "function",
+                              "props": Object {
+                                "svg": "ico-compta",
+                              },
+                              "ref": null,
+                              "rendered": null,
+                              "type": [Function],
+                            },
+                            "type": "span",
+                          },
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "host",
+                            "props": Object {
+                              "children": "Suivi des remboursements",
+                            },
+                            "ref": null,
+                            "rendered": "Suivi des remboursements",
+                            "type": "span",
+                          },
+                        ],
+                        "type": [Function],
+                      },
                       false,
                       Object {
                         "instance": null,
@@ -1285,6 +1449,23 @@ ShallowWrapper {
                       Votre structure juridique
                     </span>
                   </NavLink>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-item"
+                    to="/remboursements"
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-compta"
+                      />
+                    </span>
+                    <span>
+                      Suivi des remboursements
+                    </span>
+                  </NavLink>
                   <withRouter(Connect(SignoutButton))
                     Tag="a"
                     className="navbar-item"
@@ -1425,6 +1606,23 @@ ShallowWrapper {
                       </span>
                       <span>
                         Votre structure juridique
+                      </span>
+                    </NavLink>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="navbar-item"
+                      to="/remboursements"
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-compta"
+                        />
+                      </span>
+                      <span>
+                        Suivi des remboursements
                       </span>
                     </NavLink>
                     <withRouter(Connect(SignoutButton))
@@ -1633,6 +1831,23 @@ ShallowWrapper {
                         Votre structure juridique
                       </span>
                     </NavLink>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="navbar-item"
+                      to="/remboursements"
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-compta"
+                        />
+                      </span>
+                      <span>
+                        Suivi des remboursements
+                      </span>
+                    </NavLink>
                     <withRouter(Connect(SignoutButton))
                       Tag="a"
                       className="navbar-item"
@@ -1750,6 +1965,23 @@ ShallowWrapper {
                         </span>
                         <span>
                           Votre structure juridique
+                        </span>
+                      </NavLink>
+                      <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="navbar-item"
+                        to="/remboursements"
+                      >
+                        <span
+                          className="icon"
+                        >
+                          <Icon
+                            svg="ico-compta"
+                          />
+                        </span>
+                        <span>
+                          Suivi des remboursements
                         </span>
                       </NavLink>
                       <withRouter(Connect(SignoutButton))
@@ -1959,6 +2191,23 @@ ShallowWrapper {
                             Votre structure juridique
                           </span>
                         </NavLink>
+                        <NavLink
+                          activeClassName="active"
+                          aria-current="page"
+                          className="navbar-item"
+                          to="/remboursements"
+                        >
+                          <span
+                            className="icon"
+                          >
+                            <Icon
+                              svg="ico-compta"
+                            />
+                          </span>
+                          <span>
+                            Suivi des remboursements
+                          </span>
+                        </NavLink>
                         <withRouter(Connect(SignoutButton))
                           Tag="a"
                           className="navbar-item"
@@ -2084,6 +2333,23 @@ ShallowWrapper {
                             </span>
                           </NavLink>,
                           false,
+                          <NavLink
+                            activeClassName="active"
+                            aria-current="page"
+                            className="navbar-item"
+                            to="/remboursements"
+                          >
+                            <span
+                              className="icon"
+                            >
+                              <Icon
+                                svg="ico-compta"
+                              />
+                            </span>
+                            <span>
+                              Suivi des remboursements
+                            </span>
+                          </NavLink>,
                           false,
                           <withRouter(Connect(SignoutButton))
                             Tag="a"
@@ -2231,6 +2497,68 @@ ShallowWrapper {
                           "type": [Function],
                         },
                         false,
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "activeClassName": "active",
+                            "aria-current": "page",
+                            "children": Array [
+                              <span
+                                className="icon"
+                              >
+                                <Icon
+                                  svg="ico-compta"
+                                />
+                              </span>,
+                              <span>
+                                Suivi des remboursements
+                              </span>,
+                            ],
+                            "className": "navbar-item",
+                            "to": "/remboursements",
+                          },
+                          "ref": null,
+                          "rendered": Array [
+                            Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "host",
+                              "props": Object {
+                                "children": <Icon
+                                  svg="ico-compta"
+                                />,
+                                "className": "icon",
+                              },
+                              "ref": null,
+                              "rendered": Object {
+                                "instance": null,
+                                "key": undefined,
+                                "nodeType": "function",
+                                "props": Object {
+                                  "svg": "ico-compta",
+                                },
+                                "ref": null,
+                                "rendered": null,
+                                "type": [Function],
+                              },
+                              "type": "span",
+                            },
+                            Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "host",
+                              "props": Object {
+                                "children": "Suivi des remboursements",
+                              },
+                              "ref": null,
+                              "rendered": "Suivi des remboursements",
+                              "type": "span",
+                            },
+                          ],
+                          "type": [Function],
+                        },
                         false,
                         Object {
                           "instance": null,
