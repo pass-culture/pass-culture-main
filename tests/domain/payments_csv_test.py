@@ -21,7 +21,7 @@ class PaymentDetailsCSVTest:
         csv = generate_payment_details_csv(payments_details)
 
         # then
-        assert _get_header(csv) == '"ID de l\'utilisateur","Email de l\'utlisateur",' \
+        assert _get_header(csv) == '"ID de l\'utilisateur","Email de l\'utilisateur",' \
                                    '"Raison social de la structure","SIREN",' \
                                    '"Raison sociale du lieu","SIRET",' \
                                    '"Nom de l\'offre","Type de l\'offre",' \
