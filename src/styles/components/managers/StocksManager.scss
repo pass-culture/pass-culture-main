@@ -45,9 +45,10 @@
     table.stocks-table {
       &.small {
         margin: 5rem;
+        padding: 6px;
         td {
           input {
-            width: 50%;
+            width: 100%;
           }
         }
       }
