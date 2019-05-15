@@ -33,13 +33,13 @@ describe('src | components | Layout | Header', () => {
         const navLinks = wrapper.find('NavLink')
 
         const linkTitle = navLinks
-          .at(5)
+          .at(4)
           .childAt(1)
           .props().children
 
         // then
         expect(navLinks).toHaveLength(6)
-        expect(linkTitle).toEqual('Suivi des remboursements')
+        expect(linkTitle).toEqual('Votre structure juridique')
       })
       it('should display Vos structures when many offerers', () => {
         // given
@@ -52,13 +52,13 @@ describe('src | components | Layout | Header', () => {
         const navLinks = wrapper.find('NavLink')
 
         const linkTitle = navLinks
-          .at(5)
+          .at(4)
           .childAt(1)
           .props().children
 
         // then
         expect(navLinks).toHaveLength(6)
-        expect(linkTitle).toEqual('Suivi des remboursements')
+        expect(linkTitle).toEqual('Vos structures juridiques')
       })
     })
   })
