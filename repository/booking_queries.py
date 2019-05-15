@@ -141,7 +141,7 @@ def find_all_ongoing_bookings_by_stock(stock):
 
 
 def find_final_offerer_bookings(offerer_id):
-    booking_on_event_older_than_two_days = (datetime.utcnow() > Stock.beginningDatetime + timedelta(hours=48))
+    booking_on_event_older_than_two_days = (datetime.utcnow() > Stock.beginningDatetime + timedelta(hours=72))
 
     return Booking.query \
         .join(Stock) \
