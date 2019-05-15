@@ -20,8 +20,7 @@ const mockedStock = {
   price: 17,
 }
 
-describe.skip('src | components | pages | Offer | StocksManager', () => {
-  // need to mock .focus()
+describe('src | components | pages | Offer | StocksManager', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
@@ -33,7 +32,7 @@ describe.skip('src | components | pages | Offer | StocksManager', () => {
           state: undefined,
           key: '4c2v7m',
         },
-        query: {},
+        query: { context: () => ({}) },
         stocks: [mockedStock],
       }
 
@@ -43,28 +42,6 @@ describe.skip('src | components | pages | Offer | StocksManager', () => {
       // then
       expect(wrapper).toBeDefined()
       expect(wrapper).toMatchSnapshot()
-    })
-  })
-
-  describe('render', () => {
-    describe('When we edit a stock', () => {
-      // given
-      const initialProps = {
-        location: {
-          pathname: '/offres/AWHA',
-          search: '?gestion',
-          hash: '',
-          state: undefined,
-          key: '4c2v7m',
-        },
-        query: {},
-        stocks: [mockedStock],
-      }
-
-      // when
-      shallow(<StocksManager {...initialProps} />)
-
-      // then
     })
   })
 })

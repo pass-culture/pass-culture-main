@@ -7,16 +7,6 @@ import PropTypes from 'prop-types'
 import StockItemContainer from './StockItem/StockItemContainer'
 import HeroSection from 'components/layout/HeroSection'
 
-const getStocksManagerButtonTitle = (isEvent, stocks) => {
-  if (isEvent) {
-    return '+ Ajouter une date'
-  }
-  if (stocks.length) {
-    return ''
-  }
-  return 'Renseigner le stock'
-}
-
 class StocksManager extends Component {
   constructor() {
     super()
@@ -29,7 +19,9 @@ class StocksManager extends Component {
   componentDidMount() {
     this.handleShouldPreventCreationOfSecondNotEventStock()
 
-    this.elem.focus()
+    if (this.elem) {
+      this.elem.focus()
+    }
     document.addEventListener('keydown', this.onKeydown)
   }
 
@@ -42,6 +34,16 @@ class StocksManager extends Component {
 
   componentWillUnmount() {
     document.removeEventListener('keydown', this.onKeydown)
+  }
+
+  getStocksManagerButtonTitle = (isEvent, stocks) => {
+    if (isEvent) {
+      return '+ Ajouter une date'
+    }
+    if (stocks.length) {
+      return ''
+    }
+    return 'Renseigner le stock'
   }
 
   handleEscKey() {
@@ -66,7 +68,10 @@ class StocksManager extends Component {
     // to this parent component otherwise, but code would be more
     // complicated
     if (allStocksReadOnly) {
-      document.getElementById('add-stock').focus()
+      const addStockElement = document.getElementById('add-stock')
+      if (addStockElement) {
+        addStockElement.focus()
+      }
       query.changeToCreation(null, { key: 'stock' })
     } else {
       const submitButton = document.querySelector('button[type="submit"]')
@@ -213,7 +218,7 @@ class StocksManager extends Component {
                         query.changeToCreation(null, { key: 'stock' })
                       }
                       type="button">
-                      {getStocksManagerButtonTitle(isEvent, stocks)}
+                      {this.getStocksManagerButtonTitle(isEvent, stocks)}
                     </button>
                   </td>
                 </tr>

@@ -38,6 +38,22 @@ describe('selectTimezoneByVenueIdAndOffererId', () => {
     expect(result).toEqual(undefined)
   })
 
+  it('should return undefined when virtual venue and no offerer', () => {
+    // given
+    const offererId = 'not-valid-id'
+    const venueId = virtualVenue.id
+
+    // when
+    const result = selectTimezoneByVenueIdAndOffererId(
+      state,
+      venueId,
+      offererId
+    )
+
+    // then
+    expect(result).toEqual(undefined)
+  })
+
   it('should return the timezone of the venue when physical', () => {
     // given
     const venueId = physicalVenue.id

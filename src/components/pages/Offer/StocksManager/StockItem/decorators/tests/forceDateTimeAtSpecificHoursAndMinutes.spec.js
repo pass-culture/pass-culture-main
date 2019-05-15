@@ -4,9 +4,9 @@ import 'moment-timezone'
 import React from 'react'
 import { Field, Form } from 'react-final-form'
 
-import forceDateAtSpecificHoursAndMinutes from '../forceDateAtSpecificHoursAndMinutes'
+import forceDateTimeAtSpecificHoursAndMinutes from '../forceDateTimeAtSpecificHoursAndMinutes'
 
-describe('src | selectors | forceDateAtSpecificHoursAndMinutes', () => {
+describe('src | selectors | forceDateTimeAtSpecificHoursAndMinutes', () => {
   it('should force the date to have specific hours and minutes', done => {
     // given
     const initialValues = {
@@ -17,8 +17,8 @@ describe('src | selectors | forceDateAtSpecificHoursAndMinutes', () => {
     const wrapper = mount(
       <Form
         decorators={[
-          forceDateAtSpecificHoursAndMinutes({
-            dateName: 'fooDate',
+          forceDateTimeAtSpecificHoursAndMinutes({
+            dateTimeName: 'fooDate',
             hours: 23,
             minutes: 59,
           }),

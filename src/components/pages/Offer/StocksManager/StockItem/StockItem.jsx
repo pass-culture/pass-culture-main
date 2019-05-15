@@ -12,7 +12,7 @@ import EditAndDeleteControl from './EditAndDeleteControl'
 import EventFields from './EventFields'
 import ProductFields from './ProductFields'
 import SubmitAndCancelControl from './SubmitAndCancelControl'
-import forceDateAtSpecificHoursAndMinutes from './decorators/forceDateAtSpecificHoursAndMinutes'
+import forceDateTimeAtSpecificHoursAndMinutes from './decorators/forceDateTimeAtSpecificHoursAndMinutes'
 import {
   BOOKING_LIMIT_DATETIME_HOURS,
   BOOKING_LIMIT_DATETIME_MINUTES,
@@ -114,8 +114,8 @@ export class StockItem extends Component {
     const { readOnly } = query.context({ id: stockId, key: 'stock' })
 
     let decorators = [
-      forceDateAtSpecificHoursAndMinutes({
-        dateName: 'bookingLimitDatetime',
+      forceDateTimeAtSpecificHoursAndMinutes({
+        dateTimeName: 'bookingLimitDatetime',
         hours: BOOKING_LIMIT_DATETIME_HOURS,
         minutes: BOOKING_LIMIT_DATETIME_MINUTES,
         timezone,
@@ -131,7 +131,6 @@ export class StockItem extends Component {
         bindTimeFieldWithDateField({
           dateName: 'beginningDatetime',
           timeName: 'beginningTime',
-
           timezone,
         }),
         bindTimeFieldWithDateField({
