@@ -12,7 +12,7 @@ from models import Booking, \
     Stock, \
     User, \
     Product, \
-    Venue, Offerer, ThingType
+    Venue, Offerer, ThingType, Payment
 from models.api_errors import ResourceNotFound
 from models.db import db
 from utils.rest import query_with_order_by, check_order_by
@@ -67,7 +67,7 @@ def find_offerer_bookings_paginated(offerer_id, search=None, order_by=None, page
         check_order_by(order_by)
         query = query_with_order_by(query, order_by)
 
-    bookings = query.paginate(int(page), per_page=10, error_out=False)\
+    bookings = query.paginate(int(page), per_page=10, error_out=False) \
         .items
 
     return bookings
@@ -83,10 +83,10 @@ def find_all_offerer_bookings(offerer_id):
 
 def find_bookings_from_recommendation(reco, user):
     booking_query = Booking.query \
-                           .join(Stock) \
-                           .join(Offer) \
-                           .filter(Booking.user == user) \
-                           .filter(Offer.id == reco.offerId)
+        .join(Stock) \
+        .join(Offer) \
+        .filter(Booking.user == user) \
+        .filter(Offer.id == reco.offerId)
     return booking_query.all()
 
 
@@ -99,7 +99,7 @@ def find_all_bookings_for_stock_and_user(stock, current_user):
         .filter_by(userId=current_user.id) \
         .filter_by(isCancelled=False) \
         .filter_by(stockId=stock.id) \
-        .all() \
+        .all()
 
 
 def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
@@ -151,6 +151,9 @@ def find_final_offerer_bookings(offerer_id):
         .filter(Offerer.id == offerer_id) \
         .filter(Booking.isCancelled == False) \
         .filter((Booking.isUsed == True) | booking_on_event_older_than_two_days) \
+        .reset_joinpoint() \
+        .outerjoin(Payment) \
+        .order_by(Payment.id, Booking.dateCreated.asc()) \
         .all()
 
 

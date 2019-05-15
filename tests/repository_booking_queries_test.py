@@ -1,6 +1,7 @@
 """ repository booking queries test """
-import pytest
 from datetime import datetime, timedelta
+
+import pytest
 
 from models import PcObject, ThingType, Booking
 from models.api_errors import ResourceNotFound, ApiErrors
@@ -17,7 +18,13 @@ from tests.test_utils import create_booking, \
     create_user, \
     create_venue, create_stock_from_event_occurrence, create_event_occurrence, create_offer_with_thing_product, \
     create_offer_with_event_product, \
-    create_booking_activity, save_all_activities, create_stock_from_offer
+    create_booking_activity, save_all_activities, create_stock_from_offer, create_payment
+
+NOW = datetime.utcnow()
+two_days_ago = NOW - timedelta(days=2)
+four_days_ago = NOW - timedelta(days=4)
+five_days_ago = NOW - timedelta(days=5)
+three_days_ago = NOW - timedelta(days=3)
 
 
 @clean_database
@@ -160,6 +167,34 @@ class FindFinalOffererBookingsTest:
         assert len(bookings) == 2
         assert booking1 in bookings
         assert booking2 in bookings
+
+    @clean_database
+    def test_returns_bookings_with_payment_first_ordered_by_date_created(self, app):
+        # Given
+        user = create_user()
+        deposit = create_deposit(user, NOW, amount=500)
+
+        offerer = create_offerer(siren='123456789')
+        venue = create_venue(offerer, siret=offerer.siren + '12345')
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_with_thing_offer(offerer, venue, offer)
+        booking1 = create_booking(user, stock=stock, venue=venue, is_used=True, date_created=five_days_ago)
+        booking2 = create_booking(user, stock=stock, venue=venue, is_used=True, date_created=two_days_ago)
+        booking3 = create_booking(user, stock=stock, venue=venue, is_used=True, date_created=four_days_ago)
+        booking4 = create_booking(user, stock=stock, venue=venue, is_used=True, date_created=three_days_ago)
+        payment1 = create_payment(booking4, offerer, 5)
+        payment2 = create_payment(booking3, offerer, 5)
+
+        PcObject.check_and_save(deposit, booking1, booking2, booking3, booking4, payment1, payment2)
+
+        # When
+        bookings = find_final_offerer_bookings(offerer.id)
+
+        # Then
+        assert bookings[0] == booking3
+        assert bookings[1] == booking4
+        assert bookings[2] == booking1
+        assert bookings[3] == booking2
 
     @clean_database
     def test_returns_not_cancelled_bookings_for_offerer(self, app):
