@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch, ANY
 import pytest
 
 from models import User, Booking
-from scripts.users import fill_user_from, create_booking_for, create_users_with_activation_bookings, \
+from scripts.beneficiary.file_import import fill_user_from, create_booking_for, create_users_with_activation_bookings, \
     split_rows_in_chunks_with_no_duplicated_emails
 from tests.test_utils import create_user, create_stock, create_offer_with_thing_product, create_venue, create_offerer
 from utils.token import random_token
