@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
   postgres:
-    build: dockerfiles/postgres
+    image: postgres:10.1
     volumes:
       - "./api/postgres_data:/var/lib/postgresql/data"
     env_file:
