@@ -1,20 +1,15 @@
 import PropTypes from 'prop-types'
 import { withRouter } from 'react-router'
-import { Component } from 'react'
 
-class MatomoTracker extends Component {
-  render() {
-    const { children, location } = this.props
+const MatomoTracker = ({ children, location }) => {
+  // eslint-disable-next-line
+  const matomoTracker = window._paq || []
 
-    // eslint-disable-next-line
-    const matomoTracker = window._paq || []
+  matomoTracker.push(['setCustomUrl', location.pathname])
+  matomoTracker.push(['setDocumentTitle', document.title])
+  matomoTracker.push(['trackPageView'])
 
-    matomoTracker.push(['setCustomUrl', location.pathname])
-    matomoTracker.push(['setDocumentTitle', document.title])
-    matomoTracker.push(['trackPageView'])
-
-    return children
-  }
+  return children
 }
 
 MatomoTracker.propTypes = {
