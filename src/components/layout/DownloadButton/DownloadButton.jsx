@@ -4,6 +4,7 @@ import React from 'react'
 const DownloadButton = ({ children, downloadFileOrNotifyAnError }) => (
   <button
     className="button is-primary"
+    download
     onClick={downloadFileOrNotifyAnError}
     type="button">
     {children}

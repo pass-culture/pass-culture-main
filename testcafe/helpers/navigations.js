@@ -12,6 +12,18 @@ export const navigateToOfferersAs = user => async t => {
   await t.click(navbarAnchor).click(offerersNavbarAnchor)
 }
 
+export const navigateToReimbursementsAs = user => async t => {
+  const navbarAnchor = Selector(
+    'a.navbar-link, span.navbar-burger'
+  ).filterVisible()
+  const reimbursementsNavbarAnchor = Selector(
+    "a.navbar-item[href='/remboursements']"
+  )
+
+  await t.useRole(createUserRole(user))
+  await t.click(navbarAnchor).click(reimbursementsNavbarAnchor)
+}
+
 export const navigateToNewOffererAs = user => async t => {
   const newOffererAnchor = Selector(
     "a.button.is-primary[href='/structures/creation']"
