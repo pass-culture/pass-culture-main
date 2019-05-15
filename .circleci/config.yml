@@ -30,7 +30,7 @@ jobs:
       - run: git submodule update --init
       - run: ./install_lib_ci.sh
       - run: sudo ./pc symlink
-      - run: ./scripts/install_dockerize.sh v0.6.1
+      - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
       - run:
           name: Running API server
           command: |
@@ -55,13 +55,13 @@ jobs:
       - run: git submodule update --init
       - run: ./install_lib_ci.sh
       - run: sudo ./pc symlink
-      - run: ./scripts/install_dockerize.sh v0.6.1
+      - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
       - run:
           name: Run Unit Test WEBAPP
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
+            nvm use "$NODE_VERSION"
             cd webapp
             yarn install
             yarn test:unit
@@ -78,7 +78,7 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
+            nvm use "$NODE_VERSION"
             cd webapp
             yarn start
           background: true
@@ -92,7 +92,7 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
+            nvm use "$NODE_VERSION"
             cd webapp
             yarn test:cafe
       - run:
@@ -112,13 +112,13 @@ jobs:
       - run: git submodule update --init
       - run: ./install_lib_ci.sh
       - run: sudo ./pc symlink
-      - run: ./scripts/install_dockerize.sh v0.6.1
+      - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
       - run:
           name: Run Unit Test PRO
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
+            nvm use "$NODE_VERSION"
             cd pro
             yarn install
             yarn test:unit
@@ -135,7 +135,7 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
+            nvm use "$NODE_VERSION"
             cd pro
             yarn start
           background: true
@@ -149,7 +149,7 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
+            nvm use "$NODE_VERSION"
             cd pro
             yarn test:cafe
       - run:
@@ -199,7 +199,7 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
+            nvm use "$NODE_VERSION"
             cd pro
             yarn install
             set -a; source ~/node_modules/pass-culture-shared/config/run_envs/${CIRCLE_BRANCH}" && yarn build
@@ -231,7 +231,7 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
+            nvm use "$NODE_VERSION"
             cd webapp
             yarn install
             ./scripts/build_with_fontello.sh
