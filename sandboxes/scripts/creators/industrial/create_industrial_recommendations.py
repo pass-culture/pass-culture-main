@@ -47,12 +47,12 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
                     user=user
                 )
 
-        (mediation_name, mediation) = activation_mediation_items[0]
-        recommendation_name = '{} / {}'.format(
-            mediation_name,
+        (activation_mediation_name, mediation) = activation_mediation_items[0]
+        activation_recommendation_name = '{} / {}'.format(
+            activation_mediation_name,
             user_name
         )
-        recommendations_by_name[recommendation_name] = \
+        recommendations_by_name[activation_recommendation_name] = \
             create_recommendation(
                 is_clicked=True,
                 mediation=mediation,
@@ -101,6 +101,8 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
                 continue
             elif offer.isThing \
                 and offer.id not in already_recommended_thing_offer_ids:
+                continue
+            elif offer.venue.managingOfferer.validationToken:
                 continue
 
             recommendation_name = '{} / {}'.format(

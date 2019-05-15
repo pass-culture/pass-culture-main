@@ -9,6 +9,7 @@ import sandboxes.scripts.getters.pro_08_stocks
 import sandboxes.scripts.getters.pro_09_mediation
 import sandboxes.scripts.getters.pro_10_desk
 import sandboxes.scripts.getters.pro_11_lost_password
+import sandboxes.scripts.getters.pro_12_reimbursements
 
 import sandboxes.scripts.getters.webapp_01_activation
 import sandboxes.scripts.getters.webapp_02_signin

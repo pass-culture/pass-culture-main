@@ -6,7 +6,7 @@ from enum import Enum
 from io import StringIO
 from typing import List
 
-from models import Booking, ThingType
+from models import Booking, Payment, ThingType
 
 MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
 MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
@@ -115,16 +115,14 @@ class ReimbursementDetails:
         "Montant remboursé"
     ]
 
-    def __init__(self, booking_reimbursement: BookingReimbursement = None, booking_used_date: datetime = None):
-        if booking_reimbursement is not None:
-            booking = booking_reimbursement.booking
+    # def __init__(self, booking_reimbursement: BookingReimbursement = None, booking_used_date: datetime = None):
+    def __init__(self, payment: Payment = None, booking_used_date: datetime = None):
+        if payment is not None:
+            booking = payment.booking
             user = booking.user
             offer = booking.stock.resolvedOffer
             venue = offer.venue
             offerer = venue.managingOfferer
-            payment = booking.payments[0]
-
-            print("payment", payment, payment.amount, booking.isUsed, booking_used_date)
 
             self.payment_message_name = payment.paymentMessageName
             self.venue_name = venue.name
@@ -137,7 +135,7 @@ class ReimbursementDetails:
             self.user_first_name = user.firstName
             self.booking_token = booking.token
             self.booking_used_date = booking_used_date
-            self.reimbursed_amount = booking_reimbursement.reimbursed_amount
+            self.reimbursed_amount = payment.amount
 
     def as_csv_row(self):
         return [
