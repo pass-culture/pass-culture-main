@@ -10,9 +10,13 @@ fixture(
 
 test('Je clique sur le bouton télécharger', async t => {
   // given
+  const downloadButton = Selector('button[download]')
   const { user } = await fetchSandbox(
     'pro_12_reimbursements',
     'get_existing_pro_validated_user_with_validated_offerer_with_payment'
   )
   await navigateToReimbursementsAs(user)(t)
+
+  // when
+  await t.click(downloadButton)
 })

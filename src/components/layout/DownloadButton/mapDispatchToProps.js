@@ -6,12 +6,13 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     downloadFileOrNotifyAnError: async () => {
       try {
         const result = await fetch(href, { credentials: 'include' })
-        const { ok } = result
+        const { status } = result
 
-        if (ok) {
+        if (status === 200) {
           const text = await result.text()
           const blob = new Blob([text], { type: fileType })
-          window.location.href = window.URL.createObjectURL(blob)
+          const url = window.URL.createObjectURL(blob)
+          window.location.assign(url)
           return
         }
 

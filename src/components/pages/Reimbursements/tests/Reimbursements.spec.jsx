@@ -26,12 +26,4 @@ describe('src | components | pages | Reimbursements', () => {
       expect(wrapper).toMatchSnapshot()
     })
   })
-  describe('mount', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = mount(<Reimbursements />)
-
-      console.log(wrapper.find('button[download]').props())
-    })
-  })
 })
