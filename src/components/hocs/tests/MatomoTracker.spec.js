@@ -1,7 +1,7 @@
 import { mount } from 'enzyme'
 import React from 'react'
-import { createBrowserHistory } from "history";
-import { Router } from "react-router";
+import { createBrowserHistory } from 'history'
+import { Router } from 'react-router'
 import MatomoTracker from '../MatomoTracker'
 
 describe('src | components | hocs | MatomoTracker', () => {

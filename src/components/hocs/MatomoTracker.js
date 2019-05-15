@@ -14,11 +14,7 @@ const MatomoTracker = ({ children, location }) => {
 
 MatomoTracker.propTypes = {
   children: PropTypes.node.isRequired,
-  location: PropTypes.shape(),
-}
-
-MatomoTracker.defaultProps = {
-  location: null,
+  location: PropTypes.shape().isRequired,
 }
 
 export default withRouter(MatomoTracker)
