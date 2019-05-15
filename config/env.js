@@ -78,6 +78,7 @@ function getClientEnvironment(publicUrl) {
         PUBLIC_URL: publicUrl,
         // VERSION FOR API
         VERSION: version,
+        MATOMO_SERVER_URL: process.env.MATOMO_SERVER_URL,
       }
     )
   // Stringify all values so we can feed into Webpack DefinePlugin
