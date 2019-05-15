@@ -10,33 +10,31 @@ const ModifyOrCancelControl = ({
   query,
   venueId,
   readOnly,
-}) => {
-  return (
-    <div className="control">
-      {readOnly ? (
-        <NavLink
-          className="button is-secondary is-medium"
-          id="modify-venue"
-          to={`/structures/${offererId}/lieux/${venueId}?modification`}>
-          Modifier le lieu
-        </NavLink>
-      ) : (
-        <button
-          className="button is-secondary is-medium"
-          onClick={() => {
-            form.reset()
-            const next = isCreatedEntity
-              ? `/structures/${offererId}`
-              : `/structures/${offererId}/lieux/${venueId}`
-            history.push(next)
-          }}
-          type="button">
-          Annuler
-        </button>
-      )}
-    </div>
-  )
-}
+}) => (
+  <div className="control">
+    {readOnly ? (
+      <NavLink
+        className="button is-secondary is-medium"
+        id="modify-venue"
+        to={`/structures/${offererId}/lieux/${venueId}?modification`}>
+        Modifier le lieu
+      </NavLink>
+    ) : (
+      <button
+        className="button is-secondary is-medium"
+        onClick={() => {
+          form.reset()
+          const next = isCreatedEntity
+            ? `/structures/${offererId}`
+            : `/structures/${offererId}/lieux/${venueId}`
+          history.push(next)
+        }}
+        type="reset">
+        Annuler
+      </button>
+    )}
+  </div>
+)
 
 ModifyOrCancelControl.defaultProps = {
   venueId: null,

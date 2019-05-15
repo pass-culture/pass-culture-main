@@ -5,6 +5,7 @@ import { Form } from 'react-final-form'
 import { Provider, connect } from 'react-redux'
 import { Route, Router, Switch } from 'react-router-dom'
 import { compose } from 'redux'
+import { assignData } from 'redux-saga-data'
 
 import Venue from '../Venue'
 import mapDispatchToProps from '../mapDispatchToProps'
@@ -307,6 +308,59 @@ describe('src | components | pages | Venue', () => {
   })
 
   describe('Form Request', () => {
+    it('resets the form when click on terminer', done => {
+      // given
+      const { store } = configureStore()
+      const history = createBrowserHistory()
+      store.dispatch(
+        assignData({
+          venues: [{ id: 'AE' }],
+        })
+      )
+      history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/AE?modification`)
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <Switch>
+              <Route path="/structures/:offererId/lieux/:venueId">
+                <VenueContainer />
+              </Route>
+            </Switch>
+          </Router>
+        </Provider>
+      )
+
+      setTimeout(() => {
+        // then (offerer request is done, form is now available)
+        wrapper.update()
+
+        // when
+        wrapper
+          .find("input[name='bookingEmail']")
+          .simulate('change', { target: { value: 'foo@foo.com' } })
+
+        setTimeout(() => {
+          // then
+          wrapper.update()
+          expect(
+            wrapper.find("input[name='bookingEmail']").props().value
+          ).toEqual('foo@foo.com')
+
+          // when
+          const cancelButton = wrapper.find('button[type="reset"]')
+          cancelButton.simulate('click')
+
+          // then
+          expect(
+            wrapper.find("input[name='bookingEmail']").props().value
+          ).toEqual('')
+
+          // done
+          done()
+        })
+      })
+    })
+
     it('fills the form with a valid siret', done => {
       // given
       const { store } = configureStore()

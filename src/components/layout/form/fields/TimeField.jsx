@@ -55,6 +55,7 @@ export const TimeField = ({
                 {readOnly ? (
                   <input
                     className="field-input field-time"
+                    name={name}
                     readOnly
                     value={input.value}
                   />

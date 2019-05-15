@@ -1,12 +1,6 @@
-<<<<<<< HEAD:src/components/pages/Offer/StocksManager/tests/mapStateToProps.spec.js
 import mapStateToProps from '../mapStateToProps'
 
 describe('src | components | pages | Offer | StocksManagerContainer | mapStateToProps', () => {
-=======
-import { mapStateToProps } from '../StocksManagerContainer'
-
-describe('src | components | pages | Offer | StocksManagerContainer | StocksManagerContainer ', () => {
->>>>>>> (pC-1875) prepared test:src/components/pages/Offer/StocksManager/tests/StocksManagerContainer.spec.jsx
   let state
   let props
 
