@@ -20,7 +20,7 @@ fixture('Signin A | Je me connecte avec un compte validé')
     )
   })
 
-test('Je peux cliquer sur lien Créer un compte', async t => {
+test('Je peux cliquer sur le lien Créer un compte', async t => {
   // when
   await t.click(signUpButton)
 
@@ -75,7 +75,7 @@ test("J'ai un compte valide, en appuyant sur la touche 'Entrée' je suis redirig
   await t.expect(pageTitle.innerText).eql('Vos offres')
 })
 
-test("J'ai un email incorrect, je vois un messages d'erreur et je reste sur la page /connection", async t => {
+test("J'ai un email incorrect, je vois un message d'erreur et je reste sur la page /connexion", async t => {
   // when
   await t
     .typeText(inputUsersIdentifier, 'email@email.test')
@@ -90,7 +90,7 @@ test("J'ai un email incorrect, je vois un messages d'erreur et je reste sur la p
   await t.expect(location.pathname).eql('/connexion')
 })
 
-test("J'ai un mot de passe incorrect, je vois un messages d'erreur et je reste sur la page /connection", async t => {
+test("J'ai un mot de passe incorrect, je vois un messages d'erreur et je reste sur la page /connexion", async t => {
   // given
   const { user } = t.ctx.sandbox
   const { email } = user
@@ -118,7 +118,7 @@ fixture('Signin B | Je me connecte avec un compte pas encore validé')
     )
   })
 
-test("Je vois un messages d'erreur et je reste sur la page /connection", async t => {
+test("Je vois un message d'erreur et je reste sur la page /connexion", async t => {
   // given
   const { user } = t.ctx.sandbox
   const { email, password } = user

@@ -8,22 +8,54 @@ import {
 
 const subTitleHeader = Selector('h2')
 
+let userOne
+let userTwo
+let userThree
+let offererOne
+let offererTwo
+let offererThree
+
+fixture('Initialisation des rôles utilisateurs')
+
+test('Utilisateur validé avec une structure validée', async () => {
+  const data = await fetchSandbox(
+    'pro_03_offerers',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer'
+  )
+  userOne = data.user
+  offererOne = data.offerer
+})
+
+test('Utilisateur validé avec une structure en cours de validation', async () => {
+  const data = await fetchSandbox(
+    'pro_03_offerers',
+    'get_existing_pro_validated_user_with_not_validated_offerer_validated_user_offerer'
+  )
+  userTwo = data.user
+  offererTwo = data.offerer
+})
+
+test('Utilisateur validé avec un rattachement à une structure en cours de validation', async () => {
+  const data = await fetchSandbox(
+    'pro_03_offerers',
+    'get_existing_pro_validated_user_with_validated_offerer_not_validated_user_offerer'
+  )
+  userThree = data.user
+  offererThree = data.offerer
+})
+
 fixture(`Offerers A | Voir la liste de mes structures`)
 
 test("L'utilisateur a au moins une structure validé, on peut aller dessus", async t => {
   // given
-  const { offerer, user } = await fetchSandbox(
-    'pro_03_offerers',
-    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer'
-  )
-  const { id: offererId } = offerer
+  let { id: offererId } = offererOne
   const activationOffererItem = Selector('.offerer-item')
     .find(`a[href="/structures/${offererId}"]`)
     .parent('.offerer-item')
   const arrow = activationOffererItem.find('div.caret').find('a')
 
   // when
-  await navigateToOfferersAs(user)(t)
+  await navigateToOfferersAs(userOne)(t)
 
   // then
   await t.expect(activationOffererItem.exists).ok()
@@ -39,11 +71,7 @@ test("L'utilisateur a au moins une structure validé, on peut aller dessus", asy
 
 test("L'utilisateur a au moins une structure en cours de validation, mais on peut aller dessus", async t => {
   // given
-  const { offerer, user } = await fetchSandbox(
-    'pro_03_offerers',
-    'get_existing_pro_validated_user_with_not_validated_offerer_validated_user_offerer'
-  )
-  const { id: offererId } = offerer
+  const { id: offererId } = offererTwo
   const activationOffererItem = Selector('.offerer-item')
     .find(`a[href="/structures/${offererId}"]`)
     .parent('.offerer-item')
@@ -53,7 +81,7 @@ test("L'utilisateur a au moins une structure en cours de validation, mais on peu
   const arrow = activationOffererItem.find('div.caret').find('a')
 
   // when
-  await navigateToOfferersAs(user)(t)
+  await navigateToOfferersAs(userTwo)(t)
 
   // then
   await t.expect(activationOffererItemValidation.exists).ok()
@@ -69,18 +97,14 @@ test("L'utilisateur a au moins une structure en cours de validation, mais on peu
 
 test("L'utilisateur a au moins un rattachement à une structure en cours de validation, on ne peut pas aller dessus", async t => {
   // given
-  const { offerer, user } = await fetchSandbox(
-    'pro_03_offerers',
-    'get_existing_pro_validated_user_with_validated_offerer_not_validated_user_offerer'
-  )
-  const { name: offererName } = offerer
+  const { name: offererName } = offererThree
   const pendingOffererItem = Selector('.offerer-item.pending').withText(
     offererName
   )
   const arrow = pendingOffererItem.find('div.caret').find('a')
 
   // when
-  await navigateToOfferersAs(user)(t)
+  await navigateToOfferersAs(userThree)(t)
 
   // then
   await t.expect(pendingOffererItem.exists).ok()
@@ -141,11 +165,7 @@ fixture('Offerers B | Recherche')
 
 test('Je peux chercher une structure avec des mots-clés et naviguer sur sa page', async t => {
   // given
-  const { offerer, user } = await fetchSandbox(
-    'pro_03_offerers',
-    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer'
-  )
-  await navigateToOffererAs(user, offerer)(t)
+  await navigateToOffererAs(userOne, offererOne)(t)
 
   // then
   const location = await t.eval(() => window.location)

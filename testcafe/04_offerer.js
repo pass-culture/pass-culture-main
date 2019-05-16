@@ -1,11 +1,9 @@
 import { Selector } from 'testcafe'
 
 import { fetchSandbox } from './helpers/sandboxes'
-import {
-  navigateToNewOffererAs,
-  navigateToOffererAs,
-} from './helpers/navigations'
+import { navigateToNewOffererAs } from './helpers/navigations'
 import { getSirenRequestMockAs } from './helpers/sirenes'
+import { createUserRole } from './helpers/roles'
 
 const addressInput = Selector('input#offerer-address')
 const nameInput = Selector('input#offerer-name')
@@ -13,13 +11,19 @@ const sirenInput = Selector('#offerer-siren')
 const sirenErrorInput = Selector('#offerer-siren-error')
 const submitButton = Selector('button.button.is-primary')
 
+let user
+let userRole
+let data
 fixture('Offerer A | Créer une nouvelle structure').beforeEach(async t => {
-  t.ctx.sandbox = await fetchSandbox(
-    'pro_04_offerer',
-    'get_existing_pro_validated_user_with_first_offerer'
-  )
-  const { user } = t.ctx.sandbox
-  return navigateToNewOffererAs(user)(t)
+  if (!userRole) {
+    data = await fetchSandbox(
+      'pro_04_offerer',
+      'get_existing_pro_validated_user_with_first_offerer'
+    )
+    user = data.user
+    userRole = createUserRole(user)
+  }
+  return navigateToNewOffererAs(user, userRole)(t)
 })
 
 test('Je peux naviguer vers une nouvelle structure et revenir aux structures', async t => {
@@ -55,7 +59,7 @@ test('Je ne peux pas ajouter de nouvelle structure avec un siren faux', async t 
 
 test('Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existant dans la base', async t => {
   // given
-  const { offerer } = t.ctx.sandbox
+  const { offerer } = data
   await t.addRequestHooks(getSirenRequestMockAs(offerer))
   const { siren } = offerer
   let location = await t.eval(() => window.location)
@@ -96,7 +100,7 @@ test('Je rentre une nouvelle structure via son siren', async t => {
   await t.expect(location.pathname).eql('/structures')
 })
 
-test("Je rentre une structure dont l'adresse n'est pas renvoyée par l'api sirene et je peux valider", async t => {
+test("Je rentre une structure dont l'adresse n'est pas renvoyée par l'API Siren et je peux valider", async t => {
   // given
   const futureOffererWithNoAddress = {
     address: null,
@@ -109,7 +113,7 @@ test("Je rentre une structure dont l'adresse n'est pas renvoyée par l'api siren
   }
   const { siren } = futureOffererWithNoAddress
   await t.addRequestHooks(getSirenRequestMockAs(futureOffererWithNoAddress))
-  let location = await t.eval(() => window.location)
+  let location
 
   // when
   await t
@@ -121,22 +125,4 @@ test("Je rentre une structure dont l'adresse n'est pas renvoyée par l'api siren
   // then
   location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/structures')
-})
-
-fixture('Offerer B | Modifier une structure')
-
-test.skip('Je modifie une structure pour lui ajouter ses coordonnées bancaires car je suis admin', async t => {
-  // given
-  const { offerer, user } = await fetchSandbox(
-    'pro_04_offerer',
-    'get_existing_pro_validated_user_with_offerer_with_no_iban'
-  )
-  await navigateToOffererAs(user, offerer)(t)
-
-  // when
-  // t.typeText(bicInput, 'BNPAFRPP')
-  // t.typeText(ibanInput, 'FR7630004000031234567890143')
-
-  // then
-  // TODO
 })

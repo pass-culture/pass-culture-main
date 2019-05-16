@@ -22,7 +22,7 @@ fixture('Signup A | Je crée un compte utilisateur·ice').page(
   `${ROOT_PATH + 'inscription'}`
 )
 
-test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async t => {
+test("Je peux cliquer sur le lien pour me connecter si j'ai déjà un compte", async t => {
   // when
   await t.click(signInButton)
 
@@ -31,7 +31,7 @@ test("Je peux cliquer sur lien pour me connecter si j'ai déja un compte", async
   await t.expect(location.pathname).eql('/connexion')
 })
 
-test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est desactivé", async t => {
+test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est désactivé", async t => {
   // given
   await t.typeText(emailInput, 'email@email.test')
 
@@ -167,7 +167,7 @@ test('Je créé un compte avec un siren déjà dans la base, je suis redirigé·
 })
 
 fixture(
-  'Signup D | Clique sur le lien de validation de compte reçu par email'
+  'Signup D | Clic sur le lien de validation de compte reçu par email'
 ).page(`${ROOT_PATH + 'inscription'}`)
 
 test('Je suis redirigé·e vers la page de connexion avec un message de confirmation', async t => {

@@ -2,13 +2,17 @@ import { Selector } from 'testcafe'
 
 import { createUserRole } from './roles'
 
-export const navigateToOfferersAs = user => async t => {
+export const navigateToOfferersAs = (user, userRole = null) => async t => {
   const navbarAnchor = Selector(
     'a.navbar-link, span.navbar-burger'
   ).filterVisible()
   const offerersNavbarAnchor = Selector("a.navbar-item[href='/structures']")
 
-  await t.useRole(createUserRole(user))
+  if (!userRole) {
+    await t.useRole(createUserRole(user))
+  } else {
+    await t.useRole(userRole)
+  }
   await t.click(navbarAnchor).click(offerersNavbarAnchor)
 }
 
@@ -24,12 +28,12 @@ export const navigateToReimbursementsAs = user => async t => {
   await t.click(navbarAnchor).click(reimbursementsNavbarAnchor)
 }
 
-export const navigateToNewOffererAs = user => async t => {
+export const navigateToNewOffererAs = (user, userRole) => async t => {
   const newOffererAnchor = Selector(
     "a.button.is-primary[href='/structures/creation']"
   )
 
-  await navigateToOfferersAs(user)(t)
+  await navigateToOfferersAs(user, userRole)(t)
 
   await t.click(newOffererAnchor)
 }

@@ -11,7 +11,7 @@ fixture('Offers A | Lister les offres').beforeEach(async t => {
   )
 })
 
-test("Lorsque je cliques sur `Mes offres`, j'accès de à la liste des offres", async t => {
+test("Lorsque je clique sur `Mes offres`, j'accède à la liste des offres", async t => {
   // given
   const { user } = t.ctx.sandbox
   await t.useRole(createUserRole(user))
