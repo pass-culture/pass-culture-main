@@ -27,11 +27,12 @@ const DatePickerCustomInput = React.forwardRef((props, ref) => {
 
 DatePickerCustomInput.defaultProps = {
   readOnly: false,
+  value: null,
 }
 
 DatePickerCustomInput.propTypes = {
   readOnly: PropTypes.bool,
-  value: PropTypes.string.isRequired,
+  value: PropTypes.string,
 }
 
 const buildPopperContainer = ({ current }) => ({ children }) => {

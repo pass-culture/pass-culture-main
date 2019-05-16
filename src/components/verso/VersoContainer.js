@@ -1,16 +1,14 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import get from 'lodash.get'
-import { compose } from 'redux'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
 
 import { ROOT_PATH } from '../../utils/config'
 import Verso from './Verso'
 import { getHeaderColor } from '../../utils/colors'
-import currentRecommendationSelector from '../../selectors/currentRecommendation'
 
 const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
+
 export const getContentInlineStyle = (isTuto, backgroundColor) => {
   let result = { backgroundImage }
   if (isTuto && backgroundColor) result = { ...result, backgroundColor }
@@ -38,16 +36,11 @@ export const getBackgroundColor = recommendation => {
   return getHeaderColor(firstThumbDominantColor)
 }
 
-export const mapStateToProps = (state, { match }) => {
-  const { params } = match
-  const { mediationId, offerId } = params
-
-  const recommendation = currentRecommendationSelector(
-    state,
-    offerId,
-    mediationId
-  )
-
+export const mapStateToProps = (state, { recommendation }) => {
+  if (!recommendation) {
+    const msg = 'Props recommandation is missing in VersoContainer component'
+    throw new Error(msg)
+  }
   const backgroundColor = getBackgroundColor(recommendation)
   const isTuto = checkIsTuto(recommendation)
   const offerVenueNameOrPublicName = getOfferVenueNameOrPublicName(
@@ -59,20 +52,18 @@ export const mapStateToProps = (state, { match }) => {
 
   const draggable = get(state, 'card.draggable')
   const areDetailsVisible = get(state, 'card.areDetailsVisible')
+  const imageURL = get(recommendation, 'thumbUrl')
 
   return {
     areDetailsVisible,
     backgroundColor,
     contentInlineStyle,
     draggable,
-    imageURL: get(recommendation, 'thumbUrl'),
+    imageURL,
     isTuto,
     offerName,
     offerVenueNameOrPublicName,
   }
 }
 
-export default compose(
-  withRouter,
-  connect(mapStateToProps)
-)(Verso)
+export default connect(mapStateToProps)(Verso)

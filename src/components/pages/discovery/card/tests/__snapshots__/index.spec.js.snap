@@ -26,7 +26,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
-        false,
+        null,
         <withRouter(Connect(Recto))
           position="position"
         />,
@@ -39,7 +39,7 @@ ShallowWrapper {
     },
     "ref": null,
     "rendered": Array [
-      false,
+      null,
       Object {
         "instance": null,
         "key": undefined,
@@ -61,7 +61,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
-          false,
+          null,
           <withRouter(Connect(Recto))
             position="position"
           />,
@@ -74,7 +74,7 @@ ShallowWrapper {
       },
       "ref": null,
       "rendered": Array [
-        false,
+        null,
         Object {
           "instance": null,
           "key": undefined,

@@ -7,7 +7,7 @@ import { requestData } from 'redux-saga-data'
 
 import BookingContainer from '../../booking/BookingContainer'
 import Recto from '../../recto/Recto'
-import Verso from '../../verso/VersoContainer'
+import VersoContainer from '../../verso/VersoContainer'
 import currentRecommendationSelector from '../../../selectors/currentRecommendation'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 
@@ -18,8 +18,8 @@ class SearchDetails extends Component {
   }
 
   componentDidMount() {
-    const { currentRecommendation } = this.props
-    if (currentRecommendation) {
+    const { recommendation } = this.props
+    if (recommendation) {
       // We need to wait to go out the mount lifecycle
       // in order to force the dom to render
       // twice
@@ -61,6 +61,7 @@ class SearchDetails extends Component {
   }
 
   render() {
+    const { recommendation } = this.props
     const { forceDetailsVisible } = this.state
     return (
       <Fragment>
@@ -72,10 +73,13 @@ class SearchDetails extends Component {
             )}
           />
         )}
-        <Verso
-          extraClassName="with-header"
-          forceDetailsVisible={forceDetailsVisible}
-        />
+        {recommendation && (
+          <VersoContainer
+            recommendation={recommendation}
+            extraClassName="with-header"
+            forceDetailsVisible={forceDetailsVisible}
+          />
+        )}
         <Recto
           areDetailsVisible={forceDetailsVisible}
           extraClassName="with-header"
@@ -87,9 +91,9 @@ class SearchDetails extends Component {
 }
 
 SearchDetails.propTypes = {
-  currentRecommendation: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   match: PropTypes.object.isRequired,
+  recommendation: PropTypes.object.isRequired,
 }
 
 function mapStateToProps(state, ownProps) {
@@ -99,11 +103,7 @@ function mapStateToProps(state, ownProps) {
   } = match
 
   return {
-    currentRecommendation: currentRecommendationSelector(
-      state,
-      offerId,
-      mediationId
-    ),
+    recommendation: currentRecommendationSelector(state, offerId, mediationId),
   }
 }
 

@@ -8,17 +8,7 @@ import {
   getOfferName,
   getOfferVenueNameOrPublicName,
   mapStateToProps,
-} from '../VersoContainer';
-
-const backgroundColor = 'hsl(355, 100%, 7.5%)';
-const firstThumbDominantColor = [224, 108, 117];
-const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`;
-
-let result;
-let isTuto;
-let expected;
-let recommendation = {};
-const name = 'Offer title';
+} from '../VersoContainer'
 
 describe('src | components | verso | VersoContainer', () => {
   const backgroundColor = 'hsl(355, 100%, 7.5%)'
@@ -190,69 +180,74 @@ describe('src | components | verso | VersoContainer', () => {
   })
 
   describe('mapStateToProps', () => {
+    describe('ownProps should contains a recommendation object', () => {
+      const throwMessage =
+        'Props recommandation is missing in VersoContainer component'
+
+      it('should throw error if a recommendation object is missing', () => {
+        // given
+        const state = {}
+        const ownProps = {}
+
+        // then
+        expect(() => {
+          mapStateToProps(state, ownProps)
+        }).toThrow(throwMessage)
+      })
+
+      it('should not throw error if a recommendation object is not missing', () => {
+        // given
+        const state = {}
+        const ownProps = { recommendation }
+
+        // then
+        expect(() => {
+          mapStateToProps(state, ownProps)
+        }).not.toThrow(throwMessage)
+      })
+    })
+
     it('should map the imageURL from recommendation', () => {
       // given
-      const state = {
-        data: {
-          recommendations: [
-            {
-              mediation: {
-                tutoIndex: 1,
-              },
-              mediationId: 'H1',
-              offerId: 'tuto',
-              thumbUrl: 'https://example.net/image-bank/tuto.png',
-            },
-          ],
+      const state = {}
+      recommendation = {
+        mediation: {
+          tutoIndex: 1,
         },
-        geolocation: {
-          latitude: 48.8637,
-          longitude: 2.3374,
-        },
-      };
-      const ownProps = {
-        match: { params: { mediationId: 'H1', offerId: 'tuto' } },
-      };
+        mediationId: 'H1',
+        offerId: 'tuto',
+        thumbUrl: 'https://example.net/image-bank/tuto.png',
+      }
+      const ownProps = { recommendation }
 
       // when
-      const props = mapStateToProps(state, ownProps);
+      const props = mapStateToProps(state, ownProps)
 
       // then
       expect(props).toHaveProperty(
         'imageURL',
         'https://example.net/image-bank/tuto.png'
-      );
-    });
+      )
+    })
 
     it('should not export a mediationId', () => {
       // given
-      const state = {
-        data: {
-          recommendations: [
-            {
-              mediation: {
-                tutoIndex: 1,
-              },
-              mediationId: 'H1',
-              offerId: 'tuto',
-              thumbUrl: 'https://example.net/image-bank/tuto.png',
-            },
-          ],
+      const state = {}
+      recommendation = {
+        mediation: {
+          tutoIndex: 1,
         },
-        geolocation: {
-          latitude: 48.8637,
-          longitude: 2.3374,
-        },
-      };
-      const ownProps = {
-        match: { params: { mediationId: 'H1', offerId: 'tuto' } },
-      };
+        mediationId: 'H1',
+        offerId: 'tuto',
+        thumbUrl: 'https://example.net/image-bank/tuto.png',
+      }
+      const ownProps = { recommendation }
 
       // when
-      const props = mapStateToProps(state, ownProps);
+      const props = mapStateToProps(state, ownProps)
 
       // then
-      expect(props).not.toHaveProperty('mediationId');
-    });
-  });
-});
+      expect(props).not.toHaveProperty('mediationId')
+    })
+  })
+})
