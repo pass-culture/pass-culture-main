@@ -6,7 +6,7 @@ import withSizes from 'react-sizes'
 import { compose } from 'redux'
 
 import { mapDispatchToProps, mapStateToProps } from './connect'
-import Recto from '../../../recto/Recto'
+import RectoContainer from '../../../recto/RectoContainer'
 import VersoContainer from '../../../verso/VersoContainer'
 import { getHeaderColor } from '../../../../utils/colors'
 
@@ -70,7 +70,9 @@ export class RawCard extends PureComponent {
         {recommendation && isCurrent && (
           <VersoContainer recommendation={recommendation} />
         )}
-        <Recto position={position} />
+        {recommendation && (
+          <RectoContainer recommendation={recommendation} position={position} />
+        )}
       </div>
     )
   }

@@ -6,7 +6,7 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import BookingContainer from '../../booking/BookingContainer'
-import Recto from '../../recto/Recto'
+import RectoContainer from '../../recto/RectoContainer'
 import VersoContainer from '../../verso/VersoContainer'
 import currentRecommendationSelector from '../../../selectors/currentRecommendation'
 import { recommendationNormalizer } from '../../../utils/normalizers'
@@ -80,7 +80,7 @@ class SearchDetails extends Component {
             forceDetailsVisible={forceDetailsVisible}
           />
         )}
-        <Recto
+        <RectoContainer
           areDetailsVisible={forceDetailsVisible}
           extraClassName="with-header"
           position="current"

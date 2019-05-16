@@ -1,15 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | discovery | RawCard snapshot should match snapshot 1`] = `
+exports[`src | components | recto | Recto snapshot should match snapshot with required props only 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawCard
-    areDetailsVisible={false}
-    handleClickRecommendation={[MockFunction]}
-    handleReadRecommendation={[MockFunction]}
-    position="position"
+  Symbol(enzyme.__unrendered__): <Recto
+    areDetailsVisible={true}
+    extraClassName={null}
     recommendation={null}
-    width={500}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -26,19 +23,17 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
-        null,
-        null,
+        undefined,
+        undefined,
+        false,
       ],
-      "className": "card ",
-      "style": Object {
-        "backgroundColor": "black",
-        "transform": "translate(NaNpx, 0)",
-      },
+      "className": "recto",
     },
     "ref": null,
     "rendered": Array [
-      null,
-      null,
+      undefined,
+      undefined,
+      false,
     ],
     "type": "div",
   },
@@ -49,19 +44,17 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
-          null,
-          null,
+          undefined,
+          undefined,
+          false,
         ],
-        "className": "card ",
-        "style": Object {
-          "backgroundColor": "black",
-          "transform": "translate(NaNpx, 0)",
-        },
+        "className": "recto",
       },
       "ref": null,
       "rendered": Array [
-        null,
-        null,
+        undefined,
+        undefined,
+        false,
       ],
       "type": "div",
     },
@@ -89,6 +82,5 @@ ShallowWrapper {
       },
     },
   },
-  Symbol(enzyme.__childContext__): null,
 }
 `;
