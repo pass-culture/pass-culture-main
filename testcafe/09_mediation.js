@@ -22,7 +22,7 @@ test('Création des données', async () => {
   userRole = createUserRole(dataFromSandbox.user)
 })
 
-fixture('Mediation A | Naviguer vers ajouter une accroche')
+fixture('Mediation A | Naviguer vers "ajouter une accroche"')
 
 test("Lorsque je clique sur le bouton 'créer une accroche' sur la page d'une offre, j'accède au formulaire de création d'une accroche", async t => {
   // when

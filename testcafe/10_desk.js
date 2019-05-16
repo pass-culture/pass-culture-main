@@ -18,16 +18,14 @@ const registerButton = Selector('.form button[type="submit"]')
 fixture('Desk A | Saisir un code').page(`${ROOT_PATH}guichet`)
 
 test("L'état de départ de la page /guichet est conforme", async t => {
+  // given
   const { booking, user } = await fetchSandbox(
     'pro_10_desk',
     'get_existing_pro_validated_user_with_validated_offerer_with_validated_user_offerer_with_thing_offer_with_stock_with_not_used_booking'
   )
   const { token } = booking
   await t.useRole(createUserRole(user))
-  // Navigation
   await t.click(navbarAnchor).click(deskLink)
-
-  // intiial state
   await t.expect(pageTitleHeader.innerText).eql('Guichet')
   await t.expect(codeInput.innerText).eql('')
   await t.expect(stateText.innerText).eql('Saisissez un code')

@@ -58,7 +58,7 @@ fixture(
   'LostPassword B | La page de changement de mot de passe vérifie le token'
 ).page(`${ROOT_PATH + 'mot-de-passe-perdu?token=ABCD'}`)
 
-test('Je ne peux pas changer mon mot de passe de sans token valide', async t => {
+test('Je ne peux pas changer mon mot de passe sans token valide', async t => {
   // then
   await t.expect(pageH1.innerText).eql('Créer un nouveau mot de passe')
 
