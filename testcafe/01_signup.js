@@ -74,21 +74,24 @@ test('Je créé un compte avec un nouveau siren, je suis redirigé·e vers la pa
   await t.expect(location.pathname).eql('/inscription/confirmation')
 })
 
+let dataFromSandbox
 fixture(
   "Signup B | Création d'un compte utilisateur et messages d'erreur lorsque les champs ne sont pas correctement remplis"
 )
   .page(`${ROOT_PATH + 'inscription'}`)
   .beforeEach(async t => {
-    t.ctx.sandbox = await fetchSandbox(
-      'pro_01_signup',
-      'get_existing_pro_user_with_offerer'
-    )
-    await t.addRequestHooks(getSirenRequestMockAs(t.ctx.sandbox.offerer))
+    if (!dataFromSandbox) {
+      dataFromSandbox = await fetchSandbox(
+        'pro_01_signup',
+        'get_existing_pro_user_with_offerer'
+      )
+    }
+    await t.addRequestHooks(getSirenRequestMockAs(dataFromSandbox.offerer))
   })
 
 test('E-mail déjà présent dans la base', async t => {
   // given
-  const { offerer, user } = t.ctx.sandbox
+  const { offerer, user } = dataFromSandbox
   const { email, firstName, lastName, password } = user
   const { siren } = offerer
   await t
@@ -109,7 +112,7 @@ test('E-mail déjà présent dans la base', async t => {
 
 test('Mot de passe invalide', async t => {
   // given
-  const { offerer, user } = t.ctx.sandbox
+  const { offerer, user } = dataFromSandbox
   const { email, firstName, lastName } = user
   const { siren } = offerer
   await t
@@ -130,19 +133,11 @@ test('Mot de passe invalide', async t => {
 
 fixture(
   "Signup C | Création d'un compte pour rattachement à une structure existante"
-)
-  .page(`${ROOT_PATH + 'inscription'}`)
-  .beforeEach(async t => {
-    t.ctx.sandbox = await fetchSandbox(
-      'pro_01_signup',
-      'get_existing_pro_user_with_offerer'
-    )
-    await t.addRequestHooks(getSirenRequestMockAs(t.ctx.sandbox.offerer))
-  })
+).page(`${ROOT_PATH + 'inscription'}`)
 
 test('Je créé un compte avec un siren déjà dans la base, je suis redirigé·e vers la page /inscription/confirmation', async t => {
   // given
-  const { offerer } = t.ctx.sandbox
+  const { offerer } = dataFromSandbox
   const email = 'pctest0.pro93.cafe1@btmx.fr'
   const firstName = 'PC Test Pro'
   const lastName = '93 Café1'
@@ -182,9 +177,9 @@ test('Je suis redirigé·e vers la page de connexion avec un message de confirma
   await t
     .navigateTo(`/inscription/validation/${validationToken}`)
     // please be careful, this wait prevents is necessary
-    // to pass every time, otherwise succes of this test is
+    // to pass every time, otherwise success of this test is
     // kind of random!
-    .wait(5000)
+    .wait(10000)
 
   // then
   const location = await t.eval(() => window.location)
