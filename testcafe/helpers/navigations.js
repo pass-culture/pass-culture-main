@@ -2,7 +2,7 @@ import { Selector } from 'testcafe'
 
 import { createUserRole } from './roles'
 
-export const navigateToOfferersAs = (user, userRole = null) => async t => {
+export const navigateToOfferersAs = (user, userRole) => async t => {
   const navbarAnchor = Selector(
     'a.navbar-link, span.navbar-burger'
   ).filterVisible()
@@ -109,7 +109,12 @@ export const navigateAfterVenueSubmit = creationOrModification => async t => {
     .notOk()
 }
 
-export const navigateToNewOfferAs = (user, offerer, venue) => async t => {
+export const navigateToNewOfferAs = (
+  user,
+  offerer,
+  venue,
+  userRole
+) => async t => {
   if (venue) {
     const newOfferAnchor = Selector("a[href^='/structures/']")
       .withText(venue.name)
@@ -133,10 +138,15 @@ export const navigateToNewOfferAs = (user, offerer, venue) => async t => {
     return
   }
   const newOfferAnchor = Selector("a[href^='/offres/creation']")
-  await t.useRole(createUserRole(user)).click(newOfferAnchor)
+
+  if (userRole) {
+    await t.useRole(userRole).click(newOfferAnchor)
+  } else {
+    await t.useRole(createUserRole(user)).click(newOfferAnchor)
+  }
 }
 
-export const navigateToOfferAs = (user, offer, userRole = null) => async t => {
+export const navigateToOfferAs = (user, offer, userRole) => async t => {
   const searchInput = Selector('#search')
   const submitButton = Selector('button[type="submit"]')
   const offerAnchor = Selector('li.offer-item').find(
