@@ -18,7 +18,6 @@ import {
   mapApiToBrowser,
   translateQueryParamsToApiParams,
 } from '../../../utils/translate'
-import { MatomoSearchAction } from '../../hocs/MatomoSearchAction'
 
 class RawOfferers extends Component {
   constructor(props) {
@@ -151,27 +150,25 @@ class RawOfferers extends Component {
           render={({ handleSubmit }) => (
             <form onSubmit={handleSubmit}>
               Rechercher une structure :
-              <MatomoSearchAction>
-                <TextField
-                  id="search"
-                  name="keywords"
-                  placeholder="Saisissez un ou plusieurs mots complets"
-                  renderValue={() => (
-                    <Fragment>
-                      <button
-                        className="button is-primary is-outlined search-ok ml12"
-                        type="submit">
-                        OK
-                      </button>
-                      <button className="button is-secondary" disabled>
-                        &nbsp;
-                        <Icon svg="ico-filter" />
-                        &nbsp;
-                      </button>
-                    </Fragment>
-                  )}
-                />
-              </MatomoSearchAction>
+              <TextField
+                id="search"
+                name="keywords"
+                placeholder="Saisissez un ou plusieurs mots complets"
+                renderValue={() => (
+                  <Fragment>
+                    <button
+                      className="button is-primary is-outlined search-ok ml12"
+                      type="submit">
+                      OK
+                    </button>
+                    <button className="button is-secondary" disabled>
+                      &nbsp;
+                      <Icon svg="ico-filter" />
+                      &nbsp;
+                    </button>
+                  </Fragment>
+                )}
+              />
             </form>
           )}
         />
