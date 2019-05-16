@@ -9,25 +9,109 @@ BEGIN
 END; $$
 LANGUAGE plpgsql;
 
-UPDATE deposit SET "amount" = 500 WHERE "amount" is not null;
-UPDATE mediation SET "credit" = 'credit text' WHERE "credit" is not null;
+CREATE OR REPLACE FUNCTION generate_random_token_if_not_null(
+  original_token VARCHAR)
+  RETURNS VARCHAR AS $$
+BEGIN
+ IF original_token IS NOT NULL THEN
+  RETURN substring(md5(random()::text),1 , LENGTH(original_token));
+ ELSE
+  RETURN NULL;
+ END IF;
+END; $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION anonymize_validation_token_field(
+ json_data JSONB)
+ RETURNS JSONB as $$
+BEGIN
+ IF json_data::jsonb ->> 'validationToken' IS NOT NULL THEN
+  RETURN ((json_data::jsonb
+   - 'validationToken'::text)::jsonb
+   || ('{"validationToken": "' || generate_random_token_if_not_null(json_data::jsonb ->> 'validationToken') || '"}')::jsonb);
+ ELSE
+  RETURN json_data;
+ END IF;
+END; $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION anonymize_token_field(
+ json_data JSONB)
+ RETURNS JSONB as $$
+BEGIN
+ IF json_data::jsonb ->> 'token' IS NOT NULL THEN
+  RETURN ((json_data::jsonb
+   - 'token'::text)::jsonb
+   || ('{"token": "' || generate_random_token_if_not_null(json_data::jsonb ->> 'token') || '"}')::jsonb);
+ ELSE
+  RETURN json_data;
+ END IF;
+END; $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION anonymize_booking_email_field(
+ json_data JSONB)
+ RETURNS JSONB as $$
+BEGIN
+ IF json_data ->> 'bookingEmail' IS NOT NULL THEN
+  RETURN ((json_data::jsonb
+   - 'bookingEmail'::text)::jsonb
+   || ('{"bookingEmail": "ano@nym.ized"}')::jsonb);
+ ELSE
+  RETURN json_data;
+ END IF;
+END; $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION anonymize_bic_field(
+ json_data JSONB)
+ RETURNS JSONB as $$
+BEGIN
+ IF json_data ->> 'bic' IS NOT NULL THEN
+  RETURN ((json_data::jsonb
+  - 'bic'::text)::jsonb
+|| ('{"bic": "BDFEFR2L"}')::jsonb);
+ ELSE
+  RETURN json_data;
+ END IF;
+END; $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION anonymize_iban_field(
+ json_data JSONB)
+ RETURNS JSONB as $$
+BEGIN
+ IF json_data ->> 'iban' IS NOT NULL THEN
+  RETURN ((json_data::jsonb
+  - 'iban'::text)::jsonb
+  || ('{"iban": "FR7630001007941234567890185"}')::jsonb);
+ ELSE
+  RETURN json_data;
+ END IF;
+END; $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION anonymize_activity_data_field(
+ json_data JSONB)
+ RETURNS JSONB as $$
+BEGIN
+ json_data = anonymize_validation_token_field(json_data::jsonb);
+ json_data = anonymize_token_field(json_data::jsonb);
+ json_data = anonymize_booking_email_field(json_data::jsonb);
+ json_data = anonymize_bic_field(json_data::jsonb);
+ json_data = anonymize_iban_field(json_data::jsonb);
+ RETURN json_data;
+END; $$
+LANGUAGE plpgsql;
+
 UPDATE offer SET "bookingEmail" = 'ano@nym.ized' WHERE "bookingEmail" is not null;
 UPDATE offerer SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
-UPDATE offerer SET "name" = 'offerer_' || "id";
-UPDATE offerer SET "siren" = pg_temp.generate_random_between(999999999,100000000)::text WHERE "siren" is not null;
-UPDATE offerer SET "address" = '1 Avenue de la Libération',
-  "postalCode" = substring("postalCode",1,2) || pg_temp.generate_random_between(999,100)::text,
-  "city" = 'Cultureville' WHERE "address" is not null;
-
+UPDATE bank_information SET "iban" = pg_temp.generate_random_between(999999999,100000000)::text,
+  "bic" = pg_temp.generate_random_between(999999999,100000000)::text WHERE "iban" is not null;
 UPDATE booking SET "token" = substring(md5(random()::text),1 , 6) WHERE "token" is not null;
 
-UPDATE payment SET "recipientName" = 'recipient_name';
-UPDATE payment SET "iban" = pg_temp.generate_random_between(999999999,100000000)::text,
-  "bic" = pg_temp.generate_random_between(999999999,100000000)::text WHERE "iban" is not null;
-UPDATE payment SET "amount" = 1 WHERE "amount" > 0;
-UPDATE payment SET "recipientSiren" = pg_temp.generate_random_between(999999999,100000000)::text WHERE "recipientSiren" is not null;
-
-UPDATE payment_status SET "detail" = 'detail for PaymentStatus';
+UPDATE payment SET "iban" = 'FR7630001007941234567890185',
+  "bic" = 'BDFEFR2L' WHERE "iban" is not null;
 
 UPDATE provider SET "apiKey" = md5(random()::text) WHERE "apiKey" is not null;
 
@@ -43,23 +127,17 @@ UPDATE "user" SET "resetPasswordToken" = substring(md5(random()::text),1 , 10) W
 
 UPDATE user_offerer SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
 
-UPDATE bank_information SET "iban" = pg_temp.generate_random_between(999999999,100000000)::text,
-  "bic" = pg_temp.generate_random_between(999999999,100000000)::text  WHERE "iban" is not null;
+UPDATE bank_information SET "iban" = 'FR7630001007941234567890185',
+  "bic" = 'BDFEFR2L'  WHERE "iban" is not null;
 
-UPDATE venue SET "name" = 'Venue' || "id",
-  "bookingEmail" = 'ano@nym.ized',
-  "address" = '1 Avenue de la Libération',
-  "latitude" = pg_temp.generate_random_between(9,1)::int,
-  "longitude" = pg_temp.generate_random_between(9,1)::int,
-  "postalCode" = substring("postalCode",1,2) || pg_temp.generate_random_between(999,100)::text,
-  "city" = 'Cultureville' WHERE "address" is not null;
+UPDATE venue SET "bookingEmail" = 'ano@nym.ized',
+ "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
 
-UPDATE venue SET siret = offerer.siren || pg_temp.generate_random_between(99999,10000)::text
-FROM offerer
-WHERE venue."managingOffererId" = offerer.id
-AND venue.siret is not null;
+UPDATE activity
+SET
+ old_data = anonymize_activity_data_field(old_data),
+ changed_data = anonymize_activity_data_field(changed_data);
 
-UPDATE venue SET "comment" = 'comment for venue' WHERE "comment" is not null;
-UPDATE venue SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
+TRUNCATE email;
 
 DROP EXTENSION pgcrypto;
