@@ -53,7 +53,7 @@ export const navigateToOffererAs = (user, offerer) => async t => {
     .click(offererAnchor)
 }
 
-export const navigateToNewVenueAs = (user, offerer) => async t => {
+export const navigateToNewVenueAs = (user, offerer, userRole) => async t => {
   const newVenueAnchor = Selector('a.button.is-secondary').withText(
     '+ Ajouter un lieu'
   )
@@ -61,18 +61,23 @@ export const navigateToNewVenueAs = (user, offerer) => async t => {
     offerer.name
   )
 
-  await navigateToOfferersAs(user)(t)
+  await navigateToOfferersAs(user, userRole)(t)
 
   await t.click(offererAnchor).click(newVenueAnchor)
 }
 
-export const navigateToVenueAs = (user, offerer, venue) => async t => {
+export const navigateToVenueAs = (
+  user,
+  offerer,
+  venue,
+  userRole
+) => async t => {
   const offererAnchor = Selector("a[href^='/structures/']").withText(
     offerer.name
   )
   const venueAnchor = Selector("a[href^='/structures/']").withText(venue.name)
 
-  await navigateToOfferersAs(user)(t)
+  await navigateToOfferersAs(user, userRole)(t)
 
   await t.click(offererAnchor).click(venueAnchor)
 }

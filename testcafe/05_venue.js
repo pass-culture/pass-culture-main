@@ -7,6 +7,7 @@ import {
   navigateToVenueAs,
 } from './helpers/navigations'
 import { getSiretRequestMockAs } from './helpers/sirenes'
+import { createUserRole } from './helpers/roles'
 
 const form = Selector('form[name="venue"]')
 const mapMarker = Selector('.leaflet-marker-pane img')
@@ -29,18 +30,27 @@ const submitButton = Selector('button[type="submit"]')
 const modifyVenueButton = Selector('#modify-venue')
 const venueMarker = Selector('img.leaflet-marker-icon')
 
+let dataFromSandboxVenueA
+let userVenueA
+let offererVenueA
+let userRoleVenueA
 fixture('Venue A | Créer un nouveau lieu avec succès').beforeEach(async t => {
-  t.ctx.sandbox = await fetchSandbox(
-    'pro_05_venue',
-    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue'
-  )
-  const { offerer, user } = t.ctx.sandbox
-  return navigateToNewVenueAs(user, offerer)(t)
+  if (!dataFromSandboxVenueA) {
+    dataFromSandboxVenueA = await fetchSandbox(
+      'pro_05_venue',
+      'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue'
+    )
+    userVenueA = dataFromSandboxVenueA.user
+    offererVenueA = dataFromSandboxVenueA.offerer
+    userRoleVenueA = createUserRole(userVenueA)
+  }
+
+  return navigateToNewVenueAs(userVenueA, offererVenueA, userRoleVenueA)(t)
 })
 
-test('Je rentre une nouveau lieu via son siret avec succès', async t => {
+test('Je rentre un nouveau lieu via son siret avec succès', async t => {
   // given
-  const { offerer } = t.ctx.sandbox
+  const { offerer } = dataFromSandboxVenueA
   const { address, city, name, postalCode, siren } = offerer
   const latitude = '48.862923'
   const longitude = '2.287896'
@@ -112,20 +122,28 @@ test('Je rentre un nouveau lieu sans siret avec succès', async t => {
   await navigateAfterVenueSubmit('creation')(t)
 })
 
+let dataFromSandboxVenueB
+let userVenueB
+let offererVenueB
+let userRoleVenueB
 fixture("Venue B | Je ne peux pas créer de lieu, j'ai des erreurs").beforeEach(
   async t => {
-    t.ctx.sandbox = await fetchSandbox(
-      'pro_05_venue',
-      'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_at_least_one_physical_venue'
-    )
-    const { offerer, user } = t.ctx.sandbox
-    return navigateToNewVenueAs(user, offerer)(t)
+    if (!dataFromSandboxVenueB) {
+      dataFromSandboxVenueB = await fetchSandbox(
+        'pro_05_venue',
+        'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_at_least_one_physical_venue'
+      )
+      userVenueB = dataFromSandboxVenueB.user
+      offererVenueB = dataFromSandboxVenueB.offerer
+      userRoleVenueB = createUserRole(userVenueB)
+    }
+    return navigateToNewVenueAs(userVenueB, offererVenueB, userRoleVenueB)(t)
   }
 )
 
 test('Une entrée avec cet identifiant existe déjà', async t => {
   // when
-  const { venue } = t.ctx.sandbox
+  const { venue } = dataFromSandboxVenueB
   const { siret } = venue
   await t.addRequestHooks(getSiretRequestMockAs(venue))
   await t.typeText(siretInput, siret)
@@ -202,7 +220,7 @@ test('Le code SIRET doit correspondre à un établissement de votre structure', 
     .contains('Formulaire non validé.\nOK')
 })
 
-test('La saisie de mauvaises coordonées géographique ne crash pas la page', async t => {
+test('La saisie de mauvaises coordonnées géographiques ne crash pas la page', async t => {
   // when
   await t.typeText(latitudeInput, '45')
   // then
@@ -243,7 +261,7 @@ test('La saisie de mauvaises coordonées géographique ne crash pas la page', as
   await t.expect(form.exists).ok()
 })
 
-test('La saisie de bonnes coordonées géographiques ajoute un marker', async t => {
+test('La saisie de bonnes coordonnées géographiques ajoute un marker', async t => {
   // given
   await t.expect(mapMarker.exists).notOk()
 
@@ -258,14 +276,26 @@ test('La saisie de bonnes coordonées géographiques ajoute un marker', async t 
     .ok()
 })
 
+let dataFromSandboxVenueC
+let userVenueC
+let offererVenueC
+let venueC
+let userRoleVenueC
 fixture('Venue C | Je suis sur la page de détail du lieu').beforeEach(
   async t => {
-    t.ctx.sandbox = await fetchSandbox(
-      'pro_05_venue',
-      'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_at_least_one_physical_venue'
+    if (!dataFromSandboxVenueC) {
+      dataFromSandboxVenueC = await fetchSandbox(
+        'pro_05_venue',
+        'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_at_least_one_physical_venue'
+      )
+      userVenueC = dataFromSandboxVenueC.user
+      offererVenueC = dataFromSandboxVenueC.offerer
+      venueC = dataFromSandboxVenueC.venue
+      userRoleVenueC = createUserRole(userVenueC)
+    }
+    return navigateToVenueAs(userVenueC, offererVenueC, venueC, userRoleVenueC)(
+      t
     )
-    const { offerer, user, venue } = t.ctx.sandbox
-    return navigateToVenueAs(user, offerer, venue)(t)
   }
 )
 
@@ -280,9 +310,8 @@ test('Je peux revenir en arrière', async t => {
 
 test("Je peux modifier l'email de contact du lieu", async t => {
   // given
-  const { venue } = t.ctx.sandbox
-  await t.addRequestHooks(getSiretRequestMockAs(venue))
-  const { bookingEmail } = venue
+  await t.addRequestHooks(getSiretRequestMockAs(venueC))
+  const { bookingEmail } = venueC
   const modifiedBookingEmail = `${bookingEmail}m`
   await t.expect(bookingEmailInput.value).eql(bookingEmail)
 
