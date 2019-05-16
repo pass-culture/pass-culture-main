@@ -29,3 +29,7 @@ def feature_cron_retrieve_offerers_bank_information():
 
 def feature_cron_send_remedial_emails():
     return os.environ.get('CRON_SEND_REMEDIAL_EMAILS', False)
+
+
+def feature_request_profiling_enabled():
+    return os.environ.get('PROFILE_REQUESTS', False)

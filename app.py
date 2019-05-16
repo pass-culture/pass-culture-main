@@ -5,8 +5,10 @@ from flask_admin import Admin
 from flask_cors import CORS
 from flask_login import LoginManager
 from mailjet_rest import Client
+from werkzeug.middleware.profiler import ProfilerMiddleware
 
 from admin.install import install_admin_views
+from repository.features import feature_request_profiling_enabled
 from local_providers.install import install_local_providers
 from models.db import db
 from models.install import install_models
@@ -20,6 +22,13 @@ from utils.mailing import get_contact, \
 app = Flask(__name__, static_url_path='/static')
 login_manager = LoginManager()
 admin = Admin(name='pc Back Office', url='/pc/back-office', template_mode='bootstrap3')
+
+if feature_request_profiling_enabled():
+    # PROFILE_REQUESTS_LINES_LIMIT = max lines in a profile table
+    profiling_restrictions = [os.environ.get('PROFILE_REQUESTS_LINES_LIMIT', 30)]
+    app.config['PROFILE'] = True
+    app.wsgi_app = ProfilerMiddleware(app.wsgi_app,
+                                      restrictions=profiling_restrictions)
 
 app.secret_key = os.environ.get('FLASK_SECRET', '+%+3Q23!zbc+!Dd@')
 app.json_encoder = EnumJSONEncoder
