@@ -11,16 +11,19 @@ const pageTitle = Selector('h1')
 const signInButton = Selector('button.button.is-primary')
 const signUpButton = Selector('.is-secondary')
 
+let dataFromSandboxSigninA
 fixture('Signin A | Je me connecte avec un compte validé')
   .page(`${ROOT_PATH + 'connexion'}`)
-  .beforeEach(async t => {
-    t.ctx.sandbox = await fetchSandbox(
-      'pro_02_signin',
-      'get_existing_pro_validated_user'
-    )
+  .before(async () => {
+    if (!dataFromSandboxSigninA) {
+      dataFromSandboxSigninA = await fetchSandbox(
+        'pro_02_signin',
+        'get_existing_pro_validated_user'
+      )
+    }
   })
 
-test('Je peux cliquer sur le lien Créer un compte', async t => {
+test('Je peux cliquer sur le lien "Créer un compte"', async t => {
   // when
   await t.click(signUpButton)
 
@@ -31,7 +34,7 @@ test('Je peux cliquer sur le lien Créer un compte', async t => {
 
 test("Lorsque l'un des deux champs est manquant, le bouton connexion est désactivé", async t => {
   // given
-  const { user } = t.ctx.sandbox
+  const { user } = dataFromSandboxSigninA
   const { email } = user
 
   // when
@@ -43,7 +46,7 @@ test("Lorsque l'un des deux champs est manquant, le bouton connexion est désact
 
 test("J'ai un compte valide, en cliquant sur 'se connecter' je suis redirigé·e vers la page /offres sans erreurs", async t => {
   // given
-  const { user } = t.ctx.sandbox
+  const { user } = dataFromSandboxSigninA
   const { email, password } = user
 
   // when
@@ -60,7 +63,7 @@ test("J'ai un compte valide, en cliquant sur 'se connecter' je suis redirigé·e
 
 test("J'ai un compte valide, en appuyant sur la touche 'Entrée' je suis redirigé·e vers la page /offres sans erreurs", async t => {
   // given
-  const { user } = t.ctx.sandbox
+  const { user } = dataFromSandboxSigninA
   const { email, password } = user
 
   // when
@@ -90,9 +93,9 @@ test("J'ai un email incorrect, je vois un message d'erreur et je reste sur la pa
   await t.expect(location.pathname).eql('/connexion')
 })
 
-test("J'ai un mot de passe incorrect, je vois un messages d'erreur et je reste sur la page /connexion", async t => {
+test("J'ai un mot de passe incorrect, je vois un message d'erreur et je reste sur la page /connexion", async t => {
   // given
-  const { user } = t.ctx.sandbox
+  const { user } = dataFromSandboxSigninA
   const { email } = user
 
   // when
@@ -109,18 +112,21 @@ test("J'ai un mot de passe incorrect, je vois un messages d'erreur et je reste s
   await t.expect(location.pathname).eql('/connexion')
 })
 
+let dataFromSandboxSigninB
 fixture('Signin B | Je me connecte avec un compte pas encore validé')
   .page(`${ROOT_PATH + 'connexion'}`)
-  .beforeEach(async t => {
-    t.ctx.sandbox = await fetchSandbox(
-      'pro_02_signin',
-      'get_existing_pro_not_validated_user'
-    )
+  .before(async t => {
+    if (!dataFromSandboxSigninB) {
+      dataFromSandboxSigninB = await fetchSandbox(
+        'pro_02_signin',
+        'get_existing_pro_not_validated_user'
+      )
+    }
   })
 
 test("Je vois un message d'erreur et je reste sur la page /connexion", async t => {
   // given
-  const { user } = t.ctx.sandbox
+  const { user } = dataFromSandboxSigninB
   const { email, password } = user
 
   // when
