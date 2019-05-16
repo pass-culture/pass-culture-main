@@ -1,5 +1,6 @@
 import csv
 import datetime
+import locale
 from abc import ABC, abstractmethod
 from decimal import Decimal
 from enum import Enum
@@ -7,6 +8,7 @@ from io import StringIO
 from typing import List
 
 from models import Booking, Payment, ThingType
+from utils.date import ENGLISH_TO_FRENCH_MONTH
 
 MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
 MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
@@ -101,6 +103,7 @@ class BookingReimbursement:
 
 class ReimbursementDetails:
     CSV_HEADER = [
+        "Année",
         "Virement",
         "Créditeur",
         "SIRET créditeur",
@@ -123,7 +126,21 @@ class ReimbursementDetails:
             venue = offer.venue
             offerer = venue.managingOfferer
 
-            self.payment_message_name = payment.paymentMessageName
+            transfer_infos = payment.transactionLabel \
+                                    .replace('pass Culture Pro - ', '') \
+                                    .split(' ')
+            transfer_label = " ".join(transfer_infos[:-1])
+
+            date = transfer_infos[-1]
+            [month_number, year] = transfer_infos[-1].split('-')
+            formated_month = datetime.datetime(int(year), int(month_number), 1)
+
+
+            self.year = year
+            self.transfer_name = "{} : {}".format(
+                ENGLISH_TO_FRENCH_MONTH[formated_month.strftime("%B")],
+                transfer_label
+            )
             self.venue_name = venue.name
             self.venue_siret = venue.siret
             self.venue_address = venue.address or offerer.address
@@ -138,7 +155,8 @@ class ReimbursementDetails:
 
     def as_csv_row(self):
         return [
-            self.payment_message_name,
+            self.year,
+            self.transfer_name,
             self.venue_name,
             str(self.venue_siret),
             self.venue_address,

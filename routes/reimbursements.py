@@ -27,4 +27,4 @@ def get_reimbursements_csv():
     return reimbursement_details_csv.encode('utf-8-sig'), \
            200, \
            {'Content-type': 'text/csv; charset=utf-8;',
-            'Content-Disposition': 'attachment; filename=reservations_pass_culture.csv'}
+            'Content-Disposition': 'attachment; filename=remboursements_pass_culture.csv'}

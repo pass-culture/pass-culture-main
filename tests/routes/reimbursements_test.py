@@ -53,7 +53,7 @@ class GetReimbursementsCsvTest:
         # Then
         assert response.status_code == 200
         assert response.headers['Content-type'] == 'text/csv; charset=utf-8;'
-        assert response.headers['Content-Disposition'] == 'attachment; filename=reservations_pass_culture.csv'
+        assert response.headers['Content-Disposition'] == 'attachment; filename=remboursements_pass_culture.csv'
         assert len(response_lines) == 7
 
     @clean_database

@@ -9,6 +9,20 @@ from utils.string_processing import parse_timedelta
 today = datetime.combine(datetime.utcnow(), time(hour=20))
 DATE_ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
+ENGLISH_TO_FRENCH_MONTH = {
+    "January": "Janvier",
+    "Frebruary": "Février",
+    "March": "Mars",
+    "April": "Avril",
+    "May": "Mai",
+    "June": "Juin",
+    "July": "Juillet",
+    "August": "Août",
+    "September": "Septembre",
+    "October": "Octobre",
+    "November": "Novembre",
+    "December": "Décembre"
+}
 
 class DateTimes:
     def __init__(self, *datetimes):
