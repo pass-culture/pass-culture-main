@@ -165,12 +165,12 @@ export const navigateToOfferAs = (user, offer, userRole) => async t => {
     .click(offerAnchor)
 }
 
-export const navigateToNewMediationAs = (user, offer) => async t => {
+export const navigateToNewMediationAs = (user, offer, userRole) => async t => {
   const addMediationAnchor = Selector('a.button').withText(
     'Ajouter une accroche'
   )
 
-  await navigateToOfferAs(user, offer)(t)
+  await navigateToOfferAs(user, offer, userRole)(t)
 
   await t.click(addMediationAnchor)
 }

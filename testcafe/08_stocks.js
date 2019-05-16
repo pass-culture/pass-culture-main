@@ -28,45 +28,35 @@ let dataFromSandboxThree
 let dataFromSandboxFour
 let dataFromSandboxFive
 test('Création des données', async () => {
-  if (!dataFromSandboxOne) {
-    dataFromSandboxOne = await fetchSandbox(
-      'pro_08_stocks',
-      'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_no_stock'
-    )
-    userRoleOne = createUserRole(dataFromSandboxOne.user)
-  }
+  dataFromSandboxOne = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_no_stock'
+  )
+  userRoleOne = createUserRole(dataFromSandboxOne.user)
 
-  if (!dataFromSandboxTwo) {
-    dataFromSandboxTwo = await fetchSandbox(
-      'pro_08_stocks',
-      'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock'
-    )
-    userRoleTwo = createUserRole(dataFromSandboxTwo.user)
-  }
+  dataFromSandboxTwo = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock'
+  )
+  userRoleTwo = createUserRole(dataFromSandboxTwo.user)
 
-  if (!dataFromSandboxThree) {
-    dataFromSandboxThree = await fetchSandbox(
-      'pro_08_stocks',
-      'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_thing_offer_with_stock'
-    )
-    userRoleThree = createUserRole(dataFromSandboxThree.user)
-  }
+  dataFromSandboxThree = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_thing_offer_with_stock'
+  )
+  userRoleThree = createUserRole(dataFromSandboxThree.user)
 
-  if (!dataFromSandboxFour) {
-    dataFromSandboxFour = await fetchSandbox(
-      'pro_08_stocks',
-      'get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_thing_offer_with_no_stock'
-    )
-    userRoleFour = createUserRole(dataFromSandboxFour.user)
-  }
+  dataFromSandboxFour = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_thing_offer_with_no_stock'
+  )
+  userRoleFour = createUserRole(dataFromSandboxFour.user)
 
-  if (!dataFromSandboxFive) {
-    dataFromSandboxFive = await fetchSandbox(
-      'pro_08_stocks',
-      'get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_event_offer'
-    )
-    userRoleFive = createUserRole(dataFromSandboxFive.user)
-  }
+  dataFromSandboxFive = await fetchSandbox(
+    'pro_08_stocks',
+    'get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_event_offer'
+  )
+  userRoleFive = createUserRole(dataFromSandboxFive.user)
 })
 
 fixture('Offer Gestion A | Créer des dates et des stocks')

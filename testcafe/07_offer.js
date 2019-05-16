@@ -36,45 +36,35 @@ let dataFromSandboxThree
 let dataFromSandboxFour
 let dataFromSandboxFive
 test('Création des données', async () => {
-  if (!dataFromSandboxOne) {
-    dataFromSandboxOne = await fetchSandbox(
-      'pro_07_offer',
-      'get_existing_pro_validated_user_with_at_least_one_visible_offer'
-    )
-    userRoleOne = createUserRole(dataFromSandboxOne.user)
-  }
+  dataFromSandboxOne = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_at_least_one_visible_offer'
+  )
+  userRoleOne = createUserRole(dataFromSandboxOne.user)
 
-  if (!dataFromSandboxTwo) {
-    dataFromSandboxTwo = await fetchSandbox(
-      'pro_07_offer',
-      'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
-    )
-    userRoleTwo = createUserRole(dataFromSandboxTwo.user)
-  }
+  dataFromSandboxTwo = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
+  )
+  userRoleTwo = createUserRole(dataFromSandboxTwo.user)
 
-  if (!dataFromSandboxThree) {
-    dataFromSandboxThree = await fetchSandbox(
-      'pro_07_offer',
-      'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_virtual_venue'
-    )
-    userRoleThree = createUserRole(dataFromSandboxThree.user)
-  }
+  dataFromSandboxThree = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_virtual_venue'
+  )
+  userRoleThree = createUserRole(dataFromSandboxThree.user)
 
-  if (!dataFromSandboxFour) {
-    dataFromSandboxFour = await fetchSandbox(
-      'pro_07_offer',
-      'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_thing_offer_with_one_stock'
-    )
-    userRoleFour = createUserRole(dataFromSandboxFour.user)
-  }
+  dataFromSandboxFour = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_thing_offer_with_one_stock'
+  )
+  userRoleFour = createUserRole(dataFromSandboxFour.user)
 
-  if (!dataFromSandboxFive) {
-    dataFromSandboxFive = await fetchSandbox(
-      'pro_07_offer',
-      'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_event_offer'
-    )
-    userRoleFive = createUserRole(dataFromSandboxFive.user)
-  }
+  dataFromSandboxFive = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_event_offer'
+  )
+  userRoleFive = createUserRole(dataFromSandboxFive.user)
 })
 
 fixture('Offer A | Naviguer vers "Créer une offre" et revenir au précédent')
