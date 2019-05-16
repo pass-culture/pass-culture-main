@@ -4,7 +4,8 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators, compose } from 'redux'
-import { assignData, requestData } from 'redux-saga-data'
+import { requestData } from 'redux-saga-data'
+import get from 'lodash.get'
 
 import MyBookingItemContainer from './MyBookingItemContainer'
 import NoBookingView from './NoBookingView'
@@ -15,7 +16,6 @@ import PageHeader from '../../layout/PageHeader'
 import { toggleMainMenu } from '../../../reducers/menu'
 import NavigationFooter from '../../layout/NavigationFooter'
 import { ROOT_PATH } from '../../../utils/config'
-import { bookingNormalizer } from '../../../utils/normalizers'
 
 const renderBookingList = items => (
   <ul className="bookings">
@@ -40,14 +40,8 @@ export class RawMyBookingsPage extends Component {
       apiPath: '/bookings',
       handleFail: this.handleRequestFail,
       handleSuccess: this.handleRequestSuccess,
-      normalizer: bookingNormalizer,
       stateKey: 'bookings',
     })
-  }
-
-  componentWillUnmount() {
-    const { dispatch } = this.props
-    dispatch(assignData({ recommendations: [] }))
   }
 
   handleRequestFail = () => {
@@ -56,9 +50,7 @@ export class RawMyBookingsPage extends Component {
   }
 
   handleRequestSuccess = (state, action) => {
-    const {
-      payload: { data },
-    } = action
+    const data = get(action, 'payload.data')
     const len = data.length
     const isEmpty = !(len && len > 0)
     this.setState({ isEmpty, isLoading: false })
@@ -67,7 +59,6 @@ export class RawMyBookingsPage extends Component {
   render() {
     const { soonBookings, otherBookings } = this.props
     const { isEmpty, isLoading, hasError } = this.state
-    // NOTE -> perfs: calculate length once
     const soonBookingsLength = soonBookings.length
     const otherBookingsLength = otherBookings.length
     const hasNoBooking = soonBookingsLength === 0 && otherBookingsLength === 0
@@ -102,11 +93,6 @@ export class RawMyBookingsPage extends Component {
                     {renderBookingList(otherBookings)}
                   </div>
                 )}
-                {/*
-                FIXME: calcul qui n'a pas de sens sur deux choix
-                - si aucune reservations API
-                - si aucune reservations dans les deja charges
-              */}
                 {(isEmpty || hasNoBooking) && <NoBookingView />}
               </div>
             </main>

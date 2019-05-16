@@ -4,9 +4,10 @@ import get from 'lodash.get'
 import moment from 'moment'
 import { capitalize } from 'pass-culture-shared'
 import { connect } from 'react-redux'
+
 import { getTimezone } from '../../../utils/timezone'
-import { selectRecommendation } from '../../../selectors'
 import MyBookingItem from './MyBookingItem'
+import { getQueryURL } from '../../../helpers'
 
 // TODO A tester
 const getDateString = (date, tz) =>
@@ -17,34 +18,52 @@ const getDateString = (date, tz) =>
       .format('dddd DD/MM/YYYY à H:mm')
   )
 
+const getLinkUrl = booking => {
+  const mediationId = get(booking, 'recommendation.mediationId')
+  const offerId = get(booking, 'stock.resolvedOffer.id')
+  const queryURL = getQueryURL({ mediationId, offerId })
+  return `/decouverte/${queryURL}/verso`
+}
+
+const getCSSClass = booking => {
+  const isEvent = Boolean(get(booking, 'stock.resolvedOffer.isEvent'))
+  return (isEvent && 'event') || 'thing'
+}
+
+const getBookingTimezone = booking => {
+  const departementCode = get(
+    booking,
+    'stock.resolvedOffer.venue.departementCode'
+  )
+  return getTimezone(departementCode)
+}
+
 export const mapStateToProps = (state, ownProps) => {
   const { booking } = ownProps || {}
-  const { isCancelled, recommendationId, stock, token } = booking
   const completedUrl = get(booking, 'completedUrl')
-  const offerId = get(stock, 'resolvedOffer.id')
-  const name = get(stock, 'resolvedOffer.product.name')
-  const date = get(stock, 'beginningDatetime')
-  const departementCode = get(stock, 'resolvedOffer.venue.departementCode')
-  const timezone = getTimezone(departementCode)
+  const date = get(booking, 'stock.beginningDatetime')
+  const timezone = getBookingTimezone(booking)
+  const cssClass = getCSSClass(booking)
   const dateString = getDateString(date, timezone)
+  const isCancelled = get(booking, 'isCancelled')
+  const linkURL = getLinkUrl(booking)
+  const name = get(booking, 'stock.resolvedOffer.product.name')
+  const thumbUrl = get(booking, 'recommendation.thumbUrl')
+  const token = get(booking, 'token')
 
-  const recommendation = selectRecommendation(state, recommendationId)
-  const mediationId = get(recommendation, 'mediationId')
-
-  const isEvent = Boolean(get(stock, 'resolvedOffer.isEvent'))
-
-  return {
+  const props = {
     completedUrl,
+    cssClass,
     date,
     dateString,
     isCancelled,
-    isEvent,
-    mediationId,
+    linkURL,
     name,
-    offerId,
-    recommendation,
+    thumbUrl,
     timezone,
     token,
   }
+
+  return props
 }
 export default connect(mapStateToProps)(MyBookingItem)

@@ -24,9 +24,6 @@ describe('src | components | pages | my-bookings | RawMyBookingsPage', () => {
         <RawMyBookingsPage {...props} />
       </MemoryRouter>
     )
-    // const nestedComponent = wrapper.find(RawMyBookingsPage)
-    // nestedComponent.instance().handleRequestFail = mockHandleFail
-    // nestedComponent.instance().handleRequestSuccess = mockHandleSuccess
 
     // then
     expect(wrapper).toBeDefined()
@@ -34,7 +31,6 @@ describe('src | components | pages | my-bookings | RawMyBookingsPage', () => {
       apiPath: '/bookings',
       handleFail: expect.any(Function),
       handleSuccess: expect.any(Function),
-      normalizer: { recommendation: 'recommendations' },
       stateKey: 'bookings',
     })
   })

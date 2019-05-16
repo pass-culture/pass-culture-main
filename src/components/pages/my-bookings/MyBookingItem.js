@@ -8,74 +8,63 @@ import { Link } from 'react-router-dom'
 
 import Thumb from '../../layout/Thumb'
 import Ribbon from '../../layout/Ribbon'
-import { getQueryURL } from '../../../helpers'
 
 const MyBookingItem = ({
   completedUrl,
+  cssClass,
   date,
   dateString,
   isCancelled,
-  isEvent,
-  mediationId,
+  linkURL,
   name,
-  offerId,
+  thumbUrl,
   timezone,
-  recommendation,
   token,
-}) => {
-  const cssClass = (isEvent && 'event') || 'thing'
-  const queryURL = getQueryURL({ mediationId, offerId })
-  const linkURL = `/decouverte/${queryURL}/verso`
-  return (
-    <li
-      data-token={token}
-      data-booked-date={date}
-      data-booked-timezone={timezone}
-      className={`booking-item mb16 ${cssClass}`}
-    >
-      {isCancelled && <Ribbon />}
-      <Link to={linkURL}>
-        <Thumb src={recommendation.thumbUrl} />
-        <div className="infos">
-          <div className="top">
-            <h5 title={name} className="fs18 is-semi-bold">
-              <Dotdotdot clamp={date ? 2 : 3}>{name}</Dotdotdot>
-            </h5>
-            <span className="fs13">{dateString || 'permanent'}</span>
-          </div>
-          {!completedUrl && <div className="token">{token}</div>}
+}) => (
+  <li
+    data-token={token}
+    data-booked-date={date}
+    data-booked-timezone={timezone}
+    className={`booking-item mb16 ${cssClass}`}
+  >
+    {isCancelled && <Ribbon />}
+    <Link to={linkURL}>
+      {thumbUrl && <Thumb src={thumbUrl} />}
+      <div className="infos">
+        <div className="top">
+          <h5 title={name} className="fs18 is-semi-bold">
+            <Dotdotdot clamp={date ? 2 : 3}>{name}</Dotdotdot>
+          </h5>
+          <span className="fs13">{dateString || 'permanent'}</span>
         </div>
-        <div className="arrow">
-          <Icon svg="ico-next-S" className="Suivant" />
-        </div>
-      </Link>
-    </li>
-  )
-}
+        {!completedUrl && <div className="token">{token}</div>}
+      </div>
+      <div className="arrow">
+        <Icon svg="ico-next-S" className="Suivant" />
+      </div>
+    </Link>
+  </li>
+)
 
 MyBookingItem.defaultProps = {
   completedUrl: null,
   date: null,
   dateString: null,
   isCancelled: false,
-  isEvent: false,
-  mediationId: null,
   name: null,
-  offerId: null,
-  recommendation: {},
+  thumbUrl: null,
   token: null,
 }
 
 MyBookingItem.propTypes = {
   completedUrl: PropTypes.string,
+  cssClass: PropTypes.string.isRequired,
   date: PropTypes.string,
   dateString: PropTypes.string,
   isCancelled: PropTypes.bool,
-  isEvent: PropTypes.bool,
-  mediationId: PropTypes.string,
+  linkURL: PropTypes.string.isRequired,
   name: PropTypes.string,
-  offerId: PropTypes.string,
-  recommendation: PropTypes.shape(),
+  thumbUrl: PropTypes.string,
   timezone: PropTypes.string.isRequired,
   token: PropTypes.string,
 }
