@@ -24,6 +24,10 @@ ENGLISH_TO_FRENCH_MONTH = {
     "December": "Décembre"
 }
 
+def english_to_french_month(year, month_number, day=1):
+    english_month = datetime(year, month_number, day).strftime("%B")
+    return ENGLISH_TO_FRENCH_MONTH[english_month]
+
 class DateTimes:
     def __init__(self, *datetimes):
         self.datetimes = list(datetimes)

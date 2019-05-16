@@ -1,6 +1,5 @@
 import csv
 import datetime
-import locale
 from abc import ABC, abstractmethod
 from decimal import Decimal
 from enum import Enum
@@ -8,7 +7,7 @@ from io import StringIO
 from typing import List
 
 from models import Booking, Payment, ThingType
-from utils.date import ENGLISH_TO_FRENCH_MONTH
+from utils.date import english_to_french_month
 
 MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
 MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
@@ -132,13 +131,12 @@ class ReimbursementDetails:
             transfer_label = " ".join(transfer_infos[:-1])
 
             date = transfer_infos[-1]
-            [month_number, year] = transfer_infos[-1].split('-')
-            formated_month = datetime.datetime(int(year), int(month_number), 1)
-
+            [month_number, year] = date.split('-')
+            french_month = english_to_french_month(int(year), int(month_number))
 
             self.year = year
             self.transfer_name = "{} : {}".format(
-                ENGLISH_TO_FRENCH_MONTH[formated_month.strftime("%B")],
+                french_month,
                 transfer_label
             )
             self.venue_name = venue.name

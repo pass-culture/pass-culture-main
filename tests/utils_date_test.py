@@ -2,14 +2,18 @@ from datetime import datetime
 
 import pytest
 
-from utils.date import ENGLISH_TO_FRENCH_MONTH
+from utils.date import english_to_french_month
 
 @pytest.mark.standalone
 def test_english_to_french_month(app):
     # Given
+    whatever_it_is_year = 2030
+    month_numbers = range(1, 13)
+
+    # When
     french_months = [
-        ENGLISH_TO_FRENCH_MONTH[datetime(2030, month_number, 1).strftime("%B")]
-        for month_number in range(1, 13)
+        english_to_french_month(whatever_it_is_year, month_number)
+        for month_number in month_numbers
     ]
 
     # Then
