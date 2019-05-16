@@ -3,14 +3,15 @@ import { stringify } from 'query-string'
 import React, { Fragment, PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { assignData, requestData } from 'redux-saga-data'
+import get from 'lodash.get'
 
 import BackButton from '../../layout/BackButton'
 import { Icon } from '../../layout/Icon'
 import Footer from './Footer'
 import Header from './Header'
-import NavByOfferType from './NavByOfferType'
+import NavByOfferTypeContainer from './searchByType/NavByOfferTypeContainer'
 import NavResultsHeader from './NavResultsHeader'
-import SearchFilter from './SearchFilter'
+import SearchFilterContainer from './searchFilters/SearchFilterContainer'
 import SearchResults from './SearchResults'
 import SearchDetails from './SearchDetails'
 import isInitialQueryWithoutFilters, {
@@ -19,7 +20,7 @@ import isInitialQueryWithoutFilters, {
   translateBrowserUrlToApiUrl,
 } from './utils'
 
-class RawSearch extends PureComponent {
+class Search extends PureComponent {
   constructor(props) {
     super(props)
 
@@ -33,7 +34,7 @@ class RawSearch extends PureComponent {
       keywordsValue: queryParams['mots-cles'],
     }
 
-    props.dispatch(assignData({ recommendations: [] }))
+    props.dispatch(assignData({ searchRecommendations: [] }))
   }
 
   componentDidMount() {
@@ -62,34 +63,35 @@ class RawSearch extends PureComponent {
     }
   }
 
+  clearSearchResults = value => {
+    if (value === '') return
+    const { dispatch } = this.props
+    dispatch(assignData({ searchRecommendations: [] }))
+  }
+
   handleCategoryMissing = () => {
     const { location, match, query, typeSublabelsAndDescription } = this.props
-    const {
-      params: { option },
-    } = match
     const { categories } = query.parse()
+    if (categories) return
 
-    if (categories) {
-      return
-    }
+    const option = get(match, 'params.option')
+    const isResultatsView = location.pathname.includes('/resultats/')
+    const shouldUpdateCategories = option && isResultatsView
+    if (!shouldUpdateCategories) return
 
-    if (option && location.pathname.includes('/resultats/')) {
-      const description = getDescriptionForSublabel(
-        decodeURIComponent(option),
-        typeSublabelsAndDescription
-      )
-      if (description) {
-        query.change({ categories: option })
-      }
+    const description = getDescriptionForSublabel(
+      decodeURIComponent(option),
+      typeSublabelsAndDescription
+    )
+    if (description) {
+      query.change({ categories: option })
     }
   }
 
   handleRecommendationsRequest = () => {
     const { dispatch, location, query } = this.props
-
-    if (!location.pathname.includes('resultats')) {
-      return
-    }
+    const isResultatsView = location.pathname.includes('resultats')
+    if (!isResultatsView) return
 
     const queryParams = query.parse()
     const apiParams = translateBrowserUrlToApiUrl(queryParams)
@@ -99,12 +101,11 @@ class RawSearch extends PureComponent {
       requestData({
         apiPath,
         handleSuccess: (state, action) => {
-          const {
-            payload: { data },
-          } = action
+          const data = get(action, 'payload.data')
           const hasMore = data.length > 0
           this.setState({ hasMore })
         },
+        stateKey: 'searchRecommendations',
       })
     )
   }
@@ -150,15 +151,13 @@ class RawSearch extends PureComponent {
   }
 
   onSubmit = event => {
-    const { dispatch, query } = this.props
+    const { query } = this.props
     const { value } = event.target.elements.keywords
     event.preventDefault()
 
     this.setState({ isFilterVisible: false })
 
-    if (value !== '') {
-      dispatch(assignData({ recommendations: [] }))
-    }
+    this.clearSearchResults(value)
 
     query.change(
       {
@@ -329,9 +328,9 @@ class RawSearch extends PureComponent {
                     </div>
                   </form>
 
-                  <SearchFilter
+                  <SearchFilterContainer
+                    key="SearchFilterContainer"
                     isVisible={isFilterVisible}
-                    onKeywordsEraseClick={this.onKeywordsEraseClick}
                   />
 
                   <Switch location={location}>
@@ -339,7 +338,7 @@ class RawSearch extends PureComponent {
                       exact
                       path="/recherche/:menu(menu)?"
                       render={() => (
-                        <NavByOfferType
+                        <NavByOfferTypeContainer
                           title="PAR CATÉGORIES"
                           typeSublabels={typeSublabels}
                         />
@@ -389,7 +388,7 @@ class RawSearch extends PureComponent {
   }
 }
 
-RawSearch.propTypes = {
+Search.propTypes = {
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
@@ -400,4 +399,4 @@ RawSearch.propTypes = {
   typeSublabelsAndDescription: PropTypes.array.isRequired,
 }
 
-export default RawSearch
+export default Search

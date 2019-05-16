@@ -1,16 +1,12 @@
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import { Transition } from 'react-transition-group'
-import { compose } from 'redux'
-import { assignData } from 'redux-saga-data'
-import withQueryRouter from 'with-query-router'
 
-import FilterByDates from './FilterByDates'
-import FilterByDistance from './FilterByDistance'
-import FilterByOfferTypes from './FilterByOfferTypes'
-import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from './utils'
+import FilterByDates from '../FilterByDates'
+import FilterByDistance from '../FilterByDistance'
+import FilterByOfferTypes from '../FilterByOfferTypes'
+import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from '../utils'
 
 const filtersPanelHeight = 475
 const transitionDelay = 0
@@ -66,11 +62,11 @@ class SearchFilter extends Component {
   }
 
   onFilterClick = () => {
-    const { dispatch, query } = this.props
+    const { resetSearchStore, query } = this.props
     const { filterParamsMatchingQueryParams, params } = this.state
 
     if (filterParamsMatchingQueryParams) {
-      dispatch(assignData({ recommendations: [] }))
+      resetSearchStore()
     }
 
     params.page = null
@@ -82,8 +78,8 @@ class SearchFilter extends Component {
   }
 
   onResetClick = () => {
-    const { dispatch, query } = this.props
-    dispatch(assignData({ recommendations: [] }))
+    const { query, resetSearchStore } = this.props
+    resetSearchStore()
     this.setState({
       initialDateParams: true,
       params: {
@@ -205,13 +201,10 @@ class SearchFilter extends Component {
 }
 
 SearchFilter.propTypes = {
-  dispatch: PropTypes.func.isRequired,
   isVisible: PropTypes.bool.isRequired,
   location: PropTypes.object.isRequired,
   query: PropTypes.object.isRequired,
+  resetSearchStore: PropTypes.func.isRequired,
 }
 
-export default compose(
-  withQueryRouter,
-  connect()
-)(SearchFilter)
+export default SearchFilter

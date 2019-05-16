@@ -10,3 +10,6 @@ export { default as getRouterQueryByKey } from './getRouterQueryByKey'
 export * from './isRecommendationOfferFinished'
 export { default as isSameDayInEachTimezone } from './isSameDayInEachTimezone'
 export { default as shouldShowVerso } from './shouldShowVerso'
+export {
+  default as mapArgsToSelectorCachedKeys,
+} from './mapArgsToSelectorCachedKeys'

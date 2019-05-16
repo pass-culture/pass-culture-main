@@ -8,7 +8,7 @@ import DiscoveryPage from '../components/pages/discovery'
 import FavoritesPage from '../components/pages/FavoritesPage'
 import ForgotPasswordPage from '../components/pages/ForgotPasswordPage'
 import ProfilePage from '../components/pages/profile'
-import Search from '../components/pages/search'
+import SearchContainer from '../components/pages/search/SearchContainer'
 import { Signin } from '../components/pages/signin'
 import SignupPage from '../components/pages/SignupPage'
 
@@ -62,7 +62,7 @@ const routes = [
     title: 'Les offres',
   },
   {
-    component: Search,
+    component: SearchContainer,
     disabled: false,
     icon: 'search-w',
     path:

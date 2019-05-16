@@ -2,11 +2,11 @@ import React from 'react'
 import { shallow } from 'enzyme'
 import Dotdotdot from 'react-dotdotdot'
 
-import RawSearchResultItem from '../RawSearchResultItem'
+import SearchResultItem from '../SearchResultItem'
 import state from '../../../../mocks/global_state_1'
 import { selectRecommendations } from '../../../../selectors'
 
-describe('src | components | pages | RawSearchResultItem', () => {
+describe('src | components | pages | SearchResultItem', () => {
   const recommendations = selectRecommendations(state)
 
   describe('snapshot', () => {
@@ -23,7 +23,7 @@ describe('src | components | pages | RawSearchResultItem', () => {
       }
 
       // when
-      const wrapper = shallow(<RawSearchResultItem {...props} />)
+      const wrapper = shallow(<SearchResultItem {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -152,7 +152,7 @@ describe('src | components | pages | RawSearchResultItem', () => {
         }
 
         // when
-        wrapper = shallow(<RawSearchResultItem {...props} />)
+        wrapper = shallow(<SearchResultItem {...props} />)
 
         // then
         const img = wrapper.find('img').props()

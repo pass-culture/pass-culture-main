@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/components/pages/search/tests/SearchFilter --watch
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -7,8 +6,9 @@ import { Route, Router } from 'react-router-dom'
 import configureStore from 'redux-mock-store'
 
 import SearchFilter from '../SearchFilter'
-import { INITIAL_FILTER_PARAMS } from '../utils'
-import REDUX_STATE from '../../../../mocks/reduxState'
+import SearchFilterContainer from '../SearchFilterContainer'
+import { INITIAL_FILTER_PARAMS } from '../../utils'
+import REDUX_STATE from '../../../../../mocks/reduxState'
 
 const dispatchMock = jest.fn()
 const queryChangeMock = jest.fn()
@@ -23,8 +23,11 @@ describe('src | components | pages | search | SearchFilter', () => {
       // given
       const props = {
         isVisible: true,
-        onKeywordsEraseClick: jest.fn(),
-        query: {},
+        location: {},
+        query: {
+          parse: jest.fn(),
+        },
+        resetSearchStore: jest.fn(),
       }
 
       // when
@@ -38,22 +41,22 @@ describe('src | components | pages | search | SearchFilter', () => {
 
   describe('functions', () => {
     describe('constructor', () => {
-      it.skip('should initiliaze state with functions', () => {
+      it('should initialize state with current query arguments', () => {
         // given
+        const mockedObject = { prop: 'mocked object' }
+        const mockQueryParse = jest.fn(() => mockedObject)
         const props = {
           isVisible: false,
-          onKeywordsEraseClick: jest.fn(),
-          query: {},
+          location: {},
+          query: {
+            parse: mockQueryParse,
+          },
+          resetSearchStore: jest.fn(),
         }
 
         // when
         const wrapper = shallow(<SearchFilter {...props} />)
-        wrapper.instance().handleQueryAdd = jest.fn()
-        wrapper.instance().handleQueryChange = jest.fn()
-        wrapper.instance().handleQueryRemove = jest.fn()
-
-        // then
-        expect(wrapper.state().add).toEqual('mocked function handleQueryAdd ')
+        expect(wrapper.instance().state.params).toStrictEqual(mockedObject)
       })
     })
 
@@ -70,7 +73,7 @@ describe('src | components | pages | search | SearchFilter', () => {
           <Provider store={store}>
             <Router history={history}>
               <Route path="/test">
-                <SearchFilter isVisible onKeywordsEraseClick={jest.fn()} />
+                <SearchFilterContainer isVisible />
               </Route>
             </Router>
           </Provider>
@@ -98,7 +101,6 @@ describe('src | components | pages | search | SearchFilter', () => {
           dispatch: dispatchMock,
           isVisible: true,
           location: { search: '?page=1&jours=0-1' },
-          onKeywordsEraseClick: jest.fn(),
           query: {
             change: queryChangeMock,
             parse: () => ({
@@ -108,9 +110,10 @@ describe('src | components | pages | search | SearchFilter', () => {
               page: '1',
             }),
           },
+          resetSearchStore: jest.fn(),
         }
         const wrapper = shallow(
-          <SearchFilter.WrappedComponent.WrappedComponent {...props} />
+          <SearchFilterContainer.WrappedComponent.WrappedComponent {...props} />
         )
 
         // when
@@ -137,11 +140,11 @@ describe('src | components | pages | search | SearchFilter', () => {
     describe('onFilterClick', () => {
       it('should call hoc withQueryRouter change method with the good parameters', () => {
         // given
+        const mockResetSearchStore = jest.fn()
         const props = {
           dispatch: dispatchMock,
           isVisible: true,
           location: { search: '?page=1&jours=0-1' },
-          onKeywordsEraseClick: jest.fn(),
           query: {
             change: queryChangeMock,
             clear: queryClearMock,
@@ -150,11 +153,12 @@ describe('src | components | pages | search | SearchFilter', () => {
               page: '1',
             }),
           },
+          resetSearchStore: mockResetSearchStore,
         }
 
         // when
         const wrapper = shallow(
-          <SearchFilter.WrappedComponent.WrappedComponent {...props} />
+          <SearchFilterContainer.WrappedComponent.WrappedComponent {...props} />
         )
         wrapper.instance().onFilterClick()
         const currentQuery = wrapper.state('params')
@@ -163,10 +167,11 @@ describe('src | components | pages | search | SearchFilter', () => {
         )
 
         // THEN
+        expect(updatedFormState).toEqual(false)
+        expect(mockResetSearchStore).not.toHaveBeenCalled()
         expect(queryChangeMock).toHaveBeenCalledWith(currentQuery, {
           pathname: '/recherche/resultats',
         })
-        expect(updatedFormState).toEqual(false)
       })
     })
   })

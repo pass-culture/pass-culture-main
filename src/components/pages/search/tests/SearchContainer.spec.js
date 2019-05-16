@@ -5,12 +5,12 @@ import { shallow } from 'enzyme'
 
 import REDUX_STATE from '../../../../mocks/reduxState'
 
-import Search from '../index'
+import SearchContainer from '../SearchContainer'
 
 const middlewares = []
 const mockStore = configureStore(middlewares)
 
-describe('src | components | pages | Search', () => {
+describe('src | components | pages | SearchContainer', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
@@ -20,7 +20,7 @@ describe('src | components | pages | Search', () => {
       // when
       const wrapper = shallow(
         <Provider store={store}>
-          <Search />
+          <SearchContainer />
         </Provider>
       )
 

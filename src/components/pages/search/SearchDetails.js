@@ -4,12 +4,13 @@ import { connect } from 'react-redux'
 import { Route, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
+import get from 'lodash.get'
 
 import BookingContainer from '../../booking/BookingContainer'
 import RectoContainer from '../../recto/RectoContainer'
 import VersoContainer from '../../verso/VersoContainer'
-import currentRecommendationSelector from '../../../selectors/currentRecommendation'
 import { recommendationNormalizer } from '../../../utils/normalizers'
+import { selectCurrentSearchRecommendation } from '../../../selectors'
 
 class SearchDetails extends Component {
   constructor() {
@@ -52,6 +53,7 @@ class SearchDetails extends Component {
         apiPath,
         handleSuccess: this.handleRequestSuccess,
         normalizer: recommendationNormalizer,
+        stateKeys: 'searchRecommendations',
       })
     )
   }
@@ -80,31 +82,41 @@ class SearchDetails extends Component {
             forceDetailsVisible={forceDetailsVisible}
           />
         )}
-        <RectoContainer
-          areDetailsVisible={forceDetailsVisible}
-          extraClassName="with-header"
-          position="current"
-        />
+        {recommendation && (
+          <RectoContainer
+            recommendation={recommendation}
+            areDetailsVisible={forceDetailsVisible}
+            extraClassName="with-header"
+            position="current"
+          />
+        )}
       </Fragment>
     )
   }
 }
 
+SearchDetails.defaultProps = {
+  recommendation: null,
+}
+
 SearchDetails.propTypes = {
   dispatch: PropTypes.func.isRequired,
   match: PropTypes.object.isRequired,
-  recommendation: PropTypes.object.isRequired,
+  recommendation: PropTypes.object,
 }
 
 function mapStateToProps(state, ownProps) {
   const { match } = ownProps
-  const {
-    params: { mediationId, offerId },
-  } = match
+  const offerId = get(match, 'params.offerId')
+  const mediationId = get(match, 'params.mediationId')
 
-  return {
-    recommendation: currentRecommendationSelector(state, offerId, mediationId),
-  }
+  const recommendation = selectCurrentSearchRecommendation(
+    state,
+    offerId,
+    mediationId
+  )
+
+  return { recommendation }
 }
 
 export default compose(

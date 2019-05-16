@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 
-import SearchResultItem from './SearchResultItem'
+import SearchResultItemContainer from './SearchResultItemContainer'
 import { searchResultsTitle } from './utils'
 import { withQueryRouter } from '../../hocs/withQueryRouter'
 import Spinner from '../../layout/Spinner'
@@ -100,7 +100,7 @@ class SearchResults extends PureComponent {
             useWindow={false}
           >
             {items.map(item => (
-              <SearchResultItem key={item.id} recommendation={item} />
+              <SearchResultItemContainer key={item.id} recommendation={item} />
             ))}
           </InfiniteScroll>
         )}

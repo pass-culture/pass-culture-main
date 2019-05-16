@@ -1,16 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | RawSearch snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Search snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawSearch
+  Symbol(enzyme.__unrendered__): <Search
     dispatch={
       [MockFunction] {
         "calls": Array [
           Array [
             Object {
               "patch": Object {
-                "recommendations": Array [],
+                "searchRecommendations": Array [],
               },
               "type": "ASSIGN_DATA",
             },
@@ -27,7 +27,7 @@ ShallowWrapper {
           Array [
             Object {
               "patch": Object {
-                "recommendations": Array [],
+                "searchRecommendations": Array [],
               },
               "type": "ASSIGN_DATA",
             },
@@ -44,7 +44,7 @@ ShallowWrapper {
           Array [
             Object {
               "patch": Object {
-                "recommendations": Array [],
+                "searchRecommendations": Array [],
               },
               "type": "ASSIGN_DATA",
             },
@@ -64,14 +64,15 @@ ShallowWrapper {
                 "apiPath": "/recommendations?categories=Jouer&keywords=Fake",
                 "handleSuccess": [Function],
                 "method": "GET",
+                "stateKey": "searchRecommendations",
               },
-              "type": "REQUEST_DATA_GET_/RECOMMENDATIONS?CATEGORIES=JOUER&KEYWORDS=FAKE",
+              "type": "REQUEST_DATA_GET_SEARCHRECOMMENDATIONS",
             },
           ],
           Array [
             Object {
               "patch": Object {
-                "recommendations": Array [],
+                "searchRecommendations": Array [],
               },
               "type": "ASSIGN_DATA",
             },
@@ -88,7 +89,7 @@ ShallowWrapper {
           Array [
             Object {
               "patch": Object {
-                "recommendations": Array [],
+                "searchRecommendations": Array [],
               },
               "type": "ASSIGN_DATA",
             },
@@ -105,7 +106,7 @@ ShallowWrapper {
           Array [
             Object {
               "patch": Object {
-                "recommendations": Array [],
+                "searchRecommendations": Array [],
               },
               "type": "ASSIGN_DATA",
             },
@@ -122,7 +123,7 @@ ShallowWrapper {
           Array [
             Object {
               "patch": Object {
-                "recommendations": Array [],
+                "searchRecommendations": Array [],
               },
               "type": "ASSIGN_DATA",
             },
@@ -139,7 +140,7 @@ ShallowWrapper {
           Array [
             Object {
               "patch": Object {
-                "recommendations": Array [],
+                "searchRecommendations": Array [],
               },
               "type": "ASSIGN_DATA",
             },
@@ -156,7 +157,7 @@ ShallowWrapper {
           Array [
             Object {
               "patch": Object {
-                "recommendations": Array [],
+                "searchRecommendations": Array [],
               },
               "type": "ASSIGN_DATA",
             },

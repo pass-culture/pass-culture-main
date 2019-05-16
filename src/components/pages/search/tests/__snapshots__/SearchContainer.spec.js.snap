@@ -1,13 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | search | SearchFilter snapshot should match snapshot 1`] = `
+exports[`src | components | pages | SearchContainer snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <withRouter(_withQueryRouter)
-    isVisible={true}
-    onKeywordsEraseClick={[MockFunction]}
-    query={Object {}}
-  />,
+  Symbol(enzyme.__unrendered__): <Provider
+    store={
+      Object {
+        "clearActions": [Function],
+        "dispatch": [Function],
+        "getActions": [Function],
+        "getState": [Function],
+        "replaceReducer": [Function],
+        "subscribe": [Function],
+      }
+    }
+  >
+    <withRouter(Connect(_withLogin)) />
+  </Provider>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -20,24 +29,20 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "class",
-    "props": Object {
-      "children": [Function],
-    },
+    "nodeType": "function",
+    "props": Object {},
     "ref": null,
-    "rendered": [Function],
+    "rendered": null,
     "type": [Function],
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "class",
-      "props": Object {
-        "children": [Function],
-      },
+      "nodeType": "function",
+      "props": Object {},
       "ref": null,
-      "rendered": [Function],
+      "rendered": null,
       "type": [Function],
     },
   ],
@@ -63,6 +68,17 @@ ShallowWrapper {
         },
       },
     },
+  },
+  Symbol(enzyme.__childContext__): Object {
+    "store": Object {
+      "clearActions": [Function],
+      "dispatch": [Function],
+      "getActions": [Function],
+      "getState": [Function],
+      "replaceReducer": [Function],
+      "subscribe": [Function],
+    },
+    "storeSubscription": null,
   },
 }
 `;

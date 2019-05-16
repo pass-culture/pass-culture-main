@@ -15,7 +15,9 @@ const toggleFilterButton = Selector('#search-filter-menu-toggle-button').find(
 )
 const menuButton = Selector('#open-menu-button')
 const mainMenu = Selector('#main-menu')
-const button = Selector('#button-nav-by-offer-type').withText('Applaudir')
+const button = Selector('#nav-by-offer-type .pc-list button').withText(
+  'Applaudir'
+)
 const resultsHeader = Selector('#nav-results-header')
 const category = Selector('#category-description')
 const categoryTitle = category.find('h2')
@@ -73,7 +75,7 @@ test('Je vois le titre de la recherche "par catégories"', async t => {
 })
 
 test('Je vois 7 vignettes', async t => {
-  const pictureButton = Selector('#button-nav-by-offer-type')
+  const pictureButton = Selector('#nav-by-offer-type .pc-list button')
   await t.expect(pictureButton.count).eql(7)
 })
 
@@ -101,9 +103,9 @@ test('Lorsque je clique sur la croix, je reviens à la page des offres', async t
 fixture(
   "O5_01_03 Recherche | Je cherche des offres par catégories et j'ai des résultats"
 ).beforeEach(async t => {
-  const buttonNavByOfferType = Selector('#button-nav-by-offer-type').withText(
-    'Lire'
-  )
+  const buttonNavByOfferType = Selector(
+    '#nav-by-offer-type .pc-list button'
+  ).withText('Lire')
   await t
     .useRole(userRole)
     .navigateTo(`${ROOT_PATH}recherche/`)

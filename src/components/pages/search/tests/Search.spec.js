@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 import { Switch } from 'react-router-dom'
 
 import BackButton from '../../../layout/BackButton'
-import RawSearch from '../RawSearch'
+import Search from '../Search'
 
 const getPageContentRoute = wrapper =>
   wrapper
@@ -21,7 +21,7 @@ const getPageContentForm = wrapper =>
 
 const getPageContentFilter = wrapper =>
   getPageContentDiv(wrapper).props.children.find(
-    child => child.props.onKeywordsEraseClick
+    child => child.key === 'SearchFilterContainer'
   )
 
 const getPageContentSwitch = wrapper =>
@@ -59,7 +59,7 @@ const getFilterToggle = wrapper =>
     child => child.props.id === 'search-filter-menu-toggle-button'
   ).props.children
 
-describe('src | components | pages | RawSearch', () => {
+describe('src | components | pages | Search', () => {
   // Initializing Mocks
   const dispatchMock = jest.fn()
   const queryChangeMock = jest.fn()
@@ -95,7 +95,7 @@ describe('src | components | pages | RawSearch', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // when
-      const wrapper = shallow(<RawSearch {...baseInitialProps} />)
+      const wrapper = shallow(<Search {...baseInitialProps} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -106,7 +106,7 @@ describe('src | components | pages | RawSearch', () => {
   describe('Switch Route', () => {
     describe('on the /recherche page', () => {
       // given
-      const wrapper = shallow(<RawSearch {...baseInitialProps} />)
+      const wrapper = shallow(<Search {...baseInitialProps} />)
 
       it('should render the page title', () => {
         expect(wrapper.find('Header').props().title).toEqual('Recherche')
@@ -158,7 +158,7 @@ describe('src | components | pages | RawSearch', () => {
         initialProps.location = Object.assign({}, baseInitialProps.location, {
           pathname: '/recherche/resultats',
         })
-        const wrapper = shallow(<RawSearch {...initialProps} />)
+        const wrapper = shallow(<Search {...initialProps} />)
 
         it('should render the page title', () => {
           expect(wrapper.find('Header').props().title).toEqual(
@@ -199,7 +199,7 @@ describe('src | components | pages | RawSearch', () => {
             sublabel: 'Jouer',
           },
         ]
-        const wrapper = shallow(<RawSearch {...initialProps} />)
+        const wrapper = shallow(<Search {...initialProps} />)
 
         it('NavResultsHeader & SearchResults with path="/recherche/resultats/:categorie"', () => {
           // when
@@ -231,7 +231,7 @@ describe('src | components | pages | RawSearch', () => {
         })
 
         // when
-        const wrapper = shallow(<RawSearch {...initialProps} />)
+        const wrapper = shallow(<Search {...initialProps} />)
         const expected = {
           hasMore: false,
           isFilterVisible: false,
@@ -248,7 +248,7 @@ describe('src | components | pages | RawSearch', () => {
       describe('On resultats page', () => {
         it('should dispatch requestDataTypes when component is rendered', () => {
           // when
-          const wrapper = shallow(<RawSearch {...baseInitialProps} />)
+          const wrapper = shallow(<Search {...baseInitialProps} />)
           wrapper.instance().componentDidMount()
           const expectedRequestedGetTypes = {
             config: {
@@ -286,7 +286,7 @@ describe('src | components | pages | RawSearch', () => {
         })
 
         // when
-        const wrapper = shallow(<RawSearch {...initialProps} />)
+        const wrapper = shallow(<Search {...initialProps} />)
         wrapper.instance().loadMoreHandler()
         const expected =
           '/recherche?page=2&categories=Jouer&orderBy=offer.id+desc'
@@ -306,7 +306,7 @@ describe('src | components | pages | RawSearch', () => {
 
         it('should update state', () => {
           // when
-          const wrapper = shallow(<RawSearch {...initialProps} />)
+          const wrapper = shallow(<Search {...initialProps} />)
           wrapper
             .find(BackButton)
             .props()
@@ -325,7 +325,7 @@ describe('src | components | pages | RawSearch', () => {
 
         it('should change query', () => {
           // when
-          const wrapper = shallow(<RawSearch {...initialProps} />)
+          const wrapper = shallow(<Search {...initialProps} />)
           wrapper
             .find(BackButton)
             .props()
@@ -352,7 +352,7 @@ describe('src | components | pages | RawSearch', () => {
       describe('Not on results page', () => {
         it('should not display back button', () => {
           // when
-          const wrapper = shallow(<RawSearch {...baseInitialProps} />)
+          const wrapper = shallow(<Search {...baseInitialProps} />)
 
           // then
           expect(wrapper.contains('.back-button')).toEqual(false)
@@ -362,7 +362,7 @@ describe('src | components | pages | RawSearch', () => {
 
     describe('onSubmit', () => {
       // when
-      const wrapper = shallow(<RawSearch {...baseInitialProps} />)
+      const wrapper = shallow(<Search {...baseInitialProps} />)
       const event = Object.assign(jest.fn(), {
         preventDefault: () => {},
         target: {
@@ -445,7 +445,7 @@ describe('src | components | pages | RawSearch', () => {
       describe('when no char has been typed', () => {
         it('button should not appear', () => {
           // when
-          const wrapper = shallow(<RawSearch {...baseInitialProps} />)
+          const wrapper = shallow(<Search {...baseInitialProps} />)
           const button = wrapper.find('form').find('#refresh-keywords-button')
 
           // then
@@ -454,7 +454,7 @@ describe('src | components | pages | RawSearch', () => {
       })
 
       describe('when one char has been typed', () => {
-        const wrapper = shallow(<RawSearch {...baseInitialProps} />)
+        const wrapper = shallow(<Search {...baseInitialProps} />)
         const wrapperInstance = wrapper.instance()
         wrapperInstance.setState({ keywordsValue: 'A' })
 
@@ -486,7 +486,7 @@ describe('src | components | pages | RawSearch', () => {
 
     describe('onKeywordsChange', () => {
       // when
-      const wrapper = shallow(<RawSearch {...baseInitialProps} />)
+      const wrapper = shallow(<Search {...baseInitialProps} />)
       const event = {
         target: {
           value: 'Any',
@@ -516,7 +516,7 @@ describe('src | components | pages | RawSearch', () => {
     describe('onClickOpenCloseFilterDiv', () => {
       describe('When user does not click on the icon button', () => {
         // when
-        const wrapper = shallow(<RawSearch {...baseInitialProps} />)
+        const wrapper = shallow(<Search {...baseInitialProps} />)
 
         const filterToggleIcon = getFilterToggle(wrapper).props.children
 
@@ -540,7 +540,7 @@ describe('src | components | pages | RawSearch', () => {
 
       describe('When user click on the icon button', () => {
         // when
-        const wrapper = shallow(<RawSearch {...baseInitialProps} />)
+        const wrapper = shallow(<Search {...baseInitialProps} />)
         const filterToggle = getFilterToggle(wrapper)
         filterToggle.props.onClick(true)
         const filterToggleIcon = getFilterToggle(wrapper).props.children
@@ -580,7 +580,7 @@ describe('src | components | pages | RawSearch', () => {
           })
 
           // when
-          const wrapper = shallow(<RawSearch {...initialProps} />)
+          const wrapper = shallow(<Search {...initialProps} />)
           const filterToggleIcon = getFilterToggle(wrapper).props.children
 
           // then
