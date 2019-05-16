@@ -32,6 +32,7 @@ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION anonymize_validation_token_field(
  json_data JSONB)
  RETURNS JSONB as $$
+
 BEGIN
  IF json_data::jsonb ->> 'validationToken' IS NOT NULL THEN
   RETURN ((json_data::jsonb
@@ -46,11 +47,12 @@ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION anonymize_token_field(
  json_data JSONB)
  RETURNS JSONB as $$
+DECLARE
+ new_token VARCHAR(6) := generate_token_from_id((json_data::jsonb ->> 'id')::int);
 BEGIN
  IF json_data::jsonb ->> 'token' IS NOT NULL THEN
-  RETURN ((json_data::jsonb
-   - 'token'::text)::jsonb
-   || ('{"token": "' || generate_random_token_if_not_null(json_data::jsonb ->> 'token') || '"}')::jsonb);
+  RETURN ((json_data::jsonb - 'token'::text)::jsonb
+   || ('{"token": "' || new_token || '"}')::jsonb);
  ELSE
   RETURN json_data;
  END IF;
