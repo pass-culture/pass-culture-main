@@ -8,6 +8,7 @@ import {
 
 const subTitleHeader = Selector('h2')
 
+let dataFromSandbox
 let userOne
 let userTwo
 let userThree
@@ -15,38 +16,33 @@ let offererOne
 let offererTwo
 let offererThree
 
-fixture('Initialisation des rôles utilisateurs')
-
-test('Utilisateur validé avec une structure validée', async () => {
-  const data = await fetchSandbox(
+fixture('Initialisation')
+test('Création des utilisateurs', async () => {
+  dataFromSandbox = await fetchSandbox(
     'pro_03_offerers',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer'
   )
-  userOne = data.user
-  offererOne = data.offerer
-})
+  userOne = dataFromSandbox.user
+  offererOne = dataFromSandbox.offerer
 
-test('Utilisateur validé avec une structure en cours de validation', async () => {
-  const data = await fetchSandbox(
+  dataFromSandbox = await fetchSandbox(
     'pro_03_offerers',
     'get_existing_pro_validated_user_with_not_validated_offerer_validated_user_offerer'
   )
-  userTwo = data.user
-  offererTwo = data.offerer
-})
+  userTwo = dataFromSandbox.user
+  offererTwo = dataFromSandbox.offerer
 
-test('Utilisateur validé avec un rattachement à une structure en cours de validation', async () => {
-  const data = await fetchSandbox(
+  dataFromSandbox = await fetchSandbox(
     'pro_03_offerers',
     'get_existing_pro_validated_user_with_validated_offerer_not_validated_user_offerer'
   )
-  userThree = data.user
-  offererThree = data.offerer
+  userThree = dataFromSandbox.user
+  offererThree = dataFromSandbox.offerer
 })
 
 fixture(`Offerers A | Voir la liste de mes structures`)
 
-test("L'utilisateur a au moins une structure validé, on peut aller dessus", async t => {
+test("L'utilisateur a au moins une structure validée, on peut aller dessus", async t => {
   // given
   let { id: offererId } = offererOne
   const activationOffererItem = Selector('.offerer-item')
@@ -113,7 +109,7 @@ test("L'utilisateur a au moins un rattachement à une structure en cours de vali
   await t.expect(arrow.exists).notOk()
 })
 
-test("L'utilisateur a au moins un rattachement à une structure en cours de validation, une validée avec un rattachement en cours de validation et une validé avec un rattachement validé", async t => {
+test("L'utilisateur a au moins un rattachement à une structure en cours de validation, une validée avec un rattachement en cours de validation et une validée avec un rattachement validé", async t => {
   // given
   const {
     notValidatedOfferer,
