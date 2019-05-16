@@ -21,6 +21,14 @@ BEGIN
 END; $$
 LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION generate_token_from_id(
+ id BIGINT)
+ RETURNS VARCHAR(6) AS $$
+BEGIN
+ RETURN UPPER(RIGHT(int8send(id)::text, 6));
+END; $$
+LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION anonymize_validation_token_field(
  json_data JSONB)
  RETURNS JSONB as $$
@@ -108,7 +116,7 @@ UPDATE offer SET "bookingEmail" = 'ano@nym.ized' WHERE "bookingEmail" is not nul
 UPDATE offerer SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
 UPDATE bank_information SET "iban" = pg_temp.generate_random_between(999999999,100000000)::text,
   "bic" = pg_temp.generate_random_between(999999999,100000000)::text WHERE "iban" is not null;
-UPDATE booking SET "token" = substring(md5(random()::text),1 , 6) WHERE "token" is not null;
+UPDATE booking SET "token" = generate_token_from_id("id") WHERE "token" is not null;
 
 UPDATE payment SET "iban" = 'FR7630001007941234567890185',
   "bic" = 'BDFEFR2L' WHERE "iban" is not null;
