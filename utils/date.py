@@ -11,7 +11,7 @@ DATE_ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 ENGLISH_TO_FRENCH_MONTH = {
     "January": "Janvier",
-    "Frebruary": "Février",
+    "February": "Février",
     "March": "Mars",
     "April": "Avril",
     "May": "Mai",
