@@ -7,9 +7,8 @@ import {
   BOOKING_LIMIT_DATETIME_MINUTES,
 } from '../utils'
 
-function mapArgsToCacheKey({ isEvent, timezone }) {
-  return `${isEvent || ''} ${timezone || ''}`
-}
+const mapArgsToCacheKey = ({ isEvent, timezone }) =>
+  `${isEvent || ''} ${timezone || ''}`
 
 const adaptBookingLimitDateTimeGivenBeginningDateTime = createCachedSelector(
   ({ isEvent }) => isEvent,

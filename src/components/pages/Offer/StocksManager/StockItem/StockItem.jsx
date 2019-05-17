@@ -109,7 +109,12 @@ export class StockItem extends Component {
     const { id: stockId } = stockPatch
     const { readOnly } = query.context({ id: stockId, key: 'stock' })
 
-    let decorators = []
+    let decorators = [
+      adaptBookingLimitDateTimeGivenBeginningDateTime({
+        isEvent,
+        timezone,
+      }),
+    ]
 
     if (isEvent) {
       decorators = decorators.concat([
@@ -130,13 +135,6 @@ export class StockItem extends Component {
         }),
       ])
     }
-
-    decorators = decorators.concat([
-      adaptBookingLimitDateTimeGivenBeginningDateTime({
-        isEvent,
-        timezone,
-      }),
-    ])
 
     return (
       <tbody
