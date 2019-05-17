@@ -20,7 +20,6 @@ describe('src | components | pages | Offer | StockManager | StockItem | decorato
             decorators={[
               adaptBookingLimitDateTimeGivenBeginningDateTime({
                 isEvent: true,
-                timezone: 'America/Cayenne',
               }),
             ]}
             initialValues={initialValues}
@@ -83,7 +82,6 @@ describe('src | components | pages | Offer | StockManager | StockItem | decorato
             decorators={[
               adaptBookingLimitDateTimeGivenBeginningDateTime({
                 isEvent: true,
-                timezone: 'America/Cayenne',
               }),
             ]}
             initialValues={initialValues}
@@ -148,7 +146,6 @@ describe('src | components | pages | Offer | StockManager | StockItem | decorato
             decorators={[
               adaptBookingLimitDateTimeGivenBeginningDateTime({
                 isEvent: true,
-                timezone: 'America/Cayenne',
               }),
             ]}
             initialValues={initialValues}
@@ -211,7 +208,6 @@ describe('src | components | pages | Offer | StockManager | StockItem | decorato
             decorators={[
               adaptBookingLimitDateTimeGivenBeginningDateTime({
                 isEvent: true,
-                timezone: 'America/Cayenne',
               }),
             ]}
             initialValues={initialValues}

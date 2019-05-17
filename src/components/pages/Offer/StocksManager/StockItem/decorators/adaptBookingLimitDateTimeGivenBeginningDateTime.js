@@ -12,8 +12,7 @@ const mapArgsToCacheKey = ({ isEvent, timezone }) =>
 
 const adaptBookingLimitDateTimeGivenBeginningDateTime = createCachedSelector(
   ({ isEvent }) => isEvent,
-  ({ timezone }) => timezone,
-  (isEvent, timezone) =>
+  isEvent =>
     createDecorator(
       {
         field: 'bookingLimitDatetime',
@@ -25,15 +24,10 @@ const adaptBookingLimitDateTimeGivenBeginningDateTime = createCachedSelector(
             !isEvent ||
             bookingLimitDatetimeMoment.isBefore(beginningDatetime, 'day')
           ) {
-            let dateTimeMoment = bookingLimitDatetimeMoment.utc()
-            if (timezone) {
-              dateTimeMoment = dateTimeMoment.tz(timezone)
-            }
-
-            const updatedDateTime = dateTimeMoment
+            const updatedDateTime = bookingLimitDatetimeMoment
               .hours(BOOKING_LIMIT_DATETIME_HOURS)
               .minutes(BOOKING_LIMIT_DATETIME_MINUTES)
-              .toISOString()
+              .toISOString(true)
 
             return {
               bookingLimitDatetime: updatedDateTime,
@@ -55,12 +49,7 @@ const adaptBookingLimitDateTimeGivenBeginningDateTime = createCachedSelector(
             !isEvent ||
             bookingLimitDatetimeMoment.isBefore(beginningDatetime, 'day')
           ) {
-            let dateTimeMoment = bookingLimitDatetimeMoment.utc()
-            if (timezone) {
-              dateTimeMoment = dateTimeMoment.tz(timezone)
-            }
-
-            const updatedDateTime = dateTimeMoment
+            const updatedDateTime = bookingLimitDatetimeMoment
               .hours(BOOKING_LIMIT_DATETIME_HOURS)
               .minutes(BOOKING_LIMIT_DATETIME_MINUTES)
               .toISOString()

@@ -112,7 +112,6 @@ export class StockItem extends Component {
     let decorators = [
       adaptBookingLimitDateTimeGivenBeginningDateTime({
         isEvent,
-        timezone,
       }),
     ]
 

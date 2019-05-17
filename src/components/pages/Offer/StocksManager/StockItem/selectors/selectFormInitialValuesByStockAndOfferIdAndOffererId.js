@@ -75,7 +75,6 @@ export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCached
     const formInitialValues = {
       available,
       bookingLimitDatetime,
-      beginningDatetime,
       id,
       offerId,
       offererId,
