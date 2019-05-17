@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { withRouter } from 'react-router'
 
-const MatomoTracker = ({ children, location }) => {
+const MatomoTracker = ({ location }) => {
   // eslint-disable-next-line
   const matomoTracker = window._paq || []
 
@@ -9,11 +9,10 @@ const MatomoTracker = ({ children, location }) => {
   matomoTracker.push(['setDocumentTitle', document.title])
   matomoTracker.push(['trackPageView'])
 
-  return children
+  return null
 }
 
 MatomoTracker.propTypes = {
-  children: PropTypes.node.isRequired,
   location: PropTypes.shape().isRequired,
 }
 

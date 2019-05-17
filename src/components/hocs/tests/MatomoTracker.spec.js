@@ -22,9 +22,7 @@ describe('src | components | hocs | MatomoTracker', () => {
     // when
     mount(
       <Router history={history}>
-        <MatomoTracker>
-          <div>Children</div>
-        </MatomoTracker>
+        <MatomoTracker />
       </Router>
     )
 
@@ -48,9 +46,7 @@ describe('src | components | hocs | MatomoTracker', () => {
     // when
     mount(
       <Router history={history}>
-        <MatomoTracker>
-          <div>Children</div>
-        </MatomoTracker>
+        <MatomoTracker />
       </Router>
     )
 
@@ -59,20 +55,5 @@ describe('src | components | hocs | MatomoTracker', () => {
       'setDocumentTitle',
       'PassCulture Page Name',
     ])
-  })
-
-  it('should render the children', () => {
-    // when
-    const wrapper = mount(
-      <Router history={history}>
-        <MatomoTracker>
-          <div>Empty</div>
-        </MatomoTracker>
-      </Router>
-    )
-    wrapper.setProps({ children: <div>Children</div> })
-
-    // then
-    expect(wrapper.html()).toEqual('<div>Children</div>')
   })
 })
