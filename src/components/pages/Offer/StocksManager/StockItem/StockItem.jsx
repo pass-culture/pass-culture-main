@@ -10,14 +10,10 @@ import { requestData } from 'redux-saga-data'
 import EditAndDeleteControl from './EditAndDeleteControl'
 import EventFields from './EventFields'
 import fillEndDatimeWhenUpdatingBeginningDatetime from './fillEndDatimeWhenUpdatingBeginningDatetime'
-import forceDateTimeAtSpecificHoursAndMinutes from './decorators/forceDateTimeAtSpecificHoursAndMinutes'
 import ProductFields from './ProductFields'
 import SubmitAndCancelControlContainer from './SubmitAndCancelControl/SubmitAndCancelControlContainer'
-import {
-  BOOKING_LIMIT_DATETIME_HOURS,
-  BOOKING_LIMIT_DATETIME_MINUTES,
-  errorKeyToFrenchKey,
-} from './utils'
+import adaptBookingLimitDateTimeGivenBeginningDateTime from './decorators/adaptBookingLimitDateTimeGivenBeginningDateTime'
+import { errorKeyToFrenchKey } from './utils'
 
 export class StockItem extends Component {
   constructor() {
@@ -113,14 +109,7 @@ export class StockItem extends Component {
     const { id: stockId } = stockPatch
     const { readOnly } = query.context({ id: stockId, key: 'stock' })
 
-    let decorators = [
-      forceDateTimeAtSpecificHoursAndMinutes({
-        dateTimeName: 'bookingLimitDatetime',
-        hours: BOOKING_LIMIT_DATETIME_HOURS,
-        minutes: BOOKING_LIMIT_DATETIME_MINUTES,
-        timezone,
-      }),
-    ]
+    let decorators = []
 
     if (isEvent) {
       decorators = decorators.concat([
@@ -141,6 +130,13 @@ export class StockItem extends Component {
         }),
       ])
     }
+
+    decorators = decorators.concat([
+      adaptBookingLimitDateTimeGivenBeginningDateTime({
+        isEvent,
+        timezone,
+      }),
+    ])
 
     return (
       <tbody

@@ -29,13 +29,8 @@ export function getDatetimeOneHourAfter(datetime) {
     .toISOString()
 }
 
-export function getDatetimeTwoDaysBeforeAtSpecificHoursAndMinutes(
-  datetime,
-  hours,
-  minutes
-) {
+export function getDatetimeAtSpecificHoursAndMinutes(datetime, hours, minutes) {
   return moment(datetime)
-    .subtract(2, 'day')
     .hours(hours)
     .minutes(minutes)
     .toISOString()

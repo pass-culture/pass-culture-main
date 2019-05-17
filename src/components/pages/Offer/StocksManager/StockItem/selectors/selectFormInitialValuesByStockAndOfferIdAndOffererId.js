@@ -8,7 +8,7 @@ import {
   BOOKING_LIMIT_DATETIME_MINUTES,
   getDatetimeOneDayAfter,
   getDatetimeOneHourAfter,
-  getDatetimeTwoDaysBeforeAtSpecificHoursAndMinutes,
+  getDatetimeAtSpecificHoursAndMinutes,
 } from '../utils'
 
 function mapArgsToCacheKey(state, stock, offerId, offererId) {
@@ -55,7 +55,7 @@ export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCached
     }
 
     if (beginningDatetime && !bookingLimitDatetime) {
-      bookingLimitDatetime = getDatetimeTwoDaysBeforeAtSpecificHoursAndMinutes(
+      bookingLimitDatetime = getDatetimeAtSpecificHoursAndMinutes(
         beginningDatetime,
         BOOKING_LIMIT_DATETIME_HOURS,
         BOOKING_LIMIT_DATETIME_MINUTES
@@ -75,6 +75,7 @@ export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCached
     const formInitialValues = {
       available,
       bookingLimitDatetime,
+      beginningDatetime,
       id,
       offerId,
       offererId,
