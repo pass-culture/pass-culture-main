@@ -53,6 +53,14 @@ class Header extends Component {
                   <span>Vos offres</span>
                 </NavLink>
               )}
+              <a
+                className="navbar-item"
+                href="https://docs.passculture.app/structures-culturelles">
+                <span className="icon">
+                  <Icon svg="ico-help-w" />
+                </span>
+                <span>Aide</span>
+              </a>
               <div className="navbar-item has-dropdown is-hoverable">
                 <NavLink className="navbar-link" to="#">
                   <span className="icon">

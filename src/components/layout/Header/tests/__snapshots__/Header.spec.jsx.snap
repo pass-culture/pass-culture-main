@@ -83,6 +83,21 @@ ShallowWrapper {
                 Vos offres
               </span>
             </NavLink>
+            <a
+              className="navbar-item"
+              href="https://docs.passculture.app/structures-culturelles"
+            >
+              <span
+                className="icon"
+              >
+                <Icon
+                  svg="ico-help-w"
+                />
+              </span>
+              <span>
+                Aide
+              </span>
+            </a>
             <div
               className="navbar-item has-dropdown is-hoverable"
             >
@@ -242,6 +257,21 @@ ShallowWrapper {
                   Vos offres
                 </span>
               </NavLink>
+              <a
+                className="navbar-item"
+                href="https://docs.passculture.app/structures-culturelles"
+              >
+                <span
+                  className="icon"
+                >
+                  <Icon
+                    svg="ico-help-w"
+                  />
+                </span>
+                <span>
+                  Aide
+                </span>
+              </a>
               <div
                 className="navbar-item has-dropdown is-hoverable"
               >
@@ -465,6 +495,21 @@ ShallowWrapper {
                   Vos offres
                 </span>
               </NavLink>
+              <a
+                className="navbar-item"
+                href="https://docs.passculture.app/structures-culturelles"
+              >
+                <span
+                  className="icon"
+                >
+                  <Icon
+                    svg="ico-help-w"
+                  />
+                </span>
+                <span>
+                  Aide
+                </span>
+              </a>
               <div
                 className="navbar-item has-dropdown is-hoverable"
               >
@@ -601,6 +646,21 @@ ShallowWrapper {
                     Vos offres
                   </span>
                 </NavLink>,
+                <a
+                  className="navbar-item"
+                  href="https://docs.passculture.app/structures-culturelles"
+                >
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-help-w"
+                    />
+                  </span>
+                  <span>
+                    Aide
+                  </span>
+                </a>,
                 <div
                   className="navbar-item has-dropdown is-hoverable"
                 >
@@ -821,6 +881,66 @@ ShallowWrapper {
                   },
                 ],
                 "type": [Function],
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-help-w"
+                      />
+                    </span>,
+                    <span>
+                      Aide
+                    </span>,
+                  ],
+                  "className": "navbar-item",
+                  "href": "https://docs.passculture.app/structures-culturelles",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <Icon
+                        svg="ico-help-w"
+                      />,
+                      "className": "icon",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "svg": "ico-help-w",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    "type": "span",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "Aide",
+                    },
+                    "ref": null,
+                    "rendered": "Aide",
+                    "type": "span",
+                  },
+                ],
+                "type": "a",
               },
               Object {
                 "instance": null,
@@ -1392,6 +1512,21 @@ ShallowWrapper {
                   Vos offres
                 </span>
               </NavLink>
+              <a
+                className="navbar-item"
+                href="https://docs.passculture.app/structures-culturelles"
+              >
+                <span
+                  className="icon"
+                >
+                  <Icon
+                    svg="ico-help-w"
+                  />
+                </span>
+                <span>
+                  Aide
+                </span>
+              </a>
               <div
                 className="navbar-item has-dropdown is-hoverable"
               >
@@ -1551,6 +1686,21 @@ ShallowWrapper {
                     Vos offres
                   </span>
                 </NavLink>
+                <a
+                  className="navbar-item"
+                  href="https://docs.passculture.app/structures-culturelles"
+                >
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-help-w"
+                    />
+                  </span>
+                  <span>
+                    Aide
+                  </span>
+                </a>
                 <div
                   className="navbar-item has-dropdown is-hoverable"
                 >
@@ -1774,6 +1924,21 @@ ShallowWrapper {
                     Vos offres
                   </span>
                 </NavLink>
+                <a
+                  className="navbar-item"
+                  href="https://docs.passculture.app/structures-culturelles"
+                >
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-help-w"
+                    />
+                  </span>
+                  <span>
+                    Aide
+                  </span>
+                </a>
                 <div
                   className="navbar-item has-dropdown is-hoverable"
                 >
@@ -1910,6 +2075,21 @@ ShallowWrapper {
                       Vos offres
                     </span>
                   </NavLink>,
+                  <a
+                    className="navbar-item"
+                    href="https://docs.passculture.app/structures-culturelles"
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-help-w"
+                      />
+                    </span>
+                    <span>
+                      Aide
+                    </span>
+                  </a>,
                   <div
                     className="navbar-item has-dropdown is-hoverable"
                   >
@@ -2130,6 +2310,66 @@ ShallowWrapper {
                     },
                   ],
                   "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-help-w"
+                        />
+                      </span>,
+                      <span>
+                        Aide
+                      </span>,
+                    ],
+                    "className": "navbar-item",
+                    "href": "https://docs.passculture.app/structures-culturelles",
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": <Icon
+                          svg="ico-help-w"
+                        />,
+                        "className": "icon",
+                      },
+                      "ref": null,
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "svg": "ico-help-w",
+                        },
+                        "ref": null,
+                        "rendered": null,
+                        "type": [Function],
+                      },
+                      "type": "span",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Aide",
+                      },
+                      "ref": null,
+                      "rendered": "Aide",
+                      "type": "span",
+                    },
+                  ],
+                  "type": "a",
                 },
                 Object {
                   "instance": null,
