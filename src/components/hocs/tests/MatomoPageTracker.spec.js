@@ -2,9 +2,9 @@ import { mount } from 'enzyme'
 import React from 'react'
 import { createBrowserHistory } from 'history'
 import { Router } from 'react-router'
-import MatomoTracker from '../MatomoTracker'
+import MatomoPageTracker from '../MatomoPageTracker'
 
-describe('src | components | hocs | MatomoTracker', () => {
+describe('src | components | hocs | MatomoPageTracker', () => {
   let history
   beforeEach(() => {
     history = createBrowserHistory()
@@ -13,45 +13,45 @@ describe('src | components | hocs | MatomoTracker', () => {
 
   it('should dispatch a new page displayed event', () => {
     // given
-    const fakeMatomoTracker = {
+    const fakeMatomoPageTracker = {
       push: jest.fn(),
     }
     // eslint-disable-next-line
-    window._paq = fakeMatomoTracker
+    window._paq = fakeMatomoPageTracker
 
     // when
     mount(
       <Router history={history}>
-        <MatomoTracker />
+        <MatomoPageTracker />
       </Router>
     )
 
     // then
-    expect(fakeMatomoTracker.push).toHaveBeenNthCalledWith(1, [
+    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(1, [
       'setCustomUrl',
       '/router/path',
     ])
-    expect(fakeMatomoTracker.push).toHaveBeenNthCalledWith(3, ['trackPageView'])
+    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(3, ['trackPageView'])
   })
 
   it('should dispatch the page title', () => {
     // given
-    const fakeMatomoTracker = {
+    const fakeMatomoPageTracker = {
       push: jest.fn(),
     }
     // eslint-disable-next-line
-    window._paq = fakeMatomoTracker
+    window._paq = fakeMatomoPageTracker
     document.title = 'PassCulture Page Name'
 
     // when
     mount(
       <Router history={history}>
-        <MatomoTracker />
+        <MatomoPageTracker />
       </Router>
     )
 
     // then
-    expect(fakeMatomoTracker.push).toHaveBeenNthCalledWith(2, [
+    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(2, [
       'setDocumentTitle',
       'PassCulture Page Name',
     ])
