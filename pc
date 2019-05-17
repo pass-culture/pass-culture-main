@@ -510,7 +510,7 @@ elif [[ "$CMD" == "deploy-backend" ]] \
   if [[ "$CMD" == "deploy-frontend-webapp" ]] \
      || [[ "$CMD" == "deploy-frontend-pro" ]]; then
      rm -rf "$APP_PATH"/node_modules "$APP_PATH"/build "$APP_PATH"/.public/static/fontello/.fontello.session && yarn install
-     (set -a; source "$APP_PATH/node_modules/pass-culture-shared/config/run_envs/$ENV" && yarn build) || exit
+     (set -a; source "$ROOT_PATH/config/run_envs/$ENV" && yarn build) || exit
 
      url_is_set=$(cat build/static/js/*.js | grep -E backend.passculture*)
      if [  -z "$url_is_set" ]; then

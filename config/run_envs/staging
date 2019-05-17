@@ -1,0 +1,4 @@
+API_URL='https://backend.passculture-staging.beta.gouv.fr'
+THUMBS_URL='https://storage.gra3.cloud.ovh.net/v1/AUTH_688df1e25bd84a48a3804e7fa8938085/storage-pc-staging/thumbs'
+NODE_ENV="production"
+MATOMO_SERVER_URL="https://pc-matomo.scalingo.io/"
