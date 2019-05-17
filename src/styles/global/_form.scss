@@ -46,7 +46,8 @@ textarea.textarea {
       margin-right: 0.5rem;
       background-image: url(/icons/checkbox.svg);
       border: none;
-      background-repeat: no-repeat;
+      background-repeat
+      : no-repeat;
       background-size: $body-line-height;
       width: $body-line-height;
       height: $body-line-height;
@@ -227,6 +228,12 @@ textarea.textarea {
 
 .required-legend {
   color: $violet;
+}
+
+div.control.control-duration {
+  input.field-input.field-duration {
+    width: 5rem !important;
+  }
 }
 
 @media (min-width: $tablet) {
