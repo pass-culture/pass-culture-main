@@ -1,0 +1,3 @@
+API_URL='https://backend.passculture-integration.beta.gouv.fr'
+THUMBS_URL='https://storage.gra3.cloud.ovh.net/v1/AUTH_688df1e25bd84a48a3804e7fa8938085/storage-pc-integration/thumbs'
+NODE_ENV="production"
