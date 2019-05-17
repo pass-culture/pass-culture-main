@@ -8,6 +8,7 @@ import {
 } from 'react-final-form-utils'
 import { requestData } from 'redux-saga-data'
 
+import fillEndDatimeWhenUpdatingBeginningDatetime from './fillEndDatimeWhenUpdatingBeginningDatetime'
 import EditAndDeleteControl from './EditAndDeleteControl'
 import EventFields from './EventFields'
 import ProductFields from './ProductFields'
@@ -123,9 +124,10 @@ export class StockItem extends Component {
     ]
     if (isEvent) {
       decorators = decorators.concat([
-        triggerDateFieldChangeSetsSameHoursAndMinutesToTargetDateField({
+        fillEndDatimeWhenUpdatingBeginningDatetime({
           triggerDateName: 'beginningDatetime',
           targetDateName: 'endDatetime',
+          targetTimeName: 'endTime',
           timezone,
         }),
         bindTimeFieldWithDateField({
