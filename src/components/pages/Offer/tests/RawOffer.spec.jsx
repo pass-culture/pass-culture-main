@@ -404,6 +404,37 @@ describe('src | components | pages | Offer | RawOffer ', () => {
         expect(fieldGroups).toHaveLength(3)
         expect(venueField.prop('options')).toEqual(expectedOptions)
       })
+
+      it('should display correctly duration information', () => {
+        // given
+        props.venues = [
+          { name: 'quel beau théâtre' },
+          { name: 'quel beau musée' },
+        ]
+        props.offer = {
+          durationMinutes: 120,
+          id: 'QU',
+          isEvent: true,
+        }
+        props.match = {
+          params: {
+            offerId: 'QU',
+          },
+        }
+        props.selectedOfferType = {
+          type: 'Event',
+        }
+        // when
+        const wrapper = shallow(<RawOffer {...props} />)
+
+        // then
+        const fieldGroups = wrapper.find('.field-group')
+        const fieldGroupForUsefulInformations = fieldGroups.at(1)
+        const durationField = fieldGroupForUsefulInformations.find(Field).at(2)
+        console.log('durationField', durationField)
+        expect(fieldGroups).toHaveLength(3)
+        expect(durationField.prop('name')).toEqual('durationMinutes')
+      })
     })
   })
 })

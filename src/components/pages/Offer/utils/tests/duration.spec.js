@@ -23,6 +23,17 @@ describe('src | components | pages | Offer | utils | getDurationInHours', () => 
     // then
     expect(value).toEqual(expected)
   })
+  it('should return correct hour when minutes are not below 60', () => {
+    // given
+    const durationInMinutes = 120
+
+    // when
+    const value = getDurationInHours(durationInMinutes)
+    const expected = '02:00'
+
+    // then
+    expect(value).toEqual(expected)
+  })
   it('should return correct hour when minutes are above 60', () => {
     // given
     const durationInMinutes = 899

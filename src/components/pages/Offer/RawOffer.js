@@ -24,6 +24,8 @@ import { musicOptions, showOptions } from 'utils/edd'
 import { offerNormalizer } from 'utils/normalizers'
 import getDurationInHours, { getDurationInMinutes } from './utils/duration'
 
+const DURATION_LIMIT_TIME = 100
+
 const CONDITIONAL_FIELDS = {
   speaker: [
     'EventType.CONFERENCE_DEBAT_DEDICACE',
@@ -292,6 +294,7 @@ class RawOffer extends Component {
       venue,
       venues,
     } = this.props
+
     const { eventId } = offer || {}
     const {
       isCreatedEntity,
@@ -532,6 +535,7 @@ class RawOffer extends Component {
                       type="duration"
                       getDurationInHours={getDurationInHours}
                       getDurationInMinutes={getDurationInMinutes}
+                      limitTimeInHours={DURATION_LIMIT_TIME}
                     />
                   )}
                   <Field
