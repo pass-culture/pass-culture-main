@@ -147,7 +147,7 @@ class CreateOfferTest:
             'Une offre physique ne peut être associée au lieu "Offre en ligne"']
 
     @clean_database
-    def test_fails_when_is_event_but_durationMinute_is_empty(self, app):
+    def test_success_when_is_event_but_durationMinute_is_empty(self, app):
         # Given
         event_product = create_product_with_Event_type(duration_minutes=None)
         offerer = create_offerer()
@@ -156,13 +156,13 @@ class CreateOfferTest:
         offer = create_offer_with_event_product(venue, event_product)
 
         # When
-        with pytest.raises(ApiErrors) as errors:
-            PcObject.save(offer)
+        PcObject.save(offer)
 
         # Then
-        assert errors.value.errors['durationMinutes'] == [
-            'Une offre de type évènement doit avoir une durée en minute']
+        assert offer.durationMinutes is None
+        assert offer.product.durationMinutes is None
 
+    @clean_database
     def test_offer_is_marked_as_isevent_property(self):
         # Given
         physical_thing = create_product_with_Thing_type(thing_type=ThingType.JEUX_VIDEO, url=None)

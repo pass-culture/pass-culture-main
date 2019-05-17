@@ -90,9 +90,6 @@ class Offer(PcObject,
             api_errors.addError('url', 'Une offre de type {} ne peut pas être numérique'.format(
                 self._get_label_from_type_string()))
 
-        if self.isEvent and not self.durationMinutes:
-            api_errors.addError('durationMinutes', 'Une offre de type évènement doit avoir une durée en minute')
-
         return api_errors
 
     def update_with_product_data(self, product_dict: dict):

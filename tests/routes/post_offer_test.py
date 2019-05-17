@@ -53,8 +53,7 @@ class Post:
                 json=json)
 
             # Then
-            assert request.status_code == 400
-            assert request.json()['durationMinutes'] == ['Une offre de type évènement doit avoir une durée en minute']
+            assert request.status_code == 201
 
         @clean_database
         def when_venue_is_not_found(self, app):
