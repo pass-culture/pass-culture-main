@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
 set -o nounset
-set -e
+set -xe
 
 DB_SIZE="2g"
+
 
 if [ -z ${1:-} ] || [ "$1" == "-h" ]; then
     echo "$(basename "$0") [-h] [-a s1 -b s2 -l -z] -- program to restore a backup file on Scalingo database
@@ -16,14 +17,13 @@ where:
     exit 0
 fi
 
-
 old_scalingo_process_pid=$(pgrep -x "scalingo" || exit 0)
-
 if [[ "$old_scalingo_process_pid" > 1 ]]; then
     echo "A Scalingo tunnel was left opened, we are killing the old process ($old_scalingo_process_pid) before starting."
     echo "Safety first !"
     sudo kill -9 "$old_scalingo_process_pid"
 fi
+
 
 # GET APPLICATION NAME
 if [[ $# -gt 1 ]] && [[ "$1" == "-a" ]]; then
@@ -49,7 +49,36 @@ else
 fi
 
 # GET SCALINGO DATABASE URL
-POSTGRESQL_URL="$(/usr/local/bin/scalingo -a $APP_NAME env |grep SCALINGO_POSTGRESQL_URL= | sed -e s,SCALINGO_POSTGRESQL_URL=postgres://,,g)"
+POSTGRESQL_URL_OLD="$(/usr/local/bin/scalingo -a $APP_NAME env |grep SCALINGO_POSTGRESQL_URL= | sed -e s,SCALINGO_POSTGRESQL_URL=postgres://,,g)"
+
+# EXTRACT THE DATABASE FROM URL
+PG_DB_OLD="$(echo $POSTGRESQL_URL_OLD | grep / | cut -d/ -f2 | cut -d'?' -f1)"
+
+
+# DELETE APPLICATION ADDON
+echo $PG_DB_OLD | /usr/local/bin/scalingo -a $APP_NAME addons-remove $PG_DB_OLD
+
+# RE-ATTACHING APPLICATION ADDON
+/usr/local/bin/scalingo -a $APP_NAME addons-add postgresql $DB_SIZE
+
+# GET NEW SCALINGO DATABASE URL
+NEXT_WAIT_TIME=0
+POSTGRESQL_URL=$POSTGRESQL_URL_OLD
+echo "hello i" $?
+
+until [ "$POSTGRESQL_URL" != "$POSTGRESQL_URL_OLD" ] || [ $NEXT_WAIT_TIME -eq 60 ]; do
+   POSTGRESQL_URL="$(/usr/local/bin/scalingo -a $APP_NAME env |grep SCALINGO_POSTGRESQL_URL= | sed -e s,SCALINGO_POSTGRESQL_URL=postgres://,,g)"
+   sleep 2
+   NEXT_WAIT_TIME=$((NEXT_WAIT_TIME+1))
+done
+if [ $NEXT_WAIT_TIME -ge 60 ]; then
+   echo "Error : Could not connect to database"
+   exit 1
+fi
+
+echo "hello1"
+
+sleep 10
 
 # EXTRACT THE USER AND PASSWORD
 PG_USER="$(echo $POSTGRESQL_URL | grep @ | cut -d@ -f1 | cut -d':' -f1)"
@@ -58,16 +87,10 @@ PG_PASSWORD="$(echo $POSTGRESQL_URL | grep @ | cut -d@ -f1 | cut -d':' -f2)"
 
 # OPEN TUNNEL TO DATABASE
 /usr/local/bin/scalingo -a "$APP_NAME" db-tunnel postgres://"$POSTGRESQL_URL" &
-sleep 3
+sleep 10
 DB_TUNNEL_PID=$!
 
-PGPASSWORD="$PG_PASSWORD" psql --host 127.0.0.1 \
-                               --port 10000 \
-                               --username "$PG_USER" \
-                               --dbname "$PG_USER" \
-                               -a -f clean_database.sql
-
-echo "Database dropped"
+echo "Tunnel to database open"
 
 PGPASSWORD="$PG_PASSWORD" pg_restore --host 127.0.0.1 \
                                          --port 10000 \
@@ -87,6 +110,7 @@ if [[ $# -gt 0 ]] && [[ "$1" == "-z" ]]; then
   shift 2
 fi
 
+echo "Backup restored."
 sudo kill -9 "$DB_TUNNEL_PID"
 
 if grep -q 'ERROR' restore_"$APP_NAME"_error.log; then
