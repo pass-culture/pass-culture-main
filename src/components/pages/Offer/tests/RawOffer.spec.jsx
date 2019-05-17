@@ -431,7 +431,6 @@ describe('src | components | pages | Offer | RawOffer ', () => {
         const fieldGroups = wrapper.find('.field-group')
         const fieldGroupForUsefulInformations = fieldGroups.at(1)
         const durationField = fieldGroupForUsefulInformations.find(Field).at(2)
-        console.log('durationField', durationField)
         expect(fieldGroups).toHaveLength(3)
         expect(durationField.prop('name')).toEqual('durationMinutes')
       })

@@ -1,18 +1,15 @@
 const getDurationInHours = durationInMinutes => {
   if (!durationInMinutes) durationInMinutes = 0
-  const d = new Date()
-  d.setHours(0)
-  d.setMinutes(durationInMinutes)
-  let minutes = d.getMinutes()
-  let hours = d.getHours()
+  let hours = Math.floor(durationInMinutes / 60)
+  let minutes = durationInMinutes % 60
 
   if (hours < 10) {
     hours = `0${hours}`
   }
+
   if (minutes < 10) {
     minutes = `0${minutes}`
   }
-
   return `${hours}:${minutes}`
 }
 
