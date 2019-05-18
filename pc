@@ -217,7 +217,7 @@ elif [[ "$CMD" == "dump-db" ]]; then
 elif [[ "$CMD" == "rebuild-backend" ]]; then
   RUN='docker-compose build --no-cache;
 			 sudo rm -rf $ROOT_PATH/api/static/object_store_data;
-       sudo rm -rf $ROOT_PATH/api/postgres_data'
+       docker-compose down --volumes'
 
 # Execute request from specified file
 elif [[ "$CMD" == "psql-file" ]]; then
@@ -227,7 +227,7 @@ elif [[ "$CMD" == "psql-file" ]]; then
 # Restart API after removing the database and files
 elif [[ "$CMD" == "restart-backend" ]]; then
   RUN='sudo rm -rf $ROOT_PATH/api/static/object_store_data;
-       sudo rm -rf $ROOT_PATH/api/postgres_data;
+       docker-compose down --volumes;
        cd $ROOT_PATH && docker-compose up --force-recreate'
 
 # Clear all data in postgresql database
