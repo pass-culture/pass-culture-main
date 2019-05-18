@@ -2,12 +2,11 @@ import PropTypes from 'prop-types'
 import { withRouter } from 'react-router'
 
 const MatomoPageTracker = ({ location }) => {
-  // eslint-disable-next-line
-  const MatomoPageTracker = window._paq || []
+  const MatomoTracker = window._paq || []
 
-  MatomoPageTracker.push(['setCustomUrl', location.pathname])
-  MatomoPageTracker.push(['setDocumentTitle', document.title])
-  MatomoPageTracker.push(['trackPageView'])
+  MatomoTracker.push(['setCustomUrl', location.pathname])
+  MatomoTracker.push(['setDocumentTitle', document.title])
+  MatomoTracker.push(['trackPageView'])
 
   return null
 }
