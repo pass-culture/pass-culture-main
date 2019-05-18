@@ -7,7 +7,7 @@ import App from './App'
 import NotMatchPage from './components/pages/NotMatchPage'
 import routes from './utils/routes'
 import { configureStore } from './utils/store'
-import MatomoTracker from './components/matomo/MatomoTracker'
+import MatomoPageTracker from './components/matomo/MatomoPageTracker'
 
 const { store, persistor } = configureStore()
 
@@ -16,7 +16,7 @@ const Root = () => {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <BrowserRouter>
-          <MatomoTracker>
+          <div>
             <App>
               <Switch>
                 {routes.map(route => {
@@ -28,7 +28,8 @@ const Root = () => {
                 <Route component={NotMatchPage} />
               </Switch>
             </App>
-          </MatomoTracker>
+            <MatomoPageTracker />
+          </div>
         </BrowserRouter>
       </PersistGate>
     </Provider>
