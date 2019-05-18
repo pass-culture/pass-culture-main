@@ -9,7 +9,7 @@
       "allowElseIf": false
     }],
     "no-underscore-dangle": [2, {
-      "allow": ["_paq"]
+      "allow": ["_paq", "__REDUX_DEVTOOLS_EXTENSION_COMPOSE__"]
     }]
   }
 }
