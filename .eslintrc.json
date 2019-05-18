@@ -39,7 +39,7 @@
       "ignorePropertyModificationsFor": ["t"]
     }],
     "no-underscore-dangle": [2, {
-      "allow": ["__modifiers__"]
+      "allow": ["__modifiers__", "_paq"]
     }],
     "react/forbid-prop-types": [2, {
       "forbid": ["any"]
