@@ -5,9 +5,9 @@ class ApiDemarchesSimplifieesException(Exception):
     pass
 
 
-def get_all_applications_for_procedure(procedure_id: str, token:str) -> dict:
+def get_all_applications_for_procedure(procedure_id: str, token:str, page=1, results_per_page = 100) -> dict:
     response = requests.get(
-        f"https://www.demarches-simplifiees.fr/api/v1/procedures/{procedure_id}/dossiers?token={token}&resultats_par_page=1000")
+        f"https://www.demarches-simplifiees.fr/api/v1/procedures/{procedure_id}/dossiers?token={token}&page={page}&resultats_par_page={results_per_page}")
 
     if response.status_code != 200:
         raise ApiDemarchesSimplifieesException(
