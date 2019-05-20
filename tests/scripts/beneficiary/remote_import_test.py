@@ -10,17 +10,15 @@ from tests.scripts.beneficiary.fixture import make_application_detail, \
 
 NOW = datetime.utcnow()
 datetime_pattern = '%Y-%m-%dT%H:%M:%SZ'
-TWELVE_HOURS_AGO = (NOW - timedelta(hours=12)).strftime(datetime_pattern)
 EIGHT_HOURS_AGO = (NOW - timedelta(hours=8)).strftime(datetime_pattern)
 FOUR_HOURS_AGO = (NOW - timedelta(hours=4)).strftime(datetime_pattern)
-ONE_DAY_AGO = (NOW - timedelta(hours=24)).strftime(datetime_pattern)
 TWO_DAYS_AGO = (NOW - timedelta(hours=48)).strftime(datetime_pattern)
 
 
 @pytest.mark.standalone
 class RunTest:
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
-    def test_only_applications_closed_in_last_24_hours_are_processed(self, process_beneficiary_application):
+    def test_only_closed_applications_are_processed(self, process_beneficiary_application):
         # given
         get_all_applications = Mock()
         get_all_applications.return_value = make_applications_list(
@@ -34,14 +32,14 @@ class RunTest:
         get_details.side_effect = [
             make_application_detail(123, 'closed'),
             make_application_detail(456, 'initiated'),
-            make_application_detail(789, 'refused')
+            make_application_detail(789, 'closed')
         ]
 
         # when
         remote_import.run(get_all_applications, get_details)
 
         # then
-        assert process_beneficiary_application.call_count == 1
+        assert process_beneficiary_application.call_count == 2
 
 
 @pytest.mark.standalone

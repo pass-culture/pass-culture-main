@@ -1,6 +1,6 @@
 import os
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Callable
 
 from connectors.api_demarches_simplifiees import get_all_applications_for_procedure, get_application_details
@@ -9,7 +9,6 @@ from repository.user_queries import find_by_first_and_last_names_and_email
 
 TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN', None)
 PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', None)
-DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VALIDATED_APPLICATION = 'closed'
 
 
@@ -19,7 +18,7 @@ def run(
         find_duplicate_users: Callable[[str, str], User] = find_by_first_and_last_names_and_email
 ):
     applications = get_all_applications(PROCEDURE_ID, TOKEN)
-    processable_application = filter(lambda a: _processable_application(a), applications['dossiers'])
+    processable_application = filter(lambda a: _validated_application(a), applications['dossiers'])
     ids_to_process = {a['id'] for a in processable_application}
 
     for id in ids_to_process:
@@ -60,14 +59,5 @@ def process_beneficiary_application(
     pass
 
 
-def _processable_application(application: dict) -> bool:
-    return _validated_application(application) and _updated_in_last_24_hours(application)
-
-
 def _validated_application(application: dict) -> bool:
     return application['state'] == VALIDATED_APPLICATION
-
-
-def _updated_in_last_24_hours(application: dict) -> bool:
-    twenty_four_hours_ago = datetime.utcnow() - timedelta(hours=24)
-    return datetime.strptime(application['updated_at'], DATETIME_FORMAT) > twenty_four_hours_ago
