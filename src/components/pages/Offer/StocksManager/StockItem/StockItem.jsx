@@ -2,18 +2,17 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { Form } from 'react-final-form'
 import {
-  bindTimeFieldWithDateField,
   getCanSubmit,
-  triggerDateFieldChangeSetsSameHoursAndMinutesToTargetDateField,
+  bindTimeFieldWithDateField,
 } from 'react-final-form-utils'
 import { requestData } from 'redux-saga-data'
 
-import fillEndDatimeWhenUpdatingBeginningDatetime from './fillEndDatimeWhenUpdatingBeginningDatetime'
 import EditAndDeleteControl from './EditAndDeleteControl'
 import EventFields from './EventFields'
+import fillEndDatimeWhenUpdatingBeginningDatetime from './fillEndDatimeWhenUpdatingBeginningDatetime'
+import forceDateTimeAtSpecificHoursAndMinutes from './decorators/forceDateTimeAtSpecificHoursAndMinutes'
 import ProductFields from './ProductFields'
 import SubmitAndCancelControlContainer from './SubmitAndCancelControl/SubmitAndCancelControlContainer'
-import forceDateTimeAtSpecificHoursAndMinutes from './decorators/forceDateTimeAtSpecificHoursAndMinutes'
 import {
   BOOKING_LIMIT_DATETIME_HOURS,
   BOOKING_LIMIT_DATETIME_MINUTES,
@@ -122,6 +121,7 @@ export class StockItem extends Component {
         timezone,
       }),
     ]
+
     if (isEvent) {
       decorators = decorators.concat([
         fillEndDatimeWhenUpdatingBeginningDatetime({

@@ -36,7 +36,7 @@ export class EventFields extends Component {
           />
         </td>
         <td>
-          <DateField name="endDatetime" />
+          <HiddenField name="endDatetime" />
           <TimeField
             name="endTime"
             patchKey="endDatetime"
