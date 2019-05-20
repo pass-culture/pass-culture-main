@@ -134,7 +134,7 @@ test('Je peux créer un stock en utilisant la touche Entrée', async t => {
   await t.expect(queryParams.stock).eql(undefined)
 })
 
-test('Je peux fermer la fenêtre en utilisant sur la touche Escape', async t => {
+test('Je peux fermer la fenêtre en utilisant la touche Escape', async t => {
   // given
   const { offer, user } = dataFromSandboxTwo
   await navigateToOfferAs(user, offer, userRoleTwo)(t)
@@ -224,7 +224,7 @@ test("J'ai une info quand je rentre un prix non nul pour l'objet d'une structure
   await t.expect(queryParams.gestion).eql(null)
 })
 
-test("J'ai une info quand je rentre un prix non nul pour l'événement d'une structure et un lieu sans iban", async t => {
+test("J'ai une info quand je rentre un prix non nul pour l'évènement d'une structure et un lieu sans iban", async t => {
   // given
   const { offer, user } = dataFromSandboxFive
   await navigateToOfferAs(user, offer, userRoleFive)(t)

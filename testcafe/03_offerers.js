@@ -42,7 +42,7 @@ test('Création des utilisateurs', async () => {
 
 fixture(`Offerers A | Voir la liste de mes structures`)
 
-test("L'utilisateur a au moins une structure validée, on peut aller dessus", async t => {
+test("L'utilisateur a au moins une structure validée, il peut se rendre à la page de ses structures", async t => {
   // given
   let { id: offererId } = offererOne
   const activationOffererItem = Selector('.offerer-item')
@@ -65,7 +65,7 @@ test("L'utilisateur a au moins une structure validée, on peut aller dessus", as
   await t.expect(subTitleHeader.exists).ok()
 })
 
-test("L'utilisateur a au moins une structure en cours de validation, mais on peut aller dessus", async t => {
+test("L'utilisateur a au moins une structure en cours de validation, il peut se rendre à la page de ses structures", async t => {
   // given
   const { id: offererId } = offererTwo
   const activationOffererItem = Selector('.offerer-item')
@@ -91,7 +91,7 @@ test("L'utilisateur a au moins une structure en cours de validation, mais on peu
   await t.expect(subTitleHeader.exists).ok()
 })
 
-test("L'utilisateur a au moins un rattachement à une structure en cours de validation, on ne peut pas aller dessus", async t => {
+test("L'utilisateur a au moins un rattachement à une structure en cours de validation, il peut se rendre à la page de ses structures", async t => {
   // given
   const { name: offererName } = offererThree
   const pendingOffererItem = Selector('.offerer-item.pending').withText(

@@ -31,7 +31,7 @@ test("Je peux cliquer sur le lien pour me connecter si j'ai déjà un compte", a
   await t.expect(location.pathname).eql('/connexion')
 })
 
-test("Lorsque l'un des champs obligatoire est manquant, le bouton créer est désactivé", async t => {
+test("Lorsque l'un des champs obligatoires est manquant, le bouton créer est désactivé", async t => {
   // given
   await t.typeText(emailInput, 'email@email.test')
 
@@ -135,7 +135,7 @@ fixture(
   "Signup C | Création d'un compte pour rattachement à une structure existante"
 ).page(`${ROOT_PATH + 'inscription'}`)
 
-test('Je créé un compte avec un siren déjà dans la base, je suis redirigé·e vers la page /inscription/confirmation', async t => {
+test('Je crée un compte avec un siren déjà dans la base, je suis redirigé·e vers la page /inscription/confirmation', async t => {
   // given
   const { offerer } = dataFromSandbox
   const email = 'pctest0.pro93.cafe1@btmx.fr'

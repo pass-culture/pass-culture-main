@@ -100,7 +100,7 @@ test('Je renseigne une nouvelle structure via son siren', async t => {
   await t.expect(location.pathname).eql('/structures')
 })
 
-test("Je renseigne une structure dont l'adresse n'est pas renvoyée par l'API Siren et je peux valider", async t => {
+test("Je renseigne une structure dont l'adresse n'est pas renvoyée par l'API sirene et je peux valider", async t => {
   // given
   const futureOffererWithNoAddress = {
     address: null,

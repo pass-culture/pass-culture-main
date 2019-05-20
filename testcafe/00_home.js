@@ -1,6 +1,6 @@
 import { ROOT_PATH } from '../src/utils/config'
 
-fixture`Home A | J'arrive à la racine du portail pro`.page`${ROOT_PATH}`
+fixture("Home A | J'arrive à la racine du portail pro").page`${ROOT_PATH}`
 
 test('Je suis redirigé·e vers la page de connexion', async t => {
   await t
