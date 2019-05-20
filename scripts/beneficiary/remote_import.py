@@ -1,21 +1,29 @@
 import os
 import re
 from datetime import datetime
-from typing import Callable
+from typing import Callable, List
 
 from connectors.api_demarches_simplifiees import get_all_applications_for_procedure, get_application_details
+from domain.password import generate_reset_token, random_password
 from models import User
 from repository.user_queries import find_by_first_and_last_names_and_email
+from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 
 TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN', None)
 PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', None)
 VALIDATED_APPLICATION = 'closed'
 
 
+class DuplicateBeneficiaryError(Exception):
+    def __init__(self, application_id: int, duplicate_beneficiaries: List[User]):
+        self.message = '%s utilisateur(s) en doublon pour le dossier %s' % (
+            len(duplicate_beneficiaries), application_id)
+
+
 def run(
         get_all_applications: Callable[[str, str], dict] = get_all_applications_for_procedure,
         get_details: Callable[[str, str, str], dict] = get_application_details,
-        find_duplicate_users: Callable[[str, str], User] = find_by_first_and_last_names_and_email
+        find_duplicate_users: Callable[[str, str, str], User] = find_by_first_and_last_names_and_email
 ):
     applications = get_all_applications(PROCEDURE_ID, TOKEN)
     processable_application = filter(lambda a: _validated_application(a), applications['dossiers'])
@@ -33,7 +41,8 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
     information = {
         'last_name': dossier['individual']['nom'],
         'first_name': dossier['individual']['prenom'],
-        'email': dossier['email']
+        'email': dossier['email'],
+        'application_id': dossier['id']
     }
 
     for field in dossier['champs']:
@@ -54,9 +63,31 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
 
 def process_beneficiary_application(
         application_detail: dict,
-        find_duplicate_users: Callable[[str, str], User] = find_by_first_and_last_names_and_email
-):
-    pass
+        find_duplicate_users: Callable[[str, str, str], User] = find_by_first_and_last_names_and_email
+) -> User:
+    duplicate_users = find_duplicate_users(
+        application_detail['first_name'],
+        application_detail['last_name'],
+        application_detail['email']
+    )
+
+    if duplicate_users:
+        raise DuplicateBeneficiaryError(application_detail['application_id'], duplicate_users)
+
+    beneficiary = User()
+    beneficiary.lastName = application_detail['last_name']
+    beneficiary.firstName = application_detail['first_name']
+    beneficiary.publicName = '%s %s' % (application_detail['first_name'], application_detail['last_name'])
+    beneficiary.email = application_detail['email']
+    beneficiary.phoneNumber = application_detail['phone']
+    beneficiary.departementCode = application_detail['department']
+    beneficiary.postalCode = application_detail['postal_code']
+    beneficiary.dateOfBirth = application_detail['birth_date']
+    beneficiary.canBookFreeOffers = True
+    beneficiary.isAdmin = False
+    beneficiary.password = random_password()
+    generate_reset_token(beneficiary, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
+    return beneficiary
 
 
 def _validated_application(application: dict) -> bool:

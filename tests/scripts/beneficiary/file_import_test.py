@@ -103,19 +103,18 @@ class FillUserFromTest:
         assert user.resetPasswordTokenValidityLimit is not None
 
 
-    @patch('scripts.users.random_token')
-    @patch('bcrypt.hashpw')
-    def test_returns_an_user_with_computed_password(self, hashpw, random_token):
+    @patch('scripts.beneficiary.file_import.random_password')
+    def test_returns_an_user_with_computed_password(self, random_password):
         # given
-        random_token.return_value = "random_string"
+        random_password.return_value = "random_string"
         data = list(self.csv_row)
         del data[8]
 
         # when
-        fill_user_from(data, User())
+        user = fill_user_from(data, User())
 
         # then
-        hashpw.assert_called_with('random_string'.encode('utf-8'), ANY)
+        assert user.password == 'random_string'
 
 
 

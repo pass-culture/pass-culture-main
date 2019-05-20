@@ -7,13 +7,14 @@ from datetime import datetime
 from typing import List, Set, Iterable, Callable
 
 from domain.admin_emails import send_users_activation_report
-from domain.password import generate_reset_token
+from domain.password import generate_reset_token, random_password
 from domain.user_activation import generate_activation_users_csv
 from models import User, Booking, Stock, PcObject
 from models.booking import ActivationUser
 from repository.booking_queries import find_user_activation_booking, get_existing_tokens
 from repository.stock_queries import find_online_activation_stock
 from repository.user_queries import find_user_by_email
+from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from scripts.interact import app
 from utils.logger import logger
 from utils.mailing import MailServiceException, parse_email_addresses, send_raw_email
@@ -29,7 +30,6 @@ BIRTHDATE_COLUMN_INDEX = 7
 PASSWORD_INDEX = 8
 
 CHUNK_SIZE = 250
-THIRTY_DAYS_IN_HOURS = 30 * 24
 ACTIVATION_USER_RECIPIENTS = parse_email_addresses(os.environ.get('ACTIVATION_USER_RECIPIENTS', None))
 
 
@@ -187,4 +187,4 @@ def _get_password(csv_row: List[List[str]]) -> str:
     if has_password_in_csv:
         return bcrypt.hashpw(csv_row[PASSWORD_INDEX].encode('utf-8'), bcrypt.gensalt())
     else:
-        return bcrypt.hashpw(random_token(length=12).encode('utf-8'), bcrypt.gensalt())
+        return random_password()

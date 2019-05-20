@@ -1,12 +1,16 @@
 import re
-import secrets
-import string
 from datetime import datetime, timedelta
+
+import bcrypt
 
 from models import ApiErrors
 from utils.token import random_token
 
 RESET_PASSWORD_TOKEN_LENGTH = 10
+
+
+def random_password():
+    return bcrypt.hashpw(random_token(length=12).encode('utf-8'), bcrypt.gensalt())
 
 
 def check_new_password_validity(user, old_password, new_password):
