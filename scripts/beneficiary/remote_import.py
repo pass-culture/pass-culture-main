@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from typing import Callable
 
 from connectors.api_demarches_simplifiees import get_all_applications_for_procedure, get_application_details
+from models import User
+from repository.user_queries import find_by_first_and_last_names_and_email
 
 TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN', None)
 PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', None)
@@ -13,7 +15,8 @@ VALIDATED_APPLICATION = 'closed'
 
 def run(
         get_all_applications: Callable[[str, str], dict] = get_all_applications_for_procedure,
-        get_details: Callable[[str, str, str], dict] = get_application_details
+        get_details: Callable[[str, str, str], dict] = get_application_details,
+        find_duplicate_users: Callable[[str, str], User] = find_by_first_and_last_names_and_email
 ):
     applications = get_all_applications(PROCEDURE_ID, TOKEN)
     processable_application = filter(lambda a: _processable_application(a), applications['dossiers'])
@@ -22,7 +25,7 @@ def run(
     for id in ids_to_process:
         details = get_details(id, PROCEDURE_ID, TOKEN)
         information = parse_beneficiary_information(details)
-        process_beneficiary_application(information)
+        process_beneficiary_application(information, find_duplicate_users=find_duplicate_users)
 
 
 def parse_beneficiary_information(application_detail: dict) -> dict:
@@ -50,7 +53,10 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
     return information
 
 
-def process_beneficiary_application(application_detail: dict):
+def process_beneficiary_application(
+        application_detail: dict,
+        find_duplicate_users: Callable[[str, str], User] = find_by_first_and_last_names_and_email
+):
     pass
 
 

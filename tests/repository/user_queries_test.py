@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 
 from models import PcObject
-from repository.user_queries import get_all_users_wallet_balances
+from repository.user_queries import get_all_users_wallet_balances, find_by_first_and_last_names_and_email
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_deposit, \
     create_stock, create_booking
@@ -98,6 +98,35 @@ class GetAllUsersWalletBalancesTest:
         # then
         assert balances[0].real_balance == 90
         assert balances[1].real_balance == 200
+
+
+@pytest.mark.standalone
+class FindByFirstAndLastNamesAndEmailTest:
+    @clean_database
+    def test_returns_users_with_matching_criteria_case_insensitively(self, app):
+        # given
+        user1 = create_user(first_name="john", last_name='DOe', email='jOHN.doE@exAMple.CoM')
+        user2 = create_user(first_name="jaNE", last_name='DOe', email='jANe.doE@exAMple.CoM')
+        PcObject.check_and_save(user1, user2)
+
+        # when
+        users = find_by_first_and_last_names_and_email('john', 'doe', 'john.doe@example.com')
+
+        # ten
+        assert len(users) == 1
+        assert users[0].email == 'jOHN.doE@exAMple.CoM'
+
+    @clean_database
+    def test_returns_nothing_if_one_criteria_does_not_match(self, app):
+        # given
+        user = create_user(first_name="Jean", last_name='DOe', email='jOHN.doE@exAMple.CoM')
+        PcObject.check_and_save(user)
+
+        # when
+        users = find_by_first_and_last_names_and_email('john', 'doe', 'john.doe@example.com')
+
+        # ten
+        assert not users
 
 
 def _create_balances_for_user2(stock3, user2, venue):
