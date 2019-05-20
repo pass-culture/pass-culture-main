@@ -1,7 +1,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
-from domain.admin_emails import send_offer_creation_notification_to_support
+from domain.admin_emails import send_offer_creation_notification_to_administration
 from domain.offers import add_stock_alert_message_to_offer
 from domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
 from models import Offer, PcObject, Venue, RightsType
@@ -88,7 +88,7 @@ def post_offer():
     offer.venue = venue
     offer.bookingEmail = request.json.get('bookingEmail', None)
     PcObject.check_and_save(offer)
-    send_offer_creation_notification_to_support(offer, current_user, PRO_URL, send_raw_email)
+    send_offer_creation_notification_to_administration(offer, current_user, PRO_URL, send_raw_email)
 
     return jsonify(
         offer._asdict(include=OFFER_INCLUDES)

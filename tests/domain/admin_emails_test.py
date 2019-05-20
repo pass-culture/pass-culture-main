@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 
 from domain.admin_emails import maybe_send_offerer_validation_email, send_venue_validation_email, \
     send_payment_details_email, send_wallet_balances_email, send_payments_report_emails, \
-    send_offer_creation_notification_to_support, send_payment_message_email
+    send_offer_creation_notification_to_administration, send_payment_message_email
 from tests.test_utils import create_offerer, create_user, \
     create_user_offerer, create_venue, create_offer_with_thing_product
 from utils.mailing import MailServiceException
@@ -34,7 +34,7 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
     mocked_send_email.assert_called_once()
     args = mocked_send_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'support@passculture.app'
+    assert email['To'] == 'administration@passculture.app'
     assert 'This is a test' not in email['Html-part']
 
 
@@ -63,7 +63,7 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_dev_whe
     mocked_send_email.assert_called_once()
     args = mocked_send_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'passculture-dev@beta.gouv.fr'
+    assert email['To'] == 'dev@passculture.app'
     assert 'This is a test' in email['Html-part']
 
 
@@ -112,7 +112,7 @@ def test_send_venue_validation_email_when_mailjet_status_code_200_sends_email_to
     mocked_send_email.assert_called_once()
     args = mocked_send_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'support@passculture.app'
+    assert email['To'] == 'administration@passculture.app'
     assert 'This is a test' not in email['Html-part']
 
 
@@ -135,7 +135,7 @@ def test_send_venue_validation_email_has_pass_culture_dev_as_recipient_when_send
     mocked_send_email.assert_called_once()
     args = mocked_send_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'passculture-dev@beta.gouv.fr'
+    assert email['To'] == 'dev@passculture.app'
     assert 'This is a test' in email['Html-part']
 
 
@@ -180,7 +180,7 @@ def test_send_payment_details_email_has_pass_culture_dev_as_recipient_when_send_
     mocked_send_email.assert_called_once()
     args = mocked_send_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'passculture-dev@beta.gouv.fr'
+    assert email['To'] == 'dev@passculture.app'
 
 
 @pytest.mark.standalone
@@ -224,7 +224,7 @@ def test_send_wallet_balances_email_has_pass_culture_dev_as_recipient_when_send_
     mocked_send_email.assert_called_once()
     args = mocked_send_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'passculture-dev@beta.gouv.fr'
+    assert email['To'] == 'dev@passculture.app'
 
 
 @pytest.mark.standalone
@@ -280,12 +280,12 @@ def test_send_payments_report_emails_email_has_pass_culture_dev_as_recipient_whe
     mocked_send_email.assert_called_once()
     args = mocked_send_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'passculture-dev@beta.gouv.fr'
+    assert email['To'] == 'dev@passculture.app'
 
 
 @pytest.mark.standalone
-class SendOfferCreationNotificationToSupportTest:
-    def test_when_mailjet_status_code_200_sends_email_to_support_email(self, app):
+class SendOfferCreationNotificationToAdministrationTest:
+    def test_when_mailjet_status_code_200_sends_email_to_administration_email(self, app):
         mocked_send_email = Mock()
         return_value = Mock()
         return_value.status_code = 200
@@ -296,13 +296,13 @@ class SendOfferCreationNotificationToSupportTest:
         author = create_user(email='author@email.com')
         # When
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-            send_offer_creation_notification_to_support(offer, author, 'http://test.url', mocked_send_email)
+            send_offer_creation_notification_to_administration(offer, author, 'http://test.url', mocked_send_email)
 
         # Then
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         email = args[1]['data']
-        assert email['To'] == 'support@passculture.app'
+        assert email['To'] == 'administration@passculture.app'
 
     def test_when_send_email_disabled_has_pass_culture_dev_as_recipient(self, app):
         # Given
@@ -316,13 +316,13 @@ class SendOfferCreationNotificationToSupportTest:
         author = create_user(email='author@email.com')
         # When
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
-            send_offer_creation_notification_to_support(offer, author, 'http://test.url', mocked_send_email)
+            send_offer_creation_notification_to_administration(offer, author, 'http://test.url', mocked_send_email)
 
         # Then
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         email = args[1]['data']
-        assert email['To'] == 'passculture-dev@beta.gouv.fr'
+        assert email['To'] == 'dev@passculture.app'
 
 
 @pytest.mark.standalone
