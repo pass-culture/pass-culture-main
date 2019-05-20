@@ -8,6 +8,7 @@
 /testcafe/screenshots/thumbnails
 /testcafe/screenshots/*-diff.png
 /testcafe/screenshots/*-actual.png
+/testcafe_screenshots
 
 # production
 /public/version.txt
