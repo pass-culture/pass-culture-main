@@ -440,3 +440,43 @@ Pour déployer une nouvelle version phonegap (par default c'est en staging)
 ```bash
 pc build-pg
 ```
+
+## Lancer les tests de performance
+
+### Environnement 
+
+Les tests requièrent d'avoir un environnement spécifique sur Scalingo, ici `pass-culture-dev-perf`, comportant notamment une base utilisateur.
+Pour la remplir, il faut jouer les sandboxes `industrial` et `activation`. 
+
+Execution des sandboxes sur le conteneur :
+``` bash
+scalingo -a pass-culture-dev-perf run 'PYTHONPATH=. python scripts/pc.py sandbox -n industrial'
+scalingo -a pass-culture-dev-perf run 'PYTHONPATH=. python scripts/pc.py sandbox -n activation'
+```
+
+Ensuite, lancer le script d'import des utilisateurs avec une liste d'utilisateurs en csv prédéfinie placée dans le dossier `artillery` sous le nom `user_list`.
+On passe en paramètre un faux email qui ne sera pas utilisé.
+
+``` bash
+scalingo -a pass-culture-dev-perf run 'ACTIVATION_USER_RECIPIENTS=<email> python scalingo/import_users.py user_list' -f user_list
+
+```
+
+Un exemple de csv utilisateur `user_list` :
+```bash
+1709,Patricia,Chadwick,ac@enimo.com,0155819967,Drancy (93),16282,2001-05-17,secure_password
+```
+
+### Lancement d'un scénario
+
+Pour lancer les tests de performance il faut installer le logiciel `artillery` : `npm install -g artillery` et son plugin `metrics-by-endpoint` : `npm install artillery-plugin-statsd`, puis se munir du fichier csv contenant 
+les users valides.
+
+Puis se placer dans le dossier `artillery` et lancer la commande :
+
+```bash
+artillery run scenario.yml -o reports/report-$(date -u +"%Y-%m-%dT%H:%M:%SZ").json
+```
+
+Un rapport des tests daté sera généré dans le sous-dossier `reports` (qui doit être crée).
+
