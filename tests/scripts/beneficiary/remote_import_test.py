@@ -31,7 +31,7 @@ class RunTest:
                 (123, 'closed', FOUR_HOURS_AGO),
                 (456, 'initiated', EIGHT_HOURS_AGO),
                 (789, 'closed', TWO_DAYS_AGO)
-            ]
+            ], 1, 1
         )
         get_details = Mock()
         get_details.side_effect = [
@@ -45,6 +45,25 @@ class RunTest:
 
         # then
         assert process_beneficiary_application.call_count == 2
+
+    @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
+    def test_pagination(self, process_beneficiary_application):
+        # given
+        get_all_applications = Mock()
+        get_all_applications.return_value = make_applications_list(
+            [
+                (123, 'closed', FOUR_HOURS_AGO),
+                (456, 'initiated', EIGHT_HOURS_AGO)
+            ], 1, 3
+        )
+        get_details = Mock()
+        get_details.return_value = make_application_detail(123, 'closed')
+
+        # when
+        remote_import.run(get_all_applications, get_details)
+
+        # then
+        assert process_beneficiary_application.call_count == 3
 
 
 @pytest.mark.standalone

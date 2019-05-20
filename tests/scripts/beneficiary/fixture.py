@@ -7,7 +7,7 @@ LIST_APPLICATIONS_STANDARD_RESPONSE = {
         {
             "page": 1,
             "resultats_par_page": 100,
-            "nombre_de_page": 1
+            "nombre_de_page": 3
         }
 }
 
@@ -226,7 +226,7 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
 }
 
 
-def make_applications_list(applications_params: List[Tuple[int, str, str]]) -> dict:
+def make_applications_list(applications_params: List[Tuple[int, str, str]], page, number_of_pages) -> dict:
     applications = copy.deepcopy(LIST_APPLICATIONS_STANDARD_RESPONSE)
     for params in applications_params:
         applications['dossiers'].append(
@@ -236,6 +236,8 @@ def make_applications_list(applications_params: List[Tuple[int, str, str]]) -> d
                 "updated_at": params[2]
             }
         )
+    applications['pagination']['nombre_de_page'] = number_of_pages
+    applications['pagination']['page'] = page
     return applications
 
 

@@ -17,19 +17,26 @@ VALIDATED_APPLICATION = 'closed'
 
 
 def run(
-        get_all_applications: Callable[[str, str], dict] = get_all_applications_for_procedure,
-        get_details: Callable[[str, str, str], dict] = get_application_details,
-        find_duplicate_users: Callable[[str, str, str], User] = find_by_first_and_last_names_and_birth_date
+        get_all_applications: Callable[..., dict] = get_all_applications_for_procedure,
+        get_details: Callable[..., dict] = get_application_details,
+        find_duplicate_users: Callable[..., User] = find_by_first_and_last_names_and_birth_date
 ):
-    applications = get_all_applications(PROCEDURE_ID, TOKEN)
-    processable_application = filter(lambda a: a['state'] == 'closed', applications['dossiers'])
-    ids_to_process = {a['id'] for a in processable_application}
-    error_messages = []
+    current_page = 1
+    number_of_pages = 1
+    while current_page <= number_of_pages:
 
-    for id in ids_to_process:
-        details = get_details(id, PROCEDURE_ID, TOKEN)
-        information = parse_beneficiary_information(details)
-        process_beneficiary_application(information, error_messages, find_duplicate_users=find_duplicate_users)
+        applications = get_all_applications(PROCEDURE_ID, TOKEN, page=current_page)
+        current_page = current_page + 1
+        number_of_pages = applications['pagination']['nombre_de_page']
+
+        processable_application = filter(lambda a: a['state'] == 'closed', applications['dossiers'])
+        ids_to_process = {a['id'] for a in processable_application}
+        error_messages = []
+
+        for id in ids_to_process:
+            details = get_details(id, PROCEDURE_ID, TOKEN)
+            information = parse_beneficiary_information(details)
+            process_beneficiary_application(information, error_messages, find_duplicate_users=find_duplicate_users)
 
 
 class DuplicateBeneficiaryError(Exception):

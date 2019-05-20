@@ -18,11 +18,11 @@ class GetAllApplicationsForProcedureTest:
 
         # When
 
-        applications_for_procedure = get_all_applications_for_procedure(procedure_id=procedure_id, token=token)
+        applications_for_procedure = get_all_applications_for_procedure(procedure_id=procedure_id, token=token, results_per_page=1000)
 
         call_args = requests_get.call_args
         assert call_args[0] == (
-        'https://www.demarches-simplifiees.fr/api/v1/procedures/1/dossiers?token=12345&resultats_par_page=1000',)
+        'https://www.demarches-simplifiees.fr/api/v1/procedures/1/dossiers?token=12345&page=1&resultats_par_page=1000',)
         assert applications_for_procedure == {'test': 'value'}
 
     @patch('connectors.api_demarches_simplifiees.requests.get')
