@@ -1,7 +1,7 @@
 from models import PcObject
 from repository import email_queries
 
-DOMAIN_NAME = '@passculture.app'
+NEW_FROM_EMAIL = 'support@passculture.app'
 
 
 def update_emails_with_new_sender_email():
@@ -9,22 +9,19 @@ def update_emails_with_new_sender_email():
 
     updated_emails = []
     for failed_email in failed_emails:
-        from_email = failed_email.content['FromEmail']
-
-        failed_email.content = {
-            'FromEmail': replace_from_email(from_email),
+        new_content = {
+            'FromEmail': NEW_FROM_EMAIL,
             'FromName': failed_email.content['FromName'],
-            'Subject': failed_email.content['Subject'],
-            'Text-Part': failed_email.content['Text-Part'],
-            'Html-part': failed_email.content['Html-part']
+            'Subject': failed_email.content['Subject']
         }
+        if 'Text-Part' in failed_email.content:
+            new_content['Text-Part'] = failed_email.content['Text-Part']
+
+        if 'Html-part' in failed_email.content:
+            new_content['Html-part'] = failed_email.content['Html-part']
+
+        failed_email.content = new_content
         updated_emails.append(failed_email)
 
-    PcObject.check_and_save(*updated_emails)
-
-
-def replace_from_email(from_email):
-    split_from_email = from_email.split('@')
-    new_from_email = split_from_email[0] + DOMAIN_NAME
-
-    return new_from_email
+    if (updated_emails):
+        PcObject.check_and_save(*updated_emails)
