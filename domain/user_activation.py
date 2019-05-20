@@ -7,7 +7,7 @@ from models import Deposit, EventType, ThingType, ApiErrors, User
 from models.booking import ActivationUser
 
 
-def create_initial_deposit(user_to_activate):
+def create_initial_deposit(user_to_activate: User) -> Deposit:
     existing_deposits = Deposit.query.filter_by(userId=user_to_activate.id).all()
     if existing_deposits:
         error = AlreadyActivatedException()

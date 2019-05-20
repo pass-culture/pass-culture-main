@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 
 from models import PcObject
-from repository.user_queries import get_all_users_wallet_balances, find_by_first_and_last_names_and_email
+from repository.user_queries import get_all_users_wallet_balances, find_by_first_and_last_names_and_birth_date
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_deposit, \
     create_stock, create_booking
@@ -105,25 +105,27 @@ class FindByFirstAndLastNamesAndEmailTest:
     @clean_database
     def test_returns_users_with_matching_criteria_case_insensitively(self, app):
         # given
-        user1 = create_user(first_name="john", last_name='DOe', email='jOHN.doE@exAMple.CoM')
-        user2 = create_user(first_name="jaNE", last_name='DOe', email='jANe.doE@exAMple.CoM')
+        user2 = create_user(first_name="jaNE", last_name='DOe', email='jane@test.com',
+                            date_of_birth=datetime(2000, 3, 20))
+        user1 = create_user(first_name="john", last_name='DOe', email='john@test.com',
+                            date_of_birth=datetime(2000, 5, 1))
         PcObject.check_and_save(user1, user2)
 
         # when
-        users = find_by_first_and_last_names_and_email('john', 'doe', 'john.doe@example.com')
+        users = find_by_first_and_last_names_and_birth_date('john', 'doe', datetime(2000, 5, 1))
 
         # ten
         assert len(users) == 1
-        assert users[0].email == 'jOHN.doE@exAMple.CoM'
+        assert users[0].email == 'john@test.com'
 
     @clean_database
     def test_returns_nothing_if_one_criteria_does_not_match(self, app):
         # given
-        user = create_user(first_name="Jean", last_name='DOe', email='jOHN.doE@exAMple.CoM')
+        user = create_user(first_name="Jean", last_name='DOe', date_of_birth=datetime(2000, 5, 1))
         PcObject.check_and_save(user)
 
         # when
-        users = find_by_first_and_last_names_and_email('john', 'doe', 'john.doe@example.com')
+        users = find_by_first_and_last_names_and_birth_date('john', 'doe', datetime(2000, 5, 1))
 
         # ten
         assert not users

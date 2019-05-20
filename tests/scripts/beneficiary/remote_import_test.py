@@ -1,12 +1,15 @@
 from datetime import datetime, timedelta
+from decimal import Decimal
 from unittest.mock import Mock, patch
 
 import pytest
+from mailjet_rest import Client
 
 from models import User
 from scripts.beneficiary import remote_import
 from scripts.beneficiary.remote_import import parse_beneficiary_information, process_beneficiary_application, \
     DuplicateBeneficiaryError
+from tests.conftest import clean_database, mocked_mail
 from tests.scripts.beneficiary.fixture import make_application_detail, \
     make_applications_list, APPLICATION_DETAIL_STANDARD_RESPONSE
 
@@ -20,7 +23,10 @@ TWO_DAYS_AGO = (NOW - timedelta(hours=48)).strftime(datetime_pattern)
 @pytest.mark.standalone
 class RunTest:
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
-    def test_only_closed_applications_are_processed(self, process_beneficiary_application):
+    @patch('scripts.beneficiary.remote_import.PcObject')
+    @patch('scripts.beneficiary.remote_import.send_activation_notification_email')
+    def test_only_closed_applications_are_processed(self, send_activation_notification_email,
+                                                    PcObject, process_beneficiary_application):
         # given
         get_all_applications = Mock()
         get_all_applications.return_value = make_applications_list(
@@ -42,6 +48,62 @@ class RunTest:
 
         # then
         assert process_beneficiary_application.call_count == 2
+
+    @clean_database
+    def test_new_beneficiaries_are_recorded_with_deposit(self, app):
+        # given
+        app.mailjet_client = Mock(spec=Client)
+        app.mailjet_client.send = Mock()
+        get_all_applications = Mock()
+        get_all_applications.return_value = make_applications_list(
+            [
+                (123, 'closed', FOUR_HOURS_AGO),
+                (456, 'initiated', EIGHT_HOURS_AGO),
+                (789, 'refused', TWO_DAYS_AGO)
+            ]
+        )
+        get_details = Mock()
+        get_details.side_effect = [
+            make_application_detail(123, 'closed'),
+            make_application_detail(456, 'initiated'),
+            make_application_detail(789, 'refused')
+        ]
+
+        # when
+        remote_import.run(get_all_applications, get_details)
+
+        # then
+        first = User.query.first()
+        assert first.email == 'jane.doe@test.com'
+        assert first.wallet_balance == 500
+
+    @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
+    @patch('scripts.beneficiary.remote_import.PcObject')
+    @patch('scripts.beneficiary.remote_import.send_activation_notification_email')
+    def test_account_activation_email_is_sent(self, send_activation_notification_email, PcObject,
+                                              process_beneficiary_application):
+        # given
+        get_all_applications = Mock()
+        get_all_applications.return_value = make_applications_list(
+            [
+                (123, 'closed', FOUR_HOURS_AGO),
+                (456, 'initiated', EIGHT_HOURS_AGO),
+                (789, 'refused', TWO_DAYS_AGO)
+            ]
+        )
+        get_details = Mock()
+        get_details.side_effect = [
+            make_application_detail(123, 'closed'),
+            make_application_detail(456, 'initiated'),
+            make_application_detail(789, 'refused')
+        ]
+        process_beneficiary_application.return_value = User()
+
+        # when
+        remote_import.run(get_all_applications, get_details)
+
+        # then
+        send_activation_notification_email.assert_called()
 
 
 @pytest.mark.standalone
@@ -96,6 +158,30 @@ class ProcessBeneficiaryApplicationTest:
         assert beneficiary.password is not None
         assert beneficiary.resetPasswordToken is not None
         assert beneficiary.resetPasswordTokenValidityLimit.date() == THIRTY_DAYS_FROM_NOW
+
+    def test_a_deposit_is_made_for_the_new_beneficiary(self):
+        # given
+        THIRTY_DAYS_FROM_NOW = (datetime.utcnow() + timedelta(days=30)).date()
+        find_duplicate_users = Mock()
+        find_duplicate_users.return_value = []
+
+        beneficiary_information = {
+            'department': '67',
+            'last_name': 'Doe',
+            'first_name': 'Jane',
+            'birth_date': datetime(2000, 5, 1),
+            'email': 'jane.doe@test.com',
+            'phone': '0612345678',
+            'postal_code': '67200',
+            'application_id': 123
+        }
+        # when
+        beneficiary = process_beneficiary_application(beneficiary_information, find_duplicate_users)
+
+        # then
+        assert len(beneficiary.deposits) == 1
+        assert beneficiary.deposits[0].amount == Decimal(500)
+        assert beneficiary.deposits[0].source == 'activation'
 
     def test_raise_an_error_with_duplicate_users_if_any_are_found(self):
         # given

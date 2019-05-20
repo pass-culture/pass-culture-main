@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from sqlalchemy import func
@@ -13,11 +14,11 @@ def find_user_by_email(email: str) -> User:
         .first()
 
 
-def find_by_first_and_last_names_and_email(first_name: str, last_name: str, email: str) -> List[User]:
+def find_by_first_and_last_names_and_birth_date(first_name: str, last_name: str, birth_date: datetime) -> List[User]:
     return User.query \
         .filter(func.lower(User.firstName) == func.lower(first_name)) \
         .filter(func.lower(User.lastName) == func.lower(last_name)) \
-        .filter(func.lower(User.email) == func.lower(email)) \
+        .filter(User.dateOfBirth == birth_date) \
         .all()
 
 

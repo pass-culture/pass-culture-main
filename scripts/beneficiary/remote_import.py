@@ -5,9 +5,11 @@ from typing import Callable, List
 
 from connectors.api_demarches_simplifiees import get_all_applications_for_procedure, get_application_details
 from domain.password import generate_reset_token, random_password
-from models import User
-from repository.user_queries import find_by_first_and_last_names_and_email
+from domain.user_emails import send_activation_notification_email
+from models import User, PcObject, Deposit
+from repository.user_queries import find_by_first_and_last_names_and_birth_date
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
+from utils.mailing import send_raw_email
 
 TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN', None)
 PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', None)
@@ -23,7 +25,7 @@ class DuplicateBeneficiaryError(Exception):
 def run(
         get_all_applications: Callable[[str, str], dict] = get_all_applications_for_procedure,
         get_details: Callable[[str, str, str], dict] = get_application_details,
-        find_duplicate_users: Callable[[str, str, str], User] = find_by_first_and_last_names_and_email
+        find_duplicate_users: Callable[[str, str, str], User] = find_by_first_and_last_names_and_birth_date
 ):
     applications = get_all_applications(PROCEDURE_ID, TOKEN)
     processable_application = filter(lambda a: _validated_application(a), applications['dossiers'])
@@ -32,7 +34,9 @@ def run(
     for id in ids_to_process:
         details = get_details(id, PROCEDURE_ID, TOKEN)
         information = parse_beneficiary_information(details)
-        process_beneficiary_application(information, find_duplicate_users=find_duplicate_users)
+        new_beneficiary = process_beneficiary_application(information, find_duplicate_users=find_duplicate_users)
+        PcObject.check_and_save(new_beneficiary)
+        send_activation_notification_email(new_beneficiary, send_raw_email)
 
 
 def parse_beneficiary_information(application_detail: dict) -> dict:
@@ -63,12 +67,12 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
 
 def process_beneficiary_application(
         application_detail: dict,
-        find_duplicate_users: Callable[[str, str, str], User] = find_by_first_and_last_names_and_email
+        find_duplicate_users: Callable[[str, str, str], User] = find_by_first_and_last_names_and_birth_date
 ) -> User:
     duplicate_users = find_duplicate_users(
         application_detail['first_name'],
         application_detail['last_name'],
-        application_detail['email']
+        application_detail['birth_date']
     )
 
     if duplicate_users:
@@ -87,6 +91,12 @@ def process_beneficiary_application(
     beneficiary.isAdmin = False
     beneficiary.password = random_password()
     generate_reset_token(beneficiary, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
+
+    deposit = Deposit()
+    deposit.amount = 500
+    deposit.source = 'activation'
+    beneficiary.deposits = [deposit]
+
     return beneficiary
 
 
