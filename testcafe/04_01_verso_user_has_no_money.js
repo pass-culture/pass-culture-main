@@ -6,7 +6,7 @@ const openVersoButton = Selector('#deck-open-verso-button')
 
 let userRole
 
-fixture(`04_01 Verso`).beforeEach(async t => {
+fixture("04_01 Verso | L'utilisateur n'a pas d'argent").beforeEach(async t => {
   // given
   userRole = await createUserRoleFromUserSandbox(
     'webapp_04_verso',
@@ -15,7 +15,7 @@ fixture(`04_01 Verso`).beforeEach(async t => {
   await t.useRole(userRole)
 })
 
-test(`L'user n'a plus d'argent sur son compte`, async t => {
+test("L'utilisateur n'a plus d'argent sur son compte", async t => {
   await t.click(openVersoButton)
 
   const versoWallet = await getVersoWallet()

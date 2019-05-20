@@ -13,7 +13,7 @@ const versoOfferLabel = Selector('#verso-offer-label')
 const versoOfferName = Selector('#verso-offer-name')
 const versoOfferVenue = Selector('#verso-offer-venue')
 
-fixture(`04_05 Verso détails de l'offre`)
+fixture("04_05_01 Verso | détails de l'offre")
 
 test('Le titre et le nom du lieu sont affichés ainsi que le type', async t => {
   // given

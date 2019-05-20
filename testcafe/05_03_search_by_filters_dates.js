@@ -206,7 +206,7 @@ test('Je peux réinitialiser la date choisie via le date picker', async t => {
     .eql('')
 })
 
-fixture('O5_03_02 Recherche par Filtres | Distance ').beforeEach(async t => {
+fixture('O5_03_03 Recherche par Filtres | Distance ').beforeEach(async t => {
   await t
     .useRole(userRole)
     .navigateTo(`${ROOT_PATH}recherche`)
@@ -218,7 +218,7 @@ test('Je vois le titre de la section', async t => {
 })
 
 fixture(
-  "O5_03_02 Recherche par Filtres | Par Type d'offres / Catégories"
+  "O5_03_04 Recherche par Filtres | Par Type d'offres / Catégories"
 ).beforeEach(async t => {
   await t
     .useRole(userRole)

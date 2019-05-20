@@ -12,7 +12,7 @@ const openVersoButton = Selector('#deck-open-verso-button')
 const sharePopIn = Selector('#share-popin-fixed-container')
 
 let userRole
-fixture(`04_04 Verso partage de l'offre`).beforeEach(async t => {
+fixture("04_04_01 Verso | partage de l'offre").beforeEach(async t => {
   // given
   const { offer, user } = await fetchSandbox(
     'webapp_04_verso',

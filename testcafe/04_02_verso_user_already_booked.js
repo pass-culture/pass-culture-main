@@ -20,9 +20,9 @@ const bookingCheckIcon = Selector(
 
 let offerTitle
 
-fixture(`04_02 Verso offre déjà réservée`)
+fixture('04_02_01 Verso | offre déjà réservée')
 
-test(`L'user ne peut plus réserver une offre digitale déjà réservée`, async t => {
+test("L'user ne peut plus réserver une offre digitale déjà réservée", async t => {
   await t
     .click(openVersoButton)
     .expect(bookOfferButton.exists)
@@ -47,20 +47,22 @@ test(`L'user ne peut plus réserver une offre digitale déjà réservée`, async
 })
 
 // FIXME: the sandbox getter is not working
-fixture.skip(`04_02 Verso annulation d'un réservation`).beforeEach(async t => {
-  // given
-  const { mediation, offer, user } = await fetchSandbox(
-    'webapp_04_verso',
-    'get_existing_event_offer_with_active_mediation_already_booked_but_cancellable_and_user_hnmm_93'
-  )
-  offerTitle = offer.thingName
-  const offerURL = `${discoverURL}/${offer.id}/${mediation.id}`
+fixture
+  .skip("04_02_02 Verso | annulation d'une réservation")
+  .beforeEach(async t => {
+    // given
+    const { mediation, offer, user } = await fetchSandbox(
+      'webapp_04_verso',
+      'get_existing_event_offer_with_active_mediation_already_booked_but_cancellable_and_user_hnmm_93'
+    )
+    offerTitle = offer.thingName
+    const offerURL = `${discoverURL}/${offer.id}/${mediation.id}`
 
-  await t.useRole(createUserRole(user)).navigateTo(offerURL)
-  await dragButton.with({ visibilityCheck: true })()
-})
+    await t.useRole(createUserRole(user)).navigateTo(offerURL)
+    await dragButton.with({ visibilityCheck: true })()
+  })
 
-test(`L'user ne peut plus réserver un event déjà réservé`, async t => {
+test("L'utilisateur ne peut plus réserver un event déjà réservé", async t => {
   await t
     .click(openVersoButton)
     .expect(bookOfferButton.exists)
@@ -75,7 +77,7 @@ test(`L'user ne peut plus réserver un event déjà réservé`, async t => {
     .ok()
 })
 
-test(`Je décide de ne plus vouloir annuler ma réservation`, async t => {
+test('Je décide de ne plus vouloir annuler ma réservation', async t => {
   await t
     .click(openVersoButton)
     .expect(bookOfferButton.exists)
@@ -91,7 +93,7 @@ test(`Je décide de ne plus vouloir annuler ma réservation`, async t => {
     .ok()
 })
 
-test(`Parcours d'annulation d'une réservation`, async t => {
+test("Parcours d'annulation d'une réservation", async t => {
   await t
     .click(openVersoButton)
     .click(cancelBookButton)
@@ -108,7 +110,7 @@ test(`Parcours d'annulation d'une réservation`, async t => {
     .notEql('Annulation impossible')
 })
 
-test(`Après reservation, la coche de réservation a disparu, le bouton affiche toujours annuler`, async t => {
+test('Après reservation, la coche de réservation a disparu, le bouton affiche toujours annuler', async t => {
   await t
     .click(openVersoButton)
     .expect(bookingCheckIcon.exists)

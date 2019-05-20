@@ -39,29 +39,29 @@ const selectedTime = timeSelectBox.find('.ant-select-selection-selected-value')
 
 let userRole
 
-fixture(`08_05 Réservation d'une offre type event à dates multiple`).beforeEach(
-  async t => {
-    if (!userRole) {
-      userRole = await createUserRoleFromUserSandbox(
-        'webapp_08_booking',
-        'get_existing_webapp_user_can_book_multidates'
-      )
-    }
-    const { offer } = await fetchSandbox(
+fixture(
+  "08_05_01 Réservation d'une offre type event à dates multiple"
+).beforeEach(async t => {
+  if (!userRole) {
+    userRole = await createUserRoleFromUserSandbox(
       'webapp_08_booking',
-      'get_non_free_event_offer'
+      'get_existing_webapp_user_can_book_multidates'
     )
-    offerPage = `${discoverURL}/${offer.id}`
-    offerPageVerso = new RegExp(`${offerPage}(/[A-Z0-9]*)?/verso`)
-    offerBookingPage = `${offerPage}/booking`
-    await t
-      .useRole(userRole)
-      .navigateTo(offerPage)
-      .click(openVerso)
   }
-)
+  const { offer } = await fetchSandbox(
+    'webapp_08_booking',
+    'get_non_free_event_offer'
+  )
+  offerPage = `${discoverURL}/${offer.id}`
+  offerPageVerso = new RegExp(`${offerPage}(/[A-Z0-9]*)?/verso`)
+  offerBookingPage = `${offerPage}/booking`
+  await t
+    .useRole(userRole)
+    .navigateTo(offerPage)
+    .click(openVerso)
+})
 
-test(`Le formulaire de réservation contient un selecteur de date et d'horaire`, async t => {
+test("Le formulaire de réservation contient un selecteur de date et d'horaire", async t => {
   await t
     .click(bookOfferButton)
     .expect(getPageUrl())
@@ -74,8 +74,8 @@ test(`Le formulaire de réservation contient un selecteur de date et d'horaire`,
     .ok()
 })
 
-// FIXME -> gerer la requete dans la sandbox, quand on saute de mois
-test.skip(`Le formulaire de réservation contient de multiple dates`, async t => {
+// FIXME -> gérer la requête dans la sandbox, quand on saute de mois
+test.skip('Le formulaire de réservation contient de multiple dates', async t => {
   await t
     .click(bookOfferButton)
     .expect(dateSelectBox.exists)
@@ -85,7 +85,7 @@ test.skip(`Le formulaire de réservation contient de multiple dates`, async t =>
     .gt(1)
 })
 
-test(`Je sélectionne la première date, le champs de date se met à jour, une horaire est sélectionée`, async t => {
+test('Je sélectionne la première date, le champ de date se met à jour, un horaire est sélectionné', async t => {
   await t
     .click(bookOfferButton)
     .expect(dateSelectBox.exists)
@@ -98,7 +98,7 @@ test(`Je sélectionne la première date, le champs de date se met à jour, une h
     .match(/^[0-9]{2}:[0-9]{2}\s-\s[0-9]+\s€$/gi)
 })
 
-test(`Parcours complet de réservation d'une offre event à date unique`, async t => {
+test("Parcours complet de réservation d'une offre event à date unique", async t => {
   await t.click(openMenuFromVerso).wait(500)
   previousWalletValue = await getMenuWalletValue()
   await t
@@ -151,7 +151,7 @@ test(`Parcours complet de réservation d'une offre event à date unique`, async 
     .ok()
 })
 
-test(`Je vérifie mes réservations, après reconnexion`, async t => {
+test('Je vérifie mes réservations, après reconnexion', async t => {
   // FIXME: currentBookedToken devrait provenir d'une valeur
   // de la sandbox (ie que le fetch sandbox devrait aussi retourner un
   // objet booking) car sinon on ne peut pas
@@ -182,7 +182,7 @@ test(`Je vérifie mes réservations, après reconnexion`, async t => {
     .ok()
 })
 
-test(`Je vérifie le montant de mon pass, après reconnexion`, async t => {
+test('Je vérifie le montant de mon pass, après reconnexion', async t => {
   const walletInfoSentence = `Il reste ${previousWalletValue} €`
   await t
     .navigateTo(myProfileURL)
@@ -190,7 +190,7 @@ test(`Je vérifie le montant de mon pass, après reconnexion`, async t => {
     .eql(walletInfoSentence)
 })
 
-test(`Je ne peux plus réserver cette offre, après reconnexion`, async t => {
+test('Je ne peux plus réserver cette offre, après reconnexion', async t => {
   await t
     .click(openMenuFromVerso)
     .expect(bookOfferButton.exists)

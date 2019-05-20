@@ -13,7 +13,7 @@ const submitButton = Selector("button[type='submit']")
 
 const baseURL = `${ROOT_PATH}activation`
 
-fixture(`01_01 ActivationPage | succès de l'activation`)
+fixture(`01_01 Activation | succès de l'activation`)
 
 test('Je suis redirigé·e vers découverte', async t => {
   // given
@@ -37,7 +37,7 @@ test('Je suis redirigé·e vers découverte', async t => {
     .match(/\/decouverte\/tuto\/([A-Z0-9]*)$/)
 })
 
-fixture("01_02 ActivationPage | erreurs avec l'activation")
+fixture("01_02 Activation | erreurs avec l'activation")
 
 test('Sans token, je suis redirigé·e vers /activation/error', async t => {
   await t

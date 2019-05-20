@@ -15,7 +15,7 @@ const toogleFilterButton = Selector('#search-filter-menu-toggle-button').find(
 let userRole
 
 fixture(
-  '05_05_01 Recherche par distance | Je me suis connecté·e | Je ne suis pas géolocalisé·e'
+  '05_04_01 Recherche par distance | Je me suis connecté·e | Je ne suis pas géolocalisé·e'
 ).beforeEach(async t => {
   if (!userRole) {
     userRole = await createUserRoleFromUserSandbox(
@@ -103,6 +103,7 @@ test('Je sélectionne moins de 50 kms et je clique sur filtrer', async t => {
     .expect(getPageUrl())
     .contains(`${ROOT_PATH}recherche/resultats?distance=50`)
 })
+
 test('Je fais une recherche, je retourne sur la home, je réouvre la fenêtre de recherche, le filtre par distance est réinitialisé avec la valeur par défaut', async t => {
   const distanceInput = Selector('#filter-by-distance')
   await t

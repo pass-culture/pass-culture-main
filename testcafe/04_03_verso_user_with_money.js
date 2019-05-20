@@ -17,29 +17,29 @@ const alreadyBookedOfferButton = Selector('#verso-already-booked-button')
 
 let userRole
 
-fixture(`04_03 Verso l'user peut réserver l'offre payante`).beforeEach(
-  async t => {
-    // given
-    if (!userRole) {
-      userRole = await createUserRoleFromUserSandbox(
-        'webapp_04_verso',
-        'get_existing_webapp_hbs_user'
-      )
-    }
-
-    const { mediationId, offer } = await fetchSandbox(
-      'webapp_08_booking',
-      'get_non_free_thing_offer_with_active_mediation'
+fixture(
+  "04_03_01 Verso | L'utilisateur peut réserver l'offre payante"
+).beforeEach(async t => {
+  // given
+  if (!userRole) {
+    userRole = await createUserRoleFromUserSandbox(
+      'webapp_04_verso',
+      'get_existing_webapp_hbs_user'
     )
-    offerTitle = offer.thingName
-    offerSubTitle = offer.venueName
-    const offerURL = `${discoverURL}/${offer.id}/${mediationId}`
-    await t.useRole(userRole).navigateTo(offerURL)
-    await dragButton.with({ visibilityCheck: true })()
   }
-)
 
-test(`L'user doit pouvoir cliquer sur les chevrons pour ouvrir le verso`, async t => {
+  const { mediationId, offer } = await fetchSandbox(
+    'webapp_08_booking',
+    'get_non_free_thing_offer_with_active_mediation'
+  )
+  offerTitle = offer.thingName
+  offerSubTitle = offer.venueName
+  const offerURL = `${discoverURL}/${offer.id}/${mediationId}`
+  await t.useRole(userRole).navigateTo(offerURL)
+  await dragButton.with({ visibilityCheck: true })()
+})
+
+test("L'utilisateur doit pouvoir cliquer sur les chevrons pour ouvrir le verso", async t => {
   await t
     .expect(openVersoButton.exists)
     .ok()
@@ -48,7 +48,7 @@ test(`L'user doit pouvoir cliquer sur les chevrons pour ouvrir le verso`, async 
     .ok()
 })
 
-test(`L'user a de l'argent sur son compte`, async t => {
+test("L'utilisateur a de l'argent sur son compte", async t => {
   await t.click(openVersoButton)
 
   const versoWallet = await getVersoWallet()
@@ -60,7 +60,7 @@ test(`L'user a de l'argent sur son compte`, async t => {
     .gte(0)
 })
 
-test(`L'user peut réserver l'Offre`, async t => {
+test("L'utilisateur peut réserver l'Offre", async t => {
   await t
     .click(openVersoButton)
     .expect(alreadyBookedOfferButton.exists)

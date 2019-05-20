@@ -22,7 +22,7 @@ const sendBookingButton = Selector('#booking-validation-button')
 
 let userRole
 
-fixture(`08_02 L'user peut réserver n'importe quelle offre`).beforeEach(
+fixture("08_02_01 L'user peut réserver n'importe quelle offre").beforeEach(
   async t => {
     if (!userRole) {
       userRole = await createUserRoleFromUserSandbox(
@@ -40,7 +40,7 @@ fixture(`08_02 L'user peut réserver n'importe quelle offre`).beforeEach(
   }
 )
 
-test(`J'ai de l'argent sur mon pass`, async t => {
+test("J'ai de l'argent sur mon pass", async t => {
   await t.click(openMenu).wait(500)
   previousWalletValue = await getMenuWalletValue()
   await t
@@ -49,7 +49,7 @@ test(`J'ai de l'argent sur mon pass`, async t => {
     .click(closeMenu)
 })
 
-test(`Je peux réserver l'offre`, async t => {
+test("Je peux réserver l'offre", async t => {
   await t
     .click(openVerso)
     .wait(500)
@@ -65,7 +65,7 @@ test(`Je peux réserver l'offre`, async t => {
     .click(sendBookingButton)
 })
 
-test(`Je vois l'offre dans "mes réservations" et je peux cliquer dessus pour revenir à la page "Mes réservations"`, async t => {
+test("Je vois l'offre dans 'mes réservations' et je peux cliquer dessus pour revenir à la page 'Mes réservations'", async t => {
   await t
     .click(openMenu)
     .click(menuReservations)

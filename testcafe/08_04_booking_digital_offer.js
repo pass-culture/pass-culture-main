@@ -33,24 +33,26 @@ const myBookingsMenuButton = Selector('#main-menu-reservations-button')
 const profileWalletAllValue = Selector('#profile-wallet-balance-value')
 
 let userRole
-fixture(`08_04 Réservation d'une offre type digitale`).beforeEach(async t => {
-  if (!userRole) {
-    userRole = await createUserRoleFromUserSandbox(
+fixture("08_04_01 Réservation d'une offre type digitale").beforeEach(
+  async t => {
+    if (!userRole) {
+      userRole = await createUserRoleFromUserSandbox(
+        'webapp_08_booking',
+        'get_existing_webapp_user_can_book_digital_offer'
+      )
+    }
+    const { offer } = await fetchSandbox(
       'webapp_08_booking',
-      'get_existing_webapp_user_can_book_digital_offer'
+      'get_non_free_digital_offer'
     )
+
+    offerPage = `${discoverURL}/${offer.id}`
+    offerBookingPage = `${offerPage}/booking`
+    await t.useRole(userRole).navigateTo(offerPage)
   }
-  const { offer } = await fetchSandbox(
-    'webapp_08_booking',
-    'get_non_free_digital_offer'
-  )
+)
 
-  offerPage = `${discoverURL}/${offer.id}`
-  offerBookingPage = `${offerPage}/booking`
-  await t.useRole(userRole).navigateTo(offerPage)
-})
-
-test(`Il s'agit d'une offre en ligne qui n'est pas terminée`, async t => {
+test("Il s'agit d'une offre en ligne qui n'est pas terminée", async t => {
   await dragButton.with({ visibilityCheck: true })()
   await t
     .expect(onlineOfferLabel.nth(1).textContent)
@@ -59,7 +61,7 @@ test(`Il s'agit d'une offre en ligne qui n'est pas terminée`, async t => {
     .notOk()
 })
 
-test(`Le formulaire de réservation ne contient pas de sélecteur de date ou d'horaire`, async t => {
+test("Le formulaire de réservation ne contient pas de sélecteur de date ou d'horaire", async t => {
   await t
     .click(openVerso)
     .wait(500)
@@ -73,7 +75,7 @@ test(`Le formulaire de réservation ne contient pas de sélecteur de date ou d'h
     .notOk()
 })
 
-test(`Parcours complet de réservation d'une offre digitale`, async t => {
+test("Parcours complet de réservation d'une offre digitale", async t => {
   await t.click(openMenu).wait(500)
   previousWalletValue = await getMenuWalletValue()
   await t
@@ -126,7 +128,7 @@ test(`Parcours complet de réservation d'une offre digitale`, async t => {
     .eql(`Accéder`)
 })
 
-test(`Je vérifie mes réservations après reconnexion`, async t => {
+test('Je vérifie mes réservations après reconnexion', async t => {
   const bookedOffer = Selector(
     `.booking-item[data-token="${currentBookedToken}"]`
   )
@@ -142,7 +144,7 @@ test(`Je vérifie mes réservations après reconnexion`, async t => {
     .notEql(myBookingsURL)
 })
 
-test(`Je vérifie le montant de mon pass`, async t => {
+test('Je vérifie le montant de mon pass', async t => {
   const walletInfoSentence = `Il reste ${previousWalletValue} €`
   await t
     .navigateTo(myProfileURL)
@@ -150,7 +152,7 @@ test(`Je vérifie le montant de mon pass`, async t => {
     .eql(walletInfoSentence)
 })
 
-test(`Je ne peux plus réserver cette offre`, async t => {
+test('Je ne peux plus réserver cette offre', async t => {
   await t
     .click(openVerso)
     .expect(bookOfferButton.exists)

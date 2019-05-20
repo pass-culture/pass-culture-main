@@ -30,7 +30,7 @@ const profileWalletAllValue = Selector('#profile-wallet-balance-value')
 
 let userRole
 
-fixture(`08_03 Réservation d'une offre type thing`).beforeEach(async t => {
+fixture("08_03_01 Réservation d'une offre type thing").beforeEach(async t => {
   if (!userRole) {
     userRole = await createUserRoleFromUserSandbox(
       'webapp_08_booking',
@@ -48,7 +48,7 @@ fixture(`08_03 Réservation d'une offre type thing`).beforeEach(async t => {
   await t.useRole(userRole).navigateTo(offerPage)
 })
 
-test(`Le formulaire de réservation ne contient pas de sélecteur de date ou d'horaire`, async t => {
+test("Le formulaire de réservation ne contient pas de sélecteur de date ou d'horaire", async t => {
   await t
     .click(openVerso)
     .wait(500)
@@ -61,7 +61,7 @@ test(`Le formulaire de réservation ne contient pas de sélecteur de date ou d'h
     .notOk()
 })
 
-test(`Parcours complet de réservation d'une offre thing`, async t => {
+test("Parcours complet de réservation d'une offre thing", async t => {
   await t.click(openMenu).wait(500)
   previousWalletValue = await getMenuWalletValue()
   await t
@@ -115,7 +115,7 @@ test(`Parcours complet de réservation d'une offre thing`, async t => {
     .ok()
 })
 
-test(`Je vérifie le montant de mon pass`, async t => {
+test('Je vérifie le montant de mon pass', async t => {
   const walletInfoSentence = `Il reste ${previousWalletValue} €`
   await t
     .navigateTo(myProfileURL)
@@ -123,7 +123,7 @@ test(`Je vérifie le montant de mon pass`, async t => {
     .eql(walletInfoSentence)
 })
 
-test(`Je ne peux plus réserver cette offre`, async t => {
+test('Je ne peux plus réserver cette offre', async t => {
   await t
     .click(openVerso)
     .wait(500)

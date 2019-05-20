@@ -2,9 +2,7 @@ import { Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
 
-fixture("00 BetaPage Component | J'arrive à la racine de la webapp").page(
-  `${ROOT_PATH}`
-)
+fixture("00_01 Home | J'arrive à la racine de la webapp").page(`${ROOT_PATH}`)
 
 test('Je suis redirigé·e vers /beta', async t => {
   const location = await t.eval(() => window.location)

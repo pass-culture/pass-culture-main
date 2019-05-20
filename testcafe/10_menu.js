@@ -49,7 +49,7 @@ test('Je vois le montant de mon pass dans le header', async t => {
   await t.expect(Selector('#main-menu-header-wallet-value').exists).ok()
 })
 
-fixture('10_02 Modal Menu - Liens vers pages').beforeEach(async t => {
+fixture('10_02 - Modal Menu - Liens vers pages').beforeEach(async t => {
   const { user } = await fetchSandbox(
     'webapp_10_menu',
     'get_existing_webapp_validated_user'
@@ -147,7 +147,7 @@ test('Menu | Liens | Déconnexion', async t => {
   await t.expect(location.pathname).eql('/connexion')
 })
 
-fixture("10_03 Modal Menu - gestion de l'historique").beforeEach(async t => {
+fixture("10_03 - Modal Menu - gestion de l'historique").beforeEach(async t => {
   await t
     .useRole(userRole)
     .navigateTo(`${ROOT_PATH}profil`)

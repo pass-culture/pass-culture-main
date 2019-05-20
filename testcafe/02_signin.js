@@ -12,7 +12,7 @@ const passwordError = Selector(`${passId}-error`).find(errorClass)
 const identifierErrors = Selector(`${userId}-error`).find(errorClass)
 const signInButton = Selector('#signin-submit-button')
 
-fixture("02_01 SignInPage Component | J'ai un compte et je me connecte")
+fixture("02_01 SignIn | J'ai un compte et je me connecte")
   .page(`${ROOT_PATH}connexion`)
   .beforeEach(async t => {
     t.ctx.sandbox = await fetchSandbox(

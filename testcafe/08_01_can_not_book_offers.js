@@ -15,7 +15,7 @@ const sendBookingButton = Selector('#booking-validation-button')
 
 let userRole
 
-fixture(`08_01 L'utilisateur ne peut pas réserver`).beforeEach(async t => {
+fixture("08_01_01 L'utilisateur ne peut pas réserver").beforeEach(async t => {
   userRole = await createUserRoleFromUserSandbox(
     'webapp_08_booking',
     'get_existing_webapp_user_has_no_more_money'
@@ -23,7 +23,7 @@ fixture(`08_01 L'utilisateur ne peut pas réserver`).beforeEach(async t => {
   await t.useRole(userRole)
 })
 
-test(`Je n'ai plus d'argent`, async t => {
+test("Je n'ai plus d'argent", async t => {
   const { mediationId, offer } = await fetchSandbox(
     'webapp_08_booking',
     'get_non_free_thing_offer_with_active_mediation'
@@ -46,6 +46,6 @@ test(`Je n'ai plus d'argent`, async t => {
     .ok()
     .expect(bookingErrorReasons.nth(1).textContent)
     .eql(
-      `Le solde de votre pass n'est pas suffisant pour effectuer cette réservation.`
+      "Le solde de votre pass n'est pas suffisant pour effectuer cette réservation."
     )
 })

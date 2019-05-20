@@ -61,7 +61,7 @@ test('Je fais ma première visite sur découverte', async t => {
   await t.expect(getPageUrl()).notContains('/decouverte/tuto/')
 })
 
-fixture('O3_02 Découverte | exploration | Recommendations').beforeEach(
+fixture('O3_03 Découverte | exploration | Recommendations').beforeEach(
   async t => {
     if (!userRole2) {
       userRole2 = await createUserRoleFromUserSandbox(
@@ -112,10 +112,9 @@ test("Je vois l'écran de chargement si je passe de carte en carte très vite ve
   await t.expect(loaderScreen.visible).ok({ timeout: 10000 })
   await t.click(nextButton)
   const nbRecos = getNbRecos()
-  let x
   let urlAfter
   let urlBefore
-  for (x = 0; x <= nbRecos + 1; x += 1) {
+  for (let count = 0; count <= nbRecos + 1; count += 1) {
     urlBefore = getPageUrl()
     await t.click(nextButton)
     await t.expect(getPageUrl()).notEql(urlBefore)
