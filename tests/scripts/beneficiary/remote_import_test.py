@@ -9,7 +9,7 @@ from models import User
 from scripts.beneficiary import remote_import
 from scripts.beneficiary.remote_import import parse_beneficiary_information, process_beneficiary_application, \
     DuplicateBeneficiaryError
-from tests.conftest import clean_database, mocked_mail
+from tests.conftest import clean_database
 from tests.scripts.beneficiary.fixture import make_application_detail, \
     make_applications_list, APPLICATION_DETAIL_STANDARD_RESPONSE
 
@@ -105,6 +105,36 @@ class RunTest:
         # then
         send_activation_notification_email.assert_called()
 
+    @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
+    @patch('scripts.beneficiary.remote_import.PcObject')
+    @patch('scripts.beneficiary.remote_import.send_activation_notification_email')
+    def test_beneficiary_is_not_created_if_duplicates_are_found(self,
+                                                                send_activation_notification_email, PcObject,
+                                                                process_beneficiary_application):
+        # given
+        get_all_applications = Mock()
+        get_all_applications.return_value = make_applications_list(
+            [
+                (123, 'closed', FOUR_HOURS_AGO),
+                (456, 'initiated', EIGHT_HOURS_AGO),
+                (789, 'refused', TWO_DAYS_AGO)
+            ]
+        )
+        get_details = Mock()
+        get_details.side_effect = [
+            make_application_detail(123, 'closed'),
+            make_application_detail(456, 'initiated'),
+            make_application_detail(789, 'refused')
+        ]
+        process_beneficiary_application.side_effect = DuplicateBeneficiaryError(123, [User()])
+
+        # when
+        remote_import.run(get_all_applications, get_details)
+
+        # then
+        send_activation_notification_email.assert_not_called()
+        PcObject.assert_not_called()
+
 
 @pytest.mark.standalone
 class ParseBeneficiaryInformationTest:
@@ -185,9 +215,13 @@ class ProcessBeneficiaryApplicationTest:
 
     def test_raise_an_error_with_duplicate_users_if_any_are_found(self):
         # given
+        user1 = User()
+        user1.id = 123
+        user2 = User()
+        user2.id = 456
         find_duplicate_users = Mock()
         find_duplicate_users.return_value = [
-            User(), User()
+            user1, user2
         ]
         beneficiary_information = {
             'department': '67',
@@ -204,4 +238,4 @@ class ProcessBeneficiaryApplicationTest:
             process_beneficiary_application(beneficiary_information, find_duplicate_users)
 
         # then
-        assert e.value.message == '2 utilisateur(s) en doublon pour le dossier 123'
+        assert e.value.message == '2 utilisateur(s) en doublons (123, 456) pour le dossier 123'

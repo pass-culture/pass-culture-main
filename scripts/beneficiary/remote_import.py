@@ -18,8 +18,11 @@ VALIDATED_APPLICATION = 'closed'
 
 class DuplicateBeneficiaryError(Exception):
     def __init__(self, application_id: int, duplicate_beneficiaries: List[User]):
-        self.message = '%s utilisateur(s) en doublon pour le dossier %s' % (
-            len(duplicate_beneficiaries), application_id)
+        number_of_beneficiaries = len(duplicate_beneficiaries)
+        duplicate_ids = ", ".join([str(u.id) for u in duplicate_beneficiaries])
+        self.message = '%s utilisateur(s) en doublons (%s) pour le dossier %s' % (
+            number_of_beneficiaries, duplicate_ids, application_id
+        )
 
 
 def run(
@@ -30,13 +33,19 @@ def run(
     applications = get_all_applications(PROCEDURE_ID, TOKEN)
     processable_application = filter(lambda a: _validated_application(a), applications['dossiers'])
     ids_to_process = {a['id'] for a in processable_application}
+    error_messages = []
 
     for id in ids_to_process:
         details = get_details(id, PROCEDURE_ID, TOKEN)
         information = parse_beneficiary_information(details)
-        new_beneficiary = process_beneficiary_application(information, find_duplicate_users=find_duplicate_users)
-        PcObject.check_and_save(new_beneficiary)
-        send_activation_notification_email(new_beneficiary, send_raw_email)
+
+        try:
+            new_beneficiary = process_beneficiary_application(information, find_duplicate_users=find_duplicate_users)
+        except DuplicateBeneficiaryError as e:
+            error_messages.append(e.message)
+        else:
+            PcObject.check_and_save(new_beneficiary)
+            send_activation_notification_email(new_beneficiary, send_raw_email)
 
 
 def parse_beneficiary_information(application_detail: dict) -> dict:
