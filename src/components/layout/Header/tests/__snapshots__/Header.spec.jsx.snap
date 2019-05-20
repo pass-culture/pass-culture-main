@@ -86,6 +86,7 @@ ShallowWrapper {
             <a
               className="navbar-item"
               href="https://docs.passculture.app/structures-culturelles"
+              target="_blank"
             >
               <span
                 className="icon"
@@ -260,6 +261,7 @@ ShallowWrapper {
               <a
                 className="navbar-item"
                 href="https://docs.passculture.app/structures-culturelles"
+                target="_blank"
               >
                 <span
                   className="icon"
@@ -498,6 +500,7 @@ ShallowWrapper {
               <a
                 className="navbar-item"
                 href="https://docs.passculture.app/structures-culturelles"
+                target="_blank"
               >
                 <span
                   className="icon"
@@ -649,6 +652,7 @@ ShallowWrapper {
                 <a
                   className="navbar-item"
                   href="https://docs.passculture.app/structures-culturelles"
+                  target="_blank"
                 >
                   <span
                     className="icon"
@@ -901,6 +905,7 @@ ShallowWrapper {
                   ],
                   "className": "navbar-item",
                   "href": "https://docs.passculture.app/structures-culturelles",
+                  "target": "_blank",
                 },
                 "ref": null,
                 "rendered": Array [
@@ -1515,6 +1520,7 @@ ShallowWrapper {
               <a
                 className="navbar-item"
                 href="https://docs.passculture.app/structures-culturelles"
+                target="_blank"
               >
                 <span
                   className="icon"
@@ -1689,6 +1695,7 @@ ShallowWrapper {
                 <a
                   className="navbar-item"
                   href="https://docs.passculture.app/structures-culturelles"
+                  target="_blank"
                 >
                   <span
                     className="icon"
@@ -1927,6 +1934,7 @@ ShallowWrapper {
                 <a
                   className="navbar-item"
                   href="https://docs.passculture.app/structures-culturelles"
+                  target="_blank"
                 >
                   <span
                     className="icon"
@@ -2078,6 +2086,7 @@ ShallowWrapper {
                   <a
                     className="navbar-item"
                     href="https://docs.passculture.app/structures-culturelles"
+                    target="_blank"
                   >
                     <span
                       className="icon"
@@ -2330,6 +2339,7 @@ ShallowWrapper {
                     ],
                     "className": "navbar-item",
                     "href": "https://docs.passculture.app/structures-culturelles",
+                    "target": "_blank",
                   },
                   "ref": null,
                   "rendered": Array [

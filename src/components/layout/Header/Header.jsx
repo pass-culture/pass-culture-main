@@ -55,7 +55,8 @@ class Header extends Component {
               )}
               <a
                 className="navbar-item"
-                href="https://docs.passculture.app/structures-culturelles">
+                href="https://docs.passculture.app/structures-culturelles"
+                target="_blank">
                 <span className="icon">
                   <Icon svg="ico-help-w" />
                 </span>

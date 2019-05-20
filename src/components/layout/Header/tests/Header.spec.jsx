@@ -83,6 +83,7 @@ describe('src | components | Layout | Header', () => {
         expect(helpLink.prop('href')).toBe(
           'https://docs.passculture.app/structures-culturelles'
         )
+        expect(helpLink.prop('target')).toBe('_blank')
       })
 
       it('should display a "help" icon and the proper label', () => {
