@@ -16,6 +16,22 @@ PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', N
 VALIDATED_APPLICATION = 'closed'
 
 
+def run(
+        get_all_applications: Callable[[str, str], dict] = get_all_applications_for_procedure,
+        get_details: Callable[[str, str, str], dict] = get_application_details,
+        find_duplicate_users: Callable[[str, str, str], User] = find_by_first_and_last_names_and_birth_date
+):
+    applications = get_all_applications(PROCEDURE_ID, TOKEN)
+    processable_application = filter(lambda a: a['state'] == 'closed', applications['dossiers'])
+    ids_to_process = {a['id'] for a in processable_application}
+    error_messages = []
+
+    for id in ids_to_process:
+        details = get_details(id, PROCEDURE_ID, TOKEN)
+        information = parse_beneficiary_information(details)
+        process_beneficiary_application(information, error_messages, find_duplicate_users=find_duplicate_users)
+
+
 class DuplicateBeneficiaryError(Exception):
     def __init__(self, application_id: int, duplicate_beneficiaries: List[User]):
         number_of_beneficiaries = len(duplicate_beneficiaries)
@@ -25,27 +41,17 @@ class DuplicateBeneficiaryError(Exception):
         )
 
 
-def run(
-        get_all_applications: Callable[[str, str], dict] = get_all_applications_for_procedure,
-        get_details: Callable[[str, str, str], dict] = get_application_details,
+def process_beneficiary_application(
+        information: dict, error_messages: List[str],
         find_duplicate_users: Callable[[str, str, str], User] = find_by_first_and_last_names_and_birth_date
 ):
-    applications = get_all_applications(PROCEDURE_ID, TOKEN)
-    processable_application = filter(lambda a: _validated_application(a), applications['dossiers'])
-    ids_to_process = {a['id'] for a in processable_application}
-    error_messages = []
-
-    for id in ids_to_process:
-        details = get_details(id, PROCEDURE_ID, TOKEN)
-        information = parse_beneficiary_information(details)
-
-        try:
-            new_beneficiary = process_beneficiary_application(information, find_duplicate_users=find_duplicate_users)
-        except DuplicateBeneficiaryError as e:
-            error_messages.append(e.message)
-        else:
-            PcObject.check_and_save(new_beneficiary)
-            send_activation_notification_email(new_beneficiary, send_raw_email)
+    try:
+        new_beneficiary = create_beneficiary_from_application(information, find_duplicate_users=find_duplicate_users)
+    except DuplicateBeneficiaryError as e:
+        error_messages.append(e.message)
+    else:
+        PcObject.check_and_save(new_beneficiary)
+        send_activation_notification_email(new_beneficiary, send_raw_email)
 
 
 def parse_beneficiary_information(application_detail: dict) -> dict:
@@ -74,7 +80,7 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
     return information
 
 
-def process_beneficiary_application(
+def create_beneficiary_from_application(
         application_detail: dict,
         find_duplicate_users: Callable[[str, str, str], User] = find_by_first_and_last_names_and_birth_date
 ) -> User:
@@ -107,7 +113,3 @@ def process_beneficiary_application(
     beneficiary.deposits = [deposit]
 
     return beneficiary
-
-
-def _validated_application(application: dict) -> bool:
-    return application['state'] == VALIDATED_APPLICATION
