@@ -108,13 +108,15 @@ END; $$
 LANGUAGE plpgsql;
 
 UPDATE offer SET "bookingEmail" = 'ano@nym.ized' WHERE "bookingEmail" is not null;
+
 UPDATE offerer SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
-UPDATE bank_information SET "iban" = pg_temp.generate_random_between(999999999,100000000)::text,
-  "bic" = pg_temp.generate_random_between(999999999,100000000)::text WHERE "iban" is not null;
+
+UPDATE bank_information SET "iban" = pg_temp.generate_random_between(999999999,100000000)::text WHERE "iban" is not null;
+UPDATE bank_information SET "bic" = pg_temp.generate_random_between(999999999,100000000)::text WHERE "bic" is not null;
+
 UPDATE booking SET "token" = pg_temp.generate_booking_token_from_id("id") WHERE "token" is not null;
 
 UPDATE payment SET "iban" = 'FR7630001007941234567890185' WHERE "iban" is not null;
-
 UPDATE payment SET "bic" = 'BDFEFR2L' WHERE "bic" is not null;
 
 UPDATE provider SET "apiKey" = substring(md5(random()::text), 1, 32) WHERE "apiKey" is not null;
@@ -131,11 +133,11 @@ UPDATE "user" SET "resetPasswordToken" = substring(md5(random()::text),1 , 10) W
 
 UPDATE user_offerer SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
 
-UPDATE bank_information SET "iban" = 'FR7630001007941234567890185',
-  "bic" = 'BDFEFR2L'  WHERE "iban" is not null;
+UPDATE bank_information SET "iban" = 'FR7630001007941234567890185' WHERE "iban" is not null;
+UPDATE bank_information SET "bic" = 'BDFEFR2L'  WHERE "bic" is not null;
 
-UPDATE venue SET "bookingEmail" = 'ano@nym.ized',
- "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
+UPDATE venue SET "bookingEmail" = 'ano@nym.ized' WHERE "bookingEmail" IS NOT NULL;
+UPDATE venue SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
 
 UPDATE activity
 SET
