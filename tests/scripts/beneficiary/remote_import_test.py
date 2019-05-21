@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, ANY
 
 import pytest
 from mailjet_rest import Client
@@ -22,8 +22,9 @@ TWO_DAYS_AGO = (NOW - timedelta(hours=48)).strftime(datetime_pattern)
 
 @pytest.mark.standalone
 class RunTest:
+    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
-    def test_only_closed_applications_are_processed(self, process_beneficiary_application):
+    def test_only_closed_applications_are_processed(self, process_beneficiary_application, send_report_email):
         # given
         get_all_applications = Mock()
         get_all_applications.return_value = make_applications_list(
@@ -46,15 +47,18 @@ class RunTest:
         # then
         assert process_beneficiary_application.call_count == 2
 
+    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
-    def test_pagination(self, process_beneficiary_application):
+    def test_pagination_is_handled_properly(self, process_beneficiary_application, send_report_email):
         # given
         get_all_applications = Mock()
+        number_of_pages = 3
+        current_page = 1
         get_all_applications.return_value = make_applications_list(
             [
                 (123, 'closed', FOUR_HOURS_AGO),
                 (456, 'initiated', EIGHT_HOURS_AGO)
-            ], 1, 3
+            ], current_page, number_of_pages
         )
         get_details = Mock()
         get_details.return_value = make_application_detail(123, 'closed')
@@ -64,6 +68,28 @@ class RunTest:
 
         # then
         assert process_beneficiary_application.call_count == 3
+
+    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
+    @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
+    def test_pagination_is_handled_properly(self, process_beneficiary_application, send_report_email):
+        # given
+        get_all_applications = Mock()
+        number_of_pages = 3
+        current_page = 1
+        get_all_applications.return_value = make_applications_list(
+            [
+                (123, 'closed', FOUR_HOURS_AGO),
+                (456, 'initiated', EIGHT_HOURS_AGO)
+            ], current_page, number_of_pages
+        )
+        get_details = Mock()
+        get_details.return_value = make_application_detail(123, 'closed')
+
+        # when
+        remote_import.run(get_all_applications, get_details)
+
+        # then
+        send_report_email.assert_called_with([], [], ANY)
 
 
 @pytest.mark.standalone
@@ -85,7 +111,7 @@ class ProcessBeneficiaryApplicationTest:
         }
 
         # when
-        remote_import.process_beneficiary_application(information, [])
+        remote_import.process_beneficiary_application(information, [], [])
 
         # then
         first = User.query.first()
@@ -112,7 +138,7 @@ class ProcessBeneficiaryApplicationTest:
         create_beneficiary_from_application.return_value = [User()]
 
         # when
-        remote_import.process_beneficiary_application(information, [])
+        remote_import.process_beneficiary_application(information, [], [])
 
         # then
         send_activation_notification_email.assert_called()
@@ -137,7 +163,7 @@ class ProcessBeneficiaryApplicationTest:
         create_beneficiary_from_application.side_effect = DuplicateBeneficiaryError(123, [User()])
 
         # when
-        remote_import.process_beneficiary_application(information, [])
+        remote_import.process_beneficiary_application(information, [], [])
 
         # then
         send_activation_notification_email.assert_not_called()
@@ -220,7 +246,7 @@ class CreateBeneficiaryFromApplicationTest:
         # then
         assert len(beneficiary.deposits) == 1
         assert beneficiary.deposits[0].amount == Decimal(500)
-        assert beneficiary.deposits[0].source == 'activation'
+        assert beneficiary.deposits[0].source == 'démarches simplifiées dossier [123]'
 
     def test_raise_an_error_with_duplicate_users_if_any_are_found(self):
         # given

@@ -22,8 +22,20 @@ def upgrade():
         type_=sa.Text,
         existing_nullable=True)
 
+    op.execute("""
+    UPDATE deposit
+    SET source = 'import par fichier CSV'
+    WHERE source = 'activation';
+    """)
+
 
 def downgrade():
+    op.execute("""
+        UPDATE deposit
+        SET source = 'activation'
+        WHERE source = 'import par fichier CSV';
+        """)
+
     op.alter_column('recommendation', 'search',
         existing_type=sa.Text,
         type_=sa.VARCHAR(length=300), existing_nullable=True)

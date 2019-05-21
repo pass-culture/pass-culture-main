@@ -72,3 +72,8 @@ def send_offer_creation_notification_to_administration(offer: Offer, author: Use
     email = make_offer_creation_notification_email(offer, author, app_origin_url)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], email['To'])
     return send_email(data=email)
+
+
+def send_remote_beneficiaries_import_report_email(new_beneficiaries: List[User], error_messages: List[str],
+                                                  send_email: Callable[[dict], bool]) -> bool:
+    pass

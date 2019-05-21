@@ -18,7 +18,7 @@ def create_initial_deposit(user_to_activate: User) -> Deposit:
         deposit = Deposit()
         deposit.amount = 500
         deposit.user = user_to_activate
-        deposit.source = 'activation'
+        deposit.source = 'fichier csv'
         return deposit
 
 

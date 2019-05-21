@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Callable, List
 
 from connectors.api_demarches_simplifiees import get_all_applications_for_procedure, get_application_details
+from domain.admin_emails import send_remote_beneficiaries_import_report_email
 from domain.password import generate_reset_token, random_password
 from domain.user_emails import send_activation_notification_email
 from models import User, PcObject, Deposit
@@ -24,6 +25,7 @@ def run(
     current_page = 1
     number_of_pages = 1
     error_messages = []
+    new_beneficiaries = []
 
     while current_page <= number_of_pages:
 
@@ -34,7 +36,10 @@ def run(
         for id in ids_to_process:
             details = get_details(id, PROCEDURE_ID, TOKEN)
             information = parse_beneficiary_information(details)
-            process_beneficiary_application(information, error_messages, find_duplicate_users=find_duplicate_users)
+            process_beneficiary_application(information, error_messages, new_beneficiaries,
+                                            find_duplicate_users=find_duplicate_users)
+
+    send_remote_beneficiaries_import_report_email(new_beneficiaries, error_messages, send_raw_email)
 
 
 class DuplicateBeneficiaryError(Exception):
@@ -47,7 +52,7 @@ class DuplicateBeneficiaryError(Exception):
 
 
 def process_beneficiary_application(
-        information: dict, error_messages: List[str],
+        information: dict, error_messages: List[str], new_beneficiaries,
         find_duplicate_users: Callable[[str, str, str], User] = find_by_first_and_last_names_and_birth_date
 ):
     try:
@@ -55,6 +60,7 @@ def process_beneficiary_application(
     except DuplicateBeneficiaryError as e:
         error_messages.append(e.message)
     else:
+        new_beneficiaries.append(new_beneficiary)
         PcObject.check_and_save(new_beneficiary)
         send_activation_notification_email(new_beneficiary, send_raw_email)
 
@@ -114,7 +120,7 @@ def create_beneficiary_from_application(
 
     deposit = Deposit()
     deposit.amount = 500
-    deposit.source = 'activation'
+    deposit.source = 'démarches simplifiées dossier [%s]' % application_detail['application_id']
     beneficiary.deposits = [deposit]
 
     return beneficiary
