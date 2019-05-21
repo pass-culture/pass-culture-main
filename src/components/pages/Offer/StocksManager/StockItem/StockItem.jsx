@@ -11,7 +11,7 @@ import { requestData } from 'redux-saga-data'
 import EditAndDeleteControl from './EditAndDeleteControl'
 import EventFields from './EventFields'
 import ProductFields from './ProductFields'
-import SubmitAndCancelControl from './SubmitAndCancelControl'
+import SubmitAndCancelControlContainer from './SubmitAndCancelControl/SubmitAndCancelControlContainer'
 import forceDateTimeAtSpecificHoursAndMinutes from './decorators/forceDateTimeAtSpecificHoursAndMinutes'
 import {
   BOOKING_LIMIT_DATETIME_HOURS,
@@ -193,7 +193,7 @@ export class StockItem extends Component {
                     tbody={tbodyElement}
                   />
                 ) : (
-                  <SubmitAndCancelControl
+                  <SubmitAndCancelControlContainer
                     canSubmit={canSubmit}
                     form={form}
                     handleSubmit={handleSubmit}

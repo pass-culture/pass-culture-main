@@ -2,8 +2,6 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 
-import { withFrenchQueryRouter } from 'components/hocs'
-
 const SubmitAndCancelControl = ({
   canSubmit,
   form,
@@ -51,4 +49,4 @@ SubmitAndCancelControl.propTypes = {
   stockId: PropTypes.string,
 }
 
-export default withFrenchQueryRouter(SubmitAndCancelControl)
+export default SubmitAndCancelControl
