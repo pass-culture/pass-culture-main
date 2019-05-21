@@ -25,7 +25,7 @@ export const updateBookingLimitDatetime = (
     const updatedDateTime = bookingLimitDatetimeMoment
       .hours(BOOKING_LIMIT_DATETIME_HOURS)
       .minutes(BOOKING_LIMIT_DATETIME_MINUTES)
-      .toISOString(true)
+      .toISOString()
 
     return {
       bookingLimitDatetime: updatedDateTime,
@@ -52,7 +52,7 @@ export const updateBeginningDatetime = (
     const updatedDateTime = bookingLimitDatetimeMoment
       .hours(BOOKING_LIMIT_DATETIME_HOURS)
       .minutes(BOOKING_LIMIT_DATETIME_MINUTES)
-      .toISOString(true)
+      .toISOString()
 
     return {
       bookingLimitDatetime: updatedDateTime,
