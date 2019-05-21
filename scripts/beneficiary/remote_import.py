@@ -23,15 +23,13 @@ def run(
 ):
     current_page = 1
     number_of_pages = 1
+    error_messages = []
+
     while current_page <= number_of_pages:
 
         applications = get_all_applications(PROCEDURE_ID, TOKEN, page=current_page)
-        current_page = current_page + 1
-        number_of_pages = applications['pagination']['nombre_de_page']
-
-        processable_application = filter(lambda a: a['state'] == 'closed', applications['dossiers'])
-        ids_to_process = {a['id'] for a in processable_application}
-        error_messages = []
+        current_page, number_of_pages = _handle_pagination(applications, current_page)
+        ids_to_process = _find_application_ids_to_process(applications)
 
         for id in ids_to_process:
             details = get_details(id, PROCEDURE_ID, TOKEN)
@@ -120,3 +118,15 @@ def create_beneficiary_from_application(
     beneficiary.deposits = [deposit]
 
     return beneficiary
+
+
+def _find_application_ids_to_process(applications):
+    processable_application = filter(lambda a: a['state'] == 'closed', applications['dossiers'])
+    ids_to_process = {a['id'] for a in processable_application}
+    return ids_to_process
+
+
+def _handle_pagination(applications, current_page):
+    number_of_pages = applications['pagination']['nombre_de_page']
+    new_page = current_page + 1
+    return new_page, number_of_pages
