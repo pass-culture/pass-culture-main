@@ -23,8 +23,8 @@ const Root = () => (
               approutes.map(obj => obj && <Route {...obj} key={obj.path} />)}
             <Route component={NotMatch} />
           </Switch>
+          <MatomoPageTracker />
         </App>
-        <MatomoPageTracker />
       </BrowserRouter>
     </PersistGate>
   </Provider>
