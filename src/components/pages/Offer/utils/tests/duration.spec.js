@@ -1,6 +1,47 @@
 import getDurationInHours, { getDurationInMinutes } from '../duration'
 
 describe('src | components | pages | Offer | utils | getDurationInHours', () => {
+  it('should return correct hour when minutes are not defined', () => {
+    // when
+    const value = getDurationInHours()
+    const expected = 'HH:MM'
+
+    // then
+    expect(value).toEqual(expected)
+  })
+  it('should return correct hour when minutes are not given', () => {
+    // given
+    const durationInMinutes = null
+
+    // when
+    const value = getDurationInHours(durationInMinutes)
+    const expected = 'HH:MM'
+
+    // then
+    expect(value).toEqual(expected)
+  })
+  it('should return correct hour when minutes are equal to 0', () => {
+    // given
+    const durationInMinutes = 0
+
+    // when
+    const value = getDurationInHours(durationInMinutes)
+    const expected = 'HH:MM'
+
+    // then
+    expect(value).toEqual(expected)
+  })
+  it('should return correct hour when minutes are below 10', () => {
+    // given
+    const durationInMinutes = 8
+
+    // when
+    const value = getDurationInHours(durationInMinutes)
+    const expected = '00:08'
+
+    // then
+    expect(value).toEqual(expected)
+  })
   it('should return correct hour when minutes are equal to 60', () => {
     // given
     const durationInMinutes = 60
@@ -48,6 +89,28 @@ describe('src | components | pages | Offer | utils | getDurationInHours', () => 
 })
 
 describe('src | components | pages | Offer | utils | getDurationInMinutes', () => {
+  it('should return correct hour when hour is an empty string', () => {
+    // given
+    const durationInHours = ''
+
+    // when
+    const value = getDurationInMinutes(durationInHours)
+    const expected = null
+
+    // then
+    expect(value).toEqual(expected)
+  })
+  it('should return correct hour when hour is equal to 0', () => {
+    // given
+    const durationInHours = '00:00'
+
+    // when
+    const value = getDurationInMinutes(durationInHours)
+    const expected = 0
+
+    // then
+    expect(value).toEqual(expected)
+  })
   it('should return correct hour when hour is equal to 1', () => {
     // given
     const durationInHours = '01:00'
