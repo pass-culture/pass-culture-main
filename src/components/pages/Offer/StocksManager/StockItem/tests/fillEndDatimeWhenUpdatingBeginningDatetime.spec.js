@@ -1,5 +1,4 @@
 import { mount } from 'enzyme'
-import 'moment-timezone'
 import React from 'react'
 import { Field, Form } from 'react-final-form'
 import fillEndDatimeWhenUpdatingBeginningDatetime from '../fillEndDatimeWhenUpdatingBeginningDatetime'
@@ -7,17 +6,15 @@ import fillEndDatimeWhenUpdatingBeginningDatetime from '../fillEndDatimeWhenUpda
 describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdatingBeginningDatetime', () => {
   it('should update the endDateTime date to the beginningDateTime with keeping hours and minute of previous target date, when both dates are already initialized', () => {
     // given
-    const dateModified = '2022-04-28T13:37:00.000Z'
-    const beginningDateTime = '2019-09-27T10:01:00Z'
-    const endDateTime = '2019-11-01T12:02:00Z'
+    const dateModified = '2022-08-28T23:37:00.000Z'
+    const beginningDateTime = '2019-05-27T10:01:00Z'
+    const endDateTime = '2019-06-05T12:02:00Z'
     const endTime = '14:16'
-    const timezone = 'Europe/Paris'
 
     const initialValues = {
       beginningDateTime,
       endDateTime,
       endTime,
-      timezone,
     }
     const wrapper = mount(
       <Form
@@ -26,7 +23,6 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
             triggerDateName: 'beginningDateTime',
             targetDateName: 'endDateTime',
             targetTimeName: 'endTime',
-            timezone,
           }),
         ]}
         initialValues={initialValues}
@@ -58,12 +54,14 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
       .find({ name: 'beginningDateTime' })
       .find('input')
       .simulate('change', { target: { value: dateModified } })
+
+    console.log('WHEN')
     wrapper.find('button[type="submit"]').simulate('click')
 
     // then
     function onSubmit(formValues) {
       expect(formValues.beginningDateTime).toEqual(dateModified)
-      expect(formValues.endDateTime).toEqual('2022-04-28T12:02:00.000Z')
+      expect(formValues.endDateTime).toEqual('2022-08-28T12:02:00.000Z')
     }
   })
 
@@ -73,12 +71,10 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
     const beginningDateTime = '2019-09-27T10:01:00Z'
     const endDateTime = '2019-11-01T12:02:00Z'
     const endTime = '14:16'
-    const timezone = 'Europe/Paris'
     const initialValues = {
       beginningDateTime,
       endDateTime,
       endTime,
-      timezone,
     }
 
     const wrapper = mount(
@@ -88,7 +84,6 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
             triggerDateName: 'beginningDateTime',
             targetDateName: 'endDateTime',
             targetTimeName: 'endTime',
-            timezone,
           }),
         ]}
         initialValues={initialValues}
@@ -135,12 +130,10 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
     const beginningDateTime = '2019-09-27T10:01:00Z'
     const endDateTime = '2019-11-01T12:02:00Z'
     const endTime = '14:16'
-    const timezone = 'Europe/Paris'
     const initialValues = {
       beginningDateTime,
       endDateTime,
       endTime,
-      timezone,
     }
 
     const wrapper = mount(
@@ -150,7 +143,6 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
             triggerDateName: 'beginningDateTime',
             targetDateName: 'endDateTime',
             targetTimeName: 'endTime',
-            timezone,
           }),
         ]}
         initialValues={initialValues}

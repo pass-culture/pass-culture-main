@@ -128,7 +128,6 @@ export class StockItem extends Component {
           triggerDateName: 'beginningDatetime',
           targetDateName: 'endDatetime',
           targetTimeName: 'endTime',
-          timezone,
         }),
         bindTimeFieldWithDateField({
           dateName: 'beginningDatetime',

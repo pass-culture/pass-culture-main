@@ -7,24 +7,28 @@ function mapArgsToCacheKey({
   triggerDateName,
   targetDateName,
   targetTimeName,
-  timezone,
 }) {
   return `${triggerDateName || ''}${targetDateName || ''}${targetTimeName ||
-    ''}${timezone || ''}`
+    ''}`
 }
 
 export const fillEndDatimeWhenUpdatingBeginningDatetime = createCachedSelector(
   ({ triggerDateName }) => triggerDateName,
   ({ targetDateName }) => targetDateName,
   ({ targetTimeName }) => targetTimeName,
-  ({ timezone }) => timezone,
-  (triggerDateName, targetDateName, targetTimeName, timezone) =>
+  (triggerDateName, targetDateName, targetTimeName) =>
     createDecorator({
       field: triggerDateName,
-      updates: (triggerDate, doublonTriggerDateName, allValues) => {
+      updates: (triggerDate, doublonTriggerDateName, allValues, prevValues) => {
         const targetDate = allValues[targetDateName]
         const targetTime = allValues[targetTimeName]
         let nextTargetDate = targetDate
+
+        const shouldNotFillEndDateTimeAtMount =
+          Object.keys(prevValues).length === 0
+        if (shouldNotFillEndDateTimeAtMount) {
+          return {}
+        }
 
         if (!targetDate) {
           if (!targetTime) {
@@ -32,14 +36,17 @@ export const fillEndDatimeWhenUpdatingBeginningDatetime = createCachedSelector(
           }
           nextTargetDate = triggerDate
         }
+
         let targetMoment = moment(nextTargetDate).utc()
         const targetDateHourMinutes = targetMoment.format('HH:mm')
         const [hour, minutes] = targetDateHourMinutes.split(':')
 
         let triggerMoment = moment(triggerDate).utc()
+
         const updatedTargetDate = triggerMoment
           .hours(hour)
           .minutes(minutes)
+          .utc()
           .toISOString()
 
         return {
