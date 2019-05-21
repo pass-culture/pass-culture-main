@@ -24,6 +24,7 @@ class DownloadButton extends Component {
         className={classnames('button is-primary', {
           'is-loading': isLoading,
         })}
+        disabled={isLoading}
         download
         onClick={this.onClick}
         type="button">
