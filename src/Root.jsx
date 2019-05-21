@@ -16,20 +16,18 @@ const Root = () => {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <BrowserRouter>
-          <div>
-            <App>
-              <Switch>
-                {routes.map(route => {
-                  const isExact =
-                    typeof route.exact !== 'undefined' ? route.exact : true
-                  // first props, last overrides
-                  return <Route {...route} key={route.path} exact={isExact} />
-                })}
-                <Route component={NotMatchPage} />
-              </Switch>
-            </App>
+          <App>
+            <Switch>
+              {routes.map(route => {
+                const isExact =
+                  typeof route.exact !== 'undefined' ? route.exact : true
+                // first props, last overrides
+                return <Route {...route} key={route.path} exact={isExact} />
+              })}
+              <Route component={NotMatchPage} />
+            </Switch>
             <MatomoPageTracker />
-          </div>
+          </App>
         </BrowserRouter>
       </PersistGate>
     </Provider>
