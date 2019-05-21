@@ -6,6 +6,7 @@ from models.pc_object import PcObject
 from recommendations_engine.offers import get_departement_codes_from_user
 from repository.offer_queries import get_active_offers_by_type
 from sandboxes.scripts.utils.select import remove_every
+from sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 from utils.logger import logger
 from tests.test_utils import create_recommendation
 
@@ -116,6 +117,16 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
                 )
 
     PcObject.check_and_save(*recommendations_by_name.values())
+
+    for recommendation in recommendations_by_name.values():
+        if recommendation.offer:
+            offer = recommendation.offer
+            if not offer.mediations:
+                store_public_object_from_sandbox_assets(
+                    "thumbs",
+                    offer.product,
+                    offer.product.type
+                )
 
     logger.info('created {} recommendations'.format(len(recommendations_by_name)))
 
