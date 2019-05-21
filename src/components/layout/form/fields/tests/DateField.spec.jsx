@@ -4,7 +4,7 @@ import moment from 'moment'
 import React from 'react'
 import { Form } from 'react-final-form'
 
-import { DateField } from '../DateField'
+import { DateField, onKeyDown } from '../DateField'
 
 describe('src | components | layout | form | DateField', () => {
   it('should match snapchot', () => {
@@ -101,5 +101,40 @@ describe('src | components | layout | form | DateField', () => {
         .find('input[name="myDate"]')
         .props().value
     ).toEqual('26/04/2019')
+  })
+
+  it('should delete date when delete is pressed', done => {
+    // given
+    const initialValues = {
+      myDate: '2019-04-27T20:00:00Z',
+    }
+    const wrapper = mount(
+      <Form
+        initialValues={initialValues}
+        onSubmit={onSubmit}
+        render={({ handleSubmit }) => (
+          <form>
+            <DateField name="myDate" />
+            <button onClick={handleSubmit} type="submit">
+              Submit
+            </button>
+          </form>
+        )}
+      />
+    )
+
+    // when
+    wrapper
+      .find(DateField)
+      .find('input[name="myDate"]')
+      .simulate('click')
+      .simulate('keyDown', { keyCode: 8 })
+    wrapper.find('button[type="submit"]').simulate('click')
+
+    // then
+    function onSubmit(formValues) {
+      expect(formValues.myDate).toBeNull()
+      done()
+    }
   })
 })

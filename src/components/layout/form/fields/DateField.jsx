@@ -2,8 +2,8 @@
   react/jsx-one-expression-per-line: 0 */
 import classnames from 'classnames'
 import moment from 'moment'
-import React from 'react'
 import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import DatePicker from 'react-datepicker'
 import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
@@ -28,102 +28,121 @@ const renderDateInput = dateInputProps => (
   </div>
 )
 
-const createOnDateChange = input => date => {
-  const changedValue = date ? date.toISOString() : null
-  input.onChange(changedValue)
-}
+export class DateField extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasPressedDelete: false }
+  }
 
-export const DateField = ({
-  autoComplete,
-  className,
-  clearable,
-  dateFormat,
-  datePickerClassName,
-  disabled,
-  id,
-  label,
-  locale,
-  name,
-  placeholder,
-  readOnly,
-  renderInner,
-  renderValue,
-  required,
-  timezone,
-  type,
-  validate,
-  // see github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
-  ...DatePickerProps
-}) => {
-  const inputName = id || name
-  const isClearable = !readOnly && clearable
-  return (
-    <Field
-      name={name}
-      validate={composeValidators(validate, getRequiredValidate(required))}
-      render={({ input, meta }) => {
-        let formattedSelectedDatetime
-        let selectedDatetime
+  onDateChange = input => date => {
+    const changedValue = date ? date.toISOString() : null
+    input.onChange(changedValue)
+    this.setState({ hasPressedDelete: false })
+  }
 
-        if (input.value) {
-          selectedDatetime = moment(input.value)
-          if (timezone) {
-            selectedDatetime = selectedDatetime.tz(timezone)
+  onKeyDown = input => event => {
+    if (event.keyCode === 8) {
+      input.onChange(null)
+      this.setState({ hasPressedDelete: true })
+    }
+  }
+
+  render() {
+    const {
+      autoComplete,
+      className,
+      clearable,
+      dateFormat,
+      datePickerClassName,
+      disabled,
+      id,
+      label,
+      locale,
+      name,
+      placeholder,
+      readOnly,
+      renderInner,
+      renderValue,
+      required,
+      timezone,
+      type,
+      validate,
+      // see github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
+      ...DatePickerProps
+    } = this.props
+    const inputName = id || name
+    const isClearable = !readOnly && clearable
+    const { hasPressedDelete } = this.state
+
+    return (
+      <Field
+        name={name}
+        validate={composeValidators(validate, getRequiredValidate(required))}
+        render={({ input, meta }) => {
+          let formattedSelectedDatetime
+          let selectedDatetime
+
+          if (!hasPressedDelete && input.value) {
+            selectedDatetime = moment(input.value)
+            if (timezone) {
+              selectedDatetime = selectedDatetime.tz(timezone)
+            }
+            formattedSelectedDatetime = selectedDatetime.format(dateFormat)
           }
-          formattedSelectedDatetime = selectedDatetime.format(dateFormat)
-        }
 
-        const dateInputProps = {
-          className: 'date',
-          dateFormat,
-          id: inputName,
-          isClearable,
-          locale,
-          placeholderText: placeholder,
-          selected: selectedDatetime,
-          shouldCloseOnSelect: true,
-          ...DatePickerProps,
-          ...input,
-          onChange: createOnDateChange(input),
-          value: formattedSelectedDatetime,
-        }
+          const dateInputProps = {
+            className: 'date',
+            dateFormat,
+            id: inputName,
+            isClearable,
+            locale,
+            placeholderText: placeholder,
+            selected: selectedDatetime,
+            shouldCloseOnSelect: true,
+            ...DatePickerProps,
+            ...input,
+            onChange: this.onDateChange(input),
+            onKeyDown: this.onKeyDown(input),
+            value: formattedSelectedDatetime,
+          }
 
-        return (
-          <div
-            className={classnames('field date-field', className, {
-              'is-read-only': readOnly,
-            })}
-            id={id}>
-            <label
-              htmlFor={name}
-              className={classnames('field-label', { empty: !label })}>
-              {label && (
-                <span>
-                  <span>{label}</span>
-                  {required && !readOnly && (
-                    <span className="field-asterisk">*</span>
-                  )}
-                </span>
-              )}
-            </label>
-            <div className="field-control">
-              <div className="field-value flex-columns items-center">
-                <div className="field-inner flex-columns items-center">
-                  {readOnly
-                    ? renderReadOnlyDateInput({
-                        formattedSelectedDatetime,
-                        name,
-                      })
-                    : renderDateInput(dateInputProps)}
+          return (
+            <div
+              className={classnames('field date-field', className, {
+                'is-read-only': readOnly,
+              })}
+              id={id}>
+              <label
+                htmlFor={name}
+                className={classnames('field-label', { empty: !label })}>
+                {label && (
+                  <span>
+                    <span>{label}</span>
+                    {required && !readOnly && (
+                      <span className="field-asterisk">*</span>
+                    )}
+                  </span>
+                )}
+              </label>
+              <div className="field-control">
+                <div className="field-value flex-columns items-center">
+                  <div className="field-inner flex-columns items-center">
+                    {readOnly
+                      ? renderReadOnlyDateInput({
+                          formattedSelectedDatetime,
+                          name,
+                        })
+                      : renderDateInput(dateInputProps)}
+                  </div>
+                  {renderValue()}
                 </div>
-                {renderValue()}
               </div>
             </div>
-          </div>
-        )
-      }}
-    />
-  )
+          )
+        }}
+      />
+    )
+  }
 }
 
 DateField.defaultProps = {
