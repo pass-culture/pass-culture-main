@@ -8,7 +8,12 @@ describe('src | components | pages | Offer | StocksManagerContainer | StockItem 
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
-      const initialProps = {}
+      const initialProps = {
+        form: {},
+        handleSubmit: () => jest.fn(),
+        isRequestPending: false,
+        query: {},
+      }
 
       // when
       const wrapper = shallow(<SubmitAndCancelControl {...initialProps} />)

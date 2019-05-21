@@ -28,7 +28,8 @@ const SubmitAndCancelControl = ({
         onClick={() => {
           form.reset()
           query.changeToReadOnly(null, { id: stockId, key: 'stock' })
-        }}>
+        }}
+        type="reset">
         Annuler
       </button>
     </td>
