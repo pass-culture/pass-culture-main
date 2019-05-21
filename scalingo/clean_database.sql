@@ -1,10 +1,29 @@
 DO $$ DECLARE
   r RECORD;
 BEGIN
+  FOR r IN (SELECT pg_proc.oid::regprocedure FROM pg_proc join pg_roles on pg_proc.proowner = pg_roles.oid WHERE pronamespace = 'public'::regnamespace AND rolname = (SELECT current_user from current_user )) LOOP
+    EXECUTE 'DROP FUNCTION ' || r.oid || ' CASCADE';
+  END LOOP;
+END $$;
+
+
+DO $$ DECLARE
+  r RECORD;
+BEGIN
+  FOR r IN (SELECT cfgname from pg_ts_config join pg_roles on pg_ts_config.cfgowner = pg_roles.oid where rolname = (SELECT current_user from current_user )) LOOP
+    EXECUTE 'DROP TEXT SEARCH CONFIGURATION  ' || r.cfgname || ' CASCADE';
+  END LOOP;
+END $$;
+
+
+DO $$ DECLARE
+  r RECORD;
+BEGIN
   FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
     EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
   END LOOP;
 END $$;
+
 
 DO $$ DECLARE
   r RECORD;

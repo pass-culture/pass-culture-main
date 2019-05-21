@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -o nounset
-set -xe
+set -e
 
 DB_SIZE="2g"
 
@@ -64,7 +64,6 @@ echo $PG_DB_OLD | /usr/local/bin/scalingo -a $APP_NAME addons-remove $PG_DB_OLD
 # GET NEW SCALINGO DATABASE URL
 NEXT_WAIT_TIME=0
 POSTGRESQL_URL=$POSTGRESQL_URL_OLD
-echo "hello i" $?
 
 until [ "$POSTGRESQL_URL" != "$POSTGRESQL_URL_OLD" ] || [ $NEXT_WAIT_TIME -eq 60 ]; do
    POSTGRESQL_URL="$(/usr/local/bin/scalingo -a $APP_NAME env |grep SCALINGO_POSTGRESQL_URL= | sed -e s,SCALINGO_POSTGRESQL_URL=postgres://,,g)"
@@ -75,8 +74,6 @@ if [ $NEXT_WAIT_TIME -ge 60 ]; then
    echo "Error : Could not connect to database"
    exit 1
 fi
-
-echo "hello1"
 
 sleep 10
 
@@ -93,6 +90,7 @@ DB_TUNNEL_PID=$!
 echo "Tunnel to database open"
 
 PGPASSWORD="$PG_PASSWORD" pg_restore --host 127.0.0.1 \
+                                         --verbose \
                                          --port 10000 \
                                          --username "$PG_USER" \
                                          --no-owner \
@@ -117,7 +115,7 @@ if grep -q 'ERROR' restore_"$APP_NAME"_error.log; then
   echo "Restore fail.."
   echo "ERRORS found during restore backup. Please see file: restore_"$APP_NAME"_error.log"
 else
-  echo "Restarting backend.."
+  echo "Upgrading Alembic Head.."
   /usr/local/bin/scalingo -a "$APP_NAME" run 'alembic upgrade head'
   echo "Application restarted and ready to use."
 fi
