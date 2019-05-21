@@ -9,7 +9,7 @@ BEGIN
 END; $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION generate_random_token_if_not_null(
+CREATE OR REPLACE FUNCTION pg_temp.generate_random_token_if_not_null(
   original_token VARCHAR)
   RETURNS VARCHAR AS $$
 BEGIN
@@ -21,7 +21,7 @@ BEGIN
 END; $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION generate_token_from_id(
+CREATE OR REPLACE FUNCTION pg_temp.generate_booking_token_from_id(
  id BIGINT)
  RETURNS VARCHAR(6) AS $$
 BEGIN
@@ -29,87 +29,80 @@ BEGIN
 END; $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION anonymize_validation_token_field(
+CREATE OR REPLACE FUNCTION pg_temp.anonymize_json_field(
+ json_data JSONB,
+ field_name VARCHAR,
+ value_for_replace VARCHAR
+ )
+ RETURNS JSONB as $$
+BEGIN
+ IF json_data::jsonb ->> field_name IS NOT NULL THEN
+  RETURN ((json_data::jsonb
+   - field_name::text)::jsonb
+   || ('{"' || field_name || '": "' || value_for_replace::text || '"}')::jsonb);
+ ELSE
+  RETURN json_data;
+ END IF;
+END; $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION pg_temp.anonymize_validation_token_field(
  json_data JSONB)
  RETURNS JSONB as $$
-
 BEGIN
  IF json_data::jsonb ->> 'validationToken' IS NOT NULL THEN
   RETURN ((json_data::jsonb
    - 'validationToken'::text)::jsonb
-   || ('{"validationToken": "' || generate_random_token_if_not_null(json_data::jsonb ->> 'validationToken') || '"}')::jsonb);
+   || ('{"validationToken": "' || pg_temp.generate_random_token_if_not_null(json_data::jsonb ->> 'validationToken') || '"}')::jsonb);
  ELSE
   RETURN json_data;
  END IF;
 END; $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION anonymize_token_field(
+CREATE OR REPLACE FUNCTION pg_temp.anonymize_booking_token_field(
  json_data JSONB)
  RETURNS JSONB as $$
 DECLARE
- new_token VARCHAR(6) := generate_token_from_id((json_data::jsonb ->> 'id')::int);
+ new_token VARCHAR(6) := pg_temp.generate_booking_token_from_id((json_data::jsonb ->> 'id')::int);
 BEGIN
- IF json_data::jsonb ->> 'token' IS NOT NULL THEN
-  RETURN ((json_data::jsonb - 'token'::text)::jsonb
-   || ('{"token": "' || new_token || '"}')::jsonb);
- ELSE
-  RETURN json_data;
- END IF;
+ RETURN pg_temp.anonymize_json_field(json_data::jsonb, 'token', new_token);
 END; $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION anonymize_booking_email_field(
+CREATE OR REPLACE FUNCTION pg_temp.anonymize_booking_email_field(
  json_data JSONB)
  RETURNS JSONB as $$
 BEGIN
- IF json_data ->> 'bookingEmail' IS NOT NULL THEN
-  RETURN ((json_data::jsonb
-   - 'bookingEmail'::text)::jsonb
-   || ('{"bookingEmail": "ano@nym.ized"}')::jsonb);
- ELSE
-  RETURN json_data;
- END IF;
+ RETURN pg_temp.anonymize_json_field(json_data::jsonb, 'bookingEmail', 'ano@nym.ized');
 END; $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION anonymize_bic_field(
+CREATE OR REPLACE FUNCTION pg_temp.anonymize_bic_field(
  json_data JSONB)
  RETURNS JSONB as $$
 BEGIN
- IF json_data ->> 'bic' IS NOT NULL THEN
-  RETURN ((json_data::jsonb
-  - 'bic'::text)::jsonb
-|| ('{"bic": "BDFEFR2L"}')::jsonb);
- ELSE
-  RETURN json_data;
- END IF;
+ RETURN pg_temp.anonymize_json_field(json_data::jsonb, 'bic', 'BDFEFR2L');
 END; $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION anonymize_iban_field(
+CREATE OR REPLACE FUNCTION pg_temp.anonymize_iban_field(
  json_data JSONB)
  RETURNS JSONB as $$
 BEGIN
- IF json_data ->> 'iban' IS NOT NULL THEN
-  RETURN ((json_data::jsonb
-  - 'iban'::text)::jsonb
-  || ('{"iban": "FR7630001007941234567890185"}')::jsonb);
- ELSE
-  RETURN json_data;
- END IF;
+  RETURN pg_temp.anonymize_json_field(json_data::jsonb, 'iban', 'FR7630001007941234567890185');
 END; $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION anonymize_activity_data_field(
+CREATE OR REPLACE FUNCTION pg_temp.anonymize_activity_data_field(
  json_data JSONB)
  RETURNS JSONB as $$
 BEGIN
- json_data = anonymize_validation_token_field(json_data::jsonb);
- json_data = anonymize_token_field(json_data::jsonb);
- json_data = anonymize_booking_email_field(json_data::jsonb);
- json_data = anonymize_bic_field(json_data::jsonb);
- json_data = anonymize_iban_field(json_data::jsonb);
+ json_data = pg_temp.anonymize_validation_token_field(json_data::jsonb);
+ json_data = pg_temp.anonymize_booking_token_field(json_data::jsonb);
+ json_data = pg_temp.anonymize_booking_email_field(json_data::jsonb);
+ json_data = pg_temp.anonymize_bic_field(json_data::jsonb);
+ json_data = pg_temp.anonymize_iban_field(json_data::jsonb);
  RETURN json_data;
 END; $$
 LANGUAGE plpgsql;
@@ -118,12 +111,13 @@ UPDATE offer SET "bookingEmail" = 'ano@nym.ized' WHERE "bookingEmail" is not nul
 UPDATE offerer SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
 UPDATE bank_information SET "iban" = pg_temp.generate_random_between(999999999,100000000)::text,
   "bic" = pg_temp.generate_random_between(999999999,100000000)::text WHERE "iban" is not null;
-UPDATE booking SET "token" = generate_token_from_id("id") WHERE "token" is not null;
+UPDATE booking SET "token" = pg_temp.generate_booking_token_from_id("id") WHERE "token" is not null;
 
-UPDATE payment SET "iban" = 'FR7630001007941234567890185',
-  "bic" = 'BDFEFR2L' WHERE "iban" is not null;
+UPDATE payment SET "iban" = 'FR7630001007941234567890185' WHERE "iban" is not null;
 
-UPDATE provider SET "apiKey" = md5(random()::text) WHERE "apiKey" is not null;
+UPDATE payment SET "bic" = 'BDFEFR2L' WHERE "bic" is not null;
+
+UPDATE provider SET "apiKey" = substring(md5(random()::text), 1, 32) WHERE "apiKey" is not null;
 
 UPDATE "user" SET "email" = 'user@' || "id",
   "publicName" = 'User' || "id",
@@ -145,8 +139,8 @@ UPDATE venue SET "bookingEmail" = 'ano@nym.ized',
 
 UPDATE activity
 SET
- old_data = anonymize_activity_data_field(old_data),
- changed_data = anonymize_activity_data_field(changed_data);
+ old_data = pg_temp.anonymize_activity_data_field(old_data),
+ changed_data = pg_temp.anonymize_activity_data_field(changed_data);
 
 TRUNCATE email;
 
