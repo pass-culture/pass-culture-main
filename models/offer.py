@@ -16,15 +16,12 @@ from models.stock import Stock
 from models.venue import Venue
 from utils.date import DateTimes
 
+
 class Offer(PcObject,
             Model,
             ExtraDataMixin,
             DeactivableMixin,
             ProvidableMixin):
-    # TODO delete after migrating OVH thumbs
-    thingId = Column(BigInteger,
-                     index=True,
-                     nullable=True)
 
     productId = Column(BigInteger,
                      ForeignKey("product.id"),
