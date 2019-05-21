@@ -33,3 +33,7 @@ def feature_cron_send_remedial_emails():
 
 def feature_request_profiling_enabled():
     return os.environ.get('PROFILE_REQUESTS', False)
+
+
+def feature_import_beneficiaries_enabled():
+    return os.environ.get('CRON_DEMARCHES_SIMPLIFIEES_ENROLLMENT', False)

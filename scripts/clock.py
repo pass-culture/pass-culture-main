@@ -10,8 +10,10 @@ from sqlalchemy import orm
 
 from models.db import db
 from repository.features import feature_cron_send_final_booking_recaps_enabled, feature_cron_generate_and_send_payments, \
-    feature_cron_retrieve_offerers_bank_information, feature_cron_send_remedial_emails
+    feature_cron_retrieve_offerers_bank_information, feature_cron_send_remedial_emails, \
+    feature_import_beneficiaries_enabled
 from repository.features import feature_cron_send_wallet_balances
+from scripts.beneficiary import remote_import
 from utils.config import API_ROOT_PATH
 from utils.logger import logger
 from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
@@ -78,6 +80,14 @@ def pc_send_remedial_emails():
     logger.info("[BATCH][REMEDIAL EMAILS] Cron send_remedial_emails: END")
 
 
+def pc_remote_import_beneficiaries():
+    logger.info("[BATCH][REMOTE IMPORT BENEFICIARIES] Cron remote_import_beneficiaries: START")
+    with app.app_context():
+        app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
+        remote_import.run()
+    logger.info("[BATCH][REMOTE IMPORT BENEFICIARIES] Cron remote_import_beneficiaries: END")
+
+
 if __name__ == '__main__':
     orm.configure_mappers()
     scheduler = BlockingScheduler()
@@ -96,5 +106,8 @@ if __name__ == '__main__':
                           day='*')
     if feature_cron_send_remedial_emails():
         scheduler.add_job(pc_send_remedial_emails, 'cron', id='send_remedial_emails', minute='*/15')
+
+    if feature_import_beneficiaries_enabled():
+        scheduler.add_job(pc_remote_import_beneficiaries, 'cron', id='remote_import_beneficiaries', day='*')
 
     scheduler.start()
