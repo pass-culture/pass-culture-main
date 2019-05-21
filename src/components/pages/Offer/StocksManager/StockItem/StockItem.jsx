@@ -12,7 +12,7 @@ import EventFields from './EventFields'
 import fillEndDatimeWhenUpdatingBeginningDatetime from './fillEndDatimeWhenUpdatingBeginningDatetime'
 import ProductFields from './ProductFields'
 import SubmitAndCancelControlContainer from './SubmitAndCancelControl/SubmitAndCancelControlContainer'
-import adaptBookingLimitDateTimeGivenBeginningDateTime from './decorators/adaptBookingLimitDateTimeGivenBeginningDateTime'
+import adaptBookingLimitDatetimeGivenBeginningDatetime from './decorators/adaptBookingLimitDatetimeGivenBeginningDatetime'
 import { errorKeyToFrenchKey } from './utils'
 
 export class StockItem extends Component {
@@ -110,7 +110,7 @@ export class StockItem extends Component {
     const { readOnly } = query.context({ id: stockId, key: 'stock' })
 
     let decorators = [
-      adaptBookingLimitDateTimeGivenBeginningDateTime({
+      adaptBookingLimitDatetimeGivenBeginningDatetime({
         isEvent,
       }),
     ]
