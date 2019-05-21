@@ -42,6 +42,7 @@ ShallowWrapper {
           <button
             className="button is-secondary is-small cancel-step"
             onClick={[Function]}
+            type="reset"
           >
             Annuler
           </button>
@@ -90,6 +91,7 @@ ShallowWrapper {
           "children": <button
             className="button is-secondary is-small cancel-step"
             onClick={[Function]}
+            type="reset"
           >
             Annuler
           </button>,
@@ -104,6 +106,7 @@ ShallowWrapper {
             "children": "Annuler",
             "className": "button is-secondary is-small cancel-step",
             "onClick": [Function],
+            "type": "reset",
           },
           "ref": null,
           "rendered": "Annuler",
@@ -137,6 +140,7 @@ ShallowWrapper {
             <button
               className="button is-secondary is-small cancel-step"
               onClick={[Function]}
+              type="reset"
             >
               Annuler
             </button>
@@ -185,6 +189,7 @@ ShallowWrapper {
             "children": <button
               className="button is-secondary is-small cancel-step"
               onClick={[Function]}
+              type="reset"
             >
               Annuler
             </button>,
@@ -199,6 +204,7 @@ ShallowWrapper {
               "children": "Annuler",
               "className": "button is-secondary is-small cancel-step",
               "onClick": [Function],
+              "type": "reset",
             },
             "ref": null,
             "rendered": "Annuler",
