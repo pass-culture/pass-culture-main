@@ -4,7 +4,8 @@ from models import Offer, User, Offerer, UserOfferer, Venue
 from utils.mailing import write_object_validation_email, make_payment_message_email, \
     make_venue_validation_email, compute_email_html_part_and_recipients, make_payment_details_email, \
     make_payments_report_email, make_wallet_balances_email, make_offer_creation_notification_email, \
-    make_activation_users_email, ADMINISTRATION_EMAIL_ADDRESS, DEV_EMAIL_ADDRESS
+    make_beneficiaries_import_email,  make_activation_users_email, \
+    ADMINISTRATION_EMAIL_ADDRESS, DEV_EMAIL_ADDRESS, SUPPORT_EMAIL_ADDRESS
 
 
 def send_dev_email(subject: str, html_text: str, send_email: Callable[[dict], bool]) -> bool:
@@ -76,4 +77,6 @@ def send_offer_creation_notification_to_administration(offer: Offer, author: Use
 
 def send_remote_beneficiaries_import_report_email(new_beneficiaries: List[User], error_messages: List[str],
                                                   send_email: Callable[[dict], bool]) -> bool:
-    pass
+    email = make_beneficiaries_import_email(new_beneficiaries, error_messages)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], email['To'])
+    return send_email(data=email)

@@ -583,6 +583,24 @@ def make_offer_creation_notification_email(offer: Offer, author: User, pro_origi
             'Subject': f'[Création d’offre - {location_information}] {offer.product.name}'}
 
 
+def make_beneficiaries_import_email(new_beneficiaries: List[User], error_messages: List[str]) -> dict:
+    date_import = datetime.utcnow().strftime('%Y-%m-%d')
+
+    html = render_template(
+        'mails/beneficiaries_import_email.html',
+        number_of_new_beneficiaries=len(new_beneficiaries),
+        error_messages=error_messages,
+        date_import=date_import
+    )
+
+    return {
+        'Subject': 'Import des utilisateurs depuis Démarches Simplifiées %s' % date_import,
+        'FromEmail': 'passculture-dev@beta.gouv.fr',
+        'FromName': "pass Culture",
+        'Html-part': html
+    }
+
+
 def _generate_reservation_email_html_subject(booking):
     stock = booking.stock
     user = booking.user

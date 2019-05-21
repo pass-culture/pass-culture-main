@@ -1,9 +1,12 @@
-import pytest
 from unittest.mock import Mock, patch
+
+import pytest
 
 from domain.admin_emails import maybe_send_offerer_validation_email, send_venue_validation_email, \
     send_payment_details_email, send_wallet_balances_email, send_payments_report_emails, \
-    send_offer_creation_notification_to_administration, send_payment_message_email
+    send_offer_creation_notification_to_administration, send_payment_message_email, \
+    send_remote_beneficiaries_import_report_email
+from models import User
 from tests.test_utils import create_offerer, create_user, \
     create_user_offerer, create_venue, create_offer_with_thing_product
 from utils.mailing import MailServiceException
@@ -327,7 +330,8 @@ class SendOfferCreationNotificationToAdministrationTest:
 
 @pytest.mark.standalone
 class SendPaymentMessageEmailTest:
-    @patch('domain.admin_emails.make_payment_message_email', return_value={'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'})
+    @patch('domain.admin_emails.make_payment_message_email',
+           return_value={'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'})
     def test_returns_true_if_email_was_sent(self, make_payment_transaction_email):
         # given
         xml = '<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"></Document>'
@@ -341,7 +345,8 @@ class SendPaymentMessageEmailTest:
         # then
         assert successfully_sent
 
-    @patch('domain.admin_emails.make_payment_message_email', return_value={'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'})
+    @patch('domain.admin_emails.make_payment_message_email',
+           return_value={'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'})
     def test_returns_false_if_not_email_was_sent(self, make_payment_transaction_email):
         # given
         xml = '<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"></Document>'
@@ -355,3 +360,45 @@ class SendPaymentMessageEmailTest:
         # then
         assert not successfully_sent
 
+
+@pytest.mark.standalone
+class SendRemoteBeneficiariesImportReportEmailTest:
+    @patch('domain.admin_emails.make_beneficiaries_import_email')
+    def test_returns_true_if_email_was_sent(self, make_beneficiaries_import_email):
+        # given
+        mocked_send_email = Mock()
+        mocked_send_email.return_value = True
+        new_beneficiaries = [User(), User()]
+        error_messages = ['erreur import 1', 'erreur import 2']
+        make_beneficiaries_import_email.return_value = {'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'}
+
+        # when
+        successfully_sent = send_remote_beneficiaries_import_report_email(new_beneficiaries, error_messages,
+                                                                          mocked_send_email)
+
+        # then
+        assert successfully_sent
+        mocked_send_email.assert_called_once()
+        args = mocked_send_email.call_args
+        email = args[1]['data']
+        assert email['To'] == 'passculture-dev@beta.gouv.fr'
+
+    @patch('domain.admin_emails.make_beneficiaries_import_email')
+    def test_returns_false_if_email_was_not_sent(self, make_beneficiaries_import_email):
+        # given
+        mocked_send_email = Mock()
+        mocked_send_email.return_value = False
+        new_beneficiaries = [User(), User()]
+        error_messages = ['erreur import 1', 'erreur import 2']
+        make_beneficiaries_import_email.return_value = {'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'}
+
+        # when
+        successfully_sent = send_remote_beneficiaries_import_report_email(new_beneficiaries, error_messages,
+                                                                          mocked_send_email)
+
+        # then
+        assert not successfully_sent
+        mocked_send_email.assert_called_once()
+        args = mocked_send_email.call_args
+        email = args[1]['data']
+        assert email['To'] == 'passculture-dev@beta.gouv.fr'

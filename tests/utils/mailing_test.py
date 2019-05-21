@@ -7,15 +7,17 @@ import pytest
 from bs4 import BeautifulSoup
 from freezegun import freeze_time
 
-from models import PcObject, Offerer, ThingType, EventType
+from models import PcObject, Offerer, ThingType, EventType, User
 from models.db import db
 from models.email import Email, EmailStatus
 from tests.conftest import clean_database, mocked_mail
 from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
 from tests.test_utils import create_stock_with_event_offer, create_stock_with_thing_offer, \
     create_user, create_booking, create_user_offerer, \
-    create_offerer, create_venue, create_offer_with_thing_product, create_offer_with_event_product, create_stock_from_offer, \
-    create_stock_from_event_occurrence, create_event_occurrence, create_product_with_Thing_type, create_mocked_bookings, create_email
+    create_offerer, create_venue, create_offer_with_thing_product, create_offer_with_event_product, \
+    create_stock_from_offer, \
+    create_stock_from_event_occurrence, create_event_occurrence, create_product_with_Thing_type, create_mocked_bookings, \
+    create_email
 from utils.mailing import make_user_booking_recap_email, \
     make_offerer_booking_recap_email_after_user_action, make_final_recap_email_for_stock_with_event, \
     write_object_validation_email, make_offerer_driven_cancellation_email_for_user, \
@@ -26,7 +28,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_batch_cancellation_email, make_payment_message_email, make_user_validation_email, \
     make_payment_details_email, make_wallet_balances_email, make_payments_report_email, parse_email_addresses, \
     make_activation_notification_email, make_offer_creation_notification_email, \
-    send_raw_email, resend_email
+    send_raw_email, resend_email, make_beneficiaries_import_email
 
 SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
@@ -1618,6 +1620,49 @@ def test_send_content_and_update_does_not_update_email_when_send_mail_unsuccessf
     assert email.status == EmailStatus.ERROR
     assert email.datetime == datetime(2018, 12, 1, 12, 0, 0)
     app.mailjet_client.send.create.assert_called_once_with(data=email_content)
+
+
+@pytest.mark.standalone
+@freeze_time('2019-05-20 12:00:00')
+class MakeBeneficiariesImportEmailTest:
+    def test_sends_date_in_subject(self, app):
+        # given
+        new_beneficiaries = [User(), User()]
+        error_messages = ['erreur import 1', 'erreur import 2']
+
+        # when
+        email = make_beneficiaries_import_email(new_beneficiaries, error_messages)
+
+        # then
+        assert email["FromEmail"] == 'passculture-dev@beta.gouv.fr'
+        assert email["FromName"] == 'pass Culture'
+        assert email["Subject"] == 'Import des utilisateurs depuis Démarches Simplifiées 2019-05-20'
+
+    def test_sends_number_of_newly_created_beneficiaries(self, app):
+        # given
+        new_beneficiaries = [User(), User()]
+        error_messages = ['erreur import 1', 'erreur import 2']
+
+        # when
+        email = make_beneficiaries_import_email(new_beneficiaries, error_messages)
+
+        # then
+        email_html = remove_whitespaces(email['Html-part'])
+        parsed_email = BeautifulSoup(email_html, 'html.parser')
+        assert parsed_email.find("p", {"id": 'total'}).text == "Nombre total d'utilisateurs crées : 2"
+
+    def test_sends_list_of_import_errors(self, app):
+        # given
+        new_beneficiaries = [User(), User()]
+        error_messages = ['erreur import 1', 'erreur import 2']
+
+        # when
+        email = make_beneficiaries_import_email(new_beneficiaries, error_messages)
+
+        # then
+        email_html = remove_whitespaces(email['Html-part'])
+        parsed_email = BeautifulSoup(email_html, 'html.parser')
+        assert parsed_email.find("p", {"id": 'errors'}).text.strip() == "erreur import 1 erreur import 2"
 
 
 def remove_whitespaces(text):

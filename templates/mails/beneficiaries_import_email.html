@@ -1,0 +1,13 @@
+<html>
+    <body>
+        <h1>Récapitulatif de l'import des utilisateurs du paiements du {{ date_import }}</h1>
+        <p id="total">Nombre total d'utilisateurs crées : {{ number_of_new_beneficiaries }}</p>
+        <p id="errors">
+            <ul>
+            {% for error in error_messages %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+        </p>
+    </body>
+</html>
