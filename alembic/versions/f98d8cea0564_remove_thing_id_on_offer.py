@@ -1,4 +1,4 @@
-"""remove_thing_id_on_offer
+"""Drop column thingId on Offer
 
 Revision ID: f98d8cea0564
 Revises: 99339c9d58b1

@@ -3,8 +3,8 @@ from unittest.mock import Mock
 import pytest
 
 from models import PcObject
-from domain.offers import add_stock_alert_message_to_offer, check_digital_offer_consistency, InconsistentOffer
-from models import Offer, Venue, Product
+from domain.offers import add_stock_alert_message_to_offer
+from models import Offer
 from datetime import datetime
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -21,56 +21,7 @@ from tests.conftest import clean_database
 find_thing = Mock()
 
 offer = Offer()
-offer.thingId = 20
 
-
-@pytest.mark.standalone
-class CheckDigitalOfferConsistencyTest:
-    def test_raises_an_error_for_physical_venue_and_digital_thing(self):
-        # given
-        venue = Venue(from_dict={'isVirtual': False})
-        find_thing.return_value = Product(from_dict={'url': 'https://zerlngzergner.fr'})
-
-        # when
-        with pytest.raises(InconsistentOffer) as e:
-            check_digital_offer_consistency(offer, venue, find_thing_product=find_thing)
-
-        # then
-        assert str(e.value) == 'Offer.venue is not virtual but Offer.product has an URL'
-
-    def test_does_not_raise_an_error_for_virtual_venue_and_digital_thing(self):
-        # given
-        venue = Venue(from_dict={'isVirtual': True})
-        find_thing.return_value = Product(from_dict={'url': 'https://zerlngzergner.fr'})
-
-        # when
-        result = check_digital_offer_consistency(offer, venue, find_thing_product=find_thing)
-
-        # then
-        assert result is None
-
-    def test_raises_an_error_for_virtual_venue_and_physical_thing(self):
-        # given
-        venue = Venue(from_dict={'isVirtual': True})
-        find_thing.return_value = Product(from_dict={'url': None})
-
-        # when
-        with pytest.raises(InconsistentOffer) as e:
-            check_digital_offer_consistency(offer, venue, find_thing_product=find_thing)
-
-        # then
-        assert str(e.value) == 'Offer.venue is virtual but Offer.product does not have an URL'
-
-    def test_does_not_raise_an_error_for_physical_venue_and_physical_thing(self):
-        # given
-        venue = Venue(from_dict={'isVirtual': False})
-        find_thing.return_value = Product(from_dict={'url': None})
-
-        # when
-        result = check_digital_offer_consistency(offer, venue, find_thing_product=find_thing)
-
-        # then
-        assert result is None
 
 @pytest.mark.standalone
 class AddStockAlertMessageToOfferTest:

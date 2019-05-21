@@ -14,16 +14,6 @@ class InconsistentOffer(Exception):
         return self.message
 
 
-def check_digital_offer_consistency(offer, venue, find_thing_product=thing_queries.find_by_id):
-    thing_product = find_thing_product(offer.thingId)
-
-    if venue.isVirtual and not thing_product.url:
-        raise InconsistentOffer('Offer.venue is virtual but Offer.product does not have an URL')
-
-    if not venue.isVirtual and thing_product.url:
-        raise InconsistentOffer('Offer.venue is not virtual but Offer.product has an URL')
-
-
 def _filter_out_deleted_stocks(stocks: List[Stock]) -> List[Stock]:
     valid_stocks = [stock for stock in stocks if not stock.isSoftDeleted]
     return valid_stocks
