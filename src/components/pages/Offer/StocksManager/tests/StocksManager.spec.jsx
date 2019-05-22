@@ -3,7 +3,6 @@ import { shallow } from 'enzyme'
 
 import StocksManager from '../StocksManager'
 
-
 const mockedStock = {
   available: 10,
   bookingLimitDatetime: '2019-03-06T23:00:00Z',

@@ -3,7 +3,7 @@
 import classnames from 'classnames'
 import moment from 'moment'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import DatePicker from 'react-datepicker'
 import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
@@ -28,7 +28,21 @@ const renderDateInput = dateInputProps => (
   </div>
 )
 
-export class DateField extends Component {
+function applyTimezoneToDatetime(inputValue, timezone) {
+  let selectedDatetime
+
+  selectedDatetime = moment(inputValue)
+  if (timezone) {
+    selectedDatetime = selectedDatetime.tz(timezone)
+  }
+  return selectedDatetime
+}
+
+function formatSelectedDatetime(inputValue, dateFormat) {
+  return moment(inputValue).format(dateFormat)
+}
+
+export class DateField extends PureComponent {
   constructor(props) {
     super(props)
     this.state = { hasPressedDelete: false }
@@ -41,10 +55,11 @@ export class DateField extends Component {
   }
 
   onKeyDown = input => event => {
-    if (event.keyCode === 8) {
-      input.onChange(null)
-      this.setState({ hasPressedDelete: true })
-    }
+    const isDeleteKey = event.keyCode === 8
+    if (!isDeleteKey) return
+
+    input.onChange(null)
+    this.setState({ hasPressedDelete: true })
   }
 
   render() {
@@ -79,15 +94,16 @@ export class DateField extends Component {
         name={name}
         validate={composeValidators(validate, getRequiredValidate(required))}
         render={({ input, meta }) => {
-          let formattedSelectedDatetime
-          let selectedDatetime
+          let formattedSelectedDatetime = null
+          let selectedDatetime = null
 
-          if (!hasPressedDelete && input.value) {
-            selectedDatetime = moment(input.value)
-            if (timezone) {
-              selectedDatetime = selectedDatetime.tz(timezone)
-            }
-            formattedSelectedDatetime = selectedDatetime.format(dateFormat)
+          const shouldFormatDatetime = !hasPressedDelete && input.value
+          if (shouldFormatDatetime) {
+            selectedDatetime = applyTimezoneToDatetime(input.value, timezone)
+            formattedSelectedDatetime = formatSelectedDatetime(
+              selectedDatetime,
+              dateFormat
+            )
           }
 
           const dateInputProps = {

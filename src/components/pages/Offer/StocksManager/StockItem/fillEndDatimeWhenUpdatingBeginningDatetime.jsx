@@ -12,6 +12,21 @@ function mapArgsToCacheKey({
     ''}`
 }
 
+function getNewTargetDateThatPreserveOldHourAndMinutes(newDate, oldDate) {
+  const targetMoment = moment(newDate).utc()
+  const targetDateHourMinutes = targetMoment.format('HH:mm')
+
+  const [hour, minutes] = targetDateHourMinutes.split(':')
+
+  let triggerMoment = moment(oldDate).utc()
+
+  return triggerMoment
+    .hours(hour)
+    .minutes(minutes)
+    .utc()
+    .toISOString()
+}
+
 export const fillEndDatimeWhenUpdatingBeginningDatetime = createCachedSelector(
   ({ triggerDateName }) => triggerDateName,
   ({ targetDateName }) => targetDateName,
@@ -22,32 +37,22 @@ export const fillEndDatimeWhenUpdatingBeginningDatetime = createCachedSelector(
       updates: (triggerDate, doublonTriggerDateName, allValues, prevValues) => {
         const targetDate = allValues[targetDateName]
         const targetTime = allValues[targetTimeName]
-        let nextTargetDate = targetDate
-
         const shouldNotFillEndDateTimeAtMount =
           Object.keys(prevValues).length === 0
+
         if (shouldNotFillEndDateTimeAtMount) {
           return {}
         }
 
-        if (!targetDate) {
-          if (!targetTime) {
-            return {}
-          }
-          nextTargetDate = triggerDate
+        if (!targetDate && !targetTime) {
+          return {}
         }
 
-        let targetMoment = moment(nextTargetDate).utc()
-        const targetDateHourMinutes = targetMoment.format('HH:mm')
-        const [hour, minutes] = targetDateHourMinutes.split(':')
-
-        let triggerMoment = moment(triggerDate).utc()
-
-        const updatedTargetDate = triggerMoment
-          .hours(hour)
-          .minutes(minutes)
-          .utc()
-          .toISOString()
+        const nextTargetDate = targetDate ? targetDate : triggerDate
+        const updatedTargetDate = getNewTargetDateThatPreserveOldHourAndMinutes(
+          nextTargetDate,
+          triggerDate
+        )
 
         return {
           [targetDateName]: updatedTargetDate,
