@@ -1,12 +1,13 @@
-from datetime import datetime
+from datetime import datetime, timedelta, MINYEAR
 
 import pytest
 
 from models import PcObject
-from repository.user_queries import get_all_users_wallet_balances, find_by_first_and_last_names_and_birth_date
+from repository.user_queries import get_all_users_wallet_balances, find_by_first_and_last_names_and_birth_date, \
+    find_most_recent_beneficiary_creation_date
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_deposit, \
-    create_stock, create_booking
+    create_stock, create_booking, create_user_offerer
 
 
 @pytest.mark.standalone
@@ -129,6 +130,47 @@ class FindByFirstAndLastNamesAndEmailTest:
 
         # ten
         assert not users
+
+
+@pytest.mark.standalone
+class FindMostRecentBeneficiaryCreationDateTest:
+    @clean_database
+    def test_returns_created_at_date_of_most_recent_beneficiary_user(self, app):
+        # given
+        now = datetime.utcnow()
+
+        yesterday = now - timedelta(days=1)
+        two_days_ago = now - timedelta(days=2)
+        three_days_ago = now - timedelta(days=3)
+
+        user1 = create_user(email='user1@test.com', date_created=yesterday, can_book_free_offers=False)
+        user2 = create_user(email='user2@test.com', date_created=two_days_ago, can_book_free_offers=True)
+        user3 = create_user(email='user3@test.com', date_created=three_days_ago, can_book_free_offers=True)
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user1, offerer)
+
+        PcObject.check_and_save(user_offerer, user2, user3)
+
+        # when
+        most_recent_creation_date = find_most_recent_beneficiary_creation_date()
+
+        # then
+        assert most_recent_creation_date == two_days_ago
+
+    @clean_database
+    def test_returns_min_year_if_no_beneficiary_exist(self, app):
+        # given
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        user1 = create_user(email='user1@test.com', date_created=yesterday, can_book_free_offers=False)
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user1, offerer)
+        PcObject.check_and_save(user_offerer)
+
+        # when
+        most_recent_creation_date = find_most_recent_beneficiary_creation_date()
+
+        # then
+        assert most_recent_creation_date == datetime(MINYEAR, 1, 1)
 
 
 def _create_balances_for_user2(stock3, user2, venue):

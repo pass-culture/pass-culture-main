@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, MINYEAR
 from typing import List
 
 from sqlalchemy import func
@@ -99,3 +99,16 @@ def keep_only_webapp_users(query):
         (User.isAdmin == False)
     )
     return query
+
+
+def find_most_recent_beneficiary_creation_date():
+    most_recent_beneficiary = User.query \
+        .filter(User.canBookFreeOffers == True) \
+        .filter(User.offerers == None) \
+        .order_by(User.dateCreated.desc()) \
+        .first()
+
+    if not most_recent_beneficiary:
+        return datetime(MINYEAR, 1, 1)
+
+    return most_recent_beneficiary.dateCreated
