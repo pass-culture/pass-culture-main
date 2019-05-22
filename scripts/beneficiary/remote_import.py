@@ -139,6 +139,7 @@ def create_beneficiary_from_application(
 def _find_application_ids_to_process(applications: dict, process_applications_updated_after: datetime):
     processable_applications = filter(lambda a: a['state'] == 'closed', applications['dossiers'])
     recent_applications = filter(
-        lambda a: datetime.strptime(a['updated_at'], '%Y-%m-%dT%H:%M:%SZ') > process_applications_updated_after,
+        lambda a: datetime.strptime(a['updated_at'], '%Y-%m-%dT%H:%M:%S.%fZ') > process_applications_updated_after,
         processable_applications)
+    datetime
     return {a['id'] for a in recent_applications}

@@ -14,7 +14,7 @@ from tests.scripts.beneficiary.fixture import make_application_detail, \
     make_applications_list, APPLICATION_DETAIL_STANDARD_RESPONSE
 
 NOW = datetime.utcnow()
-datetime_pattern = '%Y-%m-%dT%H:%M:%SZ'
+datetime_pattern = '%Y-%m-%dT%H:%M:%S.%fZ'
 EIGHT_HOURS_AGO = (NOW - timedelta(hours=8)).strftime(datetime_pattern)
 FOUR_HOURS_AGO = (NOW - timedelta(hours=4)).strftime(datetime_pattern)
 TWO_DAYS_AGO = (NOW - timedelta(hours=48)).strftime(datetime_pattern)
