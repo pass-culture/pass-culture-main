@@ -85,7 +85,7 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl ',
       })
     })
 
-    it('should redirect to venue page and reset form when click on cancel modified form', done => {
+    it('should redirect to venue page and reset form when click on cancel modified form', () => {
       // given
       const props = {
         isCreatedEntity: false,
@@ -119,26 +119,19 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl ',
         .find("input[name='foo']")
         .simulate('change', { target: { value: 'bar' } })
 
+      // then
+      expect(wrapper.find("input[name='foo']").props().value).toEqual('bar')
+
       // when
-      setTimeout(() => {
-        // then
-        wrapper.update()
-        expect(wrapper.find("input[name='foo']").props().value).toEqual('bar')
+      const cancelButton = wrapper.find('button[type="reset"]')
+      cancelButton.simulate('click')
 
-        // when
-        const cancelButton = wrapper.find('button[type="reset"]')
-        cancelButton.simulate('click')
-
-        // then
-        const expectedPush = `/structures/${props.offererId}/lieux/${
-          props.venueId
-        }`
-        expect(wrapper.find("input[name='foo']").props().value).toEqual('')
-        expect(history.push).toHaveBeenCalledWith(expectedPush)
-
-        // done
-        done()
-      })
+      // then
+      const expectedPush = `/structures/${props.offererId}/lieux/${
+        props.venueId
+      }`
+      expect(wrapper.find("input[name='foo']").props().value).toEqual('')
+      expect(history.push).toHaveBeenCalledWith(expectedPush)
     })
   })
 })

@@ -25,7 +25,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | StockItem 
   })
 
   describe('mount', () => {
-    it('should redirect and reset form when click on cancel', done => {
+    it('should redirect and reset form when click on cancel', () => {
       // given
       const query = {
         changeToReadOnly: jest.fn(),
@@ -58,24 +58,17 @@ describe('src | components | pages | Offer | StocksManagerContainer | StockItem 
         .simulate('change', { target: { value: 'bar' } })
 
       // when
-      setTimeout(() => {
-        // then
-        wrapper.update()
-        expect(wrapper.find("input[name='foo']").props().value).toEqual('bar')
+      expect(wrapper.find("input[name='foo']").props().value).toEqual('bar')
 
-        // when
-        const cancelButton = wrapper.find('button.cancel-step')
-        cancelButton.simulate('click')
+      // when
+      const cancelButton = wrapper.find('button.cancel-step')
+      cancelButton.simulate('click')
 
-        // then
-        expect(wrapper.find("input[name='foo']").props().value).toEqual('')
-        expect(query.changeToReadOnly).toHaveBeenCalledWith(null, {
-          id: stockId,
-          key: 'stock',
-        })
-
-        // done
-        done()
+      // then
+      expect(wrapper.find("input[name='foo']").props().value).toEqual('')
+      expect(query.changeToReadOnly).toHaveBeenCalledWith(null, {
+        id: stockId,
+        key: 'stock',
       })
     })
   })
