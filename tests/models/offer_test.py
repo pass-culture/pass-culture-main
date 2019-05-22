@@ -1,11 +1,14 @@
 from datetime import datetime, timedelta
+from pprint import pprint
 
 import pytest
 
-from models import Offer, PcObject, ApiErrors, ThingType, EventType
+from models import Offer, PcObject, ApiErrors, ThingType, EventType, Product
 from tests.conftest import clean_database
-from tests.test_utils import create_offer_with_event_product, create_product_with_Thing_type, create_offer_with_thing_product, \
-    create_offerer, create_venue, create_stock, create_booking, create_user
+from tests.test_utils import create_booking, create_user
+from tests.test_utils import create_offer_with_event_product, create_product_with_Event_type
+from tests.test_utils import create_product_with_Thing_type, create_offer_with_thing_product, create_offerer, \
+    create_stock, create_venue
 from utils.date import DateTimes
 
 now = datetime.utcnow()
@@ -100,6 +103,7 @@ class CreateOfferTest:
         offerer = create_offerer()
         physical_venue = create_venue(offerer, is_virtual=False, siret=offerer.siren + '12345')
         PcObject.check_and_save(physical_venue)
+
         offer = create_offer_with_thing_product(physical_venue, physical_thing)
 
         # When
@@ -141,6 +145,66 @@ class CreateOfferTest:
         # Then
         assert errors.value.errors['venue'] == [
             'Une offre physique ne peut être associée au lieu "Offre en ligne"']
+
+    @clean_database
+    def test_fails_when_is_event_but_durationMinute_is_empty(self, app):
+        # Given
+        event_product = create_product_with_Event_type(duration_minutes=None)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        PcObject.check_and_save(venue)
+        offer = create_offer_with_event_product(venue, event_product)
+
+        # When
+        with pytest.raises(ApiErrors) as errors:
+            PcObject.check_and_save(offer)
+
+        # Then
+        assert errors.value.errors['durationMinutes'] == [
+            'Une offre de type évènement doit avoir une durée en minute']
+
+    def test_offer_is_marked_as_isevent_property(self):
+        # Given
+        physical_thing = create_product_with_Thing_type(thing_type=ThingType.JEUX_VIDEO, url=None)
+        offerer = create_offerer()
+        digital_venue = create_venue(offerer, is_virtual=True, siret=None)
+
+        # When
+        offer = create_offer_with_thing_product(digital_venue, physical_thing)
+        pprint(Offer.type)
+
+        # Then
+        assert offer.isEvent == False
+        assert offer.isThing == True
+
+    def test_offer_is_marked_as_isthing_property(self):
+        # Given
+        event_product = create_product_with_Event_type(event_type=EventType.CINEMA)
+        offerer = create_offerer()
+        digital_venue = create_venue(offerer, is_virtual=False, siret=None)
+
+        # When
+        offer = create_offer_with_thing_product(digital_venue, event_product)
+        pprint(Offer.type)
+
+        # Then
+        assert offer.isEvent == True
+        assert offer.isThing == False
+
+    def test_offer_is_neither_event_nor_thing(self):
+        # Given
+        event_product = Product()
+        offerer = create_offerer()
+        digital_venue = create_venue(offerer, is_virtual=False, siret=None)
+
+        # When
+        offer = create_offer_with_thing_product(digital_venue, event_product)
+        pprint(Offer.type)
+
+        # Then
+        assert offer.isEvent == False
+        assert offer.isThing == False
+
 
     @clean_database
     def test_create_digital_offer_success(self, app):
@@ -365,3 +429,55 @@ class IsFinishedTest:
 
         # then
         assert offer.isFinished is False
+
+
+@pytest.mark.standalone
+def test_date_range_is_empty_if_offer_is_on_a_thing():
+    # given
+    offer = Offer()
+    offer.product = create_product_with_Thing_type()
+    offer.stocks = []
+
+    # then
+    assert offer.dateRange == DateTimes()
+
+
+@pytest.mark.standalone
+def test_date_range_matches_the_occurrence_if_only_one_occurrence():
+    # given
+    offer = Offer()
+    offer.product = create_product_with_Event_type()
+    offer.stocks = [
+        create_stock(offer=offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now)
+    ]
+
+    # then
+    assert offer.dateRange == DateTimes(two_days_ago, five_days_from_now)
+
+
+@pytest.mark.standalone
+def test_date_range_starts_at_first_beginning_date_time_and_ends_at_last_end_date_time():
+    # given
+    offer = Offer()
+    offer.product = create_product_with_Event_type()
+    offer.stocks = [
+        create_stock(offer=offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now),
+        create_stock(offer=offer, beginning_datetime=four_days_ago, end_datetime=five_days_from_now),
+        create_stock(offer=offer, beginning_datetime=four_days_ago, end_datetime=ten_days_from_now),
+        create_stock(offer=offer, beginning_datetime=two_days_ago, end_datetime=ten_days_from_now)
+    ]
+
+    # then
+    assert offer.dateRange == DateTimes(four_days_ago, ten_days_from_now)
+    assert offer.dateRange.datetimes == [four_days_ago, ten_days_from_now]
+
+
+@pytest.mark.standalone
+def test_date_range_is_empty_if_event_has_no_stocks():
+    # given
+    offer = Offer()
+    offer.product = create_product_with_Event_type()
+    offer.stocks = []
+
+    # then
+    assert offer.dateRange == DateTimes()
