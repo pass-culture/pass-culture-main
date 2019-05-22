@@ -381,7 +381,7 @@ class SendRemoteBeneficiariesImportReportEmailTest:
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         email = args[1]['data']
-        assert email['To'] == 'passculture-dev@beta.gouv.fr'
+        assert email['To'] == 'dev@passculture.app'
 
     @patch('domain.admin_emails.make_beneficiaries_import_email')
     def test_returns_false_if_email_was_not_sent(self, make_beneficiaries_import_email):
@@ -401,4 +401,4 @@ class SendRemoteBeneficiariesImportReportEmailTest:
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         email = args[1]['data']
-        assert email['To'] == 'passculture-dev@beta.gouv.fr'
+        assert email['To'] == 'dev@passculture.app'
