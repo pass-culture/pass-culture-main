@@ -36,4 +36,4 @@ def feature_request_profiling_enabled():
 
 
 def feature_import_beneficiaries_enabled():
-    return os.environ.get('CRON_DEMARCHES_SIMPLIFIEES_ENROLLMENT', False)
+    return os.environ.get('CRON_BENEFICIARIES_ENROLLMENT', False)
