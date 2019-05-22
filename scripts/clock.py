@@ -13,6 +13,7 @@ from repository.features import feature_cron_send_final_booking_recaps_enabled, 
     feature_cron_retrieve_offerers_bank_information, feature_cron_send_remedial_emails, \
     feature_import_beneficiaries_enabled
 from repository.features import feature_cron_send_wallet_balances
+from repository.user_queries import find_most_recent_beneficiary_creation_date
 from scripts.beneficiary import remote_import
 from utils.config import API_ROOT_PATH
 from utils.logger import logger
@@ -84,7 +85,8 @@ def pc_remote_import_beneficiaries():
     logger.info("[BATCH][REMOTE IMPORT BENEFICIARIES] Cron remote_import_beneficiaries: START")
     with app.app_context():
         app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
-        remote_import.run()
+        import_from_date = find_most_recent_beneficiary_creation_date()
+        remote_import.run(import_from_date)
     logger.info("[BATCH][REMOTE IMPORT BENEFICIARIES] Cron remote_import_beneficiaries: END")
 
 

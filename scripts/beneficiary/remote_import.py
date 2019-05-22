@@ -18,6 +18,7 @@ VALIDATED_APPLICATION = 'closed'
 
 
 def run(
+        process_applications_updated_after: datetime,
         get_all_applications: Callable[..., dict] = get_all_applications_for_procedure,
         get_details: Callable[..., dict] = get_application_details,
         existing_user: Callable[[str], User] = find_user_by_email
@@ -31,7 +32,7 @@ def run(
 
         applications = get_all_applications(PROCEDURE_ID, TOKEN, page=current_page)
         current_page, number_of_pages = _handle_pagination(applications, current_page)
-        ids_to_process = _find_application_ids_to_process(applications)
+        ids_to_process = _find_application_ids_to_process(applications, process_applications_updated_after)
 
         for id in ids_to_process:
             details = get_details(id, PROCEDURE_ID, TOKEN)
@@ -127,10 +128,12 @@ def create_beneficiary_from_application(
     return beneficiary
 
 
-def _find_application_ids_to_process(applications):
-    processable_application = filter(lambda a: a['state'] == 'closed', applications['dossiers'])
-    ids_to_process = {a['id'] for a in processable_application}
-    return ids_to_process
+def _find_application_ids_to_process(applications: dict, process_applications_updated_after: datetime):
+    processable_applications = filter(lambda a: a['state'] == 'closed', applications['dossiers'])
+    recent_applications = filter(
+        lambda a: datetime.strptime(a['updated_at'], '%Y-%m-%dT%H:%M:%SZ') > process_applications_updated_after,
+        processable_applications)
+    return {a['id'] for a in recent_applications}
 
 
 def _handle_pagination(applications, current_page):

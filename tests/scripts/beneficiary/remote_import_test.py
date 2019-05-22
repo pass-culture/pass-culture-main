@@ -18,6 +18,7 @@ datetime_pattern = '%Y-%m-%dT%H:%M:%SZ'
 EIGHT_HOURS_AGO = (NOW - timedelta(hours=8)).strftime(datetime_pattern)
 FOUR_HOURS_AGO = (NOW - timedelta(hours=4)).strftime(datetime_pattern)
 TWO_DAYS_AGO = (NOW - timedelta(hours=48)).strftime(datetime_pattern)
+ONE_WEEK_AGO = NOW - timedelta(days=7)
 
 
 @pytest.mark.standalone
@@ -45,6 +46,7 @@ class RunTest:
 
         # when
         remote_import.run(
+            ONE_WEEK_AGO,
             get_all_applications=get_all_applications,
             get_details=get_details,
             existing_user=find_user_by_email
@@ -52,6 +54,39 @@ class RunTest:
 
         # then
         assert process_beneficiary_application.call_count == 2
+
+    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
+    @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
+    def test_only_applications_updated_after_given_date_are_processed(self, process_beneficiary_application,
+                                                                      send_report_email):
+        # given
+        six_hours_ago = NOW - timedelta(hours=6)
+
+        get_all_applications = Mock()
+        get_all_applications.return_value = make_applications_list(
+            [
+                (123, 'closed', FOUR_HOURS_AGO),
+                (456, 'closed', EIGHT_HOURS_AGO),
+            ], 1, 1
+        )
+        get_details = Mock()
+        get_details.side_effect = [
+            make_application_detail(123, 'closed'),
+            make_application_detail(456, 'closed'),
+        ]
+
+        find_user_by_email = Mock(return_value=None)
+
+        # when
+        remote_import.run(
+            six_hours_ago,
+            get_all_applications=get_all_applications,
+            get_details=get_details,
+            existing_user=find_user_by_email
+        )
+
+        # then
+        assert process_beneficiary_application.call_count == 1
 
     @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
@@ -71,6 +106,7 @@ class RunTest:
 
         # when
         remote_import.run(
+            ONE_WEEK_AGO,
             get_all_applications=get_all_applications,
             get_details=get_details,
             existing_user=find_user_by_email
@@ -97,6 +133,7 @@ class RunTest:
 
         # when
         remote_import.run(
+            ONE_WEEK_AGO,
             get_all_applications=get_all_applications,
             get_details=get_details,
             existing_user=find_user_by_email
@@ -123,6 +160,7 @@ class RunTest:
 
         # when
         remote_import.run(
+            ONE_WEEK_AGO,
             get_all_applications=get_all_applications,
             get_details=get_details,
             existing_user=find_user_by_email
