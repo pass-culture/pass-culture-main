@@ -2,23 +2,20 @@
 
 from flask import current_app as app, jsonify, request
 from flask_login import login_required, current_user
-from lxml.etree import LxmlError
 
 import models
 from domain.admin_emails import maybe_send_offerer_validation_email
-from domain.payments import validate_message_file_structure, read_message_name_in_message_file, \
+from domain.payments import read_message_name_in_message_file, \
     generate_file_checksum
 from domain.user_emails import send_validation_confirmation_email, send_venue_validation_confirmation_email
 from models import ApiErrors, \
-    User, \
     PcObject, UserOfferer, Offerer, Venue
 from models.api_errors import ResourceNotFound, ForbiddenError
 from repository import user_offerer_queries, offerer_queries, user_queries
 from repository.payment_queries import find_message_checksum
-from tests.validation_validate_test import check_validation_request, check_venue_found
 from utils.config import IS_INTEGRATION
 from utils.mailing import MailServiceException, send_raw_email
-from validation.validate import check_valid_token_for_user_validation
+from validation.validate import check_valid_token_for_user_validation, check_validation_request, check_venue_found
 
 
 @app.route("/validate", methods=["GET"])
