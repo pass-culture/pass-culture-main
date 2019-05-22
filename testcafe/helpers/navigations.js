@@ -28,6 +28,16 @@ export const navigateToReimbursementsAs = user => async t => {
   await t.click(navbarAnchor).click(reimbursementsNavbarAnchor)
 }
 
+export const navigateToBookingsAs = user => async t => {
+  const navbarAnchor = Selector(
+    'a.navbar-link, span.navbar-burger'
+  ).filterVisible()
+  const bookingsNavbarAnchor = Selector("a.navbar-item[href='/reservations']")
+
+  await t.useRole(createUserRole(user))
+  await t.click(navbarAnchor).click(bookingsNavbarAnchor)
+}
+
 export const navigateToNewOffererAs = (user, userRole) => async t => {
   const newOffererAnchor = Selector(
     "a.button.is-primary[href='/structures/creation']"

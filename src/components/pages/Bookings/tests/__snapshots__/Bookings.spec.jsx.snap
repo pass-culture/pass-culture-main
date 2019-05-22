@@ -1,0 +1,293 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | Bookings snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <Bookings />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "function",
+    "props": Object {
+      "children": Array [
+        <HeroSection
+          title="Suivi des réservations"
+        >
+          <p
+            className="subtitle"
+          >
+            Téléchargez le récapitulatif des réservations de vos offres.
+          </p>
+          <p
+            className="subtitle"
+          >
+            Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
+          </p>
+        </HeroSection>,
+        <hr />,
+        <div
+          className="control flex-columns items-center flex-end"
+        >
+          <Connect(DownloadButton)
+            fileType="text/csv"
+            href="http://localhost/bookings/csv"
+          >
+            Télécharger la liste des réservations
+          </Connect(DownloadButton)>
+        </div>,
+      ],
+      "name": "bookings",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "children": Array [
+            <p
+              className="subtitle"
+            >
+              Téléchargez le récapitulatif des réservations de vos offres.
+            </p>,
+            <p
+              className="subtitle"
+            >
+              Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
+            </p>,
+          ],
+          "title": "Suivi des réservations",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Téléchargez le récapitulatif des réservations de vos offres.",
+              "className": "subtitle",
+            },
+            "ref": null,
+            "rendered": "Téléchargez le récapitulatif des réservations de vos offres.",
+            "type": "p",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
+              "className": "subtitle",
+            },
+            "ref": null,
+            "rendered": "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
+            "type": "p",
+          },
+        ],
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {},
+        "ref": null,
+        "rendered": null,
+        "type": "hr",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <Connect(DownloadButton)
+            fileType="text/csv"
+            href="http://localhost/bookings/csv"
+          >
+            Télécharger la liste des réservations
+          </Connect(DownloadButton)>,
+          "className": "control flex-columns items-center flex-end",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "children": "Télécharger la liste des réservations",
+            "fileType": "text/csv",
+            "href": "http://localhost/bookings/csv",
+          },
+          "ref": null,
+          "rendered": "Télécharger la liste des réservations",
+          "type": [Function],
+        },
+        "type": "div",
+      },
+    ],
+    "type": [Function],
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "function",
+      "props": Object {
+        "children": Array [
+          <HeroSection
+            title="Suivi des réservations"
+          >
+            <p
+              className="subtitle"
+            >
+              Téléchargez le récapitulatif des réservations de vos offres.
+            </p>
+            <p
+              className="subtitle"
+            >
+              Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
+            </p>
+          </HeroSection>,
+          <hr />,
+          <div
+            className="control flex-columns items-center flex-end"
+          >
+            <Connect(DownloadButton)
+              fileType="text/csv"
+              href="http://localhost/bookings/csv"
+            >
+              Télécharger la liste des réservations
+            </Connect(DownloadButton)>
+          </div>,
+        ],
+        "name": "bookings",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "children": Array [
+              <p
+                className="subtitle"
+              >
+                Téléchargez le récapitulatif des réservations de vos offres.
+              </p>,
+              <p
+                className="subtitle"
+              >
+                Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
+              </p>,
+            ],
+            "title": "Suivi des réservations",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Téléchargez le récapitulatif des réservations de vos offres.",
+                "className": "subtitle",
+              },
+              "ref": null,
+              "rendered": "Téléchargez le récapitulatif des réservations de vos offres.",
+              "type": "p",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
+                "className": "subtitle",
+              },
+              "ref": null,
+              "rendered": "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
+              "type": "p",
+            },
+          ],
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {},
+          "ref": null,
+          "rendered": null,
+          "type": "hr",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <Connect(DownloadButton)
+              fileType="text/csv"
+              href="http://localhost/bookings/csv"
+            >
+              Télécharger la liste des réservations
+            </Connect(DownloadButton)>,
+            "className": "control flex-columns items-center flex-end",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "children": "Télécharger la liste des réservations",
+              "fileType": "text/csv",
+              "href": "http://localhost/bookings/csv",
+            },
+            "ref": null,
+            "rendered": "Télécharger la liste des réservations",
+            "type": [Function],
+          },
+          "type": "div",
+        },
+      ],
+      "type": [Function],
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;

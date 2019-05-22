@@ -86,6 +86,7 @@ ShallowWrapper {
             <a
               className="navbar-item"
               href="https://docs.passculture.app/structures-culturelles"
+              rel="noopener noreferrer"
               target="_blank"
             >
               <span
@@ -154,6 +155,23 @@ ShallowWrapper {
                   </span>
                   <span>
                     Votre structure juridique
+                  </span>
+                </NavLink>
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="navbar-item"
+                  to="/reservations"
+                >
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-compta"
+                    />
+                  </span>
+                  <span>
+                    Suivi des réservations
                   </span>
                 </NavLink>
                 <NavLink
@@ -261,6 +279,7 @@ ShallowWrapper {
               <a
                 className="navbar-item"
                 href="https://docs.passculture.app/structures-culturelles"
+                rel="noopener noreferrer"
                 target="_blank"
               >
                 <span
@@ -329,6 +348,23 @@ ShallowWrapper {
                     </span>
                     <span>
                       Votre structure juridique
+                    </span>
+                  </NavLink>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-item"
+                    to="/reservations"
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-compta"
+                      />
+                    </span>
+                    <span>
+                      Suivi des réservations
                     </span>
                   </NavLink>
                   <NavLink
@@ -500,6 +536,7 @@ ShallowWrapper {
               <a
                 className="navbar-item"
                 href="https://docs.passculture.app/structures-culturelles"
+                rel="noopener noreferrer"
                 target="_blank"
               >
                 <span
@@ -568,6 +605,23 @@ ShallowWrapper {
                     </span>
                     <span>
                       Votre structure juridique
+                    </span>
+                  </NavLink>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-item"
+                    to="/reservations"
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-compta"
+                      />
+                    </span>
+                    <span>
+                      Suivi des réservations
                     </span>
                   </NavLink>
                   <NavLink
@@ -652,6 +706,7 @@ ShallowWrapper {
                 <a
                   className="navbar-item"
                   href="https://docs.passculture.app/structures-culturelles"
+                  rel="noopener noreferrer"
                   target="_blank"
                 >
                   <span
@@ -720,6 +775,23 @@ ShallowWrapper {
                       </span>
                       <span>
                         Votre structure juridique
+                      </span>
+                    </NavLink>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="navbar-item"
+                      to="/reservations"
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-compta"
+                        />
+                      </span>
+                      <span>
+                        Suivi des réservations
                       </span>
                     </NavLink>
                     <NavLink
@@ -905,6 +977,7 @@ ShallowWrapper {
                   ],
                   "className": "navbar-item",
                   "href": "https://docs.passculture.app/structures-culturelles",
+                  "rel": "noopener noreferrer",
                   "target": "_blank",
                 },
                 "ref": null,
@@ -1005,6 +1078,23 @@ ShallowWrapper {
                         </span>
                         <span>
                           Votre structure juridique
+                        </span>
+                      </NavLink>
+                      <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="navbar-item"
+                        to="/reservations"
+                      >
+                        <span
+                          className="icon"
+                        >
+                          <Icon
+                            svg="ico-compta"
+                          />
+                        </span>
+                        <span>
+                          Suivi des réservations
                         </span>
                       </NavLink>
                       <NavLink
@@ -1149,6 +1239,23 @@ ShallowWrapper {
                           </span>
                         </NavLink>,
                         false,
+                        <NavLink
+                          activeClassName="active"
+                          aria-current="page"
+                          className="navbar-item"
+                          to="/reservations"
+                        >
+                          <span
+                            className="icon"
+                          >
+                            <Icon
+                              svg="ico-compta"
+                            />
+                          </span>
+                          <span>
+                            Suivi des réservations
+                          </span>
+                        </NavLink>,
                         <NavLink
                           activeClassName="active"
                           aria-current="page"
@@ -1313,6 +1420,68 @@ ShallowWrapper {
                         "type": [Function],
                       },
                       false,
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "activeClassName": "active",
+                          "aria-current": "page",
+                          "children": Array [
+                            <span
+                              className="icon"
+                            >
+                              <Icon
+                                svg="ico-compta"
+                              />
+                            </span>,
+                            <span>
+                              Suivi des réservations
+                            </span>,
+                          ],
+                          "className": "navbar-item",
+                          "to": "/reservations",
+                        },
+                        "ref": null,
+                        "rendered": Array [
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "host",
+                            "props": Object {
+                              "children": <Icon
+                                svg="ico-compta"
+                              />,
+                              "className": "icon",
+                            },
+                            "ref": null,
+                            "rendered": Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "function",
+                              "props": Object {
+                                "svg": "ico-compta",
+                              },
+                              "ref": null,
+                              "rendered": null,
+                              "type": [Function],
+                            },
+                            "type": "span",
+                          },
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "host",
+                            "props": Object {
+                              "children": "Suivi des réservations",
+                            },
+                            "ref": null,
+                            "rendered": "Suivi des réservations",
+                            "type": "span",
+                          },
+                        ],
+                        "type": [Function],
+                      },
                       Object {
                         "instance": null,
                         "key": undefined,
@@ -1520,6 +1689,7 @@ ShallowWrapper {
               <a
                 className="navbar-item"
                 href="https://docs.passculture.app/structures-culturelles"
+                rel="noopener noreferrer"
                 target="_blank"
               >
                 <span
@@ -1588,6 +1758,23 @@ ShallowWrapper {
                     </span>
                     <span>
                       Votre structure juridique
+                    </span>
+                  </NavLink>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="navbar-item"
+                    to="/reservations"
+                  >
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-compta"
+                      />
+                    </span>
+                    <span>
+                      Suivi des réservations
                     </span>
                   </NavLink>
                   <NavLink
@@ -1695,6 +1882,7 @@ ShallowWrapper {
                 <a
                   className="navbar-item"
                   href="https://docs.passculture.app/structures-culturelles"
+                  rel="noopener noreferrer"
                   target="_blank"
                 >
                   <span
@@ -1763,6 +1951,23 @@ ShallowWrapper {
                       </span>
                       <span>
                         Votre structure juridique
+                      </span>
+                    </NavLink>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="navbar-item"
+                      to="/reservations"
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-compta"
+                        />
+                      </span>
+                      <span>
+                        Suivi des réservations
                       </span>
                     </NavLink>
                     <NavLink
@@ -1934,6 +2139,7 @@ ShallowWrapper {
                 <a
                   className="navbar-item"
                   href="https://docs.passculture.app/structures-culturelles"
+                  rel="noopener noreferrer"
                   target="_blank"
                 >
                   <span
@@ -2002,6 +2208,23 @@ ShallowWrapper {
                       </span>
                       <span>
                         Votre structure juridique
+                      </span>
+                    </NavLink>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="navbar-item"
+                      to="/reservations"
+                    >
+                      <span
+                        className="icon"
+                      >
+                        <Icon
+                          svg="ico-compta"
+                        />
+                      </span>
+                      <span>
+                        Suivi des réservations
                       </span>
                     </NavLink>
                     <NavLink
@@ -2086,6 +2309,7 @@ ShallowWrapper {
                   <a
                     className="navbar-item"
                     href="https://docs.passculture.app/structures-culturelles"
+                    rel="noopener noreferrer"
                     target="_blank"
                   >
                     <span
@@ -2154,6 +2378,23 @@ ShallowWrapper {
                         </span>
                         <span>
                           Votre structure juridique
+                        </span>
+                      </NavLink>
+                      <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="navbar-item"
+                        to="/reservations"
+                      >
+                        <span
+                          className="icon"
+                        >
+                          <Icon
+                            svg="ico-compta"
+                          />
+                        </span>
+                        <span>
+                          Suivi des réservations
                         </span>
                       </NavLink>
                       <NavLink
@@ -2339,6 +2580,7 @@ ShallowWrapper {
                     ],
                     "className": "navbar-item",
                     "href": "https://docs.passculture.app/structures-culturelles",
+                    "rel": "noopener noreferrer",
                     "target": "_blank",
                   },
                   "ref": null,
@@ -2439,6 +2681,23 @@ ShallowWrapper {
                           </span>
                           <span>
                             Votre structure juridique
+                          </span>
+                        </NavLink>
+                        <NavLink
+                          activeClassName="active"
+                          aria-current="page"
+                          className="navbar-item"
+                          to="/reservations"
+                        >
+                          <span
+                            className="icon"
+                          >
+                            <Icon
+                              svg="ico-compta"
+                            />
+                          </span>
+                          <span>
+                            Suivi des réservations
                           </span>
                         </NavLink>
                         <NavLink
@@ -2583,6 +2842,23 @@ ShallowWrapper {
                             </span>
                           </NavLink>,
                           false,
+                          <NavLink
+                            activeClassName="active"
+                            aria-current="page"
+                            className="navbar-item"
+                            to="/reservations"
+                          >
+                            <span
+                              className="icon"
+                            >
+                              <Icon
+                                svg="ico-compta"
+                              />
+                            </span>
+                            <span>
+                              Suivi des réservations
+                            </span>
+                          </NavLink>,
                           <NavLink
                             activeClassName="active"
                             aria-current="page"
@@ -2747,6 +3023,68 @@ ShallowWrapper {
                           "type": [Function],
                         },
                         false,
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "activeClassName": "active",
+                            "aria-current": "page",
+                            "children": Array [
+                              <span
+                                className="icon"
+                              >
+                                <Icon
+                                  svg="ico-compta"
+                                />
+                              </span>,
+                              <span>
+                                Suivi des réservations
+                              </span>,
+                            ],
+                            "className": "navbar-item",
+                            "to": "/reservations",
+                          },
+                          "ref": null,
+                          "rendered": Array [
+                            Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "host",
+                              "props": Object {
+                                "children": <Icon
+                                  svg="ico-compta"
+                                />,
+                                "className": "icon",
+                              },
+                              "ref": null,
+                              "rendered": Object {
+                                "instance": null,
+                                "key": undefined,
+                                "nodeType": "function",
+                                "props": Object {
+                                  "svg": "ico-compta",
+                                },
+                                "ref": null,
+                                "rendered": null,
+                                "type": [Function],
+                              },
+                              "type": "span",
+                            },
+                            Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "host",
+                              "props": Object {
+                                "children": "Suivi des réservations",
+                              },
+                              "ref": null,
+                              "rendered": "Suivi des réservations",
+                              "type": "span",
+                            },
+                          ],
+                          "type": [Function],
+                        },
                         Object {
                           "instance": null,
                           "key": undefined,
