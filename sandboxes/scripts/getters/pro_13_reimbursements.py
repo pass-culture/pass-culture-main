@@ -1,4 +1,3 @@
-from models.bank_information import BankInformation
 from models.booking import Booking
 from models.payment import Payment
 from models.offer import Offer
@@ -14,7 +13,7 @@ from sandboxes.scripts.utils.helpers import get_booking_helper, \
     get_user_helper, \
     get_venue_helper
 
-def get_existing_pro_validated_user_with_validated_offerer_with_payment():
+def get_existing_pro_validated_user_with_validated_offerer_with_reimbursement():
     query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(Venue, Venue.managingOffererId == Offerer.id) \
