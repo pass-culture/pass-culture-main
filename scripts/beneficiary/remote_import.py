@@ -8,7 +8,7 @@ from domain.admin_emails import send_remote_beneficiaries_import_report_email
 from domain.password import generate_reset_token, random_password
 from domain.user_emails import send_activation_notification_email
 from models import User, PcObject, Deposit
-from repository.user_queries import find_by_first_and_last_names_and_birth_date
+from repository.user_queries import find_by_first_and_last_names_and_birth_date, find_user_by_email
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from utils.mailing import send_raw_email
 
@@ -20,7 +20,7 @@ VALIDATED_APPLICATION = 'closed'
 def run(
         get_all_applications: Callable[..., dict] = get_all_applications_for_procedure,
         get_details: Callable[..., dict] = get_application_details,
-        find_duplicate_users: Callable[..., User] = find_by_first_and_last_names_and_birth_date
+        existing_user: Callable[[str], User] = find_user_by_email
 ):
     current_page = 1
     number_of_pages = 1
@@ -36,8 +36,9 @@ def run(
         for id in ids_to_process:
             details = get_details(id, PROCEDURE_ID, TOKEN)
             information = parse_beneficiary_information(details)
-            process_beneficiary_application(information, error_messages, new_beneficiaries,
-                                            find_duplicate_users=find_duplicate_users)
+
+            if not existing_user(information['email']):
+                process_beneficiary_application(information, error_messages, new_beneficiaries)
 
     send_remote_beneficiaries_import_report_email(new_beneficiaries, error_messages, send_raw_email)
 

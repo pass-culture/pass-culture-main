@@ -41,8 +41,14 @@ class RunTest:
             make_application_detail(789, 'closed')
         ]
 
+        find_user_by_email = Mock(return_value=None)
+
         # when
-        remote_import.run(get_all_applications, get_details)
+        remote_import.run(
+            get_all_applications=get_all_applications,
+            get_details=get_details,
+            existing_user=find_user_by_email
+        )
 
         # then
         assert process_beneficiary_application.call_count == 2
@@ -60,18 +66,22 @@ class RunTest:
                 (456, 'initiated', EIGHT_HOURS_AGO)
             ], current_page, number_of_pages
         )
-        get_details = Mock()
-        get_details.return_value = make_application_detail(123, 'closed')
+        get_details = Mock(return_value=make_application_detail(123, 'closed'))
+        find_user_by_email = Mock(return_value=None)
 
         # when
-        remote_import.run(get_all_applications, get_details)
+        remote_import.run(
+            get_all_applications=get_all_applications,
+            get_details=get_details,
+            existing_user=find_user_by_email
+        )
 
         # then
         assert process_beneficiary_application.call_count == 3
 
     @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
-    def test_pagination_is_handled_properly(self, process_beneficiary_application, send_report_email):
+    def test_a_report_email_is_sent(self, process_beneficiary_application, send_report_email):
         # given
         get_all_applications = Mock()
         number_of_pages = 3
@@ -82,14 +92,44 @@ class RunTest:
                 (456, 'initiated', EIGHT_HOURS_AGO)
             ], current_page, number_of_pages
         )
-        get_details = Mock()
-        get_details.return_value = make_application_detail(123, 'closed')
+        get_details = Mock(return_value=make_application_detail(123, 'closed'))
+        find_user_by_email = Mock(return_value=None)
 
         # when
-        remote_import.run(get_all_applications, get_details)
+        remote_import.run(
+            get_all_applications=get_all_applications,
+            get_details=get_details,
+            existing_user=find_user_by_email
+        )
 
         # then
         send_report_email.assert_called_with([], [], ANY)
+
+    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
+    @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
+    def test_application_with_known_emails_are_not_processed(self, process_beneficiary_application, send_report_email):
+        # given
+        get_all_applications = Mock()
+        number_of_pages = 3
+        current_page = 1
+        get_all_applications.return_value = make_applications_list(
+            [
+                (123, 'closed', FOUR_HOURS_AGO),
+                (456, 'initiated', EIGHT_HOURS_AGO)
+            ], current_page, number_of_pages
+        )
+        get_details = Mock(return_value=make_application_detail(123, 'closed'))
+        find_user_by_email = Mock(return_value=User())
+
+        # when
+        remote_import.run(
+            get_all_applications=get_all_applications,
+            get_details=get_details,
+            existing_user=find_user_by_email
+        )
+
+        # then
+        process_beneficiary_application.assert_not_called()
 
 
 @pytest.mark.standalone
