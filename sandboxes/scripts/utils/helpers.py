@@ -31,6 +31,9 @@ def get_offerer_helper(offerer):
         "longitude": '2.4579903',
     })
 
+def get_payment_helper(payment):
+    return payment._asdict()
+
 def get_stock_helper(stock):
     return stock._asdict()
 
