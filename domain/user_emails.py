@@ -10,7 +10,7 @@ from utils.mailing import make_user_booking_recap_email, \
     make_offerer_driven_cancellation_email_for_offerer, make_final_recap_email_for_stock_with_event, \
     make_reset_password_email, make_validation_confirmation_email, make_batch_cancellation_email, \
     make_user_validation_email, make_venue_validation_confirmation_email, compute_email_html_part_and_recipients, \
-    make_activation_notification_email, SUPPORT_EMAIL_ADDRESS, ADMINISTRATION_EMAIL_ADDRESS
+    make_activation_notification_email, ADMINISTRATION_EMAIL_ADDRESS
 
 
 def send_final_booking_recap_email(stock: Stock, send_email: Callable[..., bool]) -> bool:

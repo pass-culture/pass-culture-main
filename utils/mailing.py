@@ -27,6 +27,7 @@ MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
 MAILJET_API_SECRET = os.environ.get('MAILJET_API_SECRET')
 SUPPORT_EMAIL_ADDRESS = os.environ.get('SUPPORT_EMAIL_ADDRESS')
 ADMINISTRATION_EMAIL_ADDRESS = os.environ.get('ADMINISTRATION_EMAIL_ADDRESS')
+DEV_EMAIL_ADDRESS = os.environ.get('DEV_EMAIL_ADDRESS')
 
 if MAILJET_API_KEY is None or MAILJET_API_KEY == '':
     raise ValueError("Missing environment variable MAILJET_API_KEY")
@@ -39,6 +40,9 @@ if SUPPORT_EMAIL_ADDRESS is None or SUPPORT_EMAIL_ADDRESS == '':
 
 if ADMINISTRATION_EMAIL_ADDRESS is None or ADMINISTRATION_EMAIL_ADDRESS == '':
     raise ValueError("Missing environment variable ADMINISTRATION_EMAIL_ADDRESS")
+
+if DEV_EMAIL_ADDRESS is None or DEV_EMAIL_ADDRESS == '':
+    raise ValueError("Missing environment variable DEV_EMAIL_ADDRESS")
 
 
 class MailServiceException(Exception):
@@ -193,7 +197,7 @@ def make_offerer_driven_cancellation_email_for_user(booking):
 
     return {
         'FromName': 'Pass Culture',
-        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else 'dev@passculture.app',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
         'Subject': email_subject,
         'Html-part': email_html,
     }
@@ -224,7 +228,7 @@ def make_offerer_driven_cancellation_email_for_offerer(booking):
                                  )
     return {
         'FromName': 'Pass Culture',
-        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else 'dev@passculture.app',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
         'Subject': email_subject,
         'Html-part': email_html,
     }
@@ -241,7 +245,7 @@ def make_user_booking_recap_email(booking, is_cancellation=False):
 
     return {
         'FromName': 'Pass Culture',
-        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else 'dev@passculture.app',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
         'Subject': email_subject,
         'Html-part': email_html,
     }
@@ -285,7 +289,7 @@ def make_validation_confirmation_email(user_offerer, offerer):
         subject = 'Validation de votre structure'
     return {
         'FromName': 'pass Culture pro',
-        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else 'dev@passculture.app',
+        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
         'Subject': subject,
         'Html-part': email_html,
     }
@@ -397,7 +401,7 @@ def make_user_validation_email(user, app_origin_url, is_webapp):
             'To': user.email,
             'Subject': 'Validation de votre adresse email pour le pass Culture',
             'FromName': from_name,
-            'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else 'dev@passculture.app'}
+            'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS}
 
 
 def get_contact(user):
@@ -549,7 +553,7 @@ def compute_email_html_part_and_recipients(email_html_part, recipients):
     else:
         email_html_part = '<p>This is a test (ENV={environment}). In production, email would have been sent to : {recipients}</p>{html_part}'.format(
             environment=ENV, recipients=recipients_string, html_part=email_html_part)
-        email_to = 'dev@passculture.app'
+        email_to = DEV_EMAIL_ADDRESS
     return email_html_part, email_to
 
 
