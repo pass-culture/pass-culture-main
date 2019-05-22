@@ -10,6 +10,7 @@ from domain.user_emails import send_activation_notification_email
 from models import User, PcObject, Deposit
 from repository.user_queries import find_by_first_and_last_names_and_birth_date, find_user_by_email
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
+from utils.logger import logger
 from utils.mailing import send_raw_email
 
 TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN', None)
@@ -28,11 +29,15 @@ def run(
     error_messages = []
     new_beneficiaries = []
 
+    logger.info('[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées')
     while current_page <= number_of_pages:
-
         applications = get_all_applications(PROCEDURE_ID, TOKEN, page=current_page)
-        current_page, number_of_pages = _handle_pagination(applications, current_page)
+        number_of_pages = applications['pagination']['nombre_de_page']
+
+        logger.info(f'[BATCH][REMOTE IMPORT BENEFICIARIES] Page {current_page} of {number_of_pages}, '
+                    f'{len(applications)} applications received')
         ids_to_process = _find_application_ids_to_process(applications, process_applications_updated_after)
+        logger.info(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {len(ids_to_process)} applications to process')
 
         for id in ids_to_process:
             details = get_details(id, PROCEDURE_ID, TOKEN)
@@ -40,6 +45,8 @@ def run(
 
             if not existing_user(information['email']):
                 process_beneficiary_application(information, error_messages, new_beneficiaries)
+
+        current_page = current_page + 1
 
     send_remote_beneficiaries_import_report_email(new_beneficiaries, error_messages, send_raw_email)
 
@@ -60,6 +67,7 @@ def process_beneficiary_application(
     try:
         new_beneficiary = create_beneficiary_from_application(information, find_duplicate_users=find_duplicate_users)
     except DuplicateBeneficiaryError as e:
+        logger.warning(f'[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : {e.message}')
         error_messages.append(e.message)
     else:
         new_beneficiaries.append(new_beneficiary)
@@ -134,9 +142,3 @@ def _find_application_ids_to_process(applications: dict, process_applications_up
         lambda a: datetime.strptime(a['updated_at'], '%Y-%m-%dT%H:%M:%SZ') > process_applications_updated_after,
         processable_applications)
     return {a['id'] for a in recent_applications}
-
-
-def _handle_pagination(applications, current_page):
-    number_of_pages = applications['pagination']['nombre_de_page']
-    new_page = current_page + 1
-    return new_page, number_of_pages
