@@ -20,18 +20,24 @@ config:
       name: "Cool down the application"
   target: "https://pass-culture-dev-perf.scalingo.io"
   payload:
-    path: "user_list"  # Needs to contains valid users
-    fields:
-      - "id"
-      - "lastName"
-      - "firstName"
-      - "email"
-      - "phoneNumber"
-      - "city"
-      - "zipCode"
-      - "birthDate"
-      - "password"
-    order: sequence
+    -
+      path: "user_list"  # Needs to contains valid users
+      fields:
+        - "id"
+        - "lastName"
+        - "firstName"
+        - "email"
+        - "phoneNumber"
+        - "city"
+        - "zipCode"
+        - "birthDate"
+        - "password"
+      order: sequence
+    -
+      path: "word_list_fr"
+      fields:
+        - "word"
+      order: sequence
 scenarios:
   - flow:
       - post:
@@ -47,3 +53,23 @@ scenarios:
           ifTrue: "id"
           json:
             seenRecommendationIds: []
+      - think: 20
+      - put:
+          url: "/recommendations"
+          ifTrue: "id"
+          json:
+            seenRecommendationIds: []
+      - think: 20
+      - get:
+          url: "/recommendations?keywords={{ word }}"
+          ifTrue: "id"
+      - get:
+          url: "/recommendations?keywords={{ word }}&page=2"
+          ifTrue: "id"
+      - think: 7
+      - get:
+          url: "/recommendations?keywords={{ word }}&page=3"
+          ifTrue: "id"
+      - get:
+          url: "/recommendations?keywords={{ word }}&page=4"
+          ifTrue: "id"
