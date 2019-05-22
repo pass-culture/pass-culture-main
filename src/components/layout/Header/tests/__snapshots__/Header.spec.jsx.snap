@@ -167,7 +167,7 @@ ShallowWrapper {
                     className="icon"
                   >
                     <Icon
-                      svg="ico-compta"
+                      svg="ico-bookings"
                     />
                   </span>
                   <span>
@@ -360,7 +360,7 @@ ShallowWrapper {
                       className="icon"
                     >
                       <Icon
-                        svg="ico-compta"
+                        svg="ico-bookings"
                       />
                     </span>
                     <span>
@@ -617,7 +617,7 @@ ShallowWrapper {
                       className="icon"
                     >
                       <Icon
-                        svg="ico-compta"
+                        svg="ico-bookings"
                       />
                     </span>
                     <span>
@@ -787,7 +787,7 @@ ShallowWrapper {
                         className="icon"
                       >
                         <Icon
-                          svg="ico-compta"
+                          svg="ico-bookings"
                         />
                       </span>
                       <span>
@@ -1090,7 +1090,7 @@ ShallowWrapper {
                           className="icon"
                         >
                           <Icon
-                            svg="ico-compta"
+                            svg="ico-bookings"
                           />
                         </span>
                         <span>
@@ -1249,7 +1249,7 @@ ShallowWrapper {
                             className="icon"
                           >
                             <Icon
-                              svg="ico-compta"
+                              svg="ico-bookings"
                             />
                           </span>
                           <span>
@@ -1432,7 +1432,7 @@ ShallowWrapper {
                               className="icon"
                             >
                               <Icon
-                                svg="ico-compta"
+                                svg="ico-bookings"
                               />
                             </span>,
                             <span>
@@ -1450,7 +1450,7 @@ ShallowWrapper {
                             "nodeType": "host",
                             "props": Object {
                               "children": <Icon
-                                svg="ico-compta"
+                                svg="ico-bookings"
                               />,
                               "className": "icon",
                             },
@@ -1460,7 +1460,7 @@ ShallowWrapper {
                               "key": undefined,
                               "nodeType": "function",
                               "props": Object {
-                                "svg": "ico-compta",
+                                "svg": "ico-bookings",
                               },
                               "ref": null,
                               "rendered": null,
@@ -1770,7 +1770,7 @@ ShallowWrapper {
                       className="icon"
                     >
                       <Icon
-                        svg="ico-compta"
+                        svg="ico-bookings"
                       />
                     </span>
                     <span>
@@ -1963,7 +1963,7 @@ ShallowWrapper {
                         className="icon"
                       >
                         <Icon
-                          svg="ico-compta"
+                          svg="ico-bookings"
                         />
                       </span>
                       <span>
@@ -2220,7 +2220,7 @@ ShallowWrapper {
                         className="icon"
                       >
                         <Icon
-                          svg="ico-compta"
+                          svg="ico-bookings"
                         />
                       </span>
                       <span>
@@ -2390,7 +2390,7 @@ ShallowWrapper {
                           className="icon"
                         >
                           <Icon
-                            svg="ico-compta"
+                            svg="ico-bookings"
                           />
                         </span>
                         <span>
@@ -2693,7 +2693,7 @@ ShallowWrapper {
                             className="icon"
                           >
                             <Icon
-                              svg="ico-compta"
+                              svg="ico-bookings"
                             />
                           </span>
                           <span>
@@ -2852,7 +2852,7 @@ ShallowWrapper {
                               className="icon"
                             >
                               <Icon
-                                svg="ico-compta"
+                                svg="ico-bookings"
                               />
                             </span>
                             <span>
@@ -3035,7 +3035,7 @@ ShallowWrapper {
                                 className="icon"
                               >
                                 <Icon
-                                  svg="ico-compta"
+                                  svg="ico-bookings"
                                 />
                               </span>,
                               <span>
@@ -3053,7 +3053,7 @@ ShallowWrapper {
                               "nodeType": "host",
                               "props": Object {
                                 "children": <Icon
-                                  svg="ico-compta"
+                                  svg="ico-bookings"
                                 />,
                                 "className": "icon",
                               },
@@ -3063,7 +3063,7 @@ ShallowWrapper {
                                 "key": undefined,
                                 "nodeType": "function",
                                 "props": Object {
-                                  "svg": "ico-compta",
+                                  "svg": "ico-bookings",
                                 },
                                 "ref": null,
                                 "rendered": null,

@@ -97,7 +97,7 @@ class Header extends Component {
                   )}
                   <NavLink to="/reservations" className="navbar-item">
                     <span className="icon">
-                      <Icon svg="ico-compta" />
+                      <Icon svg="ico-bookings" />
                     </span>
                     <span>Suivi des réservations</span>
                   </NavLink>
