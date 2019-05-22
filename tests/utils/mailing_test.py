@@ -1635,6 +1635,7 @@ class MakeBeneficiariesImportEmailTest:
 
         # then
         assert email["FromEmail"] == 'passculture-dev@beta.gouv.fr'
+        assert email["To"] == 'passculture-dev@beta.gouv.fr'
         assert email["FromName"] == 'pass Culture'
         assert email["Subject"] == 'Import des utilisateurs depuis Démarches Simplifiées 2019-05-20'
 

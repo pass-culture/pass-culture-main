@@ -596,6 +596,7 @@ def make_beneficiaries_import_email(new_beneficiaries: List[User], error_message
     return {
         'Subject': 'Import des utilisateurs depuis Démarches Simplifiées %s' % date_import,
         'FromEmail': 'passculture-dev@beta.gouv.fr',
+        'To': 'passculture-dev@beta.gouv.fr',
         'FromName': "pass Culture",
         'Html-part': html
     }
