@@ -1,10 +1,27 @@
 .stock-item {
+  input[type='number'] {
+    padding-left: 12px;
+    padding-right: 6px;
+    text-align: right;
+    width: 60px;
+  }
+
+  .time-field {
+    width: 66px;
+
+    .field-input {
+      width: 40px;
+    }
+  }
+
   display: table-row;
   td {
     vertical-align: middle;
 
     .field-input {
-      min-width: 75px;
+      font-size: 12px;
+      min-width: 32px;
+      border-radius: 1rem;
 
       &.input-number {
         width: 77px;
@@ -22,7 +39,7 @@
     .tooltip {
       &.tooltip-info {
         background-color: transparent;
-        margin-left: 1px!important;
+        margin-left: 6px!important;
       }
     }
   }

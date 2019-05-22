@@ -34,6 +34,9 @@
   }
 
   .stocks-table-wrapper {
+    display: flex;
+    flex-direction: column;
+
     .hero-section {
       text-align: left !important;
     }
@@ -44,8 +47,6 @@
 
     table.stocks-table {
       &.small {
-        margin: 5rem;
-        padding: 6px;
         td {
           input {
             width: 100%;
@@ -87,6 +88,8 @@
             input[readonly]:-moz-placeholder {
               color: $black;
             }
+
+            padding: 6px;
           }
 
           td.booking-limit-datetime {
@@ -107,9 +110,10 @@
       thead {
         tr {
           td {
-            font-weight: $weight-bold;
             vertical-align: middle;
-            padding: 1rem;
+            font-size: 12px;
+            color: #404040;
+            line-height: normal;
           }
         }
       }

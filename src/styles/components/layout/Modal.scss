@@ -10,7 +10,13 @@
 
   &.confirm-change-offer {
     .modal-dialog {
+      width: auto;
       padding: 0;
     }
+  }
+
+  .modal-dialog {
+    width: 100%;
+    max-width: 64em;
   }
 }

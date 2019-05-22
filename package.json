@@ -129,7 +129,7 @@
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
     "testunit": "jest --env=jsdom",
-    "precommit": "pretty-quick --staged",
+    "precommit": "pretty-quick --staged --pattern '**/*.*(js|jsx)'",
     "prettier": "$(yarn bin)/prettier --write 'src/**/*.js'",
     "test:cafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 'chrome:headless' testcafe",
     "test:unit": "jest --env=jsdom",
