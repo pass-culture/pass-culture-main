@@ -1,28 +1,29 @@
 /* eslint-disable no-use-before-define */
 import { mount } from 'enzyme'
-import 'moment-timezone'
 import React from 'react'
 import { Field, Form } from 'react-final-form'
 
-import adaptaBookingLimitDatetimeGivenBeginningDatetime from '../adaptaBookingLimitDatetimeGivenBeginningDatetime'
+import adaptBookingLimitDatetimeGivenBeginningDatetime from '../adaptBookingLimitDatetimeGivenBeginningDatetime'
 
 describe('src | pages | Offer | StocksManager | StocksManager | StockItem | decorators | adaptaBookingLimitDatetimeGivenBeginningDatetime', () => {
-  it('should force the date to have specific hours and minutes', done => {
+  it('should set bookingLimitDatetime at 23h59 plus 3 hours for america/cayenne (because utc)', () => {
     // given
     const initialValues = {
-      fooDate: '2019-04-28T19:00:00.000Z',
+      beginningDatetime: '2019-04-28T19:00:00.000Z',
+      bookingLimitDatetime: '2019-04-20T15:00:00.000Z',
     }
 
     // when
     const wrapper = mount(
       <Form
         decorators={[
-          adaptaBookingLimitDatetimeGivenBeginningDatetime({
+          adaptBookingLimitDatetimeGivenBeginningDatetime({
             isEvent: true,
+            timezone: 'America/Cayenne',
           }),
         ]}
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={() => null}
         render={({ handleSubmit }) => (
           <form>
             <Field
@@ -42,28 +43,10 @@ describe('src | pages | Offer | StocksManager | StocksManager | StockItem | deco
     )
 
     // then
-    setTimeout(() => {
-      wrapper.update()
-      const input = wrapper
-        .find(Field)
-        .find({ name: 'fooDate' })
-        .find('input')
-      expect(input.props().value).toEqual('2019-04-28T23:59:00.000Z')
-
-      // when
-      input.simulate('change', {
-        target: { value: '2019-04-28T19:00:00.000Z' },
-      })
-      setTimeout(() => {
-        wrapper.update()
-        wrapper.find('button[type="submit"]').simulate('click')
-      })
-    })
-
-    // then
-    function onSubmit(formValues) {
-      expect(formValues.fooDate).toEqual('2019-04-28T23:59:00.000Z')
-      done()
-    }
+    const input = wrapper
+      .find(Field)
+      .find({ name: 'bookingLimitDatetime' })
+      .find('input')
+    expect(input.props().value).toEqual('2019-04-21T02:59:00.000Z')
   })
 })

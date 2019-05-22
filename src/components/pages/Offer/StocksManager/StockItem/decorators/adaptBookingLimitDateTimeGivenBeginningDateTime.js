@@ -6,27 +6,32 @@ import updateBookingLimitDatetime from './updateBookingLimitDatetime'
 const mapArgsToCacheKey = ({ isEvent, timezone }) =>
   `${isEvent || ''} ${timezone || ''}`
 
-export const adaptBookingLimitDatetimeGivenBeginningDatetime = createCachedSelector(
+const adaptBookingLimitDatetimeGivenBeginningDatetime = createCachedSelector(
   ({ isEvent }) => isEvent,
-  isEvent =>
+  ({ timezone }) => timezone,
+  (isEvent, timezone) =>
     createDecorator(
       {
         field: 'bookingLimitDatetime',
-        updates: (bookingLimitDatetime, fieldName, allValues) =>
-          updateBookingLimitDatetime({
+        updates: (bookingLimitDatetime, fieldName, { beginningDatetime }) => ({
+          bookingLimitDatetime: updateBookingLimitDatetime({
             isEvent,
-            previousBeginningDatetime: allValues.beginningDatetime,
+            previousBeginningDatetime: beginningDatetime,
             previousBookingLimitDatetime: bookingLimitDatetime,
+            timezone,
           }),
+        }),
       },
       {
         field: 'beginningDatetime',
-        updates: (beginningDatetime, fieldName, allValues) =>
-          updateBookingLimitDatetime({
+        updates: (beginningDatetime, fieldName, { bookingLimitDatetime }) => ({
+          bookingLimitDatetime: updateBookingLimitDatetime({
             isEvent,
             previousBeginningDatetime: beginningDatetime,
-            previousBookingLimitDatetime: allValues,
+            previousBookingLimitDatetime: bookingLimitDatetime,
+            timezone,
           }),
+        }),
       }
     )
 )(mapArgsToCacheKey)

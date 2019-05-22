@@ -10,26 +10,24 @@ const updateBookingLimitDatetime = ({
   isEvent,
   previousBeginningDatetime,
   previousBookingLimitDatetime,
+  timezone,
 }) => {
-  const bookingLimitDatetimeMoment = moment(previousBookingLimitDatetime)
+  let bookingLimitDatetimeMoment = moment(previousBookingLimitDatetime).utc()
 
   if (
     !isEvent ||
     bookingLimitDatetimeMoment.isBefore(previousBeginningDatetime, 'day')
   ) {
-    const updatedDateTime = bookingLimitDatetimeMoment
+    if (timezone) {
+      bookingLimitDatetimeMoment = bookingLimitDatetimeMoment.tz(timezone)
+    }
+    return bookingLimitDatetimeMoment
       .hours(BOOKING_LIMIT_DATETIME_HOURS)
       .minutes(BOOKING_LIMIT_DATETIME_MINUTES)
       .toISOString()
-
-    return {
-      bookingLimitDatetime: updatedDateTime,
-    }
   }
 
-  return {
-    bookingLimitDatetime: previousBeginningDatetime,
-  }
+  return previousBeginningDatetime
 }
 
 export default updateBookingLimitDatetime
