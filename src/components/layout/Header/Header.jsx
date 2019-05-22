@@ -56,6 +56,7 @@ class Header extends Component {
               <a
                 className="navbar-item"
                 href="https://docs.passculture.app/structures-culturelles"
+                rel="noopener noreferrer"
                 target="_blank">
                 <span className="icon">
                   <Icon svg="ico-help-w" />
@@ -94,6 +95,12 @@ class Header extends Component {
                       <span>Délégations</span>
                     </NavLink>
                   )}
+                  <NavLink to="/reservations" className="navbar-item">
+                    <span className="icon">
+                      <Icon svg="ico-compta" />
+                    </span>
+                    <span>Suivi des réservations</span>
+                  </NavLink>
                   <NavLink to="/remboursements" className="navbar-item">
                     <span className="icon">
                       <Icon svg="ico-compta" />

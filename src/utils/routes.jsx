@@ -2,6 +2,7 @@ import React from 'react'
 import { Redirect } from 'react-router'
 
 import Accouting from '../components/pages/Accounting'
+import BookingsContainer from '../components/pages/Bookings/BookingsContainer'
 import Desk from '../components/pages/Desk'
 import Home from '../components/pages/Home'
 import Mediation from '../components/pages/Mediation'
@@ -93,6 +94,11 @@ const routes = [
     component: ReimbursementsContainer,
     path: '/remboursements',
     title: 'Remboursements',
+  },
+  {
+    component: BookingsContainer,
+    path: '/reservations',
+    title: 'Réservations',
   },
   {
     component: Offers,
