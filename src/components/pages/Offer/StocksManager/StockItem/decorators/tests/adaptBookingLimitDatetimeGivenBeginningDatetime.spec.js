@@ -1,11 +1,10 @@
-/* eslint-disable no-use-before-define */
 import { mount } from 'enzyme'
 import React from 'react'
 import { Field, Form } from 'react-final-form'
 
 import adaptBookingLimitDatetimeGivenBeginningDatetime from '../adaptBookingLimitDatetimeGivenBeginningDatetime'
 
-describe('src | pages | Offer | StocksManager | StocksManager | StockItem | decorators | adaptaBookingLimitDatetimeGivenBeginningDatetime', () => {
+describe('src | pages | Offer | StocksManager | StockItem | decorators | adaptaBookingLimitDatetimeGivenBeginningDatetime', () => {
   it('should set bookingLimitDatetime at 23h59 plus 3 hours for america/cayenne (because utc)', () => {
     // given
     const initialValues = {
