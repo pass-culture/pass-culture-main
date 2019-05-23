@@ -6,55 +6,59 @@ describe('src | components | pages | Offer | StockManager | StockItem | decorato
       test('should return 23h59 minus 1 or 2 hours for europe/paris (because utc)', () => {
         // given
         const isEvent = true
-        const previousBeginningDatetime = '2019-04-28T19:00:00.000Z'
-        const previousBookingLimitDatetime = '2019-04-20T15:00:00.000Z'
+        const beginningDatetime = '2019-04-28T19:00:00.000Z'
+        const bookingLimitDatetime = '2019-04-20T15:00:00.000Z'
 
         // when
-        const bookingLimitDatetime = updateBookingLimitDatetime({
+        const result = updateBookingLimitDatetime({
+          beginningDatetime,
+          bookingLimitDatetime,
           isEvent,
-          previousBeginningDatetime,
-          previousBookingLimitDatetime,
           timezone: 'Europe/Paris',
         })
 
         // then
-        expect(bookingLimitDatetime).toEqual('2019-04-20T21:59:00.000Z')
+        expect(result.bookingLimitDatetime).toEqual('2019-04-20T21:59:00.000Z')
       })
       test('should return 23h59 plus 3 hours for america/cayenne (because utc)', () => {
         // given
         const isEvent = true
-        const previousBeginningDatetime = '2019-04-28T19:00:00.000Z'
-        const previousBookingLimitDatetime = '2019-04-20T15:00:00.000Z'
+        const beginningDatetime = '2019-04-28T19:00:00.000Z'
+        const bookingLimitDatetime = '2019-04-20T15:00:00.000Z'
 
         // when
-        const bookingLimitDatetime = updateBookingLimitDatetime({
+        const result = updateBookingLimitDatetime({
+          beginningDatetime,
+          bookingLimitDatetime,
           isEvent,
-          previousBeginningDatetime,
-          previousBookingLimitDatetime,
           timezone: 'America/Cayenne',
         })
 
         // then
-        expect(bookingLimitDatetime).toEqual('2019-04-21T02:59:00.000Z')
+        expect(result.bookingLimitDatetime).toEqual('2019-04-21T02:59:00.000Z')
       })
     })
 
-    describe('When booking limit date is the same day as beginning date then booking limit time is equal to beginning time', () => {
-      it('should make bookingLimitDatetime equal to previousBeginningDatetime (whatever the timezone)', () => {
+    describe('When booking limit date is changed to be on the same day as beginning date then booking limit time is equal to beginning time', () => {
+      it.only('should make bookingLimitDatetime equal to beginningDatetime (whatever the timezone)', () => {
         // given
         const isEvent = true
-        const previousBeginningDatetime = '2019-04-20T19:00:00.000Z'
-        const previousBookingLimitDatetime = '2019-04-20T15:00:00.000Z'
+        const beginningDatetime = '2019-04-20T19:00:00.000Z'
+        const bookingLimitDatetime = '2019-04-20T15:00:00.000Z'
+        const previousBeginninDatetime = beginningDatetime
+        const previousBookingLimitDatetime = '2019-04-10T15:00:00.000Z'
 
         // when
-        const bookingLimitDatetime = updateBookingLimitDatetime({
+        const result = updateBookingLimitDatetime({
+          beginningDatetime,
+          bookingLimitDatetime,
           isEvent,
-          previousBeginningDatetime,
+          previousBeginninDatetime,
           previousBookingLimitDatetime,
         })
 
         // then
-        expect(bookingLimitDatetime).toEqual('2019-04-20T19:00:00.000Z')
+        expect(result.bookingLimitDatetime).toEqual('2019-04-20T19:00:00.000Z')
       })
     })
   })
@@ -63,32 +67,32 @@ describe('src | components | pages | Offer | StockManager | StockItem | decorato
     test('When booking limit date is not empty then booking limit time is equal to 23h59 minus 1 or 2 hours for europe/paris (because utc)', () => {
       // given
       const isEvent = false
-      const previousBookingLimitDatetime = '2019-04-27T19:00:00.000Z'
+      const bookingLimitDatetime = '2019-04-27T19:00:00.000Z'
 
       // when
-      const bookingLimitDatetime = updateBookingLimitDatetime({
+      const result = updateBookingLimitDatetime({
+        bookingLimitDatetime,
         isEvent,
-        previousBookingLimitDatetime,
         timezone: 'Europe/Paris',
       })
 
       // then
-      expect(bookingLimitDatetime).toEqual('2019-04-27T21:59:00.000Z')
+      expect(result.bookingLimitDatetime).toEqual('2019-04-27T21:59:00.000Z')
     })
     test('When booking limit date is not empty then booking limit time is equal to 23h59 plus 3 hours for america/cayenne (because utc)', () => {
       // given
       const isEvent = false
-      const previousBookingLimitDatetime = '2019-04-27T19:00:00.000Z'
+      const bookingLimitDatetime = '2019-04-27T19:00:00.000Z'
 
       // when
-      const bookingLimitDatetime = updateBookingLimitDatetime({
+      const result = updateBookingLimitDatetime({
+        bookingLimitDatetime,
         isEvent,
-        previousBookingLimitDatetime,
         timezone: 'America/Cayenne',
       })
 
       // then
-      expect(bookingLimitDatetime).toEqual('2019-04-28T02:59:00.000Z')
+      expect(result.bookingLimitDatetime).toEqual('2019-04-28T02:59:00.000Z')
     })
   })
 })

@@ -7,27 +7,49 @@ import {
 } from '../utils'
 
 const updateBookingLimitDatetime = ({
+  beginningDatetime,
+  bookingLimitDatetime,
   isEvent,
   previousBeginningDatetime,
   previousBookingLimitDatetime,
   timezone,
 }) => {
-  let bookingLimitDatetimeMoment = moment(previousBookingLimitDatetime).utc()
+  const bookingLimitDatetimeMoment = moment(bookingLimitDatetime)
 
   if (
     !isEvent ||
-    bookingLimitDatetimeMoment.isBefore(previousBeginningDatetime, 'day')
+    bookingLimitDatetimeMoment.isBefore(beginningDatetime, 'day')
   ) {
+    let nextBookingLimitDatetimeMoment = bookingLimitDatetimeMoment
     if (timezone) {
-      bookingLimitDatetimeMoment = bookingLimitDatetimeMoment.tz(timezone)
+      nextBookingLimitDatetimeMoment = bookingLimitDatetimeMoment.tz(timezone)
     }
-    return bookingLimitDatetimeMoment
+    const nextBookingLimitDatetime = nextBookingLimitDatetimeMoment
       .hours(BOOKING_LIMIT_DATETIME_HOURS)
       .minutes(BOOKING_LIMIT_DATETIME_MINUTES)
       .toISOString()
+    return { bookingLimitDatetime: nextBookingLimitDatetime }
   }
 
-  return previousBeginningDatetime
+  if (isEvent && bookingLimitDatetimeMoment.isSame(beginningDatetime, 'day')) {
+    if (!previousBookingLimitDatetime || !previousBookingLimitDatetime) {
+      return {}
+    }
+    const previousBookingLimitDatetimeMoment = moment(
+      previousBookingLimitDatetime
+    )
+    if (
+      previousBookingLimitDatetimeMoment.isBefore(
+        previousBeginningDatetime,
+        'day'
+      )
+    ) {
+      return { bookingLimitDatetime: beginningDatetime }
+    }
+    return {}
+  }
+
+  return { bookingLimitDatetime: beginningDatetime }
 }
 
 export default updateBookingLimitDatetime
