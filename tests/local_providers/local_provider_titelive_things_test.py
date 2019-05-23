@@ -5,7 +5,7 @@ import pytest
 from datetime import datetime
 
 from local_providers import TiteLiveThings
-from models import Product
+from models import Product, BookFormat
 from models.pc_object import PcObject
 from models.provider import Provider
 from models.venue_provider import VenueProvider
@@ -44,7 +44,7 @@ class TiteliveThingsTest:
                     "~LES EDITIONS DE L'INSTANT MEME" \
                     "~EPAGINE" \
                     "~11/05/2011" \
-                    "~LE" \
+                    "~BL" \
                     "~2" \
                     "~0" \
                     "~0,0" \
@@ -97,6 +97,9 @@ class TiteliveThingsTest:
                       erroredThumbs=0,
                       Product=1
                       )
+        
+        product = Product.query.one()
+        assert product.extraData.get('bookFormat') == BookFormat.BEAUX_LIVRES.value
 
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
@@ -124,7 +127,7 @@ class TiteliveThingsTest:
                     "~LES EDITIONS DE L'INSTANT MEME" \
                     "~EPAGINE" \
                     "~11/05/2011" \
-                    "~LE" \
+                    "~BL" \
                     "~2" \
                     "~0" \
                     "~0,0" \
@@ -185,6 +188,7 @@ class TiteliveThingsTest:
                       )
         updated_product = Product.query.first()
         assert updated_product.name == 'nouvelles du Chili'
+        assert updated_product.extraData.get('bookFormat') == BookFormat.BEAUX_LIVRES.value
 
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
@@ -213,14 +217,14 @@ class TiteliveThingsTest:
                       TiteLiveThings,
                       None,
                       checkedObjects=422,
-                      createdObjects=355,
-                      updatedObjects=13,
+                      createdObjects=340,
+                      updatedObjects=16,
                       erroredObjects=0,
                       checkedThumbs=0,
                       createdThumbs=0,
                       updatedThumbs=0,
                       erroredThumbs=0,
-                      Product=355
+                      Product=340
                       )
 
     @clean_database
