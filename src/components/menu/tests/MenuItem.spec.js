@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/components/menu/tests/MenuItem --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 

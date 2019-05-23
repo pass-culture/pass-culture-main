@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Icon } from 'pass-culture-shared'
-import { matchPath, withRouter } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 
 import ReplaceLink from './ReplaceLink'
-import { getMenuItemIdFromPathname } from './utils'
+import { getMenuItemIdFromPathname, getMenuItemPathTo } from './utils'
 
 const renderLinkContent = (icon, title, styles) => (
   <React.Fragment>
@@ -14,9 +14,7 @@ const renderLinkContent = (icon, title, styles) => (
     >
       <Icon svg={`ico-${icon}`} alt="" />
     </span>
-    <span className="flex-1 is-medium">
-      {title}
-    </span>
+    <span className="flex-1 is-medium">{title}</span>
   </React.Fragment>
 )
 
@@ -24,9 +22,7 @@ export class MenuItemContent extends React.PureComponent {
   renderNavLink = opts => {
     const { item, location } = this.props
     const { title, disabled, icon, path } = item
-    const currentpath = location.pathname
-    const isactive = matchPath(currentpath, item)
-    const pathto = isactive ? currentpath.replace('/menu', '') : path
+    const pathto = getMenuItemPathTo(location, item)
     const itemid = getMenuItemIdFromPathname(pathto, 'main-menu')
     return (
       <ReplaceLink
