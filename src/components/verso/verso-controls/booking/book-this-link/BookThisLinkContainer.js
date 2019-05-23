@@ -13,11 +13,10 @@ export const getLinkDestination = (url, search) => {
     throw new Error('Invalid url parameter')
   }
   let formattedUrl = url
-  if (url.includes('verso')) {
-    formattedUrl = url.replace('verso', '')
+  if (url.includes('/verso')) {
+    formattedUrl = url.replace('/verso', '')
   }
-  const strippedUrl = formattedUrl.replace(/\/$/, '')
-  return `${strippedUrl}/booking${search || ''}`
+  return `${formattedUrl}/booking${search || ''}`
 }
 
 export const getPriceValue = (state, params) => {
