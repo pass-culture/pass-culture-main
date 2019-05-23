@@ -16,7 +16,6 @@ describe('src | components | matomo | MatomoPageTracker', () => {
     const fakeMatomoPageTracker = {
       push: jest.fn(),
     }
-    // eslint-disable-next-line
     window._paq = fakeMatomoPageTracker
 
     // when
@@ -41,7 +40,6 @@ describe('src | components | matomo | MatomoPageTracker', () => {
     const fakeMatomoPageTracker = {
       push: jest.fn(),
     }
-    // eslint-disable-next-line
     window._paq = fakeMatomoPageTracker
     document.title = 'PassCulture Page Name'
 
