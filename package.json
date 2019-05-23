@@ -107,7 +107,7 @@
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-15": "^1.0.5",
     "enzyme-adapter-react-16": "^1.1.1",
-    "husky": "^0.14.3",
+    "husky": "1.3.1",
     "jest": "23.5.0",
     "jest-environment-jsdom": "^24.5.0",
     "jest-environment-jsdom-global": "^1.2.0",
@@ -128,7 +128,6 @@
     "build": "node scripts/build.js && ./scripts/build_redirects.sh",
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
-    "testunit": "jest --env=jsdom",
     "precommit": "pretty-quick --staged --pattern '**/*.*(js|jsx)'",
     "prettier": "$(yarn bin)/prettier --write 'src/**/*.js'",
     "test:cafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 'chrome:headless' testcafe",
@@ -145,6 +144,11 @@
     ]
   },
   "homepage": ".",
+  "husky": {
+    "hooks": {
+      "pre-commit": "./scripts/precommit.sh"
+    }
+  },
   "engines": {
     "node": ">=8.12.0 <8.16"
   }

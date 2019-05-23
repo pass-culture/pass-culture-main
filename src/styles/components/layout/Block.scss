@@ -1,6 +1,10 @@
 .confirm-change {
   max-width: 360px;
 
+  div {
+    
+  }
+
   ul {
     margin-right: 15px;
     margin-left: 15px;
@@ -8,7 +12,7 @@
     justify-content: flex-start;
     align-items: center;
 
-    li {    
+    li {
       text-align: left;
       img {
         width: 2.5em;
