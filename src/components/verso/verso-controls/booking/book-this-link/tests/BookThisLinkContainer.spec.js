@@ -1,5 +1,9 @@
 import set from 'lodash.set'
-import { getLinkDestination, getPriceValue, mapStateToProps, } from '../BookThisLinkContainer'
+import {
+  getLinkDestination,
+  getPriceValue,
+  mapStateToProps,
+} from '../BookThisLinkContainer'
 
 const uniqId = 'BBB'
 const offerId = 'AAA'
@@ -26,7 +30,7 @@ describe('src | components | verso | verso-controls | booking | BookThisLink
   describe('mapStateToProps', () => {
     it('should return an object with an url and an array of prices', () => {
       // given
-      const mockedUrl = `${offerId}/${mediationId}/`
+      const mockedUrl = `${offerId}/${mediationId}`
       const mockedSearchQuery = '?search_query=parameter'
       const mockedRouter = {
         location: { search: mockedSearchQuery },
@@ -119,7 +123,19 @@ describe('src | components | verso | verso-controls | booking | BookThisLink
   describe('getLinkDestination', () => {
     it('should add booking to current url without query to open booking card', () => {
       // given
-      const url = '/decouverte/offer_id/mediation_id/'
+      const url = '/decouverte/offer_id/mediation_id'
+      const expected = '/decouverte/offer_id/mediation_id/booking'
+
+      // when
+      const result = getLinkDestination(url)
+
+      // then
+      expect(result).toStrictEqual(expected)
+    })
+
+    it('should remove /verso to current url to open booking card', () => {
+      // given
+      const url = '/decouverte/offer_id/mediation_id/verso'
       const expected = '/decouverte/offer_id/mediation_id/booking'
 
       // when
