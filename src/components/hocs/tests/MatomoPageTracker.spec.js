@@ -16,7 +16,6 @@ describe('src | components | hocs | MatomoPageTracker', () => {
     const fakeMatomoPageTracker = {
       push: jest.fn(),
     }
-    // eslint-disable-next-line
     window._paq = fakeMatomoPageTracker
 
     // when
@@ -31,7 +30,9 @@ describe('src | components | hocs | MatomoPageTracker', () => {
       'setCustomUrl',
       '/router/path',
     ])
-    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(3, ['trackPageView'])
+    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(3, [
+      'trackPageView',
+    ])
   })
 
   it('should dispatch the page title', () => {
@@ -39,7 +40,6 @@ describe('src | components | hocs | MatomoPageTracker', () => {
     const fakeMatomoPageTracker = {
       push: jest.fn(),
     }
-    // eslint-disable-next-line
     window._paq = fakeMatomoPageTracker
     document.title = 'PassCulture Page Name'
 
