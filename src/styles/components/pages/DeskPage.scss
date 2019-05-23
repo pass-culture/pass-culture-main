@@ -30,6 +30,7 @@
 
     .state {
       @include dotted($red);
+
       margin: 20px 0;
       padding-top: 10px;
       display: flex;
@@ -57,6 +58,7 @@
   .booking-summary {
     margin: 10px auto;
     margin-left: 28%;
+
     th {
       font-weight: normal;
       text-align: right;

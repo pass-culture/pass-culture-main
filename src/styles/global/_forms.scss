@@ -137,6 +137,14 @@
   }
 }
 
+.field-checkbox,
+.field-checkboxes,
+.field-input,
+.field-textarea,
+.field-texteditor,
+.field-select {
+  color: $text;
+}
 
 .field-input,
 .field-textarea,
@@ -151,32 +159,25 @@
   border-radius: $control-radius;
   border: $control-border-width solid $grey-light;
 
+  &::-webkit-input-placeholder {
+    color: $grey-darker;
+  }
+
+  &::-moz-placeholder {
+    color: $grey-darker;
+  }
+
+  &:-moz-placeholder {
+    color: $grey-darker;
+  }
+
   &:focus {
     border-color: $red;
   }
 
-
   &::placeholder {
     color: $grey-darker;
   }
-  &::-webkit-input-placeholder{
-    color: $grey-darker;
-  }
-  &::-moz-placeholder {
-    color: $grey-darker;
-  }
-  &:-moz-placeholder {
-    color: $grey-darker;
-  }
-}
-
-.field-checkbox,
-.field-checkboxes,
-.field-input,
-.field-textarea,
-.field-texteditor,
-.field-select {
-  color: $text;
 }
 
 .field-date {
@@ -185,10 +186,12 @@
 
   input.date {
     @extend .fs12;
+
     border: 0;
     cursor: pointer;
     font-weight: 500;
     width: 60px;
+
     &:focus {
       outline: none;
     }
@@ -211,6 +214,7 @@
     padding-top: 8px;
     vertical-align: middle;
   }
+
   .field-inner {
     width: 100%;
   }
@@ -267,47 +271,29 @@
   }
 }
 
-.field {
+.label-aligned-with-control {
+  display: table-row;
 
-  &.is-label-aligned {
-    display: table-row;
-
-    .field-label, .control {
-      display: table-cell;
-    }
-
-    .field-label {
-      @extend .pb32;
-    }
-
-    .field-control {
-      display: table-cell;
-      padding-bottom: 0;
-      padding-top: 0;
-      width: 100%;
-
-      .field-value {
-
-        .field-inner {
-
-          .field-input {
-            border-radius: 20px;
-            height: 36px;
-            width: inherit;
-          }
-        }
-      }
-    }
-
-
+  .field-label,
+  .field-value {
+    display: table-cell;
   }
+}
 
+.field {
   &.is-read-only {
     .field-inner {
       border: none;
       background-color: transparent;
       padding-left: 4px;
       resize: none;
+
+      .field-checkbox,
+      .field-checkboxes {
+        input[type="checkbox"] {
+          opacity: 1;
+        }
+      }
 
       .field-checkbox,
       .field-checkboxes,
@@ -325,13 +311,6 @@
         }
       }
 
-      .field-checkbox,
-      .field-checkboxes {
-        input[type="checkbox"] {
-          opacity: 1;
-        }
-      }
-
       .field-select {
         background-image: none;
         cursor: default;
@@ -339,14 +318,35 @@
       }
     }
   }
-}
 
-.label-aligned-with-control {
-  display: table-row;
+  &.is-label-aligned {
+    display: table-row;
 
-  .field-label,
-  .field-value {
-    display: table-cell;
+    .field-label,
+    .control {
+      display: table-cell;
+    }
+
+    .field-label {
+      @extend .pb32;
+    }
+
+    .field-control {
+      display: table-cell;
+      padding-bottom: 0;
+      padding-top: 0;
+      width: 100%;
+
+      .field-value {
+        .field-inner {
+          .field-input {
+            border-radius: 20px;
+            height: 36px;
+            width: inherit;
+          }
+        }
+      }
+    }
   }
 }
 

@@ -6,7 +6,7 @@
     min-width: 75px;
   }
 
-  .has-text-weight-bold{
+  .has-text-weight-bold {
     text-transform: uppercase;
   }
 
@@ -57,6 +57,7 @@
       thead,
       tbody {
         width: 100%;
+
         tr {
           width: 100%;
 
@@ -76,15 +77,19 @@
             input[type='time'] {
               padding-left: 1rem;
             }
+
             input[readonly]::placeholder {
               color: $black;
             }
-            input[readonly]::-webkit-input-placeholder{
+
+            input[readonly]::-webkit-input-placeholder {
               color: $black;
             }
+
             input[readonly]::-moz-placeholder {
               color: $black;
             }
+
             input[readonly]:-moz-placeholder {
               color: $black;
             }
@@ -98,6 +103,7 @@
 
           td.tooltiped {
             white-space: nowrap;
+
             span.tooltip {
               background-color: transparent;
               padding: 0;

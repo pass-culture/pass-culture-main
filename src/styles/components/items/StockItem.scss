@@ -15,6 +15,7 @@
   }
 
   display: table-row;
+
   td {
     vertical-align: middle;
 
@@ -39,7 +40,7 @@
     .tooltip {
       &.tooltip-info {
         background-color: transparent;
-        margin-left: 6px!important;
+        margin-left: 6px !important;
       }
     }
   }

@@ -1,7 +1,10 @@
 li.offer-item {
-
   img {
     max-height: 100px;
+  }
+
+  .infos {
+    margin-bottom: 1rem;
   }
 
   .name,
@@ -9,7 +12,7 @@ li.offer-item {
   .offer-thumb {
     opacity: 0.5;
   }
-  
+
   &.active {
     .name,
     .infos,
@@ -18,8 +21,14 @@ li.offer-item {
     }
   }
 
-  .infos {
-    margin-bottom: 1rem;
+  ul {
+    border-top: 1px solid #EFEFF4;
+
+    li,
+    .label {
+      font-size: 0.82rem;
+      display: inline;
+    }
   }
 
   ul.main-list & .list-content {
@@ -32,6 +41,7 @@ li.offer-item {
   ul.actions {
     .button {
       margin-right: 2rem;
+
       &:last-child {
         margin-right: inherit;
       }
@@ -51,17 +61,7 @@ li.offer-item {
       margin-top: 5px;
     }
   }
-
-  ul {
-    border-top: 1px solid #EFEFF4;
-
-    li, .label {
-      font-size: 0.82rem;
-      display: inline;
-    }
-  }
 }
-
 
 ul.main-list li.offer-item {
   padding-bottom: 0.6rem;

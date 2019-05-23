@@ -1,12 +1,14 @@
 .navbar {
   &.is-primary {
-    background-image: linear-gradient(to bottom right, #eb0055, #320096);
+    background-image: linear-gradient(to bottom right, #EB0055, #320096);
+
     .navbar-brand {
       & > .navbar-item:hover {
         background: transparent !important; // Bug?
       }
     }
   }
+
   .icon {
     margin-right: 0.5rem;
   }

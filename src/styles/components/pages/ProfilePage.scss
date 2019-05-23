@@ -6,6 +6,7 @@
     cursor: pointer;
     text-align: center;
     overflow: hidden;
+
     .drag-n-drop {
       position: absolute;
       top: 0;
@@ -15,12 +16,14 @@
       margin: auto;
       width: 255px;
       height: 255px;
-      background: #eee;
+      background: #EEEEEE;
       border-radius: 255px;
       padding-top: 22%;
     }
+
     &.has-image {
       background: transparent;
+
       .drag-n-drop {
         display: none;
       }
@@ -40,6 +43,7 @@
       display: block;
       margin: auto;
     }
+
     .zoom {
       // margin-top: 1rem;
       position: absolute;

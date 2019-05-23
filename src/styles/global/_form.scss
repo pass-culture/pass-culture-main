@@ -4,10 +4,39 @@
   margin-bottom: 1rem;
 }
 
+input.input,
+.select select,
+textarea.textarea {
+  font-weight: 500;
+
+  &[readonly]:not([type='checkbox']) {
+    border: none;
+    background-color: transparent;
+    padding-left: 0.125rem;
+    resize: none;
+  }
+}
+
 .field {
+  &.field-siren {
+    input {
+      width: 8rem;
+    }
+
+    .display-name {
+      color: $text;
+      display: inline-block;
+      font-weight: $weight-semibold;
+      padding-left: 0.25rem;
+      padding-top: 0.5rem;
+      text-transform: uppercase;
+    }
+  }
+
   &.field-checkbox {
     align-items: flex-start;
     display: flex;
+
     input {
       margin-right: 0.5rem;
       background-image: url(/icons/checkbox.svg);
@@ -18,9 +47,10 @@
       height: $body-line-height;
       padding: 0;
       border-radius: 0;
+
       &:active,
       &:checked {
-        &:after {
+        &::after {
           content: '';
           background-repeat: no-repeat;
           background-image: url(/icons/checkbox-check.svg);
@@ -33,31 +63,28 @@
     }
   }
 
-  &.field-siren {
-    input {
-      width: 8rem;
-    }
-    .display-name {
-      color: $text;
-      display: inline-block;
-      font-weight: $weight-semibold;
-      padding-left: 0.25rem;
-      padding-top: 0.5rem;
-      text-transform: uppercase;
-    }
-  }
-
   &.has-addons {
+    &:focus-within .button {
+      border-color: $input-focus-border-color;
+    }
+
     .control {
       .button {
         border-width: $control-border-width;
         height: 100%;
+
         &:focus {
           border-color: $grey-light;
 
           &:not(:active) {
             box-shadow: none;
           }
+        }
+      }
+
+      &:last-child {
+        .button {
+          border-left: none;
         }
       }
 
@@ -73,16 +100,6 @@
           }
         }
       }
-
-      &:last-child {
-        .button {
-          border-left: none;
-        }
-      }
-    }
-
-    &:focus-within .button {
-      border-color: $input-focus-border-color;
     }
   }
 
@@ -97,10 +114,12 @@
     &.field-iban,
     &.field-text {
       height: 3.375em;
+
       &.readonly {
         height: 2.375em;
       }
     }
+
     &.field-textarea {
       textarea {
         margin-bottom: 1.125rem;
@@ -115,9 +134,9 @@
       display: table-cell;
 
       .columns {
-          &:last-child {
-            margin-bottom: 1rem;
-          }
+        &:last-child {
+          margin-bottom: 1rem;
+        }
       }
     }
 
@@ -140,9 +159,10 @@
       width: 100%;
 
       .select.readonly {
-        &:after {
+        &::after {
           display: none !important;
         }
+
         select[disabled] {
           border: none;
           background-color: transparent;
@@ -179,10 +199,12 @@
   .help {
     .column {
       line-height: initial;
+
       &:first-child {
         flex: none;
         width: 6%;
       }
+
       &:not(:last-child) {
         padding-right: 0.25rem;
       }
@@ -190,7 +212,7 @@
   }
 
   .required:not(.readOnly) {
-    &:after {
+    &::after {
       content: ' *';
       color: $violet;
       display: inline;
@@ -215,18 +237,5 @@
 ul.help {
   img {
     vertical-align: text-bottom;
-  }
-}
-
-input.input,
-.select select,
-textarea.textarea {
-  font-weight: 500;
-
-  &[readonly]:not([type='checkbox']) {
-    border: none;
-    background-color: transparent;
-    padding-left: 0.125rem;
-    resize: none;
   }
 }

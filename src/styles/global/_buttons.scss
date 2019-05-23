@@ -8,12 +8,12 @@
     outline: none;
   }
 
-  &:focus:not(:active) {
-    box-shadow: none;
-  }
-
   &:not(.is-outlined) {
     border-width: 0;
+  }
+
+  &:focus:not(:active) {
+    box-shadow: none;
   }
 
   &.is-primary {
@@ -38,6 +38,7 @@
     text-decoration: none;
     padding-left: 0;
     padding-right: 0;
+
     &.is-inversed {
       color: $white;
     }

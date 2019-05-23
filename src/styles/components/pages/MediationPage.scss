@@ -1,3 +1,25 @@
+.crop-explain p {
+  margin-top: auto;
+}
+
+.crop-explain .column {
+  display: flex;
+  flex-flow: column nowrap;
+  color: #003818;
+
+  &.explain-text {
+    padding-left: 0;
+
+    b {
+      display: block;
+    }
+  }
+
+  &.explain-bad {
+    color: #B30041;
+  }
+}
+
 .mediation-page {
   .hero-section {
     p {
@@ -10,6 +32,7 @@
     }
   }
 }
+
 .thumbnailManager {
   background-color: #ECF0F1;
   padding: 18px;
@@ -47,8 +70,8 @@
     text-align: center;
     font-weight: bold;
     margin-right: 10px;
-
   }
+
   ul li:first-child span.li-number {
     color: white;
     background-color: #BD10E0;
@@ -57,27 +80,4 @@
   h6 {
     margin-bottom: 5px;
   }
-
-}
-
-.crop-explain .column {
-  display: flex;
-  flex-flow: column nowrap;
-  color: #003818;
-
-  &.explain-text {
-    padding-left: 0;
-
-    b {
-      display: block;
-    }
-  }
-
-  &.explain-bad {
-    color: #B30041;
-  }
-}
-
-.crop-explain p {
-  margin-top:auto;
 }

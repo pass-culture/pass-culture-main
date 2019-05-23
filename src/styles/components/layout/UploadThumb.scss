@@ -30,9 +30,8 @@
     margin: auto;
     cursor: pointer;
 
-    &:before {
+    &::before {
       content: '';
-      position: absolute;
       border-radius: inherit;
       margin: 1rem;
       border: thin dashed $grey-light;
@@ -46,7 +45,8 @@
     &.dragged {
       font-weight: $weight-bold;
       outline-color: $text;
-      &:before {
+
+      &::before {
         border-color: $text;
       }
     }
@@ -57,8 +57,9 @@
     position: relative;
     margin: auto;
     margin-bottom: 2rem;
+
     &.no-drag {
-      &:before {
+      &::before {
         position: absolute;
         top: 0;
         bottom: 0;
@@ -67,11 +68,13 @@
         content: '';
       }
     }
+
     &.has-image {
       .drag-n-drop {
         display: none;
       }
     }
+
     .zoom {
       width: calc(100% - 90px);
       cursor: pointer;
@@ -85,7 +88,7 @@
       outline: none;
       display: inline-block;
       background: url(/icons/ico-plus-circled@2x.png) center no-repeat transparent;
-      background-size:  36px 36px;
+      background-size: 36px 36px;
       color: $red;
       font-size: 1px;
       text-indent: -50px;
@@ -100,7 +103,7 @@
 
     .change-zoom.decrement {
       margin: 0 5px 0 0;
-      background-image: url(/icons/ico-minus-circled@2x.png)
+      background-image: url(/icons/ico-minus-circled@2x.png);
     }
   }
 
@@ -108,12 +111,10 @@
     background: url(/thumb.png) center no-repeat $red !important;
   }
 
-
   canvas {
     display: block;
     margin: auto;
   }
-
 }
 
 #zoomControl {
@@ -122,8 +123,8 @@
   width: 68%;
   margin: 10px auto;
 
-  button, input {
+  button,
+  input {
     flex-direction: row;
-
   }
 }

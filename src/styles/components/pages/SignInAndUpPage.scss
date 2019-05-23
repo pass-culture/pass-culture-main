@@ -8,7 +8,7 @@
 
   .logo-side {
     // background-color: $primary;
-    background-image: linear-gradient(to bottom right, #eb0055, #320096);
+    background-image: linear-gradient(to bottom right, #EB0055, #320096);
     position: fixed;
     top: 0;
     bottom: 0;
@@ -30,9 +30,11 @@
       max-height: 100%;
       max-width: 100%;
     }
+
     @media (max-width: $tablet) {
       position: relative;
       height: 100px;
+
       img {
         left: 0;
         padding: 1rem 0;
@@ -47,6 +49,7 @@
   .columns {
     margin: 0;
     width: 100%;
+
     .column {
       display: flex;
       flex-direction: column;
@@ -73,6 +76,7 @@
   .title,
   .subtitle {
     font-style: italic;
+
     span {
       display: inline-block;
     }
@@ -91,9 +95,10 @@
 
   form {
     margin-top: 2rem;
+
     p {
       text-align: left !important;
-      color: #7a7a7a;
+      color: #7A7A7A;
       margin-left: 0.5rem;
       // has-text-grey
     }
@@ -105,6 +110,7 @@
     h3 {
       position: relative;
       font-size: $size-3;
+
       &.with-subtitle {
         float: left;
       }
@@ -114,6 +120,7 @@
       font-size: 0.9rem;
       text-align: right;
     }
+
     a {
       text-decoration: underline;
       color: $black;
@@ -153,10 +160,12 @@
       transform: scale(1.04);
       transform-origin: 0 50%;
     }
+
     img {
       vertical-align: middle;
       padding-right: 5px;
     }
+
     &:empty {
       display: none;
     }

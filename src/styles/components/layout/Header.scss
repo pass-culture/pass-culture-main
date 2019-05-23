@@ -1,39 +1,44 @@
 @mixin navbar-colors($text-color) {
   a {
-    &, &:hover {
+    &,
+    &:hover {
       color: $text-color;
     }
-    &.navbar-link:after {
+
+    &.navbar-link::after {
       border-color: $text-color; // caret
     }
   }
 }
 
-header.navbar  {
+header.navbar {
   height: $header-display-height;
   align-items: start;
   z-index: initial;
 
-  @include navbar-colors($primary)
-
+  @include navbar-colors($primary);
 
   &.is-primary {
-    @include navbar-colors($white)
+    @include navbar-colors($white);
   }
 
   .navbar-dropdown a {
-    &, &:hover {
+    &,
+    &:hover {
       color: $primary;
     }
   }
 
   @media (max-width: $desktop - 1px) {
-    &, &.is-primary {
+    &,
+    &.is-primary {
       a {
-        &, &:hover {
+        &,
+        &:hover {
           color: $primary;
         }
       }
+
       .navbar-dropdown {
         .navbar-item {
           padding-left: 2.5rem;
@@ -42,14 +47,16 @@ header.navbar  {
     }
   }
 
-  @media(min-width: $desktop) {
+  @media (min-width: $desktop) {
     & > .container {
       .navbar-brand {
         margin-left: 0;
+
         .navbar-item {
           padding: 0;
         }
       }
+
       .navbar-menu {
         margin-right: 0;
       }
@@ -63,19 +70,16 @@ header.navbar  {
   .navbar-menu {
     z-index: 30;
     position: relative;
+
     .navbar-item {
       font-weight: $weight-bold;
       font-size: $size-small;
     }
-
   }
 
   @media (min-width: $desktop) {
     .navbar-dropdown {
-      box-shadow: 0 0 3.75rem rgba(0,0,0,0.2);
+      box-shadow: 0 0 3.75rem rgba(0, 0, 0, 0.2);
     }
   }
-
 }
-
-
