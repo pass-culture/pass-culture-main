@@ -44,4 +44,4 @@ def post_storage_file(collectionName, id, index):
         ensure_current_user_has_rights(RightsType.editor, offerer_id)
 
     entity.save_thumb(request.files['file'].read(), int(index))
-    return jsonify(entity._asdict()), 200
+    return jsonify(entity.as_dict()), 200

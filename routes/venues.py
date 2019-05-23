@@ -21,7 +21,7 @@ from validation.venues import validate_coordinates, check_valid_edition
 def get_venue(venueId):
     venue = load_or_404(Venue, venueId)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
-    return jsonify(venue._asdict(include=VENUE_INCLUDES))
+    return jsonify(venue.as_dict(include=VENUE_INCLUDES))
 
 
 @app.route('/venues', methods=['POST'])
@@ -42,7 +42,7 @@ def create_venue():
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 
-    return jsonify(venue._asdict(include=VENUE_INCLUDES)), 201
+    return jsonify(venue.as_dict(include=VENUE_INCLUDES)), 201
 
 
 @app.route('/venues/<venueId>', methods=['PATCH'])
@@ -55,4 +55,4 @@ def edit_venue(venueId):
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     venue.populateFromDict(request.json)
     save_venue(venue)
-    return jsonify(venue._asdict(include=VENUE_INCLUDES)), 200
+    return jsonify(venue.as_dict(include=VENUE_INCLUDES)), 200

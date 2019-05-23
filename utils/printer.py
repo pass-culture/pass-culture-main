@@ -14,9 +14,9 @@ def listify (query, include, resolve=None, **kwargs):
     if resolve is None:
         resolve = lambda obj: obj
     if isinstance(query, collections.Iterable):
-        elements = [resolve(obj._asdict(include=include, **kwargs)) for obj in query]
+        elements = [resolve(obj.as_dict(include=include, **kwargs)) for obj in query]
     else:
-        elements = [resolve(query._asdict(include=include, **kwargs))]
+        elements = [resolve(query.as_dict(include=include, **kwargs))]
     return elements
 
 # helpful

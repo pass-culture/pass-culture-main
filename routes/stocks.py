@@ -58,7 +58,7 @@ def get_stock(stock_id, mediation_id):
         return jsonify(stock)
     else:
         stock = query.first_or_404()
-        return jsonify(stock._asdict())
+        return jsonify(stock.as_dict())
 
 
 @app.route('/stocks', methods=['POST'])
@@ -76,7 +76,7 @@ def create_stock():
     new_stock = Stock(from_dict=request_data)
     PcObject.check_and_save(new_stock)
 
-    return jsonify(new_stock._asdict()), 201
+    return jsonify(new_stock.as_dict()), 201
 
 
 # TODO: Si changement d'horaires et qu'il y a des réservations il faut envoyer des mails !
@@ -95,7 +95,7 @@ def edit_stock(stock_id):
     stock.populateFromDict(stock_data)
     PcObject.check_and_save(stock)
 
-    return jsonify(stock._asdict()), 200
+    return jsonify(stock.as_dict()), 200
 
 
 @app.route('/stocks/<id>', methods=['DELETE'])
@@ -117,6 +117,6 @@ def delete_stock(id):
 
     PcObject.check_and_save(stock, *bookings)
 
-    return jsonify(stock._asdict()), 200
+    return jsonify(stock.as_dict()), 200
 
 

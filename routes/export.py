@@ -60,13 +60,13 @@ def export_table(model_name):
         return "", 200
 
     csvfile = StringIO()
-    header = _clean_dict_for_export(model_name, objects[0]._asdict()).keys()
+    header = _clean_dict_for_export(model_name, objects[0].as_dict()).keys()
     if model_name == 'User':
         header = list(filter(lambda h: h != 'id' and h != 'password', header))
     writer = csv.DictWriter(csvfile, header, extrasaction='ignore')
     writer.writeheader()
     for obj in objects:
-        dct = _clean_dict_for_export(model_name, obj._asdict())
+        dct = _clean_dict_for_export(model_name, obj.as_dict())
         writer.writerow(dct)
     csvfile.seek(0)
     mem = BytesIO()
@@ -133,7 +133,7 @@ def get_pending_validation():
     offerers = offerer_queries.find_all_pending_validation()
 
     for o in offerers:
-        result.append(o._asdict(include=OFFERER_FOR_PENDING_VALIDATION_INCLUDES))
+        result.append(o.as_dict(include=OFFERER_FOR_PENDING_VALIDATION_INCLUDES))
 
     return jsonify(result), 200
 
@@ -152,7 +152,7 @@ def get_export_venues():
         params[key] = request.json.get(key, None)
 
     check_get_venues_params(params)
-    result = find_filtered_venues(sirens = params['sirens'],
+    venues = find_filtered_venues(sirens = params['sirens'],
                                   dpts=params['dpts'],
                                   zip_codes=params['zip_codes'],
                                   from_date=params['from_date'],
@@ -166,7 +166,7 @@ def get_export_venues():
                                   has_validated_user_offerer=params['has_validated_user_offerer'],
                                   has_validated_user=params['has_validated_user'])
 
-    return jsonify(result), 200
+    return jsonify([v.as_dict() for v in venues]), 200
 
 
 @app.route('/exports/offerers', methods=['POST'])
@@ -184,7 +184,7 @@ def get_export_offerers():
         params[key] = request.json.get(key, None)
 
     check_get_offerers_params(params)
-    result = find_filtered_offerers(sirens = params['sirens'],
+    offerers = find_filtered_offerers(sirens = params['sirens'],
                                     dpts = params['dpts'],
                                     zip_codes = params['zip_codes'],
                                     from_date = params['from_date'],
@@ -200,7 +200,7 @@ def get_export_offerers():
                                     is_active = params['is_active'],
                                     has_validated_user_offerer = params['has_validated_user_offerer'])
 
-    return jsonify(result), 200
+    return jsonify([o.as_dict() for o in offerers]), 200
 
 
 def _make_csv_response(file_name, headers, result):

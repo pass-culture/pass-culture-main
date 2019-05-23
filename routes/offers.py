@@ -51,7 +51,7 @@ def list_offers():
 @login_required
 def get_offer(id):
     offer = load_or_404(Offer, id)
-    return jsonify(offer._asdict(include=OFFER_INCLUDES))
+    return jsonify(offer.as_dict(include=OFFER_INCLUDES))
 
 
 @app.route('/offers/activation', methods=['GET'])
@@ -91,7 +91,7 @@ def post_offer():
     send_offer_creation_notification_to_administration(offer, current_user, PRO_URL, send_raw_email)
 
     return jsonify(
-        offer._asdict(include=OFFER_INCLUDES)
+        offer.as_dict(include=OFFER_INCLUDES)
     ), 201
 
 
@@ -112,5 +112,5 @@ def patch_offer(id):
         invalidate_recommendations(offer)
 
     return jsonify(
-        offer._asdict(include=OFFER_INCLUDES)
+        offer.as_dict(include=OFFER_INCLUDES)
     ), 200

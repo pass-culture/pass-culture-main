@@ -12,7 +12,7 @@ def list_providers():
                          .all()
     result = []
     for p in providers:
-        p_dict = p._asdict()
+        p_dict = p.as_dict()
         if p.localClass is not None and hasattr(local_providers, p.localClass):
             providerClass = getattr(local_providers, p.localClass)
             p_dict['identifierRegexp'] = providerClass.identifierRegexp

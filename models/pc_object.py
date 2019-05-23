@@ -74,7 +74,14 @@ class PcObject():
         if from_dict:
             self.populateFromDict(from_dict)
 
-    def _asdict(self, **options):
+    def __repr__(self):
+        id = "unsaved" \
+            if self.id is None \
+            else str(self.id) + "/" + humanize(self.id)
+        return '<%s #%s>' % (self.__class__.__name__,
+                             id)
+
+    def as_dict(self, **options):
         result = OrderedDict()
         for key in self.__mapper__.c.keys():
             if options \
@@ -133,7 +140,7 @@ class PcObject():
                         final_value = filter(lambda x: not x.is_soft_deleted(), final_value)
                         result[key] = list(
                             map(
-                                lambda attr: attr._asdict(
+                                lambda attr: attr.as_dict(
                                     cut=options and options.get('cut'),
                                     include=sub_joins,
                                 ),
@@ -144,7 +151,7 @@ class PcObject():
                             result[key] = list(map(lambda v: resolve(v, options.get('filters', {})),
                                                    result[key]))
                     elif isinstance(value, PcObject):
-                        result[key] = value._asdict(
+                        result[key] = value.as_dict(
                             include=sub_joins,
                             cut=options and options.get('cut'),
                         )
@@ -162,6 +169,36 @@ class PcObject():
 
     def dump(self):
         pprint(vars(self))
+
+    def populateFromDict(self, dct, skipped_keys=[]):
+        self._check_not_soft_deleted()
+
+        data = dct.copy()
+        if data.__contains__('id'):
+            del data['id']
+
+        cols = self.__class__.__table__.columns._data
+        for key in data.keys():
+            if (key == 'deleted') or (key in skipped_keys):
+                continue
+
+            if cols.__contains__(key):
+                col = cols[key]
+                if key.endswith('Id'):
+                    value = dehumanize(data.get(key))
+                else:
+                    value = data.get(key)
+                value_is_string = isinstance(value, str)
+                if value_is_string and isinstance(col.type, Integer):
+                    self._try_to_set_attribute_with_decimal_value(col, key, value, 'integer')
+                elif value_is_string and (isinstance(col.type, Float) or isinstance(col.type, Numeric)):
+                    self._try_to_set_attribute_with_decimal_value(col, key, value, 'float')
+                elif not isinstance(value, datetime) and isinstance(col.type, DateTime):
+                    self._try_to_set_attribute_with_deserialized_datetime(col, key, value)
+                elif value_is_string and isinstance(col.type, String):
+                    setattr(self, key, value.strip() if value else value)
+                else:
+                    setattr(self, key, value)
 
     def errors(self):
         api_errors = ApiErrors()
@@ -202,9 +239,9 @@ class PcObject():
     def is_soft_deleted(self):
         return issubclass(type(self), SoftDeletableMixin) and self.isSoftDeleted
 
-    def _check_not_soft_deleted(self):
-        if self.is_soft_deleted():
-            raise DeletedRecordException
+    def soft_delete(self):
+        self.deleted = True
+        db.session.add(self)
 
     @staticmethod
     def restize_global_error(e):
@@ -258,36 +295,6 @@ class PcObject():
         else:
             return PcObject.restize_global_error(e)
 
-    def populateFromDict(self, dct, skipped_keys=[]):
-        self._check_not_soft_deleted()
-
-        data = dct.copy()
-        if data.__contains__('id'):
-            del data['id']
-
-        cols = self.__class__.__table__.columns._data
-        for key in data.keys():
-            if (key == 'deleted') or (key in skipped_keys):
-                continue
-
-            if cols.__contains__(key):
-                col = cols[key]
-                if key.endswith('Id'):
-                    value = dehumanize(data.get(key))
-                else:
-                    value = data.get(key)
-                value_is_string = isinstance(value, str)
-                if value_is_string and isinstance(col.type, Integer):
-                    self._try_to_set_attribute_with_decimal_value(col, key, value, 'integer')
-                elif value_is_string and (isinstance(col.type, Float) or isinstance(col.type, Numeric)):
-                    self._try_to_set_attribute_with_decimal_value(col, key, value, 'float')
-                elif not isinstance(value, datetime) and isinstance(col.type, DateTime):
-                    self._try_to_set_attribute_with_deserialized_datetime(col, key, value)
-                elif value_is_string and isinstance(col.type, String):
-                    setattr(self, key, value.strip() if value else value)
-                else:
-                    setattr(self, key, value)
-
     @staticmethod
     def check_and_save(*objects):
         if not objects:
@@ -335,17 +342,6 @@ class PcObject():
         db.session.delete(model)
         db.session.commit()
 
-    def soft_delete(self):
-        self.deleted = True
-        db.session.add(self)
-
-    def __repr__(self):
-        id = "unsaved" \
-            if self.id is None \
-            else str(self.id) + "/" + humanize(self.id)
-        return '<%s #%s>' % (self.__class__.__name__,
-                             id)
-
     def _deserialize_datetime(self, key, value):
         if value is None:
             return None
@@ -378,3 +374,7 @@ class PcObject():
             error = DecimalCastError()
             error.addError(col.name, "Invalid value for {} ({}): '{}'".format(key, expected_format, value))
             raise error
+
+    def _check_not_soft_deleted(self):
+        if self.is_soft_deleted():
+            raise DeletedRecordException

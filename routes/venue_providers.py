@@ -28,7 +28,7 @@ def list_venue_providers():
     vp_query = VenueProvider.query\
                             .filter_by(venueId=dehumanize(venueId))
     return jsonify([
-        vp._asdict(include=VENUE_PROVIDER_INCLUDES)
+        vp.as_dict(include=VENUE_PROVIDER_INCLUDES)
         for vp in vp_query.all()
     ])
 
@@ -37,7 +37,7 @@ def list_venue_providers():
 @login_or_api_key_required
 def get_venue_provider(id):
     vp = load_or_404(VenueProvider, id)
-    return jsonify(vp._asdict(include=VENUE_PROVIDER_INCLUDES))
+    return jsonify(vp.as_dict(include=VENUE_PROVIDER_INCLUDES))
 
 
 @app.route('/venueProviders', methods=['POST'])
@@ -83,7 +83,7 @@ def create_venue_provider():
     #print("STDERR:", err)
 
     # RETURN
-    return jsonify(new_vp._asdict(include=VENUE_PROVIDER_INCLUDES)), 201
+    return jsonify(new_vp.as_dict(include=VENUE_PROVIDER_INCLUDES)), 201
 
 
 @app.route('/venueProviders/<id>', methods=['PATCH'])
@@ -93,7 +93,7 @@ def edit_venue_provider(id):
     vp = load_or_404(VenueProvider, id)
     vp.populateFromDict(request.json)
     PcObject.check_and_save(vp)
-    return jsonify(vp._asdict()), 200
+    return jsonify(vp.as_dict()), 200
 
 
 @app.route('/venueProviders/<id>', methods=['DELETE'])

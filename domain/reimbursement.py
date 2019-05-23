@@ -94,7 +94,7 @@ class BookingReimbursement:
         self.reimbursed_amount = reimbursed_amount
 
     def as_dict(self, include=None):
-        dict_booking = self.booking._asdict(include=include)
+        dict_booking = self.booking.as_dict(include=include)
         dict_booking['token'] = dict_booking['token'] if dict_booking['isUsed'] else None
         dict_booking['reimbursed_amount'] = self.reimbursed_amount
         dict_booking['reimbursement_rule'] = self.reimbursement.value.description

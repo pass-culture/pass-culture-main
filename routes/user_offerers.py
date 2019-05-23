@@ -9,11 +9,11 @@ from utils.human_ids import dehumanize
 @app.route('/userOfferers/<offererId>', methods=['GET'])
 @login_required
 def get_user_offerer(offererId):
-    user_offerer = UserOfferer.query.filter_by(
+    user_offerers = UserOfferer.query.filter_by(
         user=current_user,
         offererId=dehumanize(offererId)
-    )
-    return jsonify(user_offerer), 200
+    ).all()
+    return jsonify([uo.as_dict() for uo in user_offerers]), 200
 
 
 @app.route('/userOfferers', methods=['POST'])
@@ -21,4 +21,4 @@ def get_user_offerer(offererId):
 def create_user_offerer():
     new_user_offerer = UserOfferer(from_dict=request.json)
     PcObject.check_and_save(new_user_offerer)
-    return jsonify(new_user_offerer), 201
+    return jsonify(new_user_offerer.as_dict()), 201

@@ -17,7 +17,7 @@ from validation.users import check_allowed_changes_for_user, check_valid_signin
 @app.route("/users/current", methods=["GET"])
 @login_required
 def get_profile():
-    user = current_user._asdict(include=USER_INCLUDES)
+    user = current_user.as_dict(include=USER_INCLUDES)
     user['expenses'] = get_expenses(current_user.userBookings)
     return jsonify(user)
 
@@ -40,7 +40,7 @@ def patch_profile():
     check_allowed_changes_for_user(data)
     current_user.populateFromDict(request.json)
     PcObject.check_and_save(current_user)
-    user = current_user._asdict(include=USER_INCLUDES)
+    user = current_user.as_dict(include=USER_INCLUDES)
     user['expenses'] = get_expenses(current_user.userBookings)
     return jsonify(user), 200
 
@@ -54,7 +54,7 @@ def signin():
     user = get_user_with_credentials(identifier, password)
     login_user(user, remember=True)
     stamp_session(user)
-    user_dict = user._asdict(include=USER_INCLUDES)
+    user_dict = user.as_dict(include=USER_INCLUDES)
     user_dict['expenses'] = get_expenses(user.userBookings)
     return jsonify(user_dict), 200
 

@@ -150,7 +150,7 @@ def handle_rest_get_list(modelClass, query=None,
 
     # DICTIFY
     elements = [
-        o._asdict(
+        o.as_dict(
             include=include,
             resolve=resolve,
         ) for o in query

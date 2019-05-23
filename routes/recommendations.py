@@ -158,7 +158,7 @@ def _serialize_recommendations(recos):
 
 
 def _serialize_recommendation(reco):
-    dict_reco = reco._asdict(include=RECOMMENDATION_INCLUDES)
+    dict_reco = reco.as_dict(include=RECOMMENDATION_INCLUDES)
 
     if reco.offer:
         bookings = find_bookings_from_recommendation(reco, current_user)
@@ -172,4 +172,4 @@ def _serialize_bookings(bookings):
 
 
 def _serialize_booking(booking):
-    return booking._asdict(include=BOOKING_INCLUDES)
+    return booking.as_dict(include=BOOKING_INCLUDES)

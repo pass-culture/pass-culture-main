@@ -46,7 +46,7 @@ def signup_webapp():
     if request.json.get('contact_ok'):
         subscribe_newsletter(new_user)
 
-    return jsonify(new_user._asdict(include=USER_INCLUDES)), 201
+    return jsonify(new_user.as_dict(include=USER_INCLUDES)), 201
 
 
 @app.route("/users/signup/pro", methods=["POST"])
@@ -84,7 +84,7 @@ def signup_pro():
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
-    return jsonify(new_user._asdict(include=USER_INCLUDES)), 201
+    return jsonify(new_user.as_dict(include=USER_INCLUDES)), 201
 
 
 def _generate_user_offerer_when_existing_offerer(new_user, offerer):

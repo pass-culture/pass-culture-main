@@ -13,5 +13,5 @@ from utils.rest import load_or_404, \
 def get_event(id):
     event_product = load_or_404(Product, id)
     return jsonify(
-        event_product._asdict(include=EVENT_INCLUDES)
+        event_product.as_dict(include=EVENT_INCLUDES)
     ), 200

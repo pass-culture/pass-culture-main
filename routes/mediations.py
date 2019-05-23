@@ -46,14 +46,14 @@ def create_mediation():
         api_errors.addError('thumbUrl', "L'adresse saisie n'est pas valide")
         raise api_errors
 
-    return jsonify(new_mediation), 201
+    return jsonify(new_mediation.as_dict()), 201
 
 
 @app.route('/mediations/<mediation_id>', methods=['GET'])
 @login_required
 def get_mediation(mediation_id):
     mediation = load_or_404(Mediation, mediation_id)
-    return jsonify(mediation._asdict())
+    return jsonify(mediation.as_dict())
 
 
 @app.route('/mediations/<mediation_id>', methods=['PATCH'])
@@ -67,4 +67,4 @@ def update_mediation(mediation_id):
     mediation.populateFromDict(data)
     invalidate_recommendations_if_deactivating_object(data, mediation.recommendations)
     PcObject.check_and_save(mediation)
-    return jsonify(mediation._asdict(include=MEDIATION_INCLUDES)), 200
+    return jsonify(mediation.as_dict(include=MEDIATION_INCLUDES)), 200
