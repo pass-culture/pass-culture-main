@@ -1,4 +1,5 @@
 import createDecorator from 'final-form-calculate'
+import moment from 'moment'
 import createCachedSelector from 're-reselect'
 
 import updateBookingLimitDatetime from './updateBookingLimitDatetime'
@@ -13,14 +14,23 @@ const adaptBookingLimitDatetimeGivenBeginningDatetime = createCachedSelector(
     createDecorator(
       {
         field: 'bookingLimitDatetime',
-        updates: (bookingLimitDatetime, fieldName, { beginningDatetime }) => ({
-          bookingLimitDatetime: updateBookingLimitDatetime({
-            isEvent,
-            previousBeginningDatetime: beginningDatetime,
-            previousBookingLimitDatetime: bookingLimitDatetime,
-            timezone,
-          }),
-        }),
+        updates: (bookingLimitDatetime, fieldName, { beginningDatetime }) => {
+          if (
+            moment(bookingLimitDatetime)
+              .utc()
+              .isSame(beginningDatetime, 'day')
+          )
+            return {}
+
+          return {
+            bookingLimitDatetime: updateBookingLimitDatetime({
+              isEvent,
+              previousBeginningDatetime: beginningDatetime,
+              previousBookingLimitDatetime: bookingLimitDatetime,
+              timezone,
+            }),
+          }
+        },
       },
       {
         field: 'beginningDatetime',
