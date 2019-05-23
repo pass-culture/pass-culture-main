@@ -93,12 +93,18 @@ teardown(){
     mock_set_output "${mock_git}" "push current-branch pro" 9
     # call with param: git push origin "$TAG_VERSION"
     mock_set_output "${mock_git}" "push tag pro" 10
+    # call with param: git add .
+    mock_set_output "${mock_git}" "git add ." 11
+    # call with param: git commit -m "🚀 $TAG_VERSION"
+    mock_set_output "${mock_git}" "git commit -m 🚀 TAG_VERSION" 12
+    # call with param: git push origin master
+    mock_set_output "${mock_git}" "git push origin master" 13
     # call with param: git tag "$TAG_VERSION"
-    mock_set_output "${mock_git}" "tag-version main" 11
+    mock_set_output "${mock_git}" "tag-version main" 14
     # call with param: git push origin "$TAG_VERSION"
-    mock_set_output "${mock_git}" "push tag main" 12
+    mock_set_output "${mock_git}" "push tag main" 15
     # call with param: git checkout "$current_branch"
-    mock_set_output "${mock_git}" "git checkout current-branch" 13
+    mock_set_output "${mock_git}" "git checkout current-branch" 16
 
     # Mock yarn
     # call with param: yarn version --new-version "$TAG_NAME"
@@ -117,7 +123,7 @@ teardown(){
     # Then
     echo "Number of calls: $(mock_get_call_num ${mock_git})"
     echo "Number of calls: $(mock_get_call_num ${mock_yarn})"
-    [[ "$(mock_get_call_num ${mock_git})" -eq 13 ]]
+    [[ "$(mock_get_call_num ${mock_git})" -eq 16 ]]
     [[ "$(mock_get_call_num ${mock_yarn})" -eq 2 ]]
 
     # Allow to follow last steps
