@@ -397,6 +397,9 @@ elif [[ "$CMD" == "tag" ]]; then
 
     # TAG MAIN
     cd "$ROOT_PATH"
+    git add .
+    git commit -m "🚀 $TAG_VERSION"
+    git push origin master
     git tag "$TAG_VERSION"
     git push origin "$TAG_VERSION"
 
