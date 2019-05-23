@@ -288,28 +288,10 @@ class PcObject():
                 else:
                     setattr(self, key, value)
 
-    def _try_to_set_attribute_with_deserialized_datetime(self, col, key, value):
-        try:
-            datetime_value = self._deserialize_datetime(key, value)
-            setattr(self, key, datetime_value)
-        except TypeError:
-            error = DateTimeCastError()
-            error.addError(col.name, "Invalid value for %s (datetime): %r" % (key, value))
-            raise error
-
-    def _try_to_set_attribute_with_decimal_value(self, col, key, value, expected_format):
-        try:
-            setattr(self, key, Decimal(value))
-        except InvalidOperation:
-            error = DecimalCastError()
-            error.addError(col.name, "Invalid value for {} ({}): '{}'".format(key, expected_format, value))
-            raise error
-
     @staticmethod
     def check_and_save(*objects):
         if not objects:
-            raise ValueError('Objects to save need to be passed as arguments'
-                             + ' to check_and_save')
+            return None
 
         # CUMULATE ERRORS IN ONE SINGLE API ERRORS DURING ADD TIME
         api_errors = ApiErrors()
@@ -379,3 +361,20 @@ class PcObject():
             raise TypeError('Invalid value for %s: %r' % (key, value), 'datetime', key)
 
         return datetime_value
+
+    def _try_to_set_attribute_with_deserialized_datetime(self, col, key, value):
+        try:
+            datetime_value = self._deserialize_datetime(key, value)
+            setattr(self, key, datetime_value)
+        except TypeError:
+            error = DateTimeCastError()
+            error.addError(col.name, "Invalid value for %s (datetime): %r" % (key, value))
+            raise error
+
+    def _try_to_set_attribute_with_decimal_value(self, col, key, value, expected_format):
+        try:
+            setattr(self, key, Decimal(value))
+        except InvalidOperation:
+            error = DecimalCastError()
+            error.addError(col.name, "Invalid value for {} ({}): '{}'".format(key, expected_format, value))
+            raise error
