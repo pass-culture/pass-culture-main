@@ -96,7 +96,7 @@ jobs:
             cd webapp
             yarn test:cafe
       - store_artifacts:
-          path: ~/pass-culture/pass-culture-main/webapp/testcafe_screenshots
+          path: ~/pass-culture/webapp/testcafe_screenshots
       - run:
           name: Notify PC Ops Bot
           when: on_fail
@@ -142,7 +142,7 @@ jobs:
             yarn start
           background: true
       - store_artifacts:
-          path: ~/pass-culture/pass-culture-main/webapp/testcafe_screenshots
+          path: ~/pass-culture/pro/testcafe_screenshots
       - run:
           name: Running Sandbox
           command: |
