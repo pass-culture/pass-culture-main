@@ -106,7 +106,7 @@ class PopulateFromDictTest:
 
         # When
         with pytest.raises(DecimalCastError) as errors:
-            test_pc_object.populateFromDict(data)
+            test_pc_object.populate_from_dict(data)
         assert errors.value.errors['integer_attribute'] == ["Invalid value for integer_attribute (integer): 'yolo'"]
 
     def test_on_pc_object_for_sql_integer_value_with_str_12dot9_sets_attribute_to_12dot9(self):
@@ -115,7 +115,7 @@ class PopulateFromDictTest:
         data = {'integer_attribute': '12.9'}
 
         # When
-        test_pc_object.populateFromDict(data)
+        test_pc_object.populate_from_dict(data)
 
         # Then
         assert test_pc_object.integer_attribute == Decimal('12.9')
@@ -126,7 +126,7 @@ class PopulateFromDictTest:
         data = {'float_attribute': '12.9'}
 
         # When
-        test_pc_object.populateFromDict(data)
+        test_pc_object.populate_from_dict(data)
 
         # Then
         assert test_pc_object.float_attribute == Decimal('12.9')
@@ -137,7 +137,7 @@ class PopulateFromDictTest:
         data = {'integer_attribute': 12.9}
 
         # When
-        test_pc_object.populateFromDict(data)
+        test_pc_object.populate_from_dict(data)
 
         # Then
         assert test_pc_object.integer_attribute == 12.9
@@ -148,7 +148,7 @@ class PopulateFromDictTest:
         data = {'float_attribute': 12.9}
 
         # When
-        test_pc_object.populateFromDict(data)
+        test_pc_object.populate_from_dict(data)
 
         # Then
         assert test_pc_object.float_attribute == 12.9
@@ -160,7 +160,7 @@ class PopulateFromDictTest:
 
         # When
         with pytest.raises(DecimalCastError) as errors:
-            test_pc_object.populateFromDict(data)
+            test_pc_object.populate_from_dict(data)
         assert errors.value.errors['float_attribute'] == ["Invalid value for float_attribute (float): 'yolo'"]
 
     def test_on_pc_object_for_sql_datetime_value_in_wrong_format_returns_400_and_affected_key_in_error(self):
@@ -170,7 +170,7 @@ class PopulateFromDictTest:
 
         # When
         with pytest.raises(DateTimeCastError) as errors:
-            test_pc_object.populateFromDict(data)
+            test_pc_object.populate_from_dict(data)
 
         # Then
         assert errors.value.errors['date_attribute'] == [
@@ -181,7 +181,7 @@ class PopulateFromDictTest:
         raw_data = {'start': '2018-03-03T15:25:35.123Z', 'end': '2018-04-04T20:10:30.456Z'}
 
         # when
-        time_interval.populateFromDict(raw_data)
+        time_interval.populate_from_dict(raw_data)
 
         # then
         assert time_interval.start == datetime(2018, 3, 3, 15, 25, 35, 123000)
@@ -192,7 +192,7 @@ class PopulateFromDictTest:
         raw_data = {'start': '2018-03-03T15:25:35', 'end': '2018-04-04T20:10:30'}
 
         # when
-        time_interval.populateFromDict(raw_data)
+        time_interval.populate_from_dict(raw_data)
 
         # then
         assert time_interval.start == datetime(2018, 3, 3, 15, 25, 35)
@@ -203,7 +203,7 @@ class PopulateFromDictTest:
         raw_data = {'start': '2018-03-03T15:25:35Z', 'end': '2018-04-04T20:10:30Z'}
 
         # when
-        time_interval.populateFromDict(raw_data)
+        time_interval.populate_from_dict(raw_data)
 
         # then
         assert time_interval.start == datetime(2018, 3, 3, 15, 25, 35)
@@ -215,7 +215,7 @@ class PopulateFromDictTest:
 
         # when
         with pytest.raises(DateTimeCastError) as errors:
-            time_interval.populateFromDict(raw_data)
+            time_interval.populate_from_dict(raw_data)
 
         # then
         assert errors.value.errors['end'] == ["Invalid value for end (datetime): 'abcdef'"]

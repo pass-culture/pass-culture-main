@@ -64,7 +64,7 @@ def update_mediation(mediation_id):
     ensure_current_user_has_rights(RightsType.editor, mediation.offer.venue.managingOffererId)
     mediation = Mediation.query.filter_by(id=dehumanize(mediation_id)).first()
     data = request.json
-    mediation.populateFromDict(data)
+    mediation.populate_from_dict(data)
     invalidate_recommendations_if_deactivating_object(data, mediation.recommendations)
     PcObject.check_and_save(mediation)
     return jsonify(mediation.as_dict(include=MEDIATION_INCLUDES)), 200

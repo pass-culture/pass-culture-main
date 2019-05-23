@@ -92,7 +92,7 @@ def edit_stock(stock_id):
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
     
-    stock.populateFromDict(stock_data)
+    stock.populate_from_dict(stock_data)
     PcObject.check_and_save(stock)
 
     return jsonify(stock.as_dict()), 200

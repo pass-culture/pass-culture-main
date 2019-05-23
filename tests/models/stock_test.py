@@ -61,7 +61,7 @@ def test_populate_dict_on_soft_deleted_object_raises_DeletedRecordException(app)
     PcObject.check_and_save(stock)
     # When
     with pytest.raises(DeletedRecordException):
-        stock.populateFromDict({"available": 5})
+        stock.populate_from_dict({"available": 5})
 
 
 @clean_database

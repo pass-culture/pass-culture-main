@@ -103,8 +103,8 @@ class User(PcObject,
     def is_anonymous(self):
         return False
 
-    def populateFromDict(self, dct):
-        super(User, self).populateFromDict(dct)
+    def populate_from_dict(self, dct):
+        super(User, self).populate_from_dict(dct)
         if dct.__contains__('password') and dct['password']:
             self.setPassword(dct['password'])
 

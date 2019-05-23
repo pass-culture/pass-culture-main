@@ -72,7 +72,7 @@ class PcObject():
     def __init__(self, **options):
         from_dict = options.get('from_dict')
         if from_dict:
-            self.populateFromDict(from_dict)
+            self.populate_from_dict(from_dict)
 
     def __repr__(self):
         id = "unsaved" \
@@ -170,7 +170,7 @@ class PcObject():
     def dump(self):
         pprint(vars(self))
 
-    def populateFromDict(self, dct, skipped_keys=[]):
+    def populate_from_dict(self, dct, skipped_keys=[]):
         self._check_not_soft_deleted()
 
         data = dct.copy()

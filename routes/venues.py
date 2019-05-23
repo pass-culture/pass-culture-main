@@ -53,6 +53,6 @@ def edit_venue(venueId):
     check_valid_edition(request, venue)
     validate_coordinates(request.json.get('latitude', None), request.json.get('longitude', None))
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
-    venue.populateFromDict(request.json)
+    venue.populate_from_dict(request.json)
     save_venue(venue)
     return jsonify(venue.as_dict(include=VENUE_INCLUDES)), 200

@@ -16,10 +16,10 @@ def fill_offer_with_new_data(product_dict: str, user: User) -> Offer:
     if url:
         is_url_safe(url)
         product_dict['isNational'] = True
-    product.populateFromDict(product_dict)
+    product.populate_from_dict(product_dict)
     check_user_can_create_activation_event(user, product)
     offer = Offer()
-    offer.populateFromDict(product_dict)
+    offer.populate_from_dict(product_dict)
     offer.product = product
     return offer
 

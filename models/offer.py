@@ -98,7 +98,7 @@ class Offer(PcObject,
     def updatewith_product_data(self, product_dict: dict):
         owning_offerer = self.product.owningOfferer
         if owning_offerer and owning_offerer == self.venue.managingOfferer:
-            self.product.populateFromDict(product_dict)
+            self.product.populate_from_dict(product_dict)
 
     @property
     def dateRange(self):

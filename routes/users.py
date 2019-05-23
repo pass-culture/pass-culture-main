@@ -38,7 +38,7 @@ def check_activation_token_exists(token):
 def patch_profile():
     data = request.json.keys()
     check_allowed_changes_for_user(data)
-    current_user.populateFromDict(request.json)
+    current_user.populate_from_dict(request.json)
     PcObject.check_and_save(current_user)
     user = current_user.as_dict(include=USER_INCLUDES)
     user['expenses'] = get_expenses(current_user.userBookings)

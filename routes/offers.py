@@ -105,7 +105,7 @@ def patch_offer(id):
     if not offer:
         raise ResourceNotFound
     ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
-    offer.populateFromDict(request.json)
+    offer.populate_from_dict(request.json)
     offer.updatewith_product_data(thing_or_event_dict)
     PcObject.check_and_save(offer)
     if 'isActive' in request.json and not request.json['isActive']:

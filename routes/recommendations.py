@@ -61,7 +61,7 @@ def get_recommendation(offer_id):
 def patch_recommendation(recommendationId):
     query = Recommendation.query.filter_by(id=dehumanize(recommendationId))
     recommendation = query.first_or_404()
-    recommendation.populateFromDict(request.json)
+    recommendation.populate_from_dict(request.json)
     PcObject.check_and_save(recommendation)
     return jsonify(_serialize_recommendation(recommendation)), 200
 

@@ -89,7 +89,7 @@ def get_offerer_bookings(id):
 @expect_json_data
 def create_offerer():
     offerer = Offerer()
-    offerer.populateFromDict(request.json)
+    offerer.populate_from_dict(request.json)
 
     digital_venue = create_digital_venue(offerer)
 
@@ -115,7 +115,7 @@ def patch_offerer(offererId):
     data = request.json
     check_valid_edition(data)
     offerer = Offerer.query.filter_by(id=dehumanize(offererId)).first()
-    offerer.populateFromDict(data, skipped_keys=['validationToken'])
+    offerer.populate_from_dict(data, skipped_keys=['validationToken'])
     recommendations = find_all_recommendations_for_offerer(offerer)
     invalidate_recommendations_if_deactivating_object(data, recommendations)
     PcObject.check_and_save(offerer)

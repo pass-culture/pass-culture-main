@@ -91,7 +91,7 @@ def create_venue_provider():
 @expect_json_data
 def edit_venue_provider(id):
     vp = load_or_404(VenueProvider, id)
-    vp.populateFromDict(request.json)
+    vp.populate_from_dict(request.json)
     PcObject.check_and_save(vp)
     return jsonify(vp.as_dict()), 200
 
