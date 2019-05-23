@@ -1,11 +1,11 @@
 import get from 'lodash.get'
-import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Draggable from 'react-draggable'
 
 import Card from '../card'
 import DeckNavigation from '../DeckNavigation'
+import Icon from '../../../layout/Icon'
 import { shouldShowVerso } from '../../../../helpers'
 import {
   closeCardDetails,

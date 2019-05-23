@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types'
-import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
+
+import Icon from './Icon'
 
 const BackButton = ({
   history,

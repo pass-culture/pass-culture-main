@@ -3,8 +3,8 @@
 import React from 'react'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
-import { Icon } from 'pass-culture-shared'
 
+import Icon from '../../layout/Icon'
 import { getDisplayPrice } from '../../../helpers'
 
 const BookingCancel = ({ isEvent, data }) => {

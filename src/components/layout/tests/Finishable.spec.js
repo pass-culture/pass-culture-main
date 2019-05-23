@@ -1,7 +1,7 @@
-import React from 'react'
 import { shallow } from 'enzyme'
-import { Icon } from 'pass-culture-shared'
+import React from 'react'
 
+import Icon from '../Icon'
 import Finishable from '../Finishable'
 
 describe('src | components | layout | Finishable', () => {

@@ -1,13 +1,13 @@
-import React from 'react'
 import PropTypes from 'prop-types'
-import { Icon } from 'pass-culture-shared'
+import React, { Fragment } from 'react'
 import { withRouter } from 'react-router-dom'
 
 import ReplaceLink from './ReplaceLink'
 import { getMenuItemIdFromPathname, getMenuItemPathTo } from './utils'
+import Icon from '../layout/Icon'
 
 const renderLinkContent = (icon, title, styles) => (
-  <React.Fragment>
+  <Fragment>
     <span
       style={styles}
       className="flex-0 text-center menu-icon mr16 text-center"
@@ -15,7 +15,7 @@ const renderLinkContent = (icon, title, styles) => (
       <Icon svg={`ico-${icon}`} alt="" />
     </span>
     <span className="flex-1 is-medium">{title}</span>
-  </React.Fragment>
+  </Fragment>
 )
 
 export class MenuItemContent extends React.PureComponent {

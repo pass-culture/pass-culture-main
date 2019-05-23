@@ -1,10 +1,10 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-import React from 'react'
 import PropTypes from 'prop-types'
-import { Icon } from 'pass-culture-shared'
+import React from 'react'
 
 import { flattenErrors } from '../utils'
+import Icon from '../../layout/Icon'
 
 // NOTE: hack pour contourner le no-array-index-key
 // lire plus -> https://reactjs.org/docs/lists-and-keys.html#keys

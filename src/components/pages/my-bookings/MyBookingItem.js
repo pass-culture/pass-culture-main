@@ -1,11 +1,11 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
-import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
 
+import Icon from '../../layout/Icon'
 import Thumb from '../../layout/Thumb'
 import Ribbon from '../../layout/Ribbon'
 

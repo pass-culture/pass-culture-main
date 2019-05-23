@@ -1,5 +1,4 @@
 import get from 'lodash.get'
-import { Icon } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -7,6 +6,7 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import Draggable from 'react-draggable'
 
+import Icon from '../../layout/Icon'
 import Price from '../../layout/Price'
 import Finishable from '../../layout/Finishable'
 import { getHeaderColor } from '../../../utils/colors'

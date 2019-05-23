@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types'
-import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
 import { Transition } from 'react-transition-group'
+import { bindActionCreators } from 'redux'
+
+import Icon from './Icon'
 import { closeSplash } from '../../reducers/splash'
 
 const duration = 1000

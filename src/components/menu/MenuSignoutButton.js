@@ -1,13 +1,13 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import { Icon } from 'pass-culture-shared'
 
 import { mapDispatchToProps, mapStateToProps } from './connect'
+import Icon from '../layout/Icon'
 
 const MenuSignoutButton = ({ onSignoutClick, ...ownProps }) => (
   <button
