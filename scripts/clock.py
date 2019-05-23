@@ -65,7 +65,7 @@ def pc_synchronize_titelive_things():
     logger.info("[BATCH][TITELIVE THINGS] Cron synchronize_titelive_things: START")
     with app.app_context():
         process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
-                                   + ' --provider TiteliveThings',
+                                   + ' --provider TiteLiveThings',
                                    shell=True,
                                    cwd=API_ROOT_PATH)
         output, error = process.communicate()

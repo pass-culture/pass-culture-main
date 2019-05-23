@@ -80,22 +80,13 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         # given
-
         offerer = create_offerer(siren='775671464')
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
         PcObject.save(venue)
 
-        titelive_things_provider = Provider.getByClassName('TiteLiveThings')
-        venue_provider = VenueProvider()
-        venue_provider.venue = venue
-        venue_provider.provider = titelive_things_provider
-        venue_provider.isActive = True
-        venue_provider.venueIdAtOfferProvider = '77567146400110'
-        PcObject.save(venue_provider)
-
         provider_test(app,
                       TiteLiveThings,
-                      venue_provider,
+                      None,
                       checkedObjects=1,
                       createdObjects=1,
                       updatedObjects=0,
@@ -180,16 +171,9 @@ class TiteliveThingsTest:
                                                last_provider_id=titelive_things_provider.id)
         PcObject.save(venue, product)
 
-        venue_provider = VenueProvider()
-        venue_provider.venue = venue
-        venue_provider.provider = titelive_things_provider
-        venue_provider.isActive = True
-        venue_provider.venueIdAtOfferProvider = '77567146400110'
-        PcObject.save(venue_provider)
-
         provider_test(app,
                       TiteLiveThings,
-                      venue_provider,
+                      None,
                       checkedObjects=1,
                       createdObjects=0,
                       updatedObjects=1,
@@ -225,17 +209,9 @@ class TiteliveThingsTest:
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
         PcObject.save(venue)
 
-        titelive_things_provider = Provider.getByClassName('TiteLiveThings')
-        venue_provider = VenueProvider()
-        venue_provider.venue = venue
-        venue_provider.provider = titelive_things_provider
-        venue_provider.isActive = True
-        venue_provider.venueIdAtOfferProvider = '77567146400110'
-        PcObject.save(venue_provider)
-
         provider_test(app,
                       TiteLiveThings,
-                      venue_provider,
+                      None,
                       checkedObjects=422,
                       createdObjects=355,
                       updatedObjects=13,
@@ -261,17 +237,9 @@ class TiteliveThingsTest:
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
         PcObject.save(venue)
 
-        titelive_things_provider = Provider.getByClassName('TiteLiveThings')
-        venue_provider = VenueProvider()
-        venue_provider.venue = venue
-        venue_provider.provider = titelive_things_provider
-        venue_provider.isActive = True
-        venue_provider.venueIdAtOfferProvider = '77567146400110'
-        PcObject.save(venue_provider)
-
         provider_test(app,
                       TiteLiveThings,
-                      venue_provider,
+                      None,
                       checkedObjects=0,
                       createdObjects=0,
                       updatedObjects=0,
@@ -306,17 +274,9 @@ class TiteliveThingsTest:
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
         PcObject.save(venue)
 
-        titelive_things_provider = Provider.getByClassName('TiteLiveThings')
-        venue_provider = VenueProvider()
-        venue_provider.venue = venue
-        venue_provider.provider = titelive_things_provider
-        venue_provider.isActive = True
-        venue_provider.venueIdAtOfferProvider = '77567146400110'
-        PcObject.save(venue_provider)
-
         provider_test(app,
                       TiteLiveThings,
-                      venue_provider,
+                      None,
                       checkedObjects=1,
                       createdObjects=0,
                       updatedObjects=0,
@@ -399,17 +359,9 @@ class TiteliveThingsTest:
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
         PcObject.save(venue)
 
-        titelive_things_provider = Provider.getByClassName('TiteLiveThings')
-        venue_provider = VenueProvider()
-        venue_provider.venue = venue
-        venue_provider.provider = titelive_things_provider
-        venue_provider.isActive = True
-        venue_provider.venueIdAtOfferProvider = '77567146400110'
-        PcObject.save(venue_provider)
-
         provider_test(app,
                       TiteLiveThings,
-                      venue_provider,
+                      None,
                       checkedObjects=1,
                       createdObjects=0,
                       updatedObjects=0,

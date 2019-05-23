@@ -1,5 +1,6 @@
 import re
 from itertools import islice
+from sqlalchemy import or_
 from pathlib import Path
 
 import os
@@ -37,11 +38,13 @@ class InitTiteLiveThings(LocalProvider):
         self.data_lines = None
 
         last_import_commit = LocalProviderEvent.query \
-            .filter_by(type=LocalProviderEventType.SyncPartEnd) \
+            .filter(or_(LocalProviderEvent.type == LocalProviderEventType.SyncPartEnd,
+                        LocalProviderEvent.type == LocalProviderEventType.SyncEnd)) \
             .filter_by(providerId=self.dbObject.id) \
             .order_by(LocalProviderEvent.date.desc()) \
             .first()
-        if last_import_commit:
+
+        if last_import_commit.type == LocalProviderEventType.SyncPartEnd:
             self.lines_checked = int(last_import_commit.payload)
         else:
             self.lines_checked = 0

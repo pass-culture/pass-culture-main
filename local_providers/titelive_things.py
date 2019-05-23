@@ -1,10 +1,10 @@
 import re
 
-from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, get_titelive_ftp
+from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, connect_to_titelive_ftp
 from domain.titelive import get_date_from_filename, read_things_date
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
-from models import Product, ThingType, VenueProvider, BookFormat
+from models import Product, ThingType, BookFormat
 from repository import local_provider_event_queries
 from utils.logger import logger
 from utils.string_processing import trim_with_elipsis
@@ -25,8 +25,8 @@ class TiteLiveThings(LocalProvider):
     objectType = Product
     canCreate = True
 
-    def __init__(self, venue_provider: VenueProvider):
-        super().__init__(venue_provider)
+    def __init__(self):
+        super().__init__()
 
         ordered_thing_files = get_files_to_process_from_titelive_ftp(THINGS_FOLDER_NAME_TITELIVE, DATE_REGEXP)
         self.thing_files = self.get_remaining_files_to_check(ordered_thing_files)
@@ -105,7 +105,7 @@ def get_lines_from_thing_file(thing_file: str):
         line_buffering=True,
     )
     file_path = 'RETR ' + THINGS_FOLDER_NAME_TITELIVE + '/' + thing_file
-    get_titelive_ftp().retrbinary(file_path, data_file.write)
+    connect_to_titelive_ftp().retrbinary(file_path, data_file.write)
     data_wrapper.seek(0, 0)
     return iter(data_wrapper.readlines())
 
@@ -114,9 +114,9 @@ def get_thing_type_and_extra_data_from_titelive_type(titelive_type):
     if titelive_type == 'A':
         return None, None
     elif titelive_type == 'BD':
-        return str(ThingType.LIVRE_EDITION), None
+        return str(ThingType.LIVRE_EDITION), BookFormat.BANDE_DESSINEE.value
     elif titelive_type == 'BL':
-        return str(ThingType.LIVRE_EDITION), BookFormat.Hardcover.value
+        return str(ThingType.LIVRE_EDITION), BookFormat.BEAUX_LIVRES.value
     elif titelive_type == 'C':
         return None, None
     elif titelive_type == 'CA':
@@ -134,13 +134,13 @@ def get_thing_type_and_extra_data_from_titelive_type(titelive_type):
     elif titelive_type == 'K7':
         return None, None
     elif titelive_type == 'LA':
-        return str(ThingType.LIVRE_EDITION), None
+        return None, None
     elif titelive_type == 'LC':
-        return None, None
+        return str(ThingType.LIVRE_EDITION), BookFormat.LIVRE_CASSETTE.value
     elif titelive_type == 'LD':
-        return None, None
+        return str(ThingType.LIVRE_EDITION), BookFormat.LIVRE_AUDIO.value
     elif titelive_type == 'LE':
-        return str(ThingType.LIVRE_EDITION), BookFormat.EBook.value
+        return None, None
     elif titelive_type == 'LR':
         return None, None
     elif titelive_type == 'LT':
@@ -148,17 +148,17 @@ def get_thing_type_and_extra_data_from_titelive_type(titelive_type):
     elif titelive_type == 'LV':
         return None, None
     elif titelive_type == 'M':
-        return None, None
+        return str(ThingType.LIVRE_EDITION), BookFormat.MOYEN_FORMAT.value
     elif titelive_type == 'O':
         return None, None
     elif titelive_type == 'P':
-        return str(ThingType.LIVRE_EDITION), BookFormat.Paperback.value
+        return str(ThingType.LIVRE_EDITION), BookFormat.POCHE.value
     elif titelive_type == 'PC':
         return None, None
     elif titelive_type == 'PS':
         return None, None
     elif titelive_type == 'R':
-        return None, None
+        return str(ThingType.LIVRE_EDITION), BookFormat.REVUE.value
     elif titelive_type == 'T' \
             or titelive_type == 'TL':
         return str(ThingType.LIVRE_EDITION), None

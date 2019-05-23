@@ -24,10 +24,14 @@ from models.providable_mixin import ProvidableMixin
 
 
 class BookFormat(enum.Enum):
-    AudiobookFormat = "AudiobookFormat"
-    EBook = "EBook"
-    Hardcover = "Hardcover"
-    Paperback = "Paperback"
+    REVUE = "REVUE"
+    BANDE_DESSINEE = "BANDE DESSINEE "
+    BEAUX_LIVRES = "BEAUX LIVRES"
+    POCHE = "POCHE"
+    LIVRE_CASSETTE = "LIVRE + CASSETTE"
+    LIVRE_AUDIO = "LIVRE + CD AUDIO"
+    MOYEN_FORMAT = "MOYEN FORMAT"
+
 
 class Product(PcObject,
               Model,
@@ -70,7 +74,6 @@ class Product(PcObject,
                                  foreign_keys=[owningOffererId],
                                  backref='events')
 
-
     @property
     def offerType(self):
         all_types = list(ThingType) + list(EventType)
@@ -91,13 +94,13 @@ class Product(PcObject,
         matching_type_product = next(filter(lambda product_type: product_type.__str__() == self.type, ThingType))
         return matching_type_product.value['proLabel']
 
-
     def errors(self):
         api_errors = super(Product, self).errors()
         if self.isDigital and self._type_can_only_be_offline():
             api_errors.addError('url', 'Une offre de type {} ne peut pas être numérique'.format(
                 self._get_label_from_type_string()))
         return api_errors
+
 
 Product.__ts_vector__ = create_tsvector(
     cast(coalesce(Product.name, ''), TEXT),
