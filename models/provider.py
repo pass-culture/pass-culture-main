@@ -18,10 +18,10 @@ class Provider(PcObject, Model, DeactivableMixin):
     id = Column(BigInteger,
                 primary_key=True)
 
-    name = Column(String(60),
+    name = Column(String(90),
                   nullable=False)
 
-    localClass = Column(String(30),
+    localClass = Column(String(60),
                         CheckConstraint('("localClass" IS NOT NULL AND "apiKey" IS NULL)'
                                               + 'OR ("localClass" IS NULL AND "apiKey" IS NOT NULL)',
                                               name='check_provider_has_localclass_or_apikey'),
