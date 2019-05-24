@@ -95,6 +95,7 @@ const withProfileForm = (
           body: { ...formValues },
           handleFail: this.handleRequestFail(resolve),
           handleSuccess: this.handleRequestSuccess(resolve),
+          isMergingDatum: true,
           method: routeMethod,
         }
         // NOTE: par défaut on utilise la clé 'users'
