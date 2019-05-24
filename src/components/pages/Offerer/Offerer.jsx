@@ -52,7 +52,7 @@ class Offerer extends Component {
 
     const text = isCreatedEntity
       ? 'Votre structure a bien été enregistrée, elle est en cours de validation.'
-      : 'Les modifications sur votre structure ont bien été pris en compte'
+      : 'Les modifications sur votre structure ont bien été prises en compte.'
 
     dispatch(
       showNotification({
