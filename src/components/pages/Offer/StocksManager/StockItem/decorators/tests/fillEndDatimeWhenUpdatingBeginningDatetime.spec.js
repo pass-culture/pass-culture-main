@@ -55,8 +55,6 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
       .find({ name: 'beginningDateTime' })
       .find('input')
       .simulate('change', { target: { value: dateModified } })
-
-    console.log('WHEN')
     wrapper.find('button[type="submit"]').simulate('click')
 
     // then
@@ -68,7 +66,6 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
 
   it('should update the endDateTime to null ? when beginningDateTime is null', () => {
     // given
-    const dateModified = '2022-04-28T13:37:00.000Z'
     const beginningDateTime = '2019-09-27T10:01:00Z'
     const endDateTime = '2019-11-01T12:02:00Z'
     const endTime = '14:16'

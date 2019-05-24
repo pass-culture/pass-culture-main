@@ -119,9 +119,10 @@ export class StockItem extends Component {
     if (isEvent) {
       decorators = decorators.concat([
         fillEndDatimeWhenUpdatingBeginningDatetime({
-          triggerDateName: 'beginningDatetime',
           targetDateName: 'endDatetime',
           targetTimeName: 'endTime',
+          triggerDateName: 'beginningDatetime',
+          timezone,
         }),
         bindTimeFieldWithDateField({
           dateName: 'beginningDatetime',

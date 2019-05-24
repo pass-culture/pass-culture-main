@@ -7,18 +7,26 @@ function mapArgsToCacheKey({
   triggerDateName,
   targetDateName,
   targetTimeName,
+  timezone,
 }) {
   return `${triggerDateName || ''}${targetDateName || ''}${targetTimeName ||
-    ''}`
+    ''}${timezone || ''}`
 }
 
-function getNewTargetDateThatPreserveOldHourAndMinutes(newDate, oldDate) {
+function getNewTargetDateThatPreserveOldHourAndMinutes(
+  newDate,
+  oldDate,
+  timezone
+) {
   const targetMoment = moment(newDate).utc()
   const targetDateHourMinutes = targetMoment.format('HH:mm')
 
   const [hour, minutes] = targetDateHourMinutes.split(':')
 
   let triggerMoment = moment(oldDate).utc()
+  if (timezone) {
+    triggerMoment = triggerMoment.tz(timezone)
+  }
 
   return triggerMoment
     .hours(hour)
@@ -31,7 +39,8 @@ export const fillEndDatimeWhenUpdatingBeginningDatetime = createCachedSelector(
   ({ triggerDateName }) => triggerDateName,
   ({ targetDateName }) => targetDateName,
   ({ targetTimeName }) => targetTimeName,
-  (triggerDateName, targetDateName, targetTimeName) =>
+  ({ timezone }) => timezone,
+  (triggerDateName, targetDateName, targetTimeName, timezone) =>
     createDecorator({
       field: triggerDateName,
       updates: (triggerDate, doublonTriggerDateName, allValues, prevValues) => {
@@ -51,7 +60,8 @@ export const fillEndDatimeWhenUpdatingBeginningDatetime = createCachedSelector(
         const nextTargetDate = targetDate ? targetDate : triggerDate
         const updatedTargetDate = getNewTargetDateThatPreserveOldHourAndMinutes(
           nextTargetDate,
-          triggerDate
+          triggerDate,
+          timezone
         )
 
         return {
