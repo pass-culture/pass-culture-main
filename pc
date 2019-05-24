@@ -337,7 +337,6 @@ elif [[ "$CMD" == "test-cafe-webapp" ]] || [[ "$CMD" == "test-cafe-pro" ]]; then
       BROWSER="chromium"
     fi
 		confirm "Warning: your database will be wiped. Is this OK ?"
-	 	"$ROOT_PATH"/pc -e "$ENV" reset-all-db
 		"$ROOT_PATH"/pc -e "$ENV" sandbox --name=industrial
 		RUN='cd $APP_PATH && ./scripts/manager.js testcafe -b $BROWSER:headless'
 	else
