@@ -10,7 +10,7 @@ import Offers from '../components/pages/Offers'
 import Offer from '../components/pages/Offer'
 import OffererContainer from '../components/pages/Offerer/OffererContainer'
 import Offerers from '../components/pages/Offerers'
-import Profile from '../components/pages/Profile'
+import ProfilContainer from '../components/pages/Profil/ProfilContainer'
 import ReimbursementsContainer from '../components/pages/Reimbursements/ReimbursementsContainer'
 import Signin from '../components/pages/Signin'
 import Signup from '../components/pages/Signup'
@@ -126,7 +126,7 @@ const routes = [
     title: 'Offres',
   },
   {
-    component: Profile,
+    component: ProfilContainer,
     path: '/profil',
     title: 'Profil',
   },
