@@ -16,9 +16,13 @@ def get_all_application_ids_from_demarches_simplifiees_procedure(
 
 
 def _needs_processing(application: dict, last_update: datetime) -> dict:
-    return application['state'] == 'closed' and (
-                datetime.strptime(application['updated_at'], DATE_ISO_FORMAT) >= last_update)
+    return _is_closed(application) and _has_been_updated_since(application, last_update)
 
+def _is_closed(application: dict) -> dict:
+    return application['state'] == 'closed'
+
+def _has_been_updated_since(application, last_update: datetime):
+    return datetime.strptime(application['updated_at'], DATE_ISO_FORMAT) >= last_update
 
 def format_raw_iban_or_bic(raw_data: str) -> str:
     if not raw_data:
