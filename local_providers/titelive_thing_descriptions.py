@@ -27,7 +27,7 @@ class TiteLiveThingDescriptions(LocalProvider):
     def __init__(self):
         super().__init__()
 
-        all_zips = get_files_to_process_from_titelive_ftp()
+        all_zips = get_files_to_process_from_titelive_ftp(DESCRIPTION_FOLDER_NAME_TITELIVE, DATE_REGEXP)
 
         self.zips = self.get_remaining_files_to_check(all_zips)
         self.desc_zipinfos = None
@@ -70,7 +70,10 @@ class TiteLiveThingDescriptions(LocalProvider):
 
     def updateObject(self, thing):
         with self.zip.open(self.desc_zipinfo) as f:
-            thing.description = f.read().decode('iso-8859-1')
+            file_description = f.read().decode('iso-8859-1')
+            logger.info("Description %s" % file_description)
+            if len(file_description) > 2:
+                thing.description = file_description
 
     def get_remaining_files_to_check(self, all_zips):
         latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.dbObject)

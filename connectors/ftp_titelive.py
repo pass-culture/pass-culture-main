@@ -32,7 +32,7 @@ def get_zip_file_from_ftp(zip_file_name, folder_name):
     data_file.name = zip_file_name
     file_path = 'RETR ' + folder_name + '/' + zip_file_name
     logger.info("  Downloading file " + file_path)
-    get_titelive_ftp().retrbinary(file_path, data_file.write)
+    connect_to_titelive_ftp().retrbinary(file_path, data_file.write)
     return ZipFile(data_file, 'r')
 
 

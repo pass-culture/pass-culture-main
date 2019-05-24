@@ -31,6 +31,10 @@ def feature_cron_synchronize_titelive_things():
     return os.environ.get('CRON_SYNCHRONIZE_TITELIVE_THINGS', False)
 
 
+def feature_cron_synchronize_titelive_descriptions():
+    return os.environ.get('CRON_SYNCHRONIZE_TITELIVE_DESCRIPTIONS', False)
+
+
 def feature_cron_send_remedial_emails():
     return os.environ.get('CRON_SEND_REMEDIAL_EMAILS', False)
 
