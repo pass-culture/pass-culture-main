@@ -74,7 +74,10 @@ class Deck extends Component {
     const { history, areDetailsVisible, nextRecommendation } = this.props
     if (!nextRecommendation || areDetailsVisible) return
     const { offerId, mediationId } = nextRecommendation
-    history.push(`/decouverte/${offerId || 'tuto'}/${mediationId || ''}`)
+    history.push(
+      `/decouverte/${offerId || 'tuto'}${(mediationId && `/${mediationId}`) ||
+        ''}`
+    )
     this.handleRefreshNext()
   }
 
@@ -82,7 +85,10 @@ class Deck extends Component {
     const { history, areDetailsVisible, previousRecommendation } = this.props
     if (!previousRecommendation || areDetailsVisible) return
     const { offerId, mediationId } = previousRecommendation
-    history.push(`/decouverte/${offerId || 'tuto'}/${mediationId || ''}`)
+    history.push(
+      `/decouverte/${offerId || 'tuto'}${(mediationId && `/${mediationId}`) ||
+        ''}`
+    )
   }
 
   handleRefreshNext = () => {
