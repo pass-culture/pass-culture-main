@@ -1,8 +1,9 @@
 FROM python:3
 
 ENV PYTHONUNBUFFERED 1
-WORKDIR /usr/local/bin
+RUN curl https://raw.githubusercontent.com/betagouv/pass-culture-api/master/requirements.txt > requirements.txt
 RUN pip install -r requirements.txt
+WORKDIR /usr/local/bin
 COPY ./start_python.sh ./
 EXPOSE 5000
 CMD ./start_python.sh
