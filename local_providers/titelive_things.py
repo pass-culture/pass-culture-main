@@ -57,7 +57,7 @@ class TiteLiveThings(LocalProvider):
             elements = next(self.data_lines).split('~')
 
         if len(elements) != NUMBER_OF_ELEMENTS_PER_LINE:
-            logger.info("Did not find 45 elements as expected in titelive"
+            logger.debug("Did not find 45 elements as expected in titelive"
                         + " line. Skipping line")
             return None
 
@@ -94,7 +94,7 @@ class TiteLiveThings(LocalProvider):
         else:
             for index, filename in enumerate(ordered_thing_files):
                 if get_date_from_filename(filename, DATE_REGEXP) == int(latest_sync_part_end_event.payload):
-                    return iter(ordered_thing_files[index + 1:0])
+                    return iter(ordered_thing_files[index + 1:])
 
 
 def get_lines_from_thing_file(thing_file: str):
@@ -165,7 +165,7 @@ def get_thing_type_and_extra_data_from_titelive_type(titelive_type):
     elif titelive_type == 'TR':
         return None, None
     else:
-        logger.info(" WARNING: Unknown titelive_type: " + titelive_type)
+        logger.debug(" WARNING: Unknown titelive_type: " + titelive_type)
         return None, None
 
 

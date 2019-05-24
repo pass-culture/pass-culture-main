@@ -20,6 +20,7 @@ from models.provider import Provider
 from utils.date import read_json_date
 from utils.human_ids import humanize
 from utils.inflect_engine import inflect_engine
+from utils.logger import logger
 
 CHUNK_MAX_SIZE = 1000
 
@@ -125,9 +126,9 @@ class LocalProvider(Iterator):
                         continue
                     if existing_date is not None:
                         obj.delete_thumb(index)
-                        print("    Updating thumb #" + str(index) + " for " + str(obj))
+                        logger.debug("    Updating thumb #" + str(index) + " for " + str(obj))
                     else:
-                        print("    Creating thumb #" + str(index) + " for " + str(obj))
+                        logger.debug("    Creating thumb #" + str(index) + " for " + str(obj))
                     obj.save_thumb(thumb, index, need_save=False)
                     if existing_date is not None:
                         self.updatedThumbs += 1
@@ -136,7 +137,7 @@ class LocalProvider(Iterator):
         except Exception as e:
             self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
             self.erroredThumbs += 1
-            print('ERROR during handleThumb: '
+            logger.info('ERROR during handleThumb: '
                   + e.__class__.__name__ + ' ' + str(e))
             traceback.print_tb(e.__traceback__)
             pprint(vars(e))
@@ -153,7 +154,7 @@ class LocalProvider(Iterator):
         return None
 
     def createObject(self, providable_info):
-        print('  Creating ' + providable_info.type.__name__
+        logger.debug('  Creating ' + providable_info.type.__name__
               + '# ' + providable_info.idAtProviders)
         obj = providable_info.type()
         obj.idAtProviders = providable_info.idAtProviders
@@ -169,7 +170,7 @@ class LocalProvider(Iterator):
 
     def handleUpdate(self, obj, providable_info, is_new_obj):
         if not is_new_obj:
-            print('  Updating ' + providable_info.type.__name__
+            logger.debug('  Updating ' + providable_info.type.__name__
                   + '# ' + providable_info.idAtProviders)
             self.updatedObjects += 1
         try:
@@ -186,7 +187,7 @@ class LocalProvider(Iterator):
             if self.venueProvider is not None:
                 obj.venue = self.venueProvider.venue
         except Exception as e:
-            print('ERROR during updateObject: '
+            logger.info('ERROR during updateObject: '
                   + e.__class__.__name__ + ' ' + str(e))
             self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
             self.erroredObjects += 1
@@ -205,28 +206,28 @@ class LocalProvider(Iterator):
         """Update venue's objects with this provider."""
         if self.venueProvider is not None:
             if not self.venueProvider.isActive:
-                print("VenueProvider is not active. Stopping")
+                logger.info("VenueProvider is not active. Stopping")
                 return
             db.session.add(self.venueProvider)  # FIXME: we should not need this
         providerName = self.__class__.__name__
 
         if not self.dbObject.isActive:
-            print("Provider " + providerName + " is inactive")
+            logger.info("Provider " + providerName + " is inactive")
             return
 
-        print("Updating "
+        logger.debug("Updating "
               + inflect_engine.plural(self.objectType.__name__)
               + " from provider " + self.name)
         self.logEvent(LocalProviderEventType.SyncStart)
 
         if self.venueProvider is not None:
-            print(" for venue " + self.venueProvider.venue.name
+            logger.debug(" for venue " + self.venueProvider.venue.name
                   + " (#" + str(self.venueProvider.venueId) + " / "
                   + humanize(self.venueProvider.venueId) + ") "
                   + " venueIdAtOfferProvider="
                   + self.venueProvider.venueIdAtOfferProvider)
         else:
-            print("venueProvider not found")
+            logger.info("venueProvider not found")
 
         chunk_to_insert = {}
         chunk_to_update = {}
@@ -253,7 +254,7 @@ class LocalProvider(Iterator):
                             is_new_obj = True
                             if providable_info.dateModifiedAtProvider is None \
                                     or not self.canCreate:
-                                print('  Not creating or updating ' + providable_info.type.__name__ +
+                                logger.debug('  Not creating or updating ' + providable_info.type.__name__ +
                                       '# ' + providable_info.idAtProviders)
                                 continue
                             pc_obj = self.createObject(providable_info)
@@ -283,7 +284,7 @@ class LocalProvider(Iterator):
                                     chunk_to_update[chunk_key] = pc_obj
 
                         else:
-                            print('  Not creating or updating '
+                            logger.debug('  Not creating or updating '
                                   + providable_info.type.__name__
                                   + '# ' + providable_info.idAtProviders)
 
@@ -319,15 +320,15 @@ class LocalProvider(Iterator):
         if len(chunk_to_insert) + len(chunk_to_update) > 0:
             self.save_chunks(chunk_to_insert, chunk_to_update, providable_info)
 
-        print("  Checked " + str(self.checkedObjects) + " objects")
-        print("  Created " + str(self.createdObjects) + " objects")
-        print("  Updated " + str(self.updatedObjects) + " objects")
-        print("  " + str(self.erroredObjects) + " errors in creations/updates")
+        logger.info("  Checked " + str(self.checkedObjects) + " objects")
+        logger.info("  Created " + str(self.createdObjects) + " objects")
+        logger.info("  Updated " + str(self.updatedObjects) + " objects")
+        logger.info("  " + str(self.erroredObjects) + " errors in creations/updates")
 
-        print("  Checked " + str(self.checkedThumbs) + " thumbs")
-        print("  Created " + str(self.createdThumbs) + " thumbs")
-        print("  Updated " + str(self.updatedThumbs) + " thumbs")
-        print("  " + str(self.erroredThumbs) + " errors in thumb creations/updates")
+        logger.info("  Checked " + str(self.checkedThumbs) + " thumbs")
+        logger.info("  Created " + str(self.createdThumbs) + " thumbs")
+        logger.info("  Updated " + str(self.updatedThumbs) + " thumbs")
+        logger.info("  " + str(self.erroredThumbs) + " errors in thumb creations/updates")
 
         self.logEvent(LocalProviderEventType.SyncEnd)
         if self.venueProvider is not None:
