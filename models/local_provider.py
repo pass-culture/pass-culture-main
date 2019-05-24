@@ -126,9 +126,9 @@ class LocalProvider(Iterator):
                         continue
                     if existing_date is not None:
                         obj.delete_thumb(index)
-                        logger.debug("    Updating thumb #" + str(index) + " for " + str(obj))
+                        logger.info("    Updating thumb #" + str(index) + " for " + str(obj))
                     else:
-                        logger.debug("    Creating thumb #" + str(index) + " for " + str(obj))
+                        logger.info("    Creating thumb #" + str(index) + " for " + str(obj))
                     obj.save_thumb(thumb, index, need_save=False)
                     if existing_date is not None:
                         self.updatedThumbs += 1
@@ -365,7 +365,11 @@ class LocalProvider(Iterator):
             statement = providable_info.type.__table__.update(). \
                 where(providable_info.type.id == tmp_dict['id']). \
                 values(tmp_dict)
-            conn.execute(statement)
+            try:
+                conn.execute(statement)
+            except ValueError as e:
+                logger.error('ERROR during object update: '
+                             + e.__class__.__name__ + ' ' + str(e))
 
     def get_object_from_current_chunks(self, providable_info, chunk_to_insert, chunk_to_update):
         chunk_key = providable_info.idAtProviders + '|' + str(providable_info.type.__name__)

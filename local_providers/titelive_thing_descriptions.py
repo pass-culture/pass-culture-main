@@ -70,10 +70,7 @@ class TiteLiveThingDescriptions(LocalProvider):
 
     def updateObject(self, thing):
         with self.zip.open(self.desc_zipinfo) as f:
-            file_description = f.read().decode('iso-8859-1')
-            logger.info("Description %s" % file_description)
-            if len(file_description) > 2:
-                thing.description = file_description
+            thing.description = f.read().decode('iso-8859-1')
 
     def get_remaining_files_to_check(self, all_zips):
         latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.dbObject)
