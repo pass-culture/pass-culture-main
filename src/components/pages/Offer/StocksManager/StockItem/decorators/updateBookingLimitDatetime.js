@@ -15,7 +15,6 @@ const updateBookingLimitDatetime = ({
   timezone,
 }) => {
   const bookingLimitDatetimeMoment = moment(bookingLimitDatetime)
-
   if (
     !isEvent ||
     bookingLimitDatetimeMoment.isBefore(beginningDatetime, 'day')

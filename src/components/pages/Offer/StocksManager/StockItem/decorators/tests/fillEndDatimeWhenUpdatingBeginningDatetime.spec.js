@@ -1,6 +1,7 @@
 import { mount } from 'enzyme'
 import React from 'react'
 import { Field, Form } from 'react-final-form'
+
 import fillEndDatimeWhenUpdatingBeginningDatetime from '../fillEndDatimeWhenUpdatingBeginningDatetime'
 
 describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdatingBeginningDatetime', () => {

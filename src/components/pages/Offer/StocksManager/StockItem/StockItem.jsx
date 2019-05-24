@@ -9,10 +9,10 @@ import { requestData } from 'redux-saga-data'
 
 import EditAndDeleteControl from './EditAndDeleteControl'
 import EventFields from './EventFields'
-import fillEndDatimeWhenUpdatingBeginningDatetime from './fillEndDatimeWhenUpdatingBeginningDatetime'
+import adaptBookingLimitDatetimeGivenBeginningDatetime from './decorators/adaptBookingLimitDatetimeGivenBeginningDatetime'
+import fillEndDatimeWhenUpdatingBeginningDatetime from './decorators/fillEndDatimeWhenUpdatingBeginningDatetime'
 import ProductFields from './ProductFields'
 import SubmitAndCancelControlContainer from './SubmitAndCancelControl/SubmitAndCancelControlContainer'
-import adaptBookingLimitDatetimeGivenBeginningDatetime from './decorators/adaptBookingLimitDatetimeGivenBeginningDatetime'
 import { errorKeyToFrenchKey } from './utils'
 
 export class StockItem extends Component {

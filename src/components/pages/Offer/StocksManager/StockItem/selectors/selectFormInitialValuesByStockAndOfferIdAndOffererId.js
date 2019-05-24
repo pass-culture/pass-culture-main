@@ -4,8 +4,8 @@ import createCachedSelector from 're-reselect'
 import selectOfferById from 'selectors/selectOfferById'
 import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
 import {
-  BOOKING_LIMIT_DATETIME_HOURS,
-  BOOKING_LIMIT_DATETIME_MINUTES,
+  DEFAULT_BEGINNING_DATE_TIME_HOURS,
+  DEFAULT_BEGINNING_DATE_TIME_MINUTES,
   getDatetimeOneDayAfter,
   getDatetimeOneHourAfter,
   getDatetimeAtSpecificHoursAndMinutes,
@@ -22,7 +22,8 @@ export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCached
   (state, stock, offerId) => selectStocksByOfferId(state, offerId),
   (state, stock, offerId) => offerId,
   (state, stock, offerId, offererId) => offererId,
-  (stock, offer, stocks, offerId, offererId) => {
+  (state, stock, offerId, offererId, timezone) => timezone,
+  (stock, offer, stocks, offerId, offererId, timezone) => {
     let {
       available,
       beginningDatetime,
@@ -44,7 +45,12 @@ export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCached
     if (offer.isEvent && !beginningDatetime) {
       beginningDatetime = lastStock
         ? getDatetimeOneDayAfter(lastStock.beginningDatetime)
-        : getDatetimeOneDayAfter(moment())
+        : getDatetimeAtSpecificHoursAndMinutes(
+            getDatetimeOneDayAfter(moment()),
+            DEFAULT_BEGINNING_DATE_TIME_HOURS,
+            DEFAULT_BEGINNING_DATE_TIME_MINUTES,
+            timezone
+          )
     }
 
     if (offer.isEvent && !endDatetime) {
@@ -52,14 +58,6 @@ export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCached
       endDatetime = lastStock
         ? getDatetimeOneDayAfter(lastStock.endDatetime)
         : getDatetimeOneHourAfter(beginningDatetime)
-    }
-
-    if (beginningDatetime && !bookingLimitDatetime) {
-      bookingLimitDatetime = getDatetimeAtSpecificHoursAndMinutes(
-        beginningDatetime,
-        BOOKING_LIMIT_DATETIME_HOURS,
-        BOOKING_LIMIT_DATETIME_MINUTES
-      )
     }
 
     if (typeof price === 'undefined') {

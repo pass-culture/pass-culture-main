@@ -1,4 +1,4 @@
-import selectFormInitialValuesByStockAndOfferIdAndOffererId from './selectors/selectFormInitialValuesByStockAndOfferIdAndOffererId'
+import selectFormInitialValuesByStockAndOfferIdAndOffererIdAndTimezone from './selectors/selectFormInitialValuesByStockAndOfferIdAndOffererId'
 import selectOfferById from 'selectors/selectOfferById'
 import selectOffererById from 'selectors/selectOffererById'
 import selectProductById from 'selectors/selectProductById'
@@ -23,13 +23,6 @@ export default function mapStateToProps(state, ownProps) {
   const venue = selectVenueById(state, venueId)
   const managingOffererId = venue && venue.managingOffererId
 
-  const stockPatch = selectFormInitialValuesByStockAndOfferIdAndOffererId(
-    state,
-    stock,
-    offerId,
-    managingOffererId
-  )
-
   const offerer = selectOffererById(state, managingOffererId)
   const hasIban =
     (venue && typeof venue.iban !== 'undefined') ||
@@ -39,6 +32,14 @@ export default function mapStateToProps(state, ownProps) {
     state,
     venueId,
     managingOffererId
+  )
+
+  const stockPatch = selectFormInitialValuesByStockAndOfferIdAndOffererIdAndTimezone(
+    state,
+    stock,
+    offerId,
+    managingOffererId,
+    timezone
   )
 
   return {

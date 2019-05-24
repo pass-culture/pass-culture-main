@@ -16,6 +16,8 @@ export const FLOATSEP = ','
 
 export const BOOKING_LIMIT_DATETIME_HOURS = 23
 export const BOOKING_LIMIT_DATETIME_MINUTES = 59
+export const DEFAULT_BEGINNING_DATE_TIME_HOURS = 20
+export const DEFAULT_BEGINNING_DATE_TIME_MINUTES = 0
 
 export function getDatetimeOneDayAfter(datetime) {
   return moment(datetime)
@@ -29,8 +31,17 @@ export function getDatetimeOneHourAfter(datetime) {
     .toISOString()
 }
 
-export function getDatetimeAtSpecificHoursAndMinutes(datetime, hours, minutes) {
-  return moment(datetime)
+export function getDatetimeAtSpecificHoursAndMinutes(
+  datetime,
+  hours,
+  minutes,
+  timezone
+) {
+  let datetimeMoment = moment(datetime)
+  if (timezone) {
+    datetimeMoment = datetimeMoment.tz(timezone)
+  }
+  return datetimeMoment
     .hours(hours)
     .minutes(minutes)
     .toISOString()
