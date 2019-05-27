@@ -10,13 +10,11 @@ const withProfileForm = (
     routePath: 'users/current',
     stateKey: 'users',
   },
-  initialValues = false,
   validator = noop
 ) => props => (
   <ProfilFormContainer
     WrappedComponent={WrappedComponent}
     config={config}
-    initialValues={initialValues}
     validator={validator}
     {...props}
   />

@@ -4,11 +4,8 @@ import PropTypes from 'prop-types'
 import { InputField } from '../../../../forms/inputs'
 import withProfileForm from '../withProfileForm'
 
-const initialValues = {
-  publicName: null,
-}
-
-class IdentifiantForm extends React.PureComponent {
+// FIXME: ce composant n'a pas l'air utilisé. Faut-il le conserver ?
+export class UserIdentityField extends React.PureComponent {
   render() {
     const { isLoading } = this.props
     return (
@@ -16,9 +13,18 @@ class IdentifiantForm extends React.PureComponent {
         <div className="py30 px12 flex-1">
           <InputField
             required
-            name="publicName"
-            label="Votre identifiant"
+            name="lastName"
+            label="Votre nom"
             disabled={isLoading}
+            placeholder="Saisissez votre nom"
+          />
+          <InputField
+            required
+            name="firstName"
+            className="mt36"
+            label="Votre prénom"
+            disabled={isLoading}
+            placeholder="Saisissez votre prénom"
           />
         </div>
       </div>
@@ -26,17 +32,16 @@ class IdentifiantForm extends React.PureComponent {
   }
 }
 
-IdentifiantForm.propTypes = {
+UserIdentityField.propTypes = {
   isLoading: PropTypes.bool.isRequired,
 }
 
 export default withProfileForm(
-  IdentifiantForm,
+  UserIdentityField,
   {
     routeMethod: 'PATCH',
     routePath: 'users/current',
     stateKey: 'user',
   },
-  initialValues,
   null
 )

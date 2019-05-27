@@ -12,7 +12,6 @@ ShallowWrapper {
         "stateKey": "fake state key",
       }
     }
-    currentUser={Object {}}
     dispatch={[MockFunction]}
     history={
       Object {
@@ -26,7 +25,7 @@ ShallowWrapper {
         "pathname": "fake location",
       }
     }
-    title={null}
+    title="fake title"
     validator={[Function]}
   />,
   Symbol(enzyme.__renderer__): Object {

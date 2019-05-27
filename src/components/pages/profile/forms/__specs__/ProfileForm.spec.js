@@ -19,7 +19,6 @@ describe('src | components | pages | profile | ProfileForm', () => {
         routePath: 'fake url',
         stateKey: 'fake state key',
       },
-      currentUser: {},
       dispatch,
       history: {
         goBack,
@@ -29,6 +28,7 @@ describe('src | components | pages | profile | ProfileForm', () => {
       location: {
         pathname: 'fake location',
       },
+      title: 'fake title',
       validator: () => {},
     }
   })

@@ -22,7 +22,9 @@ class ProfileForm extends React.PureComponent {
       payload: { errors },
     } = action
     const errorsByKey = parseSubmitErrors(errors)
-    this.setState(nextState, () => formResolver(errorsByKey))
+    this.setState(nextState, () => {
+      formResolver(errorsByKey)
+    })
   }
 
   handleRequestSuccess = formResolver => () => {
@@ -135,18 +137,18 @@ class ProfileForm extends React.PureComponent {
 
 ProfileForm.defaultProps = {
   title: null,
+  validator: () => {},
 }
 
 ProfileForm.propTypes = {
   WrappedComponent: PropTypes.elementType.isRequired,
   config: PropTypes.object.isRequired,
-  currentUser: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   initialValues: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   title: PropTypes.string,
-  validator: PropTypes.func.isRequired,
+  validator: PropTypes.func,
 }
 
 export default ProfileForm

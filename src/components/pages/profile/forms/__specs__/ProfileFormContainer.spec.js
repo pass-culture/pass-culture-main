@@ -7,8 +7,9 @@ describe('src | components | pages | profile | forms | ProfileFormContainer', ()
       // given
       const id = '1'
       const currentUserUUID = 'ABC'
+      const publicName = 'fake name'
       const state = {
-        data: { users: [{ currentUserUUID, id }] },
+        data: { users: [{ currentUserUUID, id, publicName }] },
       }
       selectCurrentUser.currentUserUUID = currentUserUUID
 
@@ -17,9 +18,8 @@ describe('src | components | pages | profile | forms | ProfileFormContainer', ()
 
       // then
       expect(result).toEqual({
-        currentUser: {
-          currentUserUUID: 'ABC',
-          id: '1',
+        initialValues: {
+          publicName: 'fake name',
         },
       })
     })

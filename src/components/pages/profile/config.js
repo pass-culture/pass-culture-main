@@ -1,6 +1,6 @@
 import { getDepartementByCode } from '../../../helpers'
-import IdentifiantForm from './forms/fields/IdentifiantForm'
-import PasswordForm from './forms/fields/PasswordForm'
+import IdentifiantForm from './forms/fields/UserIdentifierField'
+import PasswordForm from './forms/fields/UserPasswordField'
 
 export const config = [
   // TODO: passer par une lib type https://github.com/yahoo/react-intl

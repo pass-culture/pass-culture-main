@@ -7,25 +7,30 @@ import { PasswordField } from '../../../../forms/inputs'
 import { validateMatchingFields } from '../../../../forms/validators'
 import withProfileForm from '../withProfileForm'
 
-const ERROR_OLD_PASSWORD = "L'ancien mot de passe est manquant."
+const ERROR_OLD_PASSWORD = 'L\'ancien mot de passe est manquant.'
 
-const initialValues = {
-  newPassword: null,
-  newPasswordConfirm: null,
-  oldPassword: null,
-}
+export class UserPasswordField extends React.PureComponent {
 
-class PasswordForm extends React.PureComponent {
+  buildOldPasswordLabel = () => value => {
+    if (value && !isEmpty(value)) {
+      return undefined
+    }
+
+    return ERROR_OLD_PASSWORD
+  }
+
+  validateNewPassword = () => (newPasswordConfirm, formvalues) => {
+    const {newPassword} = formvalues
+    return validateMatchingFields(newPasswordConfirm, newPassword)
+  }
+
   render() {
-    const { formErrors, isLoading } = this.props
+    const {formErrors, isLoading} = this.props
     return (
       <div className="pc-scroll-container">
         <div className="py30 px12 flex-1">
           <PasswordField
-            required={value => {
-              if (value && !isEmpty(value)) return undefined
-              return ERROR_OLD_PASSWORD
-            }}
+            required={this.buildOldPasswordLabel()}
             name="oldPassword"
             disabled={isLoading}
             label="Saisissez votre mot de passe actuel"
@@ -38,10 +43,7 @@ class PasswordForm extends React.PureComponent {
             label="Saisissez votre nouveau mot de passe"
           />
           <PasswordField
-            required={(value, formvalues) => {
-              const mainvalue = formvalues.newPassword
-              return validateMatchingFields(value, mainvalue)
-            }}
+            required={this.validateNewPassword()}
             className="mt36"
             name="newPasswordConfirm"
             disabled={isLoading}
@@ -54,11 +56,11 @@ class PasswordForm extends React.PureComponent {
   }
 }
 
-PasswordForm.defaultProps = {
+UserPasswordField.defaultProps = {
   formErrors: false,
 }
 
-PasswordForm.propTypes = {
+UserPasswordField.propTypes = {
   formErrors: PropTypes.oneOfType([
     PropTypes.array,
     PropTypes.bool,
@@ -67,14 +69,11 @@ PasswordForm.propTypes = {
   isLoading: PropTypes.bool.isRequired,
 }
 
-PasswordForm.displayName = 'PasswordForm'
-
 export default withProfileForm(
-  PasswordForm,
+  UserPasswordField,
   {
     routeMethod: 'POST',
     routePath: 'users/current/change-password',
   },
-  initialValues,
   null
 )

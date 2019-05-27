@@ -1,0 +1,163 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | profile | UserIdentifierField should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <UserIdentifierField
+    isLoading={false}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": <div
+        className="py30 px12 flex-1"
+      >
+        <InputField
+          autoComplete={false}
+          className=""
+          disabled={false}
+          label="Votre identifiant"
+          name="publicName"
+          placeholder="Veuillez saisir une valeur"
+          required={true}
+        />
+      </div>,
+      "className": "pc-scroll-container",
+    },
+    "ref": null,
+    "rendered": Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <InputField
+          autoComplete={false}
+          className=""
+          disabled={false}
+          label="Votre identifiant"
+          name="publicName"
+          placeholder="Veuillez saisir une valeur"
+          required={true}
+        />,
+        "className": "py30 px12 flex-1",
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "autoComplete": false,
+          "className": "",
+          "disabled": false,
+          "label": "Votre identifiant",
+          "name": "publicName",
+          "placeholder": "Veuillez saisir une valeur",
+          "required": true,
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      "type": "div",
+    },
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <div
+          className="py30 px12 flex-1"
+        >
+          <InputField
+            autoComplete={false}
+            className=""
+            disabled={false}
+            label="Votre identifiant"
+            name="publicName"
+            placeholder="Veuillez saisir une valeur"
+            required={true}
+          />
+        </div>,
+        "className": "pc-scroll-container",
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <InputField
+            autoComplete={false}
+            className=""
+            disabled={false}
+            label="Votre identifiant"
+            name="publicName"
+            placeholder="Veuillez saisir une valeur"
+            required={true}
+          />,
+          "className": "py30 px12 flex-1",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "autoComplete": false,
+            "className": "",
+            "disabled": false,
+            "label": "Votre identifiant",
+            "name": "publicName",
+            "placeholder": "Veuillez saisir une valeur",
+            "required": true,
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        "type": "div",
+      },
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+  Symbol(enzyme.__childContext__): null,
+}
+`;
