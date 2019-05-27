@@ -255,7 +255,6 @@ class ParseBeneficiaryInformationTest:
         information = parse_beneficiary_information(APPLICATION_DETAIL_STANDARD_RESPONSE)
 
         # then
-        assert information['department'] == '67'
         assert information['last_name'] == 'Doe'
         assert information['first_name'] == 'Jane'
         assert information['birth_date'] == datetime(2000, 5, 1)
@@ -263,6 +262,46 @@ class ParseBeneficiaryInformationTest:
         assert information['phone'] == '0612345678'
         assert information['postal_code'] == '67200'
         assert information['application_id'] == 123
+
+    def test_handles_two_digits_department_code(self):
+        # given
+        application_detail = make_application_detail(1, 'closed', department_code='67 - Bas-Rhin')
+
+        # when
+        information = parse_beneficiary_information(application_detail)
+
+        # then
+        assert information['department'] == '67'
+
+    def test_handles_three_digits_department_code(self):
+        # given
+        application_detail = make_application_detail(1, 'closed', department_code='973 - Guyane')
+
+        # when
+        information = parse_beneficiary_information(application_detail)
+
+        # then
+        assert information['department'] == '973'
+
+    def test_handles_uppercased_mixed_digits_and_letter_department_code(self):
+        # given
+        application_detail = make_application_detail(1, 'closed', department_code='2B - Haute-Corse')
+
+        # when
+        information = parse_beneficiary_information(application_detail)
+
+        # then
+        assert information['department'] == '2B'
+
+    def test_handles_lowercased_mixed_digits_and_letter_department_code(self):
+        # given
+        application_detail = make_application_detail(1, 'closed', department_code='2a - Haute-Corse')
+
+        # when
+        information = parse_beneficiary_information(application_detail)
+
+        # then
+        assert information['department'] == '2a'
 
 
 @pytest.mark.standalone

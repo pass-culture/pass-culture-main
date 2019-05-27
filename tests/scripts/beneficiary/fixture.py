@@ -241,8 +241,11 @@ def make_applications_list(applications_params: List[Tuple[int, str, str]], page
     return applications
 
 
-def make_application_detail(id: int, state: str) -> dict:
-    application = dict(APPLICATION_DETAIL_STANDARD_RESPONSE)
-    application['id'] = id
-    application['state'] = state
+def make_application_detail(id: int, state: str, department_code='67 - Bas-Rhin') -> dict:
+    application = copy.deepcopy(APPLICATION_DETAIL_STANDARD_RESPONSE)
+    application['dossier']['id'] = id
+    application['dossier']['state'] = state
+    for field in application['dossier']['champs']:
+        if field['type_de_champ']['type_champ'] == 'departements':
+            field['value'] = department_code
     return application
