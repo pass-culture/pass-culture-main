@@ -29,7 +29,7 @@ def get(plural_model_name, filter = None, resolve = None, **kwargs):
     query = model.query.filter() if filter is None else model.query.filter(filter)
     include = getattr(includes, model_name[0].upper() + model_name[1:] + '_INCLUDES')
     return listify(query, include, resolve, **kwargs)
-    #[resolve(obj._asdict(include=include, **kwargs)) for obj in query]
+    #[resolve(obj.as_dict(include=include, **kwargs)) for obj in query]
 
 class BytesEncoder(json.JSONEncoder):
     def default(self, obj):

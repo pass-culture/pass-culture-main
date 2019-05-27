@@ -11,7 +11,7 @@ Par exemple :
 @app.route("/users/current", methods=["GET"])
 @login_required
 def get_profile():
-    user = current_user._asdict(include=USER_INCLUDES)
+    user = current_user.as_dict(include=USER_INCLUDES)
     user['expenses'] = get_expenses(current_user.userBookings)
     return jsonify(user), 200
 ```
@@ -33,7 +33,7 @@ def create_event_occurrence():
 
     occurrence = EventOccurrence(from_dict=request.json)
     PcObject.check_and_save(occurrence)
-    return jsonify(occurrence._asdict(include=EVENT_OCCURRENCE_INCLUDES)), 201
+    return jsonify(occurrence.as_dict(include=EVENT_OCCURRENCE_INCLUDES)), 201
 ```
 
 ## Testing
