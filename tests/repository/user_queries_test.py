@@ -104,7 +104,7 @@ class GetAllUsersWalletBalancesTest:
 @pytest.mark.standalone
 class FindByFirstAndLastNamesAndEmailTest:
     @clean_database
-    def test_returns_users_with_matching_criteria_case_insensitively(self, app):
+    def test_returns_users_with_matching_criteria_ignoring_case(self, app):
         # given
         user2 = create_user(first_name="jaNE", last_name='DOe', email='jane@test.com',
                             date_of_birth=datetime(2000, 3, 20))
@@ -115,9 +115,57 @@ class FindByFirstAndLastNamesAndEmailTest:
         # when
         users = find_by_first_and_last_names_and_birth_date('john', 'doe', datetime(2000, 5, 1))
 
-        # ten
+        # then
         assert len(users) == 1
         assert users[0].email == 'john@test.com'
+
+    @clean_database
+    def test_returns_users_with_matching_criteria_ignoring_dash(self, app):
+        # given
+        user2 = create_user(first_name="jaNE", last_name='DOe', email='jane@test.com',
+                            date_of_birth=datetime(2000, 3, 20))
+        user1 = create_user(first_name="john-bob", last_name='doe', email='john.b@test.com',
+                            date_of_birth=datetime(2000, 5, 1))
+        PcObject.check_and_save(user1, user2)
+
+        # when
+        users = find_by_first_and_last_names_and_birth_date('johnbob', 'doe', datetime(2000, 5, 1))
+
+        # then
+        assert len(users) == 1
+        assert users[0].email == 'john.b@test.com'
+
+    @clean_database
+    def test_returns_users_with_matching_criteria_ignoring_spaces(self, app):
+        # given
+        user2 = create_user(first_name="jaNE", last_name='DOe', email='jane@test.com',
+                            date_of_birth=datetime(2000, 3, 20))
+        user1 = create_user(first_name="john bob", last_name='doe', email='john.b@test.com',
+                            date_of_birth=datetime(2000, 5, 1))
+        PcObject.check_and_save(user1, user2)
+
+        # when
+        users = find_by_first_and_last_names_and_birth_date('johnbob', 'doe', datetime(2000, 5, 1))
+
+        # then
+        assert len(users) == 1
+        assert users[0].email == 'john.b@test.com'
+
+    @clean_database
+    def test_returns_users_with_matching_criteria_ignoring_accents(self, app):
+        # given
+        user2 = create_user(first_name="jaNE", last_name='DOe', email='jane@test.com',
+                            date_of_birth=datetime(2000, 3, 20))
+        user1 = create_user(first_name="john bob", last_name='doe', email='john.b@test.com',
+                            date_of_birth=datetime(2000, 5, 1))
+        PcObject.check_and_save(user1, user2)
+
+        # when
+        users = find_by_first_and_last_names_and_birth_date('jöhn bób', 'doe', datetime(2000, 5, 1))
+
+        # then
+        assert len(users) == 1
+        assert users[0].email == 'john.b@test.com'
 
     @clean_database
     def test_returns_nothing_if_one_criteria_does_not_match(self, app):
@@ -128,7 +176,7 @@ class FindByFirstAndLastNamesAndEmailTest:
         # when
         users = find_by_first_and_last_names_and_birth_date('john', 'doe', datetime(2000, 5, 1))
 
-        # ten
+        # then
         assert not users
 
 

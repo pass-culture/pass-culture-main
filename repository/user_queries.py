@@ -1,7 +1,9 @@
 from datetime import datetime, MINYEAR
 from typing import List
 
-from sqlalchemy import func
+from sqlalchemy import func, Column
+from sqlalchemy.sql.elements import BinaryExpression
+from sqlalchemy.sql.functions import Function
 
 from models import User, UserOfferer, Offerer, RightsType
 from models.db import db
@@ -16,8 +18,8 @@ def find_user_by_email(email: str) -> User:
 
 def find_by_first_and_last_names_and_birth_date(first_name: str, last_name: str, birth_date: datetime) -> List[User]:
     return User.query \
-        .filter(func.lower(User.firstName) == func.lower(first_name)) \
-        .filter(func.lower(User.lastName) == func.lower(last_name)) \
+        .filter(_matching(User.firstName, first_name)) \
+        .filter(_matching(User.lastName, last_name)) \
         .filter(User.dateOfBirth == birth_date) \
         .all()
 
@@ -112,3 +114,15 @@ def find_most_recent_beneficiary_creation_date():
         return datetime(MINYEAR, 1, 1)
 
     return most_recent_beneficiary.dateCreated
+
+
+def _matching(column: Column, search_value: str) -> BinaryExpression:
+    return _sanitized_string(column) == _sanitized_string(search_value)
+
+
+def _sanitized_string(value: str) -> Function:
+    sanitized = func.replace(value, '-', '')
+    sanitized = func.replace(sanitized, ' ', '')
+    sanitized = func.unaccent(sanitized)
+    sanitized = func.lower(sanitized)
+    return sanitized
