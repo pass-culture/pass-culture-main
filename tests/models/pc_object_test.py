@@ -107,6 +107,8 @@ class PopulateFromDictTest:
         # When
         with pytest.raises(DecimalCastError) as errors:
             test_pc_object.populate_from_dict(data)
+
+        # then
         assert errors.value.errors['integer_attribute'] == ["Invalid value for integer_attribute (integer): 'yolo'"]
 
     def test_on_pc_object_for_sql_integer_value_with_str_12dot9_sets_attribute_to_12dot9(self):
@@ -161,6 +163,8 @@ class PopulateFromDictTest:
         # When
         with pytest.raises(DecimalCastError) as errors:
             test_pc_object.populate_from_dict(data)
+
+        # then
         assert errors.value.errors['float_attribute'] == ["Invalid value for float_attribute (float): 'yolo'"]
 
     def test_on_pc_object_for_sql_datetime_value_in_wrong_format_returns_400_and_affected_key_in_error(self):

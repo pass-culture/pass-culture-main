@@ -188,15 +188,18 @@ class PcObject():
                     value = dehumanize(data.get(key))
                 else:
                     value = data.get(key)
-                value_is_string = isinstance(value, str)
-                if value_is_string and isinstance(col.type, Integer):
-                    self._try_to_set_attribute_with_decimal_value(col, key, value, 'integer')
-                elif value_is_string and (isinstance(col.type, Float) or isinstance(col.type, Numeric)):
-                    self._try_to_set_attribute_with_decimal_value(col, key, value, 'float')
+
+                if isinstance(value, str):
+                    if isinstance(col.type, Integer):
+                        self._try_to_set_attribute_with_decimal_value(col, key, value, 'integer')
+                    elif isinstance(col.type, Float) or isinstance(col.type, Numeric):
+                        self._try_to_set_attribute_with_decimal_value(col, key, value, 'float')
+                    elif isinstance(col.type, String):
+                        setattr(self, key, value.strip() if value else value)
+                    elif isinstance(col.type, DateTime):
+                        self._try_to_set_attribute_with_deserialized_datetime(col, key, value)
                 elif not isinstance(value, datetime) and isinstance(col.type, DateTime):
                     self._try_to_set_attribute_with_deserialized_datetime(col, key, value)
-                elif value_is_string and isinstance(col.type, String):
-                    setattr(self, key, value.strip() if value else value)
                 else:
                     setattr(self, key, value)
 

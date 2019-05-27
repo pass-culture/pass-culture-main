@@ -14,11 +14,11 @@ def get_offer_helper(offer):
         "keywordsString": '{} {}'.format(
             offer.product.name,
             offer.venue.name
-        ).replace('?', ' ') \
-                .replace('!', ' ') \
-                .replace('(', '') \
-                .replace(')', '') \
-                .replace('ù', 'u'),
+        ).replace('?', ' ')
+        .replace('!', ' ') \
+        .replace('(', '') \
+        .replace(')', '') \
+        .replace('ù', 'u'),
         "venueCity": offer.venue.city,
         "venueName": offer.venue.name,
         "thingName": offer.product.name
