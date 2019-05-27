@@ -1650,7 +1650,7 @@ class MakeBeneficiariesImportEmailTest:
         # then
         email_html = remove_whitespaces(email['Html-part'])
         parsed_email = BeautifulSoup(email_html, 'html.parser')
-        assert parsed_email.find("p", {"id": 'total'}).text == "Nombre total d'utilisateurs crées : 2"
+        assert parsed_email.find("p", {"id": 'total'}).text == "Nombre total d'utilisateurs créés : 2"
 
     def test_sends_list_of_import_errors(self, app):
         # given
