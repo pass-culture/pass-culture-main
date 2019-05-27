@@ -1,0 +1,174 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | profile | ProfileForm should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <ProfileForm
+    WrappedComponent={[Function]}
+    config={
+      Object {
+        "routeMethod": "fake method",
+        "routePath": "fake url",
+        "stateKey": "fake state key",
+      }
+    }
+    currentUser={Object {}}
+    dispatch={[MockFunction]}
+    history={
+      Object {
+        "goBack": [MockFunction],
+        "replace": [MockFunction],
+      }
+    }
+    initialValues={Object {}}
+    location={
+      Object {
+        "pathname": "fake location",
+      }
+    }
+    title={null}
+    validator={[Function]}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <ReactFinalForm
+          initialValues={Object {}}
+          onSubmit={[Function]}
+          render={[Function]}
+          validate={[Function]}
+        />,
+        <withRouter(NavigationFooter)
+          className="dotted-top-red"
+          disabled={false}
+          theme="white"
+        />,
+      ],
+      "className": "pc-page-view pc-theme-default flex-rows",
+      "id": "profile-page-form-view",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "initialValues": Object {},
+          "onSubmit": [Function],
+          "render": [Function],
+          "validate": [Function],
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "className": "dotted-top-red",
+          "disabled": false,
+          "theme": "white",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <ReactFinalForm
+            initialValues={Object {}}
+            onSubmit={[Function]}
+            render={[Function]}
+            validate={[Function]}
+          />,
+          <withRouter(NavigationFooter)
+            className="dotted-top-red"
+            disabled={false}
+            theme="white"
+          />,
+        ],
+        "className": "pc-page-view pc-theme-default flex-rows",
+        "id": "profile-page-form-view",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "initialValues": Object {},
+            "onSubmit": [Function],
+            "render": [Function],
+            "validate": [Function],
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "className": "dotted-top-red",
+            "disabled": false,
+            "theme": "white",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+  Symbol(enzyme.__childContext__): null,
+}
+`;

@@ -1,7 +1,6 @@
 import { getDepartementByCode } from '../../../helpers'
-// withProfileForm Component
-import ProfileIdentifiantForm from './forms/ProfileIdentifiantForm'
-import ProfilePasswordForm from './forms/ProfilePasswordForm'
+import IdentifiantForm from './forms/fields/IdentifiantForm'
+import PasswordForm from './forms/fields/PasswordForm'
 
 export const config = [
   // TODO: passer par une lib type https://github.com/yahoo/react-intl
@@ -9,7 +8,7 @@ export const config = [
   // FIXME -> ajouter une proptypes custom pour pouvoir vérifier dans les vues
   // que l'objet recu pour les définitions des fields du formulaires est valide
   {
-    component: ProfileIdentifiantForm,
+    component: IdentifiantForm,
     key: 'publicName',
     label: 'Identifiant',
     resolver: null,
@@ -43,7 +42,7 @@ export const config = [
     title: 'Votre adresse e-mail',
   },
   {
-    component: ProfilePasswordForm,
+    component: PasswordForm,
     key: 'password',
     label: 'Mot de passe',
     mainPlaceholder: 'Changer mon mot de passe',

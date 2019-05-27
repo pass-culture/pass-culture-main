@@ -1,18 +1,12 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { FormError } from '../../../forms'
-import { isEmpty } from '../../../../utils/strings'
-import { PasswordField } from '../../../forms/inputs'
-import { validateMatchingFields } from '../../../forms/validators'
-import withProfileForm from './withProfileForm'
+import { FormError } from '../../../../forms'
+import { isEmpty } from '../../../../../utils/strings'
+import { PasswordField } from '../../../../forms/inputs'
+import { validateMatchingFields } from '../../../../forms/validators'
+import withProfileForm from '../withProfileForm'
 
-// NOTE: les anciens mot de passe lors de la phase beta
-// n'avaient de règle de validation
-// FIXME: peut être mettre un if avec une version du package.json
-// si on considére que la v1 correspond à la mise en ligne d'octobre
 const ERROR_OLD_PASSWORD = "L'ancien mot de passe est manquant."
 
 const initialValues = {
@@ -21,8 +15,7 @@ const initialValues = {
   oldPassword: null,
 }
 
-// azertyazertyP1$
-class ProfilePasswordForm extends React.PureComponent {
+class PasswordForm extends React.PureComponent {
   render() {
     const { formErrors, isLoading } = this.props
     return (
@@ -61,11 +54,11 @@ class ProfilePasswordForm extends React.PureComponent {
   }
 }
 
-ProfilePasswordForm.defaultProps = {
+PasswordForm.defaultProps = {
   formErrors: false,
 }
 
-ProfilePasswordForm.propTypes = {
+PasswordForm.propTypes = {
   formErrors: PropTypes.oneOfType([
     PropTypes.array,
     PropTypes.bool,
@@ -74,14 +67,14 @@ ProfilePasswordForm.propTypes = {
   isLoading: PropTypes.bool.isRequired,
 }
 
-ProfilePasswordForm.displayName = 'ProfilePasswordForm'
+PasswordForm.displayName = 'PasswordForm'
 
 export default withProfileForm(
-  ProfilePasswordForm,
-  null,
-  // TODO -> plutot les options de route par un objet
-  'users/current/change-password',
-  'POST',
-  false,
-  initialValues
+  PasswordForm,
+  {
+    routeMethod: 'POST',
+    routePath: 'users/current/change-password',
+  },
+  initialValues,
+  null
 )

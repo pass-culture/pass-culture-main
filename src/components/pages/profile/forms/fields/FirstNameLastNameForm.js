@@ -1,17 +1,16 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { InputField } from '../../../forms/inputs'
-import withProfileForm from './withProfileForm'
+import { InputField } from '../../../../forms/inputs'
+import withProfileForm from '../withProfileForm'
 
 const initialValues = {
   firstName: null,
   lastName: null,
 }
 
-class ProfileFirstLastNameForm extends React.PureComponent {
+// FIXME: ce composant n'a pas l'air utilisé. Faut-il le conserver ?
+class FirstNameLastNameForm extends React.PureComponent {
   render() {
     const { isLoading } = this.props
     return (
@@ -38,16 +37,17 @@ class ProfileFirstLastNameForm extends React.PureComponent {
   }
 }
 
-ProfileFirstLastNameForm.propTypes = {
+FirstNameLastNameForm.propTypes = {
   isLoading: PropTypes.bool.isRequired,
 }
 
 export default withProfileForm(
-  ProfileFirstLastNameForm,
-  null,
-  // TODO -> plutot les options de route par un objet
-  'users/current',
-  'PATCH',
-  'user',
-  initialValues
+  FirstNameLastNameForm,
+  {
+    routeMethod: 'PATCH',
+    routePath: 'users/current',
+    stateKey: 'user',
+  },
+  initialValues,
+  null
 )
