@@ -20,7 +20,7 @@ class UserAdminView(BaseAdminView):
     )
     column_searchable_list = ['publicName', 'email', 'firstName', 'lastName']
     column_filters = ['postalCode', 'canBookFreeOffers']
-    form_columns = ['firstName', 'lastName', 'publicName', 'dateOfBirth', 'departementCode', 'postalCode']
+    form_columns = ['email', 'firstName', 'lastName', 'publicName', 'dateOfBirth', 'departementCode', 'postalCode']
 
 class VenueAdminView(BaseAdminView):
     can_edit = True
