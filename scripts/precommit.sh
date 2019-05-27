@@ -23,14 +23,6 @@ do
   fi
 done
 
-# jest --env=jsdom --bail --findRelatedTests $STAGED_FILES
-# if [[ "$?" == 0 ]]; then
-#   echo "\t\033[32mJest Tests Passed\033[0m"
-# else
-#   echo "\t\033[41mJest Tests Failed\033[0m"
-#   exit 1
-# fi
-
 # Prettify all staged .js files
 echo "$STAGED_FILES" | xargs ./node_modules/.bin/prettier-eslint --eslint-config-path ./.eslintrc.json --config ./.prettierrc.json --list-different --write
 
