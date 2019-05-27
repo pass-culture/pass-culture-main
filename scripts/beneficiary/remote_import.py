@@ -90,7 +90,7 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
         value = field['value']
 
         if label == 'Veuillez indiquer votre département':
-            information['department'] = re.search('^[0-9BbAa]{2,3}', value).group(0)
+            information['department'] = re.search('^[0-9]{2,3}|[2BbAa]{2}', value).group(0)
         if label == 'Date de naissance':
             information['birth_date'] = datetime.strptime(value, '%Y-%m-%d')
         if label == 'Numéro de téléphone':
@@ -139,7 +139,10 @@ def create_beneficiary_from_application(
 def _find_application_ids_to_process(applications: dict, process_applications_updated_after: datetime):
     processable_applications = filter(lambda a: a['state'] == 'closed', applications['dossiers'])
     recent_applications = filter(
-        lambda a: datetime.strptime(a['updated_at'], '%Y-%m-%dT%H:%M:%S.%fZ') > process_applications_updated_after,
+        lambda a: _parse_application_date(a) > process_applications_updated_after,
         processable_applications)
-    datetime
     return {a['id'] for a in recent_applications}
+
+
+def _parse_application_date(application: dict) -> datetime:
+    return datetime.strptime(application['updated_at'], '%Y-%m-%dT%H:%M:%S.%fZ')

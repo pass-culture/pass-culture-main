@@ -87,6 +87,7 @@ class RunTest:
 
         # then
         assert process_beneficiary_application.call_count == 1
+        assert process_beneficiary_application.call_args[0][0]['application_id'] == 123
 
     @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
@@ -120,7 +121,7 @@ class RunTest:
     def test_a_report_email_is_sent(self, process_beneficiary_application, send_report_email):
         # given
         get_all_applications = Mock()
-        number_of_pages = 3
+        number_of_pages = 1
         current_page = 1
         get_all_applications.return_value = make_applications_list(
             [
