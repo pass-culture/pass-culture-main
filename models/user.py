@@ -8,8 +8,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
-from models.db import db, Model
-from models.has_thumb_mixin import HasThumbMixin
+from models.versioned_mixin import VersionedMixin
+from models.db import Model, db
 from models.needs_validation_mixin import NeedsValidationMixin
 from models.pc_object import PcObject
 from models.user_offerer import UserOfferer, RightsType
@@ -17,8 +17,8 @@ from models.user_offerer import UserOfferer, RightsType
 
 class User(PcObject,
            Model,
-           HasThumbMixin,
-           NeedsValidationMixin
+           NeedsValidationMixin,
+           VersionedMixin
            ):
     email = Column(String(120), nullable=False, unique=True)
     password = Column(Binary(60), nullable=False)

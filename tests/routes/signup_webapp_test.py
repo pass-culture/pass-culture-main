@@ -33,14 +33,12 @@ class Post:
                                       'departementCode': '93',
                                       'email': 'toto@btmx.fr',
                                       'firstName': 'Toto',
-                                      'firstThumbDominantColor': None,
                                       'isAdmin': False,
                                       'lastName': 'Martin',
                                       'modelName': 'User',
                                       'phoneNumber': '0612345678',
                                       'postalCode': '93100',
                                       'publicName': 'Toto',
-                                      'thumbCount': 0,
                                       'wallet_balance': 0,
                                       'dateOfBirth': '2001-01-01T00:00:00Z'}
             other_expected_keys = {'id', 'dateCreated'}

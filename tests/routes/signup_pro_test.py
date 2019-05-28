@@ -31,14 +31,12 @@ class Post:
                 'departementCode': '92',
                 'email': 'toto_pro@btmx.fr',
                 'firstName': 'Toto',
-                'firstThumbDominantColor': None,
                 'isAdmin': False,
                 'lastName': 'Pro',
                 'modelName': 'User',
                 'phoneNumber': None,
                 'postalCode': '92000',
                 'publicName': 'Toto Pro',
-                'thumbCount': 0,
                 'wallet_balance': 0,
                 'dateOfBirth': None
             }
