@@ -197,7 +197,7 @@ def generate_reimbursement_details_csv(reimbursement_details: List[Reimbursement
         reimbursement_detail.as_csv_row()
         for reimbursement_detail in reimbursement_details
     ]
-    writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+    writer = csv.writer(output, dialect=csv.excel, delimiter=';')
     writer.writerow(ReimbursementDetails.CSV_HEADER)
     writer.writerows(csv_lines)
     return output.getvalue()
