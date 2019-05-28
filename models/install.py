@@ -1,6 +1,6 @@
-from sqlalchemy import orm
-from sqlalchemy.exc import IntegrityError, ProgrammingError
 from postgresql_audit.flask import versioning_manager
+from sqlalchemy import orm
+from sqlalchemy.exc import ProgrammingError
 
 from models.db import db
 from models.mediation import upsertTutoMediations

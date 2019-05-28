@@ -6,6 +6,7 @@ from collections import OrderedDict
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from pprint import pprint
+from typing import List, Any
 
 import sqlalchemy
 from psycopg2.extras import DateTimeRange
@@ -20,7 +21,7 @@ from sqlalchemy.exc import DataError, IntegrityError, InternalError
 from sqlalchemy.orm.collections import InstrumentedList
 
 from models.api_errors import ApiErrors, DecimalCastError, DateTimeCastError
-from models.db import db
+from models.db import db, Model
 from models.soft_deletable_mixin import SoftDeletableMixin
 from utils.date import match_format, DateTimes
 from utils.human_ids import dehumanize, humanize
@@ -35,36 +36,7 @@ class DeletedRecordException(Exception):
     pass
 
 
-def serialize(value, **options):
-    if isinstance(value, sqlalchemy.Enum):
-        return value.name
-    elif isinstance(value, enum.Enum):
-        return value.value
-    elif isinstance(value, datetime):
-        return format_into_ISO_8601(value)
-    elif isinstance(value, DateTimeRange):
-        return {
-            'start': value.lower,
-            'end': value.upper
-        }
-    elif isinstance(value, list) \
-            and len(value) > 0 \
-            and isinstance(value[0], DateTimeRange):
-        return list(map(lambda d: {'start': d.lower,
-                                   'end': d.upper},
-                        value))
-    elif isinstance(value, DateTimes):
-        return [format_into_ISO_8601(v) for v in value.datetimes]
-
-    else:
-        return value
-
-
-def format_into_ISO_8601(value):
-    return value.isoformat() + "Z"
-
-
-class PcObject():
+class PcObject(Model):
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
@@ -170,72 +142,63 @@ class PcObject():
     def dump(self):
         pprint(vars(self))
 
-    def populate_from_dict(self, dct, skipped_keys=[]):
+    def populate_from_dict(self, data: dict, skipped_keys: List[str] = []):
         self._check_not_soft_deleted()
+        columns = self.__class__.__table__.columns._data
+        keys_to_populate = set(columns) - set(['id', 'deleted'] + skipped_keys)
 
-        data = dct.copy()
-        if data.__contains__('id'):
-            del data['id']
+        for key in keys_to_populate:
+            column = columns[key]
 
-        cols = self.__class__.__table__.columns._data
-        for key in data.keys():
-            if (key == 'deleted') or (key in skipped_keys):
-                continue
+            value = _dehumanize_if_needed(data, key)
 
-            if cols.__contains__(key):
-                col = cols[key]
-                if key.endswith('Id'):
-                    value = dehumanize(data.get(key))
-                else:
-                    value = data.get(key)
-
-                if isinstance(value, str):
-                    if isinstance(col.type, Integer):
-                        self._try_to_set_attribute_with_decimal_value(col, key, value, 'integer')
-                    elif isinstance(col.type, Float) or isinstance(col.type, Numeric):
-                        self._try_to_set_attribute_with_decimal_value(col, key, value, 'float')
-                    elif isinstance(col.type, String):
-                        setattr(self, key, value.strip() if value else value)
-                    elif isinstance(col.type, DateTime):
-                        self._try_to_set_attribute_with_deserialized_datetime(col, key, value)
-                elif not isinstance(value, datetime) and isinstance(col.type, DateTime):
-                    self._try_to_set_attribute_with_deserialized_datetime(col, key, value)
-                else:
-                    setattr(self, key, value)
+            if isinstance(value, str):
+                if isinstance(column.type, Integer):
+                    self._try_to_set_attribute_with_decimal_value(column, key, value, 'integer')
+                elif isinstance(column.type, Float) or isinstance(column.type, Numeric):
+                    self._try_to_set_attribute_with_decimal_value(column, key, value, 'float')
+                elif isinstance(column.type, String):
+                    setattr(self, key, value.strip() if value else value)
+                elif isinstance(column.type, DateTime):
+                    self._try_to_set_attribute_with_deserialized_datetime(column, key, value)
+            elif not isinstance(value, datetime) and isinstance(column.type, DateTime):
+                self._try_to_set_attribute_with_deserialized_datetime(column, key, value)
+            else:
+                setattr(self, key, value)
 
     def errors(self):
         api_errors = ApiErrors()
-        data = self.__class__.__table__.columns._data
-        for key in data.keys():
-            col = data[key]
-            val = getattr(self, key)
-            if not isinstance(col, Column):
+        columns = self.__class__.__table__.columns._data
+        for key in columns.keys():
+            column = columns[key]
+            value = getattr(self, key)
+            if not isinstance(column, Column):
                 continue
-            if not col.nullable \
-                    and not col.foreign_keys \
-                    and not col.primary_key \
-                    and col.default is None \
-                    and val is None:
+            if not column.nullable \
+                    and not column.foreign_keys \
+                    and not column.primary_key \
+                    and column.default is None \
+                    and value is None:
                 api_errors.addError(key, 'Cette information est obligatoire')
-            if val is None:
+            if value is None:
                 continue
-            if (isinstance(col.type, String) or isinstance(col.type, CHAR)) \
-                    and not isinstance(col.type, sqlalchemy.Enum) \
-                    and not isinstance(val, str):
+            if (isinstance(column.type, String) or isinstance(column.type, CHAR)) \
+                    and not isinstance(column.type, sqlalchemy.Enum) \
+                    and not isinstance(value, str):
                 api_errors.addError(key, 'doit être une chaîne de caractères')
-            if (isinstance(col.type, String) or isinstance(col.type, CHAR)) \
-                    and isinstance(val, str) \
-                    and col.type.length \
-                    and len(val) > col.type.length:
+            if (isinstance(column.type, String) or isinstance(column.type, CHAR)) \
+                    and isinstance(value, str) \
+                    and column.type.length \
+                    and len(value) > column.type.length:
                 api_errors.addError(key,
                                     'Vous devez saisir moins de '
-                                    + str(col.type.length)
+                                    + str(column.type.length)
                                     + ' caractères')
-            if isinstance(col.type, Integer) \
-                    and not isinstance(val, int):
+            if isinstance(column.type, Integer) \
+                    and not isinstance(value, int):
                 api_errors.addError(key, 'doit être un entier')
-            if isinstance(col.type, Float) \
-                    and not isinstance(val, float):
+            if isinstance(column.type, Float) \
+                    and not isinstance(value, float):
                 api_errors.addError(key, 'doit être un nombre')
         return api_errors
 
@@ -341,29 +304,13 @@ class PcObject():
             raise api_errors
 
     @staticmethod
-    def delete(model):
+    def delete(model: Model):
         db.session.delete(model)
         db.session.commit()
 
-    def _deserialize_datetime(self, key, value):
-        if value is None:
-            return None
-
-        valid_patterns = ['%Y-%m-%dT%H:%M:%S.%fZ', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%dT%H:%M:%SZ']
-        datetime_value = None
-
-        for pattern in valid_patterns:
-            if match_format(value, pattern):
-                datetime_value = datetime.strptime(value, pattern)
-
-        if not datetime_value:
-            raise TypeError('Invalid value for %s: %r' % (key, value), 'datetime', key)
-
-        return datetime_value
-
     def _try_to_set_attribute_with_deserialized_datetime(self, col, key, value):
         try:
-            datetime_value = self._deserialize_datetime(key, value)
+            datetime_value = _deserialize_datetime(key, value)
             setattr(self, key, datetime_value)
         except TypeError:
             error = DateTimeCastError()
@@ -381,3 +328,57 @@ class PcObject():
     def _check_not_soft_deleted(self):
         if self.is_soft_deleted():
             raise DeletedRecordException
+
+
+def serialize(value):
+    if isinstance(value, sqlalchemy.Enum):
+        return value.name
+    elif isinstance(value, enum.Enum):
+        return value.value
+    elif isinstance(value, datetime):
+        return _format_into_ISO_8601(value)
+    elif isinstance(value, DateTimeRange):
+        return {
+            'start': value.lower,
+            'end': value.upper
+        }
+    elif isinstance(value, list) \
+            and len(value) > 0 \
+            and isinstance(value[0], DateTimeRange):
+        return list(map(lambda d: {'start': d.lower,
+                                   'end': d.upper},
+                        value))
+    elif isinstance(value, DateTimes):
+        return [_format_into_ISO_8601(v) for v in value.datetimes]
+
+    else:
+        return value
+
+
+def _dehumanize_if_needed(data: dict, key: str) -> Any:
+    if key.endswith('Id'):
+        value = dehumanize(data.get(key))
+    else:
+        value = data.get(key)
+    return value
+
+
+def _format_into_ISO_8601(value):
+    return value.isoformat() + "Z"
+
+
+def _deserialize_datetime(key, value):
+    if value is None:
+        return None
+
+    valid_patterns = ['%Y-%m-%dT%H:%M:%S.%fZ', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%dT%H:%M:%SZ']
+    datetime_value = None
+
+    for pattern in valid_patterns:
+        if match_format(value, pattern):
+            datetime_value = datetime.strptime(value, pattern)
+
+    if not datetime_value:
+        raise TypeError('Invalid value for %s: %r' % (key, value), 'datetime', key)
+
+    return datetime_value

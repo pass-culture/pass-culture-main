@@ -13,7 +13,6 @@ from sqlalchemy import BigInteger, \
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
-from models.db import Model
 from models.pc_object import PcObject
 from models.versioned_mixin import VersionedMixin
 from utils.human_ids import humanize
@@ -21,7 +20,6 @@ from utils.string_processing import format_decimal
 
 
 class Booking(PcObject,
-              Model,
               VersionedMixin):
     id = Column(BigInteger,
                 primary_key=True,

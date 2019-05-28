@@ -1,8 +1,9 @@
 """ versioned mixin """
-from sqlalchemy import text
 from postgresql_audit.flask import versioning_manager
+from sqlalchemy import text
 
 from models.db import db
+
 
 class VersionedMixin(object):
     __versioned__ = {}

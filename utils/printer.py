@@ -10,7 +10,7 @@ from utils.inflect_engine import inflect_engine
 from utils.string_processing import get_camel_string
 
 
-def listify (query, include, resolve=None, **kwargs):
+def listify(query, include, resolve=None, **kwargs):
     if resolve is None:
         resolve = lambda obj: obj
     if isinstance(query, collections.Iterable):
@@ -19,9 +19,12 @@ def listify (query, include, resolve=None, **kwargs):
         elements = [resolve(query.as_dict(include=include, **kwargs))]
     return elements
 
+
 # helpful
 """ magic call like get('stocks', Stock.price > 10, lambda obj: obj['id']) """
-def get(plural_model_name, filter = None, resolve = None, **kwargs):
+
+
+def get(plural_model_name, filter=None, resolve=None, **kwargs):
     if resolve is None:
         resolve = lambda obj: obj
     model_name = get_camel_string(inflect_engine.singular_noun(plural_model_name, 1))
@@ -29,7 +32,7 @@ def get(plural_model_name, filter = None, resolve = None, **kwargs):
     query = model.query.filter() if filter is None else model.query.filter(filter)
     include = getattr(includes, model_name[0].upper() + model_name[1:] + '_INCLUDES')
     return listify(query, include, resolve, **kwargs)
-    #[resolve(obj.as_dict(include=include, **kwargs)) for obj in query]
+
 
 class BytesEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -40,6 +43,9 @@ class BytesEncoder(json.JSONEncoder):
         # Let the base class default method raise the TypeErro
         return json.JSONEncoder.default(self, obj)
 
+
 """printify(app.get('recommendations', None, get_content, cut=10)[0])"""
-def printify (elements):
+
+
+def printify(elements):
     print(json.dumps(elements, cls=BytesEncoder, indent=2))

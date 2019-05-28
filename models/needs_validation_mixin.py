@@ -1,6 +1,8 @@
 """ needs validation mixin """
 import secrets
+
 from sqlalchemy import Column, String
+
 
 class NeedsValidationMixin(object):
     validationToken = Column(String(27),

@@ -1,13 +1,12 @@
 from datetime import datetime
 
-from sqlalchemy import BigInteger, CheckConstraint, Column, DateTime, desc, ForeignKey, String
+from sqlalchemy import BigInteger, Column, DateTime, desc, ForeignKey, String
 from sqlalchemy import Text, Integer, ARRAY, Boolean, false, cast, TEXT, Index
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.functions import coalesce
 
 from domain.keywords import create_tsvector
 from models import ExtraDataMixin
-from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.offer_type import ThingType, EventType, ProductType
 from models.pc_object import PcObject
@@ -18,7 +17,6 @@ from utils.date import DateTimes
 
 
 class Offer(PcObject,
-            Model,
             ExtraDataMixin,
             DeactivableMixin,
             ProvidableMixin):

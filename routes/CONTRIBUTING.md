@@ -32,7 +32,7 @@ def create_event_occurrence():
         .first_or_404()
 
     occurrence = EventOccurrence(from_dict=request.json)
-    PcObject.check_and_save(occurrence)
+    PcObject.save(occurrence)
     return jsonify(occurrence.as_dict(include=EVENT_OCCURRENCE_INCLUDES)), 201
 ```
 

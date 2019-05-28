@@ -48,7 +48,7 @@ class FindUserActivationBookingTest:
         activation_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.ACTIVATION)
         activation_stock = create_stock_from_offer(activation_offer, available=200, price=0)
         activation_booking = create_booking(user, stock=activation_stock, venue=venue_online)
-        PcObject.check_and_save(activation_booking)
+        PcObject.save(activation_booking)
 
         # when
         booking = find_user_activation_booking(user)

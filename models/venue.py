@@ -13,7 +13,6 @@ from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
 from domain.keywords import create_tsvector
-from models.db import Model
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.needs_validation_mixin import NeedsValidationMixin
@@ -46,8 +45,7 @@ class Venue(PcObject,
             HasAddressMixin,
             ProvidableMixin,
             VersionedMixin,
-            NeedsValidationMixin,
-            Model):
+            NeedsValidationMixin):
     id = Column(BigInteger, primary_key=True)
 
     name = Column(String(140), nullable=False)

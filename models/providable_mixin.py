@@ -1,16 +1,17 @@
 """ providable mixin """
 from datetime import datetime
+
 from sqlalchemy import BigInteger, \
     CheckConstraint, \
     Column, \
     DateTime, \
     ForeignKey, \
     String
-from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import relationship
 
-from models.versioned_mixin import VersionedMixin
 from models.api_errors import ApiErrors
+from models.versioned_mixin import VersionedMixin
 
 
 class ProvidableMixin(VersionedMixin):

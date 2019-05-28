@@ -1,26 +1,25 @@
 """ mediation model """
-from datetime import datetime
 import os
+from datetime import datetime
 from pathlib import Path
-from sqlalchemy import Column,\
-                       BigInteger,\
-                       CheckConstraint,\
-                       DateTime,\
-                       ForeignKey,\
-                       Integer,\
-                       Text,\
-                       String
+
+from sqlalchemy import Column, \
+    BigInteger, \
+    CheckConstraint, \
+    DateTime, \
+    ForeignKey, \
+    Integer, \
+    Text, \
+    String
 from sqlalchemy.orm import relationship
 
 from models import DeactivableMixin
-from models.db import Model
 from models.has_thumb_mixin import HasThumbMixin
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 
 
 class Mediation(PcObject,
-                Model,
                 HasThumbMixin,
                 ProvidableMixin,
                 DeactivableMixin):

@@ -1,5 +1,6 @@
 """ has address mixin """
 import re
+
 from sqlalchemy import Column, String
 
 from models.api_errors import ApiErrors

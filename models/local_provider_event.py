@@ -1,11 +1,12 @@
 """ provider_event model """
 import enum
 from datetime import datetime
+
 from sqlalchemy import BigInteger, Column, DateTime, Enum, ForeignKey, String
 from sqlalchemy.orm import relationship
 
-from models.db import Model
 from models.pc_object import PcObject
+
 
 class LocalProviderEventType(enum.Enum):
     SyncError = "SyncError"
@@ -17,8 +18,7 @@ class LocalProviderEventType(enum.Enum):
     SyncEnd = "SyncEnd"
 
 
-class LocalProviderEvent(PcObject,
-                         Model):
+class LocalProviderEvent(PcObject):
 
     id = Column(BigInteger,
                 primary_key=True,

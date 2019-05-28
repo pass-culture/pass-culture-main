@@ -1,6 +1,7 @@
 """ stock """
 from datetime import datetime, timedelta
 from pprint import pformat
+
 from sqlalchemy import BigInteger, \
     CheckConstraint, \
     Column, \
@@ -11,16 +12,15 @@ from sqlalchemy import BigInteger, \
     Integer, \
     Numeric
 from sqlalchemy.orm import relationship
-from models.db import Model
+
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.soft_deletable_mixin import SoftDeletableMixin
-from utils.logger import logger
 from models.versioned_mixin import VersionedMixin
+from utils.logger import logger
 
 
 class Stock(PcObject,
-            Model,
             ProvidableMixin,
             SoftDeletableMixin,
             VersionedMixin):

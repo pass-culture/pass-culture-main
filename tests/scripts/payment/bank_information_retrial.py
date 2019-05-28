@@ -46,7 +46,7 @@ class RetryLinkedPaymentsTest:
             assert payment.currentStatus.status == TransactionStatus.RETRY
 
     @clean_database
-    def test_does_not_call_check_and_save_if_no_relevant_payments(self, app):
+    def test_does_not_call_save_if_no_relevant_payments(self, app):
         # Given
         offerer = create_offerer()
         other_offerer = create_offerer(siren='987654321')

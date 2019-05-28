@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
-from models.db import Model, db
+from models.db import db
 from models.has_thumb_mixin import HasThumbMixin
 from models.needs_validation_mixin import NeedsValidationMixin
 from models.pc_object import PcObject
@@ -16,7 +16,6 @@ from models.user_offerer import UserOfferer, RightsType
 
 
 class User(PcObject,
-           Model,
            HasThumbMixin,
            NeedsValidationMixin
            ):
@@ -103,10 +102,10 @@ class User(PcObject,
     def is_anonymous(self):
         return False
 
-    def populate_from_dict(self, dct):
-        super(User, self).populate_from_dict(dct)
-        if dct.__contains__('password') and dct['password']:
-            self.setPassword(dct['password'])
+    def populate_from_dict(self, data):
+        super(User, self).populate_from_dict(data)
+        if data.__contains__('password') and data['password']:
+            self.setPassword(data['password'])
 
     def setPassword(self, newpass):
         self.clearTextPassword = newpass

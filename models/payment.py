@@ -10,12 +10,11 @@ from sqlalchemy import BigInteger, \
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship, backref
 
-from models.db import Model
 from models.payment_status import TransactionStatus, PaymentStatus
 from models.pc_object import PcObject
 
 
-class Payment(PcObject, Model):
+class Payment(PcObject):
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)

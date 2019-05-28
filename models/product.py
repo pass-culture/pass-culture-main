@@ -1,9 +1,7 @@
 """ model product """
 import enum
-from enum import Enum
 
-from sqlalchemy import Binary, \
-    BigInteger, \
+from sqlalchemy import BigInteger, \
     Boolean, \
     Column, \
     Index, \
@@ -17,12 +15,12 @@ from sqlalchemy.sql.expression import cast, false
 from sqlalchemy.sql.functions import coalesce
 
 from domain.keywords import create_tsvector
-from models.offer_type import EventType, ThingType
-from models.db import Model
 from models.extra_data_mixin import ExtraDataMixin
 from models.has_thumb_mixin import HasThumbMixin
+from models.offer_type import EventType, ThingType
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
+
 
 class BookFormat(enum.Enum):
     AudiobookFormat = "AudiobookFormat"
@@ -31,7 +29,6 @@ class BookFormat(enum.Enum):
     Paperback = "Paperback"
 
 class Product(PcObject,
-              Model,
               ExtraDataMixin,
               HasThumbMixin,
               ProvidableMixin):

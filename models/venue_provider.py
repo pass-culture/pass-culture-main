@@ -2,7 +2,6 @@
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String
 from sqlalchemy.orm import relationship
 
-from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
@@ -10,8 +9,7 @@ from models.providable_mixin import ProvidableMixin
 
 class VenueProvider(PcObject,
                     ProvidableMixin,
-                    DeactivableMixin,
-                    Model):
+                    DeactivableMixin):
 
     venueId = Column(BigInteger,
                      ForeignKey('venue.id'),

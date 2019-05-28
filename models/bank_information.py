@@ -2,14 +2,11 @@ from schwifty import IBAN, BIC
 from sqlalchemy import Column, BigInteger, ForeignKey, String, Integer
 from sqlalchemy.orm import relationship, backref
 
-from models.db import Model
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 
 
-class BankInformation(PcObject,
-                      Model,
-                      ProvidableMixin):
+class BankInformation(PcObject, ProvidableMixin):
     offererId = Column(BigInteger,
                        ForeignKey("offerer.id"),
                        index=True,

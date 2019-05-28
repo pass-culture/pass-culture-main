@@ -22,7 +22,7 @@ print(title);
 #thumb_request = requests.get(tcn_info['poster'])
 #if thumb_request.status_code == 200:
 #    item.thumb = thumb_request.content
-#PcObject.check_and_save(item)
+#PcObject.save(item)
 
 #[
 #  {
