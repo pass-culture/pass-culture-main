@@ -1,3 +1,5 @@
+from local_providers.demarches_simplifiees_bank_information_without_siret import \
+    VenueWithoutSIRETBankInformationProvider
 from local_providers.openagenda_events import OpenAgendaEvents
 # from local_providers.openagenda_stocks  import OpenAgendaStocks FOR DEMO PURPOSES ONLY
 from local_providers.titelive_stocks import TiteLiveStocks
@@ -16,5 +18,6 @@ __all__ = (
     'TiteLiveThingThumbs',
     'BankInformationProvider',
     'InitTiteLiveThings',
-    'InitTiteLiveThingDescriptions'
+    'InitTiteLiveThingDescriptions',
+    'VenueWithoutSIRETBankInformationProvider'
 )

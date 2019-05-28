@@ -16,7 +16,7 @@ def find_by_id_and_table_name(object_id, table_name):
     return result
 
 
-def find_latest_sync_part_end_event(provider):
+def find_latest_sync_part_end_event(provider) -> LocalProviderEvent:
     return LocalProviderEvent \
         .query \
         .filter((LocalProviderEvent.provider == provider) &
@@ -26,7 +26,16 @@ def find_latest_sync_part_end_event(provider):
         .first()
 
 
-def find_latest_sync_start_event(provider):
+def find_latest_sync_end_event(provider) -> LocalProviderEvent:
+    return LocalProviderEvent \
+        .query \
+        .filter((LocalProviderEvent.provider == provider) &
+                (LocalProviderEvent.type == LocalProviderEventType.SyncEnd)) \
+        .order_by(LocalProviderEvent.date.desc()) \
+        .first()
+
+
+def find_latest_sync_start_event(provider) -> LocalProviderEvent:
     return LocalProviderEvent \
         .query \
         .filter((LocalProviderEvent.provider == provider) &
