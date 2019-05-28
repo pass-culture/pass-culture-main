@@ -12,7 +12,7 @@ import ProfilePage from '../components/pages/profile'
 import TypeFormPage from '../components/pages/typeform/TypeFormContainer'
 import SearchContainer from '../components/pages/search/SearchContainer'
 import SigninContainer from '../components/pages/signin/SigninContainer'
-import SignupPage from '../components/pages/SignupPage'
+import SignupContainer from '../components/pages/signup/SignupContainer'
 
 const routes = [
   {
@@ -35,7 +35,7 @@ const routes = [
     title: 'Connexion',
   },
   {
-    component: SignupPage,
+    component: SignupContainer,
     path: '/inscription',
     title: 'Inscription',
   },

@@ -16,6 +16,7 @@ const InputField = ({
   name,
   placeholder,
   required,
+  sublabel,
 }) => {
   const validateFunc =
     required && typeof required === 'function'
@@ -28,7 +29,13 @@ const InputField = ({
       render={({ input, meta }) => (
         <p className={`${className}`}>
           <label htmlFor={name} className="pc-final-form-text">
-            {label && <InputLabel label={label} required={required} />}
+            {label && (
+              <InputLabel
+                label={label}
+                required={required}
+                sublabel={sublabel}
+              />
+            )}
             <span className="pc-final-form-inner">
               <input
                 {...input}
@@ -56,6 +63,7 @@ InputField.defaultProps = {
   label: '',
   placeholder: 'Veuillez saisir une valeur',
   required: false,
+  sublabel: null,
 }
 
 InputField.propTypes = {
@@ -66,6 +74,7 @@ InputField.propTypes = {
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
   required: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
+  sublabel: PropTypes.string,
 }
 
 export default InputField

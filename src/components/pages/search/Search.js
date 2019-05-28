@@ -4,8 +4,6 @@ import React, { Fragment, PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { assignData, requestData } from 'redux-saga-data'
 
-import BackButton from '../../layout/BackButton'
-import { Icon } from '../../layout/Icon'
 import Footer from './Footer'
 import Header from './Header'
 import NavByOfferTypeContainer from './searchByType/NavByOfferTypeContainer'
@@ -19,6 +17,8 @@ import {
   isInitialQueryWithoutFilters,
   translateBrowserUrlToApiUrl,
 } from './utils'
+import BackButton from '../../layout/BackButton'
+import Icon from '../../layout/Icon'
 
 class Search extends PureComponent {
   constructor(props) {

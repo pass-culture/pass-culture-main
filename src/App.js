@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import Helmet from 'react-helmet'
 import { compose } from 'redux'
@@ -6,11 +6,11 @@ import { withRouter, matchPath, Route } from 'react-router-dom'
 
 import routes from './utils/routes'
 import MainMenu from './components/menu'
-import Debug from './components/layout/Debug'
+import DebugContainer from './components/layout/Debug/DebugContainer'
 import Splash from './components/layout/Splash'
 import Overlay from './components/layout/Overlay'
 import Notifications from './components/layout/notifications'
-import ErrorCatcher from './components/layout/error-catcher'
+import ErrorCatcherContainer from './components/layout/ErrorCatcher/ErrorCatcherContainer'
 import { SharePopin } from './components/share/SharePopin'
 import { getReactRoutes } from './utils/routes-utils'
 import { ROOT_PATH, IS_DEV, PROJECT_NAME } from './utils/config'
@@ -36,15 +36,15 @@ const App = ({ location, children }) => {
   const bodyClass = getBodyClass(currentRouteObj)
   const pageTitle = getPageTitle(currentRouteObj)
   return (
-    <React.Fragment>
+    <Fragment>
       <Helmet>
         <body className={`web ${bodyClass}`} />
         <title>
           {`${pageTitle}${PROJECT_NAME}${(IS_DEV && ' | DEV') || ''}`}
         </title>
       </Helmet>
-      <Debug className="app is-relative">
-        <ErrorCatcher>
+      <DebugContainer className="app is-relative">
+        <ErrorCatcherContainer>
           {/* TODO: mettre ici le composant from password */}
           {children}
           <Overlay />
@@ -58,9 +58,9 @@ const App = ({ location, children }) => {
             src={`${ROOT_PATH}/beta.png`}
             srcSet={`${ROOT_PATH}/beta@2x.png`}
           />
-        </ErrorCatcher>
-      </Debug>
-    </React.Fragment>
+        </ErrorCatcherContainer>
+      </DebugContainer>
+    </Fragment>
   )
 }
 

@@ -1,4 +1,4 @@
-import { Logger } from 'pass-culture-shared'
+import logger from '../utils/logger'
 import { IS_PROD, IS_LOCALHOST, ROOT_PATH } from '../utils/config'
 
 // In production, we register a service worker to serve assets from local cache.
@@ -32,14 +32,14 @@ function registerValidSW(swUrl) {
                 window.location.reload()
               }
             } else {
-              Logger.log('Content is cached for offline use.')
+              logger.log('Content is cached for offline use.')
             }
           }
         }
       }
     })
     .catch(error => {
-      Logger.error('Error during service worker registration:', error)
+      logger.error('Error during service worker registration:', error)
     })
 }
 
@@ -64,7 +64,7 @@ function checkValidServiceWorker(swUrl) {
       }
     })
     .catch(() => {
-      Logger.log(
+      logger.log(
         'No internet connection found. App is running in offline mode.'
       )
     })

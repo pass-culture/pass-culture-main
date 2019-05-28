@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import './utils/icon'
 import './styles/index.scss'
 import 'typeface-barlow'
 

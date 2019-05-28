@@ -4,8 +4,8 @@ import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 
 import SearchResultItemContainer from './SearchResultItemContainer'
-import Spinner from '../../layout/Spinner'
 import { searchResultsTitle } from './utils'
+import Spinner from '../../layout/Spinner'
 
 class SearchResults extends PureComponent {
   constructor() {

@@ -1,21 +1,21 @@
-import { Logger } from 'pass-culture-shared'
+import logger from './logger'
 import {
   setGeolocationPosition,
   setGeolocationWatchId,
 } from '../reducers/geolocation'
 
 const initGeolocation = store => {
-  Logger.log('Geoloc queried')
+  logger.log('Geoloc queried')
   if (!navigator.geolocation || !navigator.geolocation.watchPosition) {
-    Logger.log('No Geoloc here')
+    logger.log('No Geoloc here')
     return
   }
   const watchId = navigator.geolocation.watchPosition(
     position => {
-      Logger.log('Geoloc received', position)
+      logger.log('Geoloc received', position)
       store.dispatch(setGeolocationPosition(position.coords))
     },
-    err => Logger.warn('Could not get geoloc', err),
+    err => logger.warn('Could not get geoloc', err),
     {
       enableHighAccuracy: false,
       maximumAge: 10 * 60 * 1000, // 10 minutes

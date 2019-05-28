@@ -1,4 +1,5 @@
-import { pluralize, getObjectWithMappedKeys } from 'pass-culture-shared'
+import { pluralize } from 'react-final-form-utils'
+import { getObjectWithMappedKeys } from 'with-query-router'
 
 import { getTimezone } from '../../../utils/timezone'
 import { isEmpty } from '../../../utils/strings'

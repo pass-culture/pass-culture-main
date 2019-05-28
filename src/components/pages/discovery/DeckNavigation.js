@@ -110,7 +110,11 @@ export class RawDeckNavigation extends React.PureComponent {
                     onDragLeave={flipHandler}
                     className="button to-recto"
                   >
-                    <Icon svg="ico-slideup-w" alt="Plus d'infos" />
+                    <Icon
+                      className=" "
+                      alt="Plus d'infos"
+                      svg="ico-slideup-w"
+                    />
                   </button>
                   <div
                     className="clue"

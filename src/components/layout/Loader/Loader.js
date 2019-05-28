@@ -1,10 +1,9 @@
 import React from 'react'
-import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import { Icon } from 'pass-culture-shared'
 import { Transition } from 'react-transition-group'
 
-import NavigationFooter from './NavigationFooter'
+import Icon from '../Icon'
+import NavigationFooter from '../NavigationFooter'
 
 const duration = 500
 
@@ -20,7 +19,7 @@ const transitionStyles = {
   exited: { display: 'none', visibility: 'none' },
 }
 
-export class RawLoader extends React.PureComponent {
+class Loader extends React.PureComponent {
   constructor() {
     super()
     this.state = { isFirstLoad: true }
@@ -86,9 +85,7 @@ export class RawLoader extends React.PureComponent {
               {isLoading && (
                 <Icon draggable={false} svg="ico-loading-card" alt="" />
               )}
-              <h2 className="fs20">
-                {this.renderMessage()}
-              </h2>
+              <h2 className="fs20">{this.renderMessage()}</h2>
             </div>
             {showFooter && (
               <NavigationFooter
@@ -103,16 +100,16 @@ export class RawLoader extends React.PureComponent {
   }
 }
 
-RawLoader.defaultProps = {
+Loader.defaultProps = {
   hasError: false,
   isEmpty: false,
 }
 
-RawLoader.propTypes = {
+Loader.propTypes = {
   hasError: PropTypes.bool,
   isEmpty: PropTypes.bool,
   isLoading: PropTypes.bool.isRequired,
   match: PropTypes.object.isRequired,
 }
 
-export const Loader = withRouter(RawLoader)
+export default Loader

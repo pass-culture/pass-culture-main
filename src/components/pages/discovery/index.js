@@ -10,7 +10,7 @@ import DeckContainer from './deck/DeckContainer'
 import BookingContainer from '../../booking/BookingContainer'
 import { withRedirectToSigninOrTypeformAfterLogin } from '../../hocs'
 import BackButton from '../../layout/BackButton'
-import { Loader } from '../../layout/Loader'
+import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import Footer from '../../layout/Footer'
 import selectCurrentRecommendation from '../../../selectors/currentRecommendation'
 import {
@@ -160,7 +160,11 @@ export class RawDiscoveryPage extends React.PureComponent {
           )}
           <Footer id="deck-footer" borderTop />
         </main>
-        <Loader isEmpty={isEmpty} hasError={hasError} isLoading={isLoading} />
+        <LoaderContainer
+          isEmpty={isEmpty}
+          hasError={hasError}
+          isLoading={isLoading}
+        />
       </Fragment>
     )
   }

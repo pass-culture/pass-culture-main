@@ -1,17 +1,17 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
+  import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators, compose } from 'redux'
 import { requestData } from 'redux-saga-data'
-import get from 'lodash.get'
 
 import MyBookingItemContainer from './MyBookingItemContainer'
 import NoBookingView from './NoBookingView'
 import { mapStateToProps } from './connect'
 import { withRedirectToSigninOrTypeformAfterLogin } from '../../hocs'
-import { Loader } from '../../layout/Loader'
+import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import PageHeader from '../../layout/PageHeader'
 import { toggleMainMenu } from '../../../reducers/menu'
 import NavigationFooter from '../../layout/NavigationFooter'
@@ -100,7 +100,11 @@ export class RawMyBookingsPage extends Component {
           </React.Fragment>
         )}
         {!isEmpty && (
-          <Loader isEmpty={isEmpty} hasError={hasError} isLoading={isLoading} />
+          <LoaderContainer
+            isEmpty={isEmpty}
+            hasError={hasError}
+            isLoading={isLoading}
+          />
         )}
       </div>
     )

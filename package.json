@@ -57,6 +57,7 @@
     "react-dotdotdot": "^1.2.3",
     "react-draggable": "augnustin/react-draggable#pass-culture",
     "react-final-form": "^3.6.5",
+    "react-final-form-utils": "1.3.5",
     "react-helmet": "^5.2.0",
     "react-icons": "^2.2.7",
     "react-infinite-scroller": "^1.2.2",

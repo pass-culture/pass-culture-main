@@ -1,6 +1,6 @@
 /* eslint
 react/jsx-one-expression-per-line: 0 */
-import React from 'react'
+import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
@@ -25,18 +25,20 @@ const CheckBoxField = ({ children, className, name, required }) => {
       type="checkbox"
       validate={validateFunc || undefined}
       render={({ input, meta }) => (
-        <p className={`${className}`}>
-          <span className={className}>
-            <input
-              {...input}
-              type="checkbox"
-              className="input no-background"
-              required={!!required}
-            />
-            {children}
-            <FormError meta={meta} />
-          </span>
-        </p>
+        <Fragment>
+          <p className={`${className}`}>
+            <span className={className}>
+              <input
+                {...input}
+                type="checkbox"
+                className="input no-background"
+                required={!!required}
+              />
+              {children}
+            </span>
+          </p>
+          <FormError meta={meta} />
+        </Fragment>
       )}
     />
   )

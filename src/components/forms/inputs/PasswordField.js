@@ -30,6 +30,7 @@ class PasswordField extends React.PureComponent {
       name,
       placeholder,
       required,
+      sublabel,
     } = this.props
     const { hidden } = this.state
     const status = hidden ? '' : '-close'
@@ -47,7 +48,13 @@ class PasswordField extends React.PureComponent {
         render={({ input, meta }) => (
           <p className={`${className}`}>
             <label htmlFor={id || name} className="pc-final-form-password">
-              {label && <InputLabel label={label} required={required} />}
+              {label && (
+                <InputLabel
+                  label={label}
+                  required={required}
+                  sublabel={sublabel}
+                />
+              )}
               {help && <InputHelp label={help} />}
               <span className="pc-final-form-inner">
                 <input
@@ -91,6 +98,7 @@ PasswordField.defaultProps = {
   label: 'Saisissez Votre mot de passe',
   placeholder: '',
   required: false,
+  sublabel: null,
 }
 
 PasswordField.propTypes = {
@@ -103,6 +111,7 @@ PasswordField.propTypes = {
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
   required: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
+  sublabel: PropTypes.string,
 }
 
 export default PasswordField

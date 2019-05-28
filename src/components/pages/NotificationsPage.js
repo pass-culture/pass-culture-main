@@ -5,11 +5,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import {
-  selectCurrentUser,
-  withRedirectToSigninOrTypeformAfterLogin,
-} from '../hocs'
-import Loader from '../layout/Loader'
+import { selectCurrentUser, withRedirectToSigninOrTypeformAfterLogin } from '../hocs'
+import LoaderContainer from '../layout/Loader/LoaderContainer'
 import PageHeader from '../layout/PageHeader'
 import NavigationFooter from '../layout/NavigationFooter'
 
@@ -26,7 +23,7 @@ const NotificationsPage = ({ currentUser }) => {
           <NavigationFooter theme="white" className="dotted-top-primary" />
         </React.Fragment>
       )}
-      <Loader isLoading={!isCurrentUserLoaded} />
+      <LoaderContainer isLoading={!isCurrentUserLoaded} />
     </div>
   )
 }

@@ -1,8 +1,8 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-import get from 'lodash.get'
 import moment from 'moment'
-import { capitalize } from 'pass-culture-shared'
+import get from 'lodash.get'
+import { capitalize } from 'react-final-form-utils'
 import { connect } from 'react-redux'
 
 import { getTimezone } from '../../../utils/timezone'

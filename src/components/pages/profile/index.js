@@ -1,17 +1,17 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
-import { compose } from 'redux'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Route, Switch } from 'react-router-dom'
+import { compose } from 'redux'
 
 import { config } from './config'
-import NotMatch from '../NotMatch'
-import { withRedirectToSigninOrTypeformAfterLogin } from '../../hocs'
-import { Loader } from '../../layout/Loader'
 import ProfileMainView from './ProfileMainView'
 import ProfileUpdateSuccess from './ProfileUpdateSuccess'
+import NotMatch from '../NotMatch'
+import { withRedirectToSigninOrTypeformAfterLogin } from '../../hocs'
+import LoaderContainer from '../../layout/Loader/LoaderContainer'
 
 const parseRoutesWithComponent = () => {
   const components = config.filter(o => o.component)
@@ -64,7 +64,7 @@ const ProfilePage = ({ currentUser, isCurrentUserLoaded, location }) => {
           />
         </Switch>
       )}
-      {!isCurrentUserLoaded && <Loader isLoading />}
+      {!isCurrentUserLoaded && <LoaderContainer isLoading />}
     </div>
   )
 }

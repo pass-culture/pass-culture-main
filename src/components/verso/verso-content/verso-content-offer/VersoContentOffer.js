@@ -1,14 +1,14 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import get from 'lodash.get'
-import { capitalize } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { Icon } from '../../../layout/Icon'
+import { capitalize } from 'react-final-form-utils'
 
-import { getDurationFromMinutes } from './utils'
-import { navigationLink } from '../../../../utils/geolocation'
 import VersoActionsBar from '../VersoActionsBar'
+import { getDurationFromMinutes } from './utils'
+import Icon from '../../../layout/Icon'
+import { navigationLink } from '../../../../utils/geolocation'
 
 class VersoContentOffer extends React.PureComponent {
   componentDidMount() {

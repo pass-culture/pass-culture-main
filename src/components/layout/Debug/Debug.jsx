@@ -1,13 +1,11 @@
 // Warning: this component is volontarily impure.
 // Don't use it as an example unless you know what you are doing.
 import moment from 'moment'
-import PropTypes from 'prop-types'
 import get from 'lodash.get'
-import { showModal } from 'pass-culture-shared'
+import PropTypes from 'prop-types'
 import React from 'react'
-import { connect } from 'react-redux'
 
-import '../../utils/debugInitializer'
+import '../../../utils/debugInitializer'
 
 class Debug extends React.PureComponent {
   showDebug = () => {
@@ -92,7 +90,4 @@ Debug.propTypes = {
   timeoutDuration: PropTypes.number,
 }
 
-export default connect(
-  null,
-  { dispatchShowModal: showModal }
-)(Debug)
+export default Debug

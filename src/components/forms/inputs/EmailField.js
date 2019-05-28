@@ -24,6 +24,7 @@ const EmailField = ({
   name,
   placeholder,
   required,
+  sublabel,
 }) => {
   const validateFunc =
     required && typeof required === 'function'
@@ -36,7 +37,13 @@ const EmailField = ({
       render={({ input, meta }) => (
         <p className={`${className}`}>
           <label htmlFor={id || name} className="pc-final-form-text">
-            {label && <InputLabel label={label} required={required} />}
+            {label && (
+              <InputLabel
+                label={label}
+                required={required}
+                sublabel={sublabel}
+              />
+            )}
             <span className="pc-final-form-inner">
               <input
                 {...input}
@@ -65,6 +72,7 @@ EmailField.defaultProps = {
   label: '',
   placeholder: 'Identifiant (email)',
   required: false,
+  sublabel: null,
 }
 
 EmailField.propTypes = {
@@ -76,6 +84,7 @@ EmailField.propTypes = {
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
   required: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
+  sublabel: PropTypes.string,
 }
 
 export default EmailField
