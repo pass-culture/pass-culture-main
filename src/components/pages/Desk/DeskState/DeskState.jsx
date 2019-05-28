@@ -1,7 +1,7 @@
 import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import PropTypes from 'prop-types'
-import { formatLocalTimeDateString } from '../../../utils/timezone'
+import { formatLocalTimeDateString } from '../../../../utils/timezone'
 
 const displayBookingDate = booking => {
   if (!booking) {
@@ -41,10 +41,6 @@ const DeskState = ({ message, level, booking }) => (
   </div>
 )
 
-DeskState.defaultProps = {
-  level: 'pending',
-}
-
 DeskState.propTypes = {
   booking: PropTypes.shape({
     date: PropTypes.string,
@@ -53,7 +49,7 @@ DeskState.propTypes = {
     venueDepartementCode: PropTypes.string,
   }),
   message: PropTypes.string.isRequired,
-  level: PropTypes.string,
+  level: PropTypes.string.isRequired,
 }
 
 export default DeskState

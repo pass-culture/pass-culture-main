@@ -3,81 +3,91 @@ import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 import Main from '../../layout/Main'
-import DeskState from './DeskState'
+import DeskState from './DeskState/DeskState'
 
-const CONFIG_CODE_LENGTH = 6
-const CONFIG_BAD_CODE_REGEX = /[^a-z0-9]/i
+const CODE_MAX_LENGTH = 6
+const CODE_REGEX_VALIDATION = /[^a-z0-9]/i
 
-const DESK_WAIT = 'DESK_WAIT'
-const DESK_TYPE = 'DESK_TYPE'
-const DESK_INVALID = 'DESK_INVALID'
-const DESK_GET_VERIFICATION = 'DESK_GET_VERIFICATION'
-const DESK_RECEIVE_VERIFICATION_USED = 'DESK_RECEIVE_VERIFICATION_USED'
-const DESK_RECEIVE_VERIFICATION_NOT_USED = 'DESK_RECEIVE_VERIFICATION_NOT_USED'
-const DESK_FAIL_VERIFICATION = 'DESK_FAIL_VERIFICATION'
-const DESK_POST_REGISTER = 'DESK_POST_REGISTER'
-const DESK_RECEIVE_REGISTER = 'DESK_RECEIVE_REGISTER'
-const DESK_FAIL_REGISTER = 'DESK_FAIL_REGISTER'
+const CODE_ENTER = 'CODE_ENTER'
+const CODE_TYPING = 'CODE_TYPING'
+
+const CODE_SYNTAX_INVALID = 'CODE_SYNTAX_INVALID'
+const CODE_ALREADY_USED = 'CODE_ALREADY_USED'
+const CODE_VERIFICATION_IN_PROGRESS = 'CODE_VERIFICATION_IN_PROGRESS'
+const CODE_VERIFICATION_SUCCESS = 'CODE_VERIFICATION_SUCCESS'
+const CODE_VERIFICATION_FAILED = 'CODE_VERIFICATION_FAILED'
+const CODE_REGISTERING_IN_PROGRESS = 'CODE_REGISTERING_IN_PROGRESS'
+const CODE_REGISTERING_SUCCESS = 'CODE_REGISTERING_SUCCESS'
+const CODE_REGISTERING_FAILED = 'CODE_REGISTERING_FAILED'
 
 class Desk extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      name: DESK_WAIT,
-      code: '',
       booking: null,
+      code: '',
+      status: CODE_ENTER,
     }
   }
 
-  getBookingDataFor = code => {
+  getBookingFromCode = code => {
     const { dispatch } = this.props
     dispatch(
       requestData({
         apiPath: `/bookings/token/${code}`,
-        handleSuccess: (state, action) => {
-          const { payload } = action
-          const booking = payload.datum
-          if (booking.isValidated === true) {
-            this.setState({ name: DESK_RECEIVE_VERIFICATION_USED })
-          } else {
-            this.setState({ name: DESK_RECEIVE_VERIFICATION_NOT_USED })
-          }
-          this.setState({ booking })
-        },
-        handleFail: (state, action) => {
-          const {
-            payload: { errors },
-          } = action
-          this.setState({
-            name: DESK_FAIL_VERIFICATION,
-            message: getRequestErrorStringFromErrors(errors),
-          })
-        },
+        handleSuccess: this.handleSuccessWhenGetBookingFromCode(),
+        handleFail: this.handleFailWhenGetBookingFromCode(),
         stateKey: 'deskBookings',
       })
     )
   }
 
-  postRegistrationFor = code => {
+  handleSuccessWhenGetBookingFromCode = () => (state, action) => {
+    const { payload } = action
+    const booking = payload.datum
+    this.setState({ booking })
+
+    booking.isValidated
+      ? this.setState({ status: CODE_ALREADY_USED })
+      : this.setState({ status: CODE_VERIFICATION_SUCCESS })
+  }
+
+  handleFailWhenGetBookingFromCode = () => (state, action) => {
+    const {
+      payload: { errors },
+    } = action
+
+    this.setState({
+      status: CODE_VERIFICATION_FAILED,
+      message: getRequestErrorStringFromErrors(errors),
+    })
+  }
+
+  validateBooking = code => {
     const { dispatch } = this.props
     dispatch(
       requestData({
         apiPath: `/bookings/token/${code}`,
-        handleSuccess: () => {
-          this.setState({ name: DESK_RECEIVE_REGISTER })
-        },
-        handleFail: (state, action) => {
-          const {
-            payload: { errors },
-          } = action
-          this.setState({
-            name: DESK_FAIL_REGISTER,
-            message: getRequestErrorStringFromErrors(errors),
-          })
-        },
+        handleFail: this.handleFailWhenValidateBooking(),
+        handleSuccess: this.handleSuccessWhenValidateBooking(),
         method: 'PATCH',
       })
     )
+  }
+
+  handleSuccessWhenValidateBooking = () => () => {
+    this.setState({ status: CODE_REGISTERING_SUCCESS })
+  }
+
+  handleFailWhenValidateBooking = () => (state, action) => {
+    const {
+      payload: { errors },
+    } = action
+
+    this.setState({
+      status: CODE_REGISTERING_FAILED,
+      message: getRequestErrorStringFromErrors(errors),
+    })
   }
 
   handleCodeChange = event => {
@@ -85,25 +95,87 @@ class Desk extends Component {
     this.setState({ code })
 
     if (code === '') {
-      return this.setState({ name: DESK_WAIT })
+      return this.setState({ status: CODE_ENTER })
     }
 
-    if (code.match(CONFIG_BAD_CODE_REGEX) !== null) {
-      return this.setState({ name: DESK_INVALID })
+    if (code.match(CODE_REGEX_VALIDATION) !== null) {
+      return this.setState({ status: CODE_SYNTAX_INVALID })
     }
 
-    if (code.length < CONFIG_CODE_LENGTH) {
-      return this.setState({ name: DESK_TYPE })
+    if (code.length < CODE_MAX_LENGTH) {
+      return this.setState({ status: CODE_TYPING })
     }
 
-    this.setState({ name: DESK_GET_VERIFICATION })
-    return this.getBookingDataFor(code)
+    this.setState({ status: CODE_VERIFICATION_IN_PROGRESS })
+
+    return this.getBookingFromCode(code)
   }
 
   handleCodeRegistration = code => {
-    this.setState({ name: DESK_POST_REGISTER, code: '' })
-    this.postRegistrationFor(code)
+    this.setState({ status: CODE_REGISTERING_IN_PROGRESS, code: '' })
+    this.validateBooking(code)
     this.input.focus()
+  }
+
+  getValuesFromStatus = status => {
+    let booking = this.state.booking
+    let message = this.state.message
+    let level
+
+    switch (status) {
+      case CODE_TYPING:
+        message = `caractères restants: ${CODE_MAX_LENGTH -
+          this.state.code.length}/${CODE_MAX_LENGTH}`
+        level = 'pending'
+        break
+      case CODE_SYNTAX_INVALID:
+        message = 'Caractères valides : de A à Z et de 0 à 9'
+        level = 'error'
+        break
+      case CODE_VERIFICATION_IN_PROGRESS:
+        message = 'Vérification...'
+        level = 'pending'
+        break
+      case CODE_ALREADY_USED:
+        message = 'Ce coupon est déjà enregistré'
+        level = 'error'
+        break
+      case CODE_VERIFICATION_SUCCESS:
+        message = 'Coupon vérifié, cliquez sur OK pour enregistrer'
+        level = 'pending'
+        break
+      case CODE_REGISTERING_IN_PROGRESS:
+        message = 'Enregistrement en cours...'
+        level = 'pending'
+        break
+      case CODE_REGISTERING_SUCCESS:
+        message = 'Enregistrement réussi!'
+        level = 'success'
+        break
+      case CODE_VERIFICATION_FAILED:
+        level = 'error'
+        break
+      case CODE_REGISTERING_FAILED:
+        level = 'error'
+        break
+      default:
+        message = 'Saisissez un code'
+        level = 'pending'
+    }
+
+    return {
+      booking,
+      level,
+      message,
+    }
+  }
+
+  renderChildComponent = () => {
+    const { booking, level, message } = this.getValuesFromStatus(
+      this.state.status
+    )
+
+    return <DeskState booking={booking} level={level} message={message} />
   }
 
   componentDidMount() {
@@ -129,81 +201,22 @@ class Desk extends Component {
           <input
             className="input is-undefined"
             type="text"
-            ref={element => (this.input = element)}
+            ref={this.getRef()}
             name="code"
             onChange={this.handleCodeChange.bind(this)}
-            maxLength={CONFIG_CODE_LENGTH}
+            maxLength={CODE_MAX_LENGTH}
             value={this.state.code}
           />
 
           <button
-            disabled={this.state.name !== DESK_RECEIVE_VERIFICATION_NOT_USED}
+            disabled={this.state.status !== CODE_VERIFICATION_SUCCESS}
             className="button"
             type="submit"
             onClick={() => this.handleCodeRegistration(this.state.code)}>
             Valider
           </button>
 
-          {this.state.name === DESK_WAIT && (
-            <DeskState message="Saisissez un code" />
-          )}
-
-          {this.state.name === DESK_TYPE && (
-            <DeskState
-              message={`caractères restants: ${CONFIG_CODE_LENGTH -
-                this.state.code.length}/${CONFIG_CODE_LENGTH}`}
-            />
-          )}
-
-          {this.state.name === DESK_INVALID && (
-            <DeskState
-              level="error"
-              message="Caractères valides : de A à Z et de 0 à 9"
-            />
-          )}
-
-          {this.state.name === DESK_GET_VERIFICATION && (
-            <DeskState message="Vérification..." />
-          )}
-
-          {this.state.name === DESK_RECEIVE_VERIFICATION_USED && (
-            <DeskState
-              booking={this.state.booking}
-              message="Ce coupon est déjà enregistré"
-              level="error"
-            />
-          )}
-
-          {this.state.name === DESK_RECEIVE_VERIFICATION_NOT_USED && (
-            <DeskState
-              booking={this.state.booking}
-              message="Coupon vérifié, cliquez sur OK pour enregistrer"
-            />
-          )}
-
-          {this.state.name === DESK_POST_REGISTER && (
-            <DeskState
-              booking={this.state.booking}
-              message="Enregistrement en cours..."
-            />
-          )}
-
-          {this.state.name === DESK_RECEIVE_REGISTER && (
-            <DeskState
-              booking={this.state.booking}
-              message="Enregistrement réussi!"
-              level="success"
-            />
-          )}
-
-          {(this.state.name === DESK_FAIL_VERIFICATION ||
-            this.state.name === DESK_FAIL_REGISTER) && (
-            <DeskState
-              booking={this.state.booking}
-              level="error"
-              message={this.state.message}
-            />
-          )}
+          {this.renderChildComponent()}
 
           <NavLink
             id="exitlink"
@@ -214,6 +227,10 @@ class Desk extends Component {
         </div>
       </Main>
     )
+  }
+
+  getRef() {
+    return element => (this.input = element)
   }
 }
 

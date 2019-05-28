@@ -2,9 +2,9 @@ import React from 'react'
 import { shallow } from 'enzyme'
 import DeskState from '../DeskState'
 import { Icon } from 'pass-culture-shared'
-import { formatLocalTimeDateString } from '../../../../utils/timezone'
+import { formatLocalTimeDateString } from '../../../../../utils/timezone'
 
-jest.mock('../../../../utils/timezone', () => ({
+jest.mock('../../../../../utils/timezone', () => ({
   formatLocalTimeDateString: jest.fn(),
 }))
 describe('src | components | pages | Desk | DeskState ', () => {
