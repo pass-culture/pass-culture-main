@@ -94,7 +94,7 @@ class TestClient:
 
     def delete(self, route: str, headers=LOCAL_ORIGIN_HEADER):
         if self.session:
-            result = self.session.delete(route)
+            result = self.session.delete(route, headers=headers)
         else:
             result = requests.delete(route, headers=headers)
 
@@ -105,7 +105,7 @@ class TestClient:
 
     def get(self, route: str, headers=LOCAL_ORIGIN_HEADER):
         if self.session:
-            result = self.session.get(route)
+            result = self.session.get(route, headers=headers)
         else:
             result = requests.get(route, headers=headers)
 
@@ -116,7 +116,7 @@ class TestClient:
 
     def post(self, route: str, json: dict = None, headers=LOCAL_ORIGIN_HEADER):
         if self.session:
-            result = self.session.post(route, json=json)
+            result = self.session.post(route, json=json, headers=headers)
         else:
             result = requests.post(route, json=json, headers=headers)
 
@@ -127,7 +127,7 @@ class TestClient:
 
     def patch(self, route: str, json: dict = None, headers=LOCAL_ORIGIN_HEADER):
         if self.session:
-            result = self.session.patch(route, json=json)
+            result = self.session.patch(route, json=json, headers=headers)
         else:
             result = requests.patch(route, json=json, headers=headers)
 
@@ -138,7 +138,7 @@ class TestClient:
 
     def put(self, route: str, json: dict = None, headers=LOCAL_ORIGIN_HEADER):
         if self.session:
-            result = self.session.put(route, json=json)
+            result = self.session.put(route, json=json, headers=headers)
         else:
             result = requests.put(route, json=json, headers=headers)
 
