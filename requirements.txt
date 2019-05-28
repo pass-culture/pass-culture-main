@@ -14,7 +14,6 @@ flask_sqlalchemy==2.3.2
 flask_script==2.0.6
 Flask-Admin==1.5.3
 freezegun==0.3.11
-geoip2==2.9.0
 gspread==3.0.1
 gunicorn==19.9.0
 inflect==2.1.0
@@ -34,7 +33,6 @@ pytest==4.0.0
 pytest-cov==2.6.1
 pytest-flask==0.14.0
 pytest-mock==1.10.0
-python-geoip==1.2
 PyMemoize==1.0.3
 python-keystoneclient==3.18.0
 python-swiftclient==3.6.0

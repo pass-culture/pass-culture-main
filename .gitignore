@@ -93,7 +93,6 @@ scalingo/import_titelive/*
 # Rope project settings
 .ropeproject
 
-geoip
 ftp_mirrors
 postgres_data
 
