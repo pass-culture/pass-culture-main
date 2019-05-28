@@ -36,7 +36,7 @@ class DeletedRecordException(Exception):
     pass
 
 
-class PcObject(Model):
+class PcObject:
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
@@ -75,7 +75,7 @@ class PcObject(Model):
             elif key == 'firstThumbDominantColor' and value:
                 result[key] = list(value)
             else:
-                result[key] = serialize(value, **options)
+                result[key] = serialize(value)
         # add the model name
         result['modelName'] = self.__class__.__name__
         if options \

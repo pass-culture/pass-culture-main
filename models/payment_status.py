@@ -9,6 +9,7 @@ from sqlalchemy import BigInteger, \
     Enum
 from sqlalchemy.orm import relationship
 
+from models.db import Model
 from models.pc_object import PcObject
 
 
@@ -21,7 +22,7 @@ class TransactionStatus(enum.Enum):
     BANNED = 'BANNED'
 
 
-class PaymentStatus(PcObject):
+class PaymentStatus(PcObject, Model):
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)

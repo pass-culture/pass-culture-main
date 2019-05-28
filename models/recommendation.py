@@ -10,10 +10,11 @@ from sqlalchemy import BigInteger, \
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
+from models.db import Model
 from models.pc_object import PcObject
 
 
-class Recommendation(PcObject):
+class Recommendation(PcObject, Model):
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)

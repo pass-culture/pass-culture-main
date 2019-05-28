@@ -7,16 +7,17 @@ from sqlalchemy import Column, DateTime, Integer, Float
 from models import PcObject, Offer, User
 from models import ThingType
 from models.api_errors import DecimalCastError, DateTimeCastError
+from models.db import Model
 from models.pc_object import serialize
 from tests.test_utils import create_stock
 
 
-class TimeInterval(PcObject):
+class TimeInterval(PcObject, Model):
     start = Column(DateTime)
     end = Column(DateTime)
 
 
-class TestPcObject(PcObject):
+class TestPcObject(PcObject, Model):
     integer_attribute = Column(Integer, nullable=True)
     float_attribute = Column(Float, nullable=True)
     date_attribute = Column(DateTime, nullable=True)

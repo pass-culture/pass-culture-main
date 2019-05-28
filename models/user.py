@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
-from models.db import db
+from models.db import db, Model
 from models.has_thumb_mixin import HasThumbMixin
 from models.needs_validation_mixin import NeedsValidationMixin
 from models.pc_object import PcObject
@@ -16,6 +16,7 @@ from models.user_offerer import UserOfferer, RightsType
 
 
 class User(PcObject,
+           Model,
            HasThumbMixin,
            NeedsValidationMixin
            ):

@@ -7,6 +7,7 @@ from sqlalchemy.sql.functions import coalesce
 
 from domain.keywords import create_tsvector
 from models import ExtraDataMixin
+from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.offer_type import ThingType, EventType, ProductType
 from models.pc_object import PcObject
@@ -17,6 +18,7 @@ from utils.date import DateTimes
 
 
 class Offer(PcObject,
+            Model,
             ExtraDataMixin,
             DeactivableMixin,
             ProvidableMixin):

@@ -15,6 +15,7 @@ from sqlalchemy.sql.expression import cast, false
 from sqlalchemy.sql.functions import coalesce
 
 from domain.keywords import create_tsvector
+from models.db import Model
 from models.extra_data_mixin import ExtraDataMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.offer_type import EventType, ThingType
@@ -29,6 +30,7 @@ class BookFormat(enum.Enum):
     Paperback = "Paperback"
 
 class Product(PcObject,
+              Model,
               ExtraDataMixin,
               HasThumbMixin,
               ProvidableMixin):

@@ -7,12 +7,13 @@ from sqlalchemy import BigInteger, \
 from sqlalchemy.dialects.postgresql import CHAR
 from sqlalchemy.orm import relationship
 
+from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.pc_object import PcObject
 from models.venue_provider import VenueProvider
 
 
-class Provider(PcObject, DeactivableMixin):
+class Provider(PcObject, Model, DeactivableMixin):
 
     id = Column(BigInteger,
                 primary_key=True)

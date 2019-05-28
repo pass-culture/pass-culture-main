@@ -3,10 +3,11 @@ from datetime import datetime
 from sqlalchemy import Column, BigInteger, Numeric, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 
+from models.db import Model
 from models.pc_object import PcObject
 
 
-class Deposit(PcObject):
+class Deposit(PcObject, Model):
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)

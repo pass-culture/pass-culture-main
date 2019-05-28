@@ -13,6 +13,7 @@ from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
 from domain.keywords import create_tsvector
+from models.db import Model
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.needs_validation_mixin import NeedsValidationMixin
@@ -41,6 +42,7 @@ CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
 
 
 class Venue(PcObject,
+            Model,
             HasThumbMixin,
             HasAddressMixin,
             ProvidableMixin,

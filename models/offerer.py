@@ -12,6 +12,7 @@ from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
 from domain.keywords import create_tsvector
+from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
@@ -23,6 +24,7 @@ from models.versioned_mixin import VersionedMixin
 
 
 class Offerer(PcObject,
+              Model,
               HasThumbMixin,
               HasAddressMixin,
               ProvidableMixin,
