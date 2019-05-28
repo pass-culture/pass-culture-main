@@ -86,7 +86,7 @@ class VersoContentOffer extends React.PureComponent {
         {sliced.map(obj => (
           <li key={obj.id}>
             {capitalize(obj.humanBeginningDate)}
-            {obj.userAsAlreadyBookedThisDate && ' (réservé)'}
+            {(!obj.userHasCancelledThisDate && obj.userHasAlreadyBookedThisDate) && ' (réservé)'}
           </li>
         ))}
         {hasMoreBookables && (
