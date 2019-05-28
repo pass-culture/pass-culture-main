@@ -6,7 +6,7 @@ from collections import OrderedDict
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from pprint import pprint
-from typing import List, Any
+from typing import List, Any, Iterable, Set
 
 import sqlalchemy
 from psycopg2.extras import DateTimeRange
@@ -145,11 +145,10 @@ class PcObject:
     def populate_from_dict(self, data: dict, skipped_keys: List[str] = []):
         self._check_not_soft_deleted()
         columns = self.__class__.__table__.columns._data
-        keys_to_populate = set(columns) - set(['id', 'deleted'] + skipped_keys)
+        keys_to_populate = self._get_keys_to_populate(columns, data, skipped_keys)
 
         for key in keys_to_populate:
             column = columns[key]
-
             value = _dehumanize_if_needed(data, key)
 
             if isinstance(value, str):
@@ -307,6 +306,14 @@ class PcObject:
     def delete(model: Model):
         db.session.delete(model)
         db.session.commit()
+
+    @staticmethod
+    def _get_keys_to_populate(columns: Iterable[str], data: dict, skipped_keys: Iterable[str]) -> Set[str]:
+        requested_columns_to_update = set(data.keys())
+        forbidden_columns = set(['id', 'deleted'] + skipped_keys)
+        allowed_columns_to_update = requested_columns_to_update - forbidden_columns
+        keys_to_populate = set(columns).intersection(allowed_columns_to_update)
+        return keys_to_populate
 
     def _try_to_set_attribute_with_deserialized_datetime(self, col, key, value):
         try:
