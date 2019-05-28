@@ -1,0 +1,7 @@
+export OS_TENANT_NAME=
+export OS_USER=
+export OS_PASSWORD=
+export OS_REGION=GRA3
+export OS_AUTH_URL=https://auth.cloud.ovh.net/v2.0/
+export CONTAINER_NAME=
+export OS_OBJECT_STORAGE_URL=https://
