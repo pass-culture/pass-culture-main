@@ -94,6 +94,60 @@ BEGIN
 END; $$
 LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION pg_temp.anonymize_email_field(
+ json_data JSONB)
+ RETURNS JSONB as $$
+BEGIN
+  RETURN pg_temp.anonymize_json_field(json_data::jsonb, 'email', 'ano@nym.ized');
+END; $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION pg_temp.anonymize_first_name_field(
+ json_data JSONB)
+ RETURNS JSONB as $$
+DECLARE
+ user_id TEXT := json_data::jsonb ->> 'id';
+BEGIN
+  RETURN pg_temp.anonymize_json_field(json_data::jsonb, 'firstName', 'firstName' || user_id);
+END; $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION pg_temp.anonymize_public_name_field(
+ json_data JSONB)
+ RETURNS JSONB as $$
+DECLARE
+ user_id TEXT := json_data::jsonb ->> 'id';
+BEGIN
+  RETURN pg_temp.anonymize_json_field(json_data::jsonb, 'publicName', 'User' || user_id);
+END; $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION pg_temp.anonymize_last_name_field(
+ json_data JSONB)
+ RETURNS JSONB as $$
+DECLARE
+ user_id TEXT := json_data::jsonb ->> 'id';
+BEGIN
+  RETURN pg_temp.anonymize_json_field(json_data::jsonb, 'lastName', 'lastName' || user_id);
+END; $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION pg_temp.anonymize_date_of_birth_field(
+ json_data JSONB)
+ RETURNS JSONB as $$
+BEGIN
+  RETURN pg_temp.anonymize_json_field(json_data::jsonb, 'dateOfBirth', '01/01/2001');
+END; $$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION pg_temp.anonymize_phone_number_field(
+ json_data JSONB)
+ RETURNS JSONB as $$
+BEGIN
+  RETURN pg_temp.anonymize_json_field(json_data::jsonb, 'phoneNumber', '0606060606');
+END; $$
+LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION pg_temp.anonymize_activity_data_field(
  json_data JSONB)
  RETURNS JSONB as $$
@@ -103,6 +157,11 @@ BEGIN
  json_data = pg_temp.anonymize_booking_email_field(json_data::jsonb);
  json_data = pg_temp.anonymize_bic_field(json_data::jsonb);
  json_data = pg_temp.anonymize_iban_field(json_data::jsonb);
+ json_data = pg_temp.anonymize_email_field(json_data::jsonb);
+ json_data = pg_temp.anonymize_first_name_field(json_data::jsonb);
+ json_data = pg_temp.anonymize_last_name_field(json_data::jsonb);
+ json_data = pg_temp.anonymize_date_of_birth_field(json_data::jsonb);
+ json_data = pg_temp.anonymize_phone_number_field(json_data::jsonb);
  RETURN json_data;
 END; $$
 LANGUAGE plpgsql;
@@ -123,11 +182,11 @@ UPDATE provider SET "apiKey" = substring(md5(random()::text), 1, 32) WHERE "apiK
 
 UPDATE "user" SET "email" = 'user@' || "id",
   "publicName" = 'User' || "id",
-  "firstName" = 'firstName' || "id",
-  "lastName" = 'lastName' || "id",
-  "dateOfBirth" = '01/01/2001',
-  "phoneNumber" = '0606060606',
   "password" = crypt(('##PASSWORD##' || "id"), gen_salt('bf'))::bytea;
+UPDATE "user" SET  "firstName" = 'firstName' || "id" WHERE "firstName" IS NOT NULL;
+UPDATE "user" SET "lastName" = 'lastName' || "id" WHERE "lastName" IS NOT NULL;
+UPDATE "user" SET "dateOfBirth" = '01/01/2001' WHERE "dateOfBirth" IS NOT NULL;
+UPDATE "user" SET "phoneNumber" = '0606060606' WHERE "phoneNumber" IS NOT NULL;
 UPDATE "user" SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
 UPDATE "user" SET "resetPasswordToken" = substring(md5(random()::text),1 , 10) WHERE "resetPasswordToken" is not null;
 
