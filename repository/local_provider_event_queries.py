@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from sqlalchemy import or_
 
 from models import LocalProviderEvent
 from models.activity import load_activity
@@ -30,5 +31,14 @@ def find_latest_sync_start_event(provider):
         .query \
         .filter((LocalProviderEvent.provider == provider) &
                 (LocalProviderEvent.type == LocalProviderEventType.SyncStart)) \
+        .order_by(LocalProviderEvent.date.desc()) \
+        .first()
+
+
+def find_lastest_sync_end_or_sync_part_end_for_provider(provider) -> LocalProviderEvent:
+    return LocalProviderEvent.query \
+        .filter(or_(LocalProviderEvent.type == LocalProviderEventType.SyncPartEnd,
+                    LocalProviderEvent.type == LocalProviderEventType.SyncEnd)) \
+        .filte(LocalProviderEvent.provider == provider) \
         .order_by(LocalProviderEvent.date.desc()) \
         .first()

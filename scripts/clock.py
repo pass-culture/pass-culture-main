@@ -71,6 +71,7 @@ def pc_synchronize_titelive_things():
                                    cwd=API_ROOT_PATH)
         output, error = process.communicate()
         logger.info(StringIO(output))
+        logger.info(StringIO(error))
     logger.info("[BATCH][TITELIVE THINGS] Cron synchronize_titelive_things: END")
 
 
@@ -83,6 +84,7 @@ def pc_synchronize_titelive_descriptions():
                                    cwd=API_ROOT_PATH)
         output, error = process.communicate()
         logger.info(StringIO(output))
+        logger.info(StringIO(error))
     logger.info("[BATCH][TITELIVE DESCRIPTIONS] Cron synchronize_titelive_descriptions: END")
 
 
@@ -95,6 +97,7 @@ def pc_synchronize_titelive_thumbs():
                                    cwd=API_ROOT_PATH)
         output, error = process.communicate()
         logger.info(StringIO(output))
+        logger.info(StringIO(error))
     logger.info("[BATCH][TITELIVE THUMBS] Cron synchronize_titelive_thumbs: END")
 
 
@@ -107,6 +110,7 @@ def pc_retrieve_offerers_bank_information():
                                    cwd=API_ROOT_PATH)
         output, error = process.communicate()
         logger.info(StringIO(output))
+        logger.info(StringIO(error))
     logger.info("[BATCH][BANK INFORMATION] Cron retrieve_offerers_bank_information: END")
 
 
@@ -147,15 +151,15 @@ if __name__ == '__main__':
 
     if feature_cron_synchronize_titelive_things():
         scheduler.add_job(pc_synchronize_titelive_things, 'cron', id='synchronize_titelive_things',
-                          day='*')
+                          day='*', hour='1')
 
     if feature_cron_synchronize_titelive_descriptions():
         scheduler.add_job(pc_synchronize_titelive_descriptions, 'cron', id='synchronize_titelive_descriptions',
-                          day='*')
+                          day='*', hour='2')
 
     if feature_cron_synchronize_titelive_thumbs():
         scheduler.add_job(pc_synchronize_titelive_thumbs, 'cron', id='synchronize_titelive_thumbs',
-                          day='*')
+                          day='*', hour='3')
 
     if feature_cron_send_remedial_emails():
         scheduler.add_job(pc_send_remedial_emails, 'cron', id='send_remedial_emails', minute='*/15')

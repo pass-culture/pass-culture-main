@@ -1,6 +1,5 @@
 import re
 from itertools import islice
-from sqlalchemy import or_
 from pathlib import Path
 
 import os
@@ -11,6 +10,7 @@ from local_providers.titelive_things import get_thing_type_and_extra_data_from_t
 from models.local_provider import LocalProvider, ProvidableInfo
 from models import Product
 from models.local_provider_event import LocalProviderEventType, LocalProviderEvent
+from repository.local_provider_event_queries import find_lastest_sync_end_or_sync_part_end_for_provider
 
 from utils.logger import logger
 from utils.string_processing import trim_with_elipsis
@@ -18,6 +18,7 @@ from utils.string_processing import trim_with_elipsis
 DATE_REGEXP = re.compile('([a-zA-Z]+)(\d+).tit')
 NUMBER_OF_ELEMENTS_PER_LINE = 46  # (45 elements from line + \n)
 SYNC_PART_SIZE = 1000
+
 
 class InitTiteLiveThings(LocalProvider):
     help = ""
@@ -37,15 +38,11 @@ class InitTiteLiveThings(LocalProvider):
 
         self.data_lines = None
 
-        last_import_commit = LocalProviderEvent.query \
-            .filter(or_(LocalProviderEvent.type == LocalProviderEventType.SyncPartEnd,
-                        LocalProviderEvent.type == LocalProviderEventType.SyncEnd)) \
-            .filter_by(providerId=self.dbObject.id) \
-            .order_by(LocalProviderEvent.date.desc()) \
-            .first()
+        last_import_event = find_lastest_sync_end_or_sync_part_end_for_provider(self.dbObject)
+        last_import_is_incomplete = last_import_event.type == LocalProviderEventType.SyncPartEnd
 
-        if last_import_commit.type == LocalProviderEventType.SyncPartEnd:
-            self.lines_checked = int(last_import_commit.payload)
+        if last_import_is_incomplete:
+            self.lines_checked = int(last_import_event.payload)
         else:
             self.lines_checked = 0
         logger.info("Starting at line : %s" % str(self.lines_checked))
