@@ -95,7 +95,7 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
             information['birth_date'] = datetime.strptime(value, '%Y-%m-%d')
         if label == 'Numéro de téléphone':
             information['phone'] = value
-        if label == 'Code postal':
+        if label == 'Code postal de votre adresse de résidence':
             information['postal_code'] = value
 
     return information

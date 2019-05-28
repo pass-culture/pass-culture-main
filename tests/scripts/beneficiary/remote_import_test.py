@@ -260,7 +260,7 @@ class ParseBeneficiaryInformationTest:
         assert information['first_name'] == 'Jane'
         assert information['birth_date'] == datetime(2000, 5, 1)
         assert information['email'] == 'jane.doe@test.com'
-        assert information['phone'] == '0612345678'
+        assert information['phone'] == '0123456789'
         assert information['postal_code'] == '67200'
         assert information['application_id'] == 123
 
@@ -344,7 +344,6 @@ class CreateBeneficiaryFromApplicationTest:
 
     def test_a_deposit_is_made_for_the_new_beneficiary(self):
         # given
-        THIRTY_DAYS_FROM_NOW = (datetime.utcnow() + timedelta(days=30)).date()
         find_duplicate_users = Mock()
         find_duplicate_users.return_value = []
 

@@ -10,7 +10,6 @@ LIST_APPLICATIONS_STANDARD_RESPONSE = {
             "nombre_de_page": 3
         }
 }
-
 APPLICATION_DETAIL_STANDARD_RESPONSE = {
     "dossier": {
         "id": 123,
@@ -30,19 +29,19 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
         "etablissement": None, "cerfa": [], "commentaires": [
             {
                 "email": "contact@demarches-simplifiees.fr",
-                "body": "[Votre préinscription pour le pass Culture a bien été reçue]\u003cbr\u003e\u003cbr\u003e\u003cp\u003e\r\nBonjour Jane,\u003c/p\u003e\r\n\u003cp\u003e\r\nL'équipe du pass Culture vous confirme la bonne réception de votre dossier nº 470917. \u003c/p\u003e\u003cp\u003eVotre dossier sera examiné dans les plus bref délais. Si votre dossier est validé, vous bénéficierez dès l'ouverture de l'expérimentation sur votre département d'un crédit de 500€ pour réserver l'ensemble des propositions culturelles figurant sur l'application pass Culture. Un mail de confirmation vous sera envoyé à l'ouverture de votre crédit.\u003c/p\u003e\r\n\u003cp\u003e\r\nÀ tout moment, vous pouvez consulter l'avancée de votre dossier et échanger directement avec nous à cette adresse : \u003ca target=\"_blank\" rel=\"noopener\" href=\"https://www.demarches-simplifiees.fr/dossiers/470917\"\u003ehttps://www.demarches-simplifiees.fr/dossiers/470917\u003c/a\u003e\r\n\u003c/p\u003e\r\n\u003cp\u003e\r\nBonne journée,\r\n\u003c/p\u003e\r\n\u003cp\u003e\r\nL'équipe du pass Culture\u003c/p\u003e\u003cp\u003e\u003cimg alt=\"\" src=\"https://s1g.s3.amazonaws.com/42376e1f41d9842343a53bcdd87e5fc4.jpeg\"\u003e\u003cbr\u003e\u003c/p\u003e",
+                "body": "...",
                 "created_at": "2019-05-04T18:01:24.428Z",
                 "attachment": None
             },
             {
                 "email": "contact@demarches-simplifiees.fr",
-                "body": "[L'équipe du pass Culture s'occupe de votre dossier]\u003cbr\u003e\u003cbr\u003e\u003cp\u003eBonjour Jane,\u003c/p\u003e\u003cp\u003eBonne nouvelle ! Votre dossier nº 470917 est en cours d'examen par l'équipe du pass Culture.\u003c/p\u003e\u003cp\u003eÀ tout moment, vous pouvez consulter l'avancée de votre dossier et échanger directement avec nous à cette adresse : \u003ca target=\"_blank\" rel=\"noopener\" href=\"https://www.demarches-simplifiees.fr/dossiers/470917\"\u003ehttps://www.demarches-simplifiees.fr/dossiers/470917\u003c/a\u003e\u003cbr\u003e\u003c/p\u003e\u003cp\u003eBonne journée,\u003c/p\u003e\u003cp\u003eL'équipe du pass Culture\u003c/p\u003e\u003cp\u003e\u003cimg alt=\"\" src=\"https://s1g.s3.amazonaws.com/42376e1f41d9842343a53bcdd87e5fc4.jpeg\"\u003e\u003cbr\u003e\u003c/p\u003e",
+                "body": "...",
                 "created_at": "2019-05-07T15:15:22.504Z",
                 "attachment": None
             },
             {
                 "email": "contact@demarches-simplifiees.fr",
-                "body": "[Votre demande d'activation du pass Culture a été acceptée]\u003cbr\u003e\u003cbr\u003e\u003cp\u003eBonjour Jane,\u003cbr\u003e\u003c/p\u003e\u003cp\u003eL'équipe du pass Culture vous informe que votre dossier nº 470917 a été accepté le 07/05/2019.\u003c/p\u003e\u003cp\u003eDès l'ouverture de l'expérimentation sur votre département, vous recevrez votre mail de bienvenue pour accéder à l’application.\u003c/p\u003e\u003cp\u003eBonne journée,\u003cbr\u003e\u003c/p\u003e\u003cp\u003eL'équipe du pass Culture\u003c/p\u003e\u003cp\u003e\u003cimg alt=\"\" src=\"https://s1g.s3.amazonaws.com/42376e1f41d9842343a53bcdd87e5fc4.jpeg\"\u003e\u003cbr\u003e\u003c/p\u003e",
+                "body": "...",
                 "created_at": "2019-05-07T15:15:39.845Z",
                 "attachment": None
             }
@@ -53,121 +52,150 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
         "justificatif_motivation": None,
         "champs": [
             {
-                "value": "67 - Bas-Rhin",
+                "value": None,
+                "type_de_champ": {
+                    "id": 609447,
+                    "libelle": "Comment remplir ce formulaire de pré-inscription au pass Culture",
+                    "type_champ": "explication", "order_place": 0,
+                    "description": "Une aide pour remplir votre dossier est disponible ici : https://docs.passculture.app/experimentateurs/pre-inscription"}
+            },
+            {
+                "value": "94 - Val-de-Marne",
                 "type_de_champ": {
                     "id": 596453, "libelle": "Veuillez indiquer votre département",
-                    "type_champ": "departements", "order_place": 0, "description": None
+                    "type_champ": "departements", "order_place": 1,
+                    "description": "Département de résidence (vous devrez fournir un justificatif de domicile)."
                 }
             },
             {
-                "value": "0612345678",
+                "value": "0123456789",
                 "type_de_champ": {
-                    "id": 582219, "libelle": "Numéro de téléphone", "type_champ": "phone",
-                    "order_place": 2, "description": None
+                    "id": 582219, "libelle": "Numéro de téléphone",
+                    "type_champ": "phone", "order_place": 2, "description": ""
                 }
             },
             {
                 "value": "2000-05-01",
                 "type_de_champ": {
-                    "id": 582220,
-                    "libelle": "Date de naissance",
-                    "type_champ": "date",
+                    "id": 582220, "libelle": "Date de naissance", "type_champ": "date",
                     "order_place": 3,
-                    "description": None
+                    "description": "Assurez-vous de bien sélectionner votre année de naissance."
                 }
             },
             {
-                "value": "41 avenue de la Résistance 67200 Strasbourg",
+                "value": "94200",
                 "type_de_champ": {
-                    "id": 582223, "libelle": "Adresse de résidence", "type_champ": "address",
-                    "order_place": 4, "description": None
+                    "id": 639254, "libelle": "Code postal de votre lieu de naissance",
+                    "type_champ": "text", "order_place": 4, "description": None
+                }
+            },
+            {
+                "value": "6 rue de la République",
+                "type_de_champ": {
+                    "id": 582223, "libelle": "Adresse de résidence",
+                    "type_champ": "address", "order_place": 5, "description": None
                 }
             },
             {
                 "value": "67200",
                 "type_de_champ": {
                     "id": 582221,
-                    "libelle": "Code postal",
-                    "type_champ": "text",
-                    "order_place": 5,
+                    "libelle": "Code postal de votre adresse de résidence",
+                    "type_champ": "text", "order_place": 6,
                     "description": None
                 }
             },
             {
                 "value": None,
                 "type_de_champ": {
-                    "id": 582328, "libelle": "Pièces justificatives",
-                    "type_champ": "explication", "order_place": 6,
-                    "description": "Afin de valider votre inscription, vous devez fournir obligatoirement un justificatif de date de naissance (pièce d'identité), ainsi qu'un justificatif d'une adresse de résidence sur le département concerné (justificatif de domicile)"
+                    "id": 582328,
+                    "libelle": "Pièces justificatives",
+                    "type_champ": "explication",
+                    "order_place": 7,
+                    "description": "..."
                 }
             },
             {
-                "value": "https://url.to.scan/passeport",
+                "value": None,
+                "type_de_champ": {
+                    "id": 609392, "libelle": "1. Pièce d'identité",
+                    "type_champ": "header_section", "order_place": 8,
+                    "description": None
+                }
+            },
+            {
+                "value": "http://fake.url",
                 "type_de_champ": {
                     "id": 459819,
-                    "libelle": "Pièce d'identité (photocopie recto de votre carte d'identité ou passeport)",
-                    "type_champ": "piece_justificative", "order_place": 7,
-                    "description": "Cette pièce justificative est obligatoire pour valider votre inscription"
+                    "libelle": "Pièce d'identité (numérisation RECTO seul de votre carte d'identité ou passeport)",
+                    "type_champ": "piece_justificative", "order_place": 9,
+                    "description": "..."
                 }
             },
             {
                 "value": None,
                 "type_de_champ": {
                     "id": 451284,
-                    "libelle": "Vous avez un justificatif de domicile à votre nom ?",
-                    "type_champ": "header_section", "order_place": 8,
+                    "libelle": "2.1 Si vous avez un justificatif de domicile à votre nom :",
+                    "type_champ": "header_section", "order_place": 10,
                     "description": ""
                 }
-            }, {
-                "value": None,
+            },
+            {
+                "value": "http://fake.url",
                 "type_de_champ": {
                     "id": 422858,
-                    "libelle": "Justificatif de domicile à votre nom (facture de moins de 6 mois d'eau, d'électricité, de gaz ou de téléphone) ",
-                    "type_champ": "piece_justificative",
-                    "order_place": 9,
-                    "description": ""
+                    "libelle": "Justificatif de domicile à votre nom et prénom",
+                    "type_champ": "piece_justificative", "order_place": 11,
+                    "description": "..."
                 }
             },
             {
                 "value": None,
                 "type_de_champ": {
                     "id": 460834,
-                    "libelle": "Vous habitez chez un proche (parent, ami, etc.) ?",
-                    "type_champ": "header_section", "order_place": 10,
-                    "description": ""
+                    "libelle": "2.2 Sinon, si vous habitez chez un proche (parent, ami, etc.) :",
+                    "type_champ": "header_section", "order_place": 12,
+                    "description": "..."
                 }
-            }, {
-                "value": "https://url.to.scan/hebergement",
+            },
+            {
+                "value": None,
+                "type_de_champ": {
+                    "id": 460835,
+                    "libelle": "Justificatif de domicile de la personne qui vous héberge",
+                    "type_champ": "piece_justificative",
+                    "order_place": 13,
+                    "description": "..."
+                }
+            },
+            {
+                "value": None,
                 "type_de_champ": {
                     "id": 451287,
                     "libelle": "Attestation sur l'honneur d'hébergement, datée et signée par la personne qui vous héberge et par vous-même",
-                    "type_champ": "piece_justificative", "order_place": 11,
-                    "description": ""
+                    "type_champ": "piece_justificative",
+                    "order_place": 14,
+                    "description": "..."
                 }
-            }, {
-                "value": "https://url.to.scan/domicile",
-                "type_de_champ": {
-                    "id": 460835,
-                    "libelle": "Justificatif de domicile de la personne qui vous héberge (facture de moins de 6 mois d'eau, d'électricité, de gaz ou de téléphone) ",
-                    "type_champ": "piece_justificative", "order_place": 12,
-                    "description": ""
-                }
-            }, {
-                "value": "https://url.to.scan/cni_hebergeur",
+            },
+            {
+                "value": None,
                 "type_de_champ": {
                     "id": 451288,
                     "libelle": "Pièce d'identité de la personne qui vous héberge",
-                    "type_champ": "piece_justificative", "order_place": 13,
-                    "description": ""
+                    "type_champ": "piece_justificative",
+                    "order_place": 15,
+                    "description": "..."
                 }
-            }, {
+            },
+            {
                 "value": None,
                 "type_de_champ": {
                     "id": 460836,
                     "libelle": "Vous n'êtes pas de nationalité française ?",
-                    "type_champ": "header_section",
-                    "order_place": 14,
-                    "description": ""
+                    "type_champ": "header_section", "order_place": 16,
+                    "description": "..."
                 }
             },
             {
@@ -175,23 +203,29 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                 "type_de_champ": {
                     "id": 451286,
                     "libelle": "Justificatif de présence sur le territoire français depuis plus d'un an",
-                    "type_champ": "piece_justificative", "order_place": 15,
-                    "description": "Si vous n'êtes pas de la nationalité française, merci de télécharger un document permettant de justifier de votre présence légale sur le territoire depuis plus d'un an."
+                    "type_champ": "piece_justificative",
+                    "order_place": 17,
+                    "description": "..."
                 }
             },
             {
                 "value": None,
                 "type_de_champ": {
-                    "id": 466695, "libelle": "Consentement à l'utilisation de mes données",
-                    "type_champ": "header_section", "order_place": 16, "description": ""
+                    "id": 466695,
+                    "libelle": "Consentement à l'utilisation de mes données",
+                    "type_champ": "header_section", "order_place": 18,
+                    "description": "..."
                 }
             },
             {
                 "value": None,
+
                 "type_de_champ": {
-                    "id": 466635, "libelle": "Que faisons-nous de ces données ?",
-                    "type_champ": "explication", "order_place": 17,
-                    "description": "Ces données ne sont utilisées qu'à la seule fin de nous assurer de votre éligibilité à l'avant-première du pass Culture. Vos données seront contrôlées par l'équipe du pass Culture, puis conservées pendant un an à des fins de contrôle à posteriori."
+                    "id": 466635,
+                    "libelle": "Que faisons-nous de ces données ?",
+                    "type_champ": "explication",
+                    "order_place": 19,
+                    "description": "..."
                 }
             },
             {
@@ -199,17 +233,18 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                 "type_de_champ": {
                     "id": 466694,
                     "libelle": "Je donne mon accord au traitement de mes données à caractère personnel dans les conditions explicitées ci-dessus",
-                    "type_champ": "engagement", "order_place": 18,
-                    "description": ""
+                    "type_champ": "engagement", "order_place": 20,
+                    "description": "..."
                 }
-            }, {
+            },
+            {
                 "value": "on",
                 "type_de_champ": {
                     "id": 457303,
                     "libelle": "Je déclare sur l’honneur que ces documents sont authentiques. ",
                     "type_champ": "engagement",
-                    "order_place": 19,
-                    "description": "Des contrôles aléatoires seront effectués. En cas de fraude, vous vous exposez à des poursuites judiciaires."
+                    "order_place": 21,
+                    "description": "..."
                 }
             },
             {
@@ -217,8 +252,8 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                 "type_de_champ": {
                     "id": 454775,
                     "libelle": "Un grand merci et à très vite sur le pass Culture !",
-                    "type_champ": "header_section", "order_place": 20,
-                    "description": ""
+                    "type_champ": "header_section", "order_place": 22,
+                    "description": "..."
                 }
             }
         ]
@@ -246,6 +281,6 @@ def make_application_detail(id: int, state: str, department_code='67 - Bas-Rhin'
     application['dossier']['id'] = id
     application['dossier']['state'] = state
     for field in application['dossier']['champs']:
-        if field['type_de_champ']['type_champ'] == 'departements':
+        if field['type_de_champ']['libelle'] == 'Veuillez indiquer votre département':
             field['value'] = department_code
     return application
