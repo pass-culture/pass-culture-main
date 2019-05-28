@@ -39,6 +39,6 @@ def find_lastest_sync_end_or_sync_part_end_for_provider(provider) -> LocalProvid
     return LocalProviderEvent.query \
         .filter(or_(LocalProviderEvent.type == LocalProviderEventType.SyncPartEnd,
                     LocalProviderEvent.type == LocalProviderEventType.SyncEnd)) \
-        .filte(LocalProviderEvent.provider == provider) \
+        .filter(LocalProviderEvent.provider == provider) \
         .order_by(LocalProviderEvent.date.desc()) \
         .first()
