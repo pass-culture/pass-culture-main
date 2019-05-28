@@ -87,7 +87,7 @@ class TiteLiveThings(LocalProvider):
         if self.infos['url_extrait_pdf'] != '':
             thing.mediaUrls.append(self.infos['url_extrait_pdf'])
 
-    def get_remaining_files_to_check(self, ordered_thing_files):
+    def get_remaining_files_to_check(self, ordered_thing_files : list):
         latest_sync_part_end_event = local_provider_event_queries.find_latest_sync_part_end_event(self.dbObject)
         if latest_sync_part_end_event is None:
             return iter(ordered_thing_files)

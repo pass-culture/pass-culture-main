@@ -18,7 +18,16 @@ else
   exit 1
 fi
 
+# GET FILE NAME
+if [[ $# -gt 1 ]] && [[ "$1" == "-n" ]]; then
+  FILENAME=$2
+  shift 2
+else
+  echo "You must provide the unzipped filename."
+  exit 1
+fi
+
 scalingo -a "$APP_NAME" run -d --size 2XL "wget -O Titelive.zip $FILE_LINK
 && unzip Titelive.zip
-&& python scripts/pc.py import_titelive_full_table -f FullTable.tit"
+&& python scripts/pc.py import_titelive_full_table -f $FILENAME"
 
