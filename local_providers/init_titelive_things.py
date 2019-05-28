@@ -39,7 +39,8 @@ class InitTiteLiveThings(LocalProvider):
         self.data_lines = None
 
         last_import_event = find_lastest_sync_end_or_sync_part_end_for_provider(self.dbObject)
-        last_import_is_incomplete = last_import_event.type == LocalProviderEventType.SyncPartEnd
+        last_import_is_incomplete = last_import_event is not None \
+                                    and last_import_event.type == LocalProviderEventType.SyncPartEnd
 
         if last_import_is_incomplete:
             self.lines_checked = int(last_import_event.payload)
