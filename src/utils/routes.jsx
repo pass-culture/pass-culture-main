@@ -3,7 +3,7 @@ import { Redirect } from 'react-router'
 
 import Accouting from '../components/pages/Accounting'
 import BookingsContainer from '../components/pages/Bookings/BookingsContainer'
-import Desk from '../components/pages/Desk'
+import DeskContainer from '../components/pages/Desk/DeskContainer'
 import Home from '../components/pages/Home'
 import Mediation from '../components/pages/Mediation'
 import Offers from '../components/pages/Offers'
@@ -41,7 +41,7 @@ const routes = [
     title: 'Connexion',
   },
   {
-    component: Desk,
+    component: DeskContainer,
     path: '/guichet',
     title: 'Guichet',
   },
