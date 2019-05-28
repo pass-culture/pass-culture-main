@@ -15,6 +15,12 @@ services:
     build:
       context: ./api
       dockerfile: ../dockerfiles/flask/Dockerfile
+    command: >
+      bash -c "set -x;
+               cd /opt/services/flaskapp/src;
+               pip install -r ./requirements.txt;
+               python -m nltk.downloader punkt stopwords;
+               while true; do python app.py; done;"
     volumes:
       - ./api:/opt/services/flaskapp/src
       - type: bind
