@@ -1,4 +1,3 @@
-import React from 'react'
 import { mapStateToProps } from '../ProfilContainer'
 import { selectCurrentUser } from 'with-login'
 

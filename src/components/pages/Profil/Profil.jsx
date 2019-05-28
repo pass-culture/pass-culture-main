@@ -17,7 +17,7 @@ class Profil extends React.Component {
     }
   }
 
-  onSubmit = formValues => {
+  handleOnSubmit = formValues => {
     this.setState({ isLoading: true })
     const { dispatch } = this.props
     const { email, publicName } = formValues
@@ -67,14 +67,19 @@ class Profil extends React.Component {
       <Main name="profile" backTo={backTo}>
         <HeroSection title="Profil" />
         <Form
-          onSubmit={this.onSubmit}
+          onSubmit={this.handleOnSubmit}
           initialValues={currentUser}
           render={({ handleSubmit }) => (
             <form onSubmit={handleSubmit}>
               <div>
-                <div className="field-group" style={{ width: '200px' }}>
-                  <TextField name="publicName" label="Nom :" required />
-                  <TextField name="email" label="Email :" required readOnly />
+                <div className="field-profil-input">
+                  <TextField
+                    name="publicName"
+                    label="Nom :"
+                    placeholder="3 caractères minimum"
+                    required
+                  />
+                  <TextField name="email" type="email" label="E-mail :" required />
                 </div>
 
                 <div
@@ -89,14 +94,6 @@ class Profil extends React.Component {
                       Enregistrer
                     </button>
                   </div>
-                  <div className="field">
-                    <TextField
-                      name="email"
-                      type="email"
-                      label="Email :"
-                      required
-                    />
-                  </div>
                 </div>
               </div>
             </form>
@@ -109,7 +106,11 @@ class Profil extends React.Component {
 }
 
 PropTypes.propTypes = {
-  currentUser: PropTypes.object.isRequired,
+  currentUser: PropTypes.shape({
+    email: PropTypes.string,
+    publicName: PropTypes.string,
+  }).isRequired,
+  dispatch: PropTypes.func.isRequired,
 }
 
 export default Profil

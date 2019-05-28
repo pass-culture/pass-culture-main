@@ -46,17 +46,16 @@ describe('src | components | pages | Profil', () => {
     // then
     const form = wrapper.find(Form).dive()
     const textFieldComponents = form.find(TextField)
-    expect(textFieldComponents).toHaveLength(3)
+    expect(textFieldComponents).toHaveLength(2)
     expect(textFieldComponents.at(0).prop('name')).toBe('publicName')
     expect(textFieldComponents.at(0).prop('label')).toBe('Nom :')
+    expect(textFieldComponents.at(0).prop('placeholder')).toBe(
+      '3 caractères minimum'
+    )
     expect(textFieldComponents.at(0).prop('required')).toBe(true)
     expect(textFieldComponents.at(1).prop('name')).toBe('email')
-    expect(textFieldComponents.at(1).prop('label')).toBe('Email :')
+    expect(textFieldComponents.at(1).prop('label')).toBe('E-mail :')
     expect(textFieldComponents.at(1).prop('required')).toBe(true)
-    expect(textFieldComponents.at(1).prop('readOnly')).toBe(true)
-    expect(textFieldComponents.at(2).prop('name')).toBe('email')
-    expect(textFieldComponents.at(2).prop('label')).toBe('Email :')
-    expect(textFieldComponents.at(2).prop('required')).toBe(true)
   })
 
   it('should update user informations successfully when submitting form', () => {

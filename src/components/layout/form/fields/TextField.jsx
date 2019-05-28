@@ -104,6 +104,7 @@ export class TextField extends Component {
                       innerClassName
                     )}>
                     <input
+                      id={name}
                       {...input}
                       {...inputProps}
                       className={`field-input field-${type}`}
