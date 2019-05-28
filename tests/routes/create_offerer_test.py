@@ -12,7 +12,7 @@ class Post:
         def when_any_user_and_creates_one_virtual_venue(self, app):
             # given
             user = create_user()
-            PcObject.check_and_save(user)
+            PcObject.save(user)
             body = {
                 'name': 'Test Offerer',
                 'siren': '418166096',
@@ -38,7 +38,7 @@ class Post:
         def when_json_without_address_creates_an_offerer(self, app):
             # given
             user = create_user()
-            PcObject.check_and_save(user)
+            PcObject.save(user)
             body = {
                 'name': 'Test Offerer',
                 'siren': '418166096',
@@ -61,7 +61,7 @@ class Post:
         def when_admin(self, app):
             # Given
             user = create_user(can_book_free_offers=False, is_admin=True)
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             # When
             body = {

@@ -40,9 +40,9 @@ class GetReimbursementsCsvTest:
         booking4 = create_booking(user, stock3, venue=venue3, token='ABCDEI', is_used=True)
         booking5 = create_booking(user, stock4, venue=venue3, token='ABCDEJ', is_used=True)
         booking6 = create_booking(user, stock4, venue=venue3, token='ABCDEK', is_used=True)
-        PcObject.check_and_save(deposit, booking1, booking2, booking3,
-                                booking4, booking5, booking6, user_offerer1,
-                                user_offerer2, bank_information1, bank_information2)
+        PcObject.save(deposit, booking1, booking2, booking3,
+                      booking4, booking5, booking6, user_offerer1,
+                      user_offerer2, bank_information1, bank_information2)
         generate_new_payments()
 
         # When
@@ -60,7 +60,7 @@ class GetReimbursementsCsvTest:
     def test_get_reimbursements_csv_no_user_offerer(self, app):
         # Given
         user = create_user(email='user+plus@email.fr')
-        PcObject.check_and_save(user)
+        PcObject.save(user)
 
         # When
         response = TestClient().with_auth(user.email).get(

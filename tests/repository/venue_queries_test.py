@@ -27,7 +27,7 @@ def test_find_filtered_venues_with_sirens_params_return_filtered_venues(app):
     venue_123456783 = create_venue(offerer_123456783, name="venue_123456783", siret="12345678312345")
     venue_123456784 = create_venue(offerer_123456784, name="venue_123456784", siret="12345678412345")
 
-    PcObject.check_and_save(venue_123456789, venue_123456781, venue_123456782, venue_123456783, venue_123456784)
+    PcObject.save(venue_123456789, venue_123456781, venue_123456782, venue_123456783, venue_123456784)
 
     # when
     query_with_sirens = find_filtered_venues(sirens=["123456781", "123456782", "123456783"])
@@ -48,7 +48,7 @@ def test_find_filtered_venues_with_has_validated_offerer_param_return_filtered_v
     offerer_not_valid = create_offerer(siren='123456798', validation_token='abc')
     venue_with_offerer_valid = create_venue(offerer_valid)
     venue_with_offerer_not_valid = create_venue(offerer_not_valid, siret='12345679812345')
-    PcObject.check_and_save(venue_with_offerer_valid, venue_with_offerer_not_valid)
+    PcObject.save(venue_with_offerer_valid, venue_with_offerer_not_valid)
 
     # When
     query_with_not_valid_offerer_only = find_filtered_venues(has_validated_offerer=False)
@@ -69,7 +69,7 @@ def test_find_filtered_venues_with_dpts_param_return_filtered_venues(app):
     venue_34 = create_venue(offerer, departement_code='34', postal_code='34000',
                             siret='12345678912347')
     venue_virtual = create_venue(offerer, is_virtual=True, siret=None, postal_code=None)
-    PcObject.check_and_save(venue_93, venue_67, venue_34, venue_virtual)
+    PcObject.save(venue_93, venue_67, venue_34, venue_virtual)
 
     # When
     query_with_dpts = find_filtered_venues(dpts=['93', '67'])
@@ -90,7 +90,7 @@ def test_find_filtered_venues_with_zipcodes_param_return_filtered_venues(app):
     venue_67000 = create_venue(offerer, postal_code='67000', siret='12345678912346')
     venue_34000 = create_venue(offerer, postal_code='34000', siret='12345678912347')
     venue_virtual = create_venue(offerer, is_virtual=True, siret=None)
-    PcObject.check_and_save(venue_virtual, venue_93000, venue_67000, venue_34000)
+    PcObject.save(venue_virtual, venue_93000, venue_67000, venue_34000)
 
     # When
     query_with_zipcodes = find_filtered_venues(zip_codes=['93000', '34000'])
@@ -110,7 +110,7 @@ def test_find_filtered_venues_with_date_params_return_filtered_venues(app):
     venue_20180630 = create_venue(offerer)
     venue_20180730 = create_venue(offerer, siret='12345678912346')
     venue_20180830 = create_venue(offerer, siret='12345678912347')
-    PcObject.check_and_save(venue_20180630, venue_20180730, venue_20180830)
+    PcObject.save(venue_20180630, venue_20180730, venue_20180830)
 
     activity1 = create_venue_activity(venue_20180630, 'venue', 'insert', issued_at=datetime(2018,
                                                                                             6, 30))
@@ -137,7 +137,7 @@ def test_find_filtered_venues_with_is_virtual_param_return_filtered_venues(app):
     offerer = create_offerer()
     venue_virtual = create_venue(offerer, is_virtual=True, siret=None)
     venue_not_virtual = create_venue(offerer, is_virtual=False, postal_code='34000')
-    PcObject.check_and_save(venue_virtual, venue_not_virtual)
+    PcObject.save(venue_virtual, venue_not_virtual)
 
     # When
     query_only_virtual = find_filtered_venues(is_virtual=True)
@@ -155,7 +155,7 @@ def test_find_filtered_venues_with_has_siret_param_return_filtered_venues(app):
     venue_virtual = create_venue(offerer, is_virtual=True, siret=None)
     venue_with_siret = create_venue(offerer)
     venue_without_siret = create_venue(offerer, siret=None, comment="comment", is_virtual=False)
-    PcObject.check_and_save(venue_virtual, venue_with_siret, venue_without_siret)
+    PcObject.save(venue_virtual, venue_with_siret, venue_without_siret)
 
     # When
     query_no_siret = find_filtered_venues(has_siret=False)
@@ -173,7 +173,7 @@ def test_find_filtered_venues_with_is_validated_param_return_filtered_venues(app
     offerer = create_offerer()
     venue_not_validated = create_venue(offerer, validation_token="there is a token here")
     venue_validated = create_venue(offerer, siret='12345678912346')
-    PcObject.check_and_save(venue_not_validated, venue_validated)
+    PcObject.save(venue_not_validated, venue_validated)
 
     # When
     query_only_validated = find_filtered_venues(is_validated=True)
@@ -192,7 +192,7 @@ def test_find_filtered_venues_with_has_offerer_with_siren_param_return_filtered_
 
     venue_with_offerer_with_siren = create_venue(offerer_with_siren)
     venue_with_offerer_without_siren = create_venue(offerer_without_siren, siret='12345678912346')
-    PcObject.check_and_save(venue_with_offerer_with_siren, venue_with_offerer_without_siren)
+    PcObject.save(venue_with_offerer_with_siren, venue_with_offerer_without_siren)
 
     # When
     query_validated = find_filtered_venues(has_offerer_with_siren=True)
@@ -220,9 +220,9 @@ def test_find_filtered_venues_with_True_has_validated_user_offerer_param_return_
     venue_with_not_validated_user_offerer = create_venue(offerer2, siret='12345678912347')
     venue_with_both = create_venue(offerer3)
 
-    PcObject.check_and_save(validated_user_offerer, not_validated_user_offerer,
-                            user_offerer_for_both1, user_offerer_for_both2, venue_with_not_validated_user_offerer,
-                            venue_with_validated_user_offerer, venue_with_both)
+    PcObject.save(validated_user_offerer, not_validated_user_offerer,
+                  user_offerer_for_both1, user_offerer_for_both2, venue_with_not_validated_user_offerer,
+                  venue_with_validated_user_offerer, venue_with_both)
 
     # When
     query_validated = find_filtered_venues(has_validated_user_offerer=True)
@@ -251,9 +251,9 @@ def test_find_filtered_venues_with_False_has_validated_user_offerer_param_return
     venue_with_not_validated_user_offerer = create_venue(offerer2, siret='12345678912347')
     venue_with_both = create_venue(offerer3)
 
-    PcObject.check_and_save(validated_user_offerer, not_validated_user_offerer,
-                            user_offerer_for_both1, user_offerer_for_both2, venue_with_not_validated_user_offerer,
-                            venue_with_validated_user_offerer, venue_with_both)
+    PcObject.save(validated_user_offerer, not_validated_user_offerer,
+                  user_offerer_for_both1, user_offerer_for_both2, venue_with_not_validated_user_offerer,
+                  venue_with_validated_user_offerer, venue_with_both)
 
     # When
     query_not_validated = find_filtered_venues(has_validated_user_offerer=False)
@@ -283,8 +283,8 @@ def test_find_filtered_venues_with_True_has_validated_user_param_return_filtered
     venue_with_not_validated_user = create_venue(offerer2, siret='12345678912346')
     venue_with_both = create_venue(offerer3, siret='12345678912347')
 
-    PcObject.check_and_save(user_offerer1, user_offerer2, user_offerer3, user_offerer4, venue_with_not_validated_user,
-                            venue_with_validated_user, venue_with_both)
+    PcObject.save(user_offerer1, user_offerer2, user_offerer3, user_offerer4, venue_with_not_validated_user,
+                  venue_with_validated_user, venue_with_both)
 
     # When
     query_validated = find_filtered_venues(has_validated_user=True)
@@ -314,8 +314,8 @@ def test_find_filtered_venues_with_False_has_validated_user_param_return_filtere
     venue_with_not_validated_user = create_venue(offerer2, siret='12345678912346')
     venue_with_both = create_venue(offerer3, siret='12345678912347')
 
-    PcObject.check_and_save(user_offerer1, user_offerer2, user_offerer3, user_offerer4, venue_with_not_validated_user,
-                            venue_with_validated_user, venue_with_both)
+    PcObject.save(user_offerer1, user_offerer2, user_offerer3, user_offerer4, venue_with_not_validated_user,
+                  venue_with_validated_user, venue_with_both)
 
     # When
     query_not_validated = find_filtered_venues(has_validated_user=False)
@@ -383,10 +383,10 @@ def test_find_filtered_venues_with_offer_status_with_VALID_param_return_filtered
                                                                    booking_limit_date=datetime.utcnow() + timedelta(
                                                                        days=3))
 
-    PcObject.check_and_save(venue_without_offer,
-                            valid_stock, expired_stock, soft_deleted_thing_stock,
-                            expired_booking_limit_date_event_stock,
-                            valid_booking_limit_date_event_stock, soft_deleted_event_stock)
+    PcObject.save(venue_without_offer,
+                  valid_stock, expired_stock, soft_deleted_thing_stock,
+                  expired_booking_limit_date_event_stock,
+                  valid_booking_limit_date_event_stock, soft_deleted_event_stock)
 
     # When
     query_has_valid_offer = find_filtered_venues(offer_status='VALID')
@@ -459,10 +459,10 @@ def test_find_filtered_venues_with_offer_status_with_EXPIRED_param_return_filter
                                                                    booking_limit_date=datetime.utcnow() + timedelta(
                                                                        days=3))
 
-    PcObject.check_and_save(venue_without_offer,
-                            valid_stock, expired_stock, soft_deleted_thing_stock,
-                            expired_booking_limit_date_event_stock,
-                            valid_booking_limit_date_event_stock, soft_deleted_event_stock)
+    PcObject.save(venue_without_offer,
+                  valid_stock, expired_stock, soft_deleted_thing_stock,
+                  expired_booking_limit_date_event_stock,
+                  valid_booking_limit_date_event_stock, soft_deleted_event_stock)
 
     # When
     query_has_expired_offer = find_filtered_venues(offer_status='EXPIRED')
@@ -535,10 +535,10 @@ def test_find_filtered_venues_with_offer_status_with_WITHOUT_param_return_filter
                                                                    booking_limit_date=datetime.utcnow() + timedelta(
                                                                        days=3))
 
-    PcObject.check_and_save(venue_without_offer,
-                            valid_stock, expired_stock, soft_deleted_thing_stock,
-                            expired_booking_limit_date_event_stock,
-                            valid_booking_limit_date_event_stock, soft_deleted_event_stock)
+    PcObject.save(venue_without_offer,
+                  valid_stock, expired_stock, soft_deleted_thing_stock,
+                  expired_booking_limit_date_event_stock,
+                  valid_booking_limit_date_event_stock, soft_deleted_event_stock)
 
     # When
     query_without_offer = find_filtered_venues(offer_status='WITHOUT')
@@ -611,10 +611,10 @@ def test_find_filtered_venues_with_offer_status_with_ALL_param_return_filtered_v
                                                                    booking_limit_date=datetime.utcnow() + timedelta(
                                                                        days=3))
 
-    PcObject.check_and_save(venue_without_offer,
-                            valid_stock, expired_stock, soft_deleted_thing_stock,
-                            expired_booking_limit_date_event_stock,
-                            valid_booking_limit_date_event_stock, soft_deleted_event_stock)
+    PcObject.save(venue_without_offer,
+                  valid_stock, expired_stock, soft_deleted_thing_stock,
+                  expired_booking_limit_date_event_stock,
+                  valid_booking_limit_date_event_stock, soft_deleted_event_stock)
 
     # When
     query_with_all_offer = find_filtered_venues(offer_status='ALL')
@@ -650,9 +650,9 @@ def test_find_filtered_venues_with_default_param_return_all_venues(app):
     valid_offer = create_offer_with_event_product(venue_with_valid_offer)
     expired_offer = create_offer_with_event_product(venue_with_expired_offer)
 
-    PcObject.check_and_save(venue_with_valid_offer, venue_without_offer,
-                            venue_virtual, venue_97000, venue_without_siret, venue_93000,
-                            venue_67000, venue_34000)
+    PcObject.save(venue_with_valid_offer, venue_without_offer,
+                  venue_virtual, venue_97000, venue_without_siret, venue_93000,
+                  venue_67000, venue_34000)
 
     # When
     default_query = find_filtered_venues()

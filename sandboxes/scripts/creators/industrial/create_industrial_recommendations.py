@@ -116,7 +116,7 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
                     user=user
                 )
 
-    PcObject.check_and_save(*recommendations_by_name.values())
+    PcObject.save(*recommendations_by_name.values())
 
     for recommendation in recommendations_by_name.values():
         if recommendation.offer:

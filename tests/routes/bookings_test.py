@@ -26,7 +26,7 @@ class Post:
             venue.generate_validation_token()
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
-            PcObject.check_and_save(stock, user, deposit)
+            PcObject.save(stock, user, deposit)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -56,10 +56,10 @@ class Post:
 
             expired_stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0)
             expired_stock.bookingLimitDatetime = datetime.utcnow() - timedelta(seconds=1)
-            PcObject.check_and_save(expired_stock)
+            PcObject.save(expired_stock)
 
             user = create_user(email='test@mail.com')
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             recommendation = create_recommendation(thing_offer, user)
 
@@ -98,7 +98,7 @@ class Post:
 
             booking = create_booking(user2, too_many_bookings_stock, venue, quantity=2)
 
-            PcObject.check_and_save(booking, recommendation, user, deposit, deposit2, too_many_bookings_stock)
+            PcObject.save(booking, recommendation, user, deposit, deposit2, too_many_bookings_stock)
 
             booking_json = {
                 'stockId': humanize(too_many_bookings_stock.id),
@@ -120,28 +120,28 @@ class Post:
         def when_user_cannot_book_free_offers_and_free_offer(self, app):
             # Given
             user = create_user(email='cannotBook_freeOffers@email.com', can_book_free_offers=False)
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
                                      name='Test offerer')
-            PcObject.check_and_save(offerer)
+            PcObject.save(offerer)
 
             venue = create_venue(offerer=offerer, name='Venue name', booking_email='booking@email.com',
                                  address='1 Test address', postal_code='93000', city='Test city', departement_code='93')
-            PcObject.check_and_save(venue)
+            PcObject.save(venue)
 
             thing_offer = create_offer_with_thing_product(venue)
-            PcObject.check_and_save(thing_offer)
+            PcObject.save(thing_offer)
 
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=0)
-            PcObject.check_and_save(stock)
+            PcObject.save(stock)
 
             recommendation = create_recommendation(thing_offer, user)
-            PcObject.check_and_save(recommendation)
+            PcObject.save(recommendation)
 
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, deposit_date, amount=500)
-            PcObject.check_and_save(deposit)
+            PcObject.save(deposit)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -174,9 +174,9 @@ class Post:
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, deposit_date, amount=0)
 
-            PcObject.check_and_save(recommendation)
-            PcObject.check_and_save(stock)
-            PcObject.check_and_save(deposit)
+            PcObject.save(recommendation)
+            PcObject.save(stock)
+            PcObject.save(deposit)
 
             booking_json = {
                 "stockId": humanize(stock.id),
@@ -199,34 +199,34 @@ class Post:
         def when_only_public_credit_and_limit_of_physical_thing_reached(self, app):
             # Given
             user = create_user(email='test@email.com')
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             offerer = create_offerer()
-            PcObject.check_and_save(offerer)
+            PcObject.save(offerer)
 
             venue = create_venue(offerer)
-            PcObject.check_and_save(venue)
+            PcObject.save(venue)
 
             thing_offer = create_offer_with_thing_product(venue)
-            PcObject.check_and_save(thing_offer)
+            PcObject.save(thing_offer)
 
             thing_stock_price_190 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=190)
 
             thing_stock_price_12 = create_stock_with_thing_offer(offerer, venue, thing_offer, price=12)
 
-            PcObject.check_and_save(thing_stock_price_190, thing_stock_price_12)
+            PcObject.save(thing_stock_price_190, thing_stock_price_12)
 
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
 
             deposit = create_deposit(user, deposit_date, amount=500, source='public')
 
-            PcObject.check_and_save(deposit)
+            PcObject.save(deposit)
 
             booking_thing_price_190 = create_booking(user, thing_stock_price_190, venue, recommendation=None)
-            PcObject.check_and_save(booking_thing_price_190)
+            PcObject.save(booking_thing_price_190)
 
             recommendation = create_recommendation(thing_offer, user)
-            PcObject.check_and_save(recommendation)
+            PcObject.save(recommendation)
 
             booking_thing_price_12_json = {
                 "stockId": humanize(thing_stock_price_12.id),
@@ -249,7 +249,7 @@ class Post:
         def when_missing_stock_id(self, app):
             # Given
             user = create_user(email='test@email.com')
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             booking_json = {
                 'stockId': None,
@@ -275,7 +275,7 @@ class Post:
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
 
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
             booking_json = {
                 'stockId': humanize(stock.id),
                 'recommendationId': 'AFQA',
@@ -298,7 +298,7 @@ class Post:
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
-            PcObject.check_and_save(stock, user)
+            PcObject.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -323,7 +323,7 @@ class Post:
             thing_offer = create_offer_with_thing_product(venue)
             thing_offer.isActive = False
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
-            PcObject.check_and_save(stock, user)
+            PcObject.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -348,7 +348,7 @@ class Post:
             thing_offer = create_offer_with_thing_product(venue)
             offerer.isActive = False
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
-            PcObject.check_and_save(stock, user)
+            PcObject.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -373,7 +373,7 @@ class Post:
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
             stock.isSoftDeleted = True
-            PcObject.check_and_save(stock, user)
+            PcObject.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -397,7 +397,7 @@ class Post:
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
-            PcObject.check_and_save(stock, user)
+            PcObject.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -421,7 +421,7 @@ class Post:
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
-            PcObject.check_and_save(stock, user)
+            PcObject.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -452,7 +452,7 @@ class Post:
                                                        end_datetime=four_days_ago)
             stock = create_stock_from_event_occurrence(event_occurrence, price=20)
 
-            PcObject.check_and_save(deposit, stock, user)
+            PcObject.save(deposit, stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -482,7 +482,7 @@ class Post:
 
             stock = create_stock_with_thing_offer(offerer, venue, price=20, booking_limit_datetime=four_days_ago)
 
-            PcObject.check_and_save(deposit, stock, user)
+            PcObject.save(deposit, stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -510,7 +510,7 @@ class Post:
             deposit = create_deposit(user, deposit_date, amount=200)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
             booking = create_booking(user, stock, venue, is_cancelled=False)
-            PcObject.check_and_save(stock, user, booking)
+            PcObject.save(stock, user, booking)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -536,13 +536,13 @@ class Post:
             ok_stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
             ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
             ok_stock.bookingLimitDatetime = datetime.utcnow() + timedelta(minutes=2)
-            PcObject.check_and_save(ok_stock)
+            PcObject.save(ok_stock)
 
             user = create_user(email='test@mail.com')
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             recommendation = create_recommendation(offer=ok_stock.offer, user=user)
-            PcObject.check_and_save(recommendation)
+            PcObject.save(recommendation)
 
             booking_json = {
                 'stockId': humanize(ok_stock.id),
@@ -571,7 +571,7 @@ class Post:
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=20, booking_limit_datetime=None)
 
-            PcObject.check_and_save(deposit, stock, user)
+            PcObject.save(deposit, stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -595,16 +595,16 @@ class Post:
             thing_offer = create_offer_with_thing_product(venue)
 
             user = create_user(email='test@email.com')
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=50, available=1)
-            PcObject.check_and_save(stock)
+            PcObject.save(stock)
 
             recommendation = create_recommendation(thing_offer, user)
-            PcObject.check_and_save(recommendation)
+            PcObject.save(recommendation)
 
             deposit = create_deposit(user, datetime.utcnow(), amount=50)
-            PcObject.check_and_save(deposit)
+            PcObject.save(deposit)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -629,16 +629,16 @@ class Post:
             thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.JEUX_VIDEO_ABO)
 
             user = create_user(email='test@email.com')
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=210, available=1)
-            PcObject.check_and_save(stock)
+            PcObject.save(stock)
 
             recommendation = create_recommendation(thing_offer, user)
-            PcObject.check_and_save(recommendation)
+            PcObject.save(recommendation)
 
             deposit = create_deposit(user, datetime.utcnow(), amount=500)
-            PcObject.check_and_save(deposit)
+            PcObject.save(deposit)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -658,10 +658,10 @@ class Post:
         def when_user_has_enough_credit_after_cancelling_booking(self, app):
             # Given
             user = create_user(email='test@email.com')
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             deposit = create_deposit(user, datetime.utcnow(), amount=50)
-            PcObject.check_and_save(deposit)
+            PcObject.save(deposit)
 
             offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
             venue = create_venue(offerer, 'venue name', 'booking@email.com', '1 fake street', '93000', 'False city',
@@ -669,13 +669,13 @@ class Post:
             event_offer = create_offer_with_event_product(venue)
 
             stock = create_stock_with_event_offer(offerer, venue, price=50, available=1)
-            PcObject.check_and_save(stock)
+            PcObject.save(stock)
 
             booking = create_booking(user, stock, venue, is_cancelled=True)
-            PcObject.check_and_save(booking)
+            PcObject.save(booking)
 
             recommendation = create_recommendation(event_offer, user)
-            PcObject.check_and_save(recommendation)
+            PcObject.save(recommendation)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -694,28 +694,28 @@ class Post:
         @clean_database
         def when_user_cannot_book_free_offers_but_has_enough_credit_for_paid_offer(self, app):
             user = create_user(email='can_book_paid_offers@email.com', can_book_free_offers=False)
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             offerer = create_offerer(siren='899999768', address='2 Test adress', city='Test city', postal_code='93000',
                                      name='Test offerer')
-            PcObject.check_and_save(offerer)
+            PcObject.save(offerer)
 
             venue = create_venue(offerer, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city',
                                  '93')
-            PcObject.check_and_save(venue)
+            PcObject.save(venue)
 
             thing_offer = create_offer_with_thing_product(venue)
-            PcObject.check_and_save(thing_offer)
+            PcObject.save(thing_offer)
 
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=10)
-            PcObject.check_and_save(stock)
+            PcObject.save(stock)
 
             recommendation = create_recommendation(thing_offer, user)
-            PcObject.check_and_save(recommendation)
+            PcObject.save(recommendation)
 
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
             deposit = create_deposit(user, deposit_date, amount=500)
-            PcObject.check_and_save(deposit)
+            PcObject.save(deposit)
 
             booking_json = {
                 "stockId": humanize(stock.id),
@@ -745,7 +745,7 @@ class Post:
             deposit = create_deposit(user, deposit_date, amount=200)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
             booking = create_booking(user, stock, venue, is_cancelled=True)
-            PcObject.check_and_save(stock, user, booking)
+            PcObject.save(stock, user, booking)
 
             booking_json = {
                 'stockId': humanize(stock.id),
@@ -769,7 +769,7 @@ class PatchBookingTest:
         deposit_date = datetime.utcnow() - timedelta(minutes=2)
         deposit = create_deposit(user, deposit_date, amount=500)
         booking = create_booking(user, is_used=True)
-        PcObject.check_and_save(user, deposit, booking)
+        PcObject.save(user, deposit, booking)
 
         # When
         response = TestClient().with_auth(user.email) \
@@ -788,7 +788,7 @@ class PatchBookingTest:
         deposit_date = datetime.utcnow() - timedelta(minutes=2)
         deposit = create_deposit(user, deposit_date, amount=500)
         booking = create_booking(user, quantity=1)
-        PcObject.check_and_save(user, deposit, booking)
+        PcObject.save(user, deposit, booking)
 
         # When
         response = TestClient().with_auth(user.email) \
@@ -807,7 +807,7 @@ class PatchBookingTest:
         deposit = create_deposit(user, deposit_date, amount=500)
         booking = create_booking(user)
         booking.isCancelled = True
-        PcObject.check_and_save(user, deposit, booking)
+        PcObject.save(user, deposit, booking)
 
         # When
         response = TestClient().with_auth(user.email) \
@@ -832,7 +832,7 @@ class PatchBookingTest:
         event_occurrence = create_event_occurrence(offer, beginning_datetime=in_four_days, end_datetime=in_five_days)
         stock = create_stock_from_event_occurrence(event_occurrence)
         booking = create_booking(user, stock, venue)
-        PcObject.check_and_save(user, deposit, booking)
+        PcObject.save(user, deposit, booking)
 
         # When
         response = TestClient().with_auth(user.email) \
@@ -857,7 +857,7 @@ class PatchBookingTest:
         event_occurrence = create_event_occurrence(offer, beginning_datetime=in_one_days, end_datetime=in_five_days)
         stock = create_stock_from_event_occurrence(event_occurrence)
         booking = create_booking(user, stock, venue)
-        PcObject.check_and_save(user, deposit, booking)
+        PcObject.save(user, deposit, booking)
 
         # When
         response = TestClient().with_auth(user.email) \
@@ -870,7 +870,7 @@ class PatchBookingTest:
     def test_returns_404_if_booking_does_not_exist(self, app):
         # Given
         user = create_user(email='test@email.com')
-        PcObject.check_and_save(user)
+        PcObject.save(user)
 
         # When
         response = TestClient().with_auth(user.email) \
@@ -887,7 +887,7 @@ class PatchBookingTest:
         deposit = create_deposit(other_user, deposit_date, amount=500)
         booking = create_booking(other_user)
         user = create_user(email='test@email.com')
-        PcObject.check_and_save(user, other_user, deposit, booking)
+        PcObject.save(user, other_user, deposit, booking)
 
         # When
         response = TestClient().with_auth(user.email) \
@@ -906,7 +906,7 @@ class PatchBookingTest:
         deposit_date = datetime.utcnow() - timedelta(minutes=2)
         deposit = create_deposit(other_user, deposit_date, amount=500)
         booking = create_booking(other_user)
-        PcObject.check_and_save(admin_user, other_user, deposit, booking)
+        PcObject.save(admin_user, other_user, deposit, booking)
 
         # When
         response = TestClient().with_auth(admin_user.email) \
@@ -933,7 +933,7 @@ class GetBookingByTokenTest:
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
 
-        PcObject.check_and_save(user_offerer, booking)
+        PcObject.save(user_offerer, booking)
 
         expected_json = {'bookingId': humanize(booking.id),
                          'date': serialize(booking.stock.beginningDatetime),
@@ -964,7 +964,7 @@ class GetBookingByTokenTest:
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
 
-        PcObject.check_and_save(admin_user, booking)
+        PcObject.save(admin_user, booking)
 
         expected_json = {'bookingId': humanize(booking.id),
                          'date': serialize(booking.stock.beginningDatetime),
@@ -999,7 +999,7 @@ class GetBookingByTokenTest:
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
 
-        PcObject.check_and_save(user_offerer, booking)
+        PcObject.save(user_offerer, booking)
         url_email = urlencode({'email': 'user+plus@email.fr'})
         url = API_URL + '/bookings/token/{}?{}'.format(booking.token, url_email)
 
@@ -1020,7 +1020,7 @@ class GetBookingByTokenTest:
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
 
-        PcObject.check_and_save(querying_user, booking)
+        PcObject.save(querying_user, booking)
 
         # When
         response = TestClient().with_auth('querying@email.fr').get(
@@ -1040,7 +1040,7 @@ class GetBookingByTokenTest:
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
 
-        PcObject.check_and_save(admin_user, booking)
+        PcObject.save(admin_user, booking)
 
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'user@email.fr')
         # When
@@ -1060,7 +1060,7 @@ class GetBookingByTokenTest:
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
 
-        PcObject.check_and_save(admin_user, booking)
+        PcObject.save(admin_user, booking)
         url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
                                                                          humanize(offer.id))
 
@@ -1080,7 +1080,7 @@ class GetBookingByTokenTest:
         stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
         booking = create_booking(user, stock, venue=venue)
 
-        PcObject.check_and_save(admin_user, booking)
+        PcObject.save(admin_user, booking)
         url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
                                                                          humanize(stock.offerId))
 
@@ -1093,7 +1093,7 @@ class GetBookingByTokenTest:
     def test_when_token_user_has_rights_but_token_not_found_returns_status_code_404_and_global_error(self, app):
         # Given
         admin_user = create_user(email='admin@email.fr')
-        PcObject.check_and_save(admin_user)
+        PcObject.save(admin_user)
 
         # When
         response = TestClient().with_auth('admin@email.fr').get(
@@ -1114,7 +1114,7 @@ class GetBookingByTokenTest:
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
 
-        PcObject.check_and_save(admin_user, booking)
+        PcObject.save(admin_user, booking)
 
         # When
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'toto@email.fr')
@@ -1133,7 +1133,7 @@ class GetBookingByTokenTest:
         stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
         booking = create_booking(user, stock, venue=venue)
 
-        PcObject.check_and_save(admin_user, booking)
+        PcObject.save(admin_user, booking)
         url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr', humanize(123))
 
         # When
@@ -1156,7 +1156,7 @@ class GetBookingByTokenTest:
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
 
-        PcObject.check_and_save(user_offerer, booking)
+        PcObject.save(user_offerer, booking)
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
         # When
@@ -1176,7 +1176,7 @@ class GetBookingByTokenTest:
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
 
-        PcObject.check_and_save(admin_user, booking)
+        PcObject.save(admin_user, booking)
 
         url = API_URL + '/bookings/token/{}'.format(booking.token)
         # When
@@ -1198,7 +1198,7 @@ class GetBookingByTokenTest:
         stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
         booking = create_booking(user, stock, venue=venue, is_used=True)
 
-        PcObject.check_and_save(admin_user, booking)
+        PcObject.save(admin_user, booking)
         url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
                                                                          humanize(stock.offerId))
 
@@ -1219,7 +1219,7 @@ class GetBookingByTokenTest:
         stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
         booking = create_booking(user, stock, venue=venue, is_cancelled=True)
 
-        PcObject.check_and_save(admin_user, booking)
+        PcObject.save(admin_user, booking)
         url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
                                                                          humanize(stock.offerId))
 
@@ -1240,7 +1240,7 @@ class PatchBookingAsAnonymousUserTest:
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock, venue=venue)
-        PcObject.check_and_save(booking)
+        PcObject.save(booking)
         url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email,
                                                                          humanize(stock.resolvedOffer.id))
 
@@ -1260,7 +1260,7 @@ class PatchBookingAsAnonymousUserTest:
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock, venue=venue)
-        PcObject.check_and_save(booking)
+        PcObject.save(booking)
         url = API_URL + '/bookings/token/{}?&offer_id={}'.format(booking.token, humanize(stock.resolvedOffer.id))
 
         # When
@@ -1279,7 +1279,7 @@ class PatchBookingAsAnonymousUserTest:
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock, venue=venue)
-        PcObject.check_and_save(booking)
+        PcObject.save(booking)
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
         # When
@@ -1297,7 +1297,7 @@ class PatchBookingAsAnonymousUserTest:
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock, venue=venue)
-        PcObject.check_and_save(booking)
+        PcObject.save(booking)
         url = API_URL + '/bookings/token/{}'.format(booking.token, user.email)
 
         # When
@@ -1317,7 +1317,7 @@ class PatchBookingAsAnonymousUserTest:
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock, venue=venue)
-        PcObject.check_and_save(booking)
+        PcObject.save(booking)
         url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'wrong.email@test.com',
                                                                          humanize(stock.resolvedOffer.id))
 
@@ -1341,7 +1341,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock, venue=venue)
-        PcObject.check_and_save(booking, user_offerer)
+        PcObject.save(booking, user_offerer)
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
@@ -1362,7 +1362,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock, venue=venue)
-        PcObject.check_and_save(booking, user_offerer)
+        PcObject.save(booking, user_offerer)
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
@@ -1386,7 +1386,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
 
-        PcObject.check_and_save(user_offerer, booking)
+        PcObject.save(user_offerer, booking)
         url_email = urlencode({'email': 'user+plus@email.fr'})
         url = API_URL + '/bookings/token/{}?{}'.format(booking.token, url_email)
 
@@ -1404,7 +1404,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock, venue=venue)
-        PcObject.check_and_save(booking, admin_user)
+        PcObject.save(booking, admin_user)
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
         # When
@@ -1425,7 +1425,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock, venue=venue)
-        PcObject.check_and_save(booking, admin_user)
+        PcObject.save(booking, admin_user)
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'wrong@email.fr')
 
         # When
@@ -1449,7 +1449,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
 
-        PcObject.check_and_save(user_offerer, booking)
+        PcObject.save(user_offerer, booking)
         url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
         # When
@@ -1466,7 +1466,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock, venue=venue)
-        PcObject.check_and_save(booking, admin_user)
+        PcObject.save(booking, admin_user)
         url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(123))
 
         # When
@@ -1488,7 +1488,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock, venue=venue)
         booking.isCancelled = True
-        PcObject.check_and_save(booking, user_offerer)
+        PcObject.save(booking, user_offerer)
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
@@ -1512,7 +1512,7 @@ class PatchBookingByTokenAsLoggedInUserTest:
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user, stock, venue=venue)
         booking.isUsed = True
-        PcObject.check_and_save(booking, user_offerer)
+        PcObject.save(booking, user_offerer)
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
@@ -1537,7 +1537,7 @@ class GetBookingTest:
         stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=offer, price=0)
         booking = create_booking(user, stock, venue=venue, token='ABCDEF')
 
-        PcObject.check_and_save(booking)
+        PcObject.save(booking)
 
         # When
         response = TestClient().with_auth(user.email).get(
@@ -1579,9 +1579,9 @@ class GetBookingsCsvTest:
         booking5 = create_booking(user, stock4, venue=venue3, token='ABCDEJ')
         booking6 = create_booking(user, stock4, venue=venue3, token='ABCDEK')
 
-        PcObject.check_and_save(deposit, booking1, booking2, booking3,
-                                booking4, booking5, booking6, user_offerer1,
-                                user_offerer2)
+        PcObject.save(deposit, booking1, booking2, booking3,
+                      booking4, booking5, booking6, user_offerer1,
+                      user_offerer2)
 
         # When
         response = TestClient().with_auth(user.email).get(
@@ -1598,7 +1598,7 @@ class GetBookingsCsvTest:
     def test_get_bookings_csv_no_user_offerer(self, app):
         # Given
         user = create_user(email='user+plus@email.fr')
-        PcObject.check_and_save(user)
+        PcObject.save(user)
 
         # When
         response = TestClient().with_auth(user.email).get(
@@ -1625,7 +1625,7 @@ class PatchBookingByTokenForActivationOffersTest:
         activation_event_occurrence = create_event_occurrence(activation_offer)
         stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
-        PcObject.check_and_save(booking, user_offerer)
+        PcObject.save(booking, user_offerer)
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
@@ -1648,7 +1648,7 @@ class PatchBookingByTokenForActivationOffersTest:
         activation_event_occurrence = create_event_occurrence(activation_offer)
         stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
-        PcObject.check_and_save(booking, user_offerer)
+        PcObject.save(booking, user_offerer)
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
@@ -1671,7 +1671,7 @@ class PatchBookingByTokenForActivationOffersTest:
         activation_event_occurrence = create_event_occurrence(activation_offer)
         stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
-        PcObject.check_and_save(booking, user_offerer)
+        PcObject.save(booking, user_offerer)
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
@@ -1698,7 +1698,7 @@ class PatchBookingByTokenForActivationOffersTest:
         stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
         deposit = create_deposit(user, datetime.utcnow(), amount=500)
-        PcObject.check_and_save(booking, user_offerer, deposit)
+        PcObject.save(booking, user_offerer, deposit)
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When
@@ -1722,7 +1722,7 @@ class PatchBookingByTokenForActivationOffersTest:
         activation_event_occurrence = create_event_occurrence(activation_offer)
         stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
         booking = create_booking(user, stock, venue=venue)
-        PcObject.check_and_save(booking, user_offerer)
+        PcObject.save(booking, user_offerer)
         url = API_URL + '/bookings/token/{}'.format(booking.token)
 
         # When

@@ -22,7 +22,7 @@ def create_industrial_deposits(users_by_name):
             amount=500
         )
 
-    PcObject.check_and_save(*deposits_by_name.values())
+    PcObject.save(*deposits_by_name.values())
 
     logger.info('created {} deposits'.format(len(deposits_by_name)))
 

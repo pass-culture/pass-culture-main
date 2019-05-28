@@ -20,7 +20,7 @@ class Post:
                 'durationMinutes': 60,
                 'type': str(ThingType.AUDIOVISUEL)
             }
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             # When
             request = TestClient().with_auth(user.email).post(
@@ -38,7 +38,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.check_and_save(user, user_offerer, venue)
+            PcObject.save(user, user_offerer, venue)
 
             json = {
                 'bookingEmail': 'offer@email.com',
@@ -65,7 +65,7 @@ class Post:
                 'name': 'La pièce de théâtre',
                 'durationMinutes': 60
             }
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             # When
             request = TestClient().with_auth(user.email).post(
@@ -84,7 +84,7 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=True, siret=None)
-            PcObject.check_and_save(user, venue, user_offerer)
+            PcObject.save(user, venue, user_offerer)
             json = {
                 'type': 'ThingType.JEUX',
                 'name': 'Le grand jeu',
@@ -110,7 +110,7 @@ class Post:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=False)
             event_product = create_product_with_Event_type()
-            PcObject.check_and_save(user, venue, event_product, user_offerer)
+            PcObject.save(user, venue, event_product, user_offerer)
             json = {
                 'type': '',
                 'name': 'Les lapins crétins',
@@ -137,7 +137,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.check_and_save(user, user_offerer, venue)
+            PcObject.save(user, user_offerer, venue)
 
             json = {
                 'venueId': humanize(venue.id),
@@ -190,7 +190,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.check_and_save(user, user_offerer, venue)
+            PcObject.save(user, user_offerer, venue)
 
             json = {
                 'venueId': humanize(venue.id),
@@ -218,7 +218,7 @@ class Post:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=True, siret=None)
             thing_product = create_product_with_Thing_type()
-            PcObject.check_and_save(user, venue, thing_product, user_offerer)
+            PcObject.save(user, venue, thing_product, user_offerer)
             json = {
                 'type': 'ThingType.JEUX_VIDEO',
                 'name': 'Les lapins crétins',
@@ -274,7 +274,7 @@ class Post:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             thing_product = create_product_with_Thing_type()
-            PcObject.check_and_save(user_offerer, venue, thing_product)
+            PcObject.save(user_offerer, venue, thing_product)
 
             data = {
                 'venueId': humanize(venue.id),
@@ -296,7 +296,7 @@ class Post:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             event_product = create_product_with_Event_type()
-            PcObject.check_and_save(user_offerer, venue, event_product)
+            PcObject.save(user_offerer, venue, event_product)
 
             data = {
                 'venueId': humanize(venue.id),
@@ -316,7 +316,7 @@ class Post:
             user = create_user(email='test@email.com', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            PcObject.check_and_save(user, venue)
+            PcObject.save(user, venue)
 
             json = {
                 'name': "Offre d'activation",
@@ -341,7 +341,7 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer, is_admin=False)
             venue = create_venue(offerer)
-            PcObject.check_and_save(user_offerer, venue)
+            PcObject.save(user_offerer, venue)
 
             json = {
                 'name': "Offre d'activation",
@@ -368,7 +368,7 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
             venue = create_venue(offerer)
-            PcObject.check_and_save(user_offerer, venue)
+            PcObject.save(user_offerer, venue)
 
             json = {
                 'name': "Offre d'activation",
@@ -393,7 +393,7 @@ class Post:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            PcObject.check_and_save(user, venue)
+            PcObject.save(user, venue)
 
             json = {
                 'name': 'La pièce de théâtre',

@@ -73,7 +73,7 @@ class HasThumbMixin(object):
         self.thumbCount = max(image_index + 1, self.thumbCount or 0)
 
         if need_save:
-            PcObject.check_and_save(self)
+            PcObject.save(self)
 
     @property
     def thumbUrl(self):

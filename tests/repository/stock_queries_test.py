@@ -29,7 +29,7 @@ def test_find_stocks_of_finished_events_when_no_recap_sent(app):
     stock_future = create_stock_from_event_occurrence(event_occurrence_future)
     stock_thing = create_stock_from_offer(thing_offer)
     stock_recap_sent = create_stock_from_event_occurrence(event_occurrence_past_2, recap_sent=True)
-    PcObject.check_and_save(stock_past, stock_future, stock_thing, stock_soft_deleted, stock_recap_sent)
+    PcObject.save(stock_past, stock_future, stock_thing, stock_soft_deleted, stock_recap_sent)
 
     # When
     stocks = find_stocks_of_finished_events_when_no_recap_sent().all()
@@ -51,7 +51,7 @@ def test_create_stock_triggers_insert_activities(app):
     stock = create_stock_from_offer(thing_offer)
 
     # When
-    PcObject.check_and_save(stock)
+    PcObject.save(stock)
 
     # Then
     activities = load_activity().query.all()
@@ -76,7 +76,7 @@ def test_find_online_activation_stock(app):
     other_thing_stock = create_stock_from_offer(other_thing_offer, available=100, price=10)
     event_stock = create_stock_from_offer(event_offer, available=50, price=20)
 
-    PcObject.check_and_save(other_thing_stock, activation_stock, event_stock)
+    PcObject.save(other_thing_stock, activation_stock, event_stock)
 
     # when
     stock = find_online_activation_stock()

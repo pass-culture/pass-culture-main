@@ -25,7 +25,7 @@ def import_init_titelive_thumbs(connexion, container_name, titelive_thumb_identi
                                      content_type='image/jpeg')
                 connexion.delete_object(container_name,
                                         existing_image_name)
-            PcObject.check_and_save(thing)
+            PcObject.save(thing)
     return new_image_name
 
 

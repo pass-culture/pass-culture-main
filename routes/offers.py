@@ -87,7 +87,7 @@ def post_offer():
 
     offer.venue = venue
     offer.bookingEmail = request.json.get('bookingEmail', None)
-    PcObject.check_and_save(offer)
+    PcObject.save(offer)
     send_offer_creation_notification_to_administration(offer, current_user, PRO_URL, send_raw_email)
 
     return jsonify(
@@ -107,7 +107,7 @@ def patch_offer(id):
     ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
     offer.populate_from_dict(request.json)
     offer.updatewith_product_data(thing_or_event_dict)
-    PcObject.check_and_save(offer)
+    PcObject.save(offer)
     if 'isActive' in request.json and not request.json['isActive']:
         invalidate_recommendations(offer)
 

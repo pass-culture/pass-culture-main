@@ -27,7 +27,7 @@ def test_validate_offerer(app):
                              validation_token=offerer_token)
     user = create_user()
     user_offerer = create_user_offerer(user, offerer, is_admin=True)
-    PcObject.check_and_save(offerer, user_offerer)
+    PcObject.save(offerer, user_offerer)
     offerer_id = offerer.id
     del (offerer)
 
@@ -53,7 +53,7 @@ def test_validate_venue_with_right_validation_token_sets_validation_token_to_non
     offerer = create_offerer()
     venue = create_venue(offerer)
     venue.generate_validation_token()
-    PcObject.check_and_save(venue)
+    PcObject.save(venue)
 
     token = venue.validationToken
 
@@ -94,7 +94,7 @@ def test_validate_user_when_validation_token_exists_should_put_validation_token_
     # Given
     user = create_user()
     user.generate_validation_token()
-    PcObject.check_and_save(user)
+    PcObject.save(user)
 
     # When
     response = req.patch(API_URL + '/validate/user/' + user.validationToken, headers={'origin': 'http://localhost:3000'})
@@ -129,7 +129,7 @@ class CertifyMessageFileAuthenticityTest:
             name='passCulture-SCT-20181015-114356',
             checksum=b'\x86\x05[(j\xfd\x111l\xd7\xca\xcd\x00\xe6\x104\xfd\xde\xdd\xa5\x0c#L\x01W\xa8\xf0\xdan0\x93\x1e'
         )
-        PcObject.check_and_save(user, payment_message)
+        PcObject.save(user, payment_message)
 
         auth_request = req_with_auth(email=user.email)
 
@@ -152,7 +152,7 @@ class CertifyMessageFileAuthenticityTest:
             name='passCulture-SCT-20181015-114356',
             checksum=b'FAKE_CHECKSUM'
         )
-        PcObject.check_and_save(user, payment_message)
+        PcObject.save(user, payment_message)
 
         auth_request = req_with_auth(email=user.email)
 
@@ -191,7 +191,7 @@ class CertifyMessageFileAuthenticityTest:
             name='passCulture-SCT-20181015-114356',
             checksum=b'\x86\x05[(j\xfd\x111l\xd7\xca\xcd\x00\xe6\x104\xfd\xde\xdd\xa5\x0c#L\x01W\xa8\xf0\xdan0\x93\x1e'
         )
-        PcObject.check_and_save(user, message)
+        PcObject.save(user, message)
 
         auth_request = req_with_auth(email=user.email)
 
@@ -209,7 +209,7 @@ class CertifyMessageFileAuthenticityTest:
     def test_returns_not_found_if_message_id_from_file_is_unknown(self, app):
         # given
         user = create_user(can_book_free_offers=False, is_admin=True)
-        PcObject.check_and_save(user)
+        PcObject.save(user)
 
         auth_request = req_with_auth(email=user.email)
 

@@ -34,7 +34,7 @@ class RetryLinkedPaymentsTest:
         payment.setStatus(TransactionStatus.NOT_PROCESSABLE)
         other_payment.setStatus(TransactionStatus.NOT_PROCESSABLE)
 
-        PcObject.check_and_save(*(bank_information_list + [payment, other_payment]))
+        PcObject.save(*(bank_information_list + [payment, other_payment]))
 
         # When
         retry_linked_payments(bank_information_list)
@@ -57,7 +57,7 @@ class RetryLinkedPaymentsTest:
             create_bank_information(venue=other_venue, id_at_providers=other_venue.siret)
         ]
 
-        PcObject.check_and_save(*bank_information_list)
+        PcObject.save(*bank_information_list)
 
         try:
             # When

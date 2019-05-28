@@ -41,7 +41,7 @@ def signup_webapp():
     new_user.isAdmin = False
     objects_to_save.append(new_user)
 
-    PcObject.check_and_save(*objects_to_save)
+    PcObject.save(*objects_to_save)
 
     if request.json.get('contact_ok'):
         subscribe_newsletter(new_user)
@@ -76,7 +76,7 @@ def signup_pro():
     new_user.generate_validation_token()
     objects_to_save.append(new_user)
 
-    PcObject.check_and_save(*objects_to_save)
+    PcObject.save(*objects_to_save)
 
     try:
         send_user_validation_email(new_user, send_raw_email, app_origin_url, is_webapp=False)

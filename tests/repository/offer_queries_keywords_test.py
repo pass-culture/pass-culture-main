@@ -22,7 +22,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_e
     ok_offer1 = create_offer_with_event_product(venue, ok_event1)
     ko_offer2 = create_offer_with_event_product(venue, event2)
     ok_offer3 = create_offer_with_thing_product(venue, ok_thing)
-    PcObject.check_and_save(ok_offer1, ko_offer2, ok_offer3)
+    PcObject.save(ok_offer1, ko_offer2, ok_offer3)
 
     # when
     query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'rencontre')
@@ -47,7 +47,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
     ok_offer1 = create_offer_with_event_product(venue, ok_event1)
     ko_offer2 = create_offer_with_event_product(venue, event2)
     ok_offer3 = create_offer_with_thing_product(venue, ok_thing)
-    PcObject.check_and_save(ok_offer1, ko_offer2, ok_offer3)
+    PcObject.save(ok_offer1, ko_offer2, ok_offer3)
 
     # when
     query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Renc')
@@ -74,7 +74,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     ko_offer2 = create_offer_with_event_product(venue, event2)
     ok_offer3 = create_offer_with_thing_product(venue, ok_thing1)
     ko_offer4 = create_offer_with_thing_product(venue, thing2)
-    PcObject.check_and_save(ok_offer1, ko_offer2, ok_offer3, ko_offer4)
+    PcObject.save(ok_offer1, ko_offer2, ok_offer3, ko_offer4)
 
     # when
     query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Rencontre Jacques')
@@ -103,7 +103,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     ko_offer2 = create_offer_with_event_product(venue, event2)
     ok_offer3 = create_offer_with_thing_product(venue, ok_thing1)
     ko_offer4 = create_offer_with_thing_product(venue, thing2)
-    PcObject.check_and_save(ok_offer1, ko_offer2, ok_offer3, ko_offer4)
+    PcObject.save(ok_offer1, ko_offer2, ok_offer3, ko_offer4)
 
     # when
     query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Renc Jacqu')
@@ -140,7 +140,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_v
     ko_offer6 = create_offer_with_event_product(venue4, event_product)
     ok_offer7 = create_offer_with_thing_product(ok_venue3, thing_product)
     ko_offer8 = create_offer_with_thing_product(venue4, thing_product)
-    PcObject.check_and_save(
+    PcObject.save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
     )
@@ -183,7 +183,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_v
     ko_offer6 = create_offer_with_event_product(venue4, event)
     ok_offer7 = create_offer_with_thing_product(ok_venue3, thing)
     ko_offer8 = create_offer_with_thing_product(venue4, thing)
-    PcObject.check_and_save(
+    PcObject.save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
     )
@@ -226,7 +226,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
     ko_offer6 = create_offer_with_event_product(venue4, event)
     ok_offer7 = create_offer_with_thing_product(ok_venue3, thing)
     ko_offer8 = create_offer_with_thing_product(venue4, thing)
-    PcObject.check_and_save(
+    PcObject.save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
     )
@@ -269,7 +269,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     ko_offer6 = create_offer_with_event_product(venue4, event)
     ok_offer7 = create_offer_with_thing_product(ok_venue3, thing)
     ko_offer8 = create_offer_with_thing_product(venue4, thing)
-    PcObject.check_and_save(
+    PcObject.save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
     )
@@ -312,7 +312,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     ko_offer6 = create_offer_with_event_product(venue4, event)
     ok_offer7 = create_offer_with_thing_product(ok_venue3, thing)
     ko_offer8 = create_offer_with_thing_product(venue4, thing)
-    PcObject.check_and_save(
+    PcObject.save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
     )
@@ -356,7 +356,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
     ko_offer6 = create_offer_with_event_product(venue4, event_product)
     ok_offer7 = create_offer_with_thing_product(ok_venue3, thing_product)
     ko_offer8 = create_offer_with_thing_product(venue4, thing_product)
-    PcObject.check_and_save(
+    PcObject.save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
     )
@@ -401,7 +401,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     ko_offer6 = create_offer_with_event_product(venue4, event_product)
     ok_offer7 = create_offer_with_thing_product(ok_venue3, thing_product)
     ko_offer8 = create_offer_with_thing_product(venue4, thing_product)
-    PcObject.check_and_save(
+    PcObject.save(
         ok_offer1, ko_offer2, ok_offer3, ko_offer4,
         ok_offer5, ko_offer6, ok_offer7, ko_offer8
     )
@@ -445,7 +445,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     ko_offer6 = create_offer_with_event_product(ko_venue4, event_product)
     ko_offer7 = create_offer_with_thing_product(ko_venue3, thing_product)
     ko_offer8 = create_offer_with_thing_product(ko_venue4, thing_product)
-    PcObject.check_and_save(
+    PcObject.save(
         ok_offer1,
         ko_offer2,
         ok_offer3,
@@ -497,7 +497,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     ko_offer6 = create_offer_with_event_product(ko_venue4, event_product)
     ko_offer7 = create_offer_with_thing_product(ko_venue3, thing_product)
     ko_offer8 = create_offer_with_thing_product(ko_venue4, thing_product)
-    PcObject.check_and_save(
+    PcObject.save(
         ok_offer1,
         ko_offer2,
         ok_offer3,
@@ -538,7 +538,7 @@ def test_create_filter_matching_all_keywords_with_one_keyword_at_mixed_event_or_
     ok_offer1 = create_offer_with_event_product(venue1, ok_event1)
     ko_offer2 = create_offer_with_event_product(venue1, event2)
     ok_offer3 = create_offer_with_thing_product(ok_venue2, thing_product)
-    PcObject.check_and_save(ok_offer1, ko_offer2, ok_offer3)
+    PcObject.save(ok_offer1, ko_offer2, ok_offer3)
 
     # when
     query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Rencontre')
@@ -565,7 +565,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
     ok_offer1 = create_offer_with_event_product(venue1, ok_event1)
     ko_offer2 = create_offer_with_event_product(venue1, event2)
     ok_offer3 = create_offer_with_thing_product(ok_venue2, thing_product)
-    PcObject.check_and_save(ok_offer1, ko_offer2, ok_offer3)
+    PcObject.save(ok_offer1, ko_offer2, ok_offer3)
 
     # when
     query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Rencon')
@@ -594,7 +594,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     ko_offer2 = create_offer_with_event_product(venue1, event2)
     ok_offer3 = create_offer_with_thing_product(venue2, thing1)
     ko_offer4 = create_offer_with_thing_product(venue2, thing2)
-    PcObject.check_and_save(ok_offer1, ko_offer2, ok_offer3, ko_offer4)
+    PcObject.save(ok_offer1, ko_offer2, ok_offer3, ko_offer4)
 
     # when
     query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Rencontre Jacques')
@@ -624,7 +624,7 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     ko_offer2 = create_offer_with_event_product(venue1, event2)
     ok_offer3 = create_offer_with_thing_product(venue2, thing1)
     ko_offer4 = create_offer_with_thing_product(venue2, thing2)
-    PcObject.check_and_save(ok_offer1, ko_offer2, ok_offer3, ko_offer4)
+    PcObject.save(ok_offer1, ko_offer2, ok_offer3, ko_offer4)
 
     # when
     query = filter_offers_with_keywords_string(build_offer_search_base_query(), 'Jacq Rencon')
@@ -656,7 +656,7 @@ def test_get_offers_for_recommendations_search_only_return_available_offers(app)
     booking = create_booking(user, stock_with_one_available, quantity=1, venue=venue)
     stock_available = create_stock(price=12, available=5, offer=offer_available)
 
-    PcObject.check_and_save(stock_with_no_available, stock_available, booking)
+    PcObject.save(stock_with_no_available, stock_available, booking)
 
     # When
     offers = get_offers_for_recommendations_search(keywords_string='Jazz')

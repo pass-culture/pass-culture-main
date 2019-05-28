@@ -22,7 +22,7 @@ class Patch:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, booking_email='old@email.com')
 
-            PcObject.check_and_save(offer, user, user_offerer)
+            PcObject.save(offer, user, user_offerer)
 
             json = {
                 'bookingEmail': 'offer@email.com',
@@ -49,7 +49,7 @@ class Patch:
             offer = create_offer_with_thing_product(venue, booking_email='old@email.com')
             recommendation = create_recommendation(offer, user, valid_until_date=seven_days_from_now)
 
-            PcObject.check_and_save(offer, user, user_offerer, recommendation)
+            PcObject.save(offer, user, user_offerer, recommendation)
 
             json = {
                 'isActive': False,
@@ -75,7 +75,7 @@ class Patch:
             product = create_product_with_Thing_type(thing_name='Old Name', owning_offerer=owning_offerer)
             offer = create_offer_with_thing_product(venue, product)
 
-            PcObject.check_and_save(offer, user_offerer)
+            PcObject.save(offer, user_offerer)
 
             json = {
                 'name': 'New Name'
@@ -104,7 +104,7 @@ class Patch:
             product = create_product_with_Thing_type(thing_name='Old Name', owning_offerer=owning_offerer)
             offer = create_offer_with_thing_product(venue, product)
 
-            PcObject.check_and_save(offer, editor_user_offerer, owning_offerer)
+            PcObject.save(offer, editor_user_offerer, owning_offerer)
 
             json = {
                 'name': 'New Name'
@@ -132,7 +132,7 @@ class Patch:
             product = create_product_with_Thing_type(thing_name='Old Name', owning_offerer=None)
             offer = create_offer_with_thing_product(venue, product)
 
-            PcObject.check_and_save(offer, user_offerer)
+            PcObject.save(offer, user_offerer)
 
             json = {
                 'name': 'New Name'
@@ -161,7 +161,7 @@ class Patch:
             thing_product = create_product_with_Thing_type(thing_name='Old Name', owning_offerer=None)
             offer = create_offer_with_thing_product(venue, thing_product)
 
-            PcObject.check_and_save(offer, user, user_offerer)
+            PcObject.save(offer, user, user_offerer)
 
             forbidden_keys = ['idAtProviders', 'dateModifiedAtLastProvider', 'thumbCount', 'firstThumbDominantColor',
                               'owningOffererId', 'id', 'lastProviderId', 'dateCreated']
@@ -198,7 +198,7 @@ class Patch:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_product)
 
-            PcObject.check_and_save(event_product, offer, user, venue)
+            PcObject.save(event_product, offer, user, venue)
 
             json = {
                 'name': 'New name',
@@ -219,7 +219,7 @@ class Patch:
             def test_returns_404_if_offer_does_not_exist(self, app):
                 # given
                 user = create_user()
-                PcObject.check_and_save(user)
+                PcObject.save(user)
                 auth_request = TestClient().with_auth(email=user.email)
 
                 # when

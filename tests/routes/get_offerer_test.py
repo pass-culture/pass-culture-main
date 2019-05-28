@@ -14,7 +14,7 @@ class Get:
         def when_user_offerer_does_not_exist(self, app):
             # Given
             user = create_user()
-            PcObject.check_and_save(user)
+            PcObject.save(user)
             invalid_id = 12
 
             # When
@@ -35,7 +35,7 @@ class Get:
             venue = create_venue(offerer)
             create_bank_information(venue=venue, id_at_providers=venue.siret)
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.check_and_save(user_offerer, venue)
+            PcObject.save(user_offerer, venue)
             # when
             response = TestClient() \
                 .with_auth(user.email) \

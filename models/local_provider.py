@@ -332,7 +332,7 @@ class LocalProvider(Iterator):
         self.logEvent(LocalProviderEventType.SyncEnd)
         if self.venueProvider is not None:
             self.venueProvider.lastSyncDate = datetime.utcnow()
-            PcObject.check_and_save(self.venueProvider)
+            PcObject.save(self.venueProvider)
 
     def get_existing_pc_obj(self, providable_info, chunk_to_insert, chunk_to_update):
         object_in_current_chunk = self.get_object_from_current_chunks(providable_info,

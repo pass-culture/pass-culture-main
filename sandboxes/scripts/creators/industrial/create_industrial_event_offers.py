@@ -51,7 +51,7 @@ def create_industrial_event_offers(
 
         event_index += EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE
 
-    PcObject.check_and_save(*event_offers_by_name.values())
+    PcObject.save(*event_offers_by_name.values())
 
     logger.info('created {} event_offers'.format(len(event_offers_by_name)))
 

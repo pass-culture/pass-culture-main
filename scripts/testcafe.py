@@ -19,4 +19,4 @@ def testcafe():
 def do_testcafe():
     provider = Provider.query.filter_by(localClass='OpenAgendaEvents').first()
     provider.isActive = True
-    PcObject.check_and_save(provider)
+    PcObject.save(provider)

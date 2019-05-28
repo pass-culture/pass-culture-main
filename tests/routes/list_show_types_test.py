@@ -12,7 +12,7 @@ class Get:
         def when_list_show_types(self, app):
             # given
             user = create_user()
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             # when
             response = TestClient().with_auth(user.email)\

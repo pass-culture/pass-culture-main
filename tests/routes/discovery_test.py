@@ -49,7 +49,7 @@ class Put:
             stock_thing_2 = create_stock_with_thing_offer(offerer, venue, offer_thing_2, price=0)
             mediation_1 = create_mediation(offer_thing_1)
             mediation_2 = create_mediation(offer_thing_2)
-            PcObject.check_and_save(user, stock_thing_1, stock_thing_2, mediation_1, mediation_2)
+            PcObject.save(user, stock_thing_1, stock_thing_2, mediation_1, mediation_2)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -71,7 +71,7 @@ class Put:
             offer_with_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
             stock_with_thing = create_stock_with_thing_offer(offerer, venue, offer_with_thing, price=0)
             mediation = create_mediation(offer_with_thing)
-            PcObject.check_and_save(user, stock_with_thing, mediation)
+            PcObject.save(user, stock_with_thing, mediation)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -93,7 +93,7 @@ class Put:
             offer_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
-            PcObject.check_and_save(user, stock_thing, mediation)
+            PcObject.save(user, stock_thing, mediation)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -110,7 +110,7 @@ class Put:
         def when_offer_is_unknown_and_mediation_is_unknown(self, app):
             # given
             user = create_user(email='user1@user.fr')
-            PcObject.check_and_save(user)
+            PcObject.save(user)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -132,7 +132,7 @@ class Put:
             venue.generate_validation_token()
             offer1 = create_offer_with_thing_product(venue, thumb_count=1)
             stock1 = create_stock_from_offer(offer1, price=0)
-            PcObject.check_and_save(user, stock1)
+            PcObject.save(user, stock1)
             auth_request = TestClient().with_auth(user.email)
 
             data = {'seenRecommendationIds': []}
@@ -161,7 +161,7 @@ class Put:
             recommendation1 = create_recommendation(offer, user)
             recommendation2 = create_recommendation(thing_offer1, user)
             recommendation3 = create_recommendation(thing_offer2, user)
-            PcObject.check_and_save(
+            PcObject.save(
                 stock1, stock2, stock3, stock4,
                 recommendation1, recommendation2, recommendation3
             )
@@ -204,7 +204,7 @@ class Put:
             recommendation1 = create_recommendation(offer, user)
             recommendation2 = create_recommendation(thing_offer1, user)
             recommendation3 = create_recommendation(thing_offer2, user)
-            PcObject.check_and_save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
+            PcObject.save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
 
             auth_request = TestClient().with_auth(user.email)
 
@@ -240,7 +240,7 @@ class Put:
             stock2 = create_stock_from_offer(thing_offer2)
             stock3 = create_stock_from_offer(thing_offer3)
             stock4 = create_stock_from_offer(thing_offer4)
-            PcObject.check_and_save(user, stock1, stock2, stock3, stock4)
+            PcObject.save(user, stock1, stock2, stock3, stock4)
 
             # when
             response = TestClient().with_auth(user.email) \
@@ -261,7 +261,7 @@ class Put:
             thing_offer2 = create_offer_with_thing_product(venue67, thing_name='thing 67', url=None, is_national=False)
             stock1 = create_stock_from_offer(thing_offer1)
             stock2 = create_stock_from_offer(thing_offer2)
-            PcObject.check_and_save(user, stock1, stock2)
+            PcObject.save(user, stock1, stock2)
 
             # when
             response = TestClient().with_auth(user.email) \
@@ -289,7 +289,7 @@ class Put:
             recommendation1 = create_recommendation(offer, user)
             recommendation2 = create_recommendation(thing_offer1, user)
             recommendation3 = create_recommendation(thing_offer2, user)
-            PcObject.check_and_save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
+            PcObject.save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
 
             # When
             response = TestClient().with_auth('test@email.com').put(RECOMMENDATION_URL, json={})
@@ -307,7 +307,7 @@ class Put:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            PcObject.check_and_save(user, offer)
+            PcObject.save(user, offer)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -325,7 +325,7 @@ class Put:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, thumb_count=1)
             stock = create_stock_from_offer(offer, price=0)
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -343,7 +343,7 @@ class Put:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             stock = create_stock_from_offer(offer, price=0)
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -363,7 +363,7 @@ class Put:
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             stock = create_stock_from_offer(offer, price=0)
             mediation = create_mediation(offer)
-            PcObject.check_and_save(user, stock, mediation)
+            PcObject.save(user, stock, mediation)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -390,7 +390,7 @@ class Put:
                 end_datetime=eight_days_from_now
             )
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -419,7 +419,7 @@ class Put:
             )
             mediation = create_mediation(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
-            PcObject.check_and_save(user, stock, mediation)
+            PcObject.save(user, stock, mediation)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -447,7 +447,7 @@ class Put:
                 end_datetime=eight_days_from_now
             )
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -469,7 +469,7 @@ class Put:
             stock_venue_not_validated = create_stock_from_offer(offer_venue_not_validated)
             stock_venue_validated = create_stock_from_offer(offer_venue_validated)
             user = create_user(email='test@email.com')
-            PcObject.check_and_save(stock_venue_not_validated, stock_venue_validated, user)
+            PcObject.save(stock_venue_not_validated, stock_venue_validated, user)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -495,7 +495,7 @@ class Put:
             stock2 = create_stock_from_offer(offer2, price=0)
             mediation2 = create_mediation(offer2, is_active=False)
             mediation3 = create_mediation(offer2, is_active=True)
-            PcObject.check_and_save(user, stock1, mediation1, stock2, mediation2, mediation3)
+            PcObject.save(user, stock1, mediation1, stock2, mediation2, mediation3)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -530,8 +530,8 @@ class Put:
             stock4 = create_stock_from_offer(offer4, price=0)
             recommendation_offer3 = create_recommendation(offer3, user)
             recommendation_offer4 = create_recommendation(offer4, user, date_read=now - timedelta(days=1))
-            PcObject.check_and_save(user, stock1, stock2, stock3, stock4, mediation,
-                                    recommendation_offer3, recommendation_offer4)
+            PcObject.save(user, stock1, stock2, stock3, stock4, mediation,
+                          recommendation_offer3, recommendation_offer4)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -576,8 +576,8 @@ class Put:
             recommendation_offer3 = create_recommendation(offer3, user, valid_until_date=fifteen_min_ago)
             recommendation_offer4 = create_recommendation(offer4, user, date_read=now - timedelta(days=1),
                                                           valid_until_date=fifteen_min_ago)
-            PcObject.check_and_save(stock1, stock2, stock3, stock4, mediation, recommendation_offer3,
-                                    recommendation_offer4, recommendation_offer1, recommendation_offer2)
+            PcObject.save(stock1, stock2, stock3, stock4, mediation, recommendation_offer3,
+                          recommendation_offer4, recommendation_offer1, recommendation_offer2)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -612,7 +612,7 @@ class Put:
             event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
             offer_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
-            PcObject.check_and_save(user, event_stock, stock_thing)
+            PcObject.save(user, event_stock, stock_thing)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -638,7 +638,7 @@ class Put:
 
             recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
 
-            PcObject.check_and_save(user, stock1, mediation1, stock2, mediation2, recommendation)
+            PcObject.save(user, stock1, mediation1, stock2, mediation2, recommendation)
             db.session.refresh(offer2)
             db.session.refresh(recommendation)
             auth_request = TestClient().with_auth(user.email)
@@ -662,7 +662,7 @@ class Put:
             offer_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
-            PcObject.check_and_save(user, stock_thing, mediation)
+            PcObject.save(user, stock_thing, mediation)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -685,7 +685,7 @@ class Put:
             offer_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
-            PcObject.check_and_save(user, stock_thing, mediation)
+            PcObject.save(user, stock_thing, mediation)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -707,7 +707,7 @@ class Put:
             offer_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
-            PcObject.check_and_save(user, stock_thing, mediation)
+            PcObject.save(user, stock_thing, mediation)
             auth_request = TestClient().with_auth(user.email)
 
             # when
@@ -733,7 +733,7 @@ class Put:
             active_mediation = create_mediation(offer1, is_active=True)
             invalid_recommendation = create_recommendation(offer1, user, inactive_mediation,
                                                            valid_until_date=datetime.utcnow() - timedelta(hours=2))
-            PcObject.check_and_save(user, stock1, inactive_mediation, active_mediation, invalid_recommendation)
+            PcObject.save(user, stock1, inactive_mediation, active_mediation, invalid_recommendation)
             auth_request = TestClient().with_auth(user.email)
 
             data = {'seenRecommendationIds': []}
@@ -762,7 +762,7 @@ class Put:
             thing_offer2 = create_offer_with_thing_product(venue)
             stock3 = create_stock_from_offer(thing_offer1)
             stock4 = create_stock_from_offer(thing_offer2)
-            PcObject.check_and_save(stock1, stock2, stock3, stock4, user)
+            PcObject.save(stock1, stock2, stock3, stock4, user)
             upsertTutoMediations()
 
             # when
@@ -790,7 +790,7 @@ class Put:
             thing_offer2 = create_offer_with_thing_product(venue)
             stock3 = create_stock_from_offer(thing_offer1)
             stock4 = create_stock_from_offer(thing_offer2)
-            PcObject.check_and_save(stock1, stock2, stock3, stock4, user)
+            PcObject.save(stock1, stock2, stock3, stock4, user)
             upsertTutoMediations()
             tuto_mediation0 = Mediation.query.filter_by(tutoIndex=0).one()
             tuto_mediation1 = Mediation.query.filter_by(tutoIndex=1).one()
@@ -802,7 +802,7 @@ class Put:
                 mediation=tuto_mediation1,
                 user=user
             )
-            PcObject.check_and_save(tuto_recommendation0, tuto_recommendation1)
+            PcObject.save(tuto_recommendation0, tuto_recommendation1)
             humanized_tuto_recommendation0_id = humanize(tuto_recommendation0.id)
             humanized_tuto_recommendation1_id = humanize(tuto_recommendation1.id)
             reads = [
@@ -840,7 +840,7 @@ class Put:
             stock = create_stock_from_offer(offer, booking_limit_datetime=one_day_ago)
             recommendation = create_recommendation(offer, user, date_read=three_days_ago)
 
-            PcObject.check_and_save(stock, recommendation)
+            PcObject.save(stock, recommendation)
 
             # When
             recommendations = TestClient().with_auth(user.email).put(RECOMMENDATION_URL,
@@ -860,7 +860,7 @@ class Put:
             mediation = create_mediation(offer, is_active=True)
             stock = create_stock_from_offer(offer)
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
-            PcObject.check_and_save(stock, recommendation)
+            PcObject.save(stock, recommendation)
 
             # when
             response = TestClient().with_auth(user.email)\
@@ -879,7 +879,7 @@ class Put:
             user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             for i in range(0, 10):
                 offer_event = create_offer_with_event_product(venue, thumb_count=1, dominant_color=b'123')
@@ -891,7 +891,7 @@ class Put:
                 event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
                 offer_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
                 stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
-                PcObject.check_and_save(event_stock, stock_thing)
+                PcObject.save(event_stock, stock_thing)
 
             auth_request = TestClient().with_auth(user.email)
 

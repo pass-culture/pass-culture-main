@@ -43,7 +43,7 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
     # given
     offerer = create_offerer(siren='775671464')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-    PcObject.check_and_save(venue)
+    PcObject.save(venue)
 
     oa_provider = Provider.getByClassName('TiteLiveThings')
     venueProvider = VenueProvider()
@@ -51,14 +51,14 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
     venueProvider.provider = oa_provider
     venueProvider.isActive = True
     venueProvider.venueIdAtOfferProvider = '77567146400110'
-    PcObject.check_and_save(venueProvider)
+    PcObject.save(venueProvider)
     venueProvider = VenueProvider.query \
         .filter_by(venueIdAtOfferProvider='77567146400110') \
         .one_or_none()
 
     product = create_product_with_Thing_type(id_at_providers='0002730757438')
 
-    PcObject.check_and_save(product)
+    PcObject.save(product)
 
     provider_test(app,
                   TiteLiveStocks,
@@ -97,7 +97,7 @@ def test_titelive_stock_provider_create_1_stock_and_do_not_create_existing_offer
     # given
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-    PcObject.check_and_save(venue)
+    PcObject.save(venue)
 
     oa_provider = Provider.getByClassName('TiteLiveThings')
     venueProvider = VenueProvider()
@@ -105,7 +105,7 @@ def test_titelive_stock_provider_create_1_stock_and_do_not_create_existing_offer
     venueProvider.provider = oa_provider
     venueProvider.isActive = True
     venueProvider.venueIdAtOfferProvider = '77567146400110'
-    PcObject.check_and_save(venueProvider)
+    PcObject.save(venueProvider)
     venueProvider = VenueProvider.query \
         .filter_by(venueIdAtOfferProvider='77567146400110') \
         .one_or_none()
@@ -113,7 +113,7 @@ def test_titelive_stock_provider_create_1_stock_and_do_not_create_existing_offer
     product = create_product_with_Thing_type(id_at_providers='0002730757438')
     offer = create_offer_with_thing_product(venue, product=product, id_at_providers='0002730757438@77567146400110')
 
-    PcObject.check_and_save(product, offer)
+    PcObject.save(product, offer)
 
     provider_test(app,
                   TiteLiveStocks,
@@ -157,7 +157,7 @@ def test_titelive_stock_provider_create_2_stock_and_1_offer(get_data, app):
     # given
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-    PcObject.check_and_save(venue)
+    PcObject.save(venue)
 
     oa_provider = Provider.getByClassName('TiteLiveThings')
     venueProvider = VenueProvider()
@@ -165,7 +165,7 @@ def test_titelive_stock_provider_create_2_stock_and_1_offer(get_data, app):
     venueProvider.provider = oa_provider
     venueProvider.isActive = True
     venueProvider.venueIdAtOfferProvider = '77567146400110'
-    PcObject.check_and_save(venueProvider)
+    PcObject.save(venueProvider)
     venueProvider = VenueProvider.query \
         .filter_by(venueIdAtOfferProvider='77567146400110') \
         .one_or_none()
@@ -174,7 +174,7 @@ def test_titelive_stock_provider_create_2_stock_and_1_offer(get_data, app):
     thing_2 = create_product_with_Thing_type(id_at_providers='0002736409898')
     offer = create_offer_with_thing_product(venue=venue, product=thing_1)
 
-    PcObject.check_and_save(thing_1, offer, thing_2)
+    PcObject.save(thing_1, offer, thing_2)
 
     provider_test(app,
                   TiteLiveStocks,
@@ -199,7 +199,7 @@ def test_titelive_stock_provider_create_nothing_if_siret_is_not_in_titelive_data
     # given
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='12345678912345')
-    PcObject.check_and_save(venue)
+    PcObject.save(venue)
 
     oa_provider = Provider.getByClassName('TiteLiveThings')
     venueProvider = VenueProvider()
@@ -208,7 +208,7 @@ def test_titelive_stock_provider_create_nothing_if_siret_is_not_in_titelive_data
     venueProvider.isActive = True
     venueProvider.venueIdAtOfferProvider = '12345678912345'
 
-    PcObject.check_and_save(venueProvider)
+    PcObject.save(venueProvider)
 
     venueProvider = VenueProvider.query \
         .filter_by(venueIdAtOfferProvider='12345678912345') \
@@ -217,7 +217,7 @@ def test_titelive_stock_provider_create_nothing_if_siret_is_not_in_titelive_data
     product = create_product_with_Thing_type(id_at_providers='0002730757438')
     offer = create_offer_with_thing_product(venue=venue, product=product)
 
-    PcObject.check_and_save(product, offer)
+    PcObject.save(product, offer)
 
     provider_test(app,
                   TiteLiveStocks,

@@ -34,7 +34,7 @@ class AddStockAlertMessageToOfferTest:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
 
-            PcObject.check_and_save(user, offer)
+            PcObject.save(user, offer)
 
             # when
             result = add_stock_alert_message_to_offer(offer)
@@ -57,7 +57,7 @@ class AddStockAlertMessageToOfferTest:
             deposit = create_deposit(user2, datetime.utcnow(), amount=500)
             booking = create_booking(user2, stock, venue, recommendation, quantity=3)
 
-            PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+            PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = add_stock_alert_message_to_offer(offer)
@@ -80,7 +80,7 @@ class AddStockAlertMessageToOfferTest:
             deposit = create_deposit(user2, datetime.utcnow(), amount=500)
             booking = create_booking(user2, stock, venue, recommendation, quantity=3)
 
-            PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+            PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = add_stock_alert_message_to_offer(offer)
@@ -103,7 +103,7 @@ class AddStockAlertMessageToOfferTest:
             deposit = create_deposit(user2, datetime.utcnow(), amount=500)
             booking = create_booking(user2, stock, venue, recommendation, quantity=3)
 
-            PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+            PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = add_stock_alert_message_to_offer(offer)
@@ -127,7 +127,7 @@ class AddStockAlertMessageToOfferTest:
             booking = create_booking(user2, stock, venue, recommendation, quantity=3)
             booking2 = create_booking(user2, stock2, venue, recommendation, quantity=10)
 
-            PcObject.check_and_save(booking, booking2, deposit, user, offer, stock, stock2, user2)
+            PcObject.save(booking, booking2, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = add_stock_alert_message_to_offer(offer)
@@ -151,7 +151,7 @@ class AddStockAlertMessageToOfferTest:
             booking = create_booking(user2, stock, venue, recommendation, quantity=3)
             booking2 = create_booking(user2, stock2, venue, recommendation, quantity=20)
 
-            PcObject.check_and_save(booking, booking2, deposit, user, offer, stock, stock2, user2)
+            PcObject.save(booking, booking2, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = add_stock_alert_message_to_offer(offer)
@@ -174,7 +174,7 @@ class AddStockAlertMessageToOfferTest:
             deposit = create_deposit(user2, datetime.utcnow(), amount=500)
             booking = create_booking(user2, stock2, venue, recommendation, quantity=10)
 
-            PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+            PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = add_stock_alert_message_to_offer(offer)
@@ -201,7 +201,7 @@ class AddStockAlertMessageToOfferTest:
             booking = create_booking(user2, stock2, venue, recommendation, quantity=5)
             booking2 = create_booking(user2, stock3, venue, recommendation, quantity=1)
 
-            PcObject.check_and_save(booking, booking2, deposit, user, offer, stock, stock2, stock3, stock4, user2)
+            PcObject.save(booking, booking2, deposit, user, offer, stock, stock2, stock3, stock4, user2)
 
             # when
             result = add_stock_alert_message_to_offer(offer)
@@ -219,7 +219,7 @@ class AddStockAlertMessageToOfferTest:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
 
-            PcObject.check_and_save(user, offer)
+            PcObject.save(user, offer)
 
             # when
             result = add_stock_alert_message_to_offer(offer)
@@ -242,7 +242,7 @@ class AddStockAlertMessageToOfferTest:
             deposit = create_deposit(user2, datetime.utcnow(), amount=500)
             booking = create_booking(user2, stock, venue, recommendation, quantity=3)
 
-            PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+            PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = add_stock_alert_message_to_offer(offer)
@@ -266,7 +266,7 @@ class AddStockAlertMessageToOfferTest:
             deposit = create_deposit(user2, datetime.utcnow(), amount=500)
             booking = create_booking(user2, stock, venue, recommendation, quantity=3)
 
-            PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+            PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = add_stock_alert_message_to_offer(offer)
@@ -290,7 +290,7 @@ class AddStockAlertMessageToOfferTest:
             deposit = create_deposit(user2, datetime.utcnow(), amount=500)
             booking = create_booking(user2, stock, venue, recommendation, quantity=3)
 
-            PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+            PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = add_stock_alert_message_to_offer(offer)
@@ -315,7 +315,7 @@ class AddStockAlertMessageToOfferTest:
             booking = create_booking(user2, stock, venue, recommendation, quantity=3)
             booking2 = create_booking(user2, stock2, venue, recommendation, quantity=10)
 
-            PcObject.check_and_save(booking, booking2, deposit, user, offer, stock, stock2, user2)
+            PcObject.save(booking, booking2, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = add_stock_alert_message_to_offer(offer)
@@ -339,7 +339,7 @@ class AddStockAlertMessageToOfferTest:
             booking = create_booking(user2, stock, venue, recommendation, quantity=3)
             booking2 = create_booking(user2, stock2, venue, recommendation, quantity=11)
 
-            PcObject.check_and_save(booking, booking2, deposit, user, offer, stock, stock2, user2)
+            PcObject.save(booking, booking2, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = add_stock_alert_message_to_offer(offer)
@@ -362,7 +362,7 @@ class AddStockAlertMessageToOfferTest:
             deposit = create_deposit(user2, datetime.utcnow(), amount=500)
             booking = create_booking(user2, stock2, venue, recommendation, quantity=10)
 
-            PcObject.check_and_save(booking, deposit, user, offer, stock, stock2, user2)
+            PcObject.save(booking, deposit, user, offer, stock, stock2, user2)
 
             # when
             result = add_stock_alert_message_to_offer(offer)
@@ -389,7 +389,7 @@ class AddStockAlertMessageToOfferTest:
             booking = create_booking(user2, stock2, venue, recommendation, quantity=5)
             booking2 = create_booking(user2, stock3, venue, recommendation, quantity=1)
 
-            PcObject.check_and_save(booking, booking2, deposit, user, offer, stock, stock2, stock3, stock4, user2)
+            PcObject.save(booking, booking2, deposit, user, offer, stock, stock2, stock3, stock4, user2)
 
             # when
             result = add_stock_alert_message_to_offer(offer)

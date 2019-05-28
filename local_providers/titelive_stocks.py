@@ -133,4 +133,4 @@ class TiteLiveStocks(LocalProvider):
         obj.name = self.product.name
         obj.venueId = self.venueId
         obj.productId = self.product.id
-        PcObject.check_and_save(obj)
+        PcObject.save(obj)

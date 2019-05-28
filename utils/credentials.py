@@ -31,4 +31,4 @@ def change_password(user, password):
         user = User.query.filter_by(email=user).one()
     user.setPassword(password)
     user = session.merge(user)
-    PcObject.check_and_save(user)
+    PcObject.save(user)

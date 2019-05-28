@@ -9,4 +9,4 @@ def save_sandbox():
     venue = create_venue(offerer, is_virtual=True, siret=None)
     offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
     stock = create_stock_with_thing_offer(offerer, venue, offer=offer, price=0, available=10000)
-    PcObject.check_and_save(stock)
+    PcObject.save(stock)

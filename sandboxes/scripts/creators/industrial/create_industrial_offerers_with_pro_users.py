@@ -236,7 +236,7 @@ def create_industrial_offerers_with_pro_users():
                       list(users_by_name.values()) + \
                       list(user_offerers_by_name.values())
 
-    PcObject.check_and_save(*objects_to_save)
+    PcObject.save(*objects_to_save)
 
     logger.info('created {} offerers with pro users'.format(
         len(offerers_by_name)

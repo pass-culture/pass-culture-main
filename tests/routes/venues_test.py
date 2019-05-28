@@ -19,7 +19,7 @@ class Patch:
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
             siret = offerer.siren + '11111'
             venue = create_venue(offerer, comment="Pas de siret", siret=None)
-            PcObject.check_and_save(user_offerer, venue)
+            PcObject.save(user_offerer, venue)
             venue_data = {
                 'siret': siret,
             }
@@ -41,7 +41,7 @@ class Patch:
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
             siret = offerer.siren + '11111'
             venue = create_venue(offerer, siret=siret)
-            PcObject.check_and_save(user_offerer, venue)
+            PcObject.save(user_offerer, venue)
             venue_data = {
                 'siret': siret,
             }
@@ -61,7 +61,7 @@ class Patch:
             user = create_user(email='user.pro@test.com')
             venue = create_venue(offerer, name='L\'encre et la plume')
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.check_and_save(user_offerer, venue)
+            PcObject.save(user_offerer, venue)
             auth_request = TestClient().with_auth(email=user.email)
 
             # when
@@ -85,7 +85,7 @@ class Patch:
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
             siret = offerer.siren + '11111'
             venue = create_venue(offerer, siret=siret)
-            PcObject.check_and_save(user_offerer, venue)
+            PcObject.save(user_offerer, venue)
             venue_data = {
                 'siret': offerer.siren + '12345',
             }
@@ -106,7 +106,7 @@ class Patch:
             venue1 = create_venue(offerer, name='Les petits papiers', is_virtual=True, siret=None)
             venue2 = create_venue(offerer, name='L\'encre et la plume', is_virtual=False)
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.check_and_save(user_offerer, venue1, venue2)
+            PcObject.save(user_offerer, venue1, venue2)
             auth_request = TestClient().with_auth(email=user.email)
 
             # when
@@ -124,7 +124,7 @@ class Patch:
             user = create_user(email='user.pro@test.com')
             venue = create_venue(offerer, name='Les petits papiers', is_virtual=False)
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.check_and_save(user_offerer, venue)
+            PcObject.save(user_offerer, venue)
             auth_request = TestClient().with_auth(email=user.email)
             data = {'latitude': -98.82387, 'longitude': '112°3534'}
 
@@ -144,7 +144,7 @@ class Patch:
             user = create_user(email='user.pro@test.com')
             venue = create_venue(offerer, name='Les petits papiers', is_virtual=False)
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.check_and_save(user_offerer, venue, other_offerer)
+            PcObject.save(user_offerer, venue, other_offerer)
             auth_request = TestClient().with_auth(email=user.email)
 
             # When
@@ -164,7 +164,7 @@ class Post:
             offerer = create_offerer(siren='302559178')
             user = create_user(email='user.pro@test.com')
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.check_and_save(user_offerer)
+            PcObject.save(user_offerer)
             auth_request = TestClient().with_auth(email=user.email)
             venue_data = {
                 'name': 'Ma venue',
@@ -198,7 +198,7 @@ class Post:
             offerer = create_offerer()
             user = create_user()
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
-            PcObject.check_and_save(user_offerer)
+            PcObject.save(user_offerer)
             venue_data = {
                 'name': 'Ma venue',
                 'comment': 'Je ne mets pas de SIRET pour une bonne raison',
@@ -231,7 +231,7 @@ class Post:
             user = create_user(email='user.pro@test.com')
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, name='L\'encre et la plume', is_virtual=True, siret=None)
-            PcObject.check_and_save(venue, user_offerer)
+            PcObject.save(venue, user_offerer)
 
             venue_data = {
                 'name': 'Ma venue',
@@ -262,7 +262,7 @@ class Post:
             offerer = create_offerer(siren='302559178')
             user = create_user(email='user.pro@test.com')
             user_offerer = create_user_offerer(user, offerer)
-            PcObject.check_and_save(user_offerer)
+            PcObject.save(user_offerer)
 
             data = {
                 'name': 'Ma venue',
@@ -298,7 +298,7 @@ class Get:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, name='L\'encre et la plume')
             bank_information = create_bank_information(bic='QSDFGH8Z555', iban='FR7630006000011234567890189', venue=venue)
-            PcObject.check_and_save(user_offerer, bank_information)
+            PcObject.save(user_offerer, bank_information)
             auth_request = TestClient().with_auth(email=user.email)
 
             # when
@@ -318,7 +318,7 @@ class Get:
             offerer = create_offerer()
             user = create_user(email='user.pro@test.com')
             venue = create_venue(offerer, name='L\'encre et la plume')
-            PcObject.check_and_save(user, venue)
+            PcObject.save(user, venue)
             auth_request = TestClient().with_auth(email=user.email)
 
             # when

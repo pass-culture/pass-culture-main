@@ -24,4 +24,4 @@ def update_emails_with_new_sender_email():
         updated_emails.append(failed_email)
 
     if (updated_emails):
-        PcObject.check_and_save(*updated_emails)
+        PcObject.save(*updated_emails)

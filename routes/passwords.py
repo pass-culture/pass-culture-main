@@ -22,7 +22,7 @@ def post_change_password():
     check_password_strength('newPassword', new_password)
     check_new_password_validity(current_user, old_password, new_password)
     current_user.setPassword(new_password)
-    PcObject.check_and_save(current_user)
+    PcObject.save(current_user)
     return '', 204
 
 
@@ -37,7 +37,7 @@ def post_for_password_token():
         return '', 204
 
     generate_reset_token(user)
-    PcObject.check_and_save(user)
+    PcObject.save(user)
     app_origin_url = request.headers.get('origin')
 
     try:
@@ -64,6 +64,6 @@ def post_new_password():
     check_reset_token_validity(user)
     check_password_strength('newPassword', new_password)
     user.setPassword(new_password)
-    PcObject.check_and_save(user)
+    PcObject.save(user)
 
     return '', 204

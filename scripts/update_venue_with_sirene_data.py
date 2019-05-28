@@ -13,7 +13,7 @@ def update_venue_with_sirene_data(data: dict, old_siret: str):
     venue.latitude = parsed_data.get('latitude') or venue.latitude
     venue.longitude = parsed_data.get('longitude') or venue.longitude
     venue.postalCode = parsed_data.get('postalCode') or venue.postalCode
-    PcObject.check_and_save(venue)
+    PcObject.save(venue)
 
 
 def _parse_sirene_data(data: dict) -> dict:

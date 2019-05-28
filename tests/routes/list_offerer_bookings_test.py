@@ -32,10 +32,10 @@ class Get:
             user_pro = create_user(can_book_free_offers=False)
             user = create_user(email='test@email.com')
             deposit = create_deposit(user, now, amount=24000)
-            PcObject.check_and_save(deposit)
+            PcObject.save(deposit)
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_pro, offerer)
-            PcObject.check_and_save(user_offerer)
+            PcObject.save(user_offerer)
 
             venue = create_venue(offerer)
             stock1 = create_stock_with_event_offer(offerer, venue, price=20)
@@ -44,7 +44,7 @@ class Get:
             booking1 = create_booking(user, stock1, venue, recommendation=None, quantity=2)
             booking2 = create_booking(user, stock2, venue, recommendation=None, quantity=2)
             booking3 = create_booking(user, stock3, venue, recommendation=None, quantity=1)
-            PcObject.check_and_save(booking1, booking2, booking3)
+            PcObject.save(booking1, booking2, booking3)
 
             # when
             response = TestClient() \
@@ -72,7 +72,7 @@ class Get:
             stock = create_stock_with_event_offer(offerer, venue, price=20)
             booking = create_booking(user, stock, venue, recommendation=None, quantity=2)
 
-            PcObject.check_and_save(deposit, user_offerer, booking)
+            PcObject.save(deposit, user_offerer, booking)
 
             # when
             response = TestClient() \
@@ -102,7 +102,7 @@ class Get:
             stock = create_stock_with_event_offer(offerer, venue, price=20)
             booking = create_booking(user, stock, venue, recommendation=None, quantity=2, is_used=True)
 
-            PcObject.check_and_save(deposit, user_offerer, booking)
+            PcObject.save(deposit, user_offerer, booking)
 
             # when
             response = TestClient() \
@@ -126,17 +126,17 @@ class Get:
             user_pro = create_user(can_book_free_offers=False)
             user = create_user(email='test@email.com')
             deposit = create_deposit(user, now, amount=500)
-            PcObject.check_and_save(deposit)
+            PcObject.save(deposit)
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_pro, offerer)
-            PcObject.check_and_save(user_offerer)
+            PcObject.save(user_offerer)
 
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=20)
             booking = create_booking(user, stock, venue, recommendation=None, quantity=2,
                                      date_created=now - timedelta(days=5))
 
-            PcObject.check_and_save(booking)
+            PcObject.save(booking)
 
             # when
             response = TestClient() \
@@ -169,7 +169,7 @@ class Get:
             booking_event = create_booking(user, stock_event, venue, recommendation=None, quantity=2,
                                            date_created=now - timedelta(days=5))
 
-            PcObject.check_and_save(booking_thing, booking_event, user_offerer)
+            PcObject.save(booking_thing, booking_event, user_offerer)
 
             expected_audiovisuel_offer_type = {
                 'conditionalFields': [],
@@ -227,7 +227,7 @@ class Get:
             booking1 = create_booking(user, stock2, venue_2, recommendation=None, quantity=2)
             booking2 = create_booking(user, stock1, venue_1, recommendation=None, quantity=2)
             booking3 = create_booking(user, stock3, venue_2, recommendation=None, quantity=1)
-            PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+            PcObject.save(deposit, user_offerer, booking1, booking2, booking3)
 
             # when
             response = TestClient() \
@@ -263,7 +263,7 @@ class Get:
             booking1 = create_booking(user, stock2, venue_2, recommendation=None, quantity=2)
             booking2 = create_booking(user, stock1, venue_1, recommendation=None, quantity=2)
             booking3 = create_booking(user, stock3, venue_2, recommendation=None, quantity=1)
-            PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+            PcObject.save(deposit, user_offerer, booking1, booking2, booking3)
 
             # when
             response = TestClient() \
@@ -299,7 +299,7 @@ class Get:
                                       date_created=serialize(datetime(2018, 10, 5)))
             booking3 = create_booking(user, stock3, venue, recommendation=None,
                                       date_created=serialize(datetime(2018, 10, 3)))
-            PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+            PcObject.save(deposit, user_offerer, booking1, booking2, booking3)
 
             # when
             response = TestClient() \
@@ -335,7 +335,7 @@ class Get:
                                       date_created=serialize(datetime(2018, 10, 5)))
             booking3 = create_booking(user, stock3, venue, recommendation=None,
                                       date_created=serialize(datetime(2018, 10, 3)))
-            PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+            PcObject.save(deposit, user_offerer, booking1, booking2, booking3)
 
             # when
             response = TestClient() \
@@ -370,7 +370,7 @@ class Get:
             booking1 = create_booking(user, stock2, venue_2, recommendation=None)
             booking2 = create_booking(user, stock1, venue_1, recommendation=None)
             booking3 = create_booking(user, stock3, venue_2, recommendation=None)
-            PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+            PcObject.save(deposit, user_offerer, booking1, booking2, booking3)
 
             # when
             response = TestClient() \
@@ -405,7 +405,7 @@ class Get:
             booking1 = create_booking(user, stock2, venue_2, recommendation=None)
             booking2 = create_booking(user, stock1, venue_1, recommendation=None)
             booking3 = create_booking(user, stock3, venue_2, recommendation=None)
-            PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+            PcObject.save(deposit, user_offerer, booking1, booking2, booking3)
 
             # when
             response = TestClient() \
@@ -440,7 +440,7 @@ class Get:
             booking1 = create_booking(user, stock2, venue_2, recommendation=None)
             booking2 = create_booking(user, stock1, venue_1, recommendation=None)
             booking3 = create_booking(user, stock3, venue_2, recommendation=None)
-            PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+            PcObject.save(deposit, user_offerer, booking1, booking2, booking3)
 
             # when
             response = TestClient() \
@@ -475,7 +475,7 @@ class Get:
             booking1 = create_booking(user, stock2, venue_2, recommendation=None)
             booking2 = create_booking(user, stock1, venue_1, recommendation=None)
             booking3 = create_booking(user, stock3, venue_2, recommendation=None)
-            PcObject.check_and_save(deposit, user_offerer, booking1, booking2, booking3)
+            PcObject.save(deposit, user_offerer, booking1, booking2, booking3)
 
             # when
             response = TestClient() \
@@ -496,9 +496,9 @@ class Get:
             now = datetime.utcnow()
             user = create_user(email='test@email.com')
             deposit = create_deposit(user, now, amount='500')
-            PcObject.check_and_save(deposit)
+            PcObject.save(deposit)
             offerer = create_offerer()
-            PcObject.check_and_save(offerer)
+            PcObject.save(offerer)
 
             venue = create_venue(offerer)
             stock1 = create_stock_with_event_offer(offerer, venue, price=20)
@@ -508,7 +508,7 @@ class Get:
             booking2 = create_booking(user, stock2, venue, recommendation=None, quantity=1)
             booking3 = create_booking(user, stock3, venue, recommendation=None, quantity=2)
 
-            PcObject.check_and_save(booking1, booking2, booking3)
+            PcObject.save(booking1, booking2, booking3)
 
             # when
             response = TestClient() \
@@ -523,7 +523,7 @@ class Get:
         def when_user_not_logged_in(self, app):
             # when
             offerer = create_offerer()
-            PcObject.check_and_save(offerer)
+            PcObject.save(offerer)
             response = TestClient().get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id),
                                         headers={'origin': 'http://localhost:3000'})
 

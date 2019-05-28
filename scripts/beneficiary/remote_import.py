@@ -71,7 +71,7 @@ def process_beneficiary_application(
         error_messages.append(e.message)
     else:
         new_beneficiaries.append(new_beneficiary)
-        PcObject.check_and_save(new_beneficiary)
+        PcObject.save(new_beneficiary)
         send_activation_notification_email(new_beneficiary, send_raw_email)
 
 

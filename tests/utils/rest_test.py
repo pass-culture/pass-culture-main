@@ -27,7 +27,7 @@ class TestLoadOrRaiseErrorTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
         # When
         try:

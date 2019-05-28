@@ -69,7 +69,7 @@ def create_venue_provider():
         errors.maybeRaise()
 
     # SAVE
-    PcObject.check_and_save(new_vp)
+    PcObject.save(new_vp)
 
     # CALL THE PROVIDER SUB PROCESS
     p = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
@@ -92,7 +92,7 @@ def create_venue_provider():
 def edit_venue_provider(id):
     vp = load_or_404(VenueProvider, id)
     vp.populate_from_dict(request.json)
-    PcObject.check_and_save(vp)
+    PcObject.save(vp)
     return jsonify(vp.as_dict()), 200
 
 

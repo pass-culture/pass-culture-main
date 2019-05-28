@@ -25,7 +25,7 @@ def test_beginning_datetime_cannot_be_after_end_datetime(app):
 
     # when
     with pytest.raises(ApiErrors) as e:
-        PcObject.check_and_save(stock)
+        PcObject.save(stock)
 
     # then
     assert e.value.errors['endDatetime'] == [
@@ -41,7 +41,7 @@ def test_queryNotSoftDeleted_should_not_return_soft_deleted(app):
     venue = create_venue(offerer)
     stock = create_stock_with_event_offer(offerer, venue)
     stock.isSoftDeleted = True
-    PcObject.check_and_save(stock)
+    PcObject.save(stock)
 
     # When
     result = Stock.queryNotSoftDeleted().all()
@@ -58,7 +58,7 @@ def test_populate_dict_on_soft_deleted_object_raises_DeletedRecordException(app)
     venue = create_venue(offerer)
     stock = create_stock_from_offer(create_offer_with_event_product(venue))
     stock.isSoftDeleted = True
-    PcObject.check_and_save(stock)
+    PcObject.save(stock)
     # When
     with pytest.raises(DeletedRecordException):
         stock.populate_from_dict({"available": 5})
@@ -75,7 +75,7 @@ def test_stock_cannot_have_a_negative_price(app):
 
     # when
     with pytest.raises(ApiErrors) as e:
-        PcObject.check_and_save(stock)
+        PcObject.save(stock)
 
     # then
     assert e.value.errors['global'] is not None
@@ -92,7 +92,7 @@ def test_stock_cannot_have_a_negative_available_stock(app):
 
     # when
     with pytest.raises(ApiErrors) as e:
-        PcObject.check_and_save(stock)
+        PcObject.save(stock)
 
     # then
     assert e.value.errors['available']  == ["Le stock doit être positif"]
@@ -108,7 +108,7 @@ def test_stock_can_have_an_available_stock_equal_to_zero(app):
     stock = create_stock_from_offer(offer, available=0)
 
     # when
-    PcObject.check_and_save(stock)
+    PcObject.save(stock)
 
     # then
     assert stock.available == 0
@@ -122,18 +122,18 @@ def test_available_stocks_can_be_changed_even_when_bookings_with_cancellations_e
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(venue)
     stock = create_stock_from_offer(offer, available=2, price=0)
-    PcObject.check_and_save(stock)
+    PcObject.save(stock)
     user = create_user()
     cancelled_booking1 = create_booking(user, stock, quantity=1, is_cancelled=True)
     cancelled_booking2 = create_booking(user, stock, quantity=1, is_cancelled=True)
     booking1 = create_booking(user, stock, quantity=1, is_cancelled=False)
     booking2 = create_booking(create_user(email='test@mail.com'), stock, quantity=1, is_cancelled=False)
-    PcObject.check_and_save(cancelled_booking1, cancelled_booking2, booking1, booking2)
+    PcObject.save(cancelled_booking1, cancelled_booking2, booking1, booking2)
     stock.available = 3
 
     # When
     try:
-        PcObject.check_and_save(stock)
+        PcObject.save(stock)
     except:
         # Then
         assert False
@@ -147,14 +147,14 @@ def test_available_stocks_cannot_be_changed_when_exceeding_bookings_quantity_2(a
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(venue)
     stock = create_stock_from_offer(offer, available=2, price=0)
-    PcObject.check_and_save(stock)
+    PcObject.save(stock)
     user = create_user()
     booking = create_booking(user, stock, quantity=2, is_cancelled=False)
-    PcObject.check_and_save(booking)
+    PcObject.save(booking)
     stock.available = 1
 
     # When
     with pytest.raises(ApiErrors):
-        PcObject.check_and_save(stock)
+        PcObject.save(stock)
 
 

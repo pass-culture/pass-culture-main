@@ -16,7 +16,7 @@ class FindAllInErrorTest:
         email_failed_in_error = create_email(email, status=EmailStatus.ERROR)
         email_failed_sent= create_email(email, status=EmailStatus.SENT)
 
-        PcObject.check_and_save(email_failed_in_error, email_failed_sent)
+        PcObject.save(email_failed_in_error, email_failed_sent)
 
         # when
         email_failed_in_error = find_all_in_error()

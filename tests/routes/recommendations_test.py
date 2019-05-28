@@ -28,7 +28,7 @@ class Patch:
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
-            PcObject.check_and_save(recommendation)
+            PcObject.save(recommendation)
 
             # when
             response = TestClient() \
@@ -51,7 +51,7 @@ class Get:
             offer = create_offer_with_event_product(venue)
             user = create_user(email='user@test.com')
             recommendation = create_recommendation(offer, user)
-            PcObject.check_and_save(recommendation)
+            PcObject.save(recommendation)
 
             # When
             path = '/recommendations/offers/{}'.format(humanize(offer.id))
@@ -75,7 +75,7 @@ class Get:
             user = create_user(email='user@test.com')
             recommendation1 = create_recommendation(offer, user, mediation=mediation1)
             recommendation2 = create_recommendation(offer, user, mediation=mediation2)
-            PcObject.check_and_save(recommendation1, recommendation2)
+            PcObject.save(recommendation1, recommendation2)
 
             # When
             path = '/recommendations/offers/{}?mediationId={}'.format(
@@ -98,7 +98,7 @@ class Get:
         def when_recommendation_is_not_found(self, app):
             # Given
             user = create_user(email='user@test.com')
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             # When
             path = '/recommendations/offers/AE'

@@ -11,7 +11,7 @@ def save(content: dict, status: EmailStatus):
     email.content = content
     email.status = status
     email.datetime = serialize(datetime.utcnow())
-    PcObject.check_and_save(email)
+    PcObject.save(email)
 
 
 def find_all_in_error() -> List[Email]:

@@ -20,7 +20,7 @@ class Get:
                 venue = create_venue(offerer)
                 offer = create_offer_with_thing_product(venue)
 
-                PcObject.check_and_save(user, user_offerer, offer)
+                PcObject.save(user, user_offerer, offer)
 
             # when
                 response = TestClient().with_auth(email='user@test.com').get(API_URL + '/offers')

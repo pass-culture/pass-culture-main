@@ -63,7 +63,7 @@ def create_industrial_thing_offers(
 
         thing_index += THINGS_PER_OFFERER
 
-    PcObject.check_and_save(*thing_offers_by_name.values())
+    PcObject.save(*thing_offers_by_name.values())
 
     logger.info('created {} thing_offers'.format(len(thing_offers_by_name)))
 

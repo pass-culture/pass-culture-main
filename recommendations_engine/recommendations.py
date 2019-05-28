@@ -74,7 +74,7 @@ def create_tuto_mediation_if_non_existent_for_user(user, tuto_mediation):
     recommendation.user = user
     recommendation.mediation = tuto_mediation
     recommendation.validUntilDate = datetime.utcnow() + timedelta(weeks=2)
-    PcObject.check_and_save(recommendation)
+    PcObject.save(recommendation)
 
 
 def _no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
@@ -146,7 +146,7 @@ def _create_recommendation(user, offer, mediation=None):
             offer.lastStock.bookingLimitDatetime - timedelta(minutes=1)
         )
 
-    PcObject.check_and_save(recommendation)
+    PcObject.save(recommendation)
     return recommendation
 
 
@@ -176,7 +176,7 @@ def create_recommendations_for_search(user, **kwargs):
         recommendations.append(recommendation)
 
     if recommendations_to_save:
-        PcObject.check_and_save(*recommendations_to_save)
+        PcObject.save(*recommendations_to_save)
 
     return recommendations
 

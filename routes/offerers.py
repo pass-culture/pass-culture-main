@@ -93,13 +93,13 @@ def create_offerer():
 
     digital_venue = create_digital_venue(offerer)
 
-    PcObject.check_and_save(offerer, digital_venue)
+    PcObject.save(offerer, digital_venue)
 
     if not current_user.isAdmin:
         offerer.generate_validation_token()
         user_offerer = offerer.give_rights(current_user,
                                            RightsType.admin)
-        PcObject.check_and_save(offerer, user_offerer)
+        PcObject.save(offerer, user_offerer)
         try:
             maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
         except MailServiceException as e:
@@ -118,7 +118,7 @@ def patch_offerer(offererId):
     offerer.populate_from_dict(data, skipped_keys=['validationToken'])
     recommendations = find_all_recommendations_for_offerer(offerer)
     invalidate_recommendations_if_deactivating_object(data, recommendations)
-    PcObject.check_and_save(offerer)
+    PcObject.save(offerer)
     return jsonify(get_dict_offerer(offerer)), 200
 
 

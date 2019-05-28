@@ -15,7 +15,7 @@ class FillBookingEmailTest:
         offerer = create_offerer()
         venue = create_venue(offerer, booking_email='venue@email.com')
         offer = create_offer_with_thing_product(venue, booking_email=None)
-        PcObject.check_and_save(offer)
+        PcObject.save(offer)
 
         # When
         fill_booking_email([offer])
@@ -32,7 +32,7 @@ class FillBookingEmailTest:
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer, booking_email=None)
         offer = create_offer_with_thing_product(venue, booking_email=None)
-        PcObject.check_and_save(offer, user_offerer)
+        PcObject.save(offer, user_offerer)
 
         # When
         fill_booking_email([offer])
@@ -47,7 +47,7 @@ class FillBookingEmailTest:
         offerer = create_offerer()
         venue = create_venue(offerer, booking_email='venue@email.com')
         offer = create_offer_with_thing_product(venue, booking_email='offer@email.com')
-        PcObject.check_and_save(offer)
+        PcObject.save(offer)
 
         # When
         fill_booking_email([offer])
@@ -62,7 +62,7 @@ class FillBookingEmailTest:
         offerer = create_offerer()
         venue = create_venue(offerer, booking_email=None)
         offer = create_offer_with_thing_product(venue, booking_email=None)
-        PcObject.check_and_save(offer)
+        PcObject.save(offer)
 
         # When
         fill_booking_email([offer])

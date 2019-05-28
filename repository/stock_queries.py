@@ -20,7 +20,7 @@ def find_stocks_with_possible_filters(filters, user):
 
 def set_booking_recap_sent_and_save(stock):
     stock.bookingRecapSent = datetime.utcnow()
-    PcObject.check_and_save(stock)
+    PcObject.save(stock)
 
 
 def find_stocks_of_finished_events_when_no_recap_sent():

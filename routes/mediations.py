@@ -37,7 +37,7 @@ def create_mediation():
     thumb = read_thumb(files=request.files, form=request.form)
 
     # SAVE
-    PcObject.check_and_save(new_mediation)
+    PcObject.save(new_mediation)
 
     try:
         new_mediation.save_thumb(thumb, 0, crop=get_crop(request.form))
@@ -66,5 +66,5 @@ def update_mediation(mediation_id):
     data = request.json
     mediation.populate_from_dict(data)
     invalidate_recommendations_if_deactivating_object(data, mediation.recommendations)
-    PcObject.check_and_save(mediation)
+    PcObject.save(mediation)
     return jsonify(mediation.as_dict(include=MEDIATION_INCLUDES)), 200

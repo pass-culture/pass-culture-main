@@ -31,8 +31,8 @@ class FindReimbursementDetailsTest:
         booking1 = create_booking(user, stock1, venue=venue1, token='ABCDEF', is_used=True)
         booking2 = create_booking(user, stock1, venue=venue1, token='ABCDEG')
         booking3 = create_booking(user, stock2, venue=venue2, token='ABCDEH', is_used=True)
-        PcObject.check_and_save(deposit, booking1, booking2, booking3,
-                                user_offerer1, bank_information1, bank_information2)
+        PcObject.save(deposit, booking1, booking2, booking3,
+                      user_offerer1, bank_information1, bank_information2)
         generate_new_payments()
 
         # When

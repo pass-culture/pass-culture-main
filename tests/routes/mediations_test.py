@@ -29,8 +29,8 @@ def test_create_mediation_with_thumb_url(app):
     offer = create_offer_with_event_product(venue)
     user_offerer = create_user_offerer(user, offerer)
 
-    PcObject.check_and_save(offer)
-    PcObject.check_and_save(user, venue, offerer, user_offerer)
+    PcObject.save(offer)
+    PcObject.save(user, venue, offerer, user_offerer)
 
     auth_request = req_with_auth(email=user.email)
 
@@ -56,7 +56,7 @@ def test_create_mediation_with_thumb_url_returns_400_if_url_is_not_an_image(app)
     venue = create_venue(offerer)
     offer = create_offer_with_event_product(venue)
     user_offerer = create_user_offerer(user, offerer)
-    PcObject.check_and_save(user, venue, user_offerer)
+    PcObject.save(user, venue, user_offerer)
 
     auth_request = req_with_auth(email=user.email)
 
@@ -84,8 +84,8 @@ def test_create_mediation_with_thumb_file(app):
     offer = create_offer_with_event_product(venue)
     user_offerer = create_user_offerer(user, offerer)
 
-    PcObject.check_and_save(offer)
-    PcObject.check_and_save(user, venue, offerer, user_offerer)
+    PcObject.save(offer)
+    PcObject.save(user, venue, offerer, user_offerer)
 
     auth_request = req_with_auth(email=user.email)
 
@@ -116,8 +116,8 @@ def test_patch_mediation_returns_200(app):
     offer = create_offer_with_event_product(venue)
     user_offerer = create_user_offerer(user, offerer)
     mediation = create_mediation(offer)
-    PcObject.check_and_save(mediation)
-    PcObject.check_and_save(user, venue, offerer, user_offerer)
+    PcObject.save(mediation)
+    PcObject.save(user, venue, offerer, user_offerer)
 
     auth_request = req_with_auth(email=user.email)
     data = {'frontText': 'new front text', 'backText': 'new back text', 'isActive': False}
@@ -149,8 +149,8 @@ def test_patch_mediation_returns_403_if_user_is_not_attached_to_offerer_of_media
     offer = create_offer_with_event_product(venue)
     user_offerer = create_user_offerer(other_user, offerer)
     mediation = create_mediation(offer)
-    PcObject.check_and_save(mediation)
-    PcObject.check_and_save(other_user, current_user, venue, offerer, user_offerer)
+    PcObject.save(mediation)
+    PcObject.save(other_user, current_user, venue, offerer, user_offerer)
 
     auth_request = req_with_auth(email=current_user.email)
 
@@ -166,7 +166,7 @@ def test_patch_mediation_returns_403_if_user_is_not_attached_to_offerer_of_media
 def test_patch_mediation_returns_404_if_mediation_does_not_exist(app):
     # given
     user = create_user()
-    PcObject.check_and_save(user)
+    PcObject.save(user)
     auth_request = req_with_auth(email=user.email)
 
     # when
@@ -186,9 +186,9 @@ def test_get_mediation_returns_200_and_the_mediation_as_json(app):
     offer = create_offer_with_event_product(venue)
     user_offerer = create_user_offerer(user, offerer)
     mediation = create_mediation(offer)
-    PcObject.check_and_save(mediation)
-    PcObject.check_and_save(offer)
-    PcObject.check_and_save(user, venue, offerer, user_offerer)
+    PcObject.save(mediation)
+    PcObject.save(offer)
+    PcObject.save(user, venue, offerer, user_offerer)
 
     auth_request = req_with_auth(email=user.email)
 
@@ -207,7 +207,7 @@ def test_get_mediation_returns_200_and_the_mediation_as_json(app):
 def test_get_mediation_returns_404_if_mediation_does_not_exist(app):
     # given
     user = create_user()
-    PcObject.check_and_save(user)
+    PcObject.save(user)
     auth_request = req_with_auth(email=user.email)
 
     # when
@@ -233,7 +233,7 @@ def test_patch_mediation_make_mediations_invalid_for_all_users_when_deactivating
     recommendation1 = create_recommendation(offer, user_pro, mediation1, valid_until_date=original_validity_date)
     recommendation2 = create_recommendation(offer, other_user, mediation1, valid_until_date=original_validity_date)
     other_recommendation = create_recommendation(offer, other_user, mediation2, valid_until_date=original_validity_date)
-    PcObject.check_and_save(other_user,  user_offerer, recommendation1, recommendation2, other_recommendation)
+    PcObject.save(other_user, user_offerer, recommendation1, recommendation2, other_recommendation)
 
     auth_request = req_with_auth(email=user_pro.email)
     data = {'isActive': False}

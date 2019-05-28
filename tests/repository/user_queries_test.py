@@ -23,7 +23,7 @@ class GetAllUsersWalletBalancesTest:
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
         stock3 = create_stock(price=40, offer=offer)
-        PcObject.check_and_save(stock1, stock2, stock3, user1, user2)
+        PcObject.save(stock1, stock2, stock3, user1, user2)
 
         _create_balances_for_user2(stock3, user2, venue)
         _create_balances_for_user1(stock1, stock2, stock3, user1, venue)
@@ -44,7 +44,7 @@ class GetAllUsersWalletBalancesTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock3 = create_stock(price=40, offer=offer)
-        PcObject.check_and_save(stock3, user1, user2)
+        PcObject.save(stock3, user1, user2)
 
         _create_balances_for_user2(stock3, user2, venue)
 
@@ -65,7 +65,7 @@ class GetAllUsersWalletBalancesTest:
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
         stock3 = create_stock(price=40, offer=offer)
-        PcObject.check_and_save(stock1, stock2, stock3, user1, user2)
+        PcObject.save(stock1, stock2, stock3, user1, user2)
 
         _create_balances_for_user1(stock1, stock2, stock3, user1, venue)
         _create_balances_for_user2(stock3, user2, venue)
@@ -88,7 +88,7 @@ class GetAllUsersWalletBalancesTest:
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
         stock3 = create_stock(price=40, offer=offer)
-        PcObject.check_and_save(stock1, stock2, stock3, user1, user2)
+        PcObject.save(stock1, stock2, stock3, user1, user2)
 
         _create_balances_for_user1(stock1, stock2, stock3, user1, venue)
         _create_balances_for_user2(stock3, user2, venue)
@@ -110,7 +110,7 @@ class FindByFirstAndLastNamesAndEmailTest:
                             date_of_birth=datetime(2000, 3, 20))
         user1 = create_user(first_name="john", last_name='DOe', email='john@test.com',
                             date_of_birth=datetime(2000, 5, 1))
-        PcObject.check_and_save(user1, user2)
+        PcObject.save(user1, user2)
 
         # when
         users = find_by_first_and_last_names_and_birth_date('john', 'doe', datetime(2000, 5, 1))
@@ -126,7 +126,7 @@ class FindByFirstAndLastNamesAndEmailTest:
                             date_of_birth=datetime(2000, 3, 20))
         user1 = create_user(first_name="john-bob", last_name='doe', email='john.b@test.com',
                             date_of_birth=datetime(2000, 5, 1))
-        PcObject.check_and_save(user1, user2)
+        PcObject.save(user1, user2)
 
         # when
         users = find_by_first_and_last_names_and_birth_date('johnbob', 'doe', datetime(2000, 5, 1))
@@ -142,7 +142,7 @@ class FindByFirstAndLastNamesAndEmailTest:
                             date_of_birth=datetime(2000, 3, 20))
         user1 = create_user(first_name="john bob", last_name='doe', email='john.b@test.com',
                             date_of_birth=datetime(2000, 5, 1))
-        PcObject.check_and_save(user1, user2)
+        PcObject.save(user1, user2)
 
         # when
         users = find_by_first_and_last_names_and_birth_date('johnbob', 'doe', datetime(2000, 5, 1))
@@ -158,7 +158,7 @@ class FindByFirstAndLastNamesAndEmailTest:
                             date_of_birth=datetime(2000, 3, 20))
         user1 = create_user(first_name="john bob", last_name='doe', email='john.b@test.com',
                             date_of_birth=datetime(2000, 5, 1))
-        PcObject.check_and_save(user1, user2)
+        PcObject.save(user1, user2)
 
         # when
         users = find_by_first_and_last_names_and_birth_date('jöhn bób', 'doe', datetime(2000, 5, 1))
@@ -171,7 +171,7 @@ class FindByFirstAndLastNamesAndEmailTest:
     def test_returns_nothing_if_one_criteria_does_not_match(self, app):
         # given
         user = create_user(first_name="Jean", last_name='DOe', date_of_birth=datetime(2000, 5, 1))
-        PcObject.check_and_save(user)
+        PcObject.save(user)
 
         # when
         users = find_by_first_and_last_names_and_birth_date('john', 'doe', datetime(2000, 5, 1))
@@ -197,7 +197,7 @@ class FindMostRecentBeneficiaryCreationDateTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user1, offerer)
 
-        PcObject.check_and_save(user_offerer, user2, user3)
+        PcObject.save(user_offerer, user2, user3)
 
         # when
         most_recent_creation_date = find_most_recent_beneficiary_creation_date()
@@ -212,7 +212,7 @@ class FindMostRecentBeneficiaryCreationDateTest:
         user1 = create_user(email='user1@test.com', date_created=yesterday, can_book_free_offers=False)
         offerer = create_offerer()
         user_offerer = create_user_offerer(user1, offerer)
-        PcObject.check_and_save(user_offerer)
+        PcObject.save(user_offerer)
 
         # when
         most_recent_creation_date = find_most_recent_beneficiary_creation_date()
@@ -224,7 +224,7 @@ class FindMostRecentBeneficiaryCreationDateTest:
 def _create_balances_for_user2(stock3, user2, venue):
     deposit3 = create_deposit(user2, datetime.utcnow(), amount=200)
     booking4 = create_booking(user2, venue=venue, stock=stock3, quantity=3, is_cancelled=False, is_used=False)
-    PcObject.check_and_save(deposit3, booking4)
+    PcObject.save(deposit3, booking4)
 
 
 def _create_balances_for_user1(stock1, stock2, stock3, user1, venue):
@@ -233,4 +233,4 @@ def _create_balances_for_user1(stock1, stock2, stock3, user1, venue):
     booking1 = create_booking(user1, venue=venue, stock=stock1, quantity=1, is_cancelled=True, is_used=False)
     booking2 = create_booking(user1, venue=venue, stock=stock2, quantity=2, is_cancelled=False, is_used=True)
     booking3 = create_booking(user1, venue=venue, stock=stock3, quantity=1, is_cancelled=False, is_used=False)
-    PcObject.check_and_save(deposit1, deposit2, booking1, booking2, booking3)
+    PcObject.save(deposit1, deposit2, booking1, booking2, booking3)

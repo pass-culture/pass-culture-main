@@ -27,7 +27,7 @@ def create_industrial_admin_users():
                 public_name="PC Test Admin {} {}".format(departement_code, admin_count)
             )
 
-    PcObject.check_and_save(*users_by_name.values())
+    PcObject.save(*users_by_name.values())
 
     logger.info('created {} users'.format(len(users_by_name)))
 

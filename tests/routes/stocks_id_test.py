@@ -20,7 +20,7 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
             humanized_stock_id = humanize(stock.id)
 
             # when
@@ -39,7 +39,7 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=10, available=10, is_soft_deleted=True)
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
             humanized_stock_id = humanize(stock.id)
 
             # when
@@ -61,7 +61,7 @@ class Patch:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
-            PcObject.check_and_save(user, user_offerer, stock)
+            PcObject.save(user, user_offerer, stock)
             humanized_stock_id = humanize(stock.id)
 
             # when
@@ -82,7 +82,7 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
             humanized_stock_id = humanize(stock.id)
 
             # when
@@ -107,7 +107,7 @@ class Patch:
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             stock.available = 1
             booking = create_booking(user, stock, venue, recommendation=None)
-            PcObject.check_and_save(booking, user_admin)
+            PcObject.save(booking, user_admin)
 
             # when
             response = TestClient().with_auth('email@test.com') \
@@ -124,7 +124,7 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            PcObject.check_and_save(stock, user)
+            PcObject.save(stock, user)
             stockId = stock.id
             serialized_date = serialize(stock.beginningDatetime + timedelta(days=1))
 
@@ -145,7 +145,7 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            PcObject.check_and_save(stock, user)
+            PcObject.save(stock, user)
 
             # when
             response = TestClient().with_auth('email@test.com') \
@@ -165,7 +165,7 @@ class Patch:
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             stock.available = 1
             booking = create_booking(user, stock, venue, recommendation=None)
-            PcObject.check_and_save(booking, user_admin)
+            PcObject.save(booking, user_admin)
 
             # when
             response = TestClient().with_auth('email@test.com') \
@@ -183,7 +183,7 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
 
             # when
             response = TestClient().with_auth('test@email.com') \
@@ -205,7 +205,7 @@ class Delete:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            PcObject.check_and_save(user, stock, user_offerer)
+            PcObject.save(user, stock, user_offerer)
 
             # when
             response = TestClient().with_auth('test@email.com') \
@@ -226,7 +226,7 @@ class Delete:
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             booking1 = create_booking(other_user, stock=stock, is_cancelled=False)
             booking2 = create_booking(other_user, stock=stock, is_cancelled=False)
-            PcObject.check_and_save(user, stock, user_offerer, booking1, booking2)
+            PcObject.save(user, stock, user_offerer, booking1, booking2)
 
             # when
             TestClient().with_auth('test@email.com') \
@@ -245,7 +245,7 @@ class Delete:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
 
             # when
             response = TestClient().with_auth('test@email.com') \

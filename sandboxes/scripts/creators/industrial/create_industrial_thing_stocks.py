@@ -39,7 +39,7 @@ def create_industrial_thing_stocks(thing_offers_by_name):
             price=price
         )
 
-    PcObject.check_and_save(*thing_stocks_by_name.values())
+    PcObject.save(*thing_stocks_by_name.values())
 
     logger.info('created {} thing_stocks'.format(len(thing_stocks_by_name)))
 

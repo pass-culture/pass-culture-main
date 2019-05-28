@@ -81,7 +81,7 @@ def upsertTutoMediation(index, has_back=False):
                                         .first()
     mediation = existing_mediation or Mediation()
     mediation.tutoIndex = index
-    PcObject.check_and_save(mediation)
+    PcObject.save(mediation)
 
     with open(TUTOS_PATH / (str(index) + '.png'), "rb") as f:
         mediation.save_thumb(f.read(),
@@ -96,7 +96,7 @@ def upsertTutoMediation(index, has_back=False):
                                  convert=False,
                                  image_type='png')
 
-    PcObject.check_and_save(mediation)
+    PcObject.save(mediation)
 
 
 def upsertTutoMediations():

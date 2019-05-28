@@ -15,7 +15,7 @@ def test_post_storage_file_returns_bad_request_if_upload_is_not_authorized_on_mo
     user = create_user()
     offerer = create_offerer()
     venue = create_venue(offerer)
-    PcObject.check_and_save(user, venue, offerer)
+    PcObject.save(user, venue, offerer)
 
     auth_request = req_with_auth(email=user.email)
 
@@ -38,7 +38,7 @@ def test_post_storage_file_update_a_thumb_for_an_user(app):
     user = create_user()
     offerer = create_offerer()
     venue = create_venue(offerer)
-    PcObject.check_and_save(user, venue, offerer)
+    PcObject.save(user, venue, offerer)
 
     auth_request = req_with_auth(email=user.email)
 
@@ -62,7 +62,7 @@ def test_post_storage_file_on_a_mediation_returns_bad_request_if_user_is_not_att
     venue = create_venue(offerer)
     offer = create_offer_with_event_product(venue)
     mediation = create_mediation(offer)
-    PcObject.check_and_save(user, offer, mediation, venue, offerer)
+    PcObject.save(user, offer, mediation, venue, offerer)
 
     auth_request = req_with_auth(email=user.email)
 
@@ -88,7 +88,7 @@ def test_post_storage_file_on_a_mediation_returns_200_if_user_is_attached_to_off
     venue = create_venue(offerer)
     offer = create_offer_with_event_product(venue)
     mediation = create_mediation(offer)
-    PcObject.check_and_save(user_offerer, mediation)
+    PcObject.save(user_offerer, mediation)
 
     auth_request = req_with_auth(email=user.email)
 

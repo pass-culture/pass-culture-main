@@ -74,7 +74,7 @@ def create_stock():
     ensure_current_user_has_rights(RightsType.editor, offerer.id)
  
     new_stock = Stock(from_dict=request_data)
-    PcObject.check_and_save(new_stock)
+    PcObject.save(new_stock)
 
     return jsonify(new_stock.as_dict()), 201
 
@@ -93,7 +93,7 @@ def edit_stock(stock_id):
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
     
     stock.populate_from_dict(stock_data)
-    PcObject.check_and_save(stock)
+    PcObject.save(stock)
 
     return jsonify(stock.as_dict()), 200
 
@@ -115,7 +115,7 @@ def delete_stock(id):
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 
-    PcObject.check_and_save(stock, *bookings)
+    PcObject.save(stock, *bookings)
 
     return jsonify(stock.as_dict()), 200
 

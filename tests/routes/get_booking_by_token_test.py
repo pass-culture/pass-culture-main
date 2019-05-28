@@ -29,7 +29,7 @@ class Get:
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.check_and_save(user_offerer, booking)
+            PcObject.save(user_offerer, booking)
 
             expected_json = {'bookingId': humanize(booking.id),
                              'date': serialize(booking.stock.beginningDatetime),
@@ -59,7 +59,7 @@ class Get:
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.check_and_save(admin_user, booking)
+            PcObject.save(admin_user, booking)
 
             expected_json = {'bookingId': humanize(booking.id),
                              'date': serialize(booking.stock.beginningDatetime),
@@ -94,7 +94,7 @@ class Get:
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.check_and_save(user_offerer, booking)
+            PcObject.save(user_offerer, booking)
             url_email = urlencode({'email': 'user+plus@email.fr'})
             url = API_URL + '/bookings/token/{}?{}'.format(booking.token, url_email)
 
@@ -117,7 +117,7 @@ class Get:
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.check_and_save(querying_user, booking)
+            PcObject.save(querying_user, booking)
 
             # When
             response = TestClient().with_auth('querying@email.fr').get(
@@ -137,7 +137,7 @@ class Get:
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.check_and_save(admin_user, booking)
+            PcObject.save(admin_user, booking)
 
             url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'user@email.fr')
             # When
@@ -157,7 +157,7 @@ class Get:
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.check_and_save(admin_user, booking)
+            PcObject.save(admin_user, booking)
             url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
                                                                              humanize(offer.id))
 
@@ -177,7 +177,7 @@ class Get:
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.check_and_save(admin_user, booking)
+            PcObject.save(admin_user, booking)
             url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
                                                                              humanize(stock.offerId))
 
@@ -192,7 +192,7 @@ class Get:
         def when_token_user_has_rights_but_token_not_found(self, app):
             # Given
             admin_user = create_user(email='admin@email.fr')
-            PcObject.check_and_save(admin_user)
+            PcObject.save(admin_user)
 
             # When
             response = TestClient().with_auth('admin@email.fr').get(
@@ -213,7 +213,7 @@ class Get:
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.check_and_save(admin_user, booking)
+            PcObject.save(admin_user, booking)
 
             # When
             url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'toto@email.fr')
@@ -232,7 +232,7 @@ class Get:
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.check_and_save(admin_user, booking)
+            PcObject.save(admin_user, booking)
             url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
                                                                              humanize(123))
 
@@ -256,7 +256,7 @@ class Get:
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.check_and_save(user_offerer, booking)
+            PcObject.save(user_offerer, booking)
             url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
             # When
@@ -278,7 +278,7 @@ class Get:
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.check_and_save(admin_user, booking)
+            PcObject.save(admin_user, booking)
 
             url = API_URL + '/bookings/token/{}'.format(booking.token)
             # When
@@ -303,7 +303,7 @@ class Get:
             stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=in_73_hours, end_datetime=in_74_hours, booking_limit_datetime=in_72_hours)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.check_and_save(admin_user, booking)
+            PcObject.save(admin_user, booking)
             url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
                                                                              humanize(stock.offerId))
 
@@ -326,7 +326,7 @@ class Get:
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user, stock, venue=venue, is_used=True)
 
-            PcObject.check_and_save(admin_user, booking)
+            PcObject.save(admin_user, booking)
             url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
                                                                              humanize(stock.offerId))
 
@@ -346,7 +346,7 @@ class Get:
             stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
             booking = create_booking(user, stock, venue=venue, is_cancelled=True)
 
-            PcObject.check_and_save(admin_user, booking)
+            PcObject.save(admin_user, booking)
             url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
                                                                              humanize(stock.offerId))
 

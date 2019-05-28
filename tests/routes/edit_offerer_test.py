@@ -27,7 +27,7 @@ class Patch:
             user = create_user()
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer, is_admin=False)
-            PcObject.check_and_save(user_offerer)
+            PcObject.save(user_offerer)
             body = {'isActive': False}
 
             # when
@@ -45,7 +45,7 @@ class Patch:
             user = create_user()
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer, is_admin=True)
-            PcObject.check_and_save(user_offerer)
+            PcObject.save(user_offerer)
             body = {'thumbCount': 0, 'idAtProviders': 'zfeej',
                     'dateModifiedAtLastProvider': serialize(datetime(2016, 2, 1)), 'address': '123 nouvelle adresse',
                     'postalCode': '75001',
@@ -85,9 +85,9 @@ class Patch:
             recommendation3 = create_recommendation(offer_venue2_2, other_user, valid_until_date=original_validity_date)
             recommendation4 = create_recommendation(offer_venue2_2, user, valid_until_date=original_validity_date)
             other_recommendation = create_recommendation(other_offer, user, valid_until_date=original_validity_date)
-            PcObject.check_and_save(recommendation1, recommendation2, recommendation3, recommendation4,
-                                    other_recommendation,
-                                    user_offerer)
+            PcObject.save(recommendation1, recommendation2, recommendation3, recommendation4,
+                          other_recommendation,
+                          user_offerer)
 
             auth_request = req_with_auth(email=user.email)
             data = {'isActive': False}

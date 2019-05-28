@@ -36,4 +36,4 @@ def store_public_object_from_sandbox_assets(folder, obj, thumb_id, index=0):
                                 MIMES_BY_FOLDER[folder],
                                 symlink_path=thumb_path)
 
-    PcObject.check_and_save(obj)
+    PcObject.save(obj)

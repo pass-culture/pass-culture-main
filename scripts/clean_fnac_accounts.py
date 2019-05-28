@@ -21,20 +21,20 @@ def create_all_possible_user_offerers(users: List[User], offerers: List[Offerer]
         for offerer in offerers:
             if offerer not in user.offerers:
                 create_user_offerer(user, offerer)
-    PcObject.check_and_save(*users)
+    PcObject.save(*users)
 
 
 def clear_all_existing_user_offerers(id: int):
     offerer = Offerer.query.filter_by(id=id).one()
     offerer.users = []
-    PcObject.check_and_save(offerer)
+    PcObject.save(offerer)
 
 
 def move_offers_from_one_venue_to_another(origin_venue_id: int, target_venue_id: int):
     offers = Offer.query.filter_by(venueId=origin_venue_id).all()
     offers = [_change_venue(offer, target_venue_id) for offer in offers]
     if offers:
-        PcObject.check_and_save(*offers)
+        PcObject.save(*offers)
 
 
 def delete_all_physical_managed_venues(offerer_id: int):

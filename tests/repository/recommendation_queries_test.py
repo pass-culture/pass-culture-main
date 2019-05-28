@@ -38,9 +38,9 @@ def test_filter_out_recommendation_with_not_bookable_stocks_returns_recos_with_a
     recommendation_on_both_soft_deleted_and_active_event_stocks = create_recommendation(event_offer, user)
     recommendation_on_soft_deleted_thing_stock = create_recommendation(soft_deleted_thing_offer, user)
 
-    PcObject.check_and_save(soft_deleted_event_stock, active_event_stock, soft_deleted_thing_stock, active_thing_stock,
-                            recommendation_on_both_soft_deleted_and_active_event_stocks,
-                            recommendation_on_soft_deleted_thing_stock, recommendation_on_active_thing_stock)
+    PcObject.save(soft_deleted_event_stock, active_event_stock, soft_deleted_thing_stock, active_thing_stock,
+                  recommendation_on_both_soft_deleted_and_active_event_stocks,
+                  recommendation_on_soft_deleted_thing_stock, recommendation_on_active_thing_stock)
 
     # When
     result = keep_only_bookable_stocks().all()
@@ -73,7 +73,7 @@ def test_filter_out_recommendation_with_not_bookable_stocks_returns_recos_with_v
     recommendation_on_invalid_booking_date_stock = create_recommendation(invalid_booking_date_offer, user)
     recommendation_on_valid_booking_date_stock = create_recommendation(valid_booking_date_offer, user)
 
-    PcObject.check_and_save(invalid_booking_date_stock, recommendation_on_invalid_booking_date_stock, recommendation_on_valid_booking_date_stock, valid_booking_date_stock_valid, valid_booking_date_stock_invalid)
+    PcObject.save(invalid_booking_date_stock, recommendation_on_invalid_booking_date_stock, recommendation_on_valid_booking_date_stock, valid_booking_date_stock_valid, valid_booking_date_stock_invalid)
 
     # When
     result = keep_only_bookable_stocks().all()
@@ -103,8 +103,8 @@ def test_filter_unseen_valid_recommendations_for_user_only_keeps_non_tuto_recomm
     valid_recommendation = create_recommendation(offer, user, mediation, valid_until_date=tomorrow)
     tuto_recommendation = create_recommendation(offer, user, tuto_mediation, valid_until_date=None)
 
-    PcObject.check_and_save(invalid_recommendation, valid_recommendation, recommendation_with_no_validity_date,
-                            tuto_recommendation)
+    PcObject.save(invalid_recommendation, valid_recommendation, recommendation_with_no_validity_date,
+                  tuto_recommendation)
 
     query = Recommendation.query
 
@@ -136,7 +136,7 @@ def test_update_read_recommendations(app):
     recommendation1 = create_recommendation(offer, user)
     recommendation2 = create_recommendation(thing_offer1, user)
     recommendation3 = create_recommendation(thing_offer2, user)
-    PcObject.check_and_save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
+    PcObject.save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
 
     # When
     reads = [

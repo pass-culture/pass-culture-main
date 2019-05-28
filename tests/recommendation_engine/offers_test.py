@@ -22,8 +22,8 @@ class CreateRecommendationsForDiscoveryTest:
                                                                                            departements_ok)
         expected_stocks_not_recommended = _create_and_save_stock_for_offererer_in_departements(offerer_ko,
                                                                                                departements_ko)
-        PcObject.check_and_save(user)
-        PcObject.check_and_save(*(expected_stocks_recommended + expected_stocks_not_recommended))
+        PcObject.save(user)
+        PcObject.save(*(expected_stocks_recommended + expected_stocks_not_recommended))
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when
@@ -43,8 +43,8 @@ class CreateRecommendationsForDiscoveryTest:
         offerer_ok = create_offerer()
         expected_stocks_recommended = _create_and_save_stock_for_offererer_in_departements(offerer_ok,
                                                                                            departements_ok)
-        PcObject.check_and_save(user)
-        PcObject.check_and_save(*expected_stocks_recommended)
+        PcObject.save(user)
+        PcObject.save(*expected_stocks_recommended)
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when

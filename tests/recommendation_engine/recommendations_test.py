@@ -33,7 +33,7 @@ def test_create_recommendations_for_discovery_does_not_put_mediation_ids_of_inac
     stock2 = create_stock_from_offer(offer2, price=0)
     mediation2 = create_mediation(offer2, is_active=False)
     mediation3 = create_mediation(offer2, is_active=True)
-    PcObject.check_and_save(user, stock1, mediation1, stock2, mediation2, mediation3)
+    PcObject.save(user, stock1, mediation1, stock2, mediation2, mediation3)
 
     # When
     recommendations = create_recommendations_for_discovery(user=user)
@@ -99,7 +99,7 @@ def test_create_recommendations_for_discovery_should_include_recommendations_on_
 
     recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
 
-    PcObject.check_and_save(user, stock1, mediation1, stock2, mediation2, recommendation)
+    PcObject.save(user, stock1, mediation1, stock2, mediation2, recommendation)
     db.session.refresh(offer2)
 
     # When

@@ -730,7 +730,7 @@ def provider_test(app, provider, venue_provider, **counts):
     else:
         provider_object = provider(venue_provider)
     provider_object.dbObject.isActive = True
-    PcObject.check_and_save(provider_object.dbObject)
+    PcObject.save(provider_object.dbObject)
     saveCounts()
     provider_object.updateObjects()
 
@@ -785,5 +785,5 @@ def create_venue_provider(venue, provider, siren='77567146400110', is_active=Tru
 def activate_provider(provider_classname):
     provider = Provider.getByClassName(provider_classname)
     provider.isActive = True
-    PcObject.check_and_save(provider)
+    PcObject.save(provider)
     return provider

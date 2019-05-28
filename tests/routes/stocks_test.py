@@ -26,7 +26,7 @@ class Get:
             stock_1 = create_stock_with_event_offer(offerer, venue, price=10, available=10)
             stock_2 = create_stock_with_event_offer(offerer, venue, price=20, available=5)
             stock_3 = create_stock_with_event_offer(offerer, venue, price=15, available=1)
-            PcObject.check_and_save(user, stock_1, stock_2, stock_3)
+            PcObject.save(user, stock_1, stock_2, stock_3)
 
             # When
             request = TestClient().with_auth('test@email.com').get(API_URL + '/stocks')
@@ -48,10 +48,10 @@ class Post:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
-            PcObject.check_and_save(user_offerer, offer)
+            PcObject.save(user_offerer, offer)
 
             stock_data = {'price': 1222, 'offerId': humanize(offer.id)}
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             # When
             response = TestClient().with_auth('test@email.fr')\
@@ -72,7 +72,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
-            PcObject.check_and_save(user, offer)
+            PcObject.save(user, offer)
 
             data = {
                 'price': 0,
@@ -103,7 +103,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
-            PcObject.check_and_save(user, offer)
+            PcObject.save(user, offer)
 
             # When
             response = TestClient().with_auth(user.email) \
@@ -120,7 +120,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            PcObject.check_and_save(user, offer)
+            PcObject.save(user, offer)
 
             beginningDatetime = datetime(2019, 2, 14)
 
@@ -149,7 +149,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
-            PcObject.check_and_save(user, offer)
+            PcObject.save(user, offer)
 
             data = {
                 'price': 0,
@@ -174,7 +174,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            PcObject.check_and_save(user, offer)
+            PcObject.save(user, offer)
 
             data = {
                 'price': 0,
@@ -200,7 +200,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
-            PcObject.check_and_save(user, offer)
+            PcObject.save(user, offer)
             beginningDatetime = datetime(2019, 2, 14)
 
             data = {
@@ -230,7 +230,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
-            PcObject.check_and_save(user, offer)
+            PcObject.save(user, offer)
 
             data = {'price': 1222, 'offerId': humanize(offer.id)}
 
@@ -253,7 +253,7 @@ class Delete:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
 
             # When
             response = TestClient().with_auth('email@test.fr').delete(API_URL + '/stocks/' + humanize(stock.id))
@@ -285,7 +285,7 @@ class Delete:
             booking2 = create_booking(user1, stock2, venue, recommendation=recommendation1)
             booking3 = create_booking(user2, stock1, venue, recommendation=recommendation2)
 
-            PcObject.check_and_save(booking1, booking2, booking3, user_offerer)
+            PcObject.save(booking1, booking2, booking3, user_offerer)
 
             # When
             response = TestClient().with_auth('email@test.fr').delete(API_URL + '/stocks/' + humanize(stock1.id))
@@ -307,7 +307,7 @@ class Delete:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
 
             # When
             response = TestClient().with_auth('email@test.fr').delete(API_URL + '/stocks/' + humanize(stock.id))
@@ -327,7 +327,7 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=69)
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
 
             beginningDatetime = datetime(2019, 2, 14)
 
@@ -360,7 +360,7 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue)
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
 
             data = {
                 'price': 120,
@@ -386,7 +386,7 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
 
             data = {
                 'price': 0,
@@ -411,7 +411,7 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue)
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
             beginningDatetime = datetime(2019, 2, 14)
 
             data = {

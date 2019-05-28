@@ -16,7 +16,7 @@ def create_industrial_mediations(offers_by_name):
     for (offer_with_mediation_name, offer_with_mediation) in offer_items_with_mediation:
         mediations_by_name[offer_with_mediation_name] = create_mediation(offer_with_mediation)
 
-    PcObject.check_and_save(*mediations_by_name.values())
+    PcObject.save(*mediations_by_name.values())
 
     logger.info('created {} mediations'.format(len(mediations_by_name)))
 

@@ -20,5 +20,5 @@ def get_user_offerer(offererId):
 @login_required
 def create_user_offerer():
     new_user_offerer = UserOfferer(from_dict=request.json)
-    PcObject.check_and_save(new_user_offerer)
+    PcObject.save(new_user_offerer)
     return jsonify(new_user_offerer.as_dict()), 201

@@ -7,7 +7,7 @@ def register_user_session(user_id: int, session_uuid: UUID):
     session = UserSession()
     session.userId = user_id
     session.uuid = session_uuid
-    PcObject.check_and_save(session)
+    PcObject.save(session)
 
 
 def delete_user_session(user_id: int, session_uuid: UUID):

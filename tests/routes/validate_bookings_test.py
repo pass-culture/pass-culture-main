@@ -33,7 +33,7 @@ class Patch:
                                                   end_datetime=Patch.tomorrow_plus_one_hour,
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
-            PcObject.check_and_save(booking, user_offerer)
+            PcObject.save(booking, user_offerer)
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When
@@ -56,7 +56,7 @@ class Patch:
                                                   end_datetime=Patch.tomorrow_plus_one_hour,
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
-            PcObject.check_and_save(booking, user_offerer)
+            PcObject.save(booking, user_offerer)
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When
@@ -83,7 +83,7 @@ class Patch:
                                                        booking_limit_date=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.check_and_save(user_offerer, booking)
+            PcObject.save(user_offerer, booking)
             url_email = urlencode({'email': 'user+plus@email.fr'})
             url = API_URL + '/bookings/token/{}?{}'.format(booking.token, url_email)
 
@@ -106,7 +106,7 @@ class Patch:
             stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0,
                                                        booking_limit_date=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
-            PcObject.check_and_save(booking, user_offerer)
+            PcObject.save(booking, user_offerer)
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When
@@ -135,7 +135,7 @@ class Patch:
             stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0,
                                                        booking_limit_date=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
-            PcObject.check_and_save(booking, user_offerer)
+            PcObject.save(booking, user_offerer)
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When
@@ -162,7 +162,7 @@ class Patch:
                                                   end_datetime=Patch.tomorrow_plus_one_hour,
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
-            PcObject.check_and_save(booking, admin_user)
+            PcObject.save(booking, admin_user)
             url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
             # When
@@ -186,7 +186,7 @@ class Patch:
             four_days_from_now = datetime.utcnow() + timedelta(days=4)
             stock = create_stock_from_offer(offer, price=0, beginning_datetime=four_days_from_now)
             booking = create_booking(user, stock, venue=venue)
-            PcObject.check_and_save(booking, user_offerer)
+            PcObject.save(booking, user_offerer)
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When
@@ -214,7 +214,7 @@ class Patch:
             stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0,
                                                        booking_limit_date=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
-            PcObject.check_and_save(booking, user_offerer)
+            PcObject.save(booking, user_offerer)
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When
@@ -235,7 +235,7 @@ class Patch:
                                                   end_datetime=Patch.tomorrow_plus_one_hour,
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
-            PcObject.check_and_save(booking, admin_user)
+            PcObject.save(booking, admin_user)
             url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'wrong@email.fr')
 
             # When
@@ -261,7 +261,7 @@ class Patch:
                                                        booking_limit_date=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
 
-            PcObject.check_and_save(user_offerer, booking)
+            PcObject.save(user_offerer, booking)
             url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
             # When
@@ -280,7 +280,7 @@ class Patch:
                                                   end_datetime=Patch.tomorrow_plus_one_hour,
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
-            PcObject.check_and_save(booking, admin_user)
+            PcObject.save(booking, admin_user)
             url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(123))
 
             # When
@@ -309,7 +309,7 @@ class Patch:
                                                        booking_limit_date=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
             deposit = create_deposit(user, datetime.utcnow(), amount=500)
-            PcObject.check_and_save(booking, user_offerer, deposit)
+            PcObject.save(booking, user_offerer, deposit)
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When
@@ -335,7 +335,7 @@ class Patch:
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
             booking.isCancelled = True
-            PcObject.check_and_save(booking, user_offerer)
+            PcObject.save(booking, user_offerer)
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When
@@ -360,7 +360,7 @@ class Patch:
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
             booking.isUsed = True
-            PcObject.check_and_save(booking, user_offerer)
+            PcObject.save(booking, user_offerer)
             url = API_URL + '/bookings/token/{}'.format(booking.token)
 
             # When

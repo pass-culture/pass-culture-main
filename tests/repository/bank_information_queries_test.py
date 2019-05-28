@@ -26,7 +26,7 @@ class GetLastUpdateForBankInformationTest:
 
         bank_information = create_bank_information(id_at_providers='79387501900056',
                                                    date_modified_at_last_provider=datetime(2019, 1, 1), venue=venue)
-        PcObject.check_and_save(bank_information)
+        PcObject.save(bank_information)
 
         # when
         last_update = get_last_update_from_bank_information()

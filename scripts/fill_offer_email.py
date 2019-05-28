@@ -16,4 +16,4 @@ def fill_booking_email(offers: List[Offer]):
             if user_linked_to_offerer:
                 offer.bookingEmail = user_linked_to_offerer.email
         print(f'Saving offer {offer.id}')
-        PcObject.check_and_save(offer)
+        PcObject.save(offer)

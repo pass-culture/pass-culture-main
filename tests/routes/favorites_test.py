@@ -37,7 +37,7 @@ class Get:
             recommendation2 = create_recommendation(offer2, user1, is_favorite=True)
             recommendation3 = create_recommendation(offer2, user1, is_favorite=True)
             recommendation4 = create_recommendation(offer2, user2, is_favorite=True)
-            PcObject.check_and_save(user1, user2, recommendation1, recommendation2, recommendation3, recommendation4)
+            PcObject.save(user1, user2, recommendation1, recommendation2, recommendation3, recommendation4)
 
             # when
             response = TestClient().with_auth(user1.email) \
@@ -56,7 +56,7 @@ class Get:
             venue = create_venue(offerer)
             offer1 = create_offer_with_event_product(venue)
             recommendation1 = create_recommendation(offer1, user1, is_favorite=False)
-            PcObject.check_and_save(user1, user2, recommendation1)
+            PcObject.save(user1, user2, recommendation1)
 
             # when
             response = TestClient().with_auth(user1.email) \

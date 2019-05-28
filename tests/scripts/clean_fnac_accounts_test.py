@@ -20,7 +20,7 @@ class FindAllOKFnacUsersTest:
         user_fnacdarty = create_user(email='toto@fnacdarty.com')
         user_not_fnac = create_user(email='toto@cultura.com')
 
-        PcObject.check_and_save(user_fnac, user_fnacdarty, user_not_fnac)
+        PcObject.save(user_fnac, user_fnacdarty, user_not_fnac)
 
         # When
         users = find_all_fnac_users()
@@ -37,7 +37,7 @@ class FindAllFnacStructuresTest:
         # Given
         fnac_offerers = [create_offerer(siren=siren) for siren in ALL_OK_FNAC_SIREN]
         other_offerer = create_offerer(siren='123456789')
-        PcObject.check_and_save(*(fnac_offerers + [other_offerer]))
+        PcObject.save(*(fnac_offerers + [other_offerer]))
 
         # When
         offerers = find_all_OK_fnac_offerers()
@@ -55,7 +55,7 @@ class CreateAllPossibleUserOfferersTest:
         users = [create_user(email=f'{i}@toto.com') for i in range(2)]
         offerers = [create_offerer(siren=f'12345678{i}') for i in range(3)]
         user_offerer = create_user_offerer(users[0], offerers[0])
-        PcObject.check_and_save(user_offerer)
+        PcObject.save(user_offerer)
 
         # When
         create_all_possible_user_offerers(users, offerers)
@@ -84,7 +84,7 @@ class ClearAllExistingUserOfferersTest:
         user_offerer2 = create_user_offerer(user2, offerer)
         other_user_offerer = create_user_offerer(user2, other_offerer)
 
-        PcObject.check_and_save(user_offerer1, user_offerer2, other_user_offerer)
+        PcObject.save(user_offerer1, user_offerer2, other_user_offerer)
 
         # When
         clear_all_existing_user_offerers(offerer.id)
@@ -111,7 +111,7 @@ class MoveOffersFromOneVenueToAnotherTest:
         origin_offer1 = create_offer_with_thing_product(origin_venue)
         origin_offer2 = create_offer_with_event_product(origin_venue)
         other_offer = create_offer_with_event_product(other_venue)
-        PcObject.check_and_save(origin_offer1, origin_offer2, target_venue, other_offer)
+        PcObject.save(origin_offer1, origin_offer2, target_venue, other_offer)
 
         # When
         move_offers_from_one_venue_to_another(origin_venue.id, target_venue.id)
@@ -128,7 +128,7 @@ class MoveOffersFromOneVenueToAnotherTest:
 
         origin_venue = create_venue(origin_offerer, siret=origin_offerer.siren + '12345')
         target_venue = create_venue(target_offerer, siret=target_offerer.siren + '12345')
-        PcObject.check_and_save(origin_venue, target_venue)
+        PcObject.save(origin_venue, target_venue)
 
         try:
             # When
@@ -149,7 +149,7 @@ class DeleteAllPhysicalManagedVenuesTest:
         venue2 = create_venue(offerer, siret=offerer.siren + '00002', is_virtual=False)
         other_venue = create_venue(other_offerer, siret=other_offerer.siren + '00001', is_virtual=False)
 
-        PcObject.check_and_save(venue1, venue2, other_venue)
+        PcObject.save(venue1, venue2, other_venue)
 
         # When
         delete_all_physical_managed_venues(offerer.id)
@@ -165,7 +165,7 @@ class DeleteAllPhysicalManagedVenuesTest:
         offerer = create_offerer()
         venue = create_venue(offerer, siret=None, is_virtual=True)
 
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
         # When
         delete_all_physical_managed_venues(offerer.id)

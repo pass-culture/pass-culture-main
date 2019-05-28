@@ -86,12 +86,12 @@ class CreateOfferTest:
         digital_thing = create_product_with_Thing_type(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
         offerer = create_offerer()
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        PcObject.check_and_save(virtual_venue)
+        PcObject.save(virtual_venue)
 
         offer = create_offer_with_thing_product(virtual_venue, digital_thing)
 
         # When
-        PcObject.check_and_save(digital_thing, offer)
+        PcObject.save(digital_thing, offer)
 
         # Then
         assert offer.url == url
@@ -102,12 +102,12 @@ class CreateOfferTest:
         physical_thing = create_product_with_Thing_type(thing_type=ThingType.LIVRE_EDITION, url=None)
         offerer = create_offerer()
         physical_venue = create_venue(offerer, is_virtual=False, siret=offerer.siren + '12345')
-        PcObject.check_and_save(physical_venue)
+        PcObject.save(physical_venue)
 
         offer = create_offer_with_thing_product(physical_venue, physical_thing)
 
         # When
-        PcObject.check_and_save(physical_thing, offer)
+        PcObject.save(physical_thing, offer)
 
         # Then
         assert offer.url is None
@@ -118,12 +118,12 @@ class CreateOfferTest:
         digital_thing = create_product_with_Thing_type(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
         offerer = create_offerer()
         physical_venue = create_venue(offerer)
-        PcObject.check_and_save(physical_venue)
+        PcObject.save(physical_venue)
         offer = create_offer_with_thing_product(physical_venue, digital_thing)
 
         # When
         with pytest.raises(ApiErrors) as errors:
-            PcObject.check_and_save(offer)
+            PcObject.save(offer)
 
         # Then
         assert errors.value.errors['venue'] == [
@@ -135,12 +135,12 @@ class CreateOfferTest:
         physical_thing = create_product_with_Thing_type(thing_type=ThingType.JEUX_VIDEO, url=None)
         offerer = create_offerer()
         digital_venue = create_venue(offerer, is_virtual=True, siret=None)
-        PcObject.check_and_save(digital_venue)
+        PcObject.save(digital_venue)
         offer = create_offer_with_thing_product(digital_venue, physical_thing)
 
         # When
         with pytest.raises(ApiErrors) as errors:
-            PcObject.check_and_save(offer)
+            PcObject.save(offer)
 
         # Then
         assert errors.value.errors['venue'] == [
@@ -152,12 +152,12 @@ class CreateOfferTest:
         event_product = create_product_with_Event_type(duration_minutes=None)
         offerer = create_offerer()
         venue = create_venue(offerer)
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
         offer = create_offer_with_event_product(venue, event_product)
 
         # When
         with pytest.raises(ApiErrors) as errors:
-            PcObject.check_and_save(offer)
+            PcObject.save(offer)
 
         # Then
         assert errors.value.errors['durationMinutes'] == [
@@ -213,12 +213,12 @@ class CreateOfferTest:
         digital_thing = create_product_with_Thing_type(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
         offerer = create_offerer()
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        PcObject.check_and_save(virtual_venue)
+        PcObject.save(virtual_venue)
 
         offer = create_offer_with_thing_product(virtual_venue, digital_thing)
 
         # When
-        PcObject.check_and_save(digital_thing, offer)
+        PcObject.save(digital_thing, offer)
 
         # Then
         assert offer.product.url == url
@@ -229,12 +229,12 @@ class CreateOfferTest:
         digital_thing = create_product_with_Thing_type(thing_type=ThingType.JEUX_VIDEO, url='http://mygame.fr/offre')
         offerer = create_offerer()
         physical_venue = create_venue(offerer)
-        PcObject.check_and_save(physical_venue)
+        PcObject.save(physical_venue)
         offer = create_offer_with_thing_product(physical_venue, digital_thing)
 
         # When
         with pytest.raises(ApiErrors) as errors:
-            PcObject.check_and_save(offer)
+            PcObject.save(offer)
 
         # Then
         assert errors.value.errors['venue'] == [

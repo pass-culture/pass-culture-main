@@ -19,7 +19,7 @@ def test_get_keywords_analyzer(app):
     offerer = create_offerer(name=offerer_name)
     venue = create_venue(offerer, name="Le nuage magique")
     offer = create_offer_with_event_product(venue=venue, product=product_event)
-    PcObject.check_and_save(offer)
+    PcObject.save(offer)
 
     # when
     keywords_analyzer = get_keywords_analyzer(offer, 'nua')

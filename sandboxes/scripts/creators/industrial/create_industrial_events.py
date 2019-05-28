@@ -82,7 +82,7 @@ def create_industrial_events():
 
         type_index += len(event_type_dicts)
 
-    PcObject.check_and_save(*events_by_name.values())
+    PcObject.save(*events_by_name.values())
 
     logger.info('created {} events'.format(len(events_by_name)))
 

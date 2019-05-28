@@ -22,7 +22,7 @@ class FindMessageChecksumTest:
         # given
         message_id = 'ABCD1234'
         message = create_payment_message(name=message_id)
-        PcObject.check_and_save(message)
+        PcObject.save(message)
 
         # when
         checksum = find_message_checksum(message_id)
@@ -36,7 +36,7 @@ class FindMessageChecksumTest:
         # given
         message_id = 'ABCD1234'
         message = create_payment_message(name=message_id)
-        PcObject.check_and_save(message)
+        PcObject.save(message)
 
         # when
         checksum = find_message_checksum('EFGH5678')
@@ -63,7 +63,7 @@ class FindErrorPaymentsTest:
         error_status2.status = TransactionStatus.ERROR
         error_payment2.statuses.append(error_status2)
 
-        PcObject.check_and_save(error_payment1, error_payment2, pending_payment, deposit)
+        PcObject.save(error_payment1, error_payment2, pending_payment, deposit)
 
         # When
         payments = find_error_payments()
@@ -87,7 +87,7 @@ class FindErrorPaymentsTest:
         sent_status.status = TransactionStatus.SENT
         error_payment.statuses.extend([error_status, sent_status])
 
-        PcObject.check_and_save(error_payment, pending_payment, deposit)
+        PcObject.save(error_payment, pending_payment, deposit)
 
         # When
         payments = find_error_payments()
@@ -115,7 +115,7 @@ class FindRetryPaymentsTest:
         retry_status2.status = TransactionStatus.RETRY
         retry_payment2.statuses.append(retry_status2)
 
-        PcObject.check_and_save(retry_payment1, retry_payment2, pending_payment, deposit)
+        PcObject.save(retry_payment1, retry_payment2, pending_payment, deposit)
 
         # When
         payments = find_retry_payments()
@@ -140,7 +140,7 @@ class FindRetryPaymentsTest:
         sent_status.status = TransactionStatus.SENT
         payment.statuses.extend([retry_status, sent_status])
 
-        PcObject.check_and_save(payment, pending_payment, deposit)
+        PcObject.save(payment, pending_payment, deposit)
 
         # When
         payments = find_retry_payments()
@@ -173,7 +173,7 @@ class FindPaymentsByMessageTest:
             create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction1)
         ]
 
-        PcObject.check_and_save(deposit, *payments)
+        PcObject.save(deposit, *payments)
 
         # when
         matching_payments = find_payments_by_message('XML1')
@@ -203,7 +203,7 @@ class FindPaymentsByMessageTest:
             create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid3, payment_message=message3)
         ]
 
-        PcObject.check_and_save(deposit, *payments)
+        PcObject.save(deposit, *payments)
 
         # when
         matching_payments = find_payments_by_message('unknown message')
@@ -235,7 +235,7 @@ class FindAllWithStatusNotProcessableForBankInformationTest:
         payment.setStatus(TransactionStatus.NOT_PROCESSABLE)
         other_payment.setStatus(TransactionStatus.NOT_PROCESSABLE)
 
-        PcObject.check_and_save(payment, other_payment)
+        PcObject.save(payment, other_payment)
 
         # When
         payments = find_all_with_status_not_processable_for_bank_information(bank_information)
@@ -264,7 +264,7 @@ class FindAllWithStatusNotProcessableForBankInformationTest:
         payment.setStatus(TransactionStatus.NOT_PROCESSABLE)
         other_payment.setStatus(TransactionStatus.NOT_PROCESSABLE)
 
-        PcObject.check_and_save(payment, other_payment)
+        PcObject.save(payment, other_payment)
 
         # When
         payments = find_all_with_status_not_processable_for_bank_information(bank_information)
@@ -289,7 +289,7 @@ class FindAllWithStatusNotProcessableForBankInformationTest:
         payment.setStatus(TransactionStatus.NOT_PROCESSABLE)
         other_payment.setStatus(TransactionStatus.SENT)
 
-        PcObject.check_and_save(payment, other_payment)
+        PcObject.save(payment, other_payment)
 
         # When
         payments = find_all_with_status_not_processable_for_bank_information(bank_information)
@@ -311,7 +311,7 @@ class FindAllWithStatusNotProcessableForBankInformationTest:
         payment = create_payment(booking, offerer, 10)
         payment.setStatus(TransactionStatus.NOT_PROCESSABLE)
 
-        PcObject.check_and_save(payment)
+        PcObject.save(payment)
 
         # When
         payments = find_all_with_status_not_processable_for_bank_information(offerer_bank_information)

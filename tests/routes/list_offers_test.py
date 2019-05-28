@@ -161,7 +161,7 @@ class Get:
         def test_list_activation_offers_returns_offers_of_event_type(self, app):
             # given
             user = create_user()
-            PcObject.check_and_save(user)
+            PcObject.save(user)
             auth_request = TestClient().with_auth(email=user.email)
             now = datetime.utcnow()
             five_days_ago = now - timedelta(days=5)
@@ -176,7 +176,7 @@ class Get:
             stock1 = create_stock_from_offer(offer1, price=0, booking_limit_datetime=five_days_ago)
             stock2 = create_stock_from_offer(offer2, price=0, booking_limit_datetime=next_week)
             stock3 = create_stock_from_offer(offer3, price=0, booking_limit_datetime=None)
-            PcObject.check_and_save(stock1, stock2, stock3)
+            PcObject.save(stock1, stock2, stock3)
 
             # when
             response = auth_request.get(API_URL + '/offers/activation')
@@ -199,7 +199,7 @@ class Get:
             thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION)
             stock_event = create_stock_from_offer(event_offer, price=0)
             stock_thing = create_stock_from_offer(thing_offer, price=0)
-            PcObject.check_and_save(user, stock_event, stock_thing)
+            PcObject.save(user, stock_event, stock_thing)
 
             expected_thing_type = {
                 'conditionalFields': ["author", "isbn"],
@@ -246,7 +246,7 @@ class Get:
             venue = create_venue(offerer)
             user_offerer = create_user_offerer(user, offerer, validation_token=secrets.token_urlsafe(20))
             offer = create_offer_with_thing_product(venue)
-            PcObject.check_and_save(user_offerer, offer)
+            PcObject.save(user_offerer, offer)
             auth_request = TestClient().with_auth(email=user.email)
             # When
             response = auth_request.get(API_URL + '/offers')
@@ -262,8 +262,8 @@ def create_offers_for(user, n, siren='123456789'):
     venue = create_venue(offerer, siret=siren + '1345')
     offers = create_n_mixed_offers_with_same_venue(venue, n=n)
 
-    PcObject.check_and_save(user_offerer)
-    PcObject.check_and_save(*offers)
+    PcObject.save(user_offerer)
+    PcObject.save(*offers)
 
 
 def create_n_mixed_offers_with_same_venue(venue, n=10):

@@ -23,7 +23,7 @@ class Get:
             # given
             user = create_user(email='test@email.com')
 
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             # when
             response = TestClient() \
@@ -45,7 +45,7 @@ class Get:
         def when_user_is_admin(self, app):
             # given
             admin_user = create_user(email='pctest.admin93.0@btmx.fr', can_book_free_offers=False, is_admin=True)
-            PcObject.check_and_save(admin_user)
+            PcObject.save(admin_user)
 
             # when
             response = TestClient() \
@@ -65,7 +65,7 @@ class Get:
             # given
             user = create_user(email='test@email.com')
 
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             # when
             response = TestClient() \

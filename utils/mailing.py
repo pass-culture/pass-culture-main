@@ -65,7 +65,7 @@ def resend_email(email: Email) -> bool:
     if response.status_code == 200:
         email.status = EmailStatus.SENT
         email.datetime = datetime.utcnow()
-        PcObject.check_and_save(email)
+        PcObject.save(email)
         return True
     logger.logger.warning(
         f'[EMAIL] Trying to resend email # {email.id}, {email.content} failed with status code {response.status_code}')

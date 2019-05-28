@@ -20,10 +20,10 @@ class Get:
             titelive_things_provider = Provider.getByClassName('TiteLiveThings')
             venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
             venue_provider = create_venue_provider(venue=venue, provider=titelive_things_provider)
-            PcObject.check_and_save(venue_provider)
+            PcObject.save(venue_provider)
 
             user = create_user()
-            PcObject.check_and_save(user)
+            PcObject.save(user)
             auth_request = TestClient() \
                 .with_auth(email=user.email)
             humanized_venue_provider_id = humanize(venue_provider.id)
@@ -41,10 +41,10 @@ class Get:
             venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
             titelive_things_provider = Provider.getByClassName('TiteLiveThings')
             venue_provider = create_venue_provider(venue=venue, provider=titelive_things_provider)
-            PcObject.check_and_save(venue_provider)
+            PcObject.save(venue_provider)
 
             user = create_user()
-            PcObject.check_and_save(user)
+            PcObject.save(user)
             auth_request = TestClient() \
                 .with_auth(email=user.email)
 
@@ -65,10 +65,10 @@ class Get:
             venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
             titelive_things_provider = Provider.getByClassName('TiteLiveThings')
             venue_provider = create_venue_provider(venue=venue, provider=titelive_things_provider)
-            PcObject.check_and_save(venue_provider)
+            PcObject.save(venue_provider)
 
             user = create_user()
-            PcObject.check_and_save(user)
+            PcObject.save(user)
             auth_request = TestClient() \
                 .with_auth(email=user.email)
 
@@ -86,10 +86,10 @@ class Get:
             venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
             titelive_things_provider = Provider.getByClassName('TiteLiveThings')
             venue_provider = create_venue_provider(venue=venue, provider=titelive_things_provider)
-            PcObject.check_and_save(venue_provider)
+            PcObject.save(venue_provider)
 
             user = create_user()
-            PcObject.check_and_save(user)
+            PcObject.save(user)
             auth_request = TestClient() \
                 .with_auth(email=user.email)
             non_existing_venue_provider_id = 'ABCDEF'
@@ -111,10 +111,10 @@ class Delete:
             venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
             titelive_things_provider = Provider.getByClassName('TiteLiveThings')
             venue_provider = create_venue_provider(venue=venue, provider=titelive_things_provider)
-            PcObject.check_and_save(venue_provider)
+            PcObject.save(venue_provider)
 
             user = create_user(is_admin=True, can_book_free_offers=False)
-            PcObject.check_and_save(user)
+            PcObject.save(user)
             auth_request = TestClient() \
                 .with_auth(email=user.email)
 
@@ -132,10 +132,10 @@ class Delete:
             venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
             titelive_things_provider = Provider.getByClassName('TiteLiveThings')
             venue_provider = create_venue_provider(venue=venue, provider=titelive_things_provider)
-            PcObject.check_and_save(venue_provider)
+            PcObject.save(venue_provider)
 
             user = create_user(is_admin=True, can_book_free_offers=False)
-            PcObject.check_and_save(user)
+            PcObject.save(user)
             auth_request = TestClient() \
                 .with_auth(email=user.email)
 
@@ -155,7 +155,7 @@ class Post:
             # given
             offerer = create_offerer(siren='775671464')
             venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-            PcObject.check_and_save(venue)
+            PcObject.save(venue)
 
             provider = activate_provider('OpenAgendaEvents')
 
@@ -163,7 +163,7 @@ class Post:
                                    'venueId': humanize(venue.id),
                                    'venueIdAtOfferProvider': '775671464'}
             user = create_user(is_admin=True, can_book_free_offers=False)
-            PcObject.check_and_save(user)
+            PcObject.save(user)
             auth_request = TestClient() \
                 .with_auth(email=user.email)
 
@@ -203,10 +203,10 @@ class Patch:
             titelive_things_provider = Provider.getByClassName('TiteLiveThings')
             venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
             venue_provider = create_venue_provider(venue=venue, provider=titelive_things_provider)
-            PcObject.check_and_save(venue_provider)
+            PcObject.save(venue_provider)
 
             user = create_user()
-            PcObject.check_and_save(user)
+            PcObject.save(user)
             auth_request = TestClient() \
                 .with_auth(email=user.email)
             humanized_venue_provider_id = humanize(venue_provider.id)

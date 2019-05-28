@@ -26,7 +26,7 @@ def update_offerer_with_sirene_data(data: dict):
     offerer.latitude = parsed_data.get('latitude') or offerer.latitude
     offerer.longitude = parsed_data.get('longitude') or offerer.longitude
     offerer.postalCode = parsed_data.get('postalCode') or offerer.postalCode
-    PcObject.check_and_save(offerer)
+    PcObject.save(offerer)
 
 
 def update_offerer(siren: str):

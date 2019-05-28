@@ -55,7 +55,7 @@ class TiteliveTest:
         # given
         offerer = create_offerer(siren='775671464')
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
         titelive_things_provider = Provider.getByClassName('TiteLiveThings')
         venue_provider = VenueProvider()
@@ -63,7 +63,7 @@ class TiteliveTest:
         venue_provider.provider = titelive_things_provider
         venue_provider.isActive = True
         venue_provider.venueIdAtOfferProvider = '77567146400110'
-        PcObject.check_and_save(venue_provider)
+        PcObject.save(venue_provider)
 
         # Import things
         provider_test(app,

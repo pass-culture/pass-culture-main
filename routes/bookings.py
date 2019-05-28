@@ -111,7 +111,7 @@ def create_booking():
 
     expenses = get_expenses(bookings)
     check_expenses_limits(expenses, new_booking)
-    PcObject.check_and_save(new_booking)
+    PcObject.save(new_booking)
 
     try:
         send_booking_recap_emails(new_booking, send_raw_email)
@@ -149,7 +149,7 @@ def patch_booking(booking_id):
         return "Vous n'avez pas le droit d'annuler cette réservation", 403
 
     booking.isCancelled = True
-    PcObject.check_and_save(booking)
+    PcObject.save(booking)
 
     try:
         send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,
@@ -198,7 +198,7 @@ def patch_booking_by_token(token):
         activate_user(booking.user)
         send_activation_notification_email(booking.user, send_raw_email)
 
-    PcObject.check_and_save(booking)
+    PcObject.save(booking)
     return '', 204
 
 
@@ -206,7 +206,7 @@ def activate_user(user_to_activate):
     check_rights_for_activation_offer(current_user)
     user_to_activate.canBookFreeOffers = True
     deposit = create_initial_deposit(user_to_activate)
-    PcObject.check_and_save(deposit)
+    PcObject.save(deposit)
 
 
 def _create_response_to_get_booking_by_token(booking):

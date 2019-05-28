@@ -17,7 +17,7 @@ def test_deposit_creation_1(app):
     deposit.source = "test money"
 
     # when
-    PcObject.check_and_save(deposit)
+    PcObject.save(deposit)
 
     # then
     assert Deposit.query.count() == 1
@@ -35,7 +35,7 @@ def test_deposit_creation_2(app):
     deposit.source = "test money"
 
     # when
-    PcObject.check_and_save(deposit)
+    PcObject.save(deposit)
 
     # then
     assert Deposit.query.count() == 1

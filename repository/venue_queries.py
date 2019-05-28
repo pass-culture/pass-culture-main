@@ -11,7 +11,7 @@ from repository.offerer_queries import _filter_by_sirens
 
 def save_venue(venue):
     try:
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
     except TooManyVirtualVenuesException:
         errors = ApiErrors()
         errors.addError('isVirtual', 'Un lieu pour les offres numériques existe déjà pour cette structure')

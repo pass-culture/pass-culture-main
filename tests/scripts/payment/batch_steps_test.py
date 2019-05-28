@@ -35,8 +35,8 @@ class GenerateNewPaymentsTest:
         booking4 = create_booking(user, free_stock, venue, is_used=True)
         payment1 = create_payment(booking2, offerer, 10, payment_message_name="ABCD123")
 
-        PcObject.check_and_save(payment1)
-        PcObject.check_and_save(deposit, booking1, booking3, booking4)
+        PcObject.save(payment1)
+        PcObject.save(deposit, booking1, booking3, booking4)
 
         initial_payment_count = Payment.query.count()
 
@@ -51,7 +51,7 @@ class GenerateNewPaymentsTest:
         # Given
         offerer1 = create_offerer(siren='123456789')
         offerer2 = create_offerer(siren='987654321')
-        PcObject.check_and_save(offerer1)
+        PcObject.save(offerer1)
         bank_information = create_bank_information(bic='BDFEFR2LCCB', iban='FR7630006000011234567890189',
                                                    id_at_providers='123456789', offerer=offerer1)
         venue1 = create_venue(offerer1, siret='12345678912345')
@@ -67,7 +67,7 @@ class GenerateNewPaymentsTest:
         booking2 = create_booking(user, paying_stock1, venue1, is_used=True)
         booking3 = create_booking(user, paying_stock2, venue2, is_used=True)
         booking4 = create_booking(user, free_stock1, venue1, is_used=True)
-        PcObject.check_and_save(deposit, booking1, booking2, booking3, booking4, bank_information)
+        PcObject.save(deposit, booking1, booking2, booking3, booking4, bank_information)
 
         # When
         pending, not_processable = generate_new_payments()
@@ -104,7 +104,7 @@ class ConcatenatePaymentsWithErrorsAndRetriesTest:
         not_processable_status.status = TransactionStatus.NOT_PROCESSABLE
         not_processable_payment.statuses.append(not_processable_status)
 
-        PcObject.check_and_save(error_payment, retry_payment, pending_payment, deposit)
+        PcObject.save(error_payment, retry_payment, pending_payment, deposit)
 
         # When
         payments = concatenate_payments_with_errors_and_retries([pending_payment])
@@ -206,7 +206,7 @@ def test_send_transactions_should_send_an_email_with_xml_attachment(app):
     booking2 = create_booking(user, stock1)
     booking3 = create_booking(user, stock1)
     deposit = create_deposit(user, datetime.utcnow(), amount=500)
-    PcObject.check_and_save(deposit)
+    PcObject.save(deposit)
     payments = [
         create_payment(booking1, offerer1, Decimal(10)),
         create_payment(booking2, offerer1, Decimal(20)),
@@ -244,8 +244,8 @@ def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_p
         create_payment(booking3, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     ]
 
-    PcObject.check_and_save(deposit)
-    PcObject.check_and_save(*payments)
+    PcObject.save(deposit)
+    PcObject.save(*payments)
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
@@ -277,8 +277,8 @@ def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
         create_payment(booking3, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     ]
 
-    PcObject.check_and_save(deposit)
-    PcObject.check_and_save(*payments)
+    PcObject.save(deposit)
+    PcObject.save(*payments)
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
@@ -312,8 +312,8 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
         create_payment(booking3, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     ]
 
-    PcObject.check_and_save(deposit)
-    PcObject.check_and_save(*payments)
+    PcObject.save(deposit)
+    PcObject.save(*payments)
 
     app.mailjet_client.send.create.return_value = Mock(status_code=400)
 
@@ -344,7 +344,7 @@ def test_send_transactions_with_malformed_iban_on_payments_gives_them_an_error_s
         create_payment(booking, offerer, Decimal(10), iban='CF  13QSDFGH45 qbc //', bic='QSDFGH8Z555'),
     ]
 
-    PcObject.check_and_save(deposit, *payments)
+    PcObject.save(deposit, *payments)
     app.mailjet_client.send.create.return_value = Mock(status_code=400)
 
     # when
@@ -380,8 +380,8 @@ def test_send_payment_details_sends_a_csv_attachment(app):
         create_payment(booking3, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     ]
 
-    PcObject.check_and_save(deposit)
-    PcObject.check_and_save(*payments)
+    PcObject.save(deposit)
+    PcObject.save(*payments)
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
@@ -487,8 +487,8 @@ def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not
                        iban='CF13QSDFGH456789', bic='QSDFGH8Z555')
     ]
 
-    PcObject.check_and_save(deposit)
-    PcObject.check_and_save(*payments)
+    PcObject.save(deposit)
+    PcObject.save(*payments)
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
@@ -525,8 +525,8 @@ def test_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_er
                        bic='QSDFGH8Z555')
     ]
 
-    PcObject.check_and_save(deposit)
-    PcObject.check_and_save(*payments)
+    PcObject.save(deposit)
+    PcObject.save(*payments)
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 

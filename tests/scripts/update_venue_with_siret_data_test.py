@@ -38,7 +38,7 @@ class UpdateVenueWithSireneDataTest:
             latitude='48.863',
             longitude='2.36',
             postal_code='75001')
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
         # When
         update_venue_with_sirene_data(sirene_data, '12345678900002')
@@ -79,7 +79,7 @@ class UpdateVenueWithSireneDataTest:
             latitude='48.863',
             longitude='2.36',
             postal_code='75001')
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
         # When
         update_venue_with_sirene_data(sirene_data, old_siret='12345678900002')

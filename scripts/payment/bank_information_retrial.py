@@ -12,4 +12,4 @@ def retry_linked_payments(bank_information_list: List[BankInformation]):
     for payment in payments:
         payment.setStatus(TransactionStatus.RETRY)
     if payments:
-        PcObject.check_and_save(*payments)
+        PcObject.save(*payments)

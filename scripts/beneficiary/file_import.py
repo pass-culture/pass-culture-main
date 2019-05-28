@@ -154,7 +154,7 @@ def run(csv_file_path: str) -> None:
     for chunk in chunked_file:
         bookings = create_users_with_activation_bookings(chunk, stock, existing_tokens)
         if bookings:
-            PcObject.check_and_save(*bookings)
+            PcObject.save(*bookings)
         all_bookings.extend(bookings)
         total += len(chunk)
         logger.info('Enregistrement de %s comptes utilisateur | %s' % (CHUNK_SIZE, total))

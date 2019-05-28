@@ -17,7 +17,7 @@ def test_cannot_create_admin_that_can_book(app):
 
     # When
     with pytest.raises(ApiErrors):
-        PcObject.check_and_save(user)
+        PcObject.save(user)
 
 
 @pytest.mark.standalone
@@ -27,7 +27,7 @@ class HasRightsTest:
         # given
         offerer = create_offerer()
         user = create_user(is_admin=False)
-        PcObject.check_and_save(offerer, user)
+        PcObject.save(offerer, user)
 
         # when
         has_rights = user.hasRights(RightsType.editor, offerer.id)
@@ -41,7 +41,7 @@ class HasRightsTest:
         offerer = create_offerer()
         user = create_user(is_admin=False)
         user_offerer = create_user_offerer(user, offerer)
-        PcObject.check_and_save(user_offerer)
+        PcObject.save(user_offerer)
 
         # when
         has_rights = user.hasRights(RightsType.editor, offerer.id)
@@ -55,7 +55,7 @@ class HasRightsTest:
         offerer = create_offerer()
         user = create_user(email='bobby@test.com', is_admin=False)
         user_offerer = create_user_offerer(user, offerer, validation_token='AZEFRGTHRQFQ')
-        PcObject.check_and_save(user_offerer)
+        PcObject.save(user_offerer)
 
         # when
         has_rights = user.hasRights(RightsType.editor, offerer.id)
@@ -68,7 +68,7 @@ class HasRightsTest:
         # given
         offerer = create_offerer()
         user = create_user(can_book_free_offers=False, is_admin=True)
-        PcObject.check_and_save(offerer, user)
+        PcObject.save(offerer, user)
 
         # when
         has_rights = user.hasRights(RightsType.editor, offerer.id)
@@ -83,7 +83,7 @@ class WalletBalanceTest:
     def test_wallet_balance_is_0_with_no_deposits_and_no_bookings(self, app):
         # given
         user = create_user()
-        PcObject.check_and_save(user)
+        PcObject.save(user)
 
         # when
         balance = user.wallet_balance
@@ -97,7 +97,7 @@ class WalletBalanceTest:
         user = create_user()
         deposit1 = create_deposit(user, datetime.utcnow(), amount=100)
         deposit2 = create_deposit(user, datetime.utcnow(), amount=50)
-        PcObject.check_and_save(deposit1, deposit2)
+        PcObject.save(deposit1, deposit2)
 
         # when
         balance = user.wallet_balance
@@ -120,7 +120,7 @@ class WalletBalanceTest:
         booking1 = create_booking(user, venue=venue, stock=stock1, quantity=1)
         booking2 = create_booking(user, venue=venue, stock=stock2, quantity=2)
 
-        PcObject.check_and_save(deposit1, deposit2, booking1, booking2)
+        PcObject.save(deposit1, deposit2, booking1, booking2)
 
         # when
         balance = user.wallet_balance
@@ -143,7 +143,7 @@ class WalletBalanceTest:
         booking1 = create_booking(user, venue=venue, stock=stock1, quantity=1, is_cancelled=False)
         booking2 = create_booking(user, venue=venue, stock=stock2, quantity=2, is_cancelled=True)
 
-        PcObject.check_and_save(deposit1, deposit2, booking1, booking2)
+        PcObject.save(deposit1, deposit2, booking1, booking2)
 
         # when
         balance = user.wallet_balance
@@ -158,7 +158,7 @@ class RealWalletBalanceTest:
     def test_real_wallet_balance_is_0_with_no_deposits_and_no_bookings(self, app):
         # given
         user = create_user()
-        PcObject.check_and_save(user)
+        PcObject.save(user)
 
         # when
         balance = user.real_wallet_balance
@@ -172,7 +172,7 @@ class RealWalletBalanceTest:
         user = create_user()
         deposit1 = create_deposit(user, datetime.utcnow(), amount=100)
         deposit2 = create_deposit(user, datetime.utcnow(), amount=50)
-        PcObject.check_and_save(deposit1, deposit2)
+        PcObject.save(deposit1, deposit2)
 
         # when
         balance = user.real_wallet_balance
@@ -197,7 +197,7 @@ class RealWalletBalanceTest:
         booking2 = create_booking(user, venue=venue, stock=stock2, quantity=2, is_used=True)
         booking3 = create_booking(user, venue=venue, stock=stock3, quantity=1, is_used=False)
 
-        PcObject.check_and_save(deposit1, deposit2, booking1, booking2, booking3)
+        PcObject.save(deposit1, deposit2, booking1, booking2, booking3)
 
         # when
         balance = user.real_wallet_balance
@@ -222,7 +222,7 @@ class RealWalletBalanceTest:
         booking2 = create_booking(user, venue=venue, stock=stock2, quantity=2, is_cancelled=False, is_used=True)
         booking3 = create_booking(user, venue=venue, stock=stock3, quantity=1, is_cancelled=False, is_used=True)
 
-        PcObject.check_and_save(deposit1, deposit2, booking1, booking2, booking3)
+        PcObject.save(deposit1, deposit2, booking1, booking2, booking3)
 
         # when
         balance = user.real_wallet_balance

@@ -42,7 +42,7 @@ class OpenAgendaEventsTest:
         # given
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, name='Librairie OpenAgenda', siret='12345678901231')
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
         venue_id = venue.id
 
         open_agenda_provider = Provider.getByClassName('OpenAgendaEvents')
@@ -51,7 +51,7 @@ class OpenAgendaEventsTest:
         venue_provider.provider = open_agenda_provider
         venue_provider.isActive = True
         venue_provider.venueIdAtOfferProvider = '49050769'
-        PcObject.check_and_save(venue_provider)
+        PcObject.save(venue_provider)
         venue_provider = VenueProvider.query \
             .filter_by(venueIdAtOfferProvider='49050769') \
             .one_or_none()

@@ -21,7 +21,7 @@ def test_handle_rest_get_list_should_return_only_not_soft_deleted_stock(app):
     stock3 = create_stock_from_event_occurrence(event_occurrence)
     stock4 = create_stock_from_event_occurrence(event_occurrence)
     stock1.isSoftDeleted = True
-    PcObject.check_and_save(stock1, stock2, stock3, stock4)
+    PcObject.save(stock1, stock2, stock3, stock4)
 
     # When
     request = handle_rest_get_list(Stock)

@@ -45,7 +45,7 @@ def create_industrial_webapp_users():
                 reset_password_token=reset_password_token
             )
 
-    PcObject.check_and_save(*users_by_name.values())
+    PcObject.save(*users_by_name.values())
 
     logger.info('created {} users'.format(len(users_by_name)))
 

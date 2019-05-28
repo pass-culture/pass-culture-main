@@ -113,7 +113,7 @@ class BankInformationProviderProviderTest:
         offerer = create_offerer(siren='793875030')
         venue = create_venue(offerer, siret='79387503000016')
 
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
         offerer_id = offerer.id
 
@@ -209,7 +209,7 @@ class BankInformationProviderProviderTest:
         offerer = create_offerer(siren='793875030')
         venue = create_venue(offerer, siret='79387503000016')
 
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
         offerer_id = offerer.id
         venue_id = venue.id
@@ -355,11 +355,11 @@ class BankInformationProviderProviderTest:
         offerer = create_offerer(siren='793875030')
         venue = create_venue(offerer, siret='79387503000016')
 
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
         bank_information_provider = BankInformationProvider()
         bank_information_provider.dbObject.isActive = True
-        PcObject.check_and_save(bank_information_provider.dbObject)
+        PcObject.save(bank_information_provider.dbObject)
 
         # when
         with pytest.raises(UnknownRibAffiliation):
@@ -498,7 +498,7 @@ class BankInformationProviderProviderTest:
         offerer2 = create_offerer(siren='793875030')
         venue2 = create_venue(offerer2, siret='79387503000016')
 
-        PcObject.check_and_save(venue1, venue2)
+        PcObject.save(venue1, venue2)
         venue1_id = venue1.id
         venue2_id = venue2.id
 
@@ -684,7 +684,7 @@ class BankInformationProviderProviderTest:
         venue = create_venue(offerer, siret='79387501900056')
 
         bank_information = create_bank_information(id_at_providers="79387501900056", venue=venue)
-        PcObject.check_and_save(bank_information)
+        PcObject.save(bank_information)
 
         # When Then
         provider_test(app,
@@ -827,11 +827,11 @@ class BankInformationProviderProviderTest:
         offerer_ok = create_offerer(siren="793875030")
         venue_ok = create_venue(offerer_ok, siret="79387503000016")
 
-        PcObject.check_and_save(venue_ko, venue_ok)
+        PcObject.save(venue_ko, venue_ok)
 
         bank_information_provider = BankInformationProvider()
         bank_information_provider.dbObject.isActive = True
-        PcObject.check_and_save(bank_information_provider.dbObject)
+        PcObject.save(bank_information_provider.dbObject)
 
         # when
         bank_information_provider.updateObjects()
@@ -909,7 +909,7 @@ class BankInformationProviderProviderTest:
 
         bank_information_provider = BankInformationProvider()
         bank_information_provider.dbObject.isActive = True
-        PcObject.check_and_save(bank_information_provider.dbObject)
+        PcObject.save(bank_information_provider.dbObject)
 
         # when
         bank_information_provider.updateObjects()
@@ -987,11 +987,11 @@ class BankInformationProviderProviderTest:
 
         bank_information = create_bank_information(id_at_providers='79387501900056',
                                                    date_modified_at_last_provider=datetime(2019, 1, 1), venue=venue)
-        PcObject.check_and_save(bank_information)
+        PcObject.save(bank_information)
 
         bank_information_provider = BankInformationProvider()
         bank_information_provider.dbObject.isActive = True
-        PcObject.check_and_save(bank_information_provider.dbObject)
+        PcObject.save(bank_information_provider.dbObject)
 
         # when
         bank_information_provider.updateObjects()
@@ -1066,7 +1066,7 @@ class BankInformationProviderProviderTest:
         offerer = create_offerer(siren='793875030')
         venue = create_venue(offerer, siret='79387503000016')
 
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
         # When Then
         provider_test(app,
@@ -1129,7 +1129,7 @@ class RetrieveBankInformationTest:
         }
         offerer = create_offerer(siren="793875019")
         venue = create_venue(offerer, siret="79387501900056")
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
         venue_id = venue.id
 
         bank_information_provider = TestableBankInformationProvider()
@@ -1185,7 +1185,7 @@ class RetrieveBankInformationTest:
                 }
         }
         offerer = create_offerer(siren="793875019")
-        PcObject.check_and_save(offerer)
+        PcObject.save(offerer)
         offerer_id = offerer.id
         bank_information_provider = TestableBankInformationProvider()
 

@@ -30,7 +30,7 @@ def test_update_offerer_with_sirene_data_changes_given_offerer_information(app):
         latitude='48.863',
         longitude='2.36',
         postal_code='75001')
-    PcObject.check_and_save(offerer)
+    PcObject.save(offerer)
 
     # When
     update_offerer_with_sirene_data(sirene_data)
@@ -68,7 +68,7 @@ def test_update_offerer_with_sirene_data_keeps_old_information_when_not_given_by
         latitude='48.863',
         longitude='2.36',
         postal_code='75001')
-    PcObject.check_and_save(offerer)
+    PcObject.save(offerer)
 
     # When
     update_offerer_with_sirene_data(sirene_data)

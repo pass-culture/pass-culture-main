@@ -18,7 +18,7 @@ class InitTiteLiveThingDescriptionsTest:
         thing_1 = create_product_with_Thing_type(id_at_providers='1234567029006')
         init_titelive_thing_descriptions = InitTiteLiveThingDescriptions(filename)
         init_titelive_thing_descriptions.dbObject.isActive = True
-        PcObject.check_and_save(thing_1, init_titelive_thing_descriptions.dbObject)
+        PcObject.save(thing_1, init_titelive_thing_descriptions.dbObject)
 
         # when
         init_titelive_thing_descriptions.updateObjects()
@@ -37,7 +37,7 @@ class InitTiteLiveThingDescriptionsTest:
         thing_3 = create_product_with_Thing_type(id_at_providers='3760107140005')
         init_titelive_thing_descriptions = InitTiteLiveThingDescriptions(filename)
         init_titelive_thing_descriptions.dbObject.isActive = True
-        PcObject.check_and_save(thing_1, thing_2, thing_3, init_titelive_thing_descriptions.dbObject)
+        PcObject.save(thing_1, thing_2, thing_3, init_titelive_thing_descriptions.dbObject)
 
         # when
         init_titelive_thing_descriptions.updateObjects()

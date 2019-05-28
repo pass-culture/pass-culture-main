@@ -299,7 +299,7 @@ class PcObject():
             return PcObject.restize_global_error(e)
 
     @staticmethod
-    def check_and_save(*objects):
+    def save(*objects):
         if not objects:
             return None
 

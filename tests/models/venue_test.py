@@ -12,14 +12,14 @@ from tests.test_utils import create_offerer, create_venue, create_offer_with_thi
 def test_offerer_cannot_have_address_and_isVirtual(app):
     # Given
     offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
-    PcObject.check_and_save(offerer)
+    PcObject.save(offerer)
 
     venue = create_venue(offerer, name='Venue_name', booking_email='booking@email.com', is_virtual=True, siret=None)
     venue.address = '1 test address'
 
     # When
     with pytest.raises(ApiErrors):
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
 
 @clean_database
@@ -27,14 +27,14 @@ def test_offerer_cannot_have_address_and_isVirtual(app):
 def test_offerer_not_isVirtual_cannot_have_null_address(app):
     # Given
     offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
-    PcObject.check_and_save(offerer)
+    PcObject.save(offerer)
 
     venue = create_venue(offerer, name='Venue_name', booking_email='booking@email.com', address=None, postal_code=None,
                          city=None, departement_code=None, is_virtual=False)
 
     # When
     with pytest.raises(ApiErrors):
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
 
 @clean_database
@@ -42,18 +42,18 @@ def test_offerer_not_isVirtual_cannot_have_null_address(app):
 def test_offerer_cannot_create_a_second_virtual_venue(app):
     # Given
     offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
-    PcObject.check_and_save(offerer)
+    PcObject.save(offerer)
 
     venue = create_venue(offerer, name='Venue_name', booking_email='booking@email.com', address=None, postal_code=None,
                          city=None, departement_code=None, is_virtual=True, siret=None)
-    PcObject.check_and_save(venue)
+    PcObject.save(venue)
 
     new_venue = create_venue(offerer, name='Venue_name', booking_email='booking@email.com', address=None,
                              postal_code=None, city=None, departement_code=None, is_virtual=True, siret=None)
 
     # When
     with pytest.raises(TooManyVirtualVenuesException):
-        PcObject.check_and_save(new_venue)
+        PcObject.save(new_venue)
 
 
 @clean_database
@@ -62,14 +62,14 @@ def test_offerer_cannot_update_a_second_venue_to_be_virtual(app):
     # Given
     siren = '132547698'
     offerer = create_offerer(siren, '1 rue Test', 'Test city', '93000', 'Test offerer')
-    PcObject.check_and_save(offerer)
+    PcObject.save(offerer)
 
     venue = create_venue(offerer, address=None, postal_code=None, city=None, departement_code=None, is_virtual=True,
                          siret=None)
-    PcObject.check_and_save(venue)
+    PcObject.save(venue)
 
     new_venue = create_venue(offerer, is_virtual=False, siret=siren + '98765')
-    PcObject.check_and_save(new_venue)
+    PcObject.save(new_venue)
 
     # When
     new_venue.isVirtual = True
@@ -81,7 +81,7 @@ def test_offerer_cannot_update_a_second_venue_to_be_virtual(app):
 
     # Then
     with pytest.raises(TooManyVirtualVenuesException):
-        PcObject.check_and_save(new_venue)
+        PcObject.save(new_venue)
 
 
 @clean_database
@@ -93,7 +93,7 @@ def test_venue_raises_exception_when_is_virtual_and_has_siret(app):
 
     # when
     with pytest.raises(ApiErrors):
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
 
 @clean_database
@@ -105,7 +105,7 @@ def test_venue_raises_exception_when_no_siret_and_no_comment(app):
 
     # when
     with pytest.raises(ApiErrors):
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
 
 @clean_database
@@ -117,7 +117,7 @@ def test_venue_raises_exception_when_siret_and_comment_but_virtual(app):
 
     # when
     with pytest.raises(ApiErrors):
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
 
 @clean_database
@@ -129,7 +129,7 @@ def test_venue_should_not_raise_exception_when_siret_and_comment(app):
 
     # when
     try:
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
     except ApiErrors:
         # Then
@@ -145,7 +145,7 @@ def test_venue_should_not_raise_exception_when_no_siret_but_comment(app):
 
     # when
     try:
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
         
     except ApiErrors:
         # Then
@@ -161,7 +161,7 @@ def test_nOffers(app):
     offer_2 = create_offer_with_event_product(venue)
     offer_4 = create_offer_with_event_product(venue)
     offer_5 = create_offer_with_thing_product(venue)
-    PcObject.check_and_save(offer_1, offer_2, offer_4, offer_5)
+    PcObject.save(offer_1, offer_2, offer_4, offer_5)
 
     # when
     n_offers = venue.nOffers
@@ -178,7 +178,7 @@ class VenueBankInformationTest:
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret='12345678912345')
         bank_information = create_bank_information(bic='BDFEFR2LCCB', id_at_providers='12345678912345', venue=venue)
-        PcObject.check_and_save(bank_information)
+        PcObject.save(bank_information)
 
         # When
         bic = venue.bic
@@ -191,7 +191,7 @@ class VenueBankInformationTest:
         # Given
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret='12345678912345')
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
         # When
         bic = venue.bic
@@ -206,7 +206,7 @@ class VenueBankInformationTest:
         venue = create_venue(offerer, siret='12345678912345')
         bank_information = create_bank_information(iban='FR7630007000111234567890144', id_at_providers='12345678912345',
                                                    venue=venue)
-        PcObject.check_and_save(bank_information)
+        PcObject.save(bank_information)
 
         # When
         iban = venue.iban
@@ -219,7 +219,7 @@ class VenueBankInformationTest:
         # Given
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret='12345678912345')
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
         # When
         iban = venue.iban

@@ -48,7 +48,7 @@ def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
             payments = list(map(create_payment_for_booking, booking_reimbursements_to_pay))
 
         if payments:
-            PcObject.check_and_save(*payments)
+            PcObject.save(*payments)
             all_payments.extend(payments)
         logger.info('[BATCH][PAYMENTS] Saved %s payments for offerer : %s' % (len(payments), offerer.name))
 
@@ -76,7 +76,7 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
     except DocumentInvalid as e:
         for payment in payments:
             payment.setStatus(TransactionStatus.NOT_PROCESSABLE, detail=str(e))
-        PcObject.check_and_save(*payments)
+        PcObject.save(*payments)
         raise
 
     checksum = generate_file_checksum(xml_file)
@@ -95,7 +95,7 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
     else:
         for payment in payments:
             payment.setStatus(TransactionStatus.ERROR, detail="Erreur d'envoi à MailJet")
-    PcObject.check_and_save(message, *payments)
+    PcObject.save(message, *payments)
 
 
 def send_payments_details(payments: List[Payment], recipients: List[str]) -> None:

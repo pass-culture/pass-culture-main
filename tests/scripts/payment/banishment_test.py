@@ -54,7 +54,7 @@ class DoBanPaymentsTest:
         payment5 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction1)
         payment6 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction1)
 
-        PcObject.check_and_save(deposit, payment1, payment2, payment3, payment4, payment5, payment6)
+        PcObject.save(deposit, payment1, payment2, payment3, payment4, payment5, payment6)
 
         # when
         do_ban_payments('XML1', [payment1.id, payment5.id])
@@ -83,7 +83,7 @@ class DoBanPaymentsTest:
         payment1 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction1)
         payment2 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid2, payment_message=transaction2)
 
-        PcObject.check_and_save(deposit, payment1, payment2)
+        PcObject.save(deposit, payment1, payment2)
 
         # when
         do_ban_payments('XML1', [payment1.id, 123456])

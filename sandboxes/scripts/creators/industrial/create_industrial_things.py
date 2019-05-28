@@ -73,7 +73,7 @@ def create_industrial_things():
 
         type_index += len(thing_type_dicts)
 
-    PcObject.check_and_save(*things_by_name.values())
+    PcObject.save(*things_by_name.values())
 
     logger.info('created {} things'.format(len(things_by_name)))
 

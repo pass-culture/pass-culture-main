@@ -44,7 +44,7 @@ def test_find_all_by_offerer_with_event_and_things(app):
     booking1 = create_booking(user, stock1, venue1, recommendation=None, quantity=2)
     booking2 = create_booking(user, stock2, venue1, recommendation=None, quantity=1)
     booking3 = create_booking(user, stock3, venue2, recommendation=None, quantity=2)
-    PcObject.check_and_save(booking1, booking2, booking3)
+    PcObject.save(booking1, booking2, booking3)
 
     # when
     bookings = find_offerer_bookings_paginated(offerer1.id)
@@ -80,8 +80,8 @@ def test_find_all_bookings_by_offerer_in_a_not_search_context_returns_all_result
     booking10 = create_booking(user, stock1, venue2, recommendation=None, quantity=2)
     booking11 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
     booking12 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
-    PcObject.check_and_save(booking1, booking2, booking3, booking4, booking5, booking6,
-                            booking6, booking7, booking8, booking9, booking10, booking11, booking12)
+    PcObject.save(booking1, booking2, booking3, booking4, booking5, booking6,
+                  booking6, booking7, booking8, booking9, booking10, booking11, booking12)
 
     # when
     bookings = find_all_offerer_bookings(offerer1.id)
@@ -95,16 +95,16 @@ def test_find_all_bookings_by_offerer_in_a_not_search_context_returns_all_result
 def test_find_all_ongoing_bookings(app):
     # Given
     offerer = create_offerer(siren='985281920')
-    PcObject.check_and_save(offerer)
+    PcObject.save(offerer)
     venue = create_venue(offerer)
     stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
     user = create_user()
     cancelled_booking = create_booking(user, stock, is_cancelled=True)
     validated_booking = create_booking(user, stock, is_used=True)
     ongoing_booking = create_booking(user, stock, is_cancelled=False, is_used=False)
-    PcObject.check_and_save(ongoing_booking)
-    PcObject.check_and_save(validated_booking)
-    PcObject.check_and_save(cancelled_booking)
+    PcObject.save(ongoing_booking)
+    PcObject.save(validated_booking)
+    PcObject.save(cancelled_booking)
 
     # When
     all_ongoing_bookings = find_all_ongoing_bookings_by_stock(stock)
@@ -127,7 +127,7 @@ def test_find_all_bookings_for_stock(app):
     booking_to_find_2 = create_booking(user_2, stock_to_search, quantity=2)
     booking_not_to_find = create_booking(user_1, stock_not_to_search)
 
-    PcObject.check_and_save(booking_to_find_1, booking_to_find_2, booking_not_to_find)
+    PcObject.save(booking_to_find_1, booking_to_find_2, booking_not_to_find)
 
     # When
     all_bookings_for_stock = find_all_bookings_for_stock(stock_to_search)
@@ -158,7 +158,7 @@ class FindFinalOffererBookingsTest:
         stock = create_stock_with_thing_offer(offerer2, venue, offer)
         booking3 = create_booking(user, stock=stock, venue=venue, is_used=True)
 
-        PcObject.check_and_save(deposit, booking1, booking2, booking3)
+        PcObject.save(deposit, booking1, booking2, booking3)
 
         # When
         bookings = find_final_offerer_bookings(offerer1.id)
@@ -185,7 +185,7 @@ class FindFinalOffererBookingsTest:
         payment1 = create_payment(booking4, offerer, 5)
         payment2 = create_payment(booking3, offerer, 5)
 
-        PcObject.check_and_save(deposit, booking1, booking2, booking3, booking4, payment1, payment2)
+        PcObject.save(deposit, booking1, booking2, booking3, booking4, payment1, payment2)
 
         # When
         bookings = find_final_offerer_bookings(offerer.id)
@@ -209,7 +209,7 @@ class FindFinalOffererBookingsTest:
         booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
         booking2 = create_booking(user, stock=stock, venue=venue, is_cancelled=True, is_used=True)
 
-        PcObject.check_and_save(deposit, booking1, booking2)
+        PcObject.save(deposit, booking1, booking2)
 
         # When
         bookings = find_final_offerer_bookings(offerer1.id)
@@ -231,7 +231,7 @@ class FindFinalOffererBookingsTest:
         booking1 = create_booking(user, stock=stock, venue=venue, is_used=True)
         booking2 = create_booking(user, stock=stock, venue=venue, is_used=False)
 
-        PcObject.check_and_save(deposit, booking1, booking2)
+        PcObject.save(deposit, booking1, booking2)
 
         # When
         bookings = find_final_offerer_bookings(offerer1.id)
@@ -258,7 +258,7 @@ class FindFinalOffererBookingsTest:
         booking1 = create_booking(user, stock=stock1, venue=venue, is_used=False)
         booking2 = create_booking(user, stock=stock2, venue=venue, is_used=False)
 
-        PcObject.check_and_save(deposit, booking1, booking2)
+        PcObject.save(deposit, booking1, booking2)
 
         # When
         bookings = find_final_offerer_bookings(offerer1.id)
@@ -276,7 +276,7 @@ class FindDateUsedTest:
         user = create_user()
         deposit = create_deposit(user, datetime.utcnow(), amount=500)
         booking = create_booking(user)
-        PcObject.check_and_save(user, deposit, booking)
+        PcObject.save(user, deposit, booking)
 
         activity_insert = create_booking_activity(
             booking, 'booking', 'insert', issued_at=datetime(2018, 1, 28)
@@ -301,7 +301,7 @@ def test_find_date_used_on_booking_returns_none_if_no_activity_with_is_used_chan
     user = create_user()
     deposit = create_deposit(user, datetime.utcnow(), amount=500)
     booking = create_booking(user)
-    PcObject.check_and_save(user, deposit, booking)
+    PcObject.save(user, deposit, booking)
 
     activity_insert = create_booking_activity(
         booking, 'booking', 'insert', issued_at=datetime(2018, 1, 28)
@@ -327,7 +327,7 @@ class FindUserActivationBookingTest:
         activation_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.ACTIVATION)
         activation_stock = create_stock_from_offer(activation_offer, available=200, price=0)
         activation_booking = create_booking(user, stock=activation_stock, venue=venue_online)
-        PcObject.check_and_save(activation_booking)
+        PcObject.save(activation_booking)
 
         # when
         booking = find_user_activation_booking(user)
@@ -344,7 +344,7 @@ class FindUserActivationBookingTest:
         book_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.LIVRE_EDITION)
         book_stock = create_stock_from_offer(book_offer, available=200, price=0)
         book_booking = create_booking(user, stock=book_stock, venue=venue_online)
-        PcObject.check_and_save(book_booking)
+        PcObject.save(book_booking)
 
         # when
         booking = find_user_activation_booking(user)
@@ -366,7 +366,7 @@ class GetExistingTokensTest:
         booking1 = create_booking(user, stock=book_stock, venue=venue_online)
         booking2 = create_booking(user, stock=book_stock, venue=venue_online)
         booking3 = create_booking(user, stock=book_stock, venue=venue_online)
-        PcObject.check_and_save(booking1, booking2, booking3)
+        PcObject.save(booking1, booking2, booking3)
 
         # when
         tokens = get_existing_tokens()
@@ -396,7 +396,7 @@ class FindAllActiveByUserIdTest:
         booking1 = create_booking(user, stock=book_stock, venue=venue_online, is_cancelled=True)
         booking2 = create_booking(user, stock=book_stock, venue=venue_online, is_used=True)
         booking3 = create_booking(user, stock=book_stock, venue=venue_online)
-        PcObject.check_and_save(booking1, booking2, booking3)
+        PcObject.save(booking1, booking2, booking3)
 
         # when
         bookings = find_active_bookings_by_user_id(user.id)
@@ -417,7 +417,7 @@ class FindByTest:
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
             booking = create_booking(user, stock=stock)
-            PcObject.check_and_save(booking)
+            PcObject.save(booking)
 
             # when
             result = find_by(booking.token)
@@ -433,7 +433,7 @@ class FindByTest:
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
             booking = create_booking(user, stock=stock)
-            PcObject.check_and_save(booking)
+            PcObject.save(booking)
 
             # when
             with pytest.raises(ResourceNotFound) as e:
@@ -451,7 +451,7 @@ class FindByTest:
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
             booking = create_booking(user, stock=stock)
-            PcObject.check_and_save(booking)
+            PcObject.save(booking)
 
             # when
             result = find_by(booking.token, email='user@example.com')
@@ -467,7 +467,7 @@ class FindByTest:
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
             booking = create_booking(user, stock=stock)
-            PcObject.check_and_save(booking)
+            PcObject.save(booking)
 
             # when
             result = find_by(booking.token, email='USER@example.COM')
@@ -483,7 +483,7 @@ class FindByTest:
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
             booking = create_booking(user, stock=stock)
-            PcObject.check_and_save(booking)
+            PcObject.save(booking)
 
             # when
             result = find_by(booking.token, email='   user@example.com  ')
@@ -499,7 +499,7 @@ class FindByTest:
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
             booking = create_booking(user, stock=stock)
-            PcObject.check_and_save(booking)
+            PcObject.save(booking)
 
             # when
             with pytest.raises(ResourceNotFound) as e:
@@ -517,7 +517,7 @@ class FindByTest:
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
             booking = create_booking(user, stock=stock)
-            PcObject.check_and_save(booking)
+            PcObject.save(booking)
 
             # when
             result = find_by(booking.token, email='user@example.com', offer_id=stock.resolvedOffer.id)
@@ -533,7 +533,7 @@ class FindByTest:
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             booking = create_booking(user, venue=venue, stock=stock)
-            PcObject.check_and_save(booking)
+            PcObject.save(booking)
 
             # when
             result = find_by(booking.token, email='user@example.com', offer_id=stock.resolvedOffer.id)
@@ -549,7 +549,7 @@ class FindByTest:
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue, price=0)
             booking = create_booking(user, stock=stock)
-            PcObject.check_and_save(booking)
+            PcObject.save(booking)
 
             # when
             with pytest.raises(ResourceNotFound) as e:
@@ -572,10 +572,10 @@ class SaveBookingTest:
         user_booked = create_user(email='booked@email.com')
         cancelled_booking = create_booking(user_cancelled, stock, is_cancelled=True)
         booking = create_booking(user_booked, stock, is_cancelled=False)
-        PcObject.check_and_save(cancelled_booking)
+        PcObject.save(cancelled_booking)
 
         # When
-        PcObject.check_and_save(booking)
+        PcObject.save(booking)
 
         # Then
         assert Booking.query.filter_by(isCancelled=False).count() == 1
@@ -591,12 +591,12 @@ class SaveBookingTest:
         user1 = create_user(email='cancelled@booking.com')
         user2 = create_user(email='booked@email.com')
         booking1 = create_booking(user1, stock, is_cancelled=False)
-        PcObject.check_and_save(booking1)
+        PcObject.save(booking1)
         booking2 = create_booking(user2, stock, is_cancelled=False)
 
         # When
         with pytest.raises(ApiErrors) as e:
-            PcObject.check_and_save(booking2)
+            PcObject.save(booking2)
 
         # Then
         assert e.value.errors['global'] == ['la quantité disponible pour cette offre est atteinte']

@@ -22,7 +22,7 @@ def test_get_profile_should_work_only_when_logged_in(app):
 @clean_database
 def test_get_profile_should_return_the_users_profile_without_password_hash_and_password_reset_infos(app):
     user = create_user(public_name='Toto', departement_code='93', email='toto@btmx.fr')
-    PcObject.check_and_save(user)
+    PcObject.save(user)
     r = req_with_auth(email='toto@btmx.fr') \
         .get(API_URL + '/users/current', headers={'origin': 'http://localhost:3000'})
     user_json = r.json()
@@ -38,7 +38,7 @@ def test_get_profile_should_return_the_users_profile_without_password_hash_and_p
 def test_user_should_not_be_activated_by_default(app):
     # Given
     user = create_user(public_name='Test', departement_code='93', email='wallet_test@email.com')
-    PcObject.check_and_save(user)
+    PcObject.save(user)
 
     # when
     r_profile = req_with_auth('wallet_test@email.com').get(API_URL + '/users/current')
@@ -52,11 +52,11 @@ def test_user_should_not_be_activated_by_default(app):
 def test_user_wallet_should_be_marked_as_activated_when_there_is_a_deposit(app):
     # Given
     user = create_user(public_name='Test', departement_code='93', email='wallet_test@email.com')
-    PcObject.check_and_save(user)
+    PcObject.save(user)
 
     deposit_date = datetime.utcnow() - timedelta(minutes=2)
     deposit = create_deposit(user, deposit_date, amount=10)
-    PcObject.check_and_save(deposit)
+    PcObject.save(deposit)
 
     # when
     r_profile = req_with_auth('wallet_test@email.com').get(API_URL + '/users/current')
@@ -70,31 +70,31 @@ def test_user_wallet_should_be_marked_as_activated_when_there_is_a_deposit(app):
 def test_user_should_have_its_wallet_balance(app):
     # Given
     user = create_user(public_name='Test', departement_code='93', email='wallet_test@email.com')
-    PcObject.check_and_save(user)
+    PcObject.save(user)
 
     offerer = create_offerer('999199987', '2 Test adress', 'Test city', '93000', 'Test offerer')
-    PcObject.check_and_save(offerer)
+    PcObject.save(offerer)
 
     venue = create_venue(offerer)
-    PcObject.check_and_save(venue)
+    PcObject.save(venue)
 
     thing_offer = create_offer_with_thing_product(venue=None)
     stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=5)
-    PcObject.check_and_save(stock)
+    PcObject.save(stock)
 
     recommendation = create_recommendation(thing_offer, user)
-    PcObject.check_and_save(recommendation)
+    PcObject.save(recommendation)
 
     deposit_1_date = datetime.utcnow() - timedelta(minutes=2)
     deposit_1 = create_deposit(user, deposit_1_date, amount=10)
-    PcObject.check_and_save(deposit_1)
+    PcObject.save(deposit_1)
 
     deposit_2_date = datetime.utcnow() - timedelta(minutes=2)
     deposit_2 = create_deposit(user, deposit_2_date, amount=10)
-    PcObject.check_and_save(deposit_2)
+    PcObject.save(deposit_2)
 
     booking = create_booking(user, stock, venue, recommendation, quantity=1)
-    PcObject.check_and_save(booking)
+    PcObject.save(booking)
 
     r_create = req_with_auth('wallet_test@email.com').get(API_URL + '/users/current')
 
@@ -119,8 +119,8 @@ def test_get_current_user_returns_expenses(app):
     deposit = create_deposit(user, deposit_date, amount=50)
     booking = create_booking(user, stock, venue, recommendation, quantity=2)
 
-    PcObject.check_and_save(deposit)
-    PcObject.check_and_save(booking)
+    PcObject.save(deposit)
+    PcObject.save(booking)
 
     # When
     response = req_with_auth('wallet_2_bookings_test@email.com').get(API_URL + '/users/current')
@@ -139,7 +139,7 @@ def test_get_current_user_returns_expenses(app):
 def test_patch_user_returns_200_for_allowed_changes(app):
     # given
     user = create_user()
-    PcObject.check_and_save(user)
+    PcObject.save(user)
 
     auth_request = req_with_auth(email=user.email)
     data = {'publicName': 'plop', 'email': 'new@email.com', 'postalCode': '93020', 'phoneNumber': '0612345678',
@@ -170,7 +170,7 @@ def test_patch_user_returns_200_for_allowed_changes(app):
 def test_patch_user_returns_400_when_not_allowed_changes(app):
     # given
     user = create_user(can_book_free_offers=True, is_admin=False)
-    PcObject.check_and_save(user)
+    PcObject.save(user)
 
     auth_request = req_with_auth(email=user.email)
     data = {'isAdmin': True, 'canBookFreeOffers': False, 'firstName': 'Jean', 'lastName': 'Martin',
@@ -192,7 +192,7 @@ def test_patch_user_returns_400_when_not_allowed_changes(app):
 def test_get_current_user_returns_400_when_header_not_in_whitelist(app):
     # given
     user = create_user(email='e@mail.com', can_book_free_offers=True, is_admin=False)
-    PcObject.check_and_save(user)
+    PcObject.save(user)
 
     # when
     response = requests.get(API_URL + '/users/current', auth=('e@mail.com', 'p@55sw0rd'),
@@ -211,7 +211,7 @@ class Get:
             # given
             token = 'U2NCXTNB2'
             user = create_user(reset_password_token=token)
-            PcObject.check_and_save(user)
+            PcObject.save(user)
 
             # when
             request = TestClient().get(API_URL + '/users/token/' + token)

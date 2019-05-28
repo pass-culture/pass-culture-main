@@ -140,7 +140,7 @@ class Post:
             offerer.generate_validation_token()
             user = create_user(public_name='bobby', email='bobby@test.com')
             user_offerer = create_user_offerer(user, offerer, is_admin=False)
-            PcObject.check_and_save(offerer, user_offerer)
+            PcObject.save(offerer, user_offerer)
 
             data = BASE_DATA_PRO.copy()
 
@@ -179,7 +179,7 @@ class Post:
                 "city": "Paris"
             }
             offerer = Offerer(from_dict=json_offerer)
-            PcObject.check_and_save(offerer)
+            PcObject.save(offerer)
 
             data = BASE_DATA_PRO.copy()
 

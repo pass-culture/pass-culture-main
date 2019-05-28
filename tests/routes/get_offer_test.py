@@ -23,7 +23,7 @@ class Get:
             create_bank_information(venue=venue, id_at_providers=venue.siret)
             create_bank_information(offerer=offerer, id_at_providers=offerer.siren)
 
-            PcObject.check_and_save(user, stock)
+            PcObject.save(user, stock)
 
             # when
             response = TestClient().with_auth(email='user@test.com')\
