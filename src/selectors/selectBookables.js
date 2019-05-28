@@ -48,31 +48,31 @@ export const markAsBooked = bookings => {
   return items =>
     items.map(obj => {
       const isBooked = (bookingsStockIds || []).includes(obj.id)
-      console.log(isBooked, obj.id)
       return Object.assign({}, obj, {
         userHasAlreadyBookedThisDate: isBooked,
       })
     })
 }
 
-export const markAsCancelled = bookings =>
-   items =>
-    items.map(obj => {
-      const matchingBookings = bookings.filter(booking => booking.stockId === obj.id)
-      const sortedMatchingBookings = matchingBookings.sort((a, b) => {
-        const datea = moment(a.dateCreated)
-        const dateb = moment(b.dateCreated)
-        if (!datea || !dateb) return 0
-        if (datea.isAfter(dateb)) return -1
-        if (datea.isAfter(dateb)) return 1
-        return 0})
-      const lastMatchingBooking = sortedMatchingBookings[0]
-      const { isCancelled } = lastMatchingBooking || {}
-      return Object.assign({}, obj, {
-        userHasCancelledThisDate: isCancelled,
-      })
+export const markAsCancelled = bookings => items =>
+  items.map(obj => {
+    const matchingBookings = bookings.filter(
+      booking => booking.stockId === obj.id
+    )
+    const sortedMatchingBookings = matchingBookings.sort((a, b) => {
+      const datea = moment(a.dateCreated)
+      const dateb = moment(b.dateCreated)
+      if (!datea || !dateb) return 0
+      if (datea.isAfter(dateb)) return -1
+      if (datea.isBefore(dateb)) return 1
+      return 0
     })
-
+    const lastMatchingBooking = sortedMatchingBookings[0]
+    const { isCancelled } = lastMatchingBooking || {}
+    return Object.assign({}, obj, {
+      userHasCancelledThisDate: isCancelled,
+    })
+  })
 
 export const sortByDate = () => items =>
   items.sort((a, b) => {
@@ -80,7 +80,7 @@ export const sortByDate = () => items =>
     const dateb = b.beginningDatetime
     if (!datea || !dateb) return 0
     if (datea.isAfter(dateb)) return 1
-    if (datea.isAfter(dateb)) return -1
+    if (datea.isBefore(dateb)) return -1
     return 0
   })
 
