@@ -93,7 +93,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
 
         # when
         with patch.dict(os.environ, {
-            'DEMARCHES_SIMPLIFIEES_PROCEDURE_ID_VENUE_WITHOUT_SIRET': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
+            'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
             'DEMARCHES_SIMPLIFIEES_TOKEN': TOKEN
         }, clear=True):
             bank_information_provider = VenueWithoutSIRETBankInformationProvider()
@@ -119,7 +119,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
 
         # when
         with patch.dict(os.environ, {
-            'DEMARCHES_SIMPLIFIEES_PROCEDURE_ID_VENUE_WITHOUT_SIRET': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
+            'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
             'DEMARCHES_SIMPLIFIEES_TOKEN': TOKEN
         }, clear=True):
             bank_information_provider = VenueWithoutSIRETBankInformationProvider()
@@ -157,7 +157,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
 
         # when
         with patch.dict(os.environ, {
-            'DEMARCHES_SIMPLIFIEES_PROCEDURE_ID_VENUE_WITHOUT_SIRET': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
+            'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
             'DEMARCHES_SIMPLIFIEES_TOKEN': TOKEN
         }, clear=True):
             provider = VenueWithoutSIRETBankInformationProvider()
@@ -191,7 +191,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
 
         # when
         with patch.dict(os.environ, {
-            'DEMARCHES_SIMPLIFIEES_PROCEDURE_ID_VENUE_WITHOUT_SIRET': '5636727',
+            'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': '5636727',
             'DEMARCHES_SIMPLIFIEES_TOKEN': '4872'
         }, clear=True):
             provider = VenueWithoutSIRETBankInformationProvider()
@@ -222,7 +222,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
 
         # when
         with patch.dict(os.environ, {
-            'DEMARCHES_SIMPLIFIEES_PROCEDURE_ID_VENUE_WITHOUT_SIRET': '5636727',
+            'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': '5636727',
             'DEMARCHES_SIMPLIFIEES_TOKEN': '4872'
         }, clear=True):
             provider = VenueWithoutSIRETBankInformationProvider()
@@ -258,7 +258,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
 
         # when
         with patch.dict(os.environ, {
-            'DEMARCHES_SIMPLIFIEES_PROCEDURE_ID_VENUE_WITHOUT_SIRET': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
+            'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
             'DEMARCHES_SIMPLIFIEES_TOKEN': TOKEN
         }, clear=True):
             provider_test(app,
@@ -318,7 +318,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
 
         # when
         with patch.dict(os.environ, {
-            'DEMARCHES_SIMPLIFIEES_PROCEDURE_ID_VENUE_WITHOUT_SIRET': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
+            'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
             'DEMARCHES_SIMPLIFIEES_TOKEN': TOKEN
         }, clear=True):
             provider_test(app,

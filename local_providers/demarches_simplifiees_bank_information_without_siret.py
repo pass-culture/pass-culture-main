@@ -29,7 +29,7 @@ class VenueWithoutSIRETBankInformationProvider(LocalProvider):
 
     def __init__(self):
         super().__init__()
-        self.PROCEDURE_ID = os.environ['DEMARCHES_SIMPLIFIEES_PROCEDURE_ID_VENUE_WITHOUT_SIRET']
+        self.PROCEDURE_ID = os.environ['DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID']
         self.TOKEN = os.environ['DEMARCHES_SIMPLIFIEES_TOKEN']
 
         last_sync_event = find_latest_sync_end_event(self.dbObject)
