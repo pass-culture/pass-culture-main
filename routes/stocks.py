@@ -2,7 +2,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
-from domain.stocks import delete_stock_and_cancel_bookings
+from domain.stocks import delete_stock_and_cancel_bookings, TooLateToDeleteError
 from domain.user_emails import send_batch_cancellation_emails_to_users, send_batch_cancellation_email_to_offerer
 from models import Product
 from models.mediation import Mediation
@@ -104,7 +104,12 @@ def delete_stock(id):
     stock = load_or_404(Stock, id)
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
-    bookings = delete_stock_and_cancel_bookings(stock)
+
+    try:
+        bookings = delete_stock_and_cancel_bookings(stock)
+    except TooLateToDeleteError as e:
+        return jsonify({'global': [e.message]}), 400
+    
     if bookings:
         try:
             send_batch_cancellation_emails_to_users(bookings, send_raw_email)

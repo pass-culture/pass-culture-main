@@ -27,7 +27,9 @@ def delete_stock_and_cancel_bookings(stock: Stock) -> List[Booking]:
 
 
 class TooLateToDeleteError(Exception):
-    pass
+    def __init__(self):
+        self.message = "L'événement s'est terminé il y a plus de deux jours, " \
+                       "la suppression est impossible."
 
 
 def _is_thing(stock: Stock) -> bool:
