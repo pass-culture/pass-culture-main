@@ -1,9 +1,9 @@
-import { getRequestErrorStringFromErrors } from 'pass-culture-shared'
 import React from 'react'
+import { getRequestErrorStringFromErrors } from 'pass-culture-shared'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
-import Main from '../../layout/Main'
 import DeskState from './DeskState/DeskState'
+import Main from '../../layout/Main'
 
 const CODE_MAX_LENGTH = 6
 const CODE_REGEX_VALIDATION = /[^a-z0-9]/i
@@ -129,7 +129,7 @@ class Desk extends React.PureComponent {
 
     switch (status) {
       case CODE_TYPING:
-        message = `caractères restants: ${CODE_MAX_LENGTH -
+        message = `Caractères restants: ${CODE_MAX_LENGTH -
           this.state.code.length}/${CODE_MAX_LENGTH}`
         level = 'pending'
         break
@@ -203,7 +203,7 @@ class Desk extends React.PureComponent {
 
         <div className="section form">
           <p className="subtitle is-medium has-text-weight-bold">
-            Scannez un code-barres, ou saisissez-le ci-dessous:
+            Scannez un code-barres ou saisissez-le ci-dessous:
           </p>
 
           <input

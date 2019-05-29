@@ -58,7 +58,7 @@ describe('src | components | pages | Desk | Desk ', () => {
         // then
         const deskState = wrapper.find(DeskState)
         expect(deskState).toHaveLength(1)
-        expect(deskState.prop('message')).toBe('caractères restants: 6/6')
+        expect(deskState.prop('message')).toBe('Caractères restants: 6/6')
         expect(deskState.prop('booking')).toBe(null)
         expect(deskState.prop('level')).toBe('pending')
       })
