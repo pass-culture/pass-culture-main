@@ -5,6 +5,7 @@ import 'moment-timezone'
 import {
   addModifierString,
   humanizeBeginningDate,
+  markAsCancelled,
   setTimezoneOnBeginningDatetime,
 } from '../selectBookables'
 import { stockWithDates, stockWithoutDates } from './data/selectBookables'
@@ -95,6 +96,51 @@ describe('src | selectors| selectBookables', () => {
         '2019-04-19T20:30:00+02:00'
       )
       expect(results[0].endDatetime).toBe('2019-04-20T20:00:00Z')
+    })
+  })
+  describe('markAsCancelled', () => {
+    it('should return userHasCancelledThisDate as true when the booking has been cancelled', () => {
+      // given
+      const bookings = [
+        {
+          id: 'HQ',
+          isCancelled: true,
+          modelName: 'Booking',
+          recommendation: {},
+          stock: {
+            id: 'DU',
+            modelName: 'Stock',
+            offerId: 'CQ',
+          },
+        },
+        {
+          id: 'HY',
+          isCancelled: false,
+          modelName: 'Booking',
+          recommendation: {},
+          stock: {
+            id: 'DQ',
+            modelName: 'Stock',
+            offerId: 'CQ',
+          },
+        },
+      ]
+
+      const items = [
+        {
+          id: 'DU',
+          modelName: 'Stock',
+          offerId: 'CQ',
+          price: 23,
+          userHasAlreadyBookedThisDate: true,
+        },
+      ]
+
+      // when
+      const results = markAsCancelled(bookings)(items)
+
+      // then
+      expect(results[0].userHasAlreadyBookedThisDate).toBe(true)
     })
   })
   xdescribe('markAsBooked', () => {})
