@@ -1,7 +1,7 @@
 """Change length of Deposit.source column
 
 Revision ID: cff9e82d0558
-Revises: f98d8cea0564
+Revises: c41e9543e851
 Create Date: 2019-05-21 13:49:08.219046
 
 """
@@ -10,7 +10,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = 'cff9e82d0558'
-down_revision = 'f98d8cea0564'
+down_revision = 'c41e9543e851'
 branch_labels = None
 depends_on = None
 
