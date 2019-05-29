@@ -108,9 +108,9 @@ class VenueWithoutSIRETBankInformationProviderTest:
     @patch(
         'local_providers.demarches_simplifiees_bank_information_without_siret.find_latest_sync_end_event')
     def test_collect_applications_ids_from_(self,
-                                                                       find_latest_sync_end_event,
-                                                                       get_all_application_ids_from_demarches_simplifiees_procedure,
-                                                                       app):
+                                            find_latest_sync_end_event,
+                                            get_all_application_ids_from_demarches_simplifiees_procedure,
+                                            app):
         # given
         find_latest_sync_end_event.return_value = None
         get_all_application_ids_from_demarches_simplifiees_procedure.return_value = []
@@ -153,7 +153,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
         TOKEN = '4872'
         offerer = create_offerer(siren='793875030', idx=self.OFFERER_ID)
         venue = create_venue(offerer=offerer, idx=self.VENUE_ID)
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
 
         # when
         with patch.dict(os.environ, {
@@ -161,6 +161,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
             'DEMARCHES_SIMPLIFIEES_TOKEN': TOKEN
         }, clear=True):
             provider = VenueWithoutSIRETBankInformationProvider()
+            provider.dbObject.isActive = True
             provider.updateObjects()
 
         # then
@@ -213,7 +214,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
         last_provider_sync.date = datetime(2020, 1, 2)
         find_latest_sync_end_event.return_value = last_provider_sync
         offerer = create_offerer(siren='793875030', idx=49153)
-        PcObject.check_and_save(offerer)
+        PcObject.save(offerer)
 
         get_all_application_ids_from_demarches_simplifiees_procedure.return_value = [self.APPLICATION_ID]
         get_application_details.return_value = _create_detail_response(self.APPLICATION_ID, self.OFFERER_ID,
@@ -246,7 +247,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
         BIC = 'BDFEFR2LCCB'
         offerer = create_offerer(siren='793875030', idx=self.OFFERER_ID)
         venue = create_venue(offerer=offerer, idx=self.VENUE_ID)
-        PcObject.check_and_save(venue)
+        PcObject.save(venue)
         last_provider_sync = LocalProviderEvent()
         last_provider_sync.date = datetime(2020, 1, 2)
         find_latest_sync_end_event.return_value = last_provider_sync
@@ -305,7 +306,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
             venue=venue,
             id_at_providers=f"{self.OFFERER_ID}|{self.VENUE_ID}"
         )
-        PcObject.check_and_save(venue, bank_information)
+        PcObject.save(venue, bank_information)
         last_provider_sync = LocalProviderEvent()
         last_provider_sync.date = datetime(2020, 1, 2)
         find_latest_sync_end_event.return_value = last_provider_sync

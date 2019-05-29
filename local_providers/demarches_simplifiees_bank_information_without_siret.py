@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from pprint import pprint
 
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.bank_account import get_all_application_ids_from_demarches_simplifiees_procedure, format_raw_iban_or_bic
@@ -44,6 +45,8 @@ class VenueWithoutSIRETBankInformationProvider(LocalProvider):
 
     def __next__(self) -> ProvidableInfo:
         self.application_id = next(self.application_ids)
+
+        pprint('TOTO')
 
         application_response = get_application_details(self.application_id, self.PROCEDURE_ID, self.TOKEN)
         self.application_details = DemarchesSimplifieesMapper.from_venue_without_SIRET_application(application_response)

@@ -22,7 +22,7 @@ class FindLatestSyncEndEventTest:
         assert last_event == None
 
     @clean_database
-    def test_return_last_sync_event_to_get_the(self, app):
+    def test_return_last_sync_event_from_the_provider(self, app):
         # Given
         provider = Provider.query.first()
 
@@ -36,7 +36,7 @@ class FindLatestSyncEndEventTest:
         older_event.type = LocalProviderEventType.SyncEnd
         older_event.date = datetime(1900, 1, 1)
 
-        PcObject.check_and_save(older_event, most_recent_event)
+        PcObject.save(older_event, most_recent_event)
 
         # When
         last_event = find_latest_sync_end_event(provider)
