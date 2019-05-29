@@ -2,16 +2,15 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
-from domain.discard_pc_objects import cancel_bookings
+from domain.stocks import delete_stock_and_cancel_bookings
 from domain.user_emails import send_batch_cancellation_emails_to_users, send_batch_cancellation_email_to_offerer
 from models import Product
 from models.mediation import Mediation
 from models.pc_object import PcObject
 from models.stock import Stock
-
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository import booking_queries, offerer_queries
+from repository import offerer_queries
 from repository.offer_queries import find_offer_by_id
 from repository.stock_queries import find_stocks_with_possible_filters
 from utils.human_ids import dehumanize
@@ -21,7 +20,8 @@ from utils.rest import ensure_current_user_has_rights, \
     handle_rest_get_list, \
     load_or_404, \
     login_or_api_key_required
-from validation.stocks import check_request_has_offer_id, check_dates_are_allowed_on_new_stock, check_dates_are_allowed_on_existing_stock
+from validation.stocks import check_request_has_offer_id, check_dates_are_allowed_on_new_stock, \
+    check_dates_are_allowed_on_existing_stock
 
 search_models = [
     # Order is important
@@ -72,7 +72,7 @@ def create_stock():
     check_dates_are_allowed_on_new_stock(request_data, offer)
     offerer = offerer_queries.get_by_offer_id(offer_id)
     ensure_current_user_has_rights(RightsType.editor, offerer.id)
- 
+
     new_stock = Stock(from_dict=request_data)
     PcObject.save(new_stock)
 
@@ -91,7 +91,7 @@ def edit_stock(stock_id):
     check_dates_are_allowed_on_existing_stock(stock_data, stock.offer)
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
-    
+
     stock.populate_from_dict(stock_data)
     PcObject.save(stock)
 
@@ -103,11 +103,8 @@ def edit_stock(stock_id):
 def delete_stock(id):
     stock = load_or_404(Stock, id)
     offerer_id = stock.resolvedOffer.venue.managingOffererId
-    ensure_current_user_has_rights(RightsType.editor,
-                                   offerer_id)
-    stock.isSoftDeleted = True
-    bookings = booking_queries.find_all_bookings_for_stock(stock)
-    bookings = cancel_bookings(*bookings)
+    ensure_current_user_has_rights(RightsType.editor, offerer_id)
+    bookings = delete_stock_and_cancel_bookings(stock)
     if bookings:
         try:
             send_batch_cancellation_emails_to_users(bookings, send_raw_email)
@@ -118,5 +115,3 @@ def delete_stock(id):
     PcObject.save(stock, *bookings)
 
     return jsonify(stock.as_dict()), 200
-
-
