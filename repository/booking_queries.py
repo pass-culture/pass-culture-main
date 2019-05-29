@@ -110,10 +110,11 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
             .filter(func.lower(User.email) == email.strip().lower())
 
     if offer_id:
-        query = Booking.query \
+        query_offer = Booking.query \
             .join(Stock) \
             .join(Offer) \
             .filter_by(id=offer_id)
+        query = query.intersect_all(query_offer)
 
     booking = query.first()
 
