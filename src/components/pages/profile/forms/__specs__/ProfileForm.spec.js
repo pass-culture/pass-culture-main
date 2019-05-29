@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import ProfileForm from '../ProfileForm'
 
-describe('src | components | pages | profile | ProfileForm', () => {
+describe('src | components | pages | profile | forms | ProfileForm', () => {
   let dispatch
   let goBack
   let replace

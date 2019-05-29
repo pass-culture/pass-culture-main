@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 import { UserIdentifierField } from '../UserIdentifierField'
 import { InputField } from '../../../../../forms/inputs'
 
-describe('src | components | pages | profile | UserIdentifierField', () => {
+describe('src | components | pages | profile | forms | fields | UserIdentifierField', () => {
   let props
 
   beforeEach(() => {

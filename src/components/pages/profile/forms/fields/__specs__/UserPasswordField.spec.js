@@ -8,7 +8,7 @@ import { PasswordField } from '../../../../../forms/inputs'
 jest.mock('../../../../../forms/validators', () => ({
   validateMatchingFields: jest.fn(),
 }))
-describe('src | components | pages | profile | UserPasswordField', () => {
+describe('src | components | pages | profile | forms | fields | UserPasswordField', () => {
   let props
 
   beforeEach(() => {

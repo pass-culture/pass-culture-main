@@ -4,22 +4,21 @@ import PropTypes from 'prop-types'
 import { InputField } from '../../../../forms/inputs'
 import withProfileForm from '../withProfileForm'
 
-export class UserIdentifierField extends React.PureComponent {
-  render() {
-    const { isLoading } = this.props
-    return (
-      <div className="pc-scroll-container">
-        <div className="py30 px12 flex-1">
-          <InputField
-            required
-            name="publicName"
-            label="Votre identifiant"
-            disabled={isLoading}
-          />
-        </div>
+export const UserIdentifierField = props => {
+  const { isLoading } = props
+
+  return (
+    <div className="pc-scroll-container">
+      <div className="py30 px12 flex-1">
+        <InputField
+          required
+          name="publicName"
+          label="Votre identifiant"
+          disabled={isLoading}
+        />
       </div>
-    )
-  }
+    </div>
+  )
 }
 
 UserIdentifierField.propTypes = {
