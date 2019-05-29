@@ -8,11 +8,11 @@ const displayBookingDate = booking => {
     return null
   }
 
-  if (booking.date) {
-    return formatLocalTimeDateString(booking.date, booking.venueDepartementCode)
+  if (!booking.date) {
+    return 'Permanent'
   }
 
-  return 'Permanent'
+  return formatLocalTimeDateString(booking.date, booking.venueDepartementCode)
 }
 
 const DeskState = ({ message, level, booking }) => (

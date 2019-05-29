@@ -1,5 +1,5 @@
 import { getRequestErrorStringFromErrors } from 'pass-culture-shared'
-import React, { Component } from 'react'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 import Main from '../../layout/Main'
@@ -20,7 +20,7 @@ const CODE_REGISTERING_IN_PROGRESS = 'CODE_REGISTERING_IN_PROGRESS'
 const CODE_REGISTERING_SUCCESS = 'CODE_REGISTERING_SUCCESS'
 const CODE_REGISTERING_FAILED = 'CODE_REGISTERING_FAILED'
 
-class Desk extends Component {
+class Desk extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -45,11 +45,12 @@ class Desk extends Component {
   handleSuccessWhenGetBookingFromCode = () => (state, action) => {
     const { payload } = action
     const booking = payload.datum
-    this.setState({ booking })
 
-    booking.isValidated
-      ? this.setState({ status: CODE_ALREADY_USED })
-      : this.setState({ status: CODE_VERIFICATION_SUCCESS })
+    const status = booking.isValidated
+      ? CODE_ALREADY_USED
+      : CODE_VERIFICATION_SUCCESS
+
+    this.setState({ booking, status })
   }
 
   handleFailWhenGetBookingFromCode = () => (state, action) => {
@@ -92,23 +93,28 @@ class Desk extends Component {
 
   handleCodeChange = event => {
     const code = event.target.value.toUpperCase()
-    this.setState({ code })
+    const status = this.getStatusFromCode(code)
+    this.setState({ code, status })
 
+    if (status === CODE_VERIFICATION_IN_PROGRESS) {
+      return this.getBookingFromCode(code)
+    }
+  }
+
+  getStatusFromCode = code => {
     if (code === '') {
-      return this.setState({ status: CODE_ENTER })
+      return CODE_ENTER
     }
 
     if (code.match(CODE_REGEX_VALIDATION) !== null) {
-      return this.setState({ status: CODE_SYNTAX_INVALID })
+      return CODE_SYNTAX_INVALID
     }
 
     if (code.length < CODE_MAX_LENGTH) {
-      return this.setState({ status: CODE_TYPING })
+      return CODE_TYPING
     }
 
-    this.setState({ status: CODE_VERIFICATION_IN_PROGRESS })
-
-    return this.getBookingFromCode(code)
+    return CODE_VERIFICATION_IN_PROGRESS
   }
 
   handleCodeRegistration = code => {
@@ -118,8 +124,7 @@ class Desk extends Component {
   }
 
   getValuesFromStatus = status => {
-    let booking = this.state.booking
-    let message = this.state.message
+    let { booking, message } = this.state
     let level
 
     switch (status) {
@@ -174,12 +179,15 @@ class Desk extends Component {
     const { booking, level, message } = this.getValuesFromStatus(
       this.state.status
     )
-
     return <DeskState booking={booking} level={level} message={message} />
   }
 
   componentDidMount() {
     this.input.focus()
+  }
+
+  getRef() {
+    return element => (this.input = element)
   }
 
   render() {
@@ -203,7 +211,7 @@ class Desk extends Component {
             type="text"
             ref={this.getRef()}
             name="code"
-            onChange={this.handleCodeChange.bind(this)}
+            onChange={this.handleCodeChange}
             maxLength={CODE_MAX_LENGTH}
             value={this.state.code}
           />
@@ -227,10 +235,6 @@ class Desk extends Component {
         </div>
       </Main>
     )
-  }
-
-  getRef() {
-    return element => (this.input = element)
   }
 }
 
