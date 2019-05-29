@@ -38,8 +38,9 @@ ShallowWrapper {
           className="control flex-columns items-center flex-end"
         >
           <Connect(DownloadButton)
-            fileType="text/csv"
+            filename="remboursements_pass_culture"
             href="http://localhost/reimbursements/csv"
+            mimeType="text/csv"
           >
             Télécharger la liste des remboursements
           </Connect(DownloadButton)>
@@ -112,8 +113,9 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": <Connect(DownloadButton)
-            fileType="text/csv"
+            filename="remboursements_pass_culture"
             href="http://localhost/reimbursements/csv"
+            mimeType="text/csv"
           >
             Télécharger la liste des remboursements
           </Connect(DownloadButton)>,
@@ -126,8 +128,9 @@ ShallowWrapper {
           "nodeType": "class",
           "props": Object {
             "children": "Télécharger la liste des remboursements",
-            "fileType": "text/csv",
+            "filename": "remboursements_pass_culture",
             "href": "http://localhost/reimbursements/csv",
+            "mimeType": "text/csv",
           },
           "ref": null,
           "rendered": "Télécharger la liste des remboursements",
@@ -164,8 +167,9 @@ ShallowWrapper {
             className="control flex-columns items-center flex-end"
           >
             <Connect(DownloadButton)
-              fileType="text/csv"
+              filename="remboursements_pass_culture"
               href="http://localhost/reimbursements/csv"
+              mimeType="text/csv"
             >
               Télécharger la liste des remboursements
             </Connect(DownloadButton)>
@@ -238,8 +242,9 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": <Connect(DownloadButton)
-              fileType="text/csv"
+              filename="remboursements_pass_culture"
               href="http://localhost/reimbursements/csv"
+              mimeType="text/csv"
             >
               Télécharger la liste des remboursements
             </Connect(DownloadButton)>,
@@ -252,8 +257,9 @@ ShallowWrapper {
             "nodeType": "class",
             "props": Object {
               "children": "Télécharger la liste des remboursements",
-              "fileType": "text/csv",
+              "filename": "remboursements_pass_culture",
               "href": "http://localhost/reimbursements/csv",
+              "mimeType": "text/csv",
             },
             "ref": null,
             "rendered": "Télécharger la liste des remboursements",
