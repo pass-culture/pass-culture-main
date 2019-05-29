@@ -217,18 +217,25 @@ class FindFinalOffererBookingsTest:
         assert booking1 in bookings
 
     @clean_database
-    def test_returns_only_bookings_on_events_older_than_three_days(self, app):
+    def test_returns_only_bookings_on_events_finished_more_than_two_days_ago(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user, datetime.utcnow(), amount=500)
+        now = datetime.utcnow()
+        deposit = create_deposit(user, now, amount=500)
 
         offerer1 = create_offerer(siren='123456789')
         venue = create_venue(offerer1)
         offer = create_offer_with_event_product(venue)
-        old_event_occurrence = create_event_occurrence(offer,
-                                                       beginning_datetime=datetime.utcnow() - timedelta(hours=73))
-        recent_event_occurrence = create_event_occurrence(offer,
-                                                          beginning_datetime=datetime.utcnow() - timedelta(hours=49))
+        old_event_occurrence = create_event_occurrence(
+            offer,
+            beginning_datetime=now - timedelta(hours=60),
+            end_datetime=now - timedelta(hours=50)
+        )
+        recent_event_occurrence = create_event_occurrence(
+            offer,
+            beginning_datetime=now - timedelta(hours=50),
+            end_datetime=now - timedelta(hours=40)
+        )
         stock1 = create_stock_from_event_occurrence(old_event_occurrence)
         stock2 = create_stock_from_event_occurrence(recent_event_occurrence)
         booking1 = create_booking(user, stock=stock1, venue=venue, is_used=False)

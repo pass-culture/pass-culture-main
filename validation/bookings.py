@@ -1,6 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from domain.expenses import is_eligible_to_physical_products_capping, is_eligible_to_digital_products_capping
+from domain.stocks import BOOKING_CANCELLATION_DELAY
 from models import ApiErrors, Booking
 from models.api_errors import ResourceGoneError, ForbiddenError
 from repository.stock_queries import find_stock_by_id
@@ -129,7 +130,7 @@ def check_booking_is_usable(booking: Booking):
         resource_gone_error.addError('booking', 'Cette réservation a été annulée')
         raise resource_gone_error
     event_starts_in_more_than_72_hours = booking.stock.beginningDatetime and (
-                booking.stock.beginningDatetime - datetime.utcnow() > timedelta(hours=72))
+            booking.stock.beginningDatetime > (datetime.utcnow() + BOOKING_CANCELLATION_DELAY))
     if event_starts_in_more_than_72_hours:
         errors = ForbiddenError()
         errors.addError('beginningDatetime',

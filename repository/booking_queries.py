@@ -1,12 +1,12 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Set
 
 from postgresql_audit.flask import versioning_manager
 from sqlalchemy import and_, text, func
-from sqlalchemy.orm import aliased
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
+from domain.stocks import STOCK_DELETION_DELAY
 from models import Booking, \
     Offer, \
     Stock, \
@@ -110,14 +110,10 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
             .filter(func.lower(User.email) == email.strip().lower())
 
     if offer_id:
-        query_offer_1 = Booking.query.join(Stock) \
+        query = Booking.query \
+            .join(Stock) \
             .join(Offer) \
             .filter_by(id=offer_id)
-        query_offer_2 = Booking.query.join(Stock) \
-            .join(aliased(Offer)) \
-            .filter_by(id=offer_id)
-        query_offer = query_offer_1.union_all(query_offer_2)
-        query = query.intersect_all(query_offer)
 
     booking = query.first()
 
@@ -141,7 +137,7 @@ def find_all_ongoing_bookings_by_stock(stock):
 
 
 def find_final_offerer_bookings(offerer_id):
-    booking_on_event_older_than_two_days = (datetime.utcnow() > Stock.beginningDatetime + timedelta(hours=72))
+    booking_on_event_finished_more_than_two_days_ago = (datetime.utcnow() > Stock.endDatetime + STOCK_DELETION_DELAY)
 
     return Booking.query \
         .join(Stock) \
@@ -150,7 +146,7 @@ def find_final_offerer_bookings(offerer_id):
         .join(Offerer) \
         .filter(Offerer.id == offerer_id) \
         .filter(Booking.isCancelled == False) \
-        .filter((Booking.isUsed == True) | booking_on_event_older_than_two_days) \
+        .filter((Booking.isUsed == True) | booking_on_event_finished_more_than_two_days_ago) \
         .reset_joinpoint() \
         .outerjoin(Payment) \
         .order_by(Payment.id, Booking.dateCreated.asc()) \

@@ -3,6 +3,9 @@ from typing import List
 
 from models import Booking, Stock
 
+BOOKING_CANCELLATION_DELAY = timedelta(hours=72)
+STOCK_DELETION_DELAY = timedelta(hours=48)
+
 
 def delete_stock_and_cancel_bookings(stock: Stock) -> List[Booking]:
     if _is_thing(stock):
@@ -10,8 +13,8 @@ def delete_stock_and_cancel_bookings(stock: Stock) -> List[Booking]:
         _cancel_unused_bookings(stock)
         return stock.bookings
 
-    two_days_after_it_ends = stock.endDatetime + timedelta(hours=48)
-    three_days_before_it_starts = stock.beginningDatetime - timedelta(hours=72)
+    two_days_after_it_ends = stock.endDatetime + STOCK_DELETION_DELAY
+    three_days_before_it_starts = stock.beginningDatetime - BOOKING_CANCELLATION_DELAY
     now = datetime.utcnow()
 
     if now <= three_days_before_it_starts:
