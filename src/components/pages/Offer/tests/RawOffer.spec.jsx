@@ -371,8 +371,8 @@ describe('src | components | pages | Offer | RawOffer ', () => {
 
         // then
         const fieldGroups = wrapper.find('.field-group')
-        const fieldGroupForUsefulInformations = fieldGroups.at(1)
-        const venueField = fieldGroupForUsefulInformations.find(Field).at(1)
+        const fieldGroupForUsefulInformation = fieldGroups.at(1)
+        const venueField = fieldGroupForUsefulInformation.find(Field).at(1)
         expect(fieldGroups).toHaveLength(3)
         expect(venueField.prop('options')).toEqual(expectedOptions)
       })
@@ -399,23 +399,13 @@ describe('src | components | pages | Offer | RawOffer ', () => {
 
         // then
         const fieldGroups = wrapper.find('.field-group')
-        const fieldGroupForUsefulInformations = fieldGroups.at(1)
-        const venueField = fieldGroupForUsefulInformations.find(Field).at(1)
+        const fieldGroupForUsefulInformation = fieldGroups.at(1)
+        const venueField = fieldGroupForUsefulInformation.find(Field).at(1)
         expect(fieldGroups).toHaveLength(3)
         expect(venueField.prop('options')).toEqual(expectedOptions)
       })
-
-      it('should display correctly duration information', () => {
+      it('should display correctly duration field when EventType', () => {
         // given
-        props.venues = [
-          { name: 'quel beau théâtre' },
-          { name: 'quel beau musée' },
-        ]
-        props.offer = {
-          durationMinutes: 120,
-          id: 'QU',
-          isEvent: true,
-        }
         props.match = {
           params: {
             offerId: 'QU',
@@ -424,15 +414,37 @@ describe('src | components | pages | Offer | RawOffer ', () => {
         props.selectedOfferType = {
           type: 'Event',
         }
+
         // when
         const wrapper = shallow(<RawOffer {...props} />)
 
         // then
         const fieldGroups = wrapper.find('.field-group')
-        const fieldGroupForUsefulInformations = fieldGroups.at(1)
-        const durationField = fieldGroupForUsefulInformations.find(Field).at(2)
+        const fieldGroupForUsefulInformation = fieldGroups.at(1)
+        const durationField = fieldGroupForUsefulInformation.find(Field).at(2)
         expect(fieldGroups).toHaveLength(3)
         expect(durationField.prop('name')).toEqual('durationMinutes')
+      })
+      it('should not display correctly duration field when Thing', () => {
+        // given
+        props.match = {
+          params: {
+            offerId: 'QU',
+          },
+        }
+        props.selectedOfferType = {
+          type: 'Thing',
+        }
+
+        // when
+        const wrapper = shallow(<RawOffer {...props} />)
+
+        // then
+        const fieldGroups = wrapper.find('.field-group')
+        const fieldGroupForUsefulInformation = fieldGroups.at(1)
+        const durationField = fieldGroupForUsefulInformation.find(Field).at(2)
+        expect(fieldGroups).toHaveLength(3)
+        expect(durationField.prop('name')).toEqual('bookingEmail')
       })
     })
   })

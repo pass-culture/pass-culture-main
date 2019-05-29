@@ -79,6 +79,8 @@ function mapStateToProps(state, ownProps) {
     offerer,
     venue
   )
+
+  console.log('formInitialValues ', formInitialValues)
   const extraData = get(state, 'form.offer.extraData') || {}
 
   const musicSubOptions =
