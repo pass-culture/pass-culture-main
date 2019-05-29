@@ -20,8 +20,9 @@ const Reimbursements = () => (
     <hr />
     <div className="control flex-columns items-center flex-end">
       <DownloadButtonContainer
-        fileType="text/csv"
-        href={`${API_URL}/reimbursements/csv`}>
+        filename="remboursements_pass_culture"
+        href={`${API_URL}/reimbursements/csv`}
+        mimeType="text/csv">
         Télécharger la liste des remboursements
       </DownloadButtonContainer>
     </div>

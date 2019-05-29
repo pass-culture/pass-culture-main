@@ -20,8 +20,9 @@ const Bookings = () => (
     <hr />
     <div className="control flex-columns items-center flex-end">
       <DownloadButtonContainer
-        fileType="text/csv"
-        href={`${API_URL}/bookings/csv`}>
+        filename="reservations_pass_culture_pass_culture"
+        href={`${API_URL}/bookings/csv`}
+        mimeType="text/csv">
         Télécharger la liste des réservations
       </DownloadButtonContainer>
     </div>
