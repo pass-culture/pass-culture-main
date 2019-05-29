@@ -31,14 +31,11 @@ test("L'état de départ de la page /guichet est conforme", async t => {
   await t.expect(stateText.innerText).eql('Saisissez un code')
   await t.expect(state.classNames).contains('pending')
 
-  // typing...
   await t.typeText(codeInput, 'AZE')
-  await t.expect(stateText.innerText).eql('caractères restants: 3/6')
+  await t.expect(stateText.innerText).eql('Caractères restants: 3/6')
 
-  // Reset input
   t.selectText(codeInput).pressKey('delete')
 
-  // typed + verified (beware of real validation lag)
   await t.typeText(codeInput, token)
   await t
     .expect(stateText.innerText)
@@ -46,26 +43,21 @@ test("L'état de départ de la page /guichet est conforme", async t => {
   await t.expect(state.classNames).contains('pending')
   await t.expect(codeInput.innerText).eql('')
 
-  // Reset input
   t.selectText(codeInput).pressKey('delete')
 
-  // Bad input format
-  await t.click(registerButton) // Rest field
+  await t.click(registerButton)
   await t.typeText(codeInput, 'AZE{}')
   await t
     .expect(stateText.innerText)
     .eql('Caractères valides : de A à Z et de 0 à 9')
   await t.expect(state.classNames).contains('error')
 
-  // Reset input
   t.selectText(codeInput).pressKey('delete')
 
-  // Registration success
   await t.typeText(codeInput, token)
   await t.click(registerButton)
   await t.expect(state.classNames).contains('success')
 
-  // Registration failure
   await t.typeText(codeInput, 'ABC123')
   await t.click(registerButton)
   await t.expect(state.classNames).contains('error')
