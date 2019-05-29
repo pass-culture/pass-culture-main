@@ -9,6 +9,15 @@ import { filterAvailableStocks } from '../helpers'
 
 const MODIFIER_STRING_ID = 'selectBookables'
 
+const antechronologicalSort = (a, b) => {
+  const datea = moment(a.dateCreated)
+  const dateb = moment(b.dateCreated)
+  if (!datea || !dateb) return 0
+  if (datea.isAfter(dateb)) return -1
+  if (datea.isBefore(dateb)) return 1
+  return 0
+}
+
 // ajoute une 'id' dans l'objet pour indiquer
 // le selecteur qui a modifié les objets utilisables par une vue
 export const addModifierString = () => items =>
@@ -55,23 +64,13 @@ export const markAsBooked = bookings => {
 }
 
 export const markAsCancelled = bookings => items =>
-  items.map(obj => {
-    const matchingBookings = bookings.filter(
-      booking => booking.stockId === obj.id
-    )
-    const sortedMatchingBookings = matchingBookings.sort((a, b) => {
-      const datea = moment(a.dateCreated)
-      const dateb = moment(b.dateCreated)
-      if (!datea || !dateb) return 0
-      if (datea.isAfter(dateb)) return -1
-      if (datea.isBefore(dateb)) return 1
-      return 0
-    })
-    const lastMatchingBooking = sortedMatchingBookings[0]
-    const { isCancelled } = lastMatchingBooking || {}
-    return Object.assign({}, obj, {
-      userHasCancelledThisDate: isCancelled,
-    })
+  items.map(item => {
+    const sortedMatchingBookings = bookings
+      .filter(booking => booking.stockId === item.id)
+      .sort(antechronologicalSort)
+    const { isCancelled } = sortedMatchingBookings[0] || {}
+    item.userHasCancelledThisDate = isCancelled || false
+    return item
   })
 
 export const sortByDate = () => items =>
