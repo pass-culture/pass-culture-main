@@ -46,13 +46,7 @@
     overflow: auto;
 
     table.stocks-table {
-      &.small {
-        td {
-          input {
-            width: 100%;
-          }
-        }
-      }
+      width: 100%;
 
       thead,
       tbody {

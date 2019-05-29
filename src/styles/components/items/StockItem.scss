@@ -3,7 +3,6 @@
     padding-left: 12px;
     padding-right: 6px;
     text-align: right;
-    width: 60px;
   }
 
   .time-field {
@@ -11,6 +10,8 @@
 
     .field-input {
       width: 40px;
+      padding-left: 12px;
+      padding-right: 12px;
     }
   }
 
@@ -24,8 +25,12 @@
       min-width: 32px;
       border-radius: 1rem;
 
+      &.field-number {
+        text-align: center;
+      }
+
       &.input-number {
-        width: 77px;
+        min-width: 77px;
       }
 
       &[readonly] {
