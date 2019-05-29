@@ -26,6 +26,9 @@ def feature_cron_send_wallet_balances() -> bool:
 def feature_cron_retrieve_offerers_bank_information() -> bool:
     return os.environ.get('CRON_RETRIEVE_OFFERERS_BANK_INFORMATION', False)
 
+def feature_cron_retrieve_bank_information_for_venue_without_siret():
+    return os.environ.get('CRON_RETRIEVE_BANK_INFORMATION_VENUE_WITHOUT_SIRET', False)
+
 
 def feature_cron_synchronize_titelive_things() -> bool:
     return os.environ.get('CRON_SYNCHRONIZE_TITELIVE_THINGS', False)

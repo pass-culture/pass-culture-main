@@ -13,7 +13,8 @@ from repository.features import feature_cron_send_final_booking_recaps_enabled, 
     feature_cron_retrieve_offerers_bank_information, feature_cron_send_remedial_emails, \
     feature_import_beneficiaries_enabled, \
     feature_cron_synchronize_titelive_things, feature_cron_synchronize_titelive_descriptions, \
-    feature_cron_synchronize_titelive_thumbs
+    feature_cron_synchronize_titelive_thumbs, \
+    feature_cron_retrieve_bank_information_for_venue_without_siret
 from repository.features import feature_cron_send_wallet_balances
 from repository.user_queries import find_most_recent_beneficiary_creation_date
 from scripts.beneficiary import remote_import
@@ -114,6 +115,18 @@ def pc_retrieve_offerers_bank_information():
     logger.info("[BATCH][BANK INFORMATION] Cron retrieve_offerers_bank_information: END")
 
 
+def pc_retrieve_bank_information_for_venue_without_siret():
+    logger.info("[BATCH][BANK INFORMATION] Cron retrieve_bank_information_venue_without_siret: START")
+    with app.app_context():
+        process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
+                                   + ' --provider VenueWithoutSIRETBankInformationProvider',
+                                   shell=True,
+                                   cwd=API_ROOT_PATH)
+        output, error = process.communicate()
+        logger.info(StringIO(output))
+    logger.info("[BATCH][BANK INFORMATION] Cron retrieve_bank_information_venue_without_siret: END")
+
+
 def pc_send_remedial_emails():
     logger.info("[BATCH][REMEDIAL EMAILS] Cron send_remedial_emails: START")
     with app.app_context():
@@ -147,6 +160,11 @@ if __name__ == '__main__':
 
     if feature_cron_retrieve_offerers_bank_information():
         scheduler.add_job(pc_retrieve_offerers_bank_information, 'cron', id='retrieve_offerers_bank_information',
+                          day='*')
+
+    if feature_cron_retrieve_bank_information_for_venue_without_siret():
+        scheduler.add_job(pc_retrieve_bank_information_for_venue_without_siret, 'cron',
+                          id='retrieve_bank_information_venue_without_siret',
                           day='*')
 
     if feature_cron_synchronize_titelive_things():
