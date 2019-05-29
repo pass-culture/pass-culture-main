@@ -260,6 +260,7 @@ workflows:
           filters:
             branches:
               only:
+                - master
                 - staging
                 - integration
                 - demo
@@ -268,6 +269,7 @@ workflows:
           filters:
             branches:
               only:
+                - master
                 - staging
                 - integration
                 - demo
@@ -276,11 +278,16 @@ workflows:
           filters:
             branches:
               only:
+                - master
                 - staging
                 - integration
                 - demo
                 - production
       - deploy-api:
+          filters:
+            branches:
+              ignore:
+                - master
           requires:
             - tests-api
             - tests-webapp
