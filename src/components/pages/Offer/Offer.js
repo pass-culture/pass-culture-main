@@ -16,7 +16,7 @@ import React, { Component, Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
-import MediationsManager from './MediationsManager'
+import MediationsManager from './MediationsManager/MediationsManagerContainer'
 import StocksManagerContainer from './StocksManager/StocksManagerContainer'
 import HeroSection from 'components/layout/HeroSection'
 import Main from 'components/layout/Main'
@@ -55,7 +55,7 @@ const CONDITIONAL_FIELDS = {
   ],
 }
 
-class RawOffer extends Component {
+class Offer extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
       history,
@@ -662,11 +662,11 @@ class RawOffer extends Component {
   }
 }
 
-RawOffer.defaultProps = {
+Offer.defaultProps = {
   venues: [],
 }
 
-RawOffer.propTypes = {
+Offer.propTypes = {
   currentUser: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   location: PropTypes.object.isRequired,
@@ -675,4 +675,4 @@ RawOffer.propTypes = {
   venues: PropTypes.array,
 }
 
-export default RawOffer
+export default Offer

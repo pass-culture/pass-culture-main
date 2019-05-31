@@ -2,10 +2,10 @@ import React from 'react'
 import { shallow } from 'enzyme'
 import { Field, Form } from 'pass-culture-shared'
 
-import RawOffer from '../RawOffer'
-import MediationsManager from '../MediationsManager/index'
+import Offer from '../Offer'
+import MediationsManager from '../MediationsManager/MediationsManagerContainer'
 
-describe('src | components | pages | Offer | RawOffer ', () => {
+describe('src | components | pages | Offer | Offer ', () => {
   const dispatch = jest.fn()
 
   describe('snapshot', () => {
@@ -33,7 +33,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
       }
 
       // when
-      const wrapper = shallow(<RawOffer {...initialProps} />)
+      const wrapper = shallow(<Offer {...initialProps} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -66,7 +66,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
           history: {},
         }
 
-        const wrapper = shallow(<RawOffer {...initialProps} />)
+        const wrapper = shallow(<Offer {...initialProps} />)
 
         // when
         const queryParams = { gestion: '' }
@@ -108,7 +108,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
           history: {},
         }
 
-        const wrapper = shallow(<RawOffer {...initialProps} />)
+        const wrapper = shallow(<Offer {...initialProps} />)
 
         // when
         const queryParams = { gestion: '' }
@@ -162,7 +162,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
         }
 
         // when
-        const wrapper = shallow(<RawOffer {...initialProps} />)
+        const wrapper = shallow(<Offer {...initialProps} />)
         const mediationsManagerComponent = wrapper.find(MediationsManager)
 
         // then
@@ -200,7 +200,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
         }
 
         // when
-        const wrapper = shallow(<RawOffer {...initialProps} />)
+        const wrapper = shallow(<Offer {...initialProps} />)
 
         // then
         expect(wrapper.find(Form).prop('action')).toEqual('/offers')
@@ -238,7 +238,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
         }
 
         // when
-        const wrapper = shallow(<RawOffer {...initialProps} />)
+        const wrapper = shallow(<Offer {...initialProps} />)
 
         // then
         expect(wrapper.find(Form).prop('action')).toEqual('/offers')
@@ -278,7 +278,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
         }
 
         // when
-        const wrapper = shallow(<RawOffer {...initialProps} />)
+        const wrapper = shallow(<Offer {...initialProps} />)
 
         // then
         expect(wrapper.find(Form).prop('action')).toEqual('/offers/VAG')
@@ -321,7 +321,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
         }
 
         // when
-        const wrapper = shallow(<RawOffer {...initialProps} />)
+        const wrapper = shallow(<Offer {...initialProps} />)
 
         // then
         expect(wrapper.find(Form).prop('action')).toEqual('/offers/VAG')
@@ -367,7 +367,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
         ]
 
         // when
-        const wrapper = shallow(<RawOffer {...props} />)
+        const wrapper = shallow(<Offer {...props} />)
 
         // then
         const fieldGroups = wrapper.find('.field-group')
@@ -395,7 +395,7 @@ describe('src | components | pages | Offer | RawOffer ', () => {
         ]
 
         // when
-        const wrapper = shallow(<RawOffer {...props} />)
+        const wrapper = shallow(<Offer {...props} />)
 
         // then
         const fieldGroups = wrapper.find('.field-group')

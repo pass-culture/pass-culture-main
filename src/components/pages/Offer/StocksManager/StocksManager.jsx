@@ -1,5 +1,5 @@
-import classnames from 'classnames'
 import get from 'lodash.get'
+import classnames from 'classnames'
 import { closeModal } from 'pass-culture-shared'
 import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'

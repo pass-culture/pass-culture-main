@@ -1,5 +1,5 @@
 import localMapStateToProps from '../mapStateToProps'
-import mockedState from './mockedState'
+import state from '../../../../../utils/mocks/state'
 
 describe('src | components | pages | Offer | StockItem | mapStateToProps', () => {
   describe('When adding stock to one offer', () => {
@@ -18,7 +18,7 @@ describe('src | components | pages | Offer | StockItem | mapStateToProps', () =>
       }
 
       // when
-      const result = localMapStateToProps(mockedState, ownProps)
+      const result = localMapStateToProps(state, ownProps)
       const expected = {
         event: undefined,
         formBeginningDatetime: undefined,

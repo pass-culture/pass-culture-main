@@ -3,9 +3,10 @@ import get from 'lodash.get'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 
-import MediationItem from './MediationItem'
+import MediationItem from './MediationItem/MediationItem'
+import PropTypes from 'prop-types'
 
-class RawMediationsManager extends Component {
+class MediationsManager extends Component {
   componentDidMount() {
     const { dispatch, mediations } = this.props
     if (!get(mediations, 'length')) {
@@ -35,7 +36,7 @@ class RawMediationsManager extends Component {
 
   render() {
     const { mediations, offer } = this.props
-    const mediationsLength = get(mediations, 'length')
+    const numberOfMediations = get(mediations, 'length')
 
     return (
       <div className="box content has-text-centered">
@@ -60,12 +61,12 @@ class RawMediationsManager extends Component {
           {offer && (
             <NavLink
               className={`button is-primary ${
-                mediationsLength > 0 ? 'is-outlined' : ''
+                numberOfMediations > 0 ? 'is-outlined' : ''
               }`}
               to={`/offres/${get(offer, 'id')}/accroches/nouveau`}>
               <span className="icon">
                 <Icon
-                  svg={mediationsLength > 0 ? 'ico-stars' : 'ico-stars-w'}
+                  svg={numberOfMediations > 0 ? 'ico-stars' : 'ico-stars-w'}
                 />
               </span>
               <span>Ajouter une accroche</span>
@@ -77,4 +78,13 @@ class RawMediationsManager extends Component {
   }
 }
 
-export default RawMediationsManager
+MediationsManager.propTypes = {
+  dispatch: PropTypes.func,
+  mediations: PropTypes.array,
+  notification: PropTypes.object,
+  offer: PropTypes.shape({
+    id: PropTypes.string
+  }),
+}
+
+export default MediationsManager

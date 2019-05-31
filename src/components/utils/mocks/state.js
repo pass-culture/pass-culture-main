@@ -1,4 +1,4 @@
-const mockedState = {
+const state = {
   data: {
     bookings: [],
     events: [],
@@ -692,20 +692,22 @@ const mockedState = {
     ],
     types: [
       {
+        appLabel: 'Pass Culture : activation évènementielle',
         id: 0,
         description: 'Activez votre pass Culture grâce à cette offre',
-        label: 'Pass Culture : activation évènementielle',
         offlineOnly: true,
         onlineOnly: false,
+        proLabel: 'Pass Culture : activation évènementielle',
         sublabel: 'Activation',
         type: 'Event',
         value: 'EventType.ACTIVATION',
       },
       {
+        appLabel: 'Cinéma (Projections, Séances, Évènements)',
         id: 1,
         description:
           'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
-        label: 'Cinéma (Projections, Séances, Évènements)',
+        proLabel: 'Cinéma (Projections, Séances, Évènements)',
         offlineOnly: true,
         onlineOnly: false,
         sublabel: 'Regarder',
@@ -713,20 +715,22 @@ const mockedState = {
         value: 'EventType.CINEMA',
       },
       {
+        appLabel: 'Rencontrer',
         id: 2,
         description: 'Parfois une simple rencontre peut changer une vie...',
         label: 'Conférence — Débat — Dédicace',
         offlineOnly: true,
         onlineOnly: false,
-        sublabel: 'Rencontrer',
+        proLabel: 'Rencontrer',
         type: 'Event',
         value: 'EventType.CONFERENCE_DEBAT_DEDICACE',
       },
       {
+        appLabel: 'Jeux (Évenements, Rencontres, Concours)',
         id: 3,
         description:
           'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?',
-        label: 'Jeux (Évenements, Rencontres, Concours)',
+        proLabel: 'Jeux (Évenements, Rencontres, Concours)',
         offlineOnly: true,
         onlineOnly: false,
         sublabel: 'Jouer',
@@ -734,10 +738,11 @@ const mockedState = {
         value: 'EventType.JEUX',
       },
       {
+        appLabel: 'Musique (Concerts, Festivals)',
         id: 4,
         description:
           'Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?',
-        label: 'Musique (Concerts, Festivals)',
+        proLabel: 'Musique (Concerts, Festivals)',
         offlineOnly: true,
         onlineOnly: false,
         sublabel: 'Écouter',
@@ -745,10 +750,12 @@ const mockedState = {
         value: 'EventType.MUSIQUE',
       },
       {
+        appLabel:
+          'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
         id: 5,
         description:
           'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
-        label:
+        proLabel:
           'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
         offlineOnly: true,
         onlineOnly: false,
@@ -757,10 +764,11 @@ const mockedState = {
         value: 'EventType.MUSEES_PATRIMOINE',
       },
       {
+        appLabel: 'Pratique Artistique (Stages ponctuels)',
         id: 6,
         description:
           'Jamais osé monter sur les planches ? Tenter d’apprendre la guitare, le piano ou la photographie ? Partir cinq jours découvrir un autre monde ? Bricoler dans un fablab, ou pourquoi pas, enregistrer votre premier titre ?',
-        label: 'Pratique Artistique (Stages ponctuels)',
+        proLabel: 'Pratique Artistique (Stages ponctuels)',
         offlineOnly: true,
         onlineOnly: false,
         sublabel: 'Pratiquer',
@@ -768,10 +776,11 @@ const mockedState = {
         value: 'EventType.PRATIQUE_ARTISTIQUE',
       },
       {
+        appLabel: 'Spectacle vivant',
         id: 7,
         description:
           'Suivre un géant de 12 mètres dans la ville ? Rire aux éclats devant un stand up ? Rêver le temps d’un opéra ou d’un spectacle de danse ? Assister à une pièce de théâtre, ou se laisser conter une histoire ?',
-        label: 'Spectacle vivant',
+        proLabel: 'Spectacle vivant',
         offlineOnly: true,
         onlineOnly: false,
         sublabel: 'Applaudir',
@@ -779,9 +788,10 @@ const mockedState = {
         value: 'EventType.SPECTACLE_VIVANT',
       },
       {
+        appLabel: 'Pass Culture : activation en ligne',
         id: 8,
         description: 'Activez votre pass Culture grâce à cette offre',
-        label: 'Pass Culture : activation en ligne',
+        proLabel: 'Pass Culture : activation en ligne',
         offlineOnly: false,
         onlineOnly: true,
         sublabel: 'Activation',
@@ -789,10 +799,11 @@ const mockedState = {
         value: 'ThingType.ACTIVATION',
       },
       {
+        appLabel: 'Audiovisuel (Films sur supports physiques et VOD)',
         id: 9,
         description:
           'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
-        label: 'Audiovisuel (Films sur supports physiques et VOD)',
+        proLabel: 'Audiovisuel (Films sur supports physiques et VOD)',
         offlineOnly: false,
         onlineOnly: false,
         sublabel: 'Regarder',
@@ -800,10 +811,11 @@ const mockedState = {
         value: 'ThingType.AUDIOVISUEL',
       },
       {
+        appLabel: 'Cinéma (Abonnements)',
         id: 10,
         description:
           'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
-        label: 'Cinéma (Abonnements)',
+        proLabel: 'Cinéma (Abonnements)',
         offlineOnly: true,
         onlineOnly: false,
         sublabel: 'Regarder',
@@ -811,10 +823,11 @@ const mockedState = {
         value: 'ThingType.CINEMA_ABO',
       },
       {
+        appLabel: 'Jeux (Abonnements)',
         id: 11,
         description:
           'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?',
-        label: 'Jeux (Abonnements)',
+        proLabel: 'Jeux (Abonnements)',
         offlineOnly: true,
         onlineOnly: false,
         sublabel: 'Jouer',
@@ -822,10 +835,11 @@ const mockedState = {
         value: 'ThingType.JEUX_ABO',
       },
       {
+        appLabel: 'Jeux Vidéo',
         id: 12,
         description:
           'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?',
-        label: 'Jeux Vidéo',
+        proLabel: 'Jeux Vidéo',
         offlineOnly: false,
         onlineOnly: true,
         sublabel: 'Jouer',
@@ -833,10 +847,11 @@ const mockedState = {
         value: 'ThingType.JEUX_VIDEO',
       },
       {
+        appLabel: 'Livre — Édition',
         id: 13,
         description:
           'S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?',
-        label: 'Livre — Édition',
+        proLabel: 'Livre — Édition',
         offlineOnly: false,
         onlineOnly: false,
         sublabel: 'Lire',
@@ -844,10 +859,11 @@ const mockedState = {
         value: 'ThingType.LIVRE_EDITION',
       },
       {
+        appLabel: 'Musées — Patrimoine (Abonnements, Visites libres)',
         id: 14,
         description:
           'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
-        label: 'Musées — Patrimoine (Abonnements, Visites libres)',
+        proLabel: 'Musées — Patrimoine (Abonnements, Visites libres)',
         offlineOnly: true,
         onlineOnly: false,
         sublabel: 'Regarder',
@@ -855,10 +871,11 @@ const mockedState = {
         value: 'ThingType.MUSEES_PATRIMOINE_ABO',
       },
       {
+        appLabel: 'Musique (Abonnements concerts)',
         id: 15,
         description:
           'Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?',
-        label: 'Musique (Abonnements concerts)',
+        proLabel: 'Musique (Abonnements concerts)',
         offlineOnly: true,
         onlineOnly: false,
         sublabel: 'Écouter',
@@ -866,10 +883,11 @@ const mockedState = {
         value: 'ThingType.MUSIQUE_ABO',
       },
       {
+        appLabel: 'Musique (sur supports physiques ou en ligne)',
         id: 16,
         description:
           'Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?',
-        label: 'Musique (sur supports physiques ou en ligne)',
+        proLabel: 'Musique (sur supports physiques ou en ligne)',
         offlineOnly: false,
         onlineOnly: false,
         sublabel: 'Écouter',
@@ -877,10 +895,11 @@ const mockedState = {
         value: 'ThingType.MUSIQUE',
       },
       {
+        appLabel: 'Pratique Artistique (Abonnements)',
         id: 17,
         description:
           'Jamais osé monter sur les planches ? Tenter d’apprendre la guitare, le piano ou la photographie ? Partir cinq jours découvrir un autre monde ? Bricoler dans un fablab, ou pourquoi pas, enregistrer votre premier titre ?',
-        label: 'Pratique Artistique (Abonnements)',
+        proLabel: 'Pratique Artistique (Abonnements)',
         offlineOnly: true,
         onlineOnly: false,
         sublabel: 'Pratiquer',
@@ -888,10 +907,11 @@ const mockedState = {
         value: 'ThingType.PRATIQUE_ARTISTIQUE_ABO',
       },
       {
+        appLabel: 'Presse (Abonnements)',
         id: 18,
         description:
           'S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?',
-        label: 'Presse (Abonnements)',
+        proLabel: 'Presse (Abonnements)',
         offlineOnly: false,
         onlineOnly: true,
         sublabel: 'Lire',
@@ -1091,4 +1111,4 @@ const mockedState = {
   },
 }
 
-export default mockedState
+export default state

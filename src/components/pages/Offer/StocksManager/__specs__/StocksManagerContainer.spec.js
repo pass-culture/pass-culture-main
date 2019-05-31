@@ -1,4 +1,4 @@
-import mapStateToProps from '../mapStateToProps'
+import { mapStateToProps } from '../StocksManagerContainer'
 
 describe('src | components | pages | Offer | StocksManagerContainer | mapStateToProps', () => {
   let state
@@ -7,10 +7,10 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
   beforeEach(() => {
     state = {
       data: {
-        offers: [{ id: 'A1', isEvent: true, isThing: false, productId: 'B1' }],
+        offers: [{id: 'A1', isEvent: true, isThing: false, productId: 'B1'}],
         providers: [],
-        products: [{ id: 'B1', lastProviderId: 'C1' }],
-        stocks: [{ offerId: 'A1' }],
+        products: [{id: 'B1', lastProviderId: 'C1'}],
+        stocks: [{offerId: 'A1'}],
       },
     }
     props = {

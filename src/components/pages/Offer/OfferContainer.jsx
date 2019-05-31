@@ -2,7 +2,7 @@ import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import RawOffer from './RawOffer'
+import Offer from './Offer'
 import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from './utils/selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
 import {
   withFrenchQueryRouter,
@@ -20,7 +20,7 @@ import selectTypeByIsVenueVirtualAndOfferTypeValue from 'selectors/selectTypeByI
 import selectVenueById from 'selectors/selectVenueById'
 import selectVenuesByOffererIdAndOfferType from 'selectors/selectVenuesByOffererIdAndOfferType'
 
-function mapStateToProps(state, ownProps) {
+export const mapStateToProps = (state, ownProps) => {
   const {
     match: {
       params: { offerId },
@@ -29,33 +29,25 @@ function mapStateToProps(state, ownProps) {
   } = ownProps
 
   const translatedQueryParams = query.translate()
-
   const providers = selectProviders(state)
-
   const offer = selectOfferById(state, offerId)
-
   const productId = get(offer, 'productId')
   const product = selectProductById(state, productId)
-
   const formVenueId = get(state, 'form.offer.venueId')
   const venueId = formVenueId || translatedQueryParams.venueId
-
   const venue = selectVenueById(state, venueId)
-
   const isVenueVirtual = get(venue, 'isVirtual')
   const types = selectTypesByIsVenueVirtual(state, isVenueVirtual)
-
   const offerTypeValue =
     get(state, 'form.offer.type') || get(product, 'offerType.value')
-
   const selectedOfferType = selectTypeByIsVenueVirtualAndOfferTypeValue(
     state,
     isVenueVirtual,
     offerTypeValue
   )
-
   const formOffererId = get(state, 'form.offer.offererId')
   let offererId = formOffererId || translatedQueryParams.offererId
+  offererId = offererId || get(venue, 'managingOffererId')
 
   const venues = selectVenuesByOffererIdAndOfferType(
     state,
@@ -63,13 +55,9 @@ function mapStateToProps(state, ownProps) {
     selectedOfferType
   )
 
-  offererId = offererId || get(venue, 'managingOffererId')
-
   const offerers = state.data.offerers
   const offerer = selectOffererById(state, offererId)
-
   const stocks = selectStocksByOfferId(state, offerId)
-
   const url = get(state, 'form.offer.url') || get(product, 'url')
 
   const formInitialValues = selectFormInitialValuesByProductAndOfferAndOffererAndVenue(
@@ -79,14 +67,12 @@ function mapStateToProps(state, ownProps) {
     offerer,
     venue
   )
-
   const extraData = get(state, 'form.offer.extraData') || {}
 
   const musicSubOptions =
     extraData.musicType && selectMusicSubOptionsByMusicType(extraData.musicType)
   const showSubOptions =
     extraData.showType && selectShowSubOptionsByShowType(extraData.showType)
-
   const offerTypeError = get(state, 'errors.offer.type')
 
   return {
@@ -114,4 +100,4 @@ export default compose(
   withRedirectToSigninWhenNotAuthenticated,
   withFrenchQueryRouter,
   connect(mapStateToProps)
-)(RawOffer)
+)(Offer)

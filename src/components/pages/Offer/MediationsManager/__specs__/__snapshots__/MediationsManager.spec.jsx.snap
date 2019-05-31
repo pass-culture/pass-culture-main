@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offer | MediationsManager | RawMediationsManager snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Offer | MediationsManager | MediationsManager snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawMediationsManager
+  Symbol(enzyme.__unrendered__): <MediationsManager
     dispatch={
       [MockFunction] {
         "calls": Array [

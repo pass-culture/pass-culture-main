@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import { Route, Router } from 'react-router-dom'
 
 import ProductFields from '../ProductFields'
-import mockedState from './mockedState'
+import state from '../../../../../utils/mocks/state'
 const middlewares = []
 const mockStore = configureStore(middlewares)
 const dispatchMock = jest.fn()
@@ -73,7 +73,7 @@ describe('src | components | pages | Offer | StockItem | ProductFields', () => {
         // security error
         it('should update field with good params', () => {
           // given
-          const initialState = mockedState
+          const initialState = state
           const store = mockStore(initialState)
           const history = createBrowserHistory()
 
