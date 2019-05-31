@@ -1,19 +1,19 @@
 import moment from 'moment'
 
+const checkIfStockBookingLimitDatetimeIsAfter = now => stockItem => {
+  if (!stockItem.bookingLimitDatetime) return true
+
+  return moment(stockItem.bookingLimitDatetime).isAfter(now)
+}
+
 const filterAvailableStocks = stocks => {
-  const isvalid = stocks && Array.isArray(stocks)
-  if (!isvalid) return []
+  const isValid = stocks && Array.isArray(stocks)
+  if (!isValid) return []
+
   const now = moment()
-  // tuto n'a pas de stock
-  const filtered = stocks
-    .filter(item => item)
-    .filter(item => {
-      // item.bookingLimitDatetime est ISOString
-      if (!item.bookingLimitDatetime) return true
-      const bookingLimit = moment(item.bookingLimitDatetime)
-      return bookingLimit.isAfter(now)
-    })
-  return filtered
+  return stocks
+    .filter(stockItem => stockItem !== null)
+    .filter(checkIfStockBookingLimitDatetimeIsAfter(now))
 }
 
 export default filterAvailableStocks
