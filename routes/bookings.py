@@ -39,6 +39,7 @@ from validation.bookings import check_booking_is_usable, \
     check_stock_booking_limit_date, \
     check_user_is_logged_in_or_email_is_provided, check_email_and_offer_id_for_anonymous_user, \
     check_booking_is_cancellable, check_stock_venue_is_validated, check_rights_for_activation_offer
+from validation.users import check_user_can_validate_bookings
 
 
 @app.route('/bookings/csv', methods=['GET'])
@@ -172,9 +173,8 @@ def get_booking_by_token(token):
 
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
 
-    current_user_can_validate_bookings = current_user.is_authenticated and current_user.hasRights(RightsType.editor,
-                                                                                                  offerer_id)
-    if current_user_can_validate_bookings:
+    current_user_can_validate_booking = check_user_can_validate_bookings(current_user, offerer_id)
+    if current_user_can_validate_booking:
         response = _create_response_to_get_booking_by_token(booking)
         return jsonify(response), 200
     return '', 204

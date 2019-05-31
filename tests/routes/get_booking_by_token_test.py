@@ -104,27 +104,6 @@ class Get:
             assert response.status_code == 200
 
     class Returns204:
-
-        @clean_database
-        def when_user_doesnt_have_rights_and_token_exists(self, app):
-            # Given
-            user = create_user(email='user@email.fr')
-            querying_user = create_user(email='querying@email.fr')
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Event Name')
-            event_occurrence = create_event_occurrence(offer)
-            stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user, stock, venue=venue)
-
-            PcObject.save(querying_user, booking)
-
-            # When
-            response = TestClient().with_auth('querying@email.fr').get(
-                API_URL + '/bookings/token/{}'.format(booking.token))
-            # Then
-            assert response.status_code == 204
-
         @clean_database
         def when_user_not_logged_in_and_gives_right_email(self, app):
             # Given
@@ -289,6 +268,27 @@ class Get:
             assert error_message['email'] == [
                 'Vous devez préciser l\'email de l\'utilisateur quand vous n\'êtes pas connecté(e)']
 
+
+        @clean_database
+        def when_user_doesnt_have_rights_and_token_exists(self, app):
+            # Given
+            user = create_user(email='user@email.fr')
+            querying_user = create_user(email='querying@email.fr')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue, event_name='Event Name')
+            event_occurrence = create_event_occurrence(offer)
+            stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+            booking = create_booking(user, stock, venue=venue)
+
+            PcObject.save(querying_user, booking)
+
+            # When
+            response = TestClient().with_auth('querying@email.fr').get(
+                API_URL + '/bookings/token/{}'.format(booking.token))
+            # Then
+            assert response.status_code == 400
+
     class Returns403:
         @clean_database
         def when_booking_is_on_stock_with_beginning_datetime_in_more_than_72_hours(self, app):
@@ -312,7 +312,6 @@ class Get:
             # Then
             assert response.status_code == 403
             assert response.json()['beginningDatetime'] == ['Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement']
-
 
     class Returns410:
 

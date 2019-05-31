@@ -1009,7 +1009,7 @@ class GetBookingByTokenTest:
         assert response.status_code == 200
 
     @clean_database
-    def test_when_user_doesnt_have_rights_returns_status_code_204(self, app):
+    def test_when_user_doesnt_have_rights_returns_status_code_400(self, app):
         # Given
         user = create_user(email='user@email.fr')
         querying_user = create_user(email='querying@email.fr')
@@ -1026,7 +1026,7 @@ class GetBookingByTokenTest:
         response = TestClient().with_auth('querying@email.fr').get(
             API_URL + '/bookings/token/{}'.format(booking.token))
         # Then
-        assert response.status_code == 204
+        assert response.status_code == 400
 
     @clean_database
     def test_when_user_not_logged_in_and_gives_right_email_returns_204(self, app):

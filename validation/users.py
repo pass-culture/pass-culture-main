@@ -1,4 +1,4 @@
-from models import ApiErrors
+from models import ApiErrors, RightsType
 
 
 def check_allowed_changes_for_user(data):
@@ -47,3 +47,15 @@ def _contact_ok_is_not_checked(contact_ok):
     contact_ok_is_not_checked_as_bool = contact_ok is not True
     contact_ok_is_not_checked_as_str = str(contact_ok).lower() != 'true'
     return contact_ok_is_not_checked_as_bool and contact_ok_is_not_checked_as_str
+
+
+def check_user_can_validate_bookings(self, offerer_id):
+    if self.is_authenticated:
+        if self.hasRights(RightsType.editor, offerer_id):
+            return True
+        else:
+            api_errors = ApiErrors()
+            api_errors.addError('global', 'Cette contremarque n\'a pas été trouvée')
+            raise api_errors
+    else:
+        return False
