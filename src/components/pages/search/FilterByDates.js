@@ -17,6 +17,7 @@ class FilterByDates extends PureComponent {
 
   componentDidUpdate() {
     const { initialDateParams, filterState } = this.props
+
     if (
       (initialDateParams && filterState.params.date === undefined) ||
       (initialDateParams && filterState.params.date === null)
@@ -31,7 +32,7 @@ class FilterByDates extends PureComponent {
     })
   }
 
-  onChange = day => {
+  onChangeDate = day => () => {
     this.setPickedDate(null)
     const { filterActions, filterState } = this.props
     const pickedDaysInQuery = decodeURI(filterState.params.jours || '')
@@ -39,7 +40,7 @@ class FilterByDates extends PureComponent {
     let callback
     const pickedDaysInQueryLenght = get(pickedDaysInQuery, 'length')
 
-    // change callback value
+    // Change callback value
     if (pickedDaysInQueryLenght === 0) {
       // Case 1
       const date = moment(moment.now()).toISOString()
@@ -77,13 +78,12 @@ class FilterByDates extends PureComponent {
     const { pickedDate } = this.state
     const { filterState, minDate, title } = this.props
     const pickedDaysInQuery = decodeURI(filterState.params.jours || '')
+
     return (
       <div id="filter-by-dates" className="pt18">
         <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
           {title}
         </h2>
-        {/* FIXME: le scroll sous ios est pas terrible
-          du fait que le input soit cliquable */}
         <div className="pc-scroll-horizontal is-relative pb18">
           <div className="pc-list flex-columns">
             {DAYS_CHECKBOXES.map(({ label, value }, index) => {
@@ -104,7 +104,7 @@ class FilterByDates extends PureComponent {
                       type="checkbox"
                       className="input no-background"
                       checked={checked}
-                      onChange={() => this.onChange(value)}
+                      onChange={this.onChangeDate(value)}
                     />
                   </span>
                   <span className="fs19 flex-1" style={{ whiteSpace: 'pre' }}>
@@ -148,4 +148,5 @@ FilterByDates.propTypes = {
   ]),
   title: PropTypes.string.isRequired,
 }
+
 export default FilterByDates

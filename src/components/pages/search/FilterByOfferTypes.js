@@ -6,7 +6,7 @@ import selectTypeSublabels from '../../../selectors/selectTypes'
 import SearchPicture from './SearchPicture'
 
 class FilterByOfferTypes extends PureComponent {
-  onChange = typeSublabel => {
+  onChangeType = typeSublabel => () => {
     const { filterActions, filterState } = this.props
 
     const typesValue = decodeURI(filterState.params.categories || '')
@@ -23,7 +23,6 @@ class FilterByOfferTypes extends PureComponent {
 
   render() {
     const { filterState, typeSublabels, title } = this.props
-
     const typesValue = decodeURI(filterState.params.categories || '')
 
     return (
@@ -37,6 +36,7 @@ class FilterByOfferTypes extends PureComponent {
               const ischecked = typesValue.includes(typeSublabel)
               const className = ischecked ? 'checked' : ''
               const inputName = `search-image-checkbox-${index}`
+
               return (
                 <label
                   htmlFor={inputName}
@@ -48,7 +48,7 @@ class FilterByOfferTypes extends PureComponent {
                     id={inputName}
                     checked={ischecked}
                     className="is-hidden"
-                    onChange={() => this.onChange(typeSublabel)}
+                    onChange={this.onChangeType(typeSublabel)}
                     value={typeSublabel}
                     type="checkbox"
                   />
@@ -76,10 +76,8 @@ FilterByOfferTypes.propTypes = {
   typeSublabels: PropTypes.array.isRequired,
 }
 
-function mapStateToProps(state) {
-  return {
-    typeSublabels: selectTypeSublabels(state),
-  }
-}
+const mapStateToProps = state => ({
+  typeSublabels: selectTypeSublabels(state),
+})
 
 export default connect(mapStateToProps)(FilterByOfferTypes)
