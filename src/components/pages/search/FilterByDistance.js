@@ -1,18 +1,17 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import options, {
   INFINITE_DISTANCE,
 } from '../../../helpers/search/distanceOptions'
 
-class FilterByDistance extends PureComponent {
-  onChange = e => {
+class FilterByDistance extends Component {
+  onChangeDistance = event => {
     const { filterActions, geolocation } = this.props
-
-    const distance = e.target.value
-
+    const distance = event.target.value
     let { latitude, longitude } = geolocation
+
     if (distance === INFINITE_DISTANCE) {
       latitude = null
       longitude = null
@@ -31,29 +30,31 @@ class FilterByDistance extends PureComponent {
     const distanceKey =
       filterState.params.distance === null ? 'empty' : 'not-empty'
     const distanceValue = filterState.params.distance || 20000
-    const isSelected = value => (distanceValue === value ? 'selected' : null)
+
     return (
-      <div key={distanceKey} id="filter-by-distance" className="pt18">
-        <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
-          {title}
-        </h2>
-        <div className="text-center mb20">
+      <React.Fragment>
+        <div
+          key={distanceKey}
+          id="filter-by-distance"
+          className="pt18 text-center mb20"
+        >
+          <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
+            {title}
+          </h2>
           <select
             className="pc-selectbox pl24 py5 fs19"
             defaultValue={distanceValue}
-            onChange={this.onChange}
-            name="distance"
+            onChange={this.onChangeDistance}
           >
             {options.map(({ label, value }) => (
-              // NOTE: https://reactjs.org/docs/forms.html#the-select-tag
-              <option key={value} value={value} selected={isSelected(value)}>
+              <option key={value} value={value}>
                 {label}
               </option>
             ))}
           </select>
         </div>
         <hr className="dotted-bottom-primary" />
-      </div>
+      </React.Fragment>
     )
   }
 }
@@ -65,10 +66,8 @@ FilterByDistance.propTypes = {
   title: PropTypes.string.isRequired,
 }
 
-function mapStateToProps(state) {
-  return {
-    geolocation: state.geolocation,
-  }
-}
+const mapStateToProps = state => ({
+  geolocation: state.geolocation,
+})
 
 export default connect(mapStateToProps)(FilterByDistance)
