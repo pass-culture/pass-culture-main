@@ -168,7 +168,7 @@ class Search extends PureComponent {
     )
   }
 
-  onClickOpenCloseFilterDiv = isFilterVisible => () => {
+  onClickToggleFilterButton = isFilterVisible => () => {
     this.setState({ isFilterVisible: !isFilterVisible })
   }
 
@@ -209,7 +209,7 @@ class Search extends PureComponent {
       queryParams
     )
 
-    const iconName = whithoutFilters ? 'filter' : 'filter-active'
+    const iconFilterName = whithoutFilters ? 'filter' : 'filter-active'
 
     const filtersToggleButtonClass =
       (isFilterVisible && 'filters-are-opened') || ''
@@ -313,14 +313,14 @@ class Search extends PureComponent {
                       >
                         <button
                           type="button"
-                          className="no-border no-background no-outline "
-                          onClick={this.onClickOpenCloseFilterDiv(
+                          className="no-border no-background no-outline"
+                          onClick={this.onClickToggleFilterButton(
                             isFilterVisible
                           )}
                         >
                           <Icon
                             svg={`ico-${
-                              isFilterVisible ? 'chevron-up' : iconName
+                              isFilterVisible ? 'chevron-up' : iconFilterName
                             }`}
                           />
                         </button>
@@ -331,6 +331,7 @@ class Search extends PureComponent {
                   <SearchFilterContainer
                     key="SearchFilterContainer"
                     isVisible={isFilterVisible}
+                    onClickFilterButton={this.onClickToggleFilterButton}
                   />
 
                   <Switch location={location}>

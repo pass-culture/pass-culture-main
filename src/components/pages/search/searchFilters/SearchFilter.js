@@ -62,7 +62,12 @@ class SearchFilter extends Component {
   }
 
   onFilterClick = () => {
-    const { resetSearchStore, query } = this.props
+    const {
+      resetSearchStore,
+      query,
+      onClickFilterButton,
+      isVisible,
+    } = this.props
     const { filterParamsMatchingQueryParams, params } = this.state
 
     if (filterParamsMatchingQueryParams) {
@@ -75,6 +80,8 @@ class SearchFilter extends Component {
     this.setState({
       initialDateParams: false,
     })
+
+    onClickFilterButton(isVisible)()
   }
 
   onResetClick = () => {
@@ -203,6 +210,7 @@ class SearchFilter extends Component {
 SearchFilter.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   location: PropTypes.object.isRequired,
+  onClickFilterButton: PropTypes.func.isRequired,
   query: PropTypes.object.isRequired,
   resetSearchStore: PropTypes.func.isRequired,
 }
