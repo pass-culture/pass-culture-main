@@ -81,7 +81,7 @@ class SearchFilter extends Component {
       initialDateParams: false,
     })
 
-    onClickFilterButton(isVisible)()
+    onClickFilterButton(isVisible)
   }
 
   onResetClick = () => {

@@ -168,7 +168,7 @@ class Search extends PureComponent {
     )
   }
 
-  onClickToggleFilterButton = isFilterVisible => () => {
+  onClickToggleFilterButton = isFilterVisible => {
     this.setState({ isFilterVisible: !isFilterVisible })
   }
 
@@ -318,9 +318,9 @@ class Search extends PureComponent {
                         <button
                           type="button"
                           className="no-border no-background no-outline"
-                          onClick={this.onClickToggleFilterButton(
-                            isFilterVisible
-                          )}
+                          onClick={() =>
+                            this.onClickToggleFilterButton(isFilterVisible)
+                          }
                         >
                           <Icon
                             svg={`ico-${

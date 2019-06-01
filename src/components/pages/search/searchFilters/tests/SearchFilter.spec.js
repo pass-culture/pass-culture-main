@@ -21,9 +21,11 @@ describe('src | components | pages | search | SearchFilter', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
+      const mockOnClickFilterButton = jest.fn()
       const props = {
         isVisible: true,
         location: {},
+        onClickFilterButton: mockOnClickFilterButton,
         query: {
           parse: jest.fn(),
         },
@@ -45,9 +47,11 @@ describe('src | components | pages | search | SearchFilter', () => {
         // given
         const mockedObject = { prop: 'mocked object' }
         const mockQueryParse = jest.fn(() => mockedObject)
+        const mockOnClickFilterButton = jest.fn()
         const props = {
           isVisible: false,
           location: {},
+          onClickFilterButton: mockOnClickFilterButton,
           query: {
             parse: mockQueryParse,
           },
@@ -56,6 +60,8 @@ describe('src | components | pages | search | SearchFilter', () => {
 
         // when
         const wrapper = shallow(<SearchFilter {...props} />)
+
+        // then
         expect(wrapper.instance().state.params).toStrictEqual(mockedObject)
       })
     })
@@ -63,6 +69,7 @@ describe('src | components | pages | search | SearchFilter', () => {
     describe('onComponentDidUpdate', () => {
       it('should update state if params has changed', () => {
         // given
+        const mockOnClickFilterButton = jest.fn()
         const initialState = REDUX_STATE
         const store = mockStore(initialState)
         const history = createBrowserHistory()
@@ -73,7 +80,10 @@ describe('src | components | pages | search | SearchFilter', () => {
           <Provider store={store}>
             <Router history={history}>
               <Route path="/test">
-                <SearchFilterContainer isVisible />
+                <SearchFilterContainer
+                  isVisible
+                  onClickFilterButton={mockOnClickFilterButton}
+                />
               </Route>
             </Router>
           </Provider>
@@ -97,10 +107,12 @@ describe('src | components | pages | search | SearchFilter', () => {
     describe('onResetClick', () => {
       it('should call the hoc withQueryRouter query.change method with INITIAL_FILTER_PARAMS', () => {
         // given
+        const mockOnClickFilterButton = jest.fn()
         const props = {
           dispatch: dispatchMock,
           isVisible: true,
           location: { search: '?page=1&jours=0-1' },
+          onClickFilterButton: mockOnClickFilterButton,
           query: {
             change: queryChangeMock,
             parse: () => ({
@@ -129,8 +141,8 @@ describe('src | components | pages | search | SearchFilter', () => {
           },
         }
 
+        // then
         expect(updatedFormState).toEqual(expected)
-
         expect(queryChangeMock).toHaveBeenCalledWith(INITIAL_FILTER_PARAMS, {
           pathname: '/recherche/resultats',
         })
@@ -141,10 +153,12 @@ describe('src | components | pages | search | SearchFilter', () => {
       it('should call hoc withQueryRouter change method with the good parameters', () => {
         // given
         const mockResetSearchStore = jest.fn()
+        const mockOnClickFilterButton = jest.fn()
         const props = {
           dispatch: dispatchMock,
           isVisible: true,
           location: { search: '?page=1&jours=0-1' },
+          onClickFilterButton: mockOnClickFilterButton,
           query: {
             change: queryChangeMock,
             clear: queryClearMock,
@@ -166,7 +180,7 @@ describe('src | components | pages | search | SearchFilter', () => {
           'filterParamsMatchingQueryParams'
         )
 
-        // THEN
+        // then
         expect(updatedFormState).toEqual(false)
         expect(mockResetSearchStore).not.toHaveBeenCalled()
         expect(queryChangeMock).toHaveBeenCalledWith(currentQuery, {

@@ -6,6 +6,7 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <SearchFilter
     isVisible={true}
     location={Object {}}
+    onClickFilterButton={[MockFunction]}
     query={
       Object {
         "parse": [MockFunction] {
