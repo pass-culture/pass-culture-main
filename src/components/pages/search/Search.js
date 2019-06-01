@@ -180,6 +180,8 @@ class Search extends PureComponent {
 
   onKeywordsEraseClick = () => {
     const { keywordsKey } = this.state
+    const { history } = this.props
+
     this.setState({
       // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
       // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
@@ -188,6 +190,8 @@ class Search extends PureComponent {
       keywordsKey: keywordsKey + 1,
       keywordsValue: '',
     })
+
+    history.push('/recherche/resultats')
   }
 
   render() {
