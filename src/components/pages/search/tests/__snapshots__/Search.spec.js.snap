@@ -391,7 +391,7 @@ ShallowWrapper {
           <span
             aria-hidden={true}
             className="icon-legacy-close is-white-text"
-            title="Retour sur la page découverte"
+            title="Retourner sur la page découverte"
           />
         </button>,
         <Switch
@@ -440,7 +440,7 @@ ShallowWrapper {
           "children": <span
             aria-hidden={true}
             className="icon-legacy-close is-white-text"
-            title="Retour sur la page découverte"
+            title="Retourner sur la page découverte"
           />,
           "className": "pc-text-button is-absolute fs16",
           "id": "search-close-button",
@@ -455,7 +455,7 @@ ShallowWrapper {
           "props": Object {
             "aria-hidden": true,
             "className": "icon-legacy-close is-white-text",
-            "title": "Retour sur la page découverte",
+            "title": "Retourner sur la page découverte",
           },
           "ref": null,
           "rendered": null,
@@ -538,7 +538,7 @@ ShallowWrapper {
             <span
               aria-hidden={true}
               className="icon-legacy-close is-white-text"
-              title="Retour sur la page découverte"
+              title="Retourner sur la page découverte"
             />
           </button>,
           <Switch
@@ -587,7 +587,7 @@ ShallowWrapper {
             "children": <span
               aria-hidden={true}
               className="icon-legacy-close is-white-text"
-              title="Retour sur la page découverte"
+              title="Retourner sur la page découverte"
             />,
             "className": "pc-text-button is-absolute fs16",
             "id": "search-close-button",
@@ -602,7 +602,7 @@ ShallowWrapper {
             "props": Object {
               "aria-hidden": true,
               "className": "icon-legacy-close is-white-text",
-              "title": "Retour sur la page découverte",
+              "title": "Retourner sur la page découverte",
             },
             "ref": null,
             "rendered": null,

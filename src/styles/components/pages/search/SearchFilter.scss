@@ -37,19 +37,14 @@
   // pour que le bouton est la même hauteur que le search input
   // et que quand on ouvre le menu des filtres
   // on ait un background gris pour le bouton
-  width: 44px;
-  min-width: 44px;
-  max-width: 44px;
   height: 44px;
-  min-height: 44px;
+  margin-left: 6px;
+  min-width: 44px;
+  width: 44px;
 
   &.filters-are-opened {
     background: $grey-lighter;
     border-radius: 4px 4px 0 0;
-    width: 32px;
-    min-width: 32px;
-    max-width: 32px;
-    margin-left: 6px;
   }
 }
 

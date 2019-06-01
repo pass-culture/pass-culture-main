@@ -61,7 +61,7 @@ class SearchFilter extends Component {
     })
   }
 
-  onFilterClick = () => {
+  onClickFilterButton = () => {
     const {
       resetSearchStore,
       query,
@@ -146,7 +146,10 @@ class SearchFilter extends Component {
       if (nextValue[0] === ',') {
         nextValue = nextValue.slice(1)
       }
-      this.handleQueryChange({ [key]: nextValue }, callback)
+      this.handleQueryChange(
+        { [key]: nextValue === '' ? null : nextValue },
+        callback
+      )
     }
   }
 
@@ -193,7 +196,7 @@ class SearchFilter extends Component {
                 <button
                   id="filter-button"
                   className="no-background no-outline col-1of2 fs20 py12"
-                  onClick={this.onFilterClick}
+                  onClick={this.onClickFilterButton}
                   type="button"
                 >
                   <span className="is-bold">Filtrer</span>

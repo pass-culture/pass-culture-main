@@ -6,19 +6,19 @@ import selectTypeSublabels from '../../../selectors/selectTypes'
 import SearchPicture from './SearchPicture'
 
 class FilterByOfferTypes extends PureComponent {
-  onChangeType = typeSublabel => () => {
+  onChangeType = category => () => {
     const { filterActions, filterState } = this.props
 
     const typesValue = decodeURI(filterState.params.categories || '')
 
-    const isAlreadyIncluded = typesValue.includes(typeSublabel)
+    const isAlreadyIncluded = typesValue.includes(category)
 
     if (isAlreadyIncluded) {
-      filterActions.remove('categories', typeSublabel)
+      filterActions.remove('categories', category)
       return
     }
 
-    filterActions.add('categories', typeSublabel)
+    filterActions.add('categories', category)
   }
 
   render() {
@@ -26,31 +26,31 @@ class FilterByOfferTypes extends PureComponent {
     const typesValue = decodeURI(filterState.params.categories || '')
 
     return (
-      <div id="filter-by-offer-types" className="pt18">
+      <div className="pt18" id="filter-by-offer-types">
         <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
           {title}
         </h2>
         <div className="pc-scroll-horizontal is-relative">
           <div className="pc-list flex-columns pt7">
-            {typeSublabels.map((typeSublabel, index) => {
-              const ischecked = typesValue.includes(typeSublabel)
+            {typeSublabels.map((category, index) => {
+              const ischecked = typesValue.includes(category)
               const className = ischecked ? 'checked' : ''
-              const inputName = `search-image-checkbox-${index}`
+              const inputId = `search-image-checkbox-${index}`
 
               return (
                 <label
-                  htmlFor={inputName}
-                  key={typeSublabel}
                   className={`item p3 is-relative ${className}`}
+                  htmlFor={inputId}
+                  key={category}
                 >
-                  <SearchPicture searchType={typeSublabel} />
+                  <SearchPicture searchType={category} />
                   <input
-                    id={inputName}
                     checked={ischecked}
                     className="is-hidden"
-                    onChange={this.onChangeType(typeSublabel)}
-                    value={typeSublabel}
+                    id={inputId}
+                    onChange={this.onChangeType(category)}
                     type="checkbox"
+                    value={category}
                   />
                   {ischecked && (
                     <span className="icon-container is-absolute">

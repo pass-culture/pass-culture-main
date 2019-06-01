@@ -52,7 +52,7 @@ const getKeywordsInput = wrapper =>
 const getRefreshKeywordsButton = wrapper =>
   getPageContentForm(wrapper).props.children.props.children.find(
     child => child.props.id === 'search-page-keywords-field'
-  ).props.children[0].props.children[1].props.children
+  ).props.children[0].props.children[2].props.children
 
 const getFilterToggle = wrapper =>
   getPageContentForm(wrapper).props.children.props.children.find(
@@ -469,10 +469,13 @@ describe('src | components | pages | Search', () => {
             keywordsKey: 1,
             keywordsValue: '',
           }
+
           // then
           expect(wrapper.state()).toEqual(expected)
         })
+
         it('should change navigation', () => {
+          // when
           wrapperInstance.setState({ keywordsValue: 'A' })
           const button = getRefreshKeywordsButton(wrapper)
           button.props.onClick()

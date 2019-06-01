@@ -12,19 +12,15 @@ const toggleFilterButton = Selector('#search-filter-menu-toggle-button').find(
 const searchFilterMenu = Selector('#search-filter-menu')
 const filterByDatesDiv = Selector('#filter-by-dates')
 const filterByDatesTitle = filterByDatesDiv.find('h2')
-
 const checkboxDate1 = filterByDatesDiv.find('input').nth(0)
 const checkboxDate2 = filterByDatesDiv.find('input').nth(1)
 const checkboxDate3 = filterByDatesDiv.find('input').nth(2)
 const datePicker = filterByDatesDiv.find('input').nth(3)
-
 const utcExampleDay = Selector('.react-datepicker__day').withText('14')
 const nextMonthButton = Selector('.react-datepicker__navigation--next')
 const resetDatePickerInput = Selector('.react-datepicker__close-icon')
-
 const filterByDistanceDiv = Selector('#filter-by-distance')
 const filterByDistanceTitle = filterByDistanceDiv.find('h2')
-
 const filterByOfferTypesDiv = Selector('#filter-by-offer-types')
 const filterByOfferTypesTitle = filterByOfferTypesDiv.find('h2')
 
@@ -41,7 +37,9 @@ fixture(
   }
 
   await t.useRole(userRole).navigateTo(`${ROOT_PATH}recherche`)
+
   const location = await t.eval(() => window.location)
+
   await t.expect(location.pathname).eql('/recherche')
 })
 
@@ -53,17 +51,13 @@ test("Le filtre de recherche existe et l'icône n'est pas activé", async t => {
 
 test("Je peux ouvrir et fermer le filtre en cliquant sur l'icône", async t => {
   const classFilterDiv = searchFilterMenu.classNames
+
   await t
-    // ouverture du filtre
     .click(toggleFilterButton)
     .expect(classFilterDiv)
     .contains('transition-status-entered')
-
-    // changement de l'icône
     .expect(toggleFilterButton.getAttribute('src'))
     .contains('ico-chevron-up')
-
-    // fermeture du filtre
     .click(toggleFilterButton)
     .expect(toggleFilterButton.getAttribute('src'))
     .contains('ico-filter.svg')
@@ -88,6 +82,7 @@ test('Je vois le titre de la section', async t => {
 
 test('Je peux choisir entre 4 types de dates', async t => {
   const dateCheckboxes = filterByDatesDiv.find('input')
+
   await t.expect(dateCheckboxes.count).eql(4)
 })
 
@@ -102,21 +97,14 @@ test('Quand on choisit un range de date après une date précise, le date picker
     .wait(200)
     .click(datePicker)
     .wait(500)
-
-    // Je sélectionne une date via le date picker
-    // Je vais au mois suivant pour être sur d'avoir une date dans le futur
     .click(nextMonthButton)
     .click(utcExampleDay)
     .wait(500)
 
-  // la valeur de l'input est mise à jour
   await t
     .expect(datePicker.value)
     .contains('14/')
-
     .click(checkboxDate1)
-
-    // la valeur de l'input est réinitialisée
     .expect(datePicker.value)
     .contains('')
 })
@@ -136,6 +124,7 @@ test('Je sélectionne les checkboxes par range de date', async t => {
     .expect(getPageUrl())
     .contains(`&jours=0-1`)
     .wait(200)
+    .click(toggleFilterButton)
     .click(checkboxDate2)
     .click(checkboxDate3)
     .wait(100)
@@ -158,6 +147,7 @@ test('Je sélectionne plusieurs dates, je filtre puis je clique sur réinitialis
     .wait(200)
     .click(filterButton)
     .wait(200)
+    .click(toggleFilterButton)
     .click(resetButton)
     .wait(200)
     .expect(checkboxDate1.checked)

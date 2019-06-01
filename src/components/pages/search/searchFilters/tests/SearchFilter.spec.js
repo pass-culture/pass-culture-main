@@ -174,7 +174,7 @@ describe('src | components | pages | search | SearchFilter', () => {
         const wrapper = shallow(
           <SearchFilterContainer.WrappedComponent.WrappedComponent {...props} />
         )
-        wrapper.instance().onFilterClick()
+        wrapper.instance().onClickFilterButton()
         const currentQuery = wrapper.state('params')
         const updatedFormState = wrapper.state(
           'filterParamsMatchingQueryParams'

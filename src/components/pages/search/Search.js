@@ -220,7 +220,6 @@ class Search extends PureComponent {
 
     const isOneCharInKeywords = keywordsValue && keywordsValue.length > 0
 
-    // ******************** Displaying datas helpers ********************** //
     let headerTitle = 'Recherche'
     if (location.pathname.includes('/resultats'))
       headerTitle = `${headerTitle} : résultats`
@@ -249,7 +248,7 @@ class Search extends PureComponent {
           <span
             aria-hidden
             className="icon-legacy-close is-white-text"
-            title="Retour sur la page découverte"
+            title="Retourner sur la page découverte"
           />
         </button>
         <Switch location={location}>
@@ -265,21 +264,23 @@ class Search extends PureComponent {
                   <form onSubmit={this.onSubmit}>
                     <div className="flex-columns items-start">
                       <div
-                        id="search-page-keywords-field"
                         className="field has-addons flex-columns flex-1"
+                        id="search-page-keywords-field"
                       >
                         <p
                           className="control has-icons-right flex-1"
                           key={keywordsKey}
                         >
+                          <label className="is-hidden" htmlFor="keywords">
+                            Veuillez entrer un mot-clé
+                          </label>
                           <input
-                            // FIXME autoFocus Github Issue #867
-                            id="keywords"
                             defaultValue={keywordsValue}
                             className="input search-input"
+                            id="keywords"
+                            onChange={this.onKeywordsChange}
                             placeholder="Un mot-clé"
                             type="text"
-                            onChange={this.onKeywordsChange}
                           />
                           {isOneCharInKeywords && (
                             <span className="icon is-small is-right">
@@ -292,13 +293,12 @@ class Search extends PureComponent {
                                 <span
                                   aria-hidden
                                   className="icon-legacy-close"
-                                  title=""
+                                  title="Supprimer le mot-clé"
                                 />
                               </button>
                             </span>
                           )}
                         </p>
-
                         <div className="control flex-0">
                           <button
                             className="button is-rounded is-medium"
@@ -306,11 +306,10 @@ class Search extends PureComponent {
                             type="submit"
                             disabled={!isOneCharInKeywords}
                           >
-                            Chercher
+                            {'Chercher'}
                           </button>
                         </div>
                       </div>
-                      {/* ************************* BOUTON OPEN CLOSE FILTER ************************* */}
                       <div
                         id="search-filter-menu-toggle-button"
                         className={`flex-0 text-center flex-rows flex-center pb12 ${filtersToggleButtonClass}`}
@@ -331,13 +330,11 @@ class Search extends PureComponent {
                       </div>
                     </div>
                   </form>
-
                   <SearchFilterContainer
                     key="SearchFilterContainer"
                     isVisible={isFilterVisible}
                     onClickFilterButton={this.onClickToggleFilterButton}
                   />
-
                   <Switch location={location}>
                     <Route
                       exact

@@ -5,8 +5,8 @@ import distanceOptions from '../src/helpers/search/distanceOptions'
 import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 
 const getPageUrl = ClientFunction(() => window.location.href.toString())
-
-const distanceOption = Selector('#filter-by-distance option')
+const distanceInput = Selector('#filter-by-distance select')
+const distanceOption = distanceInput.find('option')
 const filterButton = Selector('#filter-button')
 const toogleFilterButton = Selector('#search-filter-menu-toggle-button').find(
   'img'
@@ -27,6 +27,7 @@ fixture(
   await t.useRole(userRole).navigateTo(`${ROOT_PATH}recherche`)
 
   const location = await t.eval(() => window.location)
+
   await t
     .expect(location.pathname)
     .eql('/recherche')
@@ -35,6 +36,7 @@ fixture(
 
 test('Je vois le titre de la recherche par distance', async t => {
   const title = Selector('#filter-by-distance').find('h2')
+
   await t.expect(title.innerText).eql('OÙ')
 })
 
@@ -51,7 +53,6 @@ test('Je ne sélectionne aucun filtre et je clique sur filtrer', async t => {
 })
 
 test('Je sélectionne toutes distances et je clique sur filtrer', async t => {
-  const distanceInput = Selector('#filter-by-distance')
   await t
     .click(distanceInput)
     .click(distanceOption.withText(distanceOptions[0].label))
@@ -63,7 +64,6 @@ test('Je sélectionne toutes distances et je clique sur filtrer', async t => {
 })
 
 test('Je sélectionne toutes distances et je clique sur filtrer', async t => {
-  const distanceInput = Selector('#filter-by-distance')
   await t
     .click(distanceInput)
     .click(distanceOption.withText(distanceOptions[1].label))
@@ -75,7 +75,6 @@ test('Je sélectionne toutes distances et je clique sur filtrer', async t => {
 })
 
 test("Je sélectionne moins d'un km et je clique sur filtrer", async t => {
-  const distanceInput = Selector('#filter-by-distance')
   await t
     .click(distanceInput)
     .click(distanceOption.withText(distanceOptions[1].label))
@@ -85,7 +84,6 @@ test("Je sélectionne moins d'un km et je clique sur filtrer", async t => {
 })
 
 test('Je sélectionne moins de 10 kms et je clique sur filtrer', async t => {
-  const distanceInput = Selector('#filter-by-distance')
   await t
     .click(distanceInput)
     .click(distanceOption.withText(distanceOptions[2].label))
@@ -95,7 +93,6 @@ test('Je sélectionne moins de 10 kms et je clique sur filtrer', async t => {
 })
 
 test('Je sélectionne moins de 50 kms et je clique sur filtrer', async t => {
-  const distanceInput = Selector('#filter-by-distance')
   await t
     .click(distanceInput)
     .click(distanceOption.withText(distanceOptions[3].label))
@@ -105,7 +102,6 @@ test('Je sélectionne moins de 50 kms et je clique sur filtrer', async t => {
 })
 
 test('Je fais une recherche, je retourne sur la home, je réouvre la fenêtre de recherche, le filtre par distance est réinitialisé avec la valeur par défaut', async t => {
-  const distanceInput = Selector('#filter-by-distance')
   await t
     .click(distanceInput)
     .click(distanceOption.withText(distanceOptions[2].label))
