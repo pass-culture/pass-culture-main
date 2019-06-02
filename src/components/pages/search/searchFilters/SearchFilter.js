@@ -172,12 +172,10 @@ class SearchFilter extends Component {
               <FilterByDistance
                 filterActions={this.filterActions}
                 filterState={this.state}
-                title="OÙ"
               />
               <FilterByOfferTypes
                 filterActions={this.filterActions}
                 filterState={this.state}
-                title="QUOI"
               />
               <div
                 id="search-filter-menu-footer-controls"
@@ -187,7 +185,7 @@ class SearchFilter extends Component {
                   id="search-filter-reset-button"
                   className="no-background no-outline col-1of2 fs20 py12"
                   onClick={this.onResetClick}
-                  type="button"
+                  type="reset"
                 >
                   Réinitialiser
                 </button>
@@ -195,7 +193,7 @@ class SearchFilter extends Component {
                   id="filter-button"
                   className="no-background no-outline col-1of2 fs20 py12"
                   onClick={this.onClickFilterButton}
-                  type="button"
+                  type="submit"
                 >
                   <span className="is-bold">Filtrer</span>
                 </button>

@@ -12,20 +12,21 @@ const getPageContentRoute = wrapper =>
     .render()
 
 const getPageContentDiv = wrapper =>
-  getPageContentRoute(wrapper).props.children.find(child =>
-    child.props.className.includes('page-content')
+  getPageContentRoute(wrapper).props.children.find(
+    child => child.props.children.type === 'form'
   )
 
-const getPageContentForm = wrapper =>
-  getPageContentDiv(wrapper).props.children.find(child => child.type === 'form')
+const getPageContentForm = wrapper => getPageContentDiv(wrapper).props.children
 
 const getPageContentFilter = wrapper =>
-  getPageContentDiv(wrapper).props.children.find(
+  getPageContentDiv(wrapper).props.children.props.children.find(
     child => child.key === 'SearchFilterContainer'
   )
 
 const getPageContentSwitch = wrapper =>
-  getPageContentDiv(wrapper).props.children.find(child => child.type === Switch)
+  getPageContentDiv(wrapper).props.children.props.children.find(
+    child => child.type === Switch
+  )
 
 const getSwitchedPageContent = path => wrapper =>
   getPageContentSwitch(wrapper)
@@ -42,7 +43,7 @@ const getSearchResultsFromCategory = wrapper =>
 
 const getKeywordsInput = wrapper =>
   getPageContentForm(wrapper)
-    .props.children.props.children.find(
+    .props.children[0].props.children.find(
       child => child.props.id === 'search-page-keywords-field'
     )
     .props.children[0].props.children.find(
@@ -50,12 +51,12 @@ const getKeywordsInput = wrapper =>
     )
 
 const getRefreshKeywordsButton = wrapper =>
-  getPageContentForm(wrapper).props.children.props.children.find(
+  getPageContentForm(wrapper).props.children[0].props.children.find(
     child => child.props.id === 'search-page-keywords-field'
   ).props.children[0].props.children[2].props.children
 
 const getFilterToggle = wrapper =>
-  getPageContentForm(wrapper).props.children.props.children.find(
+  getPageContentForm(wrapper).props.children[0].props.children.find(
     child => child.props.id === 'search-filter-menu-toggle-button'
   ).props.children
 
@@ -116,7 +117,7 @@ describe('src | components | pages | Search', () => {
         // when
         const button = getPageContentForm(
           wrapper
-        ).props.children.props.children.find(
+        ).props.children[0].props.children.find(
           child => child.props.id === 'search-page-keywords-field'
         ).props.children[1].props.children
         // then

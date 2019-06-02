@@ -1,27 +1,39 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | search | FilterByDistance snapshot should match snapshot 1`] = `
+exports[`src | components | pages | search | FilterByDistance should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Provider
-    store={
+  Symbol(enzyme.__unrendered__): <FilterByDistance
+    filterActions={
       Object {
-        "clearActions": [Function],
-        "dispatch": [Function],
-        "getActions": [Function],
-        "getState": [Function],
-        "replaceReducer": [Function],
-        "subscribe": [Function],
+        "add": [MockFunction],
+        "change": [MockFunction],
+        "remove": [MockFunction],
       }
     }
-  >
-    <Connect(FilterByDistance)
-      filterActions={Object {}}
-      filterState={Object {}}
-      geolocation={Object {}}
-      title="Fake title"
-    />
-  </Provider>,
+    filterState={
+      Object {
+        "isNew": false,
+        "params": Object {
+          "categories": null,
+          "date": null,
+          "distance": null,
+          "jours": null,
+          "latitude": null,
+          "longitude": null,
+          "mots-cles": null,
+          "orderBy": "offer.id+desc",
+        },
+      }
+    }
+    geolocation={
+      Object {
+        "latitude": null,
+        "longitude": null,
+        "watchId": null,
+      }
+    }
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -34,31 +46,413 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "class",
+    "nodeType": "function",
     "props": Object {
-      "filterActions": Object {},
-      "filterState": Object {},
-      "geolocation": Object {},
-      "title": "Fake title",
+      "children": Array [
+        <div
+          className="pt18 text-center mb20"
+          id="filter-by-distance"
+        >
+          <h2
+            className="fs15 is-italic is-medium is-uppercase text-center mb12"
+          >
+            Où
+          </h2>
+          <select
+            className="pc-selectbox pl24 py5 fs19"
+            defaultValue={20000}
+            onChange={[Function]}
+          >
+            <option
+              value={20000}
+            >
+              Toutes distances
+            </option>
+            <option
+              value={1}
+            >
+              Moins d'1 km
+            </option>
+            <option
+              value={10}
+            >
+              Moins de 10 km
+            </option>
+            <option
+              value={50}
+            >
+              Moins de 50 km
+            </option>
+          </select>
+        </div>,
+        <hr
+          className="dotted-bottom-primary"
+        />,
+      ],
     },
     "ref": null,
-    "rendered": null,
-    "type": [Function],
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <h2
+              className="fs15 is-italic is-medium is-uppercase text-center mb12"
+            >
+              Où
+            </h2>,
+            <select
+              className="pc-selectbox pl24 py5 fs19"
+              defaultValue={20000}
+              onChange={[Function]}
+            >
+              <option
+                value={20000}
+              >
+                Toutes distances
+              </option>
+              <option
+                value={1}
+              >
+                Moins d'1 km
+              </option>
+              <option
+                value={10}
+              >
+                Moins de 10 km
+              </option>
+              <option
+                value={50}
+              >
+                Moins de 50 km
+              </option>
+            </select>,
+          ],
+          "className": "pt18 text-center mb20",
+          "id": "filter-by-distance",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Où",
+              "className": "fs15 is-italic is-medium is-uppercase text-center mb12",
+            },
+            "ref": null,
+            "rendered": "Où",
+            "type": "h2",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <option
+                  value={20000}
+                >
+                  Toutes distances
+                </option>,
+                <option
+                  value={1}
+                >
+                  Moins d'1 km
+                </option>,
+                <option
+                  value={10}
+                >
+                  Moins de 10 km
+                </option>,
+                <option
+                  value={50}
+                >
+                  Moins de 50 km
+                </option>,
+              ],
+              "className": "pc-selectbox pl24 py5 fs19",
+              "defaultValue": 20000,
+              "onChange": [Function],
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": "20000",
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Toutes distances",
+                  "value": 20000,
+                },
+                "ref": null,
+                "rendered": "Toutes distances",
+                "type": "option",
+              },
+              Object {
+                "instance": null,
+                "key": "1",
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Moins d'1 km",
+                  "value": 1,
+                },
+                "ref": null,
+                "rendered": "Moins d'1 km",
+                "type": "option",
+              },
+              Object {
+                "instance": null,
+                "key": "10",
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Moins de 10 km",
+                  "value": 10,
+                },
+                "ref": null,
+                "rendered": "Moins de 10 km",
+                "type": "option",
+              },
+              Object {
+                "instance": null,
+                "key": "50",
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Moins de 50 km",
+                  "value": 50,
+                },
+                "ref": null,
+                "rendered": "Moins de 50 km",
+                "type": "option",
+              },
+            ],
+            "type": "select",
+          },
+        ],
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "className": "dotted-bottom-primary",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": "hr",
+      },
+    ],
+    "type": Symbol(react.fragment),
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "class",
+      "nodeType": "function",
       "props": Object {
-        "filterActions": Object {},
-        "filterState": Object {},
-        "geolocation": Object {},
-        "title": "Fake title",
+        "children": Array [
+          <div
+            className="pt18 text-center mb20"
+            id="filter-by-distance"
+          >
+            <h2
+              className="fs15 is-italic is-medium is-uppercase text-center mb12"
+            >
+              Où
+            </h2>
+            <select
+              className="pc-selectbox pl24 py5 fs19"
+              defaultValue={20000}
+              onChange={[Function]}
+            >
+              <option
+                value={20000}
+              >
+                Toutes distances
+              </option>
+              <option
+                value={1}
+              >
+                Moins d'1 km
+              </option>
+              <option
+                value={10}
+              >
+                Moins de 10 km
+              </option>
+              <option
+                value={50}
+              >
+                Moins de 50 km
+              </option>
+            </select>
+          </div>,
+          <hr
+            className="dotted-bottom-primary"
+          />,
+        ],
       },
       "ref": null,
-      "rendered": null,
-      "type": [Function],
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <h2
+                className="fs15 is-italic is-medium is-uppercase text-center mb12"
+              >
+                Où
+              </h2>,
+              <select
+                className="pc-selectbox pl24 py5 fs19"
+                defaultValue={20000}
+                onChange={[Function]}
+              >
+                <option
+                  value={20000}
+                >
+                  Toutes distances
+                </option>
+                <option
+                  value={1}
+                >
+                  Moins d'1 km
+                </option>
+                <option
+                  value={10}
+                >
+                  Moins de 10 km
+                </option>
+                <option
+                  value={50}
+                >
+                  Moins de 50 km
+                </option>
+              </select>,
+            ],
+            "className": "pt18 text-center mb20",
+            "id": "filter-by-distance",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Où",
+                "className": "fs15 is-italic is-medium is-uppercase text-center mb12",
+              },
+              "ref": null,
+              "rendered": "Où",
+              "type": "h2",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <option
+                    value={20000}
+                  >
+                    Toutes distances
+                  </option>,
+                  <option
+                    value={1}
+                  >
+                    Moins d'1 km
+                  </option>,
+                  <option
+                    value={10}
+                  >
+                    Moins de 10 km
+                  </option>,
+                  <option
+                    value={50}
+                  >
+                    Moins de 50 km
+                  </option>,
+                ],
+                "className": "pc-selectbox pl24 py5 fs19",
+                "defaultValue": 20000,
+                "onChange": [Function],
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": "20000",
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Toutes distances",
+                    "value": 20000,
+                  },
+                  "ref": null,
+                  "rendered": "Toutes distances",
+                  "type": "option",
+                },
+                Object {
+                  "instance": null,
+                  "key": "1",
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Moins d'1 km",
+                    "value": 1,
+                  },
+                  "ref": null,
+                  "rendered": "Moins d'1 km",
+                  "type": "option",
+                },
+                Object {
+                  "instance": null,
+                  "key": "10",
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Moins de 10 km",
+                    "value": 10,
+                  },
+                  "ref": null,
+                  "rendered": "Moins de 10 km",
+                  "type": "option",
+                },
+                Object {
+                  "instance": null,
+                  "key": "50",
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Moins de 50 km",
+                    "value": 50,
+                  },
+                  "ref": null,
+                  "rendered": "Moins de 50 km",
+                  "type": "option",
+                },
+              ],
+              "type": "select",
+            },
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "className": "dotted-bottom-primary",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": "hr",
+        },
+      ],
+      "type": Symbol(react.fragment),
     },
   ],
   Symbol(enzyme.__options__): Object {

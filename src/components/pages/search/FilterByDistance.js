@@ -6,7 +6,7 @@ import options, {
   INFINITE_DISTANCE,
 } from '../../../helpers/search/distanceOptions'
 
-class FilterByDistance extends Component {
+export class FilterByDistance extends Component {
   onChangeDistance = event => {
     const { filterActions, geolocation } = this.props
     const distance = event.target.value
@@ -21,25 +21,17 @@ class FilterByDistance extends Component {
   }
 
   render() {
-    const { filterState, title } = this.props
-
-    // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
-    // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
-    // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
-    // THE IN PUT WITH A SYNCED DEFAULT VALUE
-    const distanceKey =
-      filterState.params.distance === null ? 'empty' : 'not-empty'
+    const { filterState } = this.props
     const distanceValue = filterState.params.distance || 20000
 
     return (
       <React.Fragment>
         <div
-          key={distanceKey}
-          id="filter-by-distance"
           className="pt18 text-center mb20"
+          id="filter-by-distance"
         >
           <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
-            {title}
+            {'Où'}
           </h2>
           <select
             className="pc-selectbox pl24 py5 fs19"
@@ -60,10 +52,35 @@ class FilterByDistance extends Component {
 }
 
 FilterByDistance.propTypes = {
-  filterActions: PropTypes.object.isRequired,
-  filterState: PropTypes.object.isRequired,
-  geolocation: PropTypes.object.isRequired,
-  title: PropTypes.string.isRequired,
+  filterActions: PropTypes.shape({
+    add: PropTypes.func.isRequired,
+    change: PropTypes.func.isRequired,
+    remove: PropTypes.func.isRequired,
+  }).isRequired,
+  filterState: PropTypes.shape({
+    isNew: PropTypes.bool,
+    params: PropTypes.shape({
+      categories: PropTypes.string,
+      date: PropTypes.string,
+      distance: PropTypes.string,
+      jours: PropTypes.string,
+      latitude: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+      ]),
+      longitude: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+      ]),
+      'mots-cles': PropTypes.string,
+      orderBy: PropTypes.string,
+    }),
+  }).isRequired,
+  geolocation: PropTypes.shape({
+    latitude: PropTypes.number,
+    longitude: PropTypes.number,
+    watchId: PropTypes.number,
+  }).isRequired,
 }
 
 const mapStateToProps = state => ({

@@ -329,56 +329,56 @@ class Search extends PureComponent {
                         </button>
                       </div>
                     </div>
-                  </form>
-                  <SearchFilterContainer
-                    key="SearchFilterContainer"
-                    isVisible={isFilterVisible}
-                    onClickFilterButton={this.onClickToggleFilterButton}
-                  />
-                  <Switch location={location}>
-                    <Route
-                      exact
-                      path="/recherche/:menu(menu)?"
-                      render={() => (
-                        <NavByOfferTypeContainer
-                          title="PAR CATÉGORIES"
-                          typeSublabels={typeSublabels}
-                        />
-                      )}
+                    <SearchFilterContainer
+                      key="SearchFilterContainer"
+                      isVisible={isFilterVisible}
+                      onClickFilterButton={this.onClickToggleFilterButton}
                     />
-                    <Route
-                      path="/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?"
-                      sensitive
-                      render={() => (
-                        <Fragment>
-                          <NavResultsHeader
-                            category={category}
-                            description={description}
+                    <Switch location={location}>
+                      <Route
+                        exact
+                        path="/recherche/:menu(menu)?"
+                        render={() => (
+                          <NavByOfferTypeContainer
+                            title="PAR CATÉGORIES"
+                            typeSublabels={typeSublabels}
                           />
+                        )}
+                      />
+                      <Route
+                        path="/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?"
+                        sensitive
+                        render={() => (
+                          <Fragment>
+                            <NavResultsHeader
+                              category={category}
+                              description={description}
+                            />
+                            <SearchResults
+                              cameFromOfferTypesPage
+                              hasMore={hasMore}
+                              items={recommendations}
+                              keywords={keywords}
+                              loadMoreHandler={this.loadMoreHandler}
+                              typeSublabels={typeSublabels}
+                            />
+                          </Fragment>
+                        )}
+                      />
+                      <Route
+                        path="/recherche/resultats/:menu(menu)?"
+                        render={() => (
                           <SearchResults
-                            cameFromOfferTypesPage
+                            cameFromOfferTypesPage={false}
                             hasMore={hasMore}
                             items={recommendations}
                             keywords={keywords}
-                            loadMoreHandler={this.loadMoreHandler}
                             typeSublabels={typeSublabels}
                           />
-                        </Fragment>
-                      )}
-                    />
-                    <Route
-                      path="/recherche/resultats/:menu(menu)?"
-                      render={() => (
-                        <SearchResults
-                          cameFromOfferTypesPage={false}
-                          hasMore={hasMore}
-                          items={recommendations}
-                          keywords={keywords}
-                          typeSublabels={typeSublabels}
-                        />
-                      )}
-                    />
-                  </Switch>
+                        )}
+                      />
+                    </Switch>
+                  </form>
                 </div>
                 <Footer />
               </Fragment>
