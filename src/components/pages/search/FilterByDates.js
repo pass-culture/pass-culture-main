@@ -1,10 +1,18 @@
-import get from 'lodash.get'
-import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import { DAYS_CHECKBOXES } from './utils'
 import { DatePickerField } from '../../forms/inputs'
+import { DAYS_CHECKBOXES } from './utils'
+
+export const isDaysChecked = (
+  pickedDate,
+  pickedDaysInQuery = '0-1',
+  inputValue = '0-1'
+) => {
+  if (pickedDate !== null) return false
+
+  return pickedDaysInQuery.includes(inputValue)
+}
 
 class FilterByDates extends PureComponent {
   constructor(props) {
@@ -18,10 +26,7 @@ class FilterByDates extends PureComponent {
   componentDidUpdate() {
     const { initialDateParams, filterState } = this.props
 
-    if (
-      (initialDateParams && filterState.params.date === undefined) ||
-      (initialDateParams && filterState.params.date === null)
-    ) {
+    if (initialDateParams && filterState.params.date === null) {
       this.setPickedDate(null)
     }
   }
@@ -38,60 +43,53 @@ class FilterByDates extends PureComponent {
     const pickedDaysInQuery = decodeURI(filterState.params.jours || '')
     const isdayAlreadyChecked = pickedDaysInQuery.includes(day)
     let callback
-    const pickedDaysInQueryLenght = get(pickedDaysInQuery, 'length')
 
-    // Change callback value
-    if (pickedDaysInQueryLenght === 0) {
-      // Case 1
-      const date = moment(moment.now()).toISOString()
+    if (pickedDaysInQuery.length === 0) {
+      const date = new Date().toISOString()
       callback = () => filterActions.change({ date })
     } else if (
       isdayAlreadyChecked &&
       pickedDaysInQuery.split(',').length === 1
     ) {
-      // Case 2
       callback = () => filterActions.change({ date: null })
     }
 
     if (isdayAlreadyChecked) {
-      // Case 3 Callback is undefined
       filterActions.remove('jours', day, callback)
       return
     }
-    // Case 4 add days
+
     filterActions.add('jours', day, callback)
   }
 
-  onPickedDateChange = date => {
+  onChangePickedDate = (date = null) => {
     const { filterActions } = this.props
     const formatedDate = (date && date.toISOString()) || null
+
     filterActions.change({ date: formatedDate, jours: null })
+
     this.setPickedDate(date)
   }
 
-  isDaysChecked = (date, pickedDaysInQuery, inputValue) =>
-    date !== null && inputValue === '0-1'
-      ? false
-      : pickedDaysInQuery.includes(inputValue)
-
   render() {
     const { pickedDate } = this.state
-    const { filterState, minDate, title } = this.props
+    const { filterState } = this.props
     const pickedDaysInQuery = decodeURI(filterState.params.jours || '')
 
     return (
       <div id="filter-by-dates" className="pt18">
         <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
-          {title}
+          {'Quand'}
         </h2>
         <div className="pc-scroll-horizontal is-relative pb18">
           <div className="pc-list flex-columns">
             {DAYS_CHECKBOXES.map(({ label, value }, index) => {
-              const checked = this.isDaysChecked(
+              const checked = isDaysChecked(
                 pickedDate,
                 pickedDaysInQuery,
                 value
               )
+
               return (
                 <label
                   htmlFor={`filter-by-dates-days-${index}-checkbox`}
@@ -105,20 +103,19 @@ class FilterByDates extends PureComponent {
                       className="input no-background"
                       checked={checked}
                       onChange={this.onChangeDate(value)}
+                      value={value}
                     />
                   </span>
-                  <span className="fs19 flex-1" style={{ whiteSpace: 'pre' }}>
-                    {label}
-                  </span>
+                  <span className="fs19 flex-1">{label}</span>
                 </label>
               )
             })}
             <DatePickerField
               name="pick-by-date-filter"
               className="item fs19 py5 px7"
-              minDate={minDate}
+              minDate={new Date()}
               selected={pickedDate}
-              onChange={this.onPickedDateChange}
+              onChange={this.onChangePickedDate}
               popperRefContainer={this.datepickerPopper}
             />
           </div>
@@ -133,20 +130,26 @@ class FilterByDates extends PureComponent {
   }
 }
 
-FilterByDates.defaultProps = {
-  minDate: moment(),
-}
-
 FilterByDates.propTypes = {
-  filterActions: PropTypes.object.isRequired,
-  filterState: PropTypes.object.isRequired,
+  filterActions: PropTypes.shape({
+    add: PropTypes.func.isRequired,
+    change: PropTypes.func.isRequired,
+    remove: PropTypes.func.isRequired,
+  }).isRequired,
+  filterState: PropTypes.shape({
+    isNew: PropTypes.bool,
+    params: PropTypes.shape({
+      categories: PropTypes.string,
+      date: PropTypes.string,
+      distance: PropTypes.string,
+      jours: PropTypes.string,
+      latitude: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      longitude: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      'mots-cles': PropTypes.string,
+      orderBy: PropTypes.string,
+    }),
+  }).isRequired,
   initialDateParams: PropTypes.bool.isRequired,
-  minDate: PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.object,
-    PropTypes.string,
-  ]),
-  title: PropTypes.string.isRequired,
 }
 
 export default FilterByDates

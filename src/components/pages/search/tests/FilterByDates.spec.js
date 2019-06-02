@@ -1,337 +1,239 @@
-// jest --env=jsdom ./src/components/pages/search/tests/FilterByDates --watch
-import moment from 'moment'
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
-import FilterByDates from '../FilterByDates'
 import { DatePickerField } from '../../../forms/inputs'
-
-const filterActionsAddMock = jest.fn()
-const filterActionsChangeMock = jest.fn()
-const filterActionsRemoveMock = jest.fn()
-
-const initialProps = {
-  filterActions: {
-    add: filterActionsAddMock,
-    change: filterActionsChangeMock,
-    remove: filterActionsRemoveMock,
-  },
-  filterState: {
-    isNew: false,
-    params: {
-      categories: null,
-      date: null,
-      distance: null,
-      jours: null,
-      latitude: null,
-      longitude: null,
-      'mots-cles': null,
-      orderBy: 'offer.id+desc',
-    },
-  },
-  initialDateParams: false,
-  title: 'Fake title',
-}
+import FilterByDates, { isDaysChecked } from '../FilterByDates'
+import { DAYS_CHECKBOXES } from '../utils'
 
 describe('src | components | pages | search | FilterByDates', () => {
-  const filterActions = {
-    add: filterActionsAddMock,
-    change: filterActionsChangeMock,
-    remove: filterActionsRemoveMock,
-  }
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const snapshotExpectedDateFormat = 'MMM Do YY'
-      const snapshotExpectedDateString = '2018-12-10 09:30:00'
-      const minDate = moment(snapshotExpectedDateString).format(
-        snapshotExpectedDateFormat
-      )
-      const props = { ...initialProps, minDate }
-      const wrapper = shallow(<FilterByDates {...props} />)
+  const fakeMethod = jest.fn()
+  let props
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+  beforeEach(() => {
+    props = {
+      filterActions: {
+        add: fakeMethod,
+        change: fakeMethod,
+        remove: fakeMethod,
+      },
+      filterState: {
+        isNew: false,
+        params: {
+          categories: null,
+          date: null,
+          distance: null,
+          jours: null,
+          latitude: null,
+          longitude: null,
+          'mots-cles': null,
+          orderBy: 'offer.id+desc',
+        },
+      },
+      initialDateParams: false,
+    }
   })
-  describe('functions ', () => {
-    // WE ADD THE DATE AT THE FIRST DAYS SEGMENTS CLICKED
-    // WE REMOVE THE DATE AT THE LAST DAYS SEGMENTS CLICKED
-    describe('isDaysChecked', () => {
-      it('should ckeck boxes corresponding to days filtered', () => {
-        const wrapper = shallow(<FilterByDates {...initialProps} />)
+
+  it('should match the snapshot', () => {
+    // given
+    const snapshotDate = new Date('2019-06-02T12:41:33.680Z')
+    global.Date = jest.fn(() => snapshotDate)
+
+    // when
+    const wrapper = shallow(<FilterByDates {...props} />)
+
+    // then
+    expect(wrapper).toBeDefined()
+    expect(wrapper).toMatchSnapshot()
+  })
+
+  describe('isDaysChecked()', () => {
+    describe('date is picked in calendar', () => {
+      it('should not check date', () => {
+        // given
+        const pickedDate = new Date()
+
+        // when
+        const result = isDaysChecked(pickedDate)
+
+        // then
+        expect(result).toEqual(false)
+      })
+    })
+
+    describe('date is picked with a checkbox', () => {
+      it('should ckeck boxes', () => {
+        // given
         const pickedDate = null
-        const days = '0-1, 5-10000'
-        const value = '0-1'
-        const result = wrapper.instance().isDaysChecked(pickedDate, days, value)
+        const pickedDaysInQuery = '0-1,5-10000'
+        const inputValue = '0-1'
+
+        // when
+        const result = isDaysChecked(pickedDate, pickedDaysInQuery, inputValue)
+
+        // then
         expect(result).toEqual(true)
       })
-      it('should not ckeck box not corresponding to day filtered', () => {
-        const wrapper = shallow(<FilterByDates {...initialProps} />)
+
+      it('should not ckeck box', () => {
+        // given
         const pickedDate = null
-        const days = '1-5'
-        const value = '0-1'
-        const result = wrapper.instance().isDaysChecked(pickedDate, days, value)
-        expect(result).toEqual(false)
-      })
-      it('should not check date when a date is picked in calendar', () => {
-        const wrapper = shallow(<FilterByDates {...initialProps} />)
-        const pickedDate = moment()
-        const days = '0-1'
-        const value = '0-1'
-        const result = wrapper.instance().isDaysChecked(pickedDate, days, value)
+        const pickedDaysInQuery = '1-5'
+        const inputValue = '0-1'
+
+        // when
+        const result = isDaysChecked(pickedDate, pickedDaysInQuery, inputValue)
+
+        // then
         expect(result).toEqual(false)
       })
     })
-    describe('onPickedDateChange', () => {
-      describe('when a date is picked', () => {
-        it('should call change function with a date', () => {
-          // given
-          const props = {
-            filterActions,
-            filterState: {
-              isNew: false,
-              params: {
-                categories: null,
-                date: '2018-10-24T09:15:55.098Z',
-                distance: null,
-                jours: '0-1',
-                latitude: null,
-                longitude: null,
-                'mots-cles': null,
-                orderBy: 'offer.id+desc',
-              },
-            },
-            initialDateParams: false,
-            title: 'Fake title',
-          }
-          const pickedDate = moment('12/12/2034', 'DD/MM/YYYY')
+  })
 
-          // when
-          const wrapper = shallow(<FilterByDates {...props} />)
-          wrapper.instance().onPickedDateChange(pickedDate)
-          const expected = {
-            date: pickedDate.toISOString(),
-            jours: null,
-          }
+  describe('onChangePickedDate()', () => {
+    it('should call change filter action function with a date', () => {
+      // given
+      props.filterState.params.date = '2018-10-24T09:15:55.098Z'
+      props.filterState.params.jours = '0-1'
+      const pickedDate = new Date('12/12/2034')
+      const expected = {
+        date: pickedDate.toISOString(),
+        jours: null,
+      }
 
-          // then
-          expect(filterActionsChangeMock).toHaveBeenCalledWith(expected)
-        })
+      // when
+      const wrapper = shallow(<FilterByDates {...props} />)
+      wrapper.instance().onChangePickedDate(pickedDate)
 
-        // pas de picked date
-        it('should call change function without a date', () => {
-          // given
-          const props = {
-            filterActions,
-            filterState: {
-              isNew: false,
-              params: {
-                categories: null,
-                date: '2018-10-24T09:15:55.098Z',
-                distance: null,
-                jours: '0-1',
-                latitude: null,
-                longitude: null,
-                'mots-cles': null,
-                orderBy: 'offer.id+desc',
-              },
-            },
-            initialDateParams: false,
-            title: 'Fake title',
-          }
+      // then
+      expect(props.filterActions.change).toHaveBeenCalledWith(expected)
+      expect(wrapper.state(['pickedDate'])).toBe(pickedDate)
+      props.filterActions.change.mockClear()
+    })
 
-          // when
-          const wrapper = shallow(<FilterByDates {...props} />)
-          wrapper.instance().onPickedDateChange()
-          const expected = {
+    it('should call change filter action function without a date', () => {
+      // given
+      props.filterState.params.date = '2018-10-24T09:15:55.098Z'
+      props.filterState.params.jours = '0-1'
+      const expected = {
+        date: null,
+        jours: null,
+      }
+
+      // when
+      const wrapper = shallow(<FilterByDates {...props} />)
+      wrapper.instance().onChangePickedDate()
+
+      // then
+      expect(props.filterActions.change).toHaveBeenCalledWith(expected)
+      expect(wrapper.state(['pickedDate'])).toBe(null)
+      props.filterActions.change.mockClear()
+    })
+  })
+
+  describe('onChangeDate()', () => {
+    describe('when a day is checked for the first time', () => {
+      it('should initialize date in query with a random range', () => {
+        // given
+        const day = '1-5'
+
+        // when
+        const wrapper = shallow(<FilterByDates {...props} />)
+        wrapper.instance().onChangeDate(day)()
+
+        // then
+        expect(wrapper.state(['pickedDate'])).toBe(null)
+        expect(props.filterActions.add).toHaveBeenCalled()
+        props.filterActions.add.mockClear()
+      })
+
+      it('change date to null when more than one days checked', () => {
+        // given
+        const day = '0-1'
+        props.filterState.params.jours = day
+
+        // when
+        const wrapper = shallow(<FilterByDates {...props} />)
+        wrapper.instance().onChangeDate(day)()
+
+        // then
+        expect(wrapper.state(['pickedDate'])).toBe(null)
+        expect(props.filterActions.remove).toHaveBeenCalled()
+        props.filterActions.remove.mockClear()
+      })
+
+      it('check another day, already checked', () => {
+        // given
+        const day = '0-1'
+        const callback = undefined
+        props.filterState.params.jours = `${day},1-5`
+
+        // when
+        const wrapper = shallow(<FilterByDates {...props} />)
+        wrapper.instance().onChangeDate(day)()
+
+        // then
+        expect(wrapper.state(['pickedDate'])).toBe(null)
+        expect(props.filterActions.remove).toHaveBeenCalledWith(
+          'jours',
+          day,
+          callback
+        )
+        props.filterActions.remove.mockClear()
+      })
+
+      it('add another day not added yet to query with callback undefined ', () => {
+        // given
+        const day = '0-1'
+        const callback = undefined
+        props.filterState.params.jours = '1-5'
+
+        // when
+        const wrapper = shallow(<FilterByDates {...props} />)
+        wrapper.instance().onChangeDate(day)()
+
+        // then
+        expect(wrapper.state(['pickedDate'])).toBe(null)
+        expect(props.filterActions.add).toHaveBeenCalledWith(
+          'jours',
+          day,
+          callback
+        )
+        props.filterActions.add.mockClear()
+      })
+    })
+  })
+
+  describe('componentDidUpdate()', () => {
+    it('should set the picked date', () => {
+      // when
+      const wrapper = shallow(<FilterByDates {...props} />)
+      wrapper.setProps({
+        filterState: {
+          params: {
             date: null,
-            jours: null,
-          }
-
-          // then
-          expect(filterActionsChangeMock).toHaveBeenCalledWith(expected)
-        })
+          },
+        },
+        initialDateParams: true,
       })
+
+      // then
+      expect(wrapper.state(['pickedDate'])).toBe(null)
     })
-    describe('OnChange', () => {
-      describe('When a date is already selected with calendar and user pick one of the checkboxes', () => {
-        it('it should set picked date from calendar to null', () => {
-          // given
-          const props = {
-            filterActions,
-            filterState: {
-              isNew: false,
-              params: {
-                categories: null,
-                date: '2018-10-24T09:15:55.098Z',
-                distance: null,
-                jours: '0-1',
-                latitude: null,
-                longitude: null,
-                'mots-cles': null,
-                orderBy: 'offer.id+desc',
-              },
-            },
-            initialDateParams: false,
-            title: 'Fake title',
-          }
-          // when
-          const wrapper = shallow(<FilterByDates {...props} />)
-          const datePicker = wrapper.find(DatePickerField).props()
-          wrapper
-            .find('input')
-            .at(1)
-            .simulate('change')
+  })
 
-          // then
-          expect(datePicker.selected).toEqual(null)
-          expect(wrapper.state()).toEqual({ pickedDate: null })
-        })
+  describe('render()', () => {
+    it('should have three checkboxes with right values and one DatePickerField', () => {
+      // when
+      const wrapper = shallow(<FilterByDates {...props} />)
+      const checkboxes = wrapper.find('input[type="checkbox"]')
+      const datePicker = wrapper.find(DatePickerField)
+
+      // then
+      expect(checkboxes).toHaveLength(3)
+      DAYS_CHECKBOXES.forEach((checkbox, index) => {
+        expect(checkboxes.at(index).props().value).toBe(checkbox.value)
       })
-
-      describe('When a day is checked for the first time', () => {
-        it('Case 1 Should initialize date in query with today date', () => {
-          // given
-          const props = {
-            filterActions,
-            filterState: {
-              isNew: false,
-              params: {
-                categories: null,
-                date: null,
-                distance: null,
-                jours: null,
-                latitude: null,
-                longitude: null,
-                'mots-cles': null,
-                orderBy: 'offer.id+desc',
-              },
-            },
-            initialDateParams: false,
-            title: 'Fake title',
-          }
-
-          // when
-          const wrapper = shallow(<FilterByDates {...props} />)
-          wrapper
-            .find('input')
-            .at(1)
-            .simulate('change')
-
-          // then
-          expect(filterActionsAddMock).toHaveBeenCalled()
-          filterActionsAddMock.mockClear()
-        })
-        it('Case 2 Change date to null when more than one days checked', () => {
-          // given
-          const props = {
-            filterActions,
-            filterState: {
-              isNew: false,
-              params: {
-                categories: null,
-                date: null,
-                distance: null,
-                jours: '0-1',
-                latitude: null,
-                longitude: null,
-                'mots-cles': null,
-                orderBy: 'offer.id+desc',
-              },
-            },
-            initialDateParams: false,
-            title: 'Fake title',
-          }
-
-          // when
-          const wrapper = shallow(<FilterByDates {...props} />)
-          wrapper
-            .find('input')
-            .at(0)
-            .simulate('change')
-
-          // then
-          expect(filterActionsRemoveMock).toHaveBeenCalled()
-          filterActionsRemoveMock.mockClear()
-        })
-        it('Case 3 Check another day, already checked ', () => {
-          // given
-          const props = {
-            filterActions,
-            filterState: {
-              isNew: false,
-              params: {
-                categories: null,
-                date: null,
-                distance: null,
-                jours: '0-1,1-5',
-                latitude: null,
-                longitude: null,
-                'mots-cles': null,
-                orderBy: 'offer.id+desc',
-              },
-            },
-            initialDateParams: false,
-            title: 'Fake title',
-          }
-
-          // when
-          const wrapper = shallow(<FilterByDates {...props} />)
-          wrapper
-            .find('input')
-            .at(0)
-            .simulate('change')
-
-          // then
-          let callback
-          expect(filterActionsRemoveMock).toHaveBeenCalledWith(
-            'jours',
-            '0-1',
-            callback
-          )
-          filterActionsRemoveMock.mockClear()
-        })
-
-        it('Case 4 Add another day not added yet to query with callback undefined ', () => {
-          // given
-          const props = {
-            filterActions,
-            filterState: {
-              isNew: false,
-              params: {
-                categories: null,
-                date: null,
-                distance: null,
-                jours: '1-5',
-                latitude: null,
-                longitude: null,
-                'mots-cles': null,
-                orderBy: 'offer.id+desc',
-              },
-            },
-            initialDateParams: false,
-            title: 'Fake title',
-          }
-
-          // when
-          const wrapper = shallow(<FilterByDates {...props} />)
-          wrapper
-            .find('input')
-            .at(0)
-            .simulate('change')
-
-          // then
-          let callback
-          expect(filterActionsAddMock).toHaveBeenCalledWith(
-            'jours',
-            '0-1',
-            callback
-          )
-          filterActionsAddMock.mockClear()
-        })
-      })
+      expect(datePicker).toHaveLength(1)
     })
   })
 })

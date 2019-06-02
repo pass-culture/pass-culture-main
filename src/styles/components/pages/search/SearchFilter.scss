@@ -54,8 +54,14 @@
 
 ------------------------------------------------ */
 
-#filter-by-dates h2 {
-  margin-bottom: rem(12px);
+#filter-by-dates {
+  h2 {
+    margin-bottom: rem(12px);
+  }
+
+  label .fs19 {
+    white-space: pre;
+  }
 }
 
 #filter-by-dates .pc-list .item {

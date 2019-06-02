@@ -40,7 +40,6 @@ class SearchFilter extends Component {
       add: this.handleQueryAdd,
       change: this.handleQueryChange,
       remove: this.handleQueryRemove,
-      replace: this.handleQueryReplace,
     }
   }
 
@@ -169,7 +168,6 @@ class SearchFilter extends Component {
                 filterActions={this.filterActions}
                 filterState={this.state}
                 initialDateParams={initialDateParams}
-                title="QUAND"
               />
               <FilterByDistance
                 filterActions={this.filterActions}

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | search | FilterByDates snapshot should match snapshot 1`] = `
+exports[`src | components | pages | search | FilterByDates should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <FilterByDates
@@ -27,8 +27,6 @@ ShallowWrapper {
       }
     }
     initialDateParams={false}
-    minDate="Dec 10th 18"
-    title="Fake title"
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -48,7 +46,7 @@ ShallowWrapper {
         <h2
           className="fs15 is-italic is-medium is-uppercase text-center mb12"
         >
-          Fake title
+          Quand
         </h2>,
         <div
           className="pc-scroll-horizontal is-relative pb18"
@@ -69,15 +67,11 @@ ShallowWrapper {
                   id="filter-by-dates-days-0-checkbox"
                   onChange={[Function]}
                   type="checkbox"
+                  value="0-1"
                 />
               </span>
               <span
                 className="fs19 flex-1"
-                style={
-                  Object {
-                    "whiteSpace": "pre",
-                  }
-                }
               >
                 Tout de suite !
               </span>
@@ -95,15 +89,11 @@ ShallowWrapper {
                   id="filter-by-dates-days-1-checkbox"
                   onChange={[Function]}
                   type="checkbox"
+                  value="1-5"
                 />
               </span>
               <span
                 className="fs19 flex-1"
-                style={
-                  Object {
-                    "whiteSpace": "pre",
-                  }
-                }
               >
                 Entre 1 et 5 jours
               </span>
@@ -121,22 +111,18 @@ ShallowWrapper {
                   id="filter-by-dates-days-2-checkbox"
                   onChange={[Function]}
                   type="checkbox"
+                  value="5-100000"
                 />
               </span>
               <span
                 className="fs19 flex-1"
-                style={
-                  Object {
-                    "whiteSpace": "pre",
-                  }
-                }
               >
                 Plus de 5 jours
               </span>
             </label>
             <withSizes(DatePickerField)
               className="item fs19 py5 px7"
-              minDate="Dec 10th 18"
+              minDate={2019-06-02T12:41:33.680Z}
               name="pick-by-date-filter"
               onChange={[Function]}
               popperRefContainer={
@@ -165,11 +151,11 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "Fake title",
+          "children": "Quand",
           "className": "fs15 is-italic is-medium is-uppercase text-center mb12",
         },
         "ref": null,
-        "rendered": "Fake title",
+        "rendered": "Quand",
         "type": "h2",
       },
       Object {
@@ -193,15 +179,11 @@ ShallowWrapper {
                   id="filter-by-dates-days-0-checkbox"
                   onChange={[Function]}
                   type="checkbox"
+                  value="0-1"
                 />
               </span>
               <span
                 className="fs19 flex-1"
-                style={
-                  Object {
-                    "whiteSpace": "pre",
-                  }
-                }
               >
                 Tout de suite !
               </span>
@@ -219,15 +201,11 @@ ShallowWrapper {
                   id="filter-by-dates-days-1-checkbox"
                   onChange={[Function]}
                   type="checkbox"
+                  value="1-5"
                 />
               </span>
               <span
                 className="fs19 flex-1"
-                style={
-                  Object {
-                    "whiteSpace": "pre",
-                  }
-                }
               >
                 Entre 1 et 5 jours
               </span>
@@ -245,22 +223,18 @@ ShallowWrapper {
                   id="filter-by-dates-days-2-checkbox"
                   onChange={[Function]}
                   type="checkbox"
+                  value="5-100000"
                 />
               </span>
               <span
                 className="fs19 flex-1"
-                style={
-                  Object {
-                    "whiteSpace": "pre",
-                  }
-                }
               >
                 Plus de 5 jours
               </span>
             </label>
             <withSizes(DatePickerField)
               className="item fs19 py5 px7"
-              minDate="Dec 10th 18"
+              minDate={2019-06-02T12:41:33.680Z}
               name="pick-by-date-filter"
               onChange={[Function]}
               popperRefContainer={
@@ -294,15 +268,11 @@ ShallowWrapper {
                       id="filter-by-dates-days-0-checkbox"
                       onChange={[Function]}
                       type="checkbox"
+                      value="0-1"
                     />
                   </span>
                   <span
                     className="fs19 flex-1"
-                    style={
-                      Object {
-                        "whiteSpace": "pre",
-                      }
-                    }
                   >
                     Tout de suite !
                   </span>
@@ -320,15 +290,11 @@ ShallowWrapper {
                       id="filter-by-dates-days-1-checkbox"
                       onChange={[Function]}
                       type="checkbox"
+                      value="1-5"
                     />
                   </span>
                   <span
                     className="fs19 flex-1"
-                    style={
-                      Object {
-                        "whiteSpace": "pre",
-                      }
-                    }
                   >
                     Entre 1 et 5 jours
                   </span>
@@ -346,15 +312,11 @@ ShallowWrapper {
                       id="filter-by-dates-days-2-checkbox"
                       onChange={[Function]}
                       type="checkbox"
+                      value="5-100000"
                     />
                   </span>
                   <span
                     className="fs19 flex-1"
-                    style={
-                      Object {
-                        "whiteSpace": "pre",
-                      }
-                    }
                   >
                     Plus de 5 jours
                   </span>
@@ -362,7 +324,7 @@ ShallowWrapper {
               ],
               <withSizes(DatePickerField)
                 className="item fs19 py5 px7"
-                minDate="Dec 10th 18"
+                minDate={2019-06-02T12:41:33.680Z}
                 name="pick-by-date-filter"
                 onChange={[Function]}
                 popperRefContainer={
@@ -392,15 +354,11 @@ ShallowWrapper {
                       id="filter-by-dates-days-0-checkbox"
                       onChange={[Function]}
                       type="checkbox"
+                      value="0-1"
                     />
                   </span>,
                   <span
                     className="fs19 flex-1"
-                    style={
-                      Object {
-                        "whiteSpace": "pre",
-                      }
-                    }
                   >
                     Tout de suite !
                   </span>,
@@ -421,6 +379,7 @@ ShallowWrapper {
                       id="filter-by-dates-days-0-checkbox"
                       onChange={[Function]}
                       type="checkbox"
+                      value="0-1"
                     />,
                     "className": "flex-0 field field-checkbox",
                   },
@@ -435,6 +394,7 @@ ShallowWrapper {
                       "id": "filter-by-dates-days-0-checkbox",
                       "onChange": [Function],
                       "type": "checkbox",
+                      "value": "0-1",
                     },
                     "ref": null,
                     "rendered": null,
@@ -449,9 +409,6 @@ ShallowWrapper {
                   "props": Object {
                     "children": "Tout de suite !",
                     "className": "fs19 flex-1",
-                    "style": Object {
-                      "whiteSpace": "pre",
-                    },
                   },
                   "ref": null,
                   "rendered": "Tout de suite !",
@@ -475,15 +432,11 @@ ShallowWrapper {
                       id="filter-by-dates-days-1-checkbox"
                       onChange={[Function]}
                       type="checkbox"
+                      value="1-5"
                     />
                   </span>,
                   <span
                     className="fs19 flex-1"
-                    style={
-                      Object {
-                        "whiteSpace": "pre",
-                      }
-                    }
                   >
                     Entre 1 et 5 jours
                   </span>,
@@ -504,6 +457,7 @@ ShallowWrapper {
                       id="filter-by-dates-days-1-checkbox"
                       onChange={[Function]}
                       type="checkbox"
+                      value="1-5"
                     />,
                     "className": "flex-0 field field-checkbox",
                   },
@@ -518,6 +472,7 @@ ShallowWrapper {
                       "id": "filter-by-dates-days-1-checkbox",
                       "onChange": [Function],
                       "type": "checkbox",
+                      "value": "1-5",
                     },
                     "ref": null,
                     "rendered": null,
@@ -532,9 +487,6 @@ ShallowWrapper {
                   "props": Object {
                     "children": "Entre 1 et 5 jours",
                     "className": "fs19 flex-1",
-                    "style": Object {
-                      "whiteSpace": "pre",
-                    },
                   },
                   "ref": null,
                   "rendered": "Entre 1 et 5 jours",
@@ -558,15 +510,11 @@ ShallowWrapper {
                       id="filter-by-dates-days-2-checkbox"
                       onChange={[Function]}
                       type="checkbox"
+                      value="5-100000"
                     />
                   </span>,
                   <span
                     className="fs19 flex-1"
-                    style={
-                      Object {
-                        "whiteSpace": "pre",
-                      }
-                    }
                   >
                     Plus de 5 jours
                   </span>,
@@ -587,6 +535,7 @@ ShallowWrapper {
                       id="filter-by-dates-days-2-checkbox"
                       onChange={[Function]}
                       type="checkbox"
+                      value="5-100000"
                     />,
                     "className": "flex-0 field field-checkbox",
                   },
@@ -601,6 +550,7 @@ ShallowWrapper {
                       "id": "filter-by-dates-days-2-checkbox",
                       "onChange": [Function],
                       "type": "checkbox",
+                      "value": "5-100000",
                     },
                     "ref": null,
                     "rendered": null,
@@ -615,9 +565,6 @@ ShallowWrapper {
                   "props": Object {
                     "children": "Plus de 5 jours",
                     "className": "fs19 flex-1",
-                    "style": Object {
-                      "whiteSpace": "pre",
-                    },
                   },
                   "ref": null,
                   "rendered": "Plus de 5 jours",
@@ -632,7 +579,7 @@ ShallowWrapper {
               "nodeType": "class",
               "props": Object {
                 "className": "item fs19 py5 px7",
-                "minDate": "Dec 10th 18",
+                "minDate": 2019-06-02T12:41:33.680Z,
                 "name": "pick-by-date-filter",
                 "onChange": [Function],
                 "popperRefContainer": Object {
@@ -686,7 +633,7 @@ ShallowWrapper {
           <h2
             className="fs15 is-italic is-medium is-uppercase text-center mb12"
           >
-            Fake title
+            Quand
           </h2>,
           <div
             className="pc-scroll-horizontal is-relative pb18"
@@ -707,15 +654,11 @@ ShallowWrapper {
                     id="filter-by-dates-days-0-checkbox"
                     onChange={[Function]}
                     type="checkbox"
+                    value="0-1"
                   />
                 </span>
                 <span
                   className="fs19 flex-1"
-                  style={
-                    Object {
-                      "whiteSpace": "pre",
-                    }
-                  }
                 >
                   Tout de suite !
                 </span>
@@ -733,15 +676,11 @@ ShallowWrapper {
                     id="filter-by-dates-days-1-checkbox"
                     onChange={[Function]}
                     type="checkbox"
+                    value="1-5"
                   />
                 </span>
                 <span
                   className="fs19 flex-1"
-                  style={
-                    Object {
-                      "whiteSpace": "pre",
-                    }
-                  }
                 >
                   Entre 1 et 5 jours
                 </span>
@@ -759,22 +698,18 @@ ShallowWrapper {
                     id="filter-by-dates-days-2-checkbox"
                     onChange={[Function]}
                     type="checkbox"
+                    value="5-100000"
                   />
                 </span>
                 <span
                   className="fs19 flex-1"
-                  style={
-                    Object {
-                      "whiteSpace": "pre",
-                    }
-                  }
                 >
                   Plus de 5 jours
                 </span>
               </label>
               <withSizes(DatePickerField)
                 className="item fs19 py5 px7"
-                minDate="Dec 10th 18"
+                minDate={2019-06-02T12:41:33.680Z}
                 name="pick-by-date-filter"
                 onChange={[Function]}
                 popperRefContainer={
@@ -803,11 +738,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Fake title",
+            "children": "Quand",
             "className": "fs15 is-italic is-medium is-uppercase text-center mb12",
           },
           "ref": null,
-          "rendered": "Fake title",
+          "rendered": "Quand",
           "type": "h2",
         },
         Object {
@@ -831,15 +766,11 @@ ShallowWrapper {
                     id="filter-by-dates-days-0-checkbox"
                     onChange={[Function]}
                     type="checkbox"
+                    value="0-1"
                   />
                 </span>
                 <span
                   className="fs19 flex-1"
-                  style={
-                    Object {
-                      "whiteSpace": "pre",
-                    }
-                  }
                 >
                   Tout de suite !
                 </span>
@@ -857,15 +788,11 @@ ShallowWrapper {
                     id="filter-by-dates-days-1-checkbox"
                     onChange={[Function]}
                     type="checkbox"
+                    value="1-5"
                   />
                 </span>
                 <span
                   className="fs19 flex-1"
-                  style={
-                    Object {
-                      "whiteSpace": "pre",
-                    }
-                  }
                 >
                   Entre 1 et 5 jours
                 </span>
@@ -883,22 +810,18 @@ ShallowWrapper {
                     id="filter-by-dates-days-2-checkbox"
                     onChange={[Function]}
                     type="checkbox"
+                    value="5-100000"
                   />
                 </span>
                 <span
                   className="fs19 flex-1"
-                  style={
-                    Object {
-                      "whiteSpace": "pre",
-                    }
-                  }
                 >
                   Plus de 5 jours
                 </span>
               </label>
               <withSizes(DatePickerField)
                 className="item fs19 py5 px7"
-                minDate="Dec 10th 18"
+                minDate={2019-06-02T12:41:33.680Z}
                 name="pick-by-date-filter"
                 onChange={[Function]}
                 popperRefContainer={
@@ -932,15 +855,11 @@ ShallowWrapper {
                         id="filter-by-dates-days-0-checkbox"
                         onChange={[Function]}
                         type="checkbox"
+                        value="0-1"
                       />
                     </span>
                     <span
                       className="fs19 flex-1"
-                      style={
-                        Object {
-                          "whiteSpace": "pre",
-                        }
-                      }
                     >
                       Tout de suite !
                     </span>
@@ -958,15 +877,11 @@ ShallowWrapper {
                         id="filter-by-dates-days-1-checkbox"
                         onChange={[Function]}
                         type="checkbox"
+                        value="1-5"
                       />
                     </span>
                     <span
                       className="fs19 flex-1"
-                      style={
-                        Object {
-                          "whiteSpace": "pre",
-                        }
-                      }
                     >
                       Entre 1 et 5 jours
                     </span>
@@ -984,15 +899,11 @@ ShallowWrapper {
                         id="filter-by-dates-days-2-checkbox"
                         onChange={[Function]}
                         type="checkbox"
+                        value="5-100000"
                       />
                     </span>
                     <span
                       className="fs19 flex-1"
-                      style={
-                        Object {
-                          "whiteSpace": "pre",
-                        }
-                      }
                     >
                       Plus de 5 jours
                     </span>
@@ -1000,7 +911,7 @@ ShallowWrapper {
                 ],
                 <withSizes(DatePickerField)
                   className="item fs19 py5 px7"
-                  minDate="Dec 10th 18"
+                  minDate={2019-06-02T12:41:33.680Z}
                   name="pick-by-date-filter"
                   onChange={[Function]}
                   popperRefContainer={
@@ -1030,15 +941,11 @@ ShallowWrapper {
                         id="filter-by-dates-days-0-checkbox"
                         onChange={[Function]}
                         type="checkbox"
+                        value="0-1"
                       />
                     </span>,
                     <span
                       className="fs19 flex-1"
-                      style={
-                        Object {
-                          "whiteSpace": "pre",
-                        }
-                      }
                     >
                       Tout de suite !
                     </span>,
@@ -1059,6 +966,7 @@ ShallowWrapper {
                         id="filter-by-dates-days-0-checkbox"
                         onChange={[Function]}
                         type="checkbox"
+                        value="0-1"
                       />,
                       "className": "flex-0 field field-checkbox",
                     },
@@ -1073,6 +981,7 @@ ShallowWrapper {
                         "id": "filter-by-dates-days-0-checkbox",
                         "onChange": [Function],
                         "type": "checkbox",
+                        "value": "0-1",
                       },
                       "ref": null,
                       "rendered": null,
@@ -1087,9 +996,6 @@ ShallowWrapper {
                     "props": Object {
                       "children": "Tout de suite !",
                       "className": "fs19 flex-1",
-                      "style": Object {
-                        "whiteSpace": "pre",
-                      },
                     },
                     "ref": null,
                     "rendered": "Tout de suite !",
@@ -1113,15 +1019,11 @@ ShallowWrapper {
                         id="filter-by-dates-days-1-checkbox"
                         onChange={[Function]}
                         type="checkbox"
+                        value="1-5"
                       />
                     </span>,
                     <span
                       className="fs19 flex-1"
-                      style={
-                        Object {
-                          "whiteSpace": "pre",
-                        }
-                      }
                     >
                       Entre 1 et 5 jours
                     </span>,
@@ -1142,6 +1044,7 @@ ShallowWrapper {
                         id="filter-by-dates-days-1-checkbox"
                         onChange={[Function]}
                         type="checkbox"
+                        value="1-5"
                       />,
                       "className": "flex-0 field field-checkbox",
                     },
@@ -1156,6 +1059,7 @@ ShallowWrapper {
                         "id": "filter-by-dates-days-1-checkbox",
                         "onChange": [Function],
                         "type": "checkbox",
+                        "value": "1-5",
                       },
                       "ref": null,
                       "rendered": null,
@@ -1170,9 +1074,6 @@ ShallowWrapper {
                     "props": Object {
                       "children": "Entre 1 et 5 jours",
                       "className": "fs19 flex-1",
-                      "style": Object {
-                        "whiteSpace": "pre",
-                      },
                     },
                     "ref": null,
                     "rendered": "Entre 1 et 5 jours",
@@ -1196,15 +1097,11 @@ ShallowWrapper {
                         id="filter-by-dates-days-2-checkbox"
                         onChange={[Function]}
                         type="checkbox"
+                        value="5-100000"
                       />
                     </span>,
                     <span
                       className="fs19 flex-1"
-                      style={
-                        Object {
-                          "whiteSpace": "pre",
-                        }
-                      }
                     >
                       Plus de 5 jours
                     </span>,
@@ -1225,6 +1122,7 @@ ShallowWrapper {
                         id="filter-by-dates-days-2-checkbox"
                         onChange={[Function]}
                         type="checkbox"
+                        value="5-100000"
                       />,
                       "className": "flex-0 field field-checkbox",
                     },
@@ -1239,6 +1137,7 @@ ShallowWrapper {
                         "id": "filter-by-dates-days-2-checkbox",
                         "onChange": [Function],
                         "type": "checkbox",
+                        "value": "5-100000",
                       },
                       "ref": null,
                       "rendered": null,
@@ -1253,9 +1152,6 @@ ShallowWrapper {
                     "props": Object {
                       "children": "Plus de 5 jours",
                       "className": "fs19 flex-1",
-                      "style": Object {
-                        "whiteSpace": "pre",
-                      },
                     },
                     "ref": null,
                     "rendered": "Plus de 5 jours",
@@ -1270,7 +1166,7 @@ ShallowWrapper {
                 "nodeType": "class",
                 "props": Object {
                   "className": "item fs19 py5 px7",
-                  "minDate": "Dec 10th 18",
+                  "minDate": 2019-06-02T12:41:33.680Z,
                   "name": "pick-by-date-filter",
                   "onChange": [Function],
                   "popperRefContainer": Object {
