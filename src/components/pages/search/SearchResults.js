@@ -64,7 +64,6 @@ class SearchResults extends PureComponent {
     const resultTitle = searchResultsTitle(
       keywords,
       items,
-      queryParams,
       cameFromOfferTypesPage,
       hasReceivedFirstSuccessData
     )

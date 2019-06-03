@@ -61,7 +61,6 @@ export const getFirstChangingKey = (previousObject, nextObject) =>
 export const searchResultsTitle = (
   keywords,
   items,
-  queryParams,
   cameFromOfferTypesPage = false,
   hasReceivedFirstSuccessData
 ) => {
@@ -78,12 +77,11 @@ export const searchResultsTitle = (
     const count = items.length
     const resultString = pluralize(count, 'résultats')
     const keywordsString = decodeURI(keywords || '')
-    const typesString = decodeURI(queryParams.types || '')
 
     if (isEmpty(keywordsString)) {
-      resultTitle = ''
+      resultTitle = `${resultString}`
     } else {
-      resultTitle = `"${keywordsString}" ${typesString}: ${resultString}`
+      resultTitle = `"${keywordsString}" : ${resultString}`
     }
   }
 

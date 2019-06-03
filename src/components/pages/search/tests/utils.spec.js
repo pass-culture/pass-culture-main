@@ -178,7 +178,6 @@ describe('src | components | pages | search | utils', () => {
             result = searchResultsTitle(
               keywords,
               items,
-              queryParams,
               cameFromOfferTypesPage,
               hasReceivedFirstSuccessData
             )
@@ -211,7 +210,6 @@ describe('src | components | pages | search | utils', () => {
             result = searchResultsTitle(
               keywords,
               items,
-              queryParams,
               cameFromOfferTypesPage,
               hasReceivedFirstSuccessData
             )
@@ -246,7 +244,6 @@ describe('src | components | pages | search | utils', () => {
             result = searchResultsTitle(
               keywords,
               items,
-              queryParams,
               cameFromOfferTypesPage,
               hasReceivedFirstSuccessData
             )
@@ -282,7 +279,6 @@ describe('src | components | pages | search | utils', () => {
             result = searchResultsTitle(
               keywords,
               items,
-              queryParams,
               cameFromOfferTypesPage,
               hasReceivedFirstSuccessData
             )
@@ -315,7 +311,6 @@ describe('src | components | pages | search | utils', () => {
             result = searchResultsTitle(
               keywords,
               items,
-              queryParams,
               cameFromOfferTypesPage,
               hasReceivedFirstSuccessData
             )
