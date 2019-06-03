@@ -98,7 +98,7 @@ def create_offerer():
     if not current_user.isAdmin:
         offerer.generate_validation_token()
         user_offerer = offerer.give_rights(current_user,
-                                           RightsType.admin)
+                                           RightsType.editor)
         PcObject.save(offerer, user_offerer)
         try:
             maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
