@@ -9,7 +9,7 @@ from tests.test_utils import create_user, API_URL
 class Post:
     class Returns201:
         @clean_database
-        def when_any_user_and_creates_one_virtual_venue(self, app):
+        def when_creating_a_virtual_venue(self, app):
             # given
             user = create_user()
             PcObject.save(user)
@@ -35,7 +35,7 @@ class Post:
             assert len(virtual_venues) == 1
 
         @clean_database
-        def when_json_without_address_creates_an_offerer(self, app):
+        def when_no_address_is_provided(self, app):
             # given
             user = create_user()
             PcObject.save(user)
@@ -57,8 +57,7 @@ class Post:
             assert response.json()['name'] == 'Test Offerer'
 
         @clean_database
-        @pytest.mark.standalone
-        def when_admin(self, app):
+        def when_current_user_is_admin(self, app):
             # Given
             user = create_user(can_book_free_offers=False, is_admin=True)
             PcObject.save(user)
