@@ -2,15 +2,13 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 
-import selectTypeSublabels from '../../../selectors/selectTypes'
 import SearchPicture from './SearchPicture'
+import selectTypeSublabels from '../../../selectors/selectTypes'
 
-class FilterByOfferTypes extends PureComponent {
-  onChangeType = category => () => {
+export class FilterByOfferTypes extends PureComponent {
+  onChangeCategory = category => () => {
     const { filterActions, filterState } = this.props
-
     const typesValue = decodeURI(filterState.params.categories || '')
-
     const isAlreadyIncluded = typesValue.includes(category)
 
     if (isAlreadyIncluded) {
@@ -22,13 +20,13 @@ class FilterByOfferTypes extends PureComponent {
   }
 
   render() {
-    const { filterState, typeSublabels, title } = this.props
+    const { filterState, typeSublabels } = this.props
     const typesValue = decodeURI(filterState.params.categories || '')
 
     return (
       <div className="pt18" id="filter-by-offer-types">
         <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
-          {title}
+          {'Quoi'}
         </h2>
         <div className="pc-scroll-horizontal is-relative">
           <div className="pc-list flex-columns pt7">
@@ -48,7 +46,7 @@ class FilterByOfferTypes extends PureComponent {
                     checked={ischecked}
                     className="is-hidden"
                     id={inputId}
-                    onChange={this.onChangeType(category)}
+                    onChange={this.onChangeCategory(category)}
                     type="checkbox"
                     value={category}
                   />
@@ -70,10 +68,25 @@ class FilterByOfferTypes extends PureComponent {
 }
 
 FilterByOfferTypes.propTypes = {
-  filterActions: PropTypes.object.isRequired,
-  filterState: PropTypes.object.isRequired,
-  title: PropTypes.string.isRequired,
-  typeSublabels: PropTypes.array.isRequired,
+  filterActions: PropTypes.shape({
+    add: PropTypes.func.isRequired,
+    change: PropTypes.func.isRequired,
+    remove: PropTypes.func.isRequired,
+  }).isRequired,
+  filterState: PropTypes.shape({
+    isNew: PropTypes.bool,
+    params: PropTypes.shape({
+      categories: PropTypes.string,
+      date: PropTypes.string,
+      distance: PropTypes.string,
+      jours: PropTypes.string,
+      latitude: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      longitude: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      'mots-cles': PropTypes.string,
+      orderBy: PropTypes.string,
+    }),
+  }).isRequired,
+  typeSublabels: PropTypes.arrayOf(PropTypes.string).isRequired,
 }
 
 const mapStateToProps = state => ({

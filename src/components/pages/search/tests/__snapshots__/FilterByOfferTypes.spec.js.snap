@@ -1,27 +1,43 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | search | FilterByOfferTypes snapshot should match snapshot 1`] = `
+exports[`src | components | pages | search | FilterByOfferTypes should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Provider
-    store={
+  Symbol(enzyme.__unrendered__): <FilterByOfferTypes
+    filterActions={
       Object {
-        "clearActions": [Function],
-        "dispatch": [Function],
-        "getActions": [Function],
-        "getState": [Function],
-        "replaceReducer": [Function],
-        "subscribe": [Function],
+        "add": [MockFunction],
+        "change": [MockFunction],
+        "remove": [MockFunction],
       }
     }
-  >
-    <Connect(FilterByOfferTypes)
-      filterActions={Object {}}
-      filterState={Object {}}
-      title="Fake title"
-      typeSublabels={Array []}
-    />
-  </Provider>,
+    filterState={
+      Object {
+        "isNew": false,
+        "params": Object {
+          "categories": null,
+          "date": null,
+          "distance": null,
+          "jours": null,
+          "latitude": null,
+          "longitude": null,
+          "mots-cles": null,
+          "orderBy": "offer.id+desc",
+        },
+      }
+    }
+    typeSublabels={
+      Array [
+        "Applaudir",
+        "Jouer",
+        "Lire",
+        "Pratiquer",
+        "Regarder",
+        "Rencontrer",
+        "Écouter",
+      ]
+    }
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -34,31 +50,1581 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "class",
+    "nodeType": "host",
     "props": Object {
-      "filterActions": Object {},
-      "filterState": Object {},
-      "title": "Fake title",
-      "typeSublabels": Array [],
+      "children": Array [
+        <h2
+          className="fs15 is-italic is-medium is-uppercase text-center mb12"
+        >
+          Quoi
+        </h2>,
+        <div
+          className="pc-scroll-horizontal is-relative"
+        >
+          <div
+            className="pc-list flex-columns pt7"
+          >
+            <label
+              className="item p3 is-relative "
+              htmlFor="search-image-checkbox-0"
+            >
+              <SearchPicture
+                searchType="Applaudir"
+              />
+              <input
+                checked={false}
+                className="is-hidden"
+                id="search-image-checkbox-0"
+                onChange={[Function]}
+                type="checkbox"
+                value="Applaudir"
+              />
+            </label>
+            <label
+              className="item p3 is-relative "
+              htmlFor="search-image-checkbox-1"
+            >
+              <SearchPicture
+                searchType="Jouer"
+              />
+              <input
+                checked={false}
+                className="is-hidden"
+                id="search-image-checkbox-1"
+                onChange={[Function]}
+                type="checkbox"
+                value="Jouer"
+              />
+            </label>
+            <label
+              className="item p3 is-relative "
+              htmlFor="search-image-checkbox-2"
+            >
+              <SearchPicture
+                searchType="Lire"
+              />
+              <input
+                checked={false}
+                className="is-hidden"
+                id="search-image-checkbox-2"
+                onChange={[Function]}
+                type="checkbox"
+                value="Lire"
+              />
+            </label>
+            <label
+              className="item p3 is-relative "
+              htmlFor="search-image-checkbox-3"
+            >
+              <SearchPicture
+                searchType="Pratiquer"
+              />
+              <input
+                checked={false}
+                className="is-hidden"
+                id="search-image-checkbox-3"
+                onChange={[Function]}
+                type="checkbox"
+                value="Pratiquer"
+              />
+            </label>
+            <label
+              className="item p3 is-relative "
+              htmlFor="search-image-checkbox-4"
+            >
+              <SearchPicture
+                searchType="Regarder"
+              />
+              <input
+                checked={false}
+                className="is-hidden"
+                id="search-image-checkbox-4"
+                onChange={[Function]}
+                type="checkbox"
+                value="Regarder"
+              />
+            </label>
+            <label
+              className="item p3 is-relative "
+              htmlFor="search-image-checkbox-5"
+            >
+              <SearchPicture
+                searchType="Rencontrer"
+              />
+              <input
+                checked={false}
+                className="is-hidden"
+                id="search-image-checkbox-5"
+                onChange={[Function]}
+                type="checkbox"
+                value="Rencontrer"
+              />
+            </label>
+            <label
+              className="item p3 is-relative "
+              htmlFor="search-image-checkbox-6"
+            >
+              <SearchPicture
+                searchType="Écouter"
+              />
+              <input
+                checked={false}
+                className="is-hidden"
+                id="search-image-checkbox-6"
+                onChange={[Function]}
+                type="checkbox"
+                value="Écouter"
+              />
+            </label>
+          </div>
+        </div>,
+      ],
+      "className": "pt18",
+      "id": "filter-by-offer-types",
     },
     "ref": null,
-    "rendered": null,
-    "type": [Function],
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Quoi",
+          "className": "fs15 is-italic is-medium is-uppercase text-center mb12",
+        },
+        "ref": null,
+        "rendered": "Quoi",
+        "type": "h2",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <div
+            className="pc-list flex-columns pt7"
+          >
+            <label
+              className="item p3 is-relative "
+              htmlFor="search-image-checkbox-0"
+            >
+              <SearchPicture
+                searchType="Applaudir"
+              />
+              <input
+                checked={false}
+                className="is-hidden"
+                id="search-image-checkbox-0"
+                onChange={[Function]}
+                type="checkbox"
+                value="Applaudir"
+              />
+            </label>
+            <label
+              className="item p3 is-relative "
+              htmlFor="search-image-checkbox-1"
+            >
+              <SearchPicture
+                searchType="Jouer"
+              />
+              <input
+                checked={false}
+                className="is-hidden"
+                id="search-image-checkbox-1"
+                onChange={[Function]}
+                type="checkbox"
+                value="Jouer"
+              />
+            </label>
+            <label
+              className="item p3 is-relative "
+              htmlFor="search-image-checkbox-2"
+            >
+              <SearchPicture
+                searchType="Lire"
+              />
+              <input
+                checked={false}
+                className="is-hidden"
+                id="search-image-checkbox-2"
+                onChange={[Function]}
+                type="checkbox"
+                value="Lire"
+              />
+            </label>
+            <label
+              className="item p3 is-relative "
+              htmlFor="search-image-checkbox-3"
+            >
+              <SearchPicture
+                searchType="Pratiquer"
+              />
+              <input
+                checked={false}
+                className="is-hidden"
+                id="search-image-checkbox-3"
+                onChange={[Function]}
+                type="checkbox"
+                value="Pratiquer"
+              />
+            </label>
+            <label
+              className="item p3 is-relative "
+              htmlFor="search-image-checkbox-4"
+            >
+              <SearchPicture
+                searchType="Regarder"
+              />
+              <input
+                checked={false}
+                className="is-hidden"
+                id="search-image-checkbox-4"
+                onChange={[Function]}
+                type="checkbox"
+                value="Regarder"
+              />
+            </label>
+            <label
+              className="item p3 is-relative "
+              htmlFor="search-image-checkbox-5"
+            >
+              <SearchPicture
+                searchType="Rencontrer"
+              />
+              <input
+                checked={false}
+                className="is-hidden"
+                id="search-image-checkbox-5"
+                onChange={[Function]}
+                type="checkbox"
+                value="Rencontrer"
+              />
+            </label>
+            <label
+              className="item p3 is-relative "
+              htmlFor="search-image-checkbox-6"
+            >
+              <SearchPicture
+                searchType="Écouter"
+              />
+              <input
+                checked={false}
+                className="is-hidden"
+                id="search-image-checkbox-6"
+                onChange={[Function]}
+                type="checkbox"
+                value="Écouter"
+              />
+            </label>
+          </div>,
+          "className": "pc-scroll-horizontal is-relative",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-0"
+              >
+                <SearchPicture
+                  searchType="Applaudir"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-0"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Applaudir"
+                />
+              </label>,
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-1"
+              >
+                <SearchPicture
+                  searchType="Jouer"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-1"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Jouer"
+                />
+              </label>,
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-2"
+              >
+                <SearchPicture
+                  searchType="Lire"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-2"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Lire"
+                />
+              </label>,
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-3"
+              >
+                <SearchPicture
+                  searchType="Pratiquer"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-3"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Pratiquer"
+                />
+              </label>,
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-4"
+              >
+                <SearchPicture
+                  searchType="Regarder"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-4"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Regarder"
+                />
+              </label>,
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-5"
+              >
+                <SearchPicture
+                  searchType="Rencontrer"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-5"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Rencontrer"
+                />
+              </label>,
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-6"
+              >
+                <SearchPicture
+                  searchType="Écouter"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-6"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Écouter"
+                />
+              </label>,
+            ],
+            "className": "pc-list flex-columns pt7",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": "Applaudir",
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <SearchPicture
+                    searchType="Applaudir"
+                  />,
+                  <input
+                    checked={false}
+                    className="is-hidden"
+                    id="search-image-checkbox-0"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="Applaudir"
+                  />,
+                  false,
+                ],
+                "className": "item p3 is-relative ",
+                "htmlFor": "search-image-checkbox-0",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "searchType": "Applaudir",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "checked": false,
+                    "className": "is-hidden",
+                    "id": "search-image-checkbox-0",
+                    "onChange": [Function],
+                    "type": "checkbox",
+                    "value": "Applaudir",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "input",
+                },
+                false,
+              ],
+              "type": "label",
+            },
+            Object {
+              "instance": null,
+              "key": "Jouer",
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <SearchPicture
+                    searchType="Jouer"
+                  />,
+                  <input
+                    checked={false}
+                    className="is-hidden"
+                    id="search-image-checkbox-1"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="Jouer"
+                  />,
+                  false,
+                ],
+                "className": "item p3 is-relative ",
+                "htmlFor": "search-image-checkbox-1",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "searchType": "Jouer",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "checked": false,
+                    "className": "is-hidden",
+                    "id": "search-image-checkbox-1",
+                    "onChange": [Function],
+                    "type": "checkbox",
+                    "value": "Jouer",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "input",
+                },
+                false,
+              ],
+              "type": "label",
+            },
+            Object {
+              "instance": null,
+              "key": "Lire",
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <SearchPicture
+                    searchType="Lire"
+                  />,
+                  <input
+                    checked={false}
+                    className="is-hidden"
+                    id="search-image-checkbox-2"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="Lire"
+                  />,
+                  false,
+                ],
+                "className": "item p3 is-relative ",
+                "htmlFor": "search-image-checkbox-2",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "searchType": "Lire",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "checked": false,
+                    "className": "is-hidden",
+                    "id": "search-image-checkbox-2",
+                    "onChange": [Function],
+                    "type": "checkbox",
+                    "value": "Lire",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "input",
+                },
+                false,
+              ],
+              "type": "label",
+            },
+            Object {
+              "instance": null,
+              "key": "Pratiquer",
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <SearchPicture
+                    searchType="Pratiquer"
+                  />,
+                  <input
+                    checked={false}
+                    className="is-hidden"
+                    id="search-image-checkbox-3"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="Pratiquer"
+                  />,
+                  false,
+                ],
+                "className": "item p3 is-relative ",
+                "htmlFor": "search-image-checkbox-3",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "searchType": "Pratiquer",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "checked": false,
+                    "className": "is-hidden",
+                    "id": "search-image-checkbox-3",
+                    "onChange": [Function],
+                    "type": "checkbox",
+                    "value": "Pratiquer",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "input",
+                },
+                false,
+              ],
+              "type": "label",
+            },
+            Object {
+              "instance": null,
+              "key": "Regarder",
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <SearchPicture
+                    searchType="Regarder"
+                  />,
+                  <input
+                    checked={false}
+                    className="is-hidden"
+                    id="search-image-checkbox-4"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="Regarder"
+                  />,
+                  false,
+                ],
+                "className": "item p3 is-relative ",
+                "htmlFor": "search-image-checkbox-4",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "searchType": "Regarder",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "checked": false,
+                    "className": "is-hidden",
+                    "id": "search-image-checkbox-4",
+                    "onChange": [Function],
+                    "type": "checkbox",
+                    "value": "Regarder",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "input",
+                },
+                false,
+              ],
+              "type": "label",
+            },
+            Object {
+              "instance": null,
+              "key": "Rencontrer",
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <SearchPicture
+                    searchType="Rencontrer"
+                  />,
+                  <input
+                    checked={false}
+                    className="is-hidden"
+                    id="search-image-checkbox-5"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="Rencontrer"
+                  />,
+                  false,
+                ],
+                "className": "item p3 is-relative ",
+                "htmlFor": "search-image-checkbox-5",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "searchType": "Rencontrer",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "checked": false,
+                    "className": "is-hidden",
+                    "id": "search-image-checkbox-5",
+                    "onChange": [Function],
+                    "type": "checkbox",
+                    "value": "Rencontrer",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "input",
+                },
+                false,
+              ],
+              "type": "label",
+            },
+            Object {
+              "instance": null,
+              "key": "Écouter",
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <SearchPicture
+                    searchType="Écouter"
+                  />,
+                  <input
+                    checked={false}
+                    className="is-hidden"
+                    id="search-image-checkbox-6"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="Écouter"
+                  />,
+                  false,
+                ],
+                "className": "item p3 is-relative ",
+                "htmlFor": "search-image-checkbox-6",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "searchType": "Écouter",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "checked": false,
+                    "className": "is-hidden",
+                    "id": "search-image-checkbox-6",
+                    "onChange": [Function],
+                    "type": "checkbox",
+                    "value": "Écouter",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "input",
+                },
+                false,
+              ],
+              "type": "label",
+            },
+          ],
+          "type": "div",
+        },
+        "type": "div",
+      },
+    ],
+    "type": "div",
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "class",
+      "nodeType": "host",
       "props": Object {
-        "filterActions": Object {},
-        "filterState": Object {},
-        "title": "Fake title",
-        "typeSublabels": Array [],
+        "children": Array [
+          <h2
+            className="fs15 is-italic is-medium is-uppercase text-center mb12"
+          >
+            Quoi
+          </h2>,
+          <div
+            className="pc-scroll-horizontal is-relative"
+          >
+            <div
+              className="pc-list flex-columns pt7"
+            >
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-0"
+              >
+                <SearchPicture
+                  searchType="Applaudir"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-0"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Applaudir"
+                />
+              </label>
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-1"
+              >
+                <SearchPicture
+                  searchType="Jouer"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-1"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Jouer"
+                />
+              </label>
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-2"
+              >
+                <SearchPicture
+                  searchType="Lire"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-2"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Lire"
+                />
+              </label>
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-3"
+              >
+                <SearchPicture
+                  searchType="Pratiquer"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-3"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Pratiquer"
+                />
+              </label>
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-4"
+              >
+                <SearchPicture
+                  searchType="Regarder"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-4"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Regarder"
+                />
+              </label>
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-5"
+              >
+                <SearchPicture
+                  searchType="Rencontrer"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-5"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Rencontrer"
+                />
+              </label>
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-6"
+              >
+                <SearchPicture
+                  searchType="Écouter"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-6"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Écouter"
+                />
+              </label>
+            </div>
+          </div>,
+        ],
+        "className": "pt18",
+        "id": "filter-by-offer-types",
       },
       "ref": null,
-      "rendered": null,
-      "type": [Function],
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Quoi",
+            "className": "fs15 is-italic is-medium is-uppercase text-center mb12",
+          },
+          "ref": null,
+          "rendered": "Quoi",
+          "type": "h2",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <div
+              className="pc-list flex-columns pt7"
+            >
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-0"
+              >
+                <SearchPicture
+                  searchType="Applaudir"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-0"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Applaudir"
+                />
+              </label>
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-1"
+              >
+                <SearchPicture
+                  searchType="Jouer"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-1"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Jouer"
+                />
+              </label>
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-2"
+              >
+                <SearchPicture
+                  searchType="Lire"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-2"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Lire"
+                />
+              </label>
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-3"
+              >
+                <SearchPicture
+                  searchType="Pratiquer"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-3"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Pratiquer"
+                />
+              </label>
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-4"
+              >
+                <SearchPicture
+                  searchType="Regarder"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-4"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Regarder"
+                />
+              </label>
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-5"
+              >
+                <SearchPicture
+                  searchType="Rencontrer"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-5"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Rencontrer"
+                />
+              </label>
+              <label
+                className="item p3 is-relative "
+                htmlFor="search-image-checkbox-6"
+              >
+                <SearchPicture
+                  searchType="Écouter"
+                />
+                <input
+                  checked={false}
+                  className="is-hidden"
+                  id="search-image-checkbox-6"
+                  onChange={[Function]}
+                  type="checkbox"
+                  value="Écouter"
+                />
+              </label>
+            </div>,
+            "className": "pc-scroll-horizontal is-relative",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <label
+                  className="item p3 is-relative "
+                  htmlFor="search-image-checkbox-0"
+                >
+                  <SearchPicture
+                    searchType="Applaudir"
+                  />
+                  <input
+                    checked={false}
+                    className="is-hidden"
+                    id="search-image-checkbox-0"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="Applaudir"
+                  />
+                </label>,
+                <label
+                  className="item p3 is-relative "
+                  htmlFor="search-image-checkbox-1"
+                >
+                  <SearchPicture
+                    searchType="Jouer"
+                  />
+                  <input
+                    checked={false}
+                    className="is-hidden"
+                    id="search-image-checkbox-1"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="Jouer"
+                  />
+                </label>,
+                <label
+                  className="item p3 is-relative "
+                  htmlFor="search-image-checkbox-2"
+                >
+                  <SearchPicture
+                    searchType="Lire"
+                  />
+                  <input
+                    checked={false}
+                    className="is-hidden"
+                    id="search-image-checkbox-2"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="Lire"
+                  />
+                </label>,
+                <label
+                  className="item p3 is-relative "
+                  htmlFor="search-image-checkbox-3"
+                >
+                  <SearchPicture
+                    searchType="Pratiquer"
+                  />
+                  <input
+                    checked={false}
+                    className="is-hidden"
+                    id="search-image-checkbox-3"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="Pratiquer"
+                  />
+                </label>,
+                <label
+                  className="item p3 is-relative "
+                  htmlFor="search-image-checkbox-4"
+                >
+                  <SearchPicture
+                    searchType="Regarder"
+                  />
+                  <input
+                    checked={false}
+                    className="is-hidden"
+                    id="search-image-checkbox-4"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="Regarder"
+                  />
+                </label>,
+                <label
+                  className="item p3 is-relative "
+                  htmlFor="search-image-checkbox-5"
+                >
+                  <SearchPicture
+                    searchType="Rencontrer"
+                  />
+                  <input
+                    checked={false}
+                    className="is-hidden"
+                    id="search-image-checkbox-5"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="Rencontrer"
+                  />
+                </label>,
+                <label
+                  className="item p3 is-relative "
+                  htmlFor="search-image-checkbox-6"
+                >
+                  <SearchPicture
+                    searchType="Écouter"
+                  />
+                  <input
+                    checked={false}
+                    className="is-hidden"
+                    id="search-image-checkbox-6"
+                    onChange={[Function]}
+                    type="checkbox"
+                    value="Écouter"
+                  />
+                </label>,
+              ],
+              "className": "pc-list flex-columns pt7",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": "Applaudir",
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <SearchPicture
+                      searchType="Applaudir"
+                    />,
+                    <input
+                      checked={false}
+                      className="is-hidden"
+                      id="search-image-checkbox-0"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="Applaudir"
+                    />,
+                    false,
+                  ],
+                  "className": "item p3 is-relative ",
+                  "htmlFor": "search-image-checkbox-0",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "searchType": "Applaudir",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "checked": false,
+                      "className": "is-hidden",
+                      "id": "search-image-checkbox-0",
+                      "onChange": [Function],
+                      "type": "checkbox",
+                      "value": "Applaudir",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": "input",
+                  },
+                  false,
+                ],
+                "type": "label",
+              },
+              Object {
+                "instance": null,
+                "key": "Jouer",
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <SearchPicture
+                      searchType="Jouer"
+                    />,
+                    <input
+                      checked={false}
+                      className="is-hidden"
+                      id="search-image-checkbox-1"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="Jouer"
+                    />,
+                    false,
+                  ],
+                  "className": "item p3 is-relative ",
+                  "htmlFor": "search-image-checkbox-1",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "searchType": "Jouer",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "checked": false,
+                      "className": "is-hidden",
+                      "id": "search-image-checkbox-1",
+                      "onChange": [Function],
+                      "type": "checkbox",
+                      "value": "Jouer",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": "input",
+                  },
+                  false,
+                ],
+                "type": "label",
+              },
+              Object {
+                "instance": null,
+                "key": "Lire",
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <SearchPicture
+                      searchType="Lire"
+                    />,
+                    <input
+                      checked={false}
+                      className="is-hidden"
+                      id="search-image-checkbox-2"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="Lire"
+                    />,
+                    false,
+                  ],
+                  "className": "item p3 is-relative ",
+                  "htmlFor": "search-image-checkbox-2",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "searchType": "Lire",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "checked": false,
+                      "className": "is-hidden",
+                      "id": "search-image-checkbox-2",
+                      "onChange": [Function],
+                      "type": "checkbox",
+                      "value": "Lire",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": "input",
+                  },
+                  false,
+                ],
+                "type": "label",
+              },
+              Object {
+                "instance": null,
+                "key": "Pratiquer",
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <SearchPicture
+                      searchType="Pratiquer"
+                    />,
+                    <input
+                      checked={false}
+                      className="is-hidden"
+                      id="search-image-checkbox-3"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="Pratiquer"
+                    />,
+                    false,
+                  ],
+                  "className": "item p3 is-relative ",
+                  "htmlFor": "search-image-checkbox-3",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "searchType": "Pratiquer",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "checked": false,
+                      "className": "is-hidden",
+                      "id": "search-image-checkbox-3",
+                      "onChange": [Function],
+                      "type": "checkbox",
+                      "value": "Pratiquer",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": "input",
+                  },
+                  false,
+                ],
+                "type": "label",
+              },
+              Object {
+                "instance": null,
+                "key": "Regarder",
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <SearchPicture
+                      searchType="Regarder"
+                    />,
+                    <input
+                      checked={false}
+                      className="is-hidden"
+                      id="search-image-checkbox-4"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="Regarder"
+                    />,
+                    false,
+                  ],
+                  "className": "item p3 is-relative ",
+                  "htmlFor": "search-image-checkbox-4",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "searchType": "Regarder",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "checked": false,
+                      "className": "is-hidden",
+                      "id": "search-image-checkbox-4",
+                      "onChange": [Function],
+                      "type": "checkbox",
+                      "value": "Regarder",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": "input",
+                  },
+                  false,
+                ],
+                "type": "label",
+              },
+              Object {
+                "instance": null,
+                "key": "Rencontrer",
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <SearchPicture
+                      searchType="Rencontrer"
+                    />,
+                    <input
+                      checked={false}
+                      className="is-hidden"
+                      id="search-image-checkbox-5"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="Rencontrer"
+                    />,
+                    false,
+                  ],
+                  "className": "item p3 is-relative ",
+                  "htmlFor": "search-image-checkbox-5",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "searchType": "Rencontrer",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "checked": false,
+                      "className": "is-hidden",
+                      "id": "search-image-checkbox-5",
+                      "onChange": [Function],
+                      "type": "checkbox",
+                      "value": "Rencontrer",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": "input",
+                  },
+                  false,
+                ],
+                "type": "label",
+              },
+              Object {
+                "instance": null,
+                "key": "Écouter",
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <SearchPicture
+                      searchType="Écouter"
+                    />,
+                    <input
+                      checked={false}
+                      className="is-hidden"
+                      id="search-image-checkbox-6"
+                      onChange={[Function]}
+                      type="checkbox"
+                      value="Écouter"
+                    />,
+                    false,
+                  ],
+                  "className": "item p3 is-relative ",
+                  "htmlFor": "search-image-checkbox-6",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "searchType": "Écouter",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "checked": false,
+                      "className": "is-hidden",
+                      "id": "search-image-checkbox-6",
+                      "onChange": [Function],
+                      "type": "checkbox",
+                      "value": "Écouter",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": "input",
+                  },
+                  false,
+                ],
+                "type": "label",
+              },
+            ],
+            "type": "div",
+          },
+          "type": "div",
+        },
+      ],
+      "type": "div",
     },
   ],
   Symbol(enzyme.__options__): Object {
