@@ -214,16 +214,16 @@ class Patch:
             assert response.status_code == 403
             assert response.json()['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
 
-        class Returns404:
-            @clean_database
-            def test_returns_404_if_offer_does_not_exist(self, app):
-                # given
-                user = create_user()
-                PcObject.save(user)
-                auth_request = TestClient().with_auth(email=user.email)
+    class Returns404:
+        @clean_database
+        def test_returns_404_if_offer_does_not_exist(self, app):
+            # given
+            user = create_user()
+            PcObject.save(user)
+            auth_request = TestClient().with_auth(email=user.email)
 
-                # when
-                response = auth_request.patch(API_URL + '/offers/ADFGA', json={})
+            # when
+            response = auth_request.patch(API_URL + '/offers/ADFGA', json={})
 
-                # then
-                assert response.status_code == 404
+            # then
+            assert response.status_code == 404
