@@ -314,7 +314,6 @@ class Get:
             assert response.json()['beginningDatetime'] == ['Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement']
 
     class Returns410:
-
         @clean_database
         def when_booking_is_already_validated(self, app):
             # Given
