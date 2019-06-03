@@ -1,15 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | SearchResultItem snapshot should match snapshot 1`] = `
+exports[`src | components | pages | search | SearchResultItem should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <SearchResultItem
-    dispatch={[Function]}
-    history={Object {}}
+    dispatch={[MockFunction]}
+    history={
+      Object {
+        "push": [MockFunction],
+      }
+    }
     location={
       Object {
-        "pathname": "/recherche/Applaudir",
-        "search": "",
+        "pathname": "/recherche/resultats",
+        "search": "?categories=Applaudir",
       }
     }
     recommendation={

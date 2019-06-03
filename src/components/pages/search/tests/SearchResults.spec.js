@@ -2,7 +2,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import SearchResults from '../SearchResults'
-import SearchResultItemContainer from '../SearchResultItemContainer'
+import SearchResultItem from '../SearchResultItem'
 
 describe('src | components | pages | SearchResults', () => {
   describe('snapshot', () => {
@@ -167,7 +167,7 @@ describe('src | components | pages | SearchResults', () => {
           const wrapper = shallow(<SearchResults.WrappedComponent {...props} />)
           const resultsTitle = wrapper.find('h2').props()
           const SearchResultItemWrapper = wrapper.find(
-            SearchResultItemContainer
+            SearchResultItem
           )
           const item = {
             recommendation: items[0],
@@ -194,7 +194,7 @@ describe('src | components | pages | SearchResults', () => {
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
           const SearchResultItemWrapper = wrapper.find(
-            SearchResultItemContainer
+            SearchResultItem
           )
 
           // then
@@ -222,7 +222,7 @@ describe('src | components | pages | SearchResults', () => {
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
           const SearchResultItemWrapper = wrapper.find(
-            SearchResultItemContainer
+            SearchResultItem
           )
           const item = {
             recommendation: items[0],
@@ -249,7 +249,7 @@ describe('src | components | pages | SearchResults', () => {
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
           const SearchResultItemWrapper = wrapper.find(
-            SearchResultItemContainer
+            SearchResultItem
           )
 
           // then

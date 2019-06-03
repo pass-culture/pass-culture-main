@@ -1,27 +1,28 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import Dotdotdot from 'react-dotdotdot'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
+import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import { getQueryURL } from '../../../helpers'
-import { getRecommendationDateString } from './utils'
 import { recommendationNormalizer } from '../../../utils/normalizers'
+import { getRecommendationDateString } from './utils'
 
-class SearchResultItem extends Component {
+export class SearchResultItem extends Component {
   onSuccessLoadRecommendationDetails = () => {
     const { history, location, recommendation } = this.props
     const offerId = recommendation && recommendation.offerId
     const mediationId = recommendation && recommendation.mediationId
     const queryURL = getQueryURL({ mediationId, offerId })
     const linkURL = `${location.pathname}/item/${queryURL}${location.search}`
+
     history.push(linkURL)
   }
 
   markSearchRecommendationsAsClicked = () => {
     const { dispatch, recommendation } = this.props
-
     const config = {
       apiPath: `/recommendations/${recommendation.id}`,
       body: { isClicked: true },
@@ -78,9 +79,12 @@ class SearchResultItem extends Component {
 
 SearchResultItem.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
-  location: PropTypes.object.isRequired,
-  recommendation: PropTypes.object.isRequired,
+  history: PropTypes.shape().isRequired,
+  location: PropTypes.shape().isRequired,
+  recommendation: PropTypes.shape().isRequired,
 }
 
-export default SearchResultItem
+export default compose(
+  withRouter,
+  connect()
+)(SearchResultItem)
