@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from domain.expenses import is_eligible_to_physical_products_capping, is_eligible_to_digital_products_capping
-from domain.stocks import BOOKING_CANCELLATION_DELAY
+from domain.bookings import BOOKING_CANCELLATION_DELAY
 from models import ApiErrors, Booking
 from models.api_errors import ResourceGoneError, ForbiddenError
 from repository.stock_queries import find_stock_by_id

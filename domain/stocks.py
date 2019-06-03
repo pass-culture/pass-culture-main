@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta
 from typing import List
 
-from models import Booking, Stock
+from models import Booking, Stock, ApiErrors
 
-BOOKING_CANCELLATION_DELAY = timedelta(hours=72)
 STOCK_DELETION_DELAY = timedelta(hours=48)
 
 
@@ -13,14 +12,10 @@ def delete_stock_and_cancel_bookings(stock: Stock) -> List[Booking]:
         _cancel_unused_bookings(stock)
         return stock.bookings
 
-    two_days_after_it_ends = stock.endDatetime + STOCK_DELETION_DELAY
-    three_days_before_it_starts = stock.beginningDatetime - BOOKING_CANCELLATION_DELAY
+    limit_date_for_stock_deletion = stock.endDatetime + STOCK_DELETION_DELAY
     now = datetime.utcnow()
 
-    if now <= three_days_before_it_starts:
-        stock.isSoftDeleted = True
-        _cancel_unused_bookings(stock)
-    elif three_days_before_it_starts < now <= two_days_after_it_ends:
+    if now <= limit_date_for_stock_deletion:
         stock.isSoftDeleted = True
         _cancel_all_bookings(stock)
     else:
@@ -29,10 +24,11 @@ def delete_stock_and_cancel_bookings(stock: Stock) -> List[Booking]:
     return stock.bookings
 
 
-class TooLateToDeleteError(Exception):
+class TooLateToDeleteError(ApiErrors):
     def __init__(self):
-        self.message = "L'événement s'est terminé il y a plus de deux jours, " \
-                       "la suppression est impossible."
+        super().__init__(
+            errors={"global": "L'événement s'est terminé il y a plus de deux jours, la suppression est impossible."}
+        )
 
 
 def _is_thing(stock: Stock) -> bool:
@@ -40,11 +36,11 @@ def _is_thing(stock: Stock) -> bool:
 
 
 def _cancel_unused_bookings(stock: Stock):
-    for b in stock.bookings:
-        if not b.isUsed:
-            b.isCancelled = True
+    for booking in stock.bookings:
+        if not booking.isUsed:
+            booking.isCancelled = True
 
 
 def _cancel_all_bookings(stock: Stock):
-    for b in stock.bookings:
-        b.isCancelled = True
+    for booking in stock.bookings:
+        booking.isCancelled = True

@@ -4,6 +4,7 @@ import traceback
 import simplejson as json
 from flask import current_app as app, jsonify, request
 
+from domain.stocks import TooLateToDeleteError
 from domain.user_activation import AlreadyActivatedException
 from models.api_errors import ApiErrors, ResourceGoneError, ResourceNotFound, ForbiddenError, DecimalCastError, \
     DateTimeCastError
@@ -13,6 +14,11 @@ from utils.human_ids import NonDehumanizableId
 
 @app.errorhandler(ApiErrors)
 def restize_api_errors(e):
+    app.logger.error(json.dumps(e.errors))
+    return jsonify(e.errors), e.status_code or 400
+
+@app.errorhandler(TooLateToDeleteError)
+def restize_too_late_to_delete_error(e):
     app.logger.error(json.dumps(e.errors))
     return jsonify(e.errors), e.status_code or 400
 

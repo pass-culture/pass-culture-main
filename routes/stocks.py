@@ -104,11 +104,7 @@ def delete_stock(id):
     stock = load_or_404(Stock, id)
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
-
-    try:
-        bookings = delete_stock_and_cancel_bookings(stock)
-    except TooLateToDeleteError as e:
-        return jsonify({'global': [e.message]}), 400
+    bookings = delete_stock_and_cancel_bookings(stock)
     
     if bookings:
         try:

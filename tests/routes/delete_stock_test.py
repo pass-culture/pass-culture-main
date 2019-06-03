@@ -34,7 +34,7 @@ class Delete:
             assert response.json()['isSoftDeleted'] is True
 
         @clean_database
-        def when_bookings_exist_on_stock(self, app):
+        def expect_bookings_to_be_cancelled(self, app):
             # given
             user = create_user(email='test@email.com')
             other_user = create_user(email='consumer@test.com')
@@ -77,9 +77,8 @@ class Delete:
 
             # then
             assert response.status_code == 400
-            assert response.json()['global'] == [
-                "L'événement s'est terminé il y a plus de deux jours, la suppression est impossible."
-            ]
+            assert response.json()['global'] == "L'événement s'est terminé il y a plus de deux jours, " \
+                                                "la suppression est impossible."
 
     class Returns403:
         @clean_database

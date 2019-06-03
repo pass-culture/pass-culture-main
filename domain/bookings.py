@@ -1,8 +1,11 @@
-from models.booking import Booking
-
 import csv
+from datetime import timedelta
 from io import StringIO
 from typing import List
+
+from models.booking import Booking
+
+BOOKING_CANCELLATION_DELAY = timedelta(hours=72)
 
 
 def generate_bookings_details_csv(bookings: List[Booking]) -> str:

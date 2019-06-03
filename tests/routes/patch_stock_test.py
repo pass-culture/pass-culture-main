@@ -2,10 +2,11 @@ from datetime import timedelta
 
 import pytest
 
+from models.db import db
 from models.pc_object import PcObject, serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_booking, create_user, create_user_offerer, create_offerer, create_venue, \
-    create_stock_with_event_offer
+    create_stock_with_event_offer, create_stock_with_thing_offer
 from utils.human_ids import humanize
 
 
@@ -55,6 +56,30 @@ class Patch:
             assert request_after_update.json()['available'] == 5
             assert request_after_update.json()['price'] == 20
 
+        @clean_database
+        def when_booking_limit_datetime_is_none_for_thing(self, app):
+            # Given
+            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_thing_offer(offerer, venue)
+            PcObject.save(user, stock)
+
+            data = {
+                'price': 120,
+                'offerId': humanize(stock.offer.id),
+                'bookingLimitDatetime': None
+            }
+
+            # When
+            response = TestClient().with_auth(user.email) \
+                .patch(API_URL + '/stocks/' + humanize(stock.id), json=data)
+
+            # Then
+            assert response.status_code == 200
+            db.session.refresh(stock)
+            assert stock.price == 120
+
     class Returns400:
         @clean_database
         def when_wrong_type_for_available(self, app):
@@ -98,7 +123,7 @@ class Patch:
             ]
 
         @clean_database
-        def when_booking_limit_datetime_after_beginning_datetime(self, app):
+        def when_end_limit_datetime_is_none_for_event(self, app):
             # given
             user = create_user(email='email@test.com', can_book_free_offers=False, is_admin=True)
             offerer = create_offerer()
@@ -113,6 +138,29 @@ class Patch:
             # then
             assert response.status_code == 400
             assert response.json()['endDatetime'] == ['Ce paramètre est obligatoire']
+
+        @clean_database
+        def when_booking_limit_datetime_is_none_for_event(self, app):
+            # Given
+            user = create_user(email='test@email.fr', can_book_free_offers=False, is_admin=True)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue)
+            PcObject.save(user, stock)
+
+            data = {
+                'price': 0,
+                'offerId': humanize(stock.offer.id),
+                'bookingLimitDatetime': None
+            }
+
+            # When
+            response = TestClient().with_auth(user.email) \
+                .patch(API_URL + '/stocks/' + humanize(stock.id), json=data)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json()["bookingLimitDatetime"] == ['Ce paramètre est obligatoire']
 
         @clean_database
         def when_available_below_number_of_already_existing_bookings(self, app):
