@@ -20,8 +20,7 @@ config:
       name: "Cool down the application"
   target: "https://pass-culture-dev-perf.scalingo.io"
   payload:
-    -
-      path: "user_list"  # Needs to contains valid users
+    - path: "user_list"  # Needs to contains valid users
       fields:
         - "id"
         - "lastName"
@@ -33,8 +32,7 @@ config:
         - "birthDate"
         - "password"
       order: sequence
-    -
-      path: "word_list_fr"
+    - path: "word_list_fr"
       fields:
         - "word"
       order: sequence
