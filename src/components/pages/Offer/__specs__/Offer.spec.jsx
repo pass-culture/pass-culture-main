@@ -404,6 +404,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         expect(fieldGroups).toHaveLength(3)
         expect(venueField.prop('options')).toEqual(expectedOptions)
       })
+
       it('should display correctly duration field when EventType', () => {
         // given
         props.match = {
@@ -416,7 +417,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         }
 
         // when
-        const wrapper = shallow(<RawOffer {...props} />)
+        const wrapper = shallow(<Offer {...props} />)
 
         // then
         const fieldGroups = wrapper.find('.field-group')
@@ -425,6 +426,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         expect(fieldGroups).toHaveLength(3)
         expect(durationField.prop('name')).toEqual('durationMinutes')
       })
+
       it('should not display correctly duration field when Thing', () => {
         // given
         props.match = {
@@ -437,7 +439,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         }
 
         // when
-        const wrapper = shallow(<RawOffer {...props} />)
+        const wrapper = shallow(<Offer {...props} />)
 
         // then
         const fieldGroups = wrapper.find('.field-group')
