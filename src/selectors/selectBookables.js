@@ -69,6 +69,7 @@ export const markAsCancelled = bookings => items =>
       .filter(booking => booking.stockId === item.id)
       .sort(antechronologicalSort)
     const { isCancelled } = sortedMatchingBookings[0] || {}
+    /* eslint-disable */
     item.userHasCancelledThisDate = isCancelled || false
     return item
   })
