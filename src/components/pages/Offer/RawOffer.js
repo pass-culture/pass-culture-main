@@ -76,7 +76,6 @@ class RawOffer extends Component {
         requestData({
           apiPath: `/offers/${offerId}`,
           normalizer: offerNormalizer,
-          stateKey: 'offer',
         })
       )
     } else if (venueId) {

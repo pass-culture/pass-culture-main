@@ -80,7 +80,6 @@ function mapStateToProps(state, ownProps) {
     venue
   )
 
-  console.log('formInitialValues ', formInitialValues)
   const extraData = get(state, 'form.offer.extraData') || {}
 
   const musicSubOptions =
