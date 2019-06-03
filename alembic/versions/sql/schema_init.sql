@@ -1741,3 +1741,9 @@ ALTER TABLE ONLY venue_provider
 
 ALTER TABLE ONLY venue_provider
     ADD CONSTRAINT "venue_provider_venueId_fkey" FOREIGN KEY ("venueId") REFERENCES venue(id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+

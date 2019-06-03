@@ -63,7 +63,7 @@ with app.app_context():
         install_local_providers()
     import utils.login_manager
     import routes
-    #install_admin_views(admin, db.session)
+    install_admin_views(admin, db.session)
 
     app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
 
