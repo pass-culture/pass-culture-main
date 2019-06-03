@@ -60,10 +60,13 @@ export class SearchResultItem extends Component {
                   >
                     <Dotdotdot clamp="2">{recommendation.offer.name}</Dotdotdot>
                   </h5>
-                  <span id="recommendation-date" className="fs13">
+                  <div className="fs13">
+                    {recommendation.offer.product.offerType.appLabel}
+                  </div>
+                  <div id="recommendation-date" className="fs13">
                     {recommendation.offer &&
                       getRecommendationDateString(recommendation.offer)}
-                  </span>
+                  </div>
                 </Fragment>
               )}
             </div>

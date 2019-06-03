@@ -112,8 +112,8 @@ describe('src | components | pages | search | FilterByOfferTypes', () => {
       }, [])
 
       // then
-      expect(expectedLabels[0].find('i').is('.icon-ico-check')).toBe(true)
-      expect(expectedLabels[1].find('i').is('.icon-ico-check')).toBe(true)
+      expect(expectedLabels[0].find('i').is('.anticon-check-circle')).toBe(true)
+      expect(expectedLabels[1].find('i').is('.anticon-check-circle')).toBe(true)
       expect(expectedLabels).toHaveLength(2)
     })
   })

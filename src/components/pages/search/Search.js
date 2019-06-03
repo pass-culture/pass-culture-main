@@ -334,51 +334,51 @@ class Search extends PureComponent {
                       isVisible={isFilterVisible}
                       onClickFilterButton={this.onClickToggleFilterButton}
                     />
-                    <Switch location={location}>
-                      <Route
-                        exact
-                        path="/recherche/:menu(menu)?"
-                        render={() => (
-                          <NavByOfferTypeContainer
-                            title="PAR CATÉGORIES"
-                            typeSublabels={typeSublabels}
+                  </form>
+                  <Switch location={location}>
+                    <Route
+                      exact
+                      path="/recherche/:menu(menu)?"
+                      render={() => (
+                        <NavByOfferTypeContainer
+                          title="EXPLORER LES CATÉGORIES"
+                          typeSublabels={typeSublabels}
+                        />
+                        )}
+                    />
+                    <Route
+                      path="/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?"
+                      sensitive
+                      render={() => (
+                        <Fragment>
+                          <NavResultsHeader
+                            category={category}
+                            description={description}
                           />
-                        )}
-                      />
-                      <Route
-                        path="/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?"
-                        sensitive
-                        render={() => (
-                          <Fragment>
-                            <NavResultsHeader
-                              category={category}
-                              description={description}
-                            />
-                            <SearchResults
-                              cameFromOfferTypesPage
-                              hasMore={hasMore}
-                              items={recommendations}
-                              keywords={keywords}
-                              loadMoreHandler={this.loadMoreHandler}
-                              typeSublabels={typeSublabels}
-                            />
-                          </Fragment>
-                        )}
-                      />
-                      <Route
-                        path="/recherche/resultats/:menu(menu)?"
-                        render={() => (
                           <SearchResults
-                            cameFromOfferTypesPage={false}
+                            cameFromOfferTypesPage
                             hasMore={hasMore}
                             items={recommendations}
                             keywords={keywords}
+                            loadMoreHandler={this.loadMoreHandler}
                             typeSublabels={typeSublabels}
                           />
+                        </Fragment>
                         )}
-                      />
-                    </Switch>
-                  </form>
+                    />
+                    <Route
+                      path="/recherche/resultats/:menu(menu)?"
+                      render={() => (
+                        <SearchResults
+                          cameFromOfferTypesPage={false}
+                          hasMore={hasMore}
+                          items={recommendations}
+                          keywords={keywords}
+                          typeSublabels={typeSublabels}
+                        />
+                        )}
+                    />
+                  </Switch>
                 </div>
                 <Footer />
               </Fragment>

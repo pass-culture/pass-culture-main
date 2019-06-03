@@ -12,19 +12,20 @@ const getPageContentRoute = wrapper =>
     .render()
 
 const getPageContentDiv = wrapper =>
-  getPageContentRoute(wrapper).props.children.find(
-    child => child.props.children.type === 'form'
+  getPageContentRoute(wrapper).props.children.find(child =>
+    child.props.className.includes('page-content')
   )
 
-const getPageContentForm = wrapper => getPageContentDiv(wrapper).props.children
+const getPageContentForm = wrapper =>
+  getPageContentDiv(wrapper).props.children.find(child => child.type === 'form')
 
 const getPageContentFilter = wrapper =>
-  getPageContentDiv(wrapper).props.children.props.children.find(
+  getPageContentForm(wrapper).props.children.find(
     child => child.key === 'SearchFilterContainer'
   )
 
 const getPageContentSwitch = wrapper =>
-  getPageContentDiv(wrapper).props.children.props.children.find(
+  getPageContentDiv(wrapper).props.children.find(
     child => child.type === Switch
   )
 
@@ -148,7 +149,7 @@ describe('src | components | pages | Search', () => {
         )(wrapper)
 
         // then
-        expect(NavByOfferTypeComponent.props.title).toEqual('PAR CATÉGORIES')
+        expect(NavByOfferTypeComponent.props.title).toEqual('EXPLORER LES CATÉGORIES')
       })
     })
 

@@ -19,21 +19,14 @@ ShallowWrapper {
     recommendation={
       Object {
         "bookingsIds": Array [],
-        "dateCreated": "2018-09-10T14:27:31.787900Z",
+        "dateCreated": "2018-09-10T08:04:49.264895Z",
         "dateRead": null,
-        "dateUpdated": "2018-09-10T14:27:31.787917Z",
-        "dehumanizedId": 257,
+        "dateUpdated": "2018-09-10T08:04:49.264905Z",
+        "dehumanizedId": 128,
         "dehumanizedMediationId": null,
         "dehumanizedOfferId": 186,
         "dehumanizedUserId": 1,
-        "distance": "6802 km",
-        "firstThumbDominantColor": Array [
-          12,
-          62,
-          123,
-        ],
-        "id": "AEAQ",
-        "index": 0,
+        "id": "QA",
         "isClicked": false,
         "isFavorite": false,
         "isFirst": false,
@@ -78,7 +71,17 @@ ShallowWrapper {
             "lastProviderId": "BA",
             "mediaUrls": Array [],
             "modelName": "Product",
-            "name": "sur la route des migrants ; rencontres à Calais",
+            "offerType": Object {
+              "appLabel": "Livres, cartes bibliothèque ou médiathèque",
+              "conditionalFields": Array [],
+              "description": "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?",
+              "offlineOnly": false,
+              "onlineOnly": true,
+              "proLabel": "Presse  Abonnements",
+              "sublabel": "Lire",
+              "type": "Thing",
+              "value": "ThingType.PRESSE_ABO",
+            },
             "thumbCount": 2,
             "type": "Book",
             "url": null,
@@ -128,13 +131,11 @@ ShallowWrapper {
           "venueId": "A9",
         },
         "offerId": "X9",
-        "search": "route",
+        "search": null,
         "shareMedium": null,
         "thumbUrl": "http://localhost/storage/thumbs/products/QE",
-        "tz": "Europe/Paris",
-        "uniqId": "product_QE",
         "userId": "AE",
-        "validUntilDate": "2018-09-11T14:27:31.798174Z",
+        "validUntilDate": "2018-09-11T08:04:49.273248Z",
       }
     }
   />,
@@ -190,12 +191,17 @@ ShallowWrapper {
                   sur la route des migrants ; rencontres à Calais
                 </Dotdotdot>
               </h5>
-              <span
+              <div
+                className="fs13"
+              >
+                Livres, cartes bibliothèque ou médiathèque
+              </div>
+              <div
                 className="fs13"
                 id="recommendation-date"
               >
                 permanent
-              </span>
+              </div>
             </React.Fragment>
           </div>
           <div
@@ -249,12 +255,17 @@ ShallowWrapper {
                     sur la route des migrants ; rencontres à Calais
                   </Dotdotdot>
                 </h5>
-                <span
+                <div
+                  className="fs13"
+                >
+                  Livres, cartes bibliothèque ou médiathèque
+                </div>
+                <div
                   className="fs13"
                   id="recommendation-date"
                 >
                   permanent
-                </span>
+                </div>
               </React.Fragment>
             </div>
             <div
@@ -318,12 +329,17 @@ ShallowWrapper {
                       sur la route des migrants ; rencontres à Calais
                     </Dotdotdot>
                   </h5>
-                  <span
+                  <div
+                    className="fs13"
+                  >
+                    Livres, cartes bibliothèque ou médiathèque
+                  </div>
+                  <div
                     className="fs13"
                     id="recommendation-date"
                   >
                     permanent
-                  </span>
+                  </div>
                 </React.Fragment>
               </div>,
               <div
@@ -385,12 +401,17 @@ ShallowWrapper {
                       sur la route des migrants ; rencontres à Calais
                     </Dotdotdot>
                   </h5>
-                  <span
+                  <div
+                    className="fs13"
+                  >
+                    Livres, cartes bibliothèque ou médiathèque
+                  </div>
+                  <div
                     className="fs13"
                     id="recommendation-date"
                   >
                     permanent
-                  </span>
+                  </div>
                 </React.Fragment>,
                 "className": "m18 flex-1",
               },
@@ -414,12 +435,17 @@ ShallowWrapper {
                         sur la route des migrants ; rencontres à Calais
                       </Dotdotdot>
                     </h5>,
-                    <span
+                    <div
+                      className="fs13"
+                    >
+                      Livres, cartes bibliothèque ou médiathèque
+                    </div>,
+                    <div
                       className="fs13"
                       id="recommendation-date"
                     >
                       permanent
-                    </span>,
+                    </div>,
                   ],
                 },
                 "ref": null,
@@ -463,13 +489,25 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
+                      "children": "Livres, cartes bibliothèque ou médiathèque",
+                      "className": "fs13",
+                    },
+                    "ref": null,
+                    "rendered": "Livres, cartes bibliothèque ou médiathèque",
+                    "type": "div",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
                       "children": "permanent",
                       "className": "fs13",
                       "id": "recommendation-date",
                     },
                     "ref": null,
                     "rendered": "permanent",
-                    "type": "span",
+                    "type": "div",
                   },
                 ],
                 "type": Symbol(react.fragment),
@@ -556,12 +594,17 @@ ShallowWrapper {
                     sur la route des migrants ; rencontres à Calais
                   </Dotdotdot>
                 </h5>
-                <span
+                <div
+                  className="fs13"
+                >
+                  Livres, cartes bibliothèque ou médiathèque
+                </div>
+                <div
                   className="fs13"
                   id="recommendation-date"
                 >
                   permanent
-                </span>
+                </div>
               </React.Fragment>
             </div>
             <div
@@ -615,12 +658,17 @@ ShallowWrapper {
                       sur la route des migrants ; rencontres à Calais
                     </Dotdotdot>
                   </h5>
-                  <span
+                  <div
+                    className="fs13"
+                  >
+                    Livres, cartes bibliothèque ou médiathèque
+                  </div>
+                  <div
                     className="fs13"
                     id="recommendation-date"
                   >
                     permanent
-                  </span>
+                  </div>
                 </React.Fragment>
               </div>
               <div
@@ -684,12 +732,17 @@ ShallowWrapper {
                         sur la route des migrants ; rencontres à Calais
                       </Dotdotdot>
                     </h5>
-                    <span
+                    <div
+                      className="fs13"
+                    >
+                      Livres, cartes bibliothèque ou médiathèque
+                    </div>
+                    <div
                       className="fs13"
                       id="recommendation-date"
                     >
                       permanent
-                    </span>
+                    </div>
                   </React.Fragment>
                 </div>,
                 <div
@@ -751,12 +804,17 @@ ShallowWrapper {
                         sur la route des migrants ; rencontres à Calais
                       </Dotdotdot>
                     </h5>
-                    <span
+                    <div
+                      className="fs13"
+                    >
+                      Livres, cartes bibliothèque ou médiathèque
+                    </div>
+                    <div
                       className="fs13"
                       id="recommendation-date"
                     >
                       permanent
-                    </span>
+                    </div>
                   </React.Fragment>,
                   "className": "m18 flex-1",
                 },
@@ -780,12 +838,17 @@ ShallowWrapper {
                           sur la route des migrants ; rencontres à Calais
                         </Dotdotdot>
                       </h5>,
-                      <span
+                      <div
+                        className="fs13"
+                      >
+                        Livres, cartes bibliothèque ou médiathèque
+                      </div>,
+                      <div
                         className="fs13"
                         id="recommendation-date"
                       >
                         permanent
-                      </span>,
+                      </div>,
                     ],
                   },
                   "ref": null,
@@ -829,13 +892,25 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
+                        "children": "Livres, cartes bibliothèque ou médiathèque",
+                        "className": "fs13",
+                      },
+                      "ref": null,
+                      "rendered": "Livres, cartes bibliothèque ou médiathèque",
+                      "type": "div",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
                         "children": "permanent",
                         "className": "fs13",
                         "id": "recommendation-date",
                       },
                       "ref": null,
                       "rendered": "permanent",
-                      "type": "span",
+                      "type": "div",
                     },
                   ],
                   "type": Symbol(react.fragment),

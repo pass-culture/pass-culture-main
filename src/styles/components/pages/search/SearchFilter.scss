@@ -176,14 +176,13 @@
     right: rem(-6px);
   }
 
-  .icon-container > .icon-container-inner {
+  .icon-container .anticon-check-circle {
     @extend .is-block;
     @extend .text-center;
-    @extend .pc-background-red;
 
-    width: rem(18px);
-    height: rem(18px);
     border-radius: 50%;
+    background-color: $white;
+    color: $red;
   }
 
   .icon-ico-check {

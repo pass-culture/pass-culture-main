@@ -70,6 +70,17 @@ describe('src | components | pages | search | SearchResultItem', () => {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Product',
+            offerType: {
+              appLabel: 'Livres, cartes bibliothèque ou médiathèque',
+              conditionalFields: [],
+              description: "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?",
+              offlineOnly: false,
+              onlineOnly: true,
+              proLabel: "Presse  Abonnements",
+              sublabel: "Lire",
+              type: "Thing",
+              value: "ThingType.PRESSE_ABO",
+            },
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -130,7 +141,7 @@ describe('src | components | pages | search | SearchResultItem', () => {
 
   it('should match the snapshot', () => {
     // given
-    [props.recommendation] = selectRecommendations(state)
+    // [props.recommendation] = selectRecommendations(state)
 
     // when
     const wrapper = shallow(<SearchResultItem {...props} />)
@@ -174,17 +185,19 @@ describe('src | components | pages | search | SearchResultItem', () => {
       const img = wrapper.find('img').props()
       const h5 = wrapper.find('h5').props()
       const dotdotdot = wrapper.find(Dotdotdot).props()
-      const recommendationDate = wrapper.find('#recommendation-date').props()
+      const recommendationDate = wrapper.find('.fs13').last().text()
+      const first = wrapper.find('.fs13').first().text()
 
       // then
       expect(img.src).toBe('http://localhost/storage/thumbs/products/QE')
-      expect(dotdotdot.children).toBe(
-        'sur la route des migrants ; rencontres à Calais'
-      )
-      expect(recommendationDate.children).toBe('permanent')
       expect(h5.title).toBe(
         'sur la route des migrants ; rencontres à Calais'
       )
+      expect(dotdotdot.children).toBe(
+        'sur la route des migrants ; rencontres à Calais'
+      )
+      expect(first).toBe('Livres, cartes bibliothèque ou médiathèque')
+      expect(recommendationDate).toBe('permanent')
     })
   })
 })

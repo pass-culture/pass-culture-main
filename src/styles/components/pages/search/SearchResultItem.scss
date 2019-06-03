@@ -12,22 +12,30 @@
     cursor: pointer;
     outline: none;
   }
-}
 
-.recommendation-list-item .image {
-  overflow: hidden;
-  width: rem(96px);
-  height: rem(96px);
-  max-width: rem(96px);
-  max-height: rem(96px);
-  min-width: rem(96px);
-  min-height: rem(96px);
-  margin-left: -12px;
-  margin-bottom: -12px;
+  .image {
+    overflow: hidden;
+    width: rem(96px);
+    height: rem(96px);
+    max-width: rem(96px);
+    max-height: rem(96px);
+    min-width: rem(96px);
+    min-height: rem(96px);
+    margin-left: -12px;
+    margin-bottom: -12px;
 
-  img {
-    width: 100%;
-    height: auto;
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  .fs13 {
+    color: $grey;
+  }
+
+  div.m18 div:nth-child(2) {
+    font-weight: 600;
   }
 }
 

@@ -52,8 +52,8 @@ export class FilterByOfferTypes extends PureComponent {
                   />
                   {ischecked && (
                     <span className="icon-container is-absolute">
-                      <span className="icon-container-inner is-relative">
-                        <i className="icon-ico-check" />
+                      <span className="is-relative">
+                        <i className="anticon anticon-check-circle" />
                       </span>
                     </span>
                   )}
