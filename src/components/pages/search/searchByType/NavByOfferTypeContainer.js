@@ -1,9 +1,9 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { assignData } from 'redux-saga-data'
-import withQueryRouter from 'with-query-router'
 
 import NavByOfferType from './NavByOfferType'
+import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'
 
 export const mapDispatchToProps = (dispatch, ownProps) => ({
   resetSearchStore: () => {
@@ -20,7 +20,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
 })
 
 export default compose(
-  withQueryRouter,
+  withFrenchQueryRouter,
   connect(
     null,
     mapDispatchToProps

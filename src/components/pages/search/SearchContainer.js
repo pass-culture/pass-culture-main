@@ -1,9 +1,10 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import withQueryRouter from 'with-query-router'
+import get from 'lodash.get'
 
 import Search from './Search'
 import { withRedirectToSigninOrTypeformAfterLogin } from '../../hocs'
+import withFrenchQueryRouter from '../../hocs/withFrenchQueryRouter'
 import { selectRecommendations } from '../../../selectors'
 import selectTypeSublabels, {
   selectTypes,
@@ -31,7 +32,7 @@ const mapStateToProps = state => {
 }
 
 export default compose(
-  withQueryRouter,
   withRedirectToSigninOrTypeformAfterLogin,
+  withFrenchQueryRouter,
   connect(mapStateToProps)
 )(Search)

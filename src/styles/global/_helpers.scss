@@ -41,6 +41,12 @@
   @extend .is-full-height;
 }
 
+.is-hyphens {
+  -webkit-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: auto;
+}
+
 .is-primary-border {
   border: 2px solid $primary;
 }
@@ -54,4 +60,18 @@
   word-wrap: break-word;
   white-space: pre-wrap;
   background-color: transparent;
+}
+
+.no-appearance {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.no-box-shadow {
+  box-shadow: none !important;
+  box-shadow: 0 !important;
+}
+
+.no-list-style {
+  list-style: none;
 }

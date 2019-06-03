@@ -1,4 +1,3 @@
-// TODO: eventually remove unused dependencies
 .button {
   height: auto;
 
@@ -15,6 +14,12 @@
     font-weight: $weight-bold;
   }
 
+  .is-rounded {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 290486px;
+  }
+
   &.is-secondary {
     background: none;
     border: none;
@@ -24,19 +29,4 @@
     padding-left: 0;
     padding-right: 0;
   }
-}
-
-[disabled]:not(form),
-.is-disabled:not(form) {
-  cursor: default;
-  opacity: $button-disabled-opacity;
-}
-
-.field-group
-.field.is-horizontal
-.field-body
-.field:not(.is-expanded)
-input[type='checkbox'] {
-  width: 1.1875em;
-  margin-top: 0.5rem;
 }

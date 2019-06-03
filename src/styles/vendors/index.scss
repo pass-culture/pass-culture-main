@@ -1,18 +1,7 @@
-@import '~bulma/sass/utilities/_all';
-@import '~bulma/sass/base/_all';
-@import '~bulma/sass/elements/_all';
-@import '~bulma/sass/components/_all';
-@import '~bulma/sass/grid/_all';
-@import '~bulma/sass/layout/_all';
-@import '~bulma/sass/form/_all';
 @import '~react-datepicker/src/stylesheets/datepicker';
-
-//
-@import './pass-culture-shared.scss'; // import first
 @import './react-toastify.scss';
-@import './bulma-with-overrides.scss';
+@import './bulma.scss';
 @import './fontello-pass-culture.scss';
-
-/* antd | https://ant.design/docs/react/introduce */
 @import './antd-base.scss';
 @import './antd-select.scss';
+@import '~la-sass-vy/lib/index.scss';

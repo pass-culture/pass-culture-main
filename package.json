@@ -19,6 +19,7 @@
     "final-form-calculate": "^1.2.1",
     "history": "^4.7.2",
     "is-absolute-url": "^2.1.0",
+    "la-sass-vy": "^0.0.3",
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
     "lodash.find": "^4.6.0",
@@ -82,7 +83,7 @@
     "util.promisify": "^1.0.0",
     "uuid": "^3.3.2",
     "with-login": "2.4.0",
-    "with-query-router": "^0.1.1"
+    "with-query-router": "3.1.0"
   },
   "devDependencies": {
     "archiver": "^2.1.1",

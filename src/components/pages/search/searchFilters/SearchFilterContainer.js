@@ -1,9 +1,9 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { assignData } from 'redux-saga-data'
-import withQueryRouter from 'with-query-router'
 
 import SearchFilter from './SearchFilter'
+import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'
 
 const mapDispatchToProps = dispatch => ({
   resetSearchStore: () => {
@@ -12,7 +12,7 @@ const mapDispatchToProps = dispatch => ({
 })
 
 export default compose(
-  withQueryRouter,
+  withFrenchQueryRouter,
   connect(
     null,
     mapDispatchToProps
