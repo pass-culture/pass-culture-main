@@ -3,7 +3,7 @@ import React, { Component, Fragment } from 'react'
 import { Portal } from 'react-portal'
 import { requestData } from 'redux-saga-data'
 
-import DeleteDialog from './DeleteDialog'
+import DeleteDialog from '../DeleteDialog/DeleteDialog'
 import { withFrenchQueryRouter } from 'components/hocs'
 import Icon from 'components/layout/Icon'
 

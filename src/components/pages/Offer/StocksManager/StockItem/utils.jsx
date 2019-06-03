@@ -12,8 +12,6 @@ export const getRemainingStocksCount = (available, bookings) => {
   return available - validBookings.length
 }
 
-export const FLOATSEP = ','
-
 export const BOOKING_LIMIT_DATETIME_HOURS = 23
 export const BOOKING_LIMIT_DATETIME_MINUTES = 59
 export const DEFAULT_BEGINNING_DATE_TIME_HOURS = 20

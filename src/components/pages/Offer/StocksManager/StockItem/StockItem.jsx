@@ -7,12 +7,12 @@ import {
 } from 'react-final-form-utils'
 import { requestData } from 'redux-saga-data'
 
-import EditAndDeleteControl from './EditAndDeleteControl'
-import EventFields from './EventFields'
+import EditAndDeleteControl from './sub-components/EditAndDeleteControl/EditAndDeleteControl'
+import EventFields from './sub-components/fields/EventFields/EventFields'
 import adaptBookingLimitDatetimeGivenBeginningDatetime from './decorators/adaptBookingLimitDatetimeGivenBeginningDatetime'
 import fillEndDatimeWhenUpdatingBeginningDatetime from './decorators/fillEndDatimeWhenUpdatingBeginningDatetime'
-import ProductFields from './ProductFields'
-import SubmitAndCancelControlContainer from './SubmitAndCancelControl/SubmitAndCancelControlContainer'
+import ProductFields from './sub-components/fields/ProductFields/ProductFields'
+import SubmitAndCancelControlContainer from './sub-components/SubmitAndCancelControl/SubmitAndCancelControlContainer'
 import { errorKeyToFrenchKey } from './utils'
 
 export class StockItem extends Component {

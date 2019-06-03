@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import { Route, Router } from 'react-router-dom'
 
 import ProductFields from '../ProductFields'
-import state from '../../../../../utils/mocks/state'
+import state from '../../../../../../../../utils/mocks/state'
 const middlewares = []
 const mockStore = configureStore(middlewares)
 const dispatchMock = jest.fn()

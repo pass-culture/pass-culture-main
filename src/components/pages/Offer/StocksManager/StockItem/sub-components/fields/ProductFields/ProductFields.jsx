@@ -9,7 +9,7 @@ import {
   createFormatAvailable,
   createFormatPrice,
   getRemainingStocksCount,
-} from './utils'
+} from '../../../utils'
 import {
   DateField,
   HiddenField,
