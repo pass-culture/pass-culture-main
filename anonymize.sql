@@ -97,8 +97,10 @@ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION pg_temp.anonymize_email_field(
  json_data JSONB)
  RETURNS JSONB as $$
+DECLARE
+ user_id TEXT := json_data::jsonb ->> 'id';
 BEGIN
-  RETURN pg_temp.anonymize_json_field(json_data::jsonb, 'email', 'ano@nym.ized');
+  RETURN pg_temp.anonymize_json_field(json_data::jsonb, 'email', 'user@' || user_id);
 END; $$
 LANGUAGE plpgsql;
 
@@ -160,11 +162,48 @@ BEGIN
  json_data = pg_temp.anonymize_email_field(json_data::jsonb);
  json_data = pg_temp.anonymize_first_name_field(json_data::jsonb);
  json_data = pg_temp.anonymize_last_name_field(json_data::jsonb);
+ json_data = pg_temp.anonymize_public_name_field(json_data::jsonb);
  json_data = pg_temp.anonymize_date_of_birth_field(json_data::jsonb);
  json_data = pg_temp.anonymize_phone_number_field(json_data::jsonb);
  RETURN json_data;
 END; $$
 LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION pg_temp.disable_activity_trigger(table_name text)
+ RETURNS void
+ LANGUAGE plpgsql
+AS $function$
+DECLARE
+    query text;
+BEGIN
+    EXECUTE 'ALTER TABLE ' || table_name || ' DISABLE TRIGGER audit_trigger_row;';
+END;
+$function$;
+
+CREATE OR REPLACE FUNCTION pg_temp.enable_activity_trigger(table_name text)
+ RETURNS void
+ LANGUAGE plpgsql
+AS $function$
+DECLARE
+    query text;
+BEGIN
+    EXECUTE 'ALTER TABLE ' || table_name || ' ENABLE TRIGGER audit_trigger_row;';
+END;
+$function$;
+
+ALTER TABLE "user" DISABLE TRIGGER audit_trigger_insert;
+ALTER TABLE "user" DISABLE TRIGGER audit_trigger_update;
+ALTER TABLE "user" DISABLE TRIGGER audit_trigger_delete;
+
+SELECT pg_temp.disable_activity_trigger('offerer');
+SELECT pg_temp.disable_activity_trigger('venue');
+SELECT pg_temp.disable_activity_trigger('booking');
+SELECT pg_temp.disable_activity_trigger('stock');
+SELECT pg_temp.disable_activity_trigger('bank_information');
+SELECT pg_temp.disable_activity_trigger('mediation');
+SELECT pg_temp.disable_activity_trigger('offer');
+SELECT pg_temp.disable_activity_trigger('product');
+SELECT pg_temp.disable_activity_trigger('venue_provider');
 
 UPDATE offer SET "bookingEmail" = 'ano@nym.ized' WHERE "bookingEmail" is not null;
 
@@ -204,5 +243,19 @@ SET
  changed_data = pg_temp.anonymize_activity_data_field(changed_data);
 
 TRUNCATE email;
+
+SELECT pg_temp.enable_activity_trigger('offerer');
+SELECT pg_temp.enable_activity_trigger('venue');
+SELECT pg_temp.enable_activity_trigger('booking');
+SELECT pg_temp.enable_activity_trigger('stock');
+SELECT pg_temp.enable_activity_trigger('bank_information');
+SELECT pg_temp.enable_activity_trigger('mediation');
+SELECT pg_temp.enable_activity_trigger('offer');
+SELECT pg_temp.enable_activity_trigger('product');
+SELECT pg_temp.enable_activity_trigger('venue_provider');
+
+ALTER TABLE "user" ENABLE TRIGGER audit_trigger_insert;
+ALTER TABLE "user" ENABLE TRIGGER audit_trigger_update;
+ALTER TABLE "user" ENABLE TRIGGER audit_trigger_delete;
 
 DROP EXTENSION pgcrypto;
