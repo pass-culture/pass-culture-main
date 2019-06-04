@@ -4,16 +4,16 @@ import pytest
 
 from models import Offerer, PcObject
 from models.db import db
-from tests.conftest import clean_database
+from tests.conftest import clean_database, TestClient
 from tests.files.transactions import VALID_MESSAGE
-from tests.test_utils import req, create_user, req_with_auth, API_URL, create_offerer, create_user_offerer, \
+from tests.test_utils import create_user, API_URL, create_offerer, create_user_offerer, \
     create_venue, create_payment_message
 
 
 @clean_database
 @pytest.mark.standalone
 def test_should_not_be_able_to_validate_offerer_with_non_existing_token(app):
-    r = req_with_auth(email='toto_pro@btmx.fr') \
+    r = TestClient().with_auth(email='toto_pro@btmx.fr') \
         .get(API_URL + '/validate?modelNames=Offerer&token=123')
     assert r.status_code == 404
 
@@ -36,7 +36,8 @@ def test_validate_offerer(app):
         .first().validationToken
 
     # When
-    r = req.get(API_URL + '/validate?modelNames=Offerer&token=' + token, headers={'origin': 'http://localhost:3000'})
+    r = TestClient().get(API_URL + '/validate?modelNames=Offerer&token=' + token,
+                         headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r.status_code == 202
@@ -58,7 +59,8 @@ def test_validate_venue_with_right_validation_token_sets_validation_token_to_non
     token = venue.validationToken
 
     # When
-    r = req.get('{}/validate/venue?token={}'.format(API_URL, token), headers={'origin': 'http://localhost:3000'})
+    r = TestClient().get('{}/validate/venue?token={}'.format(API_URL, token),
+                         headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r.status_code == 202
@@ -70,7 +72,7 @@ def test_validate_venue_with_right_validation_token_sets_validation_token_to_non
 @pytest.mark.standalone
 def test_validate_venue_with_no_validation_token_returns_status_code_400_and_token_in_error(app):
     # When
-    r = req.get('{}/validate/venue'.format(API_URL), headers={'origin': 'http://localhost:3000'})
+    r = TestClient().get('{}/validate/venue'.format(API_URL), headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r.status_code == 400
@@ -81,7 +83,8 @@ def test_validate_venue_with_no_validation_token_returns_status_code_400_and_tok
 @pytest.mark.standalone
 def test_validate_venue_with_non_existing_validation_token_returns_status_code_404_and_token_in_error(app):
     # When
-    r = req.get('{}/validate/venue?token={}'.format(API_URL, '12345'), headers={'origin': 'http://localhost:3000'})
+    r = TestClient().get('{}/validate/venue?token={}'.format(API_URL, '12345'),
+                         headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert r.status_code == 404
@@ -97,7 +100,8 @@ def test_validate_user_when_validation_token_exists_should_put_validation_token_
     PcObject.save(user)
 
     # When
-    response = req.patch(API_URL + '/validate/user/' + user.validationToken, headers={'origin': 'http://localhost:3000'})
+    response = TestClient().patch(API_URL + '/validate/user/' + user.validationToken,
+                                  headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert response.status_code == 204
@@ -112,7 +116,8 @@ def test_validate_user_when_validation_token_not_found_returns_status_code_404(a
     random_token = '0987TYGHHJMJ'
 
     # When
-    response = req.patch(API_URL + '/validate/user/' + random_token, headers={'origin': 'http://localhost:3000'})
+    response = TestClient().patch(API_URL + '/validate/user/' + random_token,
+                                  headers={'origin': 'http://localhost:3000'})
 
     # Then
     assert response.status_code == 404
@@ -131,12 +136,12 @@ class CertifyMessageFileAuthenticityTest:
         )
         PcObject.save(user, payment_message)
 
-        auth_request = req_with_auth(email=user.email)
+        auth_request = TestClient().with_auth(email=user.email)
 
         # when
         response = auth_request.post(
             API_URL + '/validate/payment_message/',
-            data={},
+            json={},
             files={'file': ('message.xml', VALID_MESSAGE)}
         )
 
@@ -154,12 +159,12 @@ class CertifyMessageFileAuthenticityTest:
         )
         PcObject.save(user, payment_message)
 
-        auth_request = req_with_auth(email=user.email)
+        auth_request = TestClient().with_auth(email=user.email)
 
         # when
         response = auth_request.post(
             API_URL + '/validate/payment_message/',
-            data={},
+            json={},
             files={'file': ('message.xml', VALID_MESSAGE)}
         )
 
@@ -173,9 +178,9 @@ class CertifyMessageFileAuthenticityTest:
     @clean_database
     def test_returns_unauthorized_if_user_is_not_logged_in(self, app):
         # when
-        response = req.post(
+        response = TestClient().post(
             API_URL + '/validate/payment_message/',
-            data={},
+            json={},
             files={'file': ('message.xml', VALID_MESSAGE)},
             headers={'origin': 'http://localhost:3000'}
         )
@@ -193,12 +198,12 @@ class CertifyMessageFileAuthenticityTest:
         )
         PcObject.save(user, message)
 
-        auth_request = req_with_auth(email=user.email)
+        auth_request = TestClient().with_auth(email=user.email)
 
         # when
         response = auth_request.post(
             API_URL + '/validate/payment_message/',
-            data={},
+            json={},
             files={'file': ('message.xml', VALID_MESSAGE)}
         )
 
@@ -211,12 +216,12 @@ class CertifyMessageFileAuthenticityTest:
         user = create_user(can_book_free_offers=False, is_admin=True)
         PcObject.save(user)
 
-        auth_request = req_with_auth(email=user.email)
+        auth_request = TestClient().with_auth(email=user.email)
 
         # when
         response = auth_request.post(
             API_URL + '/validate/payment_message/',
-            data={},
+            json={},
             files={'file': ('message.xml', VALID_MESSAGE)}
         )
 

@@ -4,7 +4,7 @@ import pytest
 
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, req_with_auth, create_offerer, create_venue, create_user, activate_provider, \
+from tests.test_utils import API_URL, create_offerer, create_venue, create_user, activate_provider, \
     check_open_agenda_api_is_down
 from utils.human_ids import humanize
 
@@ -47,8 +47,7 @@ class Post:
             tries = 0
             while read_json['lastSyncDate'] is None:
                 assert tries < 30
-                response_check = req_with_auth(email=user.email) \
-                    .get(API_URL + '/venueProviders/' + venue_provider_id)
+                response_check = auth_request.get(API_URL + '/venueProviders/' + venue_provider_id)
                 assert response_check.status_code == 200
                 read_json = response_check.json()
                 tries += 1

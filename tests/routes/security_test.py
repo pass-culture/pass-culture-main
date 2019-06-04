@@ -3,8 +3,8 @@ import copy
 import pytest
 
 from models import PcObject, UserSession
-from tests.conftest import clean_database
-from tests.test_utils import create_user, API_URL, req, req_with_auth
+from tests.conftest import clean_database, TestClient
+from tests.test_utils import create_user, API_URL
 
 
 @clean_database
@@ -16,7 +16,7 @@ def test_a_new_user_session_is_recorded_when_signing_in(app):
     data = {'identifier': user.email, 'password': user.clearTextPassword}
 
     # when
-    req.post(API_URL + '/users/signin', json=data, headers={'origin': 'http://localhost:3000'})
+    TestClient().post(API_URL + '/users/signin', json=data, headers={'origin': 'http://localhost:3000'})
 
     # then
     session = UserSession.query.filter_by(userId=user.id).first()
@@ -29,7 +29,7 @@ def test_an_existing_user_session_is_deleted_when_signing_out(app):
     # given
     user = create_user(email='test@mail.com')
     PcObject.save(user)
-    auth_request = req_with_auth(email=user.email)
+    auth_request = TestClient().with_auth(email=user.email)
 
     assert auth_request.get(API_URL + '/bookings').status_code == 200
 
@@ -47,7 +47,7 @@ def test_reusing_cookies_after_a_sign_out_is_unauthorized(app):
     # given
     user = create_user(email='test@mail.com')
     PcObject.save(user)
-    original_auth_request = req_with_auth(email=user.email)
+    original_auth_request = TestClient().with_auth(email=user.email)
     spoofed_auth_request = copy.deepcopy(original_auth_request)
 
     assert original_auth_request.get(API_URL + '/bookings').status_code == 200

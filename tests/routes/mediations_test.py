@@ -7,16 +7,15 @@ import pytest
 
 from models import PcObject
 from models.db import db
-from tests.conftest import clean_database
-from utils.human_ids import humanize
+from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, \
     create_user, \
-    req_with_auth, \
     create_offer_with_event_product, \
     create_mediation, \
     create_offerer, \
     create_user_offerer, \
     create_venue, create_recommendation
+from utils.human_ids import humanize
 
 
 @clean_database
@@ -32,7 +31,7 @@ def test_create_mediation_with_thumb_url(app):
     PcObject.save(offer)
     PcObject.save(user, venue, offerer, user_offerer)
 
-    auth_request = req_with_auth(email=user.email)
+    auth_request = TestClient().with_auth(email=user.email)
 
     data = {
         'offerId': humanize(offer.id),
@@ -41,7 +40,7 @@ def test_create_mediation_with_thumb_url(app):
     }
 
     # when
-    response = auth_request.post(API_URL + '/mediations', data=data)
+    response = auth_request.post(API_URL + '/mediations', json=data)
 
     # then
     assert response.status_code == 201
@@ -58,7 +57,7 @@ def test_create_mediation_with_thumb_url_returns_400_if_url_is_not_an_image(app)
     user_offerer = create_user_offerer(user, offerer)
     PcObject.save(user, venue, user_offerer)
 
-    auth_request = req_with_auth(email=user.email)
+    auth_request = TestClient().with_auth(email=user.email)
 
     data = {
         'offerId': humanize(offer.id),
@@ -67,7 +66,7 @@ def test_create_mediation_with_thumb_url_returns_400_if_url_is_not_an_image(app)
     }
 
     # when
-    response = auth_request.post(API_URL + '/mediations', data=data)
+    response = auth_request.post(API_URL + '/mediations', json=data)
 
     # then
     assert response.status_code == 400
@@ -87,7 +86,7 @@ def test_create_mediation_with_thumb_file(app):
     PcObject.save(offer)
     PcObject.save(user, venue, offerer, user_offerer)
 
-    auth_request = req_with_auth(email=user.email)
+    auth_request = TestClient().with_auth(email=user.email)
 
     with open(Path(path.dirname(path.realpath(__file__))) / '..' / '..'
               / 'sandboxes' / 'thumbs' / 'mediations' / 'FranckLepage', 'rb') as thumb_file:
@@ -100,7 +99,7 @@ def test_create_mediation_with_thumb_file(app):
         files = {'thumb': ('FranckLepage.jpg', thumb_file)}
 
         # when
-        response = auth_request.post(API_URL + '/mediations', data=data, files=files)
+        response = auth_request.post(API_URL + '/mediations', json=data, files=files)
 
     # then
     assert response.status_code == 201
@@ -119,7 +118,7 @@ def test_patch_mediation_returns_200(app):
     PcObject.save(mediation)
     PcObject.save(user, venue, offerer, user_offerer)
 
-    auth_request = req_with_auth(email=user.email)
+    auth_request = TestClient().with_auth(email=user.email)
     data = {'frontText': 'new front text', 'backText': 'new back text', 'isActive': False}
 
     # when
@@ -152,7 +151,7 @@ def test_patch_mediation_returns_403_if_user_is_not_attached_to_offerer_of_media
     PcObject.save(mediation)
     PcObject.save(other_user, current_user, venue, offerer, user_offerer)
 
-    auth_request = req_with_auth(email=current_user.email)
+    auth_request = TestClient().with_auth(email=current_user.email)
 
     # when
     response = auth_request.patch(API_URL + '/mediations/%s' % humanize(mediation.id), json={})
@@ -167,7 +166,7 @@ def test_patch_mediation_returns_404_if_mediation_does_not_exist(app):
     # given
     user = create_user()
     PcObject.save(user)
-    auth_request = req_with_auth(email=user.email)
+    auth_request = TestClient().with_auth(email=user.email)
 
     # when
     response = auth_request.patch(API_URL + '/mediations/ADFGA', json={})
@@ -190,7 +189,7 @@ def test_get_mediation_returns_200_and_the_mediation_as_json(app):
     PcObject.save(offer)
     PcObject.save(user, venue, offerer, user_offerer)
 
-    auth_request = req_with_auth(email=user.email)
+    auth_request = TestClient().with_auth(email=user.email)
 
     # when
     response = auth_request.get(API_URL + '/mediations/%s' % humanize(mediation.id))
@@ -208,7 +207,7 @@ def test_get_mediation_returns_404_if_mediation_does_not_exist(app):
     # given
     user = create_user()
     PcObject.save(user)
-    auth_request = req_with_auth(email=user.email)
+    auth_request = TestClient().with_auth(email=user.email)
 
     # when
     response = auth_request.get(API_URL + '/mediations/AE')
@@ -235,7 +234,7 @@ def test_patch_mediation_make_mediations_invalid_for_all_users_when_deactivating
     other_recommendation = create_recommendation(offer, other_user, mediation2, valid_until_date=original_validity_date)
     PcObject.save(other_user, user_offerer, recommendation1, recommendation2, other_recommendation)
 
-    auth_request = req_with_auth(email=user_pro.email)
+    auth_request = TestClient().with_auth(email=user_pro.email)
     data = {'isActive': False}
 
     # when

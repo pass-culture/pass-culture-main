@@ -1,15 +1,16 @@
 """ test utils """
 import random
-import requests as req
 import string
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from decimal import Decimal
 from glob import glob
 from hashlib import sha256
 from inspect import isclass
-from postgresql_audit.flask import versioning_manager
 from unittest.mock import Mock
+
+import requests
+from postgresql_audit.flask import versioning_manager
 
 import models
 from models import Booking, \
@@ -46,21 +47,8 @@ user.setPassword(PLAIN_DEFAULT_TESTING_PASSWORD)
 HASHED_DEFAULT_TESTING_PASSWORD = user.password
 
 
-def req_with_auth(email=None, headers={'origin': 'http://localhost:3000'}):
-    request = req.Session()
-    request.headers = headers
-
-    if email:
-        request.auth = (email, PLAIN_DEFAULT_TESTING_PASSWORD)
-    else:
-        request.auth = (USER_TEST_ADMIN_EMAIL, PLAIN_DEFAULT_TESTING_PASSWORD)
-
-    return request
-
-
 def create_booking(user, stock=None, venue=None, recommendation=None, quantity=1, date_created=datetime.utcnow(),
                    is_cancelled=False, is_used=False, token=None, idx=None, amount=None):
-
     booking = Booking()
     if venue is None:
         offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
@@ -143,7 +131,8 @@ def create_booking_for_event(
     return booking
 
 
-def create_user(public_name='John Doe', password=None, first_name='John', last_name='Doe', postal_code='93100', departement_code='93',
+def create_user(public_name='John Doe', password=None, first_name='John', last_name='Doe', postal_code='93100',
+                departement_code='93',
                 email='john.doe@test.com', can_book_free_offers=True, validation_token=None, is_admin=False,
                 reset_password_token=None, reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
                 date_created=datetime.utcnow(), phone_number='0612345678', date_of_birth=datetime(2001, 1, 1),
@@ -188,7 +177,8 @@ def create_stock_with_event_offer(offerer, venue, price=10, booking_email='offer
     stock.endDatetime = end_datetime
     stock.bookingLimitDatetime = booking_limit_datetime
 
-    stock.offer = create_offer_with_event_product(venue, event_name=name, event_type=event_type, booking_email=booking_email, is_national=False)
+    stock.offer = create_offer_with_event_product(venue, event_name=name, event_type=event_type,
+                                                  booking_email=booking_email, is_national=False)
     stock.offer.id = offer_id
     stock.isSoftDeleted = is_soft_deleted
 
@@ -323,9 +313,11 @@ def create_product_with_Event_type(
     return product
 
 
-def create_offer_with_thing_product(venue, product=None, date_created=datetime.utcnow(), booking_email='booking.email@test.com',
+def create_offer_with_thing_product(venue, product=None, date_created=datetime.utcnow(),
+                                    booking_email='booking.email@test.com',
                                     thing_type=ThingType.AUDIOVISUEL, thing_name='Test Book', media_urls=['test/urls'],
-                                    author_name='Test Author', description=None, thumb_count=1, dominant_color=None, url=None,
+                                    author_name='Test Author', description=None, thumb_count=1, dominant_color=None,
+                                    url=None,
                                     is_national=False, is_active=True, id_at_providers=None, idx=None) -> Offer:
     offer = Offer()
     if product:
@@ -339,9 +331,11 @@ def create_offer_with_thing_product(venue, product=None, date_created=datetime.u
         offer.isNational = product.isNational
         offer.description = product.description
     else:
-        offer.product = create_product_with_Thing_type(thing_name=thing_name, thing_type=thing_type, media_urls=media_urls,
+        offer.product = create_product_with_Thing_type(thing_name=thing_name, thing_type=thing_type,
+                                                       media_urls=media_urls,
                                                        author_name=author_name, url=url, thumb_count=thumb_count,
-                                                       dominant_color=dominant_color, is_national=is_national, description=description)
+                                                       dominant_color=dominant_color, is_national=is_national,
+                                                       description=description)
         offer.name = thing_name
         offer.type = str(thing_type)
         offer.mediaUrls = media_urls
@@ -363,13 +357,17 @@ def create_offer_with_thing_product(venue, product=None, date_created=datetime.u
     return offer
 
 
-def create_offer_with_event_product(venue=None, product=None, event_name='Test event', duration_minutes=60, date_created=datetime.utcnow(),
+def create_offer_with_event_product(venue=None, product=None, event_name='Test event', duration_minutes=60,
+                                    date_created=datetime.utcnow(),
                                     booking_email='booking.email@test.com', thumb_count=0, dominant_color=None,
-                                    event_type=EventType.SPECTACLE_VIVANT, is_national=False, is_active=True, idx=None) -> Offer:
+                                    event_type=EventType.SPECTACLE_VIVANT, is_national=False, is_active=True,
+                                    idx=None) -> Offer:
     offer = Offer()
     if product is None:
-        product = create_product_with_Event_type(event_name=event_name, event_type=event_type, duration_minutes=duration_minutes,
-                                                 thumb_count=thumb_count, dominant_color=dominant_color, is_national=is_national)
+        product = create_product_with_Event_type(event_name=event_name, event_type=event_type,
+                                                 duration_minutes=duration_minutes,
+                                                 thumb_count=thumb_count, dominant_color=dominant_color,
+                                                 is_national=is_national)
     offer.product = product
     offer.venue = venue
     offer.name = product.name
@@ -591,7 +589,8 @@ def create_mocked_bookings(num_bookings, venue_email, name='Offer name'):
 
 
 def create_payment(booking, offerer, amount, author='test author', reimbursement_rule='remboursement à 100%',
-                   reimbursement_rate=Decimal(0.5), payment_message=None, payment_message_name=None, transaction_end_ot_end_id=None,
+                   reimbursement_rate=Decimal(0.5), payment_message=None, payment_message_name=None,
+                   transaction_end_ot_end_id=None,
                    transaction_label='pass Culture Pro - remboursement 2nde quinzaine 07-2018',
                    status=TransactionStatus.PENDING, idx=None, iban='FR7630007000111234567890144', bic='BDFEFR2LCCB'):
     payment = Payment()
@@ -664,7 +663,7 @@ def create_payment_details(
     details.payment_iban = payment_iban
     details.payment_message_name = payment_message_name
     details.transaction_end_to_end_id = transaction_end_to_end_id
-    details.payment_id= payment_id
+    details.payment_id = payment_id
     details.reimbursement_rate = reimbursement_rate
     details.reimbursed_amount = reimbursed_amount
     return details
@@ -693,7 +692,6 @@ def create_email(content, status=EmailStatus.ERROR, time=datetime.utcnow()):
     return email_failed
 
 
-
 def saveCounts():
     for modelName in models.__all__:
         model = getattr(models, modelName)
@@ -709,7 +707,7 @@ def assertCreatedCounts(**counts):
         all_records_count = model.query.count()
         previous_records_count = saved_counts[modelName]
         last_created_count = all_records_count - previous_records_count
-        assert last_created_count == counts[modelName],\
+        assert last_created_count == counts[modelName], \
             'Model [%s], Actual [%s], Expected [%s]' % (modelName, last_created_count, counts[modelName])
 
 
@@ -757,24 +755,27 @@ def save_all_activities(*objects):
 
 
 def check_open_agenda_api_is_down():
-    response = req.get('https://openagenda.com/agendas/86585975/events.json?limit=1')
+    response = requests.get('https://openagenda.com/agendas/86585975/events.json?limit=1')
     response_json = response.json()
     unsuccessful_request = ('success' in response_json) and not response_json['success']
     status_code_not_200 = (response.status_code != 200)
     return unsuccessful_request or status_code_not_200
 
+
 def get_occurrence_short_name(concatened_names_with_a_date):
     splitted_names = concatened_names_with_a_date.split(' / ')
     if len(splitted_names) > 0:
-      return splitted_names[0]
+        return splitted_names[0]
     else:
-      return None
+        return None
+
 
 def get_price_by_short_name(occurrence_short_name=None):
     if occurrence_short_name is None:
-      return 0
+        return 0
     else:
-      return sum(map(ord, occurrence_short_name)) % 50
+        return sum(map(ord, occurrence_short_name)) % 50
+
 
 def create_venue_provider(venue, provider, siren='77567146400110', is_active=True):
     venue_provider = VenueProvider()

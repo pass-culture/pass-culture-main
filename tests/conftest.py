@@ -16,33 +16,9 @@ from tests.test_utils import PLAIN_DEFAULT_TESTING_PASSWORD
 items_by_category = {'first': [], 'last': []}
 
 
-def _sort_alphabetically(category):
-    return sorted(items_by_category[category], key=lambda item: item.location)
-
-
 def pytest_configure(config):
     if config.getoption('capture') == 'no':
         TestClient.WITH_DOC = True
-
-
-def pytest_collection_modifyitems(config, items):
-    """
-    This function can be deleted once the tests are truly order-independent.
-    :param items: Test items parsed by pytest, available for sorting
-    """
-
-    for item in items:
-        if 'standalone' in item.keywords:
-            items_by_category['last'].append(item)
-        else:
-            items_by_category['first'].append(item)
-
-    print('\n************************************************************')
-    print('*                                                          *')
-    print('*  %s tests are still depending on the execution order     *' % len(items_by_category['first']))
-    print('*                                                          *')
-    print('************************************************************')
-    items[:] = _sort_alphabetically('first') + _sort_alphabetically('last')
 
 
 @pytest.fixture(scope='session')

@@ -5,7 +5,7 @@ from models.offerer import Offerer
 from models.user import User
 from models.user_offerer import UserOfferer, RightsType
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, req, create_user, create_user_offerer
+from tests.test_utils import API_URL, create_user, create_user_offerer
 
 BASE_DATA_PRO = {
     'email': 'toto_pro@btmx.fr',

@@ -7,7 +7,7 @@ from tests.test_utils import API_URL, \
     create_offerer, \
     create_user, \
     create_user_offerer, \
-    req_with_auth, create_bank_information
+    create_bank_information
 
 
 @pytest.mark.standalone
@@ -246,7 +246,7 @@ class Get:
             user = create_user()
             user_offerer = create_user_offerer(user, offerer, validation_token=secrets.token_urlsafe(20))
             PcObject.save(user_offerer)
-            auth_request = req_with_auth(email=user.email)
+            auth_request = TestClient().with_auth(email=user.email)
 
             # When
             response = auth_request.get(API_URL + '/offerers/')

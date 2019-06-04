@@ -13,8 +13,7 @@ from tests.test_utils import API_URL, \
     create_offer_with_thing_product, \
     create_user, \
     create_user_offerer, \
-    create_venue, \
-    req_with_auth
+    create_venue
 from utils.human_ids import humanize
 
 
@@ -89,7 +88,6 @@ class Patch:
                           other_recommendation,
                           user_offerer)
 
-            auth_request = req_with_auth(email=user.email)
             data = {'isActive': False}
 
             # when
