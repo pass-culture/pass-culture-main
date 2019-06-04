@@ -1,4 +1,4 @@
-from models import PcObject
+from models import PcObject, UserSession
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_user
 
@@ -48,6 +48,23 @@ class Post:
 
             # then
             assert response.status_code == 200
+
+        @clean_database
+        def expect_a_new_user_session_to_be_recorded(self, app):
+            # given
+            user = create_user(email='user@example.com')
+            PcObject.save(user)
+            data = {'identifier': user.email, 'password': user.clearTextPassword}
+
+            # when
+            response = TestClient().post(API_URL + '/users/signin', json=data,
+                                         headers={'origin': 'http://localhost:3000'})
+
+            # then
+            assert response.status_code == 200
+
+            session = UserSession.query.filter_by(userId=user.id).first()
+            assert session is not None
 
     class Returns401:
         @clean_database
