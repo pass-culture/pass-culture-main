@@ -1297,19 +1297,29 @@ class UserValidationEmailsTest:
 
         # When
         email = make_user_validation_email(user, app_origin_url, is_webapp=False)
+        expected = {
+            'FromEmail': 'dev@passculture.app',
+            'FromName': 'pass Culture pro',
+            'Subject': '[pass Culture pro] Validation de votre adresse email pour le pass Culture',
+            'MJ-TemplateID': '778329',
+            'MJ-TemplateLanguage': 'true',
+            'Recipients': [
+                {
+                    'Email': 'test@email.com',
+                    'Name': 'John Doe'
+                }
+            ],
+            'Vars':
+                {
+                    'nom_structure': 'John Doe',
+                    'lien_validation_mail': f'{app_origin_url}/inscription/validation/{user.validationToken}'
+                }
+            }
 
         # Then
-        email_html = BeautifulSoup(email['Html-part'], 'html.parser')
-        mail_content = email_html.find("div", {"id": 'mail-content'}).text
-        assert 'Cher partenaire pass Culture,'.format(user.publicName) in email_html.find("p",
-                                                                                          {"id": 'mail-greeting'}).text
-        assert "Vous venez de créer un compte pass Culture pro avec votre adresse test@email.com." in mail_content
-
-        assert 'portail-pro/inscription/validation/{}'.format(user.validationToken) in \
-               email_html.find('a', href=True)['href']
-        assert 'Vous pouvez valider votre adresse email en suivant ce lien :' in mail_content
-        assert 'portail-pro/inscription/validation/{}'.format(user.validationToken) in mail_content
         assert email['FromName'] == 'pass Culture pro'
+        assert email['Vars']['lien_validation_mail'] == f'{app_origin_url}/inscription/validation/{user.validationToken}'
+        assert email == expected
 
 
 def test_make_venue_validation_email(app):

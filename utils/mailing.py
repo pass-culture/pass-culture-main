@@ -352,7 +352,7 @@ def _make_activation_notification_email_as_plain_text(first_name: str, set_passw
 
     ———
 
-    * Le mot du ministre *    
+    * Le mot du ministre *
 
     «Je vous remercie d’avoir répondu présents en si grand nombre pour prendre part à cette expérimentation sans précédent. Pour une fois, l’on ne vous dira pas que la curiosité est un vilain défaut. Je vous invite précisément à être curieux. Le pass Culture est une formidable chance d’explorer des domaines de la culture que vous ne connaissez pas encore, profitez-en. Faites-nous part également de tous vos retours, autant que possible, la période qui s’ouvre est faite pour cela. Nous avons le plaisir de construire ensemble le pass Culture dont des générations entières de jeunes de votre âge bénéficieront dans les années à venir. Gardez d’ailleurs en tête que la culture doit toujours rester associée au plaisir. Je vous souhaite donc de faire de belles découvertes sur le pass Culture et, surtout, de vous y amuser.»
 
@@ -388,21 +388,37 @@ def _make_activation_notification_email_as_plain_text(first_name: str, set_passw
     support@passculture.app • pass.culture.fr
     """
 
-
 def make_user_validation_email(user, app_origin_url, is_webapp):
     if is_webapp:
         template = 'mails/webapp_user_validation_email.html'
         from_name = 'pass Culture'
+        email_html = render_template(template, user=user, api_url=API_URL, app_origin_url=app_origin_url)
+        data = {'Html-part': email_html,
+                'To': user.email,
+                'Subject': 'Validation de votre adresse email pour le pass Culture',
+                'FromName': from_name,
+                'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS}
     else:
-        template = 'mails/pro_user_validation_email.html'
         from_name = 'pass Culture pro'
-    email_html = render_template(template, user=user, api_url=API_URL, app_origin_url=app_origin_url)
-    return {'Html-part': email_html,
-            'To': user.email,
-            'Subject': 'Validation de votre adresse email pour le pass Culture',
+        data = {
+            'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
             'FromName': from_name,
-            'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS}
+            'Subject': "[pass Culture pro] Validation de votre adresse email pour le pass Culture",
+            'MJ-TemplateID': '778329',
+            'MJ-TemplateLanguage': 'true',
+            'Recipients': [
+                {
+                    "Email": user.email,
+                    "Name": user.publicName
+                }
+            ],
+            'Vars': {
+                'nom_structure': user.publicName,
+                'lien_validation_mail': f'{app_origin_url}/inscription/validation/{user.validationToken}'
+            },
 
+        }
+    return data
 
 def get_contact(user):
     mailjet_json_response = app.mailjet_client.contact.get(user.email).json()
