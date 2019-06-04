@@ -11,10 +11,6 @@ where:
     exit 0
 fi
 
-# ==========================
-# Init variables
-# ==========================
-
 source ovh_object_storage_env
 virtualenv import_titelive
 
@@ -40,13 +36,11 @@ fi
 
 # GET THREADS NUMBER
 if [[ $# -gt 1 ]] && [[ "$1" == "-t" ]]; then
-  THREAD_POOL=$2
+  THREAD_POOL_SIZE=$2
   shift 2
 else
-  THREAD_POOL=10
+  THREAD_POOL_SIZE=10
 fi
-
-# ==========================
 
 thread_count=()
 
@@ -66,10 +60,9 @@ count=0
 
 for directory in "${images_directories[@]:$index}"
 do
-    get_thread_count
     echo "${#thread_count[@]}"
 
-    while [ "${#thread_count[@]}" -ge "$THREAD_POOL" ]
+    while [ "${#thread_count[@]}" -ge "$THREAD_POOL_SIZE" ]
     do
         echo "waiting for available pool thread..."
         get_thread_count
@@ -77,11 +70,11 @@ do
     done
 
     echo "[Uploading] $directory"
-    x-terminal-emulator -e swift --os-auth-url "$OS_AUTH_URL" \
-          --os-tenant-name "$OS_TENANT_NAME" \
-          --os-username "$OS_USER" \
-          --os-password "$OS_PASSWORD" \
-          --os-region-name "$OS_REGION" \
+    x-terminal-emulator -e swift --os-auth-url "$OVH_AUTH_URL" \
+          --os-tenant-name "$OVH_TENANT_NAME" \
+          --os-username "$OVH_USER" \
+          --os-password "$OVH_PASSWORD" \
+          --os-region-name "$OVH_REGION" \
           -V 2 upload "$CONTAINER_NAME" "$directory"
 done
 
