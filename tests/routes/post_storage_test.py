@@ -9,26 +9,6 @@ from utils.human_ids import humanize
 class Post:
     class Returns200:
         @clean_database
-        def when_a_thumb_is_uploaded_for_an_user(self, app):
-            # given
-            user = create_user()
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            PcObject.save(user, venue, offerer)
-
-            auth_request = TestClient().with_auth(email=user.email)
-
-            # when
-            response = auth_request.post(
-                API_URL + '/storage/thumb/%s/%s/%s' % ('users', humanize(user.id), '0'),
-                json={},
-                files={'file': ('1.png', ONE_PIXEL_PNG)}
-            )
-
-            # then
-            assert response.status_code == 200
-
-        @clean_database
         def when_a_file_is_uploaded_for_a_mediation(self, app):
             # given
             user = create_user()
