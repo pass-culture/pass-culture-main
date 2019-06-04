@@ -9,6 +9,7 @@ from local_providers.init_titelive_things import InitTiteLiveThings
 from scripts.init_titelive.clean_images_in_object_storage import clean_remaining_titelive_images_in_object_storage
 from scripts.init_titelive.import_thumbs import import_init_titelive_thumbs
 from scripts.update_providables import do_update
+from utils.storage_utils import swift_con
 
 
 @app.manager.option('-l',
@@ -31,7 +32,8 @@ def import_titelive_full_table(limit: int, file: str):
                     help='Titelive thumbs pattern for imported images')
 def import_titelive_full_thumbs(container, pattern):
     try:
-        import_init_titelive_thumbs(container, pattern)
+        connexion = swift_con(container)
+        import_init_titelive_thumbs(connexion, container, pattern)
     except Exception as e:
         print('ERROR: ' + str(e))
         traceback.print_tb(e.__traceback__)

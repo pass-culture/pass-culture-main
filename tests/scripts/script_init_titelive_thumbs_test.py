@@ -3,8 +3,7 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock, call, ANY
 
 from models import PcObject
-from scripts.init_titelive.import_thumbs import import_init_titelive_thumbs, \
-    get_titelive_thumb_names_group_by_id_at_providers
+from scripts.init_titelive.import_thumbs import import_init_titelive_thumbs
 from tests.conftest import clean_database
 from tests.test_utils import create_offerer, create_venue, create_product_with_Thing_type
 from utils.human_ids import humanize
@@ -32,15 +31,21 @@ class InitTiteliveThumbsTest:
 
         connexion = MagicMock()
         connexion.get_container = MagicMock()
-        connexion.get_container.return_value = [
-            {'config'},
+        connexion.get_container.side_effect = [
             [
-                {
-                    "name": filename_to_save_1
-                },
-                {
-                    "name": filename_to_save_2
-                }
+                {'config'},
+                [
+                    {
+                        "name": filename_to_save_1
+                    },
+                    {
+                        "name": filename_to_save_2
+                    }
+                ]
+            ],
+            [
+                {},
+                []
             ]
         ]
 
@@ -80,34 +85,3 @@ class InitTiteliveThumbsTest:
 
         assert connexion.delete_object.call_args_list[0] == call(container_name, filename_to_save_1)
         assert connexion.delete_object.call_args_list[1] == call(container_name, filename_to_save_2)
-
-    @clean_database
-    def test_get_titelive_thumb_names_group_by_id_at_providers(self, app):
-        filename_to_save_1 = 'thumbs/titelive/3663608844000_1_v.jpg'
-        filename_to_save_2 = 'thumbs/titelive/3663608844000_1_75.jpg'
-
-        connexion = MagicMock()
-        connexion.get_container = MagicMock()
-        connexion.get_container.return_value = [
-            {'config'},
-            [
-                {
-                    "name": filename_to_save_1
-                },
-                {
-                    "name": filename_to_save_2
-                }
-            ]
-        ]
-
-        container_name = "storage-pc-testing"
-        titelive_thumb_identifier = 'titelive/'
-
-        images_name_in_object_storage = get_titelive_thumb_names_group_by_id_at_providers(connexion,
-                                                                                          container_name,
-                                                                                          titelive_thumb_identifier)
-
-        connexion.get_container.assert_called_once_with(container_name)
-        assert '3663608844000' in images_name_in_object_storage
-        assert filename_to_save_1 in images_name_in_object_storage['3663608844000']
-        assert filename_to_save_2 in images_name_in_object_storage['3663608844000']
