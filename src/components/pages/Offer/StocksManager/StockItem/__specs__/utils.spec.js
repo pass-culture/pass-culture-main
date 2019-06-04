@@ -7,7 +7,7 @@ import {
   getDatetimeOneHourAfter,
   getDatetimeAtSpecificHoursAndMinutes,
   getRemainingStocksCount,
-  createFormatPrice
+  formatPrice
 } from '../utils'
 
 describe('src | components | pages | Offer | StockItem | utils', () => {
@@ -194,7 +194,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
     })
   })
 
-  describe('createFormatPrice', () => {
+  describe('formatPrice', () => {
     describe('Gratuit label', () => {
       it('should return "Gratuit" label when isReadOnly is true and value is null', () => {
         // given
@@ -202,7 +202,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
         const value = null
 
         // when
-        const result = createFormatPrice(readOnly)(value)
+        const result = formatPrice(readOnly)(value)
 
         // then
         expect(result).toBe('Gratuit')
@@ -214,7 +214,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
         const value = 0
 
         // when
-        const result = createFormatPrice(readOnly)(value)
+        const result = formatPrice(readOnly)(value)
 
         // then
         expect(result).toBe('Gratuit')
@@ -226,7 +226,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
         const value = ''
 
         // when
-        const result = createFormatPrice(readOnly)(value)
+        const result = formatPrice(readOnly)(value)
 
         // then
         expect(result).toBe('Gratuit')
@@ -234,23 +234,25 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
     })
 
     describe('formatted price', () => {
-      it('should replace comma sign to dot sign when value from is a string and contains numbers', () => {
+      it('should replace comma sign to dot sign when value is a string and contains numbers', () => {
         // given
         const value = '1,1'
+        const readOnly = false
 
         // when
-        const result = createFormatPrice(false)(value)
+        const result = formatPrice(readOnly)(value)
 
         // then
         expect(result).toEqual("1.1")
       })
 
-      it('should return a not formatted value when it is valid', () => {
+      it('should return a not formatted value when value contain a dot', () => {
         // given
         const value = '1.1'
+        const readOnly = false
 
         // when
-        const result = createFormatPrice(false)(value)
+        const result = formatPrice(readOnly)(value)
 
         // then
         expect(result).toEqual("1.1")

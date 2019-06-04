@@ -7,7 +7,7 @@ import ReactTooltip from 'react-tooltip'
 
 import {
   createFormatAvailable,
-  createFormatPrice,
+  formatPrice,
   getRemainingStocksCount,
 } from '../../../utils'
 import {
@@ -98,7 +98,7 @@ export class ProductFields extends Component {
           <PriceField
             name="price"
             onBlur={this.onPriceBlur}
-            format={createFormatPrice(readOnly)}
+            format={formatPrice(readOnly)}
             placeholder="Gratuit"
             readOnly={readOnly}
             title="Prix"

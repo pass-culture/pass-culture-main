@@ -69,13 +69,13 @@ export const createFormatAvailable = () => value => {
   return value
 }
 
-export const createFormatPrice = readOnly => value => {
+export const formatPrice = readOnly => value => {
   if (readOnly && (value === null || value === 0 || value === '')) {
     return 'Gratuit'
   }
 
   if (typeof value === 'string') {
-    if (value.includes(',') || value.includes('.')) {
+    if (value.includes(',')) {
       return value.replace(',', '.')
     }
   }
