@@ -1,9 +1,7 @@
 """ repository venue queries """
 from datetime import datetime, timedelta
-import pytest
 
 from models import PcObject
-
 from repository.venue_queries import find_filtered_venues
 from tests.conftest import clean_database
 from tests.test_utils import create_venue, create_offer_with_event_product, create_venue_activity, \

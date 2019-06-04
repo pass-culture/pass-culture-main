@@ -1,14 +1,11 @@
 """ local providers test """
-from unittest.mock import patch
-
-import pytest
 from datetime import datetime
+from unittest.mock import patch
 
 from local_providers import TiteLiveThings
 from models import Product, BookFormat
 from models.pc_object import PcObject
 from models.provider import Provider
-from models.venue_provider import VenueProvider
 from tests.conftest import clean_database
 from tests.local_providers.local_provider_titelive_test import get_ordered_thing_files_from_sandbox_files, \
     get_lines_from_thing_file_sandboxes

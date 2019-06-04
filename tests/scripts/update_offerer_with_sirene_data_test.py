@@ -1,5 +1,3 @@
-import pytest
-
 from models import PcObject
 from models.db import db
 from scripts.update_offerer_with_sirene_data import update_offerer_with_sirene_data

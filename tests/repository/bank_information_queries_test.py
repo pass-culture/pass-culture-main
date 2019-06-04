@@ -1,7 +1,5 @@
 from datetime import datetime
 
-import pytest
-
 from models import PcObject
 from repository.bank_information_queries import get_last_update_from_bank_information
 from tests.conftest import clean_database

@@ -1,7 +1,3 @@
-from datetime import datetime
-
-import pytest
-
 from utils.date import english_to_french_month
 
 def test_english_to_french_month(app):

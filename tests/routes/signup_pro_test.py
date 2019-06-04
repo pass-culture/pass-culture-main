@@ -1,5 +1,3 @@
-import pytest
-
 from models import PcObject
 from models.offerer import Offerer
 from models.user import User

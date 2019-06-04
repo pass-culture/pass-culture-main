@@ -1,7 +1,5 @@
 from datetime import timedelta
 
-import pytest
-
 from models.db import db
 from models.pc_object import PcObject, serialize
 from tests.conftest import clean_database, TestClient

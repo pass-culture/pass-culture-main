@@ -1,7 +1,5 @@
 from unittest.mock import Mock, patch
 
-import pytest
-
 from domain.admin_emails import maybe_send_offerer_validation_email, send_venue_validation_email, \
     send_payment_details_email, send_wallet_balances_email, send_payments_report_emails, \
     send_offer_creation_notification_to_administration, send_payment_message_email, \

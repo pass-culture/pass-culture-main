@@ -1,8 +1,6 @@
 from datetime import datetime, timedelta
 from pprint import pprint
 
-import pytest
-
 from models import PcObject, \
     EventType
 from tests.conftest import clean_database, TestClient

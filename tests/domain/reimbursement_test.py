@@ -1,8 +1,6 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-import pytest
-
 from domain.reimbursement import ReimbursementRules, find_all_booking_reimbursements, ReimbursementRule
 from models import Booking, ThingType
 from tests.test_utils import create_booking_for_thing, create_booking_for_event

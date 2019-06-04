@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
 
-import pytest
-
 from models import Booking, Offer, Stock, User, Product
 from tests.test_utils import create_product_with_Thing_type
 

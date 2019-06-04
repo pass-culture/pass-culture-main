@@ -1,8 +1,6 @@
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
-import pytest
-
 from models import PcObject, EventType
 from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient

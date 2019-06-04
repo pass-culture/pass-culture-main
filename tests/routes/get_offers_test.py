@@ -1,5 +1,4 @@
 """ routes offers tests """
-import pytest
 import secrets
 from datetime import datetime, timedelta
 

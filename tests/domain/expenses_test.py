@@ -1,5 +1,3 @@
-import pytest
-
 from domain.expenses import get_expenses
 from models import ThingType, EventType
 from tests.test_utils import create_booking_for_event, \

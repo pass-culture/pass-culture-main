@@ -1,5 +1,3 @@
-import pytest
-
 from models import PcObject
 from models.email import EmailStatus
 from repository.email_queries import find_all_in_error

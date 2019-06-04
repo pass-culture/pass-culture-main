@@ -1,7 +1,5 @@
 from datetime import datetime
 
-import pytest
-
 from models import PcObject
 from scripts.payment.batch_steps import generate_new_payments
 from tests.conftest import clean_database, TestClient

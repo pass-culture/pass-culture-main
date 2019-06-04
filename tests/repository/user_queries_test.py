@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta, MINYEAR
 
-import pytest
-
 from models import PcObject
 from repository.user_queries import get_all_users_wallet_balances, find_by_first_and_last_names_and_birth_date, \
     find_most_recent_beneficiary_creation_date

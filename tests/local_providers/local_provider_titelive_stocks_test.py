@@ -2,14 +2,15 @@
 from unittest.mock import patch
 
 import pytest
+import requests
 
 from local_providers import TiteLiveStocks
 from models.pc_object import PcObject
 from models.provider import Provider
 from models.venue_provider import VenueProvider
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_venue, create_product_with_Thing_type, create_offer_with_thing_product, provider_test
-import requests
+from tests.test_utils import create_offerer, create_venue, create_product_with_Thing_type, \
+    create_offer_with_thing_product, provider_test
 
 savedCounts = {}
 

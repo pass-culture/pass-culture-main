@@ -1,5 +1,3 @@
-import pytest
-
 from models import Offer, Offerer, PcObject, UserOfferer, Venue
 from repository.user_offerer_queries import find_first_by_user_id, \
                                             find_user_offerer_email, \

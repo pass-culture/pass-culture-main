@@ -1,5 +1,3 @@
-import pytest
-
 from domain.departments import get_departement_codes_from_user
 from tests.test_utils import create_user
 

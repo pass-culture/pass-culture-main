@@ -1,5 +1,3 @@
-import pytest
-
 from tests.test_utils import create_bank_information
 
 

@@ -1,5 +1,3 @@
-import pytest
-
 from domain.show_types import show_types
 from models import PcObject
 from tests.conftest import clean_database, TestClient

@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
 
-import pytest
-
 from models import PcObject
 from models.db import db
 from tests.conftest import clean_database, TestClient

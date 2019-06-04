@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import patch, Mock, call
 
 from domain.user_emails import send_user_driven_cancellation_email_to_user, \

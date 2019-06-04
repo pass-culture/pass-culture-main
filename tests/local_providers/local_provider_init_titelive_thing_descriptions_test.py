@@ -1,5 +1,4 @@
 """ local providers test """
-import pytest
 
 from local_providers import InitTiteLiveThingDescriptions
 from models import PcObject

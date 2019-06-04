@@ -1,4 +1,3 @@
-import pytest
 from datetime import timedelta, datetime
 
 from domain.reimbursement import ReimbursementRules
@@ -17,7 +16,8 @@ from tests.test_utils import API_URL, \
     create_user, \
     create_user_offerer, \
     create_venue, \
-    create_product_with_Thing_type, create_product_with_Event_type, create_stock_from_event_occurrence, create_event_occurrence
+    create_product_with_Thing_type, create_product_with_Event_type, create_stock_from_event_occurrence, \
+    create_event_occurrence
 from utils.human_ids import dehumanize, humanize
 
 

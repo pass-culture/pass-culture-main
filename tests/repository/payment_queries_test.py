@@ -1,8 +1,6 @@
 import uuid
 from datetime import datetime
 
-import pytest
-
 from models import PcObject
 from models.payment_status import TransactionStatus, PaymentStatus
 from repository.payment_queries import find_all_with_status_not_processable_for_bank_information

@@ -1,5 +1,3 @@
-import pytest
-
 from models import PcObject
 from tests.conftest import clean_database, TestClient
 from tests.files.images import ONE_PIXEL_PNG

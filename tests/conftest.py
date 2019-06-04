@@ -90,11 +90,11 @@ class TestClient:
 
         return result
 
-    def post(self, route: str, json: dict = None, headers=LOCAL_ORIGIN_HEADER):
+    def post(self, route: str, json: dict = None, files: dict = None, headers=LOCAL_ORIGIN_HEADER):
         if self.session:
-            result = self.session.post(route, json=json, headers=headers)
+            result = self.session.post(route, json=json, files=files, headers=headers)
         else:
-            result = requests.post(route, json=json, headers=headers)
+            result = requests.post(route, json=json, files=files, headers=headers)
 
         if TestClient.WITH_DOC:
             self._print_spec('POST', route, json, result)

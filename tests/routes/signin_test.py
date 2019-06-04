@@ -1,5 +1,3 @@
-import pytest
-
 from models import PcObject
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_user

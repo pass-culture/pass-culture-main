@@ -1,7 +1,5 @@
 import copy
 
-import pytest
-
 from models import PcObject, UserSession
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, API_URL
@@ -48,7 +46,7 @@ def test_reusing_cookies_after_a_sign_out_is_unauthorized(app):
     spoofed_auth_request = copy.deepcopy(original_auth_request)
 
     assert original_auth_request.get(API_URL + '/bookings').status_code == 200
-    spoofed_auth_request.cookies = copy.deepcopy(original_auth_request.cookies)
+    spoofed_auth_request.session.cookies = copy.deepcopy(original_auth_request.session.cookies)
     original_auth_request.get(API_URL + '/users/signout')
 
     # when

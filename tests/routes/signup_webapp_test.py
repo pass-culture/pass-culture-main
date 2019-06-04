@@ -1,7 +1,6 @@
 from datetime import datetime
 from unittest.mock import patch
 
-import pytest
 from freezegun import freeze_time
 
 from models.pc_object import serialize

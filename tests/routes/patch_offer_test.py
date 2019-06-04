@@ -1,4 +1,3 @@
-import pytest
 from datetime import datetime, timedelta
 
 from models import PcObject
@@ -6,7 +5,8 @@ from models.db import db
 from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
-    create_offer_with_thing_product, API_URL, create_product_with_Event_type, create_offer_with_event_product, create_product_with_Thing_type, create_recommendation
+    create_offer_with_thing_product, API_URL, create_product_with_Event_type, create_offer_with_event_product, \
+    create_product_with_Thing_type, create_recommendation
 from utils.human_ids import humanize
 
 

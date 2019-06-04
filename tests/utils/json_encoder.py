@@ -1,8 +1,7 @@
 from enum import Enum
 
-import pytest
-
 from utils.json_encoder import EnumJSONEncoder
+
 
 def test_json_encoder(app):
     class RightsType(Enum):

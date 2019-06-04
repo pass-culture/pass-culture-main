@@ -1,7 +1,5 @@
 from unittest.mock import patch
 
-import pytest
-
 from validation.headers import check_origin_header_validity
 
 

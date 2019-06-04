@@ -1,14 +1,13 @@
 from datetime import datetime
-import pytest
 
 from models import PcObject
 from repository.reimbursement_queries import find_all_offerer_reimbursement_details
 from scripts.payment.batch_steps import generate_new_payments
-from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_bank_information, create_stock_with_thing_offer, \
-    create_offer_with_thing_product, create_deposit, create_stock_with_event_offer, create_venue, create_offerer, \
-    create_recommendation, create_user, create_booking, create_offer_with_event_product, \
-    create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer
+from tests.conftest import clean_database
+from tests.test_utils import create_bank_information, create_stock_with_thing_offer, \
+    create_offer_with_thing_product, create_deposit, create_venue, create_offerer, \
+    create_user, create_booking, create_user_offerer
+
 
 class FindReimbursementDetailsTest:
     @clean_database

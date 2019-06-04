@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 
-import pytest
 from freezegun import freeze_time
 
 from models import Offer, PcObject, Stock, Product
@@ -11,7 +10,6 @@ from repository.offer_queries import department_or_national_offers, \
     get_offers_for_recommendations_search, \
     get_active_offers_by_type, \
     _has_remaining_stock_predicate
-
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_product_with_Event_type, \

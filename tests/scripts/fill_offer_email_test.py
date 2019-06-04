@@ -1,5 +1,3 @@
-import pytest
-
 from models import PcObject
 from models.db import db
 from scripts.fill_offer_email import fill_booking_email

@@ -1,7 +1,7 @@
 import os
-import pytest
-import requests
 from datetime import datetime
+
+import requests
 
 from models import PcObject
 from models.pc_object import serialize

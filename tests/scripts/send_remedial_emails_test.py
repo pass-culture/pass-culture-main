@@ -1,7 +1,7 @@
-import pytest
 from datetime import datetime
-from freezegun import freeze_time
 from unittest.mock import MagicMock
+
+from freezegun import freeze_time
 
 from models import PcObject
 from models.db import db

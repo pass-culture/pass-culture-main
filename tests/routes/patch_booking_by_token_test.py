@@ -1,8 +1,6 @@
 from datetime import datetime
 from urllib.parse import urlencode
 
-import pytest
-
 from models import PcObject, EventType, ThingType, Deposit
 from models.db import db
 from tests.conftest import clean_database, TestClient

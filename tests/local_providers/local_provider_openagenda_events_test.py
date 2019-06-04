@@ -1,6 +1,5 @@
 """ local providers test """
 import json
-
 import os
 from pathlib import Path
 from unittest.mock import patch
@@ -12,7 +11,6 @@ from models.pc_object import PcObject
 from models.provider import Provider
 from models.venue_provider import VenueProvider
 from tests.conftest import clean_database
-
 from tests.test_utils import provider_test, check_open_agenda_api_is_down, create_offerer, create_venue
 
 

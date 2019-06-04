@@ -1,7 +1,5 @@
 from unittest.mock import MagicMock
 
-import pytest
-
 from utils.storage_utils import get_folder_content, build_new_filename
 
 

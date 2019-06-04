@@ -1,7 +1,4 @@
-import pytest
-
-from models import PcObject, Offerer, User, RightsType
-from models.db import db
+from models import PcObject, Offerer, RightsType
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, API_URL
 

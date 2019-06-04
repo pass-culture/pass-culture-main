@@ -3,7 +3,6 @@ import secrets
 from datetime import datetime, timezone, timedelta
 from unittest.mock import MagicMock, patch, Mock
 
-import pytest
 from bs4 import BeautifulSoup
 from freezegun import freeze_time
 

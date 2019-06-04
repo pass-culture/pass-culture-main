@@ -1,11 +1,10 @@
 """ local providers titelive test """
+import os
 from pathlib import Path
 from unittest.mock import patch
-
-import os
 from zipfile import ZipFile
 
-import pytest
+from sqlalchemy import func
 
 from local_providers import TiteLiveThings, TiteLiveThingThumbs, TiteLiveThingDescriptions
 from local_providers.titelive_thing_descriptions import DESCRIPTION_FOLDER_NAME_TITELIVE
@@ -13,14 +12,11 @@ from local_providers.titelive_thing_thumbs import THUMB_FOLDER_NAME_TITELIVE
 from local_providers.titelive_things import THINGS_FOLDER_NAME_TITELIVE
 from models import Product
 from models.db import db
-from sqlalchemy import func
 from models.pc_object import PcObject
-from models.provider import Provider
-from models.venue_provider import VenueProvider
 from tests.conftest import clean_database
-from utils.logger import logger
 from tests.test_utils import create_offerer, create_venue, \
     provider_test
+from utils.logger import logger
 
 
 class TiteliveTest:

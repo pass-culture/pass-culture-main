@@ -46,6 +46,7 @@ class Get:
             # Then
             assert response.json()['wallet_is_activated'] == True
 
+        @clean_database
         def when_user_has_booked_some_offers(self, app):
             # Given
             user = create_user(public_name='Test', departement_code='93', email='wallet_test@email.com')

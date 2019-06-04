@@ -2,10 +2,10 @@ import pytest
 
 from models import ApiErrors, PcObject, Stock
 from tests.conftest import clean_database
-from utils.human_ids import humanize
-from utils.rest import handle_rest_get_list
 from tests.test_utils import create_stock_from_event_occurrence, create_offerer, create_event_occurrence, \
     create_offer_with_event_product, create_venue
+from utils.human_ids import humanize
+from utils.rest import handle_rest_get_list
 
 
 @clean_database

@@ -1,12 +1,13 @@
-import pytest
 from datetime import datetime, timedelta
 
 from models import PcObject
 from repository.offer_queries import filter_offers_with_keywords_string, build_offer_search_base_query, \
     get_offers_for_recommendations_search
 from tests.conftest import clean_database
-from tests.test_utils import create_product_with_Event_type, create_product_with_Thing_type, create_offerer, create_venue, create_offer_with_event_product, \
-    create_offer_with_thing_product, create_event_occurrence, create_stock_from_event_occurrence, create_stock, create_booking, \
+from tests.test_utils import create_product_with_Event_type, create_product_with_Thing_type, create_offerer, \
+    create_venue, create_offer_with_event_product, \
+    create_offer_with_thing_product, create_event_occurrence, create_stock_from_event_occurrence, create_stock, \
+    create_booking, \
     create_user
 
 

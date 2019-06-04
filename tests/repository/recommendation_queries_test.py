@@ -1,4 +1,3 @@
-import pytest
 from datetime import datetime, timedelta
 
 from models import PcObject, Recommendation
@@ -6,10 +5,10 @@ from repository.recommendation_queries import keep_only_bookable_stocks, \
     filter_unseen_valid_recommendations_for_user, \
     update_read_recommendations
 from tests.conftest import clean_database
-from utils.human_ids import humanize
 from tests.test_utils import create_recommendation, create_offer_with_event_product, create_offerer, \
     create_venue, create_user, create_stock_from_event_occurrence, create_event_occurrence, create_stock_from_offer, \
     create_offer_with_thing_product, create_mediation
+from utils.human_ids import humanize
 
 
 @clean_database

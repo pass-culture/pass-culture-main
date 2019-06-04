@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 from connectors.api_demarches_simplifiees import get_all_applications_for_procedure, ApiDemarchesSimplifieesException, \
     get_application_details

@@ -1,5 +1,3 @@
-import pytest
-
 from models import PcObject
 from repository.offer_queries import get_offers_for_recommendations_search
 

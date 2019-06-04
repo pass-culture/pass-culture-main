@@ -1,5 +1,3 @@
-import pytest
-
 from domain.music_types import music_types
 from models import PcObject
 from tests.conftest import clean_database, TestClient

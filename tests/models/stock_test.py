@@ -1,16 +1,14 @@
 from datetime import datetime, timedelta
+
 import pytest
 
-from models import Stock, ApiErrors, PcObject
-from models.db import db
-from models.pc_object import DeletedRecordException, serialize
+from models import ApiErrors, PcObject
+from models.pc_object import DeletedRecordException
 from models.stock import Stock
 from tests.conftest import clean_database
 from tests.test_utils import create_stock_with_event_offer, create_offerer, create_venue, \
     create_offer_with_event_product, \
-    create_stock_from_offer, create_offer_with_thing_product, create_booking, create_user, create_stock, \
-    create_stock_with_thing_offer
-from utils.human_ids import humanize
+    create_stock_from_offer, create_offer_with_thing_product, create_booking, create_user, create_stock
 
 
 @clean_database

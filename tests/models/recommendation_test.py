@@ -1,7 +1,7 @@
-import pytest
 from unittest.mock import patch
 
-from tests.test_utils import create_recommendation, create_offer_with_thing_product, create_product_with_Thing_type, create_venue, create_offerer, \
+from tests.test_utils import create_recommendation, create_offer_with_thing_product, create_product_with_Thing_type, \
+    create_venue, create_offerer, \
     create_mediation, create_user, create_offer_with_event_product
 
 

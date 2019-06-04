@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
-import pytest
-
 from models import PcObject, EventType, ThingType, Deposit
 from models.db import db
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_offer_with_thing_product, create_deposit, create_stock_with_event_offer, create_venue, \
+from tests.test_utils import API_URL, create_offer_with_thing_product, create_deposit, create_stock_with_event_offer, \
+    create_venue, \
     create_offerer, \
     create_user, create_booking, create_offer_with_event_product, \
     create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, create_stock_from_offer

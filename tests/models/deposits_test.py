@@ -1,5 +1,3 @@
-import pytest
-
 from models import Deposit, PcObject
 from tests.conftest import clean_database
 from tests.test_utils import create_user

@@ -1,8 +1,6 @@
+import os
 from pathlib import Path
 from unittest.mock import patch, MagicMock, call, ANY
-
-import os
-import pytest
 
 from models import PcObject
 from scripts.init_titelive.import_thumbs import import_init_titelive_thumbs, \

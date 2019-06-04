@@ -1,7 +1,5 @@
 from datetime import datetime
 
-import pytest
-
 from models import PcObject
 from models.db import db
 from scripts.update_emails_with_new_sender_email import update_emails_with_new_sender_email

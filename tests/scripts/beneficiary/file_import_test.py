@@ -1,8 +1,6 @@
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch, ANY
 
-import pytest
-
 from models import User, Booking
 from scripts.beneficiary.file_import import fill_user_from, create_booking_for, create_users_with_activation_bookings, \
     split_rows_in_chunks_with_no_duplicated_emails

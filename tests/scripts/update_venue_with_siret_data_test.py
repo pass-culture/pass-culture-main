@@ -1,7 +1,5 @@
 from decimal import Decimal
 
-import pytest
-
 from models import PcObject
 from models.db import db
 from scripts.update_venue_with_sirene_data import update_venue_with_sirene_data

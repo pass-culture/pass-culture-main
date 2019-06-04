@@ -1,7 +1,5 @@
 from decimal import Decimal
 
-import pytest
-
 from domain.payments import generate_payment_details_csv, generate_wallet_balances_csv
 from models.user import WalletBalance
 from tests.test_utils import create_payment_details

@@ -1,11 +1,10 @@
-import pytest
-
 from datetime import datetime
-from tests.conftest import clean_database
+
 from domain.bookings import generate_bookings_details_csv
 from models import Booking, PcObject
+from tests.conftest import clean_database
 from tests.test_utils import create_booking, create_deposit, create_stock, create_user, create_offerer, create_venue, \
-    create_offer_with_thing_product, create_bank_information
+    create_offer_with_thing_product
 
 
 class BookingsCSVTest:

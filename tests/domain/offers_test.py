@@ -1,11 +1,10 @@
+from datetime import datetime
 from unittest.mock import Mock
 
-import pytest
-
-from models import PcObject
 from domain.offers import add_stock_alert_message_to_offer
 from models import Offer
-from datetime import datetime
+from models import PcObject
+from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
     create_offer_with_event_product, \
@@ -15,8 +14,6 @@ from tests.test_utils import create_booking, \
     create_user, \
     create_stock_from_offer, \
     create_venue
-
-from tests.conftest import clean_database
 
 find_thing = Mock()
 

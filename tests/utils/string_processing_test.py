@@ -1,5 +1,3 @@
-import pytest
-
 from utils.string_processing import get_matched_string_index, \
     format_decimal, \
     get_price_value, \

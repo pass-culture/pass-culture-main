@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
 
-import pytest
-
 from models import Booking
 from models.pc_object import PcObject
 from tests.conftest import clean_database, TestClient

@@ -1,4 +1,3 @@
-import pytest
 from models import Stock
 
 from sandboxes.scripts.save_sandbox import save_sandbox

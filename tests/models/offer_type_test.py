@@ -1,5 +1,3 @@
-import pytest
-
 from models.offer_type import ProductType, ThingType, EventType
 
 

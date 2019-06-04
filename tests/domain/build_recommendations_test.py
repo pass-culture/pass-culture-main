@@ -1,7 +1,5 @@
 from unittest.mock import patch
 
-import pytest
-
 from domain.build_recommendations import build_mixed_recommendations
 from models import Offer
 from tests.test_utils import create_recommendation, create_stock

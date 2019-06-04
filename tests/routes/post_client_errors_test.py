@@ -1,5 +1,3 @@
-import pytest
-
 from tests.conftest import TestClient
 from tests.test_utils import API_URL
 

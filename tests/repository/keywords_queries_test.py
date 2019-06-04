@@ -1,5 +1,3 @@
-import pytest
-
 from models.pc_object import PcObject
 from repository.keywords_queries import get_keywords_analyzer
 from tests.conftest import clean_database

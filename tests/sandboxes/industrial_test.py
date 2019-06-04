@@ -1,7 +1,5 @@
 from pprint import pprint
 
-import pytest
-
 from sandboxes.scripts.save_sandbox import save_sandbox
 from sandboxes.scripts.testcafe_helpers import get_all_testcafe_helpers
 from tests.conftest import clean_database

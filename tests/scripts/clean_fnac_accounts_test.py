@@ -1,5 +1,3 @@
-import pytest
-
 from models import PcObject, UserOfferer, Offer, Venue, RightsType
 from scripts.clean_fnac_accounts import find_all_fnac_users, find_all_OK_fnac_offerers, \
     create_all_possible_user_offerers, \

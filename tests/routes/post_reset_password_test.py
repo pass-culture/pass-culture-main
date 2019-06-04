@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
 
-import pytest
-
 from domain.password import RESET_PASSWORD_TOKEN_LENGTH
 from models import PcObject
 from models.db import db

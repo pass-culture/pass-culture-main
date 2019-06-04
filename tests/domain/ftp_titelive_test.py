@@ -1,4 +1,3 @@
-import pytest
 import re
 
 from freezegun import freeze_time

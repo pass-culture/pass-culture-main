@@ -1,5 +1,4 @@
 """ routes offerer """
-import pytest
 from datetime import timedelta, datetime
 
 from models import PcObject
