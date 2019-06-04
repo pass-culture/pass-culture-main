@@ -75,10 +75,11 @@ class InitTiteLiveThings(LocalProvider):
         self.thing_type, self.extraData['bookFormat'] = get_thing_type_and_extra_data_from_titelive_type(
             self.infos['code_support'])
 
+        self.lines_checked += 1
+
         if self.thing_type is None:
             return None
 
-        self.lines_checked += 1
         providable_info = ProvidableInfo()
         providable_info.type = Product
         providable_info.idAtProviders = self.infos['ean13']
@@ -94,6 +95,9 @@ class InitTiteLiveThings(LocalProvider):
         thing.extraData = get_extraData_from_infos(self.extraData, self.infos)
 
         if self.infos['url_extrait_pdf'] != '':
+            if thing.mediaUrls is None:
+                thing.mediaUrls = []
+
             thing.mediaUrls.append(self.infos['url_extrait_pdf'])
 
 
