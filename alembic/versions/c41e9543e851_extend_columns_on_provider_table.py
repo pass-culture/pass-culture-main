@@ -1,7 +1,7 @@
 """extend_columns_on_provider_table
 
 Revision ID: c41e9543e851
-Revises: f98d8cea0564
+Revises: cff9e82d0558
 Create Date: 2019-05-24 12:56:12.550164
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = 'c41e9543e851'
-down_revision = 'f98d8cea0564'
+down_revision = 'cff9e82d0558'
 branch_labels = None
 depends_on = None
 
