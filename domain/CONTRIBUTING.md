@@ -61,7 +61,6 @@ Ils ont pour objectif de :
 
 Par exemple :
 ```python
-@pytest.mark.standalone
 class DigitalThingsReimbursementTest:
     def test_apply_for_booking_returns_a_reimbursed_amount(self):
         # given

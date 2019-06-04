@@ -37,7 +37,6 @@ Ils ont pour objectif de :
 
 Par exemple :
 ```python
-@pytest.mark.standalone
 class FindUserActivationBookingTest:
     @clean_database
     def test_returns_true_is_a_booking_exists_on_such_stock(self, app):

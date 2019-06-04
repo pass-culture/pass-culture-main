@@ -18,7 +18,6 @@ d'instance ou des _properties_) il est possible de les tester unitairement.
 
 Par exemple :
 ```python
-@pytest.mark.standalone
 def test_date_range_matches_the_occurrence_if_only_one_occurrence():
     # given
     offer = Offer()

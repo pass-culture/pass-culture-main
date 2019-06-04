@@ -67,7 +67,6 @@ def _create_detail_response(application_id=145, offerer_id=267, venue_id=578, bi
     }
 
 
-@pytest.mark.standalone
 class VenueWithoutSIRETBankInformationProviderTest:
 
     def setup(self):

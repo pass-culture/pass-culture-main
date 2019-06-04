@@ -9,9 +9,6 @@ exécutés plus tôt. Le souhait est de les rendre exécutable indépendamment d
 
 * Pour ce faire, on peut décorer une fonction de test avec `@clean_database` qui va s'occuper de vider toutes les tables dans la base de donnée.
 Un test décoré de cette manière va donc devoir se préoccuper d'enregistrer les données dont il a besoin.
-* Les tests considérés comme indépendants (ceux qui n'utilisent pas la fixture `app`, donc qui sont naturellement unitaires) peuvent être décorés
-avec un marqueur pytest `@pytest.mark.standalone` : ils seront alors exécutés *après* tous les tests qui sont dépendants.
-* Lorsqu'on n'aura plus de tests dépendants les uns des autres, on pourra supprimer ce marqueur pytest.
 
 ## Niveaux de tests
 

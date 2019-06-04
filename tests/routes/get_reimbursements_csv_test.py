@@ -4,7 +4,7 @@ from models import PcObject
 from scripts.payment.batch_steps import generate_new_payments
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_bank_information, create_stock_with_thing_offer, \
-    create_offer_with_thing_product, create_deposit, create_venue, create_offerer, \
+    create_deposit, create_venue, create_offerer, \
     create_user, create_booking, create_user_offerer
 
 

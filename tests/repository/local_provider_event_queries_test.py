@@ -1,16 +1,12 @@
 from datetime import datetime
 
-import pytest
-
 from models import Provider, LocalProviderEvent, PcObject
 from models.local_provider_event import LocalProviderEventType
 from repository.local_provider_event_queries import find_latest_sync_end_event
 from tests.conftest import clean_database
 
 
-@pytest.mark.standalone
 class FindLatestSyncEndEventTest:
-
     def test_return_none_when_no_event_happended(self, app):
         # Given
         provider = Provider()

@@ -28,7 +28,6 @@ renvoie une erreur, un réponse valide, etc.
 
 Par exemple :
 ```python
-@pytest.mark.standalone
 @patch('connectors.api_entreprises.requests.get')
 def test_write_object_validation_email_raises_ApiEntrepriseException_when_siren_api_does_not_respond(requests_get):
     # Given

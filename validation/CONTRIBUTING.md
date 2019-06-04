@@ -32,7 +32,6 @@ Ils ont pour objectif de :
 
 Par exemple :
 ```python
-@pytest.mark.standalone
 def test_check_valid_signup_raises_api_error_if_not_contact_ok():
     # Given
     mocked_request = Mock()
