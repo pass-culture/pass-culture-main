@@ -7,7 +7,7 @@ import DiscoveryPage from '../../components/pages/discovery'
 import FavoritesPage from '../../components/pages/FavoritesPage'
 import MyBookingsPage from '../../components/pages/my-bookings'
 import ProfilePage from '../../components/pages/profile'
-import Search from '../../components/pages/search/Search'
+import { SearchContainer as Search } from '../../components/pages/search/Search'
 import { SUPPORT_EMAIL, SUPPORT_EMAIL_SUBJECT } from '../config'
 
 describe('filterRoutes', () => {

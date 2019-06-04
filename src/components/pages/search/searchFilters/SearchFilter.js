@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { Transition } from 'react-transition-group'
@@ -124,7 +123,7 @@ class SearchFilter extends Component {
     const encodedValue = encodeURI(value)
     let nextValue = encodedValue
     const previousValue = params[key]
-    if (get(previousValue, 'length')) {
+    if (previousValue && previousValue.length) {
       const args = previousValue.split(',').concat([encodedValue])
       args.sort()
       nextValue = args.join(',')
@@ -137,7 +136,7 @@ class SearchFilter extends Component {
     const { params } = this.state
     const previousValue = params[key]
 
-    if (get(previousValue, 'length')) {
+    if (previousValue && previousValue.length) {
       const encodedValue = encodeURI(value)
       let nextValue = previousValue
         .replace(`,${encodedValue}`, '')
