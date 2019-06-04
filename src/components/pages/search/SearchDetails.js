@@ -7,12 +7,12 @@ import { requestData } from 'redux-saga-data'
 import get from 'lodash.get'
 
 import BookingContainer from '../../booking/BookingContainer'
-import RectoContainer from '../../recto/RectoContainer'
-import VersoContainer from '../../verso/VersoContainer'
 import { recommendationNormalizer } from '../../../utils/normalizers'
+import RectoContainer from '../../recto/RectoContainer'
 import { selectCurrentSearchRecommendation } from '../../../selectors'
+import VersoContainer from '../../verso/VersoContainer'
 
-class SearchDetails extends Component {
+export class SearchDetails extends Component {
   constructor() {
     super()
     this.state = { forceDetailsVisible: false }
@@ -20,6 +20,7 @@ class SearchDetails extends Component {
 
   componentDidMount() {
     const { recommendation } = this.props
+
     if (recommendation) {
       // We need to wait to go out the mount lifecycle
       // in order to force the dom to render
@@ -27,11 +28,8 @@ class SearchDetails extends Component {
       setTimeout(this.handleForceDetailsVisible)
       return
     }
-    this.handleRequestData()
-  }
 
-  handleRequestSuccess = () => {
-    this.handleForceDetailsVisible()
+    this.handleRequestData()
   }
 
   handleRequestData = () => {
@@ -39,11 +37,10 @@ class SearchDetails extends Component {
     const {
       params: { mediationIdOrView, offerId },
     } = match
-
     const mediationId =
       mediationIdOrView === 'booking' ? null : mediationIdOrView
-
     let apiPath = `/recommendations/offers/${offerId}`
+
     if (mediationId) {
       apiPath = `${apiPath}?mediationId=${mediationId}`
     }
@@ -51,7 +48,7 @@ class SearchDetails extends Component {
     dispatch(
       requestData({
         apiPath,
-        handleSuccess: this.handleRequestSuccess,
+        handleSuccess: this.handleForceDetailsVisible,
         normalizer: recommendationNormalizer,
         stateKeys: 'searchRecommendations',
       })
@@ -65,6 +62,7 @@ class SearchDetails extends Component {
   render() {
     const { recommendation } = this.props
     const { forceDetailsVisible } = this.state
+
     return (
       <Fragment>
         {forceDetailsVisible && (
@@ -76,19 +74,19 @@ class SearchDetails extends Component {
           />
         )}
         {recommendation && (
-          <VersoContainer
-            recommendation={recommendation}
-            extraClassName="with-header"
-            forceDetailsVisible={forceDetailsVisible}
-          />
-        )}
-        {recommendation && (
-          <RectoContainer
-            recommendation={recommendation}
-            areDetailsVisible={forceDetailsVisible}
-            extraClassName="with-header"
-            position="current"
-          />
+          <Fragment>
+            <VersoContainer
+              recommendation={recommendation}
+              extraClassName="with-header"
+              forceDetailsVisible={forceDetailsVisible}
+            />
+            <RectoContainer
+              recommendation={recommendation}
+              areDetailsVisible={forceDetailsVisible}
+              extraClassName="with-header"
+              position="current"
+            />
+          </Fragment>
         )}
       </Fragment>
     )
@@ -109,7 +107,6 @@ function mapStateToProps(state, ownProps) {
   const { match } = ownProps
   const offerId = get(match, 'params.offerId')
   const mediationId = get(match, 'params.mediationId')
-
   const recommendation = selectCurrentSearchRecommendation(
     state,
     offerId,
@@ -119,7 +116,7 @@ function mapStateToProps(state, ownProps) {
   return { recommendation }
 }
 
-export default compose(
+export const SearchDetailsContainer = compose(
   withRouter,
   connect(mapStateToProps)
 )(SearchDetails)
