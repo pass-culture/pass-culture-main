@@ -9,11 +9,10 @@ from mailjet_rest import Client
 from werkzeug.middleware.profiler import ProfilerMiddleware
 
 from admin.install import install_admin_views
-from models.install import install_models
 from repository.features import feature_request_profiling_enabled
 from local_providers.install import install_local_providers
 from models.db import db
-#from models.install import install_models
+from models.install import install_models
 from utils.config import IS_DEV
 from utils.json_encoder import EnumJSONEncoder
 from utils.mailing import get_contact, \
