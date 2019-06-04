@@ -5,6 +5,9 @@ import { Route, Switch } from 'react-router-dom'
 import { assignData, requestData } from 'redux-saga-data'
 import get from 'lodash.get'
 
+import { connect } from 'react-redux'
+import { compose } from 'redux'
+import withQueryRouter from 'with-query-router'
 import BackButton from '../../layout/BackButton'
 import { Icon } from '../../layout/Icon'
 import Footer from './Footer'
@@ -20,7 +23,13 @@ import isInitialQueryWithoutFilters, {
   translateBrowserUrlToApiUrl,
 } from './utils'
 
-class Search extends PureComponent {
+import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
+import { selectRecommendations } from '../../../selectors'
+import selectTypeSublabels, {
+  selectTypes,
+} from '../../../selectors/selectTypes'
+
+export class Search extends PureComponent {
   constructor(props) {
     super(props)
 
@@ -344,7 +353,7 @@ class Search extends PureComponent {
                           title="EXPLORER LES CATÉGORIES"
                           typeSublabels={typeSublabels}
                         />
-                        )}
+                      )}
                     />
                     <Route
                       path="/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?"
@@ -364,7 +373,7 @@ class Search extends PureComponent {
                             typeSublabels={typeSublabels}
                           />
                         </Fragment>
-                        )}
+                      )}
                     />
                     <Route
                       path="/recherche/resultats/:menu(menu)?"
@@ -376,7 +385,7 @@ class Search extends PureComponent {
                           keywords={keywords}
                           typeSublabels={typeSublabels}
                         />
-                        )}
+                      )}
                     />
                   </Switch>
                 </div>
@@ -401,4 +410,27 @@ Search.propTypes = {
   typeSublabelsAndDescription: PropTypes.array.isRequired,
 }
 
-export default Search
+const selectSearchRecommendations = state => {
+  const recommendations = get(state, 'data.searchRecommendations', [])
+  const derivedState = { ...state, data: { ...state.data, recommendations } }
+  return selectRecommendations(derivedState)
+}
+
+const mapStateToProps = state => {
+  const recommendations = selectSearchRecommendations(state)
+  const typeSublabels = selectTypeSublabels(state)
+  const typeSublabelsAndDescription = selectTypes(state)
+  const { user } = state
+  return {
+    recommendations,
+    typeSublabels,
+    typeSublabelsAndDescription,
+    user,
+  }
+}
+
+export const SearchContainer = compose(
+  withRedirectToSigninWhenNotAuthenticated,
+  withQueryRouter,
+  connect(mapStateToProps)
+)(Search)

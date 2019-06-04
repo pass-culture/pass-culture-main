@@ -26,10 +26,7 @@ export class FilterByDistance extends Component {
 
     return (
       <React.Fragment>
-        <div
-          className="pt18 text-center mb20"
-          id="filter-by-distance"
-        >
+        <div className="pt18 text-center mb20" id="filter-by-distance">
           <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
             {'Où'}
           </h2>
@@ -64,14 +61,8 @@ FilterByDistance.propTypes = {
       date: PropTypes.string,
       distance: PropTypes.string,
       jours: PropTypes.string,
-      latitude: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number,
-      ]),
-      longitude: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number,
-      ]),
+      latitude: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      longitude: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       'mots-cles': PropTypes.string,
       orderBy: PropTypes.string,
     }),
@@ -87,4 +78,6 @@ const mapStateToProps = state => ({
   geolocation: state.geolocation,
 })
 
-export default connect(mapStateToProps)(FilterByDistance)
+export const FilterByDistanceContainer = connect(mapStateToProps)(
+  FilterByDistance
+)

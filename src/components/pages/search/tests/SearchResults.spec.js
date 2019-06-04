@@ -2,7 +2,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import SearchResults from '../SearchResults'
-import SearchResultItem from '../SearchResultItem'
+import { SearchResultItemContainer as SearchResultItem } from '../SearchResultItem'
 
 describe('src | components | pages | SearchResults', () => {
   describe('snapshot', () => {
@@ -165,16 +165,14 @@ describe('src | components | pages | SearchResults', () => {
 
           // when
           const wrapper = shallow(<SearchResults.WrappedComponent {...props} />)
-          const resultsTitle = wrapper.find('h2').props()
-          const SearchResultItemWrapper = wrapper.find(
-            SearchResultItem
-          )
+          const resultsTitle = wrapper.is('h2')
+          const SearchResultItemWrapper = wrapper.find(SearchResultItem)
           const item = {
             recommendation: items[0],
           }
 
           // then
-          expect(resultsTitle.children).toEqual('')
+          expect(resultsTitle).toBe(false)
           expect(SearchResultItemWrapper.props()).toEqual(item)
         })
       })
@@ -193,9 +191,7 @@ describe('src | components | pages | SearchResults', () => {
           const wrapper = shallow(<SearchResults.WrappedComponent {...props} />)
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
-          const SearchResultItemWrapper = wrapper.find(
-            SearchResultItem
-          )
+          const SearchResultItemWrapper = wrapper.find(SearchResultItem)
 
           // then
           expect(resultsTitle.children).toEqual(
@@ -221,9 +217,7 @@ describe('src | components | pages | SearchResults', () => {
           const wrapper = shallow(<SearchResults.WrappedComponent {...props} />)
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
-          const SearchResultItemWrapper = wrapper.find(
-            SearchResultItem
-          )
+          const SearchResultItemWrapper = wrapper.find(SearchResultItem)
           const item = {
             recommendation: items[0],
           }
@@ -248,9 +242,7 @@ describe('src | components | pages | SearchResults', () => {
           const wrapper = shallow(<SearchResults.WrappedComponent {...props} />)
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
-          const SearchResultItemWrapper = wrapper.find(
-            SearchResultItem
-          )
+          const SearchResultItemWrapper = wrapper.find(SearchResultItem)
 
           // then
           expect(resultsTitle.children).toEqual('"fakeKeywords" : 0 résultat')

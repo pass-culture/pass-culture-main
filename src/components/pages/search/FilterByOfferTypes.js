@@ -93,4 +93,6 @@ const mapStateToProps = state => ({
   typeSublabels: selectTypeSublabels(state),
 })
 
-export default connect(mapStateToProps)(FilterByOfferTypes)
+export const FilterByOfferTypesContainer = connect(mapStateToProps)(
+  FilterByOfferTypes
+)

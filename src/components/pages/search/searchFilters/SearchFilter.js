@@ -4,8 +4,8 @@ import React, { Component } from 'react'
 import { Transition } from 'react-transition-group'
 
 import FilterByDates from '../FilterByDates'
-import FilterByDistance from '../FilterByDistance'
-import FilterByOfferTypes from '../FilterByOfferTypes'
+import { FilterByDistanceContainer as FilterByDistance } from '../FilterByDistance'
+import { FilterByOfferTypesContainer as FilterByOfferTypes } from '../FilterByOfferTypes'
 import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from '../utils'
 
 const filtersPanelHeight = 475

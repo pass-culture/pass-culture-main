@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 
-import SearchResultItem from './SearchResultItem'
+import { SearchResultItemContainer as SearchResultItem } from './SearchResultItem'
 import { searchResultsTitle } from './utils'
 import { withQueryRouter } from '../../hocs/withQueryRouter'
 import Spinner from '../../layout/Spinner'
@@ -76,17 +76,21 @@ class SearchResults extends PureComponent {
 
     return (
       <div className="search-results">
-        <h2
-          className={classnames(
-            'fs15 is-uppercase is-italic is-semi-bold mb12',
-            {
-              [`nav-result-title`]: cameFromOfferTypesPage,
-            }
-          )}
-          id="results-title"
-        >
-          {resultTitle}
-        </h2>
+        {resultTitle ? (
+          <h2
+            className={classnames(
+              'fs15 is-uppercase is-italic is-semi-bold mb12',
+              {
+                [`nav-result-title`]: cameFromOfferTypesPage,
+              }
+            )}
+            id="results-title"
+          >
+            {resultTitle}
+          </h2>
+        ) : (
+          ''
+        )}
         {items && items.length > 0 && (
           <InfiniteScroll
             element="ul"

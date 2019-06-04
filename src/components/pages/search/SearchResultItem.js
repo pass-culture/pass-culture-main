@@ -87,7 +87,7 @@ SearchResultItem.propTypes = {
   recommendation: PropTypes.shape().isRequired,
 }
 
-export default compose(
+export const SearchResultItemContainer = compose(
   withRouter,
   connect()
 )(SearchResultItem)

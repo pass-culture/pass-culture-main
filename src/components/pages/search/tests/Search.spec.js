@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 import { Switch } from 'react-router-dom'
 
 import BackButton from '../../../layout/BackButton'
-import Search from '../Search'
+import { Search } from '../Search'
 
 const getPageContentRoute = wrapper =>
   wrapper
@@ -25,9 +25,7 @@ const getPageContentFilter = wrapper =>
   )
 
 const getPageContentSwitch = wrapper =>
-  getPageContentDiv(wrapper).props.children.find(
-    child => child.type === Switch
-  )
+  getPageContentDiv(wrapper).props.children.find(child => child.type === Switch)
 
 const getSwitchedPageContent = path => wrapper =>
   getPageContentSwitch(wrapper)
@@ -149,7 +147,9 @@ describe('src | components | pages | Search', () => {
         )(wrapper)
 
         // then
-        expect(NavByOfferTypeComponent.props.title).toEqual('EXPLORER LES CATÉGORIES')
+        expect(NavByOfferTypeComponent.props.title).toEqual(
+          'EXPLORER LES CATÉGORIES'
+        )
       })
     })
 
