@@ -12,7 +12,7 @@ from postgresql_audit.base import VersioningManager
 from models import User
 
 revision = '565f79cfa5b2'
-down_revision = 'cff9e82d0558'
+down_revision = 'c41e9543e851'
 branch_labels = None
 depends_on = None
 
