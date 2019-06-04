@@ -85,6 +85,9 @@ class TiteLiveThings(LocalProvider):
         thing.extraData = get_extraData_from_infos(self.extraData, self.infos)
 
         if self.infos['url_extrait_pdf'] != '':
+            if thing.mediaUrls is None:
+                thing.mediaUrls = []
+
             thing.mediaUrls.append(self.infos['url_extrait_pdf'])
 
     def get_remaining_files_to_check(self, ordered_thing_files : list):
