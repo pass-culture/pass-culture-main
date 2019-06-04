@@ -8788,9 +8788,10 @@ react-error-overlay@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-3.0.0.tgz#c2bc8f4d91f1375b3dad6d75265d51cd5eeaf655"
 
-react-final-form-utils@1.3.4:
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/react-final-form-utils/-/react-final-form-utils-1.3.4.tgz#6fab10ec4267f2ba619f81ced6c58b30032fad16"
+react-final-form-utils@1.3.6:
+  version "1.3.6"
+  resolved "https://registry.yarnpkg.com/react-final-form-utils/-/react-final-form-utils-1.3.6.tgz#2d5f67665d6ddbf5196baf4a71e67ee31877c8f3"
+  integrity sha512-CnWshfoIYbsYu149QA1mSVp348xHSOfxOxwwWHQU1fIy3YiI7keB9K4dToaCIVgst5DDr1sWe13vJeH4Rt6V+w==
   dependencies:
     classnames "2.2.5"
     eslint "^5.8.0"

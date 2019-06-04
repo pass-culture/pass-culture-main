@@ -7,6 +7,7 @@ import {
   getDatetimeOneHourAfter,
   getDatetimeAtSpecificHoursAndMinutes,
   getRemainingStocksCount,
+  createFormatPrice
 } from '../utils'
 
 describe('src | components | pages | Offer | StockItem | utils', () => {
@@ -141,7 +142,8 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
       expect(result).toEqual(54)
     })
   })
-  describe('When stock is illimited', () => {
+
+  describe('When stock is unlimited', () => {
     it('should compute remaining illimited stock', () => {
       // given
       const available = null
@@ -154,6 +156,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
       expect(result).toEqual('Illimité')
     })
   })
+
   describe('getDatetimeOneDayAfter', () => {
     it('should getDatetimeOneDayAfter', () => {
       // given
@@ -188,6 +191,70 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
 
       // then
       expect(nextDatetime).toEqual('2019-04-27T21:59:00.000Z')
+    })
+  })
+
+  describe('createFormatPrice', () => {
+    describe('Gratuit label', () => {
+      it('should return "Gratuit" label when isReadOnly is true and value is null', () => {
+        // given
+        const readOnly = true
+        const value = null
+
+        // when
+        const result = createFormatPrice(readOnly)(value)
+
+        // then
+        expect(result).toBe('Gratuit')
+      })
+
+      it('should return "Gratuit" label when isReadOnly is true and value is equal to 0', () => {
+        // given
+        const readOnly = true
+        const value = 0
+
+        // when
+        const result = createFormatPrice(readOnly)(value)
+
+        // then
+        expect(result).toBe('Gratuit')
+      })
+
+      it('should return "Gratuit" label when isReadOnly is true and value is empty', () => {
+        // given
+        const readOnly = true
+        const value = ''
+
+        // when
+        const result = createFormatPrice(readOnly)(value)
+
+        // then
+        expect(result).toBe('Gratuit')
+      })
+    })
+
+    describe('formatted price', () => {
+      it('should replace comma sign to dot sign when value from is a string and contains numbers', () => {
+        // given
+        const value = '1,1'
+
+        // when
+        const result = createFormatPrice(false)(value)
+
+        // then
+        expect(result).toEqual("1.1")
+      })
+
+      it('should return a not formatted value when it is valid', () => {
+        // given
+        const value = '1.1'
+
+        // when
+        const result = createFormatPrice(false)(value)
+
+        // then
+        expect(result).toEqual("1.1")
+      })
     })
   })
 })

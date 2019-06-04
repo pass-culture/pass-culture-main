@@ -62,7 +62,7 @@ export function errorKeyToFrenchKey(errorKey) {
   }
 }
 
-export const createFormatAvailable = readOnly => value => {
+export const createFormatAvailable = () => value => {
   if (value === null) {
     return 'Illimité'
   }
@@ -70,8 +70,15 @@ export const createFormatAvailable = readOnly => value => {
 }
 
 export const createFormatPrice = readOnly => value => {
-  if (value === '' || (readOnly && value === 0)) {
+  if (readOnly && (value === null || value === 0 || value === '')) {
     return 'Gratuit'
   }
+
+  if (typeof value === 'string') {
+    if (value.includes(',') || value.includes('.')) {
+      return value.replace(',', '.')
+    }
+  }
+
   return value
 }

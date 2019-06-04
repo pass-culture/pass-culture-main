@@ -16,6 +16,7 @@ import {
   NumberField,
 } from 'components/layout/form/fields'
 import Icon from 'components/layout/Icon'
+import { PriceField } from '../../../../../../../layout/form/fields/PriceField'
 
 export class ProductFields extends Component {
   static isParsedByForm = true
@@ -94,7 +95,7 @@ export class ProductFields extends Component {
         <td title="Gratuit si vide">
           <HiddenField name="offerId" type="hidden" />
           <HiddenField name="venueId" type="hidden" />
-          <NumberField
+          <PriceField
             name="price"
             onBlur={this.onPriceBlur}
             format={createFormatPrice(readOnly)}
@@ -135,7 +136,7 @@ export class ProductFields extends Component {
         </td>
         <td className="tooltiped">
           <NumberField
-            format={createFormatAvailable(readOnly)}
+            format={createFormatAvailable()}
             name="available"
             placeholder="Illimité"
             readOnly={readOnly}
