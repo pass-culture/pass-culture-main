@@ -66,12 +66,11 @@ export const markAsBooked = bookings => {
 export const markAsCancelled = bookings => items =>
   items.map(item => {
     const sortedMatchingBookings = bookings
-      .filter(booking => booking.stockId === item.id)
       .sort(antechronologicalSort)
-    const { isCancelled } = sortedMatchingBookings[0] || {}
-    /* eslint-disable */
-    item.userHasCancelledThisDate = isCancelled || false
-    return item
+      .find(booking => booking.stockId === item.id)
+    const userHasCancelledThisDate =
+      (sortedMatchingBookings && sortedMatchingBookings.isCancelled) || false
+    return { ...item, userHasCancelledThisDate }
   })
 
 export const sortByDate = () => items =>
