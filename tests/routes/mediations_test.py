@@ -37,7 +37,7 @@ def test_create_mediation_with_thumb_url(app):
     }
 
     # when
-    response = auth_request.post(API_URL + '/mediations', json=data)
+    response = auth_request.post(API_URL + '/mediations', form=data)
 
     # then
     assert response.status_code == 201
@@ -62,7 +62,7 @@ def test_create_mediation_with_thumb_url_returns_400_if_url_is_not_an_image(app)
     }
 
     # when
-    response = auth_request.post(API_URL + '/mediations', json=data)
+    response = auth_request.post(API_URL + '/mediations', form=data)
 
     # then
     assert response.status_code == 400
@@ -94,7 +94,7 @@ def test_create_mediation_with_thumb_file(app):
         files = {'thumb': ('FranckLepage.jpg', thumb_file)}
 
         # when
-        response = auth_request.post(API_URL + '/mediations', json=data, files=files)
+        response = auth_request.post(API_URL + '/mediations', form=data, files=files)
 
     # then
     assert response.status_code == 201

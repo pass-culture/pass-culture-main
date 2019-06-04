@@ -90,12 +90,17 @@ class TestClient:
 
         return result
 
-    def post(self, route: str, json: dict = None, files: dict = None, headers=LOCAL_ORIGIN_HEADER):
+    def post(self, route: str, json: dict = None, form: dict = None, files: dict = None, headers=LOCAL_ORIGIN_HEADER):
         if self.session:
-            result = self.session.post(route, json=json, files=files, headers=headers)
+            sender = self.session
         else:
-            result = requests.post(route, json=json, files=files, headers=headers)
+            sender = requests
 
+        if form:
+            result = sender.post(route, data=form, files=files, headers=headers)
+        else:
+            result = sender.post(route, json=json, files=files, headers=headers)
+        
         if TestClient.WITH_DOC:
             self._print_spec('POST', route, json, result)
 
