@@ -1,7 +1,9 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import options, { INFINITE_DISTANCE } from '../../../../helpers/search/distanceOptions'
+import options, {
+  INFINITE_DISTANCE,
+} from '../../../../helpers/search/distanceOptions'
 import { FilterByDistance } from '../FilterByDistance'
 
 describe('src | components | pages | search | FilterByDistance', () => {
@@ -46,14 +48,14 @@ describe('src | components | pages | search | FilterByDistance', () => {
   })
 
   describe('onChangeDistance()', () => {
-    describe('with no geolocation', () => {
+    describe('when I am not geolocated', () => {
       it('should change the distance to 1', () => {
         // given
         const distance = 1
         const event = {
           target: {
-            value: distance
-          }
+            value: distance,
+          },
         }
         const expected = {
           distance,
@@ -70,7 +72,7 @@ describe('src | components | pages | search | FilterByDistance', () => {
       })
     })
 
-    describe('with geolocation', () => {
+    describe('when I am geolocated', () => {
       it('should change the distance to 1', () => {
         // given
         props.geolocation.latitude = 48.854892
@@ -78,8 +80,8 @@ describe('src | components | pages | search | FilterByDistance', () => {
         const distance = 1
         const event = {
           target: {
-            value: distance
-          }
+            value: distance,
+          },
         }
         const expected = {
           distance,
@@ -103,8 +105,8 @@ describe('src | components | pages | search | FilterByDistance', () => {
         const distance = INFINITE_DISTANCE
         const event = {
           target: {
-            value: distance
-          }
+            value: distance,
+          },
         }
         const expected = {
           distance,

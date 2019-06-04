@@ -257,7 +257,7 @@ export class Search extends PureComponent {
           <span
             aria-hidden
             className="icon-legacy-close is-white-text"
-            title="Retourner sur la page découverte"
+            title="Retourner à la page découverte"
           />
         </button>
         <Switch location={location}>

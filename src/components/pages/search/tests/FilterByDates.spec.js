@@ -146,7 +146,7 @@ describe('src | components | pages | search | FilterByDates', () => {
         props.filterActions.add.mockClear()
       })
 
-      it('change date to null when more than one days checked', () => {
+      it('should change date to null when more than one days checked', () => {
         // given
         const day = '0-1'
         props.filterState.params.jours = day
@@ -161,7 +161,7 @@ describe('src | components | pages | search | FilterByDates', () => {
         props.filterActions.remove.mockClear()
       })
 
-      it('check another day, already checked', () => {
+      it('should check another day, already checked', () => {
         // given
         const day = '0-1'
         const callback = undefined
@@ -181,7 +181,7 @@ describe('src | components | pages | search | FilterByDates', () => {
         props.filterActions.remove.mockClear()
       })
 
-      it('add another day not added yet to query with callback undefined ', () => {
+      it('shoud add another day not added yet to query with callback undefined ', () => {
         // given
         const day = '0-1'
         const callback = undefined

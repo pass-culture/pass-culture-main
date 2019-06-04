@@ -2,9 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 
-import state from '../../../../mocks/global_state_1'
 import { SearchResultItem } from '../SearchResultItem'
-import { selectRecommendations } from '../../../../selectors'
 
 describe('src | components | pages | search | SearchResultItem', () => {
   const fakeMethod = jest.fn()
@@ -73,13 +71,14 @@ describe('src | components | pages | search | SearchResultItem', () => {
             offerType: {
               appLabel: 'Livres, cartes bibliothèque ou médiathèque',
               conditionalFields: [],
-              description: "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?",
+              description:
+                'S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?',
               offlineOnly: false,
               onlineOnly: true,
-              proLabel: "Presse  Abonnements",
-              sublabel: "Lire",
-              type: "Thing",
-              value: "ThingType.PRESSE_ABO",
+              proLabel: 'Presse  Abonnements',
+              sublabel: 'Lire',
+              type: 'Thing',
+              value: 'ThingType.PRESSE_ABO',
             },
             thumbCount: 2,
             type: 'Book',
@@ -140,9 +139,6 @@ describe('src | components | pages | search | SearchResultItem', () => {
   })
 
   it('should match the snapshot', () => {
-    // given
-    // [props.recommendation] = selectRecommendations(state)
-
     // when
     const wrapper = shallow(<SearchResultItem {...props} />)
 
@@ -154,7 +150,9 @@ describe('src | components | pages | search | SearchResultItem', () => {
   describe('onSuccessLoadRecommendationDetails()', () => {
     it('should push URL in history', () => {
       // given
-      const linkURL = `${props.location.pathname}/item/${props.recommendation.offerId}${props.location.search}`
+      const linkURL = `${props.location.pathname}/item/${
+        props.recommendation.offerId
+      }${props.location.search}`
 
       // when
       const wrapper = shallow(<SearchResultItem {...props} />)
@@ -185,14 +183,18 @@ describe('src | components | pages | search | SearchResultItem', () => {
       const img = wrapper.find('img').props()
       const h5 = wrapper.find('h5').props()
       const dotdotdot = wrapper.find(Dotdotdot).props()
-      const recommendationDate = wrapper.find('.fs13').last().text()
-      const first = wrapper.find('.fs13').first().text()
+      const recommendationDate = wrapper
+        .find('.fs13')
+        .last()
+        .text()
+      const first = wrapper
+        .find('.fs13')
+        .first()
+        .text()
 
       // then
       expect(img.src).toBe('http://localhost/storage/thumbs/products/QE')
-      expect(h5.title).toBe(
-        'sur la route des migrants ; rencontres à Calais'
-      )
+      expect(h5.title).toBe('sur la route des migrants ; rencontres à Calais')
       expect(dotdotdot.children).toBe(
         'sur la route des migrants ; rencontres à Calais'
       )
