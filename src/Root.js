@@ -4,11 +4,11 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
 import App from './App'
-import routes from './utils/routes'
-import { configureStore } from './utils/store'
+import MatomoPageTracker from './components/matomo/MatomoPageTracker'
 import NotMatch from './components/pages/NotMatch'
+import routes from './utils/routes'
 import { getReactRoutes } from './utils/routes-utils'
-import MatomoPageTracker from './components/hocs/MatomoPageTracker'
+import { configureStore } from './utils/store'
 
 const approutes = getReactRoutes(routes)
 const { store, persistor } = configureStore()
