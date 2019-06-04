@@ -8,7 +8,6 @@ const getSearchResultsHook = RequestMock()
   .onRequestTo(`${ROOT_PATH}recherche/resultats/Applaudir?categories=Applaudir`)
   .respond([], 200, { 'access-control-allow-origin': '*' })
 
-const searchResultsTitle = Selector('#results-title')
 const headerTitle = Selector('header')
 const toggleFilterButton = Selector('#search-filter-menu-toggle-button').find(
   'img'
@@ -69,9 +68,9 @@ test("Le filtre de recherche existe et l'icône n'est pas activée", async t => 
     .contains('ico-filter.svg')
 })
 
-test('Je vois le titre de la recherche "par catégories"', async t => {
+test('Je vois le titre de la recherche "EXPLORER LES CATÉGORIES"', async t => {
   const title = Selector('#nav-by-offer-type').find('h2')
-  await t.expect(title.innerText).eql('PAR CATÉGORIES')
+  await t.expect(title.innerText).eql('EXPLORER LES CATÉGORIES')
 })
 
 test('Je vois 7 vignettes', async t => {
@@ -152,8 +151,6 @@ test('Je vois les résultats de la page de résultats de la catégorie Lire', as
     .find('.to-details')
 
   await t
-    .expect(searchResultsTitle.innerText)
-    .eql('')
     .expect(resultsSection.exists)
     .ok()
     .expect(resultsSection.find('h5').exists)

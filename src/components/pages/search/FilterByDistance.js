@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 
 import options, {
   INFINITE_DISTANCE,
 } from '../../../helpers/search/distanceOptions'
 
-export class FilterByDistance extends Component {
+export class FilterByDistance extends PureComponent {
   onChangeDistance = event => {
     const { filterActions, geolocation } = this.props
     const distance = event.target.value
