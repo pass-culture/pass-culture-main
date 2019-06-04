@@ -12,6 +12,8 @@ get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_i
     Venue
 )
 
+def find_by_id(id):
+    return Offerer.query.filter_by(id=id).first()
 
 def find_by_siren(siren):
     return Offerer.query.filter_by(siren=siren).first()

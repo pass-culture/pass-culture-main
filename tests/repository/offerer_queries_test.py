@@ -7,13 +7,30 @@ from repository.offerer_queries import find_all_offerers_with_managing_user_info
     find_all_offerers_with_managing_user_information_and_venue, \
     find_all_offerers_with_managing_user_information_and_not_virtual_venue, \
     find_all_offerers_with_venue, find_first_by_user_offerer_id, find_all_pending_validation, \
-    find_filtered_offerers, filter_offerers_with_keywords_string
+    find_filtered_offerers, filter_offerers_with_keywords_string, find_by_id
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
     create_offer_with_event_product, create_offer_with_thing_product, create_event_occurrence, \
     create_stock_with_thing_offer, create_stock_from_event_occurrence, create_bank_information
 
+
+@pytest.mark.standalone
+class OffererQueriesTest:
+
+    @clean_database
+    def test_find_by_id_returns_the_right_offerer(self, app):
+        # Given
+        id = 52325
+        searched_offerer = create_offerer(idx=id, name="My sweet offerer", siren="123456789")
+        other_offerer = create_offerer(siren="987654321")
+        PcObject.save(searched_offerer, other_offerer)
+
+        # When
+        offerer = find_by_id(id)
+
+        # Then
+        assert offerer.name == "My sweet offerer"
 
 @pytest.mark.standalone
 @clean_database

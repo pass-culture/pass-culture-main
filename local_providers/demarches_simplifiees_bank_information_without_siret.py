@@ -1,12 +1,13 @@
 import os
 from datetime import datetime
-from pprint import pprint
 
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.bank_account import get_all_application_ids_from_demarches_simplifiees_procedure, format_raw_iban_or_bic
-from models import LocalProvider, BankInformation, Offerer, Venue
+from models import LocalProvider, BankInformation
 from models.local_provider import ProvidableInfo
+from repository import offerer_queries
 from repository.local_provider_event_queries import find_latest_sync_end_event
+from repository import venue_queries
 from utils.date import DATE_ISO_FORMAT
 from utils.human_ids import dehumanize
 
@@ -46,17 +47,15 @@ class VenueWithoutSIRETBankInformationProvider(LocalProvider):
     def __next__(self) -> ProvidableInfo:
         self.application_id = next(self.application_ids)
 
-        pprint('TOTO')
-
         application_response = get_application_details(self.application_id, self.PROCEDURE_ID, self.TOKEN)
         self.application_details = DemarchesSimplifieesMapper.from_venue_without_SIRET_application(application_response)
 
-        offerer = Offerer.query.filter_by(id=self.application_details['structureId']).first()
+        offerer = offerer_queries.find_by_id(self.application_details['structureId'])
 
         if offerer is None:
             raise NoOffererFoundException
 
-        venue = Venue.query.filter_by(id=self.application_details['venueId']).first()
+        venue = venue_queries.find_by_id(self.application_details['venueId'])
 
         if venue is None:
             raise NoVenueFoundException
@@ -76,7 +75,6 @@ class VenueWithoutSIRETBankInformationProvider(LocalProvider):
         bank_information.iban = format_raw_iban_or_bic(self.application_details['IBAN'])
         bank_information.bic = format_raw_iban_or_bic(self.application_details['BIC'])
         bank_information.applicationId = self.application_details['applicationId']
-        bank_information.offererId = self.application_details.get('structureId', None)
         bank_information.venueId = self.application_details.get('venueId', None)
 
 
@@ -87,7 +85,7 @@ class DemarchesSimplifieesMapper:
                 return field["value"]
 
     @classmethod
-    def from_venue_without_SIRET_application(cls, response) -> dict:
+    def from_venue_without_SIRET_application(cls, response: dict) -> dict:
         application_details = dict()
         application_details['BIC'] = cls._find_value_in_fields(response['dossier']["champs"], "BIC")
         application_details['IBAN'] = cls._find_value_in_fields(response['dossier']["champs"], "IBAN")

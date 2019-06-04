@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from sqlalchemy import or_
 
-from models import LocalProviderEvent
+from models import LocalProviderEvent, Provider
 from models.activity import load_activity
 from models.db import db
 from models.local_provider_event import LocalProviderEventType
@@ -16,7 +16,7 @@ def find_by_id_and_table_name(object_id, table_name):
     return result
 
 
-def find_latest_sync_part_end_event(provider) -> LocalProviderEvent:
+def find_latest_sync_part_end_event(provider: Provider) -> LocalProviderEvent:
     return LocalProviderEvent \
         .query \
         .filter((LocalProviderEvent.provider == provider) &
@@ -26,7 +26,7 @@ def find_latest_sync_part_end_event(provider) -> LocalProviderEvent:
         .first()
 
 
-def find_latest_sync_end_event(provider) -> LocalProviderEvent:
+def find_latest_sync_end_event(provider: Provider) -> LocalProviderEvent:
     return LocalProviderEvent \
         .query \
         .filter((LocalProviderEvent.provider == provider) &
@@ -35,7 +35,7 @@ def find_latest_sync_end_event(provider) -> LocalProviderEvent:
         .first()
 
 
-def find_latest_sync_start_event(provider) -> LocalProviderEvent:
+def find_latest_sync_start_event(provider: Provider) -> LocalProviderEvent:
     return LocalProviderEvent \
         .query \
         .filter((LocalProviderEvent.provider == provider) &
@@ -44,7 +44,7 @@ def find_latest_sync_start_event(provider) -> LocalProviderEvent:
         .first()
 
 
-def find_lastest_sync_end_or_sync_part_end_for_provider(provider) -> LocalProviderEvent:
+def find_lastest_sync_end_or_sync_part_end_for_provider(provider: Provider) -> LocalProviderEvent:
     return LocalProviderEvent.query \
         .filter(or_(LocalProviderEvent.type == LocalProviderEventType.SyncPartEnd,
                     LocalProviderEvent.type == LocalProviderEventType.SyncEnd)) \
