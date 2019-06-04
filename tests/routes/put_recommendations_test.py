@@ -6,7 +6,6 @@ from models import PcObject
 from models.db import db
 from models.mediation import Mediation, upsertTutoMediations
 from tests.conftest import clean_database, TestClient
-from utils.human_ids import humanize
 from tests.test_utils import API_URL, \
     create_event_occurrence, \
     create_offer_with_event_product, \
@@ -19,6 +18,7 @@ from tests.test_utils import API_URL, \
     create_user, \
     create_venue, \
     create_stock_with_thing_offer
+from utils.human_ids import humanize
 
 RECOMMENDATION_URL = API_URL + '/recommendations'
 
@@ -863,7 +863,7 @@ class Put:
             PcObject.save(stock, recommendation)
 
             # when
-            response = TestClient().with_auth(user.email)\
+            response = TestClient().with_auth(user.email) \
                 .put(RECOMMENDATION_URL, json={'seenRecommendationIds': [humanize(recommendation.id)]})
 
             # then

@@ -1,13 +1,14 @@
 from datetime import datetime
+
 import pytest
 
 from models import PcObject
 from scripts.payment.batch_steps import generate_new_payments
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_bank_information, create_stock_with_thing_offer, \
-    create_offer_with_thing_product, create_deposit, create_stock_with_event_offer, create_venue, create_offerer, \
-    create_recommendation, create_user, create_booking, create_offer_with_event_product, \
-    create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer
+    create_offer_with_thing_product, create_deposit, create_venue, create_offerer, \
+    create_user, create_booking, create_user_offerer
+
 
 @pytest.mark.standalone
 class GetReimbursementsCsvTest:
@@ -26,7 +27,8 @@ class GetReimbursementsCsvTest:
         bank_information1 = create_bank_information(id_at_providers='79387501900056', venue=venue1)
         bank_information2 = create_bank_information(id_at_providers='79387501900057', venue=venue2)
 
-        offer1 = create_offer_with_thing_product(venue1, url='https://host/path/{token}?offerId={offerId}&email={email}')
+        offer1 = create_offer_with_thing_product(venue1,
+                                                 url='https://host/path/{token}?offerId={offerId}&email={email}')
         offer2 = create_offer_with_thing_product(venue2)
         offer3 = create_offer_with_thing_product(venue3)
         offer4 = create_offer_with_thing_product(venue3)
