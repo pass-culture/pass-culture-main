@@ -4,11 +4,11 @@ import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 
 import { SearchResultItemContainer as SearchResultItem } from './SearchResultItem'
+import Spinner from '../../layout/Spinner'
 import { searchResultsTitle } from './utils'
 import { withQueryRouter } from '../../hocs/withQueryRouter'
-import Spinner from '../../layout/Spinner'
 
-class SearchResults extends PureComponent {
+export class SearchResults extends PureComponent {
   constructor() {
     super()
     this.state = {
@@ -19,6 +19,7 @@ class SearchResults extends PureComponent {
 
   componentDidUpdate(prevProps) {
     const { items } = this.props
+
     if (items !== prevProps.items) {
       this.handleSetHasReceivedFirstSuccessData()
       this.handleShouldCancelLoading()
@@ -27,6 +28,7 @@ class SearchResults extends PureComponent {
 
   handleSetHasReceivedFirstSuccessData = () => {
     const { hasReceivedFirstSuccessData } = this.state
+
     if (!hasReceivedFirstSuccessData) {
       this.setState({ hasReceivedFirstSuccessData: true })
     }
@@ -34,6 +36,7 @@ class SearchResults extends PureComponent {
 
   handleShouldCancelLoading = () => {
     const { isLoading } = this.state
+
     if (isLoading) {
       this.setState({ isLoading: false })
     }
@@ -42,9 +45,8 @@ class SearchResults extends PureComponent {
   loadMore = page => {
     const { query } = this.props
     const { isLoading } = this.state
-    if (isLoading) {
-      return
-    }
+
+    if (isLoading) return
 
     this.setState({ isLoading: true }, () =>
       query.change({ page }, { historyMethod: 'replace' })
@@ -67,7 +69,6 @@ class SearchResults extends PureComponent {
       cameFromOfferTypesPage,
       hasReceivedFirstSuccessData
     )
-
     const reachableThresholdThatTriggersLoadMore = -10
     const unreachableThreshold = -1000
     const threshold = isLoading
@@ -126,4 +127,4 @@ SearchResults.propTypes = {
   query: PropTypes.object.isRequired,
 }
 
-export default withQueryRouter(SearchResults)
+export const SearchResultsContainer = withQueryRouter(SearchResults)

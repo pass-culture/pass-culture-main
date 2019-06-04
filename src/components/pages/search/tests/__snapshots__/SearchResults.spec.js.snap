@@ -1,11 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | SearchResults snapshot should match snapshot 1`] = `
+exports[`src | components | pages | search | SearchResults should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <withRouter(_withQueryRouter)
+  Symbol(enzyme.__unrendered__): <SearchResults
     cameFromOfferTypesPage={false}
-    loadMoreHandler={[MockFunction]}
+    hasMore={false}
+    items={Array []}
+    keywords="fakeKeywords"
+    query={
+      Object {
+        "add": [MockFunction],
+        "change": [MockFunction],
+        "clear": [MockFunction],
+        "parse": [Function],
+        "remove": [MockFunction],
+      }
+    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -19,25 +30,39 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "class",
+    "nodeType": "host",
     "props": Object {
-      "children": [Function],
+      "children": Array [
+        "",
+        false,
+      ],
+      "className": "search-results",
     },
     "ref": null,
-    "rendered": [Function],
-    "type": [Function],
+    "rendered": Array [
+      "",
+      false,
+    ],
+    "type": "div",
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "class",
+      "nodeType": "host",
       "props": Object {
-        "children": [Function],
+        "children": Array [
+          "",
+          false,
+        ],
+        "className": "search-results",
       },
       "ref": null,
-      "rendered": [Function],
-      "type": [Function],
+      "rendered": Array [
+        "",
+        false,
+      ],
+      "type": "div",
     },
   ],
   Symbol(enzyme.__options__): Object {

@@ -15,7 +15,7 @@ import Header from './Header'
 import NavByOfferTypeContainer from './searchByType/NavByOfferTypeContainer'
 import NavResultsHeader from './NavResultsHeader'
 import SearchFilterContainer from './searchFilters/SearchFilterContainer'
-import SearchResults from './SearchResults'
+import { SearchResultsContainer as SearchResults } from './SearchResults'
 import { SearchDetailsContainer as SearchDetails } from './SearchDetails'
 import isInitialQueryWithoutFilters, {
   getDescriptionForSublabel,

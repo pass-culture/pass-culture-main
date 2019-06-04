@@ -1,27 +1,117 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
-import SearchResults from '../SearchResults'
+import { SearchResults } from '../SearchResults'
 import { SearchResultItemContainer as SearchResultItem } from '../SearchResultItem'
 
-describe('src | components | pages | SearchResults', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const props = {
-        cameFromOfferTypesPage: false,
-        loadMoreHandler: jest.fn(),
-      }
+describe('src | components | pages | search | SearchResults', () => {
+  const fakeMethod = jest.fn()
+  let props
 
+  beforeEach(() => {
+    props = {
+      cameFromOfferTypesPage: true,
+      hasMore: false,
+      items: [],
+      keywords: 'fakeKeywords',
+      query: {
+        add: fakeMethod,
+        change: fakeMethod,
+        clear: fakeMethod,
+        parse: () => ({ page: '1' }),
+        remove: fakeMethod,
+      },
+    }
+  })
+
+  it('should match the snapshot', () => {
+    // given
+    props.cameFromOfferTypesPage = false
+
+    // when
+    const wrapper = shallow(<SearchResults {...props} />)
+
+    // then
+    expect(wrapper).toBeDefined()
+    expect(wrapper).toMatchSnapshot()
+  })
+
+  describe('handleSetHasReceivedFirstSuccessData()', () => {
+    it('should return hasReceivedFirstSuccessData = true if there are data', () => {
       // when
       const wrapper = shallow(<SearchResults {...props} />)
+      wrapper.setState({ hasReceivedFirstSuccessData: false })
+      wrapper.instance().handleSetHasReceivedFirstSuccessData()
 
       // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
+      expect(wrapper.state(['hasReceivedFirstSuccessData'])).toBe(true)
+    })
+
+    it('should return undefined if there are no data', () => {
+      // when
+      const wrapper = shallow(<SearchResults {...props} />)
+      wrapper.setState({ hasReceivedFirstSuccessData: true })
+      const handleSetHasReceivedFirstSuccessData = wrapper
+        .instance()
+        .handleSetHasReceivedFirstSuccessData()
+
+      // then
+      expect(handleSetHasReceivedFirstSuccessData).toBeUndefined()
     })
   })
-  describe('render', () => {
+
+  describe('handleShouldCancelLoading()', () => {
+    it('should return isLoading = false if its loading', () => {
+      // when
+      const wrapper = shallow(<SearchResults {...props} />)
+      wrapper.setState({ isLoading: true })
+      wrapper.instance().handleShouldCancelLoading()
+
+      // then
+      expect(wrapper.state(['isLoading'])).toBe(false)
+    })
+
+    it('should return undefined if its not loading', () => {
+      // when
+      const wrapper = shallow(<SearchResults {...props} />)
+      const handleShouldCancelLoading = wrapper
+        .instance()
+        .handleShouldCancelLoading()
+
+      // then
+      expect(handleShouldCancelLoading).toBeUndefined()
+    })
+  })
+
+  describe('loadMore()', () => {
+    const page = 10
+
+    it('should return undefined if its loading', () => {
+      // when
+      const wrapper = shallow(<SearchResults {...props} />)
+      wrapper.setState({ isLoading: true })
+      const loadMore = wrapper.instance().loadMore(page)
+
+      // then
+      expect(loadMore).toBeUndefined()
+    })
+
+    it('should called query change if its not loading', () => {
+      // when
+      const wrapper = shallow(<SearchResults {...props} />)
+      wrapper.instance().loadMore(page)
+
+      // then
+      expect(wrapper.state(['isLoading'])).toBe(true)
+      expect(props.query.change).toBeCalledWith(
+        { page },
+        { historyMethod: 'replace' }
+      )
+      props.query.change.mockClear()
+    })
+  })
+
+  describe('render()', () => {
     const items = [
       {
         bookings: [],
@@ -151,20 +241,15 @@ describe('src | components | pages | SearchResults', () => {
         validUntilDate: '2018-09-22T10:06:06.837449Z',
       },
     ]
+
     describe('with navigation by offer types mode', () => {
       describe('when there is items', () => {
         it('should not render title', () => {
           // given
-          const props = {
-            cameFromOfferTypesPage: true,
-            items,
-            keywords: 'fakeKeywords',
-            loadMoreHandler: jest.fn(),
-            query: { parse: () => ({ page: '1' }) },
-          }
+          props.items = items
 
           // when
-          const wrapper = shallow(<SearchResults.WrappedComponent {...props} />)
+          const wrapper = shallow(<SearchResults {...props} />)
           const resultsTitle = wrapper.is('h2')
           const SearchResultItemWrapper = wrapper.find(SearchResultItem)
           const item = {
@@ -176,19 +261,11 @@ describe('src | components | pages | SearchResults', () => {
           expect(SearchResultItemWrapper.props()).toEqual(item)
         })
       })
+
       describe('when there is no result', () => {
         it('should render properly the result title with no item', () => {
-          // given
-          const props = {
-            cameFromOfferTypesPage: true,
-            items: [],
-            keywords: 'fakeKeywords',
-            loadMoreHandler: jest.fn(),
-            query: { parse: () => ({ page: '1' }) },
-          }
-
           // when
-          const wrapper = shallow(<SearchResults.WrappedComponent {...props} />)
+          const wrapper = shallow(<SearchResults {...props} />)
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
           const SearchResultItemWrapper = wrapper.find(SearchResultItem)
@@ -201,20 +278,16 @@ describe('src | components | pages | SearchResults', () => {
         })
       })
     })
+
     describe('without navigation by offer types mode', () => {
       describe('when there is a result with only key words', () => {
         it('should render properly the result title and item', () => {
           // given
-          const props = {
-            cameFromOfferTypesPage: false,
-            items,
-            keywords: 'fakeKeywords',
-            loadMoreHandler: jest.fn(),
-            query: { parse: () => ({ page: '1' }) },
-          }
+          props.cameFromOfferTypesPage = false
+          props.items = items
 
           // when
-          const wrapper = shallow(<SearchResults.WrappedComponent {...props} />)
+          const wrapper = shallow(<SearchResults {...props} />)
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
           const SearchResultItemWrapper = wrapper.find(SearchResultItem)
@@ -227,19 +300,14 @@ describe('src | components | pages | SearchResults', () => {
           expect(SearchResultItemWrapper.props()).toEqual(item)
         })
       })
+
       describe('when there is no result', () => {
         it('should render properly the result title with no item', () => {
           // given
-          const props = {
-            cameFromOfferTypesPage: false,
-            items: [],
-            keywords: 'fakeKeywords',
-            loadMoreHandler: jest.fn(),
-            query: { parse: () => ({ page: '1' }) },
-          }
+          props.cameFromOfferTypesPage = false
 
           // when
-          const wrapper = shallow(<SearchResults.WrappedComponent {...props} />)
+          const wrapper = shallow(<SearchResults {...props} />)
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
           const SearchResultItemWrapper = wrapper.find(SearchResultItem)
