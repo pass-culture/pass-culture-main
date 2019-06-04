@@ -60,85 +60,64 @@ class TestClient:
     def with_auth(self, email: str = None, headers: dict = LOCAL_ORIGIN_HEADER):
         self.session = requests.Session()
         self.session.headers = headers
-
         if email is None:
             self.session.auth = (TestClient.USER_TEST_ADMIN_EMAIL, PLAIN_DEFAULT_TESTING_PASSWORD)
         else:
             self.session.auth = (email, PLAIN_DEFAULT_TESTING_PASSWORD)
-
         return self
 
     def delete(self, route: str, headers=LOCAL_ORIGIN_HEADER):
-        if self.session:
-            result = self.session.delete(route, headers=headers)
-        else:
-            result = requests.delete(route, headers=headers)
-
-        if TestClient.WITH_DOC:
-            self._print_spec('DELETE', route, None, result)
-
+        sender = self._get_sender()
+        result = sender.delete(route, headers=headers)
+        self._print_spec('DELETE', route, None, result)
         return result
 
     def get(self, route: str, headers=LOCAL_ORIGIN_HEADER):
-        if self.session:
-            result = self.session.get(route, headers=headers)
-        else:
-            result = requests.get(route, headers=headers)
-
-        if TestClient.WITH_DOC:
-            self._print_spec('GET', route, None, result)
-
+        sender = self._get_sender()
+        result = sender.get(route, headers=headers)
+        self._print_spec('GET', route, None, result)
         return result
 
     def post(self, route: str, json: dict = None, form: dict = None, files: dict = None, headers=LOCAL_ORIGIN_HEADER):
-        if self.session:
-            sender = self.session
-        else:
-            sender = requests
-
+        sender = self._get_sender()
         if form:
             result = sender.post(route, data=form, files=files, headers=headers)
         else:
             result = sender.post(route, json=json, files=files, headers=headers)
-        
-        if TestClient.WITH_DOC:
-            self._print_spec('POST', route, json, result)
-
+        self._print_spec('POST', route, json, result)
         return result
 
     def patch(self, route: str, json: dict = None, headers=LOCAL_ORIGIN_HEADER):
-        if self.session:
-            result = self.session.patch(route, json=json, headers=headers)
-        else:
-            result = requests.patch(route, json=json, headers=headers)
-
-        if TestClient.WITH_DOC:
-            self._print_spec('PATCH', route, json, result)
-
+        sender = self._get_sender()
+        result = sender.patch(route, json=json, headers=headers)
+        self._print_spec('PATCH', route, json, result)
         return result
 
     def put(self, route: str, json: dict = None, headers=LOCAL_ORIGIN_HEADER):
-        if self.session:
-            result = self.session.put(route, json=json, headers=headers)
-        else:
-            result = requests.put(route, json=json, headers=headers)
-
-        if TestClient.WITH_DOC:
-            self._print_spec('PUT', route, json, result)
-
+        sender = self._get_sender()
+        result = sender.put(route, json=json, headers=headers)
+        self._print_spec('PUT', route, json, result)
         return result
 
+    def _get_sender(self):
+        if self.session:
+            sender = self.session
+        else:
+            sender = requests
+        return sender
+
     def _print_spec(self, verb: str, route: str, request_body: dict, result: Response):
-        print('\n===========================================')
-        print('%s :: %s' % (verb, route))
-        print('STATUS CODE :: %s' % result.status_code)
+        if TestClient.WITH_DOC:
+            print('\n===========================================')
+            print('%s :: %s' % (verb, route))
+            print('STATUS CODE :: %s' % result.status_code)
+    
+            if request_body:
+                print('REQUEST BODY')
+                pprint(request_body)
 
-        if request_body:
-            print('REQUEST BODY')
-            pprint(request_body)
+            if result.content:
+                print('RESPONSE BODY')
+                pprint(result.json())
 
-        if result.content:
-            print('RESPONSE BODY')
-            pprint(result.json())
-
-        print('===========================================\n')
+            print('===========================================\n')
