@@ -1,11 +1,9 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import get from 'lodash.get'
 
 import StocksManager from './StocksManager'
 import { withFrenchQueryRouter } from 'components/hocs'
-
-import get from 'lodash.get'
-
 import selectOfferById from 'selectors/selectOfferById'
 import selectProductById from 'selectors/selectProductById'
 import selectProviderById from 'selectors/selectProviderById'
@@ -26,7 +24,7 @@ export const mapStateToProps = (state, ownProps) => {
 
   const product = selectProductById(state, get(offer, 'productId'))
   const stocks = selectStocksByOfferId(state, offerId)
-  const shouldPreventCreationOfSecondStock = offer.isThing && stocks.length > 0
+  const creationOfSecondStockIsPrevented = offer.isThing && stocks.length > 0
   const provider = selectProviderById(state, product && product.lastProviderId)
 
   return {
@@ -34,7 +32,7 @@ export const mapStateToProps = (state, ownProps) => {
     offer,
     product,
     provider,
-    shouldPreventCreationOfSecondStock,
+    creationOfSecondStockIsPrevented,
     stocks,
   }
 }

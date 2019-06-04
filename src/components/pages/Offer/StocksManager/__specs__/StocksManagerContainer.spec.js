@@ -54,7 +54,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
           id: 'B1',
           lastProviderId: 'C1',
         },
-        shouldPreventCreationOfSecondStock: false,
+        creationOfSecondStockIsPrevented: false,
         stocks: [
           {
             offerId: 'A1',
@@ -63,7 +63,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
       })
     })
 
-    describe('shouldPreventCreationOfSecondStock', () => {
+    describe('creationOfSecondStockIsPrevented', () => {
       it('should be false when offer is an event', () => {
         // given
         state.data.offers[0].isEvent = true
@@ -77,7 +77,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
 
         // then
         expect(result).toHaveProperty(
-          'shouldPreventCreationOfSecondStock',
+          'creationOfSecondStockIsPrevented',
           false
         )
       })
@@ -96,7 +96,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
 
         // then
         expect(result).toHaveProperty(
-          'shouldPreventCreationOfSecondStock',
+          'creationOfSecondStockIsPrevented',
           false
         )
       })
@@ -114,7 +114,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
 
         // then
         expect(result).toHaveProperty(
-          'shouldPreventCreationOfSecondStock',
+          'creationOfSecondStockIsPrevented',
           true
         )
       })

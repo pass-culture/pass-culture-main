@@ -37,7 +37,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
   })
 
   describe('render', () => {
-    it('should display a notification when no mediations', () => {
+    it('should display a notification when no mediation', () => {
       // when
       shallow(<MediationsManager {...props} />)
 
@@ -106,7 +106,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       expect(spans.at(1).text()).toBe('Ajouter une accroche')
     })
 
-    it('should render an Icon component with the prop ico-stars-w when no mediations', () => {
+    it('should render an Icon component with the prop ico-stars-w when no mediation', () => {
       // given
       props.offer = {
         id: 'ABC'

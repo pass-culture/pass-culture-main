@@ -263,7 +263,7 @@ class StocksManager extends Component {
 }
 
 StocksManager.defaultProps = {
-  shouldPreventCreationOfSecondStock: false,
+  creationOfSecondStockIsPrevented: false,
   stocks: [],
 }
 

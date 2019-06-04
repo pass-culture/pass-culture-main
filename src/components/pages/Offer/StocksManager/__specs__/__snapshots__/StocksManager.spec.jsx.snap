@@ -4,6 +4,7 @@ exports[`src | components | pages | Offer | StocksManager | StocksManager snapsh
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <StocksManager
+    creationOfSecondStockIsPrevented={false}
     location={
       Object {
         "hash": "",
@@ -18,7 +19,6 @@ ShallowWrapper {
         "context": [Function],
       }
     }
-    shouldPreventCreationOfSecondStock={false}
     stocks={
       Array [
         Object {
