@@ -6,7 +6,6 @@ from models.payment import Payment
 from models.payment_status import TransactionStatus, PaymentStatus
 
 
-@pytest.mark.standalone
 def test_set_status_appends_a_status_to_a_new_payment():
     # given
     one_second = timedelta(seconds=1)
@@ -23,7 +22,6 @@ def test_set_status_appends_a_status_to_a_new_payment():
     assert now - one_second < payment.statuses[0].date < now + one_second
 
 
-@pytest.mark.standalone
 def test_set_status_appends_a_status_to_a_payment_with_existing_status():
     # given
     one_second = timedelta(seconds=1)

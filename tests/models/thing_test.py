@@ -16,7 +16,6 @@ def test_thing_type_find_from_sub_labels_returns_nothing_if_no_sub_labels():
     assert types == []
 
 
-@pytest.mark.standalone
 def test_thing_type_find_from_sub_labels_returns_nothing_if_label_is_unknown():
     # given
     sub_labels = ['randomlabel']
@@ -28,7 +27,6 @@ def test_thing_type_find_from_sub_labels_returns_nothing_if_label_is_unknown():
     assert types == []
 
 
-@pytest.mark.standalone
 def test_thing_type_find_from_sub_labels_returns_several_types_given_several_sub_labels_ignoring_case():
     # given
     sub_labels = ['Regarder', 'LIRE', 'Pratiquer']
@@ -48,7 +46,6 @@ def test_thing_type_find_from_sub_labels_returns_several_types_given_several_sub
     assert ThingType.INSTRUMENT in types
 
 @clean_database
-@pytest.mark.standalone
 def test_thing_error_when_thing_type_is_offlineOnly_but_has_url(app):
     # Given
     thing_product = create_product_with_Thing_type(thing_type=ThingType.JEUX, url='http://mygame.fr/offre')

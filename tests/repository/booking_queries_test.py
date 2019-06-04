@@ -28,7 +28,6 @@ three_days_ago = NOW - timedelta(days=3)
 
 
 @clean_database
-@pytest.mark.standalone
 def test_find_all_by_offerer_with_event_and_things(app):
     # given
     user = create_user()
@@ -56,7 +55,6 @@ def test_find_all_by_offerer_with_event_and_things(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_find_all_bookings_by_offerer_in_a_not_search_context_returns_all_results(app):
     # given
     user = create_user()
@@ -91,7 +89,6 @@ def test_find_all_bookings_by_offerer_in_a_not_search_context_returns_all_result
 
 
 @clean_database
-@pytest.mark.standalone
 def test_find_all_ongoing_bookings(app):
     # Given
     offerer = create_offerer(siren='985281920')
@@ -113,7 +110,6 @@ def test_find_all_ongoing_bookings(app):
     assert all_ongoing_bookings == [ongoing_booking]
 
 
-@pytest.mark.standalone
 class FindFinalOffererBookingsTest:
     @clean_database
     def test_returns_bookings_for_given_offerer(self, app):
@@ -251,7 +247,6 @@ class FindFinalOffererBookingsTest:
         assert booking1 in bookings
 
 
-@pytest.mark.standalone
 class FindDateUsedTest:
     @clean_database
     def test_returns_issued_date_of_matching_activity(self, app):
@@ -277,7 +272,6 @@ class FindDateUsedTest:
         assert date_used == datetime(2018, 2, 12)
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_date_used_on_booking_returns_none_if_no_activity_with_is_used_changed_is_found(app):
     # given
@@ -299,7 +293,6 @@ def test_find_date_used_on_booking_returns_none_if_no_activity_with_is_used_chan
     assert date_used is None
 
 
-@pytest.mark.standalone
 class FindUserActivationBookingTest:
     @clean_database
     def test_returns_true_is_a_booking_exists_on_such_stock(self, app):
@@ -336,7 +329,6 @@ class FindUserActivationBookingTest:
         assert booking is None
 
 
-@pytest.mark.standalone
 class GetExistingTokensTest:
     @clean_database
     def test_returns_a_set_of_tokens(self, app):
@@ -366,7 +358,6 @@ class GetExistingTokensTest:
         assert tokens == set()
 
 
-@pytest.mark.standalone
 class FindAllActiveByUserIdTest:
     @clean_database
     def test_returns_a_list_of_not_cancelled_bookings(self, app):
@@ -389,7 +380,6 @@ class FindAllActiveByUserIdTest:
         assert booking1 not in bookings
 
 
-@pytest.mark.standalone
 class FindByTest:
     class ByTokenTest:
         @clean_database
@@ -542,7 +532,6 @@ class FindByTest:
             assert e.value.errors['global'] == ["Cette contremarque n'a pas été trouvée"]
 
 
-@pytest.mark.standalone
 class SaveBookingTest:
     @clean_database
     def test_saves_booking_when_enough_stocks_after_cancellation(self, app):

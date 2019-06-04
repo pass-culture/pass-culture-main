@@ -1,10 +1,7 @@
-import pytest
-
 from domain.types import get_formatted_event_or_thing_types, get_event_or_thing_type_values_from_sublabels
 
 
 class GetFormattedEventOrThingTypesTest:
-    @pytest.mark.standalone
     def test_returns_all_types_except_activations_if_user_is_not_admin(self):
         # when
         types = get_formatted_event_or_thing_types(with_activation_type=False)
@@ -25,7 +22,6 @@ class GetFormattedEventOrThingTypesTest:
         }
         assert len(types) == 20
 
-    @pytest.mark.standalone
     def test_returns_all_types_including_activations_if_user_is_admin(self):
         # given
         activation_event_product = {
@@ -60,7 +56,6 @@ class GetFormattedEventOrThingTypesTest:
         assert activation_thing_product in types
         assert len(types) == 22
 
-    @pytest.mark.standalone
     def test_does_not_return_thing_type_jeux(self):
         # given
         jeux = {
@@ -82,7 +77,6 @@ class GetFormattedEventOrThingTypesTest:
                                   'phase avec les CGU'
 
 
-@pytest.mark.standalone
 def test_get_event_or_thing_type_values_from_sublabels():
     # given
     type_values = get_event_or_thing_type_values_from_sublabels('Rencontrer')

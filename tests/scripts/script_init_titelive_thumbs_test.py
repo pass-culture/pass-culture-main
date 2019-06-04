@@ -12,7 +12,6 @@ from tests.test_utils import create_offerer, create_venue, create_product_with_T
 from utils.human_ids import humanize
 
 
-@pytest.mark.standalone
 class InitTiteliveThumbsTest:
 
     @clean_database

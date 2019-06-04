@@ -6,7 +6,6 @@ from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, API_URL
 
 
-@pytest.mark.standalone
 class Post:
     class Returns201:
         @clean_database

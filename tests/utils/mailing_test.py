@@ -51,7 +51,6 @@ def get_mocked_response_status_200(entity):
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_make_user_booking_event_recap_email_should_have_standard_subject_and_body(app):
     # Given
     beginning_datetime = datetime(2019, 7, 20, 12, 0, 0)
@@ -85,7 +84,6 @@ def test_make_user_booking_event_recap_email_should_have_standard_subject_and_bo
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_make_user_booking_event_recap_email_should_have_standard_cancellation_body_and_subject(app):
     # Given
     beginning_datetime = datetime(2019, 7, 20, 12, 0, 0)
@@ -114,7 +112,6 @@ def test_make_user_booking_event_recap_email_should_have_standard_cancellation_b
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_maker_user_booking_thing_recap_email_should_have_standard_body_and_subject(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
@@ -139,7 +136,6 @@ def test_maker_user_booking_thing_recap_email_should_have_standard_body_and_subj
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_make_user_booking_thing_recap_email_should_have_standard_cancellation_body_and_subject(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
@@ -161,7 +157,6 @@ def test_make_user_booking_thing_recap_email_should_have_standard_cancellation_b
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_booking_recap_email_html_should_have_place_and_structure(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
@@ -207,7 +202,6 @@ def test_booking_recap_email_html_should_have_place_and_structure(app):
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_booking_recap_email_html_should_have_unsubscribe_option(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
@@ -237,7 +231,6 @@ def test_booking_recap_email_html_should_have_unsubscribe_option(app):
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_booking_recap_email_html_should_not_have_cancelled_or_used_bookings(app):
     # Given
     venue = create_venue(Offerer(), 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
@@ -268,7 +261,6 @@ def test_booking_recap_email_html_should_not_have_cancelled_or_used_bookings(app
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_offerer_recap_email_past_offer_without_booking(app):
     # Given
     beginning_datetime = datetime(2017, 7, 20, 12, 0, 0)
@@ -296,7 +288,6 @@ def test_offerer_recap_email_past_offer_without_booking(app):
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_offerer_recap_email_past_offer_with_booking(app):
     # Given
     beginning_datetime = datetime(2017, 7, 20, 12, 0, 0)
@@ -337,7 +328,6 @@ def test_offerer_recap_email_past_offer_with_booking(app):
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_offerer_recap_email_does_not_send_cancelled_or_used_booking(app):
     # Given
     venue = create_venue(Offerer(), 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
@@ -368,7 +358,6 @@ def test_offerer_recap_email_does_not_send_cancelled_or_used_booking(app):
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_offerer_recap_email_has_unsubscribe_options(app):
     # Given
     venue = create_venue(Offerer(), 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
@@ -403,7 +392,6 @@ def test_offerer_recap_email_has_unsubscribe_options(app):
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
@@ -440,7 +428,6 @@ def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app)
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_offerer_booking_recap_email_thing_offer_has_action_and_recap_html(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
@@ -474,7 +461,6 @@ def test_offerer_booking_recap_email_thing_offer_has_action_and_recap_html(app):
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_offerer_booking_recap_email_thing_offer_has_recap_table(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
@@ -505,7 +491,6 @@ def test_offerer_booking_recap_email_thing_offer_has_recap_table(app):
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_offerer_booking_recap_email_thing_offer_does_not_have_validation_tokens(app):
     # Given
     venue = create_venue(None, 'Test offerer', 'reservations@test.fr', '123 rue test', '93000', 'Test city', '93')
@@ -534,7 +519,6 @@ def test_offerer_booking_recap_email_thing_offer_does_not_have_validation_tokens
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_write_object_validation_email_should_have_some_specific_information(app):
     # Given
     validation_token = secrets.token_urlsafe(20)
@@ -585,7 +569,6 @@ def test_write_object_validation_email_should_have_some_specific_information(app
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_write_object_validation_email_does_not_include_validation_link_if_user_offerer_is_already_validated(app):
     # Given
     validation_token = secrets.token_urlsafe(20)
@@ -608,7 +591,6 @@ def test_write_object_validation_email_does_not_include_validation_link_if_user_
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_write_object_validation_email_does_not_include_validation_link_if_offerer_is_already_validated(app):
     # Given
     validation_token = secrets.token_urlsafe(20)
@@ -631,7 +613,6 @@ def test_write_object_validation_email_does_not_include_validation_link_if_offer
 
 @mocked_mail
 @clean_database
-@pytest.mark.standalone
 def test_validation_email_should_not_return_clearTextPassword(app):
     # Given
     validation_token = secrets.token_urlsafe(20)
@@ -654,7 +635,6 @@ def test_validation_email_should_not_return_clearTextPassword(app):
     assert 'totallysafepsswd' not in str(email_html_soup)
 
 
-@pytest.mark.standalone
 def test_make_reset_password_email_generates_an_html_email_with_a_reset_link(app):
     # given
     user = create_user(public_name='bobby', email='bobby@test.com', reset_password_token='AZ45KNB99H')
@@ -672,7 +652,6 @@ def test_make_reset_password_email_generates_an_html_email_with_a_reset_link(app
 
 @freeze_time('2018-10-15 09:21:34')
 @clean_database
-@pytest.mark.standalone
 def test_make_offerer_booking_user_cancellation_email_for_physical_venue(app):
     # Given
     offerer = create_offerer()
@@ -710,7 +689,6 @@ def test_make_offerer_booking_user_cancellation_email_for_physical_venue(app):
 
 @freeze_time('2018-10-15 09:21:34')
 @clean_database
-@pytest.mark.standalone
 def test_make_offerer_booking_recap_email_after_user_cancellation_should_have_unsubscribe_option(app):
     # Given
     offerer = create_offerer()
@@ -750,7 +728,6 @@ def test_make_offerer_booking_recap_email_after_user_cancellation_should_have_un
 
 
 @clean_database
-@pytest.mark.standalone
 def test_make_offerer_driven_cancellation_email_for_user_event(app):
     # Given
     beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
@@ -783,7 +760,6 @@ def test_make_offerer_driven_cancellation_email_for_user_event(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_make_offerer_driven_cancellation_email_for_user_thing(app):
     # Given
     user = create_user(public_name='John Doe')
@@ -809,7 +785,6 @@ def test_make_offerer_driven_cancellation_email_for_user_thing(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_make_offerer_driven_cancellation_email_for_offerer_event_when_no_other_booking(app):
     # Given
     beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
@@ -850,7 +825,6 @@ def test_make_offerer_driven_cancellation_email_for_offerer_event_when_no_other_
 
 
 @clean_database
-@pytest.mark.standalone
 def test_make_offerer_driven_cancellation_email_for_offerer_event_when_other_booking(app):
     # Given
     user1 = create_user(public_name='John Doe', first_name='John', last_name='Doe', email='john@doe.fr')
@@ -882,7 +856,6 @@ def test_make_offerer_driven_cancellation_email_for_offerer_event_when_other_boo
 
 
 @clean_database
-@pytest.mark.standalone
 def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_existing_booking(app):
     # Given
     user = create_user(public_name='John Doe', first_name='John', last_name='Doe', email='john@doe.fr')
@@ -924,7 +897,6 @@ def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_ex
 
 
 @clean_database
-@pytest.mark.standalone
 def test_make_validation_confirmation_email_offerer_user_offerer_admin(app):
     # Given
     user = create_user(email='admin@letheatresas.com')
@@ -944,7 +916,6 @@ def test_make_validation_confirmation_email_offerer_user_offerer_admin(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_make_validation_confirmation_email_offerer_user_offerer_editor(app):
     # Given
     user = create_user(email='admin@letheatresas.com')
@@ -964,7 +935,6 @@ def test_make_validation_confirmation_email_offerer_user_offerer_editor(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_make_validation_confirmation_email_user_offerer_editor(app):
     # Given
     user = create_user(email='admin@letheatresas.com')
@@ -984,7 +954,6 @@ def test_make_validation_confirmation_email_user_offerer_editor(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_make_validation_confirmation_email_offerer(app):
     # Given
     offerer = create_offerer(name='Le Théâtre SAS')
@@ -1001,7 +970,6 @@ def test_make_validation_confirmation_email_offerer(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_make_make_batch_cancellation_email_for_case_event_occurrence(app):
     # Given
     bookings = create_mocked_bookings(num_bookings=4, venue_email='venue@email.com', name='Le récit de voyage')
@@ -1025,7 +993,6 @@ def test_make_make_batch_cancellation_email_for_case_event_occurrence(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_make_make_batch_cancellation_email_for_case_stock(app):
     # Given
     bookings = create_mocked_bookings(num_bookings=4, venue_email='venue@email.com', name='Le récit de voyage')
@@ -1049,7 +1016,6 @@ def test_make_make_batch_cancellation_email_for_case_stock(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_make_offerer_booking_user_cancellation_for_thing_email_when_virtual_venue_does_not_show_address(app):
     # Given
     offerer = create_offerer()
@@ -1076,7 +1042,6 @@ def test_make_offerer_booking_user_cancellation_for_thing_email_when_virtual_ven
 
 
 @clean_database
-@pytest.mark.standalone
 def test_make_offerer_booking_user_cancellation_for_event_email_when_virtual_venue_does_not_show_address(app):
     # Given
     offerer = create_offerer()
@@ -1104,7 +1069,6 @@ def test_make_offerer_booking_user_cancellation_for_event_email_when_virtual_ven
 
 
 @clean_database
-@pytest.mark.standalone
 def test_make_offerer_booking_user_cancellation_email_for_thing_has_cancellation_subject_without_date(app):
     # Given
     offerer = create_offerer()
@@ -1128,7 +1092,6 @@ def test_make_offerer_booking_user_cancellation_email_for_thing_has_cancellation
 
 @freeze_time('2018-10-15 09:21:34')
 @clean_database
-@pytest.mark.standalone
 def test_make_offerer_booking_user_cancellation_email_for_event_has_cancellation_subject_with_date(app):
     # Given
     offerer = create_offerer()
@@ -1152,7 +1115,6 @@ def test_make_offerer_booking_user_cancellation_email_for_event_has_cancellation
 
 
 @clean_database
-@pytest.mark.standalone
 def test_make_offerer_booking_user_cancellation_has_recap_information_but_no_token(app):
     # Given
     offerer = create_offerer()
@@ -1181,7 +1143,6 @@ def test_make_offerer_booking_user_cancellation_has_recap_information_but_no_tok
     assert '56789' not in recap_table_html
 
 
-@pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
 def test_make_payment_message_email_sends_a_xml_file_with_its_checksum_in_email_body(app):
     # Given
@@ -1206,7 +1167,6 @@ def test_make_payment_message_email_sends_a_xml_file_with_its_checksum_in_email_
            in email_html.find('p', {'id': 'checksum'}).find('strong').text
 
 
-@pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
 def test_make_payment_details_email():
     # Given
@@ -1226,7 +1186,6 @@ def test_make_payment_details_email():
                                                 'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='}]
 
 
-@pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
 def test_make_wallet_balances_email():
     # Given
@@ -1246,7 +1205,6 @@ def test_make_wallet_balances_email():
                                                 'IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo='}]
 
 
-@pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
 class MakePaymentsReportEmailTest:
     def setup_class(self):
@@ -1307,7 +1265,6 @@ class MakePaymentsReportEmailTest:
         assert email_html.find('ul').text == '\nERROR : 2\nSENT : 1\nPENDING : 3\n'
 
 
-@pytest.mark.standalone
 class UserValidationEmailsTest:
     def test_make_webapp_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
@@ -1356,7 +1313,6 @@ class UserValidationEmailsTest:
         assert email['FromName'] == 'pass Culture pro'
 
 
-@pytest.mark.standalone
 def test_make_venue_validation_email(app):
     # Given
     offerer = create_offerer(name='La Structure', siren='123456789')
@@ -1382,7 +1338,6 @@ def test_make_venue_validation_email(app):
     assert 'localhost/validate/venue?token={}'.format(venue.validationToken) in html_validation_link
 
 
-@pytest.mark.standalone
 @patch('utils.mailing.get_storage_base_url', return_value='http://localhost/storage')
 def test_make_activation_notification_email(get_storage_base_url, app):
     # Given
@@ -1404,7 +1359,6 @@ def test_make_activation_notification_email(get_storage_base_url, app):
            'http://localhost/storage/mailing/header.jpg'
 
 
-@pytest.mark.standalone
 def test_make_venue_validation_confirmation_email(app):
     # Given
     offerer = create_offerer(name='La Structure', siren='123456789')
@@ -1429,7 +1383,6 @@ def test_make_venue_validation_confirmation_email(app):
     assert 'L\'équipe pass Culture' in html_salutation
 
 
-@pytest.mark.standalone
 class ParseEmailAddressesTest:
     def test_returns_an_empty_list(self):
         assert parse_email_addresses('') == []
@@ -1451,7 +1404,6 @@ class ParseEmailAddressesTest:
         assert parse_email_addresses('  one@test.com  ; two@test.com   ') == ['one@test.com', 'two@test.com']
 
 
-@pytest.mark.standalone
 class MakeOfferCreationNotificationEmailTest:
     def setup_class(self):
         self.offerer = create_offerer(siren='123456789', postal_code='93100', name='Cinéma de Montreuil')
@@ -1622,7 +1574,6 @@ def test_send_content_and_update_does_not_update_email_when_send_mail_unsuccessf
     app.mailjet_client.send.create.assert_called_once_with(data=email_content)
 
 
-@pytest.mark.standalone
 @freeze_time('2019-05-20 12:00:00')
 class MakeBeneficiariesImportEmailTest:
     def test_sends_date_in_subject(self, app):

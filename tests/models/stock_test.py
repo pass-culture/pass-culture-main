@@ -14,7 +14,6 @@ from utils.human_ids import humanize
 
 
 @clean_database
-@pytest.mark.standalone
 def test_beginning_datetime_cannot_be_after_end_datetime(app):
     # given
     offer = create_offer_with_thing_product(create_venue(create_offerer()))
@@ -34,7 +33,6 @@ def test_beginning_datetime_cannot_be_after_end_datetime(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_queryNotSoftDeleted_should_not_return_soft_deleted(app):
     # Given
     offerer = create_offerer()
@@ -51,7 +49,6 @@ def test_queryNotSoftDeleted_should_not_return_soft_deleted(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_populate_dict_on_soft_deleted_object_raises_DeletedRecordException(app):
     # Given
     offerer = create_offerer()
@@ -65,7 +62,6 @@ def test_populate_dict_on_soft_deleted_object_raises_DeletedRecordException(app)
 
 
 @clean_database
-@pytest.mark.standalone
 def test_stock_cannot_have_a_negative_price(app):
     # given
     offerer = create_offerer()
@@ -82,7 +78,6 @@ def test_stock_cannot_have_a_negative_price(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_stock_cannot_have_a_negative_available_stock(app):
     # given
     offerer = create_offerer()
@@ -99,7 +94,6 @@ def test_stock_cannot_have_a_negative_available_stock(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_stock_can_have_an_available_stock_equal_to_zero(app):
     # given
     offerer = create_offerer()
@@ -115,7 +109,6 @@ def test_stock_can_have_an_available_stock_equal_to_zero(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_available_stocks_can_be_changed_even_when_bookings_with_cancellations_exceed_available(app):
     # Given
     offerer = create_offerer()
@@ -140,7 +133,6 @@ def test_available_stocks_can_be_changed_even_when_bookings_with_cancellations_e
 
 
 @clean_database
-@pytest.mark.standalone
 def test_available_stocks_cannot_be_changed_when_exceeding_bookings_quantity_2(app):
     # Given
     offerer = create_offerer()

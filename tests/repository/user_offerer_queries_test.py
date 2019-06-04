@@ -15,7 +15,6 @@ from tests.test_utils import create_product_with_Event_type, \
                              create_venue
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_user_offerer_email(app):
     # Given
@@ -31,7 +30,6 @@ def test_find_user_offerer_email(app):
     assert email == 'offerer@email.com'
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_first_by_user_id_should_return_one_user_offerers_with_user_id(app):
     # Given
@@ -50,7 +48,6 @@ def test_find_first_by_user_id_should_return_one_user_offerers_with_user_id(app)
     assert type(first_user_offerer) == UserOfferer
     assert first_user_offerer.id == user_offerer1.id
 
-@pytest.mark.standalone
 @clean_database
 def test_filter_query_where_user_is_user_offerer_and_is_validated(app):
     # Given

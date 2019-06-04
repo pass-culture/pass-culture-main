@@ -5,7 +5,6 @@ import pytest
 from validation.headers import check_origin_header_validity
 
 
-@pytest.mark.standalone
 @patch('validation.headers.ENV', 'development')
 def test_is_valid_header_when_is_dev_and_header_is_local_host_for_normal_endpoint():
     # Given
@@ -19,7 +18,6 @@ def test_is_valid_header_when_is_dev_and_header_is_local_host_for_normal_endpoin
     assert is_valid_header
 
 
-@pytest.mark.standalone
 @patch('validation.headers.ENV', 'testing')
 def test_is_valid_header_when_is_testing_and_header_is_local_host_for_normal_endpoint():
     # Given
@@ -33,7 +31,6 @@ def test_is_valid_header_when_is_testing_and_header_is_local_host_for_normal_end
     assert is_valid_header
 
 
-@pytest.mark.standalone
 @patch('validation.headers.ENV', 'staging')
 @patch('validation.headers.API_URL', 'https://backend.passculture-staging.beta.gouv.fr')
 def test_is_not_valid_header_when_is_staging_and_header_is_local_host_for_normal_endpoint():
@@ -48,7 +45,6 @@ def test_is_not_valid_header_when_is_staging_and_header_is_local_host_for_normal
     assert not is_valid_header
 
 
-@pytest.mark.standalone
 @patch('validation.headers.ENV', 'staging')
 @patch('validation.headers.API_URL', 'https://backend.passculture-staging.beta.gouv.fr')
 def test_is_valid_header_when_header_not_in_whitelist_for_exception_endpoint():
@@ -63,7 +59,6 @@ def test_is_valid_header_when_header_not_in_whitelist_for_exception_endpoint():
     assert is_valid_header
 
 
-@pytest.mark.standalone
 @patch('validation.headers.ENV', 'staging')
 @patch('validation.headers.API_URL', 'https://backend.passculture-staging.beta.gouv.fr')
 def test_is_valid_header_when_is_staging_and_header_is_pro_passculture_staging_for_normal_endpoint():
@@ -78,7 +73,6 @@ def test_is_valid_header_when_is_staging_and_header_is_pro_passculture_staging_f
     assert is_valid_header
 
 
-@pytest.mark.standalone
 @patch('validation.headers.ENV', 'staging')
 @patch('validation.headers.API_URL', 'https://backend.passculture-staging.beta.gouv.fr')
 def test_is_valid_header_when_is_staging_and_header_is_app_passculture_staging_for_normal_endpoint():
@@ -93,7 +87,6 @@ def test_is_valid_header_when_is_staging_and_header_is_app_passculture_staging_f
     assert is_valid_header
 
 
-@pytest.mark.standalone
 @patch('validation.headers.ENV', 'production')
 @patch('validation.headers.API_URL', 'https://backend.passculture.beta.gouv.fr')
 def test_is_not_valid_header_when_not_staging_not_dev_and_header_is_app_passculture_staging_for_normal_endpoint():
@@ -108,7 +101,6 @@ def test_is_not_valid_header_when_not_staging_not_dev_and_header_is_app_passcult
     assert not is_valid_header
 
 
-@pytest.mark.standalone
 @patch('validation.headers.ENV', 'production')
 @patch('validation.headers.API_URL', 'https://backend.passculture.beta.gouv.fr')
 def test_is_valid_header_when_not_staging_not_dev_for_exception_endpoint_and_exception_endpoint():
@@ -123,7 +115,6 @@ def test_is_valid_header_when_not_staging_not_dev_for_exception_endpoint_and_exc
     assert is_valid_header
 
 
-@pytest.mark.standalone
 @patch('validation.headers.ENV', 'production')
 @patch('validation.headers.API_URL', 'https://backend.passculture.beta.gouv.fr')
 def test_is_valid_header_when_not_staging_not_dev_and_header_is_app_passculture_for_normal_endpoint():
@@ -138,7 +129,6 @@ def test_is_valid_header_when_not_staging_not_dev_and_header_is_app_passculture_
     assert is_valid_header
 
 
-@pytest.mark.standalone
 @patch('validation.headers.ENV', 'production')
 @patch('validation.headers.API_URL', 'https://backend.passculture.beta.gouv.fr')
 def test_not_valid_header_when_not_staging_not_dev_and_header_is_pro_passculture_for_normal_endpoint():
@@ -153,7 +143,6 @@ def test_not_valid_header_when_not_staging_not_dev_and_header_is_pro_passculture
     assert is_valid_header
 
 
-@pytest.mark.standalone
 @patch('validation.headers.ENV', 'production')
 @patch('validation.headers.API_URL', 'https://backend.passculture.beta.gouv.fr')
 def test_is_valid_header_when_not_staging_not_dev_and_header_is_pro_passculture_for_exception_endpoint():
@@ -168,7 +157,6 @@ def test_is_valid_header_when_not_staging_not_dev_and_header_is_pro_passculture_
     assert is_valid_header
 
 
-@pytest.mark.standalone
 @patch('validation.headers.ENV', 'production')
 @patch('validation.headers.API_URL', 'https://backend.passculture.beta.gouv.fr')
 def test_any_origin_header_is_valid_on_endpoint_validate_venue():
@@ -183,7 +171,6 @@ def test_any_origin_header_is_valid_on_endpoint_validate_venue():
     assert is_valid_header
 
 
-@pytest.mark.standalone
 @patch('validation.headers.ENV', 'testing')
 def test_is_valid_header_when_url_is_authorized_in_subdomain():
     # Given
@@ -197,7 +184,6 @@ def test_is_valid_header_when_url_is_authorized_in_subdomain():
     assert is_valid_header
 
 
-@pytest.mark.standalone
 @patch('validation.headers.ENV', 'testing')
 def test_is_invalid_header_when_url_is_not_known():
     # Given
@@ -211,7 +197,6 @@ def test_is_invalid_header_when_url_is_not_known():
     assert not is_valid_header
 
 
-@pytest.mark.standalone
 @patch('validation.headers.ENV', 'testing')
 def test_is_invalid_header_when_malicious_url_is_used():
     # Given
@@ -225,7 +210,6 @@ def test_is_invalid_header_when_malicious_url_is_used():
     assert not is_valid_header
 
 
-@pytest.mark.standalone
 @patch('validation.headers.ENV', 'testing')
 def test_is_valid_header_when_url_has_dash_is_authorized_in_subdomain():
     # Given

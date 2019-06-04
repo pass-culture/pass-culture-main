@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
 
-import pytest
-
 from models import PcObject
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_offer_with_thing_product, create_user, create_offerer, \
@@ -9,7 +7,6 @@ from tests.test_utils import API_URL, create_offer_with_thing_product, create_us
     create_stock_with_thing_offer, create_recommendation, create_deposit, create_booking
 
 
-@pytest.mark.standalone
 class Get:
     class Returns200:
         @clean_database
@@ -49,7 +46,6 @@ class Get:
             # Then
             assert response.json()['wallet_is_activated'] == True
 
-        @pytest.mark.standalone
         def when_user_has_booked_some_offers(self, app):
             # Given
             user = create_user(public_name='Test', departement_code='93', email='wallet_test@email.com')

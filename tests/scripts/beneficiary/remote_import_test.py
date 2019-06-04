@@ -21,7 +21,6 @@ TWO_DAYS_AGO = (NOW - timedelta(hours=48)).strftime(datetime_pattern)
 ONE_WEEK_AGO = NOW - timedelta(days=7)
 
 
-@pytest.mark.standalone
 class RunTest:
     @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
@@ -171,7 +170,6 @@ class RunTest:
         process_beneficiary_application.assert_not_called()
 
 
-@pytest.mark.standalone
 class ProcessBeneficiaryApplicationTest:
     @clean_database
     def test_new_beneficiaries_are_recorded_with_deposit(self, app):
@@ -249,7 +247,6 @@ class ProcessBeneficiaryApplicationTest:
         PcObject.assert_not_called()
 
 
-@pytest.mark.standalone
 class ParseBeneficiaryInformationTest:
     def test_personal_information_of_beneficiary_are_parsed_from_application_detail(self):
         # when
@@ -305,7 +302,6 @@ class ParseBeneficiaryInformationTest:
         assert information['department'] == '2a'
 
 
-@pytest.mark.standalone
 class CreateBeneficiaryFromApplicationTest:
     def test_return_newly_created_user_if_no_duplicate_are_found(self):
         # given

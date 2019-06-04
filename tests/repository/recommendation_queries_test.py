@@ -13,7 +13,6 @@ from tests.test_utils import create_recommendation, create_offer_with_event_prod
 
 
 @clean_database
-@pytest.mark.standalone
 def test_filter_out_recommendation_with_not_bookable_stocks_returns_recos_with_at_least_one_not_soft_deleted_stock(app):
     # Given
     offerer = create_offerer()
@@ -53,7 +52,6 @@ def test_filter_out_recommendation_with_not_bookable_stocks_returns_recos_with_a
 
 
 @clean_database
-@pytest.mark.standalone
 def test_filter_out_recommendation_with_not_bookable_stocks_returns_recos_with_valid_booking_date(app):
     # Given
     one_day_ago = datetime.utcnow() - timedelta(days=1)
@@ -84,7 +82,6 @@ def test_filter_out_recommendation_with_not_bookable_stocks_returns_recos_with_v
     assert recommendation_on_valid_booking_date_stock.id in recommendation_ids
 
 
-@pytest.mark.standalone
 @clean_database
 def test_filter_unseen_valid_recommendations_for_user_only_keeps_non_tuto_recommendations_that_have_not_expired(app):
     # Given
@@ -117,7 +114,6 @@ def test_filter_unseen_valid_recommendations_for_user_only_keeps_non_tuto_recomm
     assert recommendation_with_no_validity_date in recommendations
 
 
-@pytest.mark.standalone
 @clean_database
 def test_update_read_recommendations(app):
     # Given

@@ -4,7 +4,6 @@ from models import ApiErrors, ThingType, EventType
 from validation.offers import check_has_venue_id, check_offer_type_is_valid
 
 
-@pytest.mark.standalone
 class CheckHasVenueIdTest:
     def test_raises_exception_when_venue_id_is_None(self):
         # Given
@@ -28,7 +27,6 @@ class CheckHasVenueIdTest:
             assert False
 
 
-@pytest.mark.standalone
 class CheckOfferTypeIsValidTest:
     def test_raises_api_error_when_offer_type_is_invalid(self):
         # When

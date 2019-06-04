@@ -16,7 +16,6 @@ class MockedOffer(Offer):
         return self._stocks
 
 
-@pytest.mark.standalone
 def test_build_mixed_recommendations_with_only_created_recommendations():
     # given
     created_recommendations = [create_recommendation(idx=1), create_recommendation(idx=2)]
@@ -31,7 +30,6 @@ def test_build_mixed_recommendations_with_only_created_recommendations():
     assert [r.id for r in created_recommendations] == [1, 2]
 
 
-@pytest.mark.standalone
 def test_build_mixed_recommendations_with_created_recommendations_and_unread_but_none_read():
     # given
     created_recommendations = [create_recommendation(idx=1), create_recommendation(idx=2)]
@@ -46,7 +44,6 @@ def test_build_mixed_recommendations_with_created_recommendations_and_unread_but
     assert [r.id for r in created_recommendations] == [1, 2, 3, 4]
 
 
-@pytest.mark.standalone
 def test_build_mixed_recommendations_with_created_recommendations_and_read_but_none_unread():
     # given
     created_recommendations = [create_recommendation(idx=1), create_recommendation(idx=2)]
@@ -61,7 +58,6 @@ def test_build_mixed_recommendations_with_created_recommendations_and_read_but_n
     assert [r.id for r in created_recommendations] == [1, 2, 3, 4]
 
 
-@pytest.mark.standalone
 def test_build_mixed_recommendations_with_only_read_recommendations_and_none_created():
     # given
     created_recommendations = []
@@ -76,7 +72,6 @@ def test_build_mixed_recommendations_with_only_read_recommendations_and_none_cre
     assert [r.id for r in created_recommendations] == [1, 2]
 
 
-@pytest.mark.standalone
 def test_build_mixed_recommendations_with_only_unread_recommendations_and_none_created():
     # given
     created_recommendations = []
@@ -91,7 +86,6 @@ def test_build_mixed_recommendations_with_only_unread_recommendations_and_none_c
     assert [r.id for r in created_recommendations] == [1, 2]
 
 
-@pytest.mark.standalone
 def test_build_mixed_recommendations_with_read_recommendations_and_unread_but_none_created():
     # given
     created_recommendations = []
@@ -106,7 +100,6 @@ def test_build_mixed_recommendations_with_read_recommendations_and_unread_but_no
     assert [r.id for r in created_recommendations] == [3, 4, 1, 2]
 
 
-@pytest.mark.standalone
 def test_build_mixed_recommendations_with_all_sorts_of_recommendations():
     # given
     created_recommendations = [create_recommendation(idx=5), create_recommendation(idx=6)]
@@ -121,7 +114,6 @@ def test_build_mixed_recommendations_with_all_sorts_of_recommendations():
     assert [r.id for r in created_recommendations] == [5, 6, 3, 4, 1, 2]
 
 
-@pytest.mark.standalone
 @patch('domain.build_recommendations.feature_paid_offers_enabled', return_value=False)
 def test_build_mixed_recommendations_removes_the_recommendations_on_paid_offers_if_feature_is_disabled(feature_enabled):
     # given

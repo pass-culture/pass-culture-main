@@ -13,7 +13,6 @@ from tests.test_utils import API_URL, create_offer_with_thing_product, create_de
 from utils.human_ids import humanize
 
 
-@pytest.mark.standalone
 class Patch:
     def setup_class(cls):
         cls.tomorrow = datetime.utcnow() + timedelta(days=1)

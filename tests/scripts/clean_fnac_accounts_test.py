@@ -11,7 +11,6 @@ from tests.test_utils import create_user, create_offerer, create_user_offerer, c
 ALL_OK_FNAC_SIREN = ['350127460', '434001954', '334473352', '343282380']
 
 
-@pytest.mark.standalone
 class FindAllOKFnacUsersTest:
     @clean_database
     def test_retrieves_users_with_email_ending_with_fnac_dot_com_and_fnacdarty_dot_com_only(self, app):
@@ -30,7 +29,6 @@ class FindAllOKFnacUsersTest:
         assert user_not_fnac not in users
 
 
-@pytest.mark.standalone
 class FindAllFnacStructuresTest:
     @clean_database
     def test_only_retrieves_offerers_with_fnac_siren(self, app):
@@ -47,7 +45,6 @@ class FindAllFnacStructuresTest:
         assert other_offerer not in offerers
 
 
-@pytest.mark.standalone
 class CreateAllPossibleUserOfferersTest:
     @clean_database
     def test_should_create_user_offerers_linking_all_fnac_users_and_offerers_only_if_they_do_not_exist(self, app):
@@ -69,7 +66,6 @@ class CreateAllPossibleUserOfferersTest:
             assert user_offerer.rights == RightsType.editor
 
 
-@pytest.mark.standalone
 class ClearAllExistingUserOfferersTest:
     @clean_database
     def test_should_only_delete_user_offerers_linked_to_given_offerer(self, app):
@@ -95,7 +91,6 @@ class ClearAllExistingUserOfferersTest:
         assert user_offerers[0].offerer.siren != '123456789'
 
 
-@pytest.mark.standalone
 class MoveOffersFromOneVenueToAnotherTest:
     @clean_database
     def test_unlinks_offers_from_origin_venue_and_links_it_to_target(self, app):
@@ -138,7 +133,6 @@ class MoveOffersFromOneVenueToAnotherTest:
             assert False
 
 
-@pytest.mark.standalone
 class DeleteAllPhysicalManagedVenuesTest:
     @clean_database
     def test_removes_all_physical_venues(self, app):

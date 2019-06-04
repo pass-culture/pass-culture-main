@@ -10,7 +10,6 @@ from tests.test_utils import create_user, create_offerer, create_user_offerer, c
 
 
 @clean_database
-@pytest.mark.standalone
 def test_cannot_create_admin_that_can_book(app):
     # Given
     user = create_user(can_book_free_offers=True, is_admin=True)
@@ -20,7 +19,6 @@ def test_cannot_create_admin_that_can_book(app):
         PcObject.save(user)
 
 
-@pytest.mark.standalone
 class HasRightsTest:
     @clean_database
     def test_user_has_no_editor_right_on_offerer_if_he_is_not_attached(self, app):
@@ -77,7 +75,6 @@ class HasRightsTest:
         assert has_rights is True
 
 
-@pytest.mark.standalone
 class WalletBalanceTest:
     @clean_database
     def test_wallet_balance_is_0_with_no_deposits_and_no_bookings(self, app):
@@ -152,7 +149,6 @@ class WalletBalanceTest:
         assert balance == Decimal(130)
 
 
-@pytest.mark.standalone
 class RealWalletBalanceTest:
     @clean_database
     def test_real_wallet_balance_is_0_with_no_deposits_and_no_bookings(self, app):

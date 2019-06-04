@@ -7,7 +7,6 @@ from models.user import WalletBalance
 from tests.test_utils import create_payment_details
 
 
-@pytest.mark.standalone
 class PaymentDetailsCSVTest:
     def test_generate_payment_details_csv_has_human_readable_header(self):
         # given
@@ -54,7 +53,6 @@ class PaymentDetailsCSVTest:
         assert _count_non_empty_lines(csv) == 1
 
 
-@pytest.mark.standalone
 class WalletBalancesCSVTest:
     def test_generate_wallet_balances_csv_has_human_readable_header(self):
         # given

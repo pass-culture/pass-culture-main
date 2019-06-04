@@ -10,7 +10,6 @@ from tests.test_utils import create_user, create_offerer, create_user_offerer, c
 from utils.human_ids import humanize
 
 
-@pytest.mark.standalone
 class Patch:
     class Returns200:
         @clean_database

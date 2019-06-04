@@ -8,7 +8,6 @@ from tests.conftest import clean_database
 from tests.test_utils import create_offerer, create_venue, create_bank_information
 
 
-@pytest.mark.standalone
 class GetLastUpdateForBankInformationTest:
     @clean_database
     def when_bank_information_table_is_empty_returns_1900_01_01(self, app):

@@ -27,7 +27,6 @@ TEN_DAYS_FROM_NOW = datetime.utcnow() + timedelta(days=10)
 RECOMMENDATION_URL = API_URL + '/recommendations'
 
 
-@pytest.mark.standalone
 class Get:
     class Returns401:
         def when_no_user_is_logged_in(self):

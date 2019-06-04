@@ -6,7 +6,6 @@ from tests.test_utils import create_booking_for_event, \
     create_booking_for_thing
 
 
-@pytest.mark.standalone
 class ExpensesTest:
     class ThingsTest:
         class AudiovisuelTest:

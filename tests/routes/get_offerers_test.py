@@ -1,4 +1,3 @@
-import pytest
 import secrets
 
 from models import PcObject
@@ -10,7 +9,6 @@ from tests.test_utils import API_URL, \
     create_bank_information
 
 
-@pytest.mark.standalone
 class Get:
     class Returns401:
         @clean_database
@@ -239,7 +237,6 @@ class Get:
             assert 'iban' not in response.json()[0]
 
         @clean_database
-        @pytest.mark.standalone
         def when_user_offerer_is_not_validated_but_returns_no_offerer(self, app):
             # Given
             offerer = create_offerer()

@@ -11,7 +11,6 @@ from tests.test_utils import API_URL, create_deposit, create_venue, create_offer
 from utils.human_ids import humanize
 
 
-@pytest.mark.standalone
 class PatchBookingTest:
     @clean_database
     def test_cannot_cancel_used_booking(self, app):

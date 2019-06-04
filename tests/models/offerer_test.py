@@ -6,7 +6,6 @@ from tests.test_utils import create_offerer, create_venue, create_offer_with_thi
     create_bank_information
 
 
-@pytest.mark.standalone
 @clean_database
 def test_nOffers(app):
     # given
@@ -28,7 +27,6 @@ def test_nOffers(app):
     assert n_offers == 5
 
 
-@pytest.mark.standalone
 @clean_database
 def test_offerer_can_have_null_address(app):
     # given
@@ -42,7 +40,6 @@ def test_offerer_can_have_null_address(app):
         assert False
 
 
-@pytest.mark.standalone
 class OffererBankInformationTest:
     @clean_database
     def test_bic_property_returns_bank_information_bic_when_offerer_has_bank_information(self, app):

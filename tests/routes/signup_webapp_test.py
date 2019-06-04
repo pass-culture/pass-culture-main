@@ -22,7 +22,6 @@ BASE_DATA = {
 }
 
 
-@pytest.mark.standalone
 class Post:
     class Returns201:
         @clean_database

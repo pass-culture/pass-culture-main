@@ -11,7 +11,6 @@ from tests.conftest import clean_database, mocked_mail
 from tests.test_utils import create_email
 
 
-@pytest.mark.standalone
 @clean_database
 @freeze_time('2019-01-01 12:00:00')
 @mocked_mail
@@ -44,7 +43,6 @@ def test_send_remedial_emails_sets_status_to_sent_and_datetime_to_now_only_to_em
     assert email3.datetime == datetime(2019, 1, 1, 12, 0, 0)
 
 
-@pytest.mark.standalone
 @clean_database
 @freeze_time('2019-01-01 12:00:00')
 @mocked_mail

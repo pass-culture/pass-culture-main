@@ -10,7 +10,6 @@ from tests.test_utils import create_user, create_offerer, create_venue, create_o
     create_stock, create_booking, create_user_offerer
 
 
-@pytest.mark.standalone
 class GetAllUsersWalletBalancesTest:
     @clean_database
     def test_users_are_sorted_by_user_id(self, app):
@@ -101,7 +100,6 @@ class GetAllUsersWalletBalancesTest:
         assert balances[1].real_balance == 200
 
 
-@pytest.mark.standalone
 class FindByFirstAndLastNamesAndEmailTest:
     @clean_database
     def test_returns_users_with_matching_criteria_ignoring_case(self, app):
@@ -180,7 +178,6 @@ class FindByFirstAndLastNamesAndEmailTest:
         assert not users
 
 
-@pytest.mark.standalone
 class FindMostRecentBeneficiaryCreationDateTest:
     @clean_database
     def test_returns_created_at_date_of_most_recent_beneficiary_user(self, app):

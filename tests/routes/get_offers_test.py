@@ -17,7 +17,6 @@ from tests.test_utils import API_URL, \
 from utils.human_ids import dehumanize, humanize
 
 
-@pytest.mark.standalone
 class Get:
     class Returns200:
         @clean_database

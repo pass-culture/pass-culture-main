@@ -7,7 +7,6 @@ from tests.test_utils import API_URL, \
 from utils.human_ids import humanize
 
 
-@pytest.mark.standalone
 class Get:
     class Returns404:
         @clean_database

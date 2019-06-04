@@ -10,7 +10,6 @@ from tests.conftest import clean_database
 from tests.test_utils import create_payment, create_payment_message, create_deposit, create_booking, create_user
 
 
-@pytest.mark.standalone
 class ParseRawPaymentIdsTest:
     def test_returns_a_list_of_integers(self):
         # given
@@ -31,7 +30,6 @@ class ParseRawPaymentIdsTest:
             parse_raw_payments_ids(raw_ids)
 
 
-@pytest.mark.standalone
 class DoBanPaymentsTest:
     @clean_database
     def test_modify_statuses_on_given_payments(self, app):

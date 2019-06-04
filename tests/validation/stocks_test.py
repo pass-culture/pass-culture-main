@@ -9,7 +9,6 @@ from utils.human_ids import humanize
 from validation.stocks import check_dates_are_allowed_on_new_stock, check_dates_are_allowed_on_existing_stock
 
 
-@pytest.mark.standalone
 class CheckDatesAreAllowedOnNewStockTest:
     class OfferIsOnThingTest:
         def test_raises_error_with_beginning_and_end_datetimes(self):

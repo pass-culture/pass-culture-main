@@ -21,7 +21,6 @@ class TestableBankInformationProvider(BankInformationProvider):
         pass
 
 
-@pytest.mark.standalone
 class BankInformationProviderProviderTest:
     @patch(
         'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_from_demarches_simplifiees_procedure')

@@ -9,7 +9,6 @@ from utils.logger import logger
 
 
 @clean_database
-@pytest.mark.standalone
 def test_save_activation_sandbox(app):
     # given
     saveCounts()

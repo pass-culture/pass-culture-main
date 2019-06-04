@@ -29,7 +29,6 @@ time_interval.end = datetime(2018, 2, 2, 5, 15, 25, 222000)
 now = datetime.utcnow()
 
 
-@pytest.mark.standalone
 class SerializeTest:
     def test_on_datetime_list_returns_string_with_date_in_ISO_8601_list(self):
         # Given
@@ -77,7 +76,6 @@ class SerializeTest:
             assert False, 'La date doit être au format ISO 8601 %Y-%m-%dT%H:%M:%S.%fZ'
 
 
-@pytest.mark.standalone
 class PopulateFromDictTest:
     def test_user_string_fields_are_stripped_of_whitespace(self):
         # Given

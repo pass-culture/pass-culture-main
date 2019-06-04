@@ -15,7 +15,6 @@ from tests.local_providers.local_provider_titelive_test import get_ordered_thing
 from tests.test_utils import create_offerer, create_venue, provider_test, create_product_with_Thing_type
 
 
-@pytest.mark.standalone
 class TiteliveThingsTest:
 
     @clean_database

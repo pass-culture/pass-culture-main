@@ -7,7 +7,6 @@ from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_stock
 
 
-@pytest.mark.standalone
 class CreateRecommendationsForDiscoveryTest:
     @clean_database
     def test_returns_offer_in_all_ile_de_france_for_user_from_93(self, app):

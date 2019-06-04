@@ -13,7 +13,6 @@ from tests.test_utils import create_stock_with_event_offer
 from utils.human_ids import humanize
 
 
-@pytest.mark.standalone
 class PatchBookingAsAnonymousUserTest:
     @clean_database
     def test_with_token_and_valid_email_and_offer_id_returns_204_and_sets_booking_is_used(self, app):
@@ -112,7 +111,6 @@ class PatchBookingAsAnonymousUserTest:
         assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
 
 
-@pytest.mark.standalone
 class PatchBookingByTokenAsLoggedInUserTest:
     @clean_database
     def test_when_has_rights_returns_204_and_is_used_is_true(self, app):
@@ -308,7 +306,6 @@ class PatchBookingByTokenAsLoggedInUserTest:
         assert booking.isUsed == True
 
 
-@pytest.mark.standalone
 class PatchBookingByTokenForActivationOffersTest:
     @clean_database
     def test_when_user_patching_admin_and_activation_event_returns_status_code_204_set_can_book_free_offers_true_for_booking_user(

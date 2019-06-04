@@ -10,7 +10,6 @@ from tests.test_utils import create_user, create_stock, create_offer_with_thing_
 from utils.token import random_token
 
 
-@pytest.mark.standalone
 class FillUserFromTest:
     def setup_method(self):
         self.csv_row = [
@@ -118,7 +117,6 @@ class FillUserFromTest:
 
 
 
-@pytest.mark.standalone
 class CreateBookingForTest:
     def test_returns_a_booking_for_given_user_and_stock(self):
         # given
@@ -155,7 +153,6 @@ class CreateBookingForTest:
         assert len(booking.token) == 6
 
 
-@pytest.mark.standalone
 class CreateUsersWithActivationBookingsTest:
     def setup_method(self):
         self.csv_rows = [
@@ -229,7 +226,6 @@ class CreateUsersWithActivationBookingsTest:
         assert bookings[1].user.email == 'fblake@bletchley.co.uk'
 
 
-@pytest.mark.standalone
 class SplitRowsInChunkWithNoDuplicatedEmailsTest:
     def test_returns_a_list_of_list_of_given_chunk_sizes(self):
         # given

@@ -7,7 +7,6 @@ from tests.conftest import clean_database
 from tests.test_utils import create_product_with_Thing_type
 
 
-@pytest.mark.standalone
 class InitTiteLiveThingDescriptionsTest:
 
     @clean_database

@@ -9,7 +9,6 @@ from tests.conftest import clean_database
 from tests.test_utils import create_email
 
 
-@pytest.mark.standalone
 class UpdateEmailsWithNewSenderEmailTest:
     @clean_database
     def test_update_emails_with_new_sender_email(self, app):

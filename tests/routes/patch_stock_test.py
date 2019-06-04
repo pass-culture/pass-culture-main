@@ -10,7 +10,6 @@ from tests.test_utils import API_URL, create_booking, create_user, create_user_o
 from utils.human_ids import humanize
 
 
-@pytest.mark.standalone
 class Patch:
     class Returns200:
         @clean_database

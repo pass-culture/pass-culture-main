@@ -4,7 +4,6 @@ from models import ApiErrors
 from validation.venues import validate_coordinates
 
 
-@pytest.mark.standalone
 def test_validate_coordinates_raises_an_api_errors_if_latitude_is_not_a_decimal():
     # when
     with pytest.raises(ApiErrors) as e:
@@ -14,7 +13,6 @@ def test_validate_coordinates_raises_an_api_errors_if_latitude_is_not_a_decimal(
     assert e.value.errors['latitude'] == ['Format incorrect']
 
 
-@pytest.mark.standalone
 def test_validate_coordinates_raises_an_api_errors_if_longitude_is_not_a_decimal():
     # when
     with pytest.raises(ApiErrors) as e:
@@ -24,7 +22,6 @@ def test_validate_coordinates_raises_an_api_errors_if_longitude_is_not_a_decimal
     assert e.value.errors['longitude'] == ['Format incorrect']
 
 
-@pytest.mark.standalone
 def test_validate_coordinates_raises_an_api_errors_for_both_latitude_and_longitude():
     # when
     with pytest.raises(ApiErrors) as e:
@@ -35,7 +32,6 @@ def test_validate_coordinates_raises_an_api_errors_for_both_latitude_and_longitu
     assert e.value.errors['longitude'] == ['Format incorrect']
 
 
-@pytest.mark.standalone
 def test_validate_coordinates_raises_an_api_errors_if_latitude_is_greater_than_90():
     # when
     with pytest.raises(ApiErrors) as e:
@@ -45,7 +41,6 @@ def test_validate_coordinates_raises_an_api_errors_if_latitude_is_greater_than_9
     assert e.value.errors['latitude'] == ['La latitude doit être comprise entre -90.0 et +90.0']
 
 
-@pytest.mark.standalone
 def test_validate_coordinates_raises_an_api_errors_if_latitude_is_lower_than_minus_90():
     # when
     with pytest.raises(ApiErrors) as e:
@@ -55,7 +50,6 @@ def test_validate_coordinates_raises_an_api_errors_if_latitude_is_lower_than_min
     assert e.value.errors['latitude'] == ['La latitude doit être comprise entre -90.0 et +90.0']
 
 
-@pytest.mark.standalone
 def test_validate_coordinates_raises_an_api_errors_if_longitude_is_greater_than_180():
     # when
     with pytest.raises(ApiErrors) as e:
@@ -65,7 +59,6 @@ def test_validate_coordinates_raises_an_api_errors_if_longitude_is_greater_than_
     assert e.value.errors['longitude'] == ['La longitude doit être comprise entre -180.0 et +180.0']
 
 
-@pytest.mark.standalone
 def test_validate_coordinates_raises_an_api_errors_if_longitude_is_lower_than_minus_180():
     # when
     with pytest.raises(ApiErrors) as e:
@@ -75,7 +68,6 @@ def test_validate_coordinates_raises_an_api_errors_if_longitude_is_lower_than_mi
     assert e.value.errors['longitude'] == ['La longitude doit être comprise entre -180.0 et +180.0']
 
 
-@pytest.mark.standalone
 def test_validate_coordinates_raises_an_api_errors_if_both_latitude_and_longitude_are_out_of_bounds():
     # when
     with pytest.raises(ApiErrors) as e:

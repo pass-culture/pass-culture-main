@@ -7,7 +7,6 @@ from utils.human_ids import humanize
 from utils.logger import logger
 
 
-@pytest.mark.standalone
 class Get:
     class Returns200:
         @clean_database

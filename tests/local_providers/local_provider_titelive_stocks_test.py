@@ -22,7 +22,6 @@ def check_titelive_epagine_is_down():
     return not successful_request or status_code_not_200
 
 
-@pytest.mark.standalone
 @clean_database
 @pytest.mark.skipif(check_titelive_epagine_is_down(), reason="Titelive Epagine API is down")
 @patch('local_providers.titelive_stocks.get_data')
@@ -76,7 +75,6 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
                   )
 
 
-@pytest.mark.standalone
 @clean_database
 @pytest.mark.skipif(check_titelive_epagine_is_down(), reason="Titelive Epagine API is down")
 @patch('local_providers.titelive_stocks.get_data')
@@ -130,7 +128,6 @@ def test_titelive_stock_provider_create_1_stock_and_do_not_create_existing_offer
                   )
 
 
-@pytest.mark.standalone
 @clean_database
 @pytest.mark.skipif(check_titelive_epagine_is_down(), reason="Titelive Epagine API is down")
 @patch('local_providers.titelive_stocks.get_data')
@@ -192,7 +189,6 @@ def test_titelive_stock_provider_create_2_stock_and_1_offer(get_data, app):
                   )
 
 
-@pytest.mark.standalone
 @clean_database
 @pytest.mark.skipif(check_titelive_epagine_is_down(), reason="Titelive Epagine API is down")
 def test_titelive_stock_provider_create_nothing_if_siret_is_not_in_titelive_database(app):

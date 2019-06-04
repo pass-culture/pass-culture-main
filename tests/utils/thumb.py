@@ -7,7 +7,6 @@ from werkzeug.datastructures import FileStorage
 from models import ApiErrors
 from utils.thumb import read_thumb
 
-@pytest.mark.standalone
 def test_read_thumb_returns_api_error_when_no_extension_in_filename():
     dir_path = Path(os.path.dirname(os.path.realpath(__file__)))
 

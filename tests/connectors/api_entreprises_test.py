@@ -7,7 +7,6 @@ from connectors.api_entreprises import ApiEntrepriseException, get_by_offerer, g
 from tests.test_utils import create_offerer
 
 
-@pytest.mark.standalone
 class GetByOffererTest:
     @patch('connectors.api_entreprises.requests.get')
     def test_raises_ApiEntrepriseException_when_sirene_api_does_not_respond(self, requests_get):
@@ -45,7 +44,6 @@ class GetByOffererTest:
         assert response == mocked_api_response
 
 
-@pytest.mark.standalone
 class GetBySiretTest:
     @patch('connectors.api_entreprises.requests.get')
     def test_raises_ApiEntrepriseException_when_sirene_api_does_not_respond(self, requests_get):

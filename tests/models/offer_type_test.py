@@ -3,7 +3,6 @@ import pytest
 from models.offer_type import ProductType, ThingType, EventType
 
 
-@pytest.mark.standalone
 class ProductTypeTest:
     class IsThingTest:
         def test_if_name_is_empty_return_False(self):

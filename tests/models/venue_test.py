@@ -8,7 +8,6 @@ from tests.test_utils import create_offerer, create_venue, create_offer_with_thi
 
 
 @clean_database
-@pytest.mark.standalone
 def test_offerer_cannot_have_address_and_isVirtual(app):
     # Given
     offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
@@ -23,7 +22,6 @@ def test_offerer_cannot_have_address_and_isVirtual(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_offerer_not_isVirtual_cannot_have_null_address(app):
     # Given
     offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
@@ -38,7 +36,6 @@ def test_offerer_not_isVirtual_cannot_have_null_address(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_offerer_cannot_create_a_second_virtual_venue(app):
     # Given
     offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
@@ -57,7 +54,6 @@ def test_offerer_cannot_create_a_second_virtual_venue(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_offerer_cannot_update_a_second_venue_to_be_virtual(app):
     # Given
     siren = '132547698'
@@ -85,7 +81,6 @@ def test_offerer_cannot_update_a_second_venue_to_be_virtual(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_venue_raises_exception_when_is_virtual_and_has_siret(app):
     # given
     offerer = create_offerer()
@@ -97,7 +92,6 @@ def test_venue_raises_exception_when_is_virtual_and_has_siret(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_venue_raises_exception_when_no_siret_and_no_comment(app):
     # given
     offerer = create_offerer()
@@ -109,7 +103,6 @@ def test_venue_raises_exception_when_no_siret_and_no_comment(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_venue_raises_exception_when_siret_and_comment_but_virtual(app):
     # given
     offerer = create_offerer()
@@ -121,7 +114,6 @@ def test_venue_raises_exception_when_siret_and_comment_but_virtual(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_venue_should_not_raise_exception_when_siret_and_comment(app):
     # given
     offerer = create_offerer()
@@ -137,7 +129,6 @@ def test_venue_should_not_raise_exception_when_siret_and_comment(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_venue_should_not_raise_exception_when_no_siret_but_comment(app):
     # given
     offerer = create_offerer()
@@ -152,7 +143,6 @@ def test_venue_should_not_raise_exception_when_no_siret_but_comment(app):
         assert pytest.fail("Should not fail with comment but not virtual nor siret")
 
 
-@pytest.mark.standalone
 @clean_database
 def test_nOffers(app):
     offerer = create_offerer()
@@ -170,7 +160,6 @@ def test_nOffers(app):
     assert n_offers == 4
 
 
-@pytest.mark.standalone
 class VenueBankInformationTest:
     @clean_database
     def test_bic_property_returns_bank_information_bic_when_venue_has_bank_information(self, app):

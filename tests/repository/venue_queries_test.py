@@ -11,7 +11,6 @@ from tests.test_utils import create_venue, create_offer_with_event_product, crea
     create_user, create_user_offerer, create_stock_from_event_occurrence, save_all_activities
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_sirens_params_return_filtered_venues(app):
     # given
@@ -40,7 +39,6 @@ def test_find_filtered_venues_with_sirens_params_return_filtered_venues(app):
     assert venue_123456784 not in query_with_sirens
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_has_validated_offerer_param_return_filtered_venues(app):
     # Given
@@ -58,7 +56,6 @@ def test_find_filtered_venues_with_has_validated_offerer_param_return_filtered_v
     assert venue_with_offerer_not_valid in query_with_not_valid_offerer_only
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_dpts_param_return_filtered_venues(app):
     # Given
@@ -81,7 +78,6 @@ def test_find_filtered_venues_with_dpts_param_return_filtered_venues(app):
     assert venue_virtual not in query_with_dpts
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_zipcodes_param_return_filtered_venues(app):
     # Given
@@ -102,7 +98,6 @@ def test_find_filtered_venues_with_zipcodes_param_return_filtered_venues(app):
     assert venue_67000 not in query_with_zipcodes
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_date_params_return_filtered_venues(app):
     # Given
@@ -130,7 +125,6 @@ def test_find_filtered_venues_with_date_params_return_filtered_venues(app):
     assert venue_20180730 in query_with_date
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_is_virtual_param_return_filtered_venues(app):
     # Given
@@ -147,7 +141,6 @@ def test_find_filtered_venues_with_is_virtual_param_return_filtered_venues(app):
     assert venue_not_virtual not in query_only_virtual
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_has_siret_param_return_filtered_venues(app):
     # Given
@@ -166,7 +159,6 @@ def test_find_filtered_venues_with_has_siret_param_return_filtered_venues(app):
     assert venue_with_siret not in query_no_siret
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_is_validated_param_return_filtered_venues(app):
     # Given
@@ -183,7 +175,6 @@ def test_find_filtered_venues_with_is_validated_param_return_filtered_venues(app
     assert venue_validated in query_only_validated
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_has_offerer_with_siren_param_return_filtered_venues(app):
     # Given
@@ -202,7 +193,6 @@ def test_find_filtered_venues_with_has_offerer_with_siren_param_return_filtered_
     assert venue_with_offerer_with_siren in query_validated
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_True_has_validated_user_offerer_param_return_filtered_venues(app):
     # Given
@@ -233,7 +223,6 @@ def test_find_filtered_venues_with_True_has_validated_user_offerer_param_return_
     assert venue_with_both in query_validated
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_False_has_validated_user_offerer_param_return_filtered_venues(app):
     # Given
@@ -264,7 +253,6 @@ def test_find_filtered_venues_with_False_has_validated_user_offerer_param_return
     assert venue_with_both not in query_not_validated
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_True_has_validated_user_param_return_filtered_venues(app):
     # Given
@@ -295,7 +283,6 @@ def test_find_filtered_venues_with_True_has_validated_user_param_return_filtered
     assert venue_with_both in query_validated
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_False_has_validated_user_param_return_filtered_venues(app):
     # Given
@@ -326,7 +313,6 @@ def test_find_filtered_venues_with_False_has_validated_user_param_return_filtere
     assert venue_with_both not in query_not_validated
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_offer_status_with_VALID_param_return_filtered_venues(app):
     # Given
@@ -402,7 +388,6 @@ def test_find_filtered_venues_with_offer_status_with_VALID_param_return_filtered
     assert venue_with_not_available_event not in query_has_valid_offer
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_offer_status_with_EXPIRED_param_return_filtered_venues(app):
     # Given
@@ -478,7 +463,6 @@ def test_find_filtered_venues_with_offer_status_with_EXPIRED_param_return_filter
     assert venue_with_not_available_event in query_has_expired_offer
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_offer_status_with_WITHOUT_param_return_filtered_venues(app):
     # Given
@@ -554,7 +538,6 @@ def test_find_filtered_venues_with_offer_status_with_WITHOUT_param_return_filter
     assert venue_with_not_available_event not in query_without_offer
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_offer_status_with_ALL_param_return_filtered_venues(app):
     # Given
@@ -630,7 +613,6 @@ def test_find_filtered_venues_with_offer_status_with_ALL_param_return_filtered_v
     assert venue_with_not_available_event in query_with_all_offer
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_venues_with_default_param_return_all_venues(app):
     # Given

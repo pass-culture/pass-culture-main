@@ -8,7 +8,6 @@ from tests.test_utils import create_user, API_URL
 
 
 @clean_database
-@pytest.mark.standalone
 def test_a_new_user_session_is_recorded_when_signing_in(app):
     # given
     user = create_user(email='user@example.com')
@@ -24,7 +23,6 @@ def test_a_new_user_session_is_recorded_when_signing_in(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_an_existing_user_session_is_deleted_when_signing_out(app):
     # given
     user = create_user(email='test@mail.com')
@@ -42,7 +40,6 @@ def test_an_existing_user_session_is_deleted_when_signing_out(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_reusing_cookies_after_a_sign_out_is_unauthorized(app):
     # given
     user = create_user(email='test@mail.com')

@@ -7,7 +7,6 @@ from tests.conftest import clean_database
 from tests.test_utils import create_offerer
 
 
-@pytest.mark.standalone
 @clean_database
 def test_update_offerer_with_sirene_data_changes_given_offerer_information(app):
     # Given
@@ -46,7 +45,6 @@ def test_update_offerer_with_sirene_data_changes_given_offerer_information(app):
     assert offerer.postalCode == '75000'
 
 
-@pytest.mark.standalone
 @clean_database
 def test_update_offerer_with_sirene_data_keeps_old_information_when_not_given_by_api(app):
     # Given

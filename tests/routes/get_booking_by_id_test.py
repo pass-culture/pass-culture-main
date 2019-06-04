@@ -8,7 +8,6 @@ from tests.test_utils import API_URL, create_stock_with_thing_offer, \
 from utils.human_ids import humanize
 
 
-@pytest.mark.standalone
 class GetBookingTest:
     @clean_database
     def test_get_booking_with_url_has_completed_url(self, app):

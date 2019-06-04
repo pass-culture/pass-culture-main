@@ -4,7 +4,6 @@ import pytest
 
 from utils.date import english_to_french_month
 
-@pytest.mark.standalone
 def test_english_to_french_month(app):
     # Given
     whatever_it_is_year = 2030

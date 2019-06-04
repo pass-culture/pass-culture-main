@@ -6,7 +6,6 @@ from models import Booking, Offer, Stock, User, Product
 from tests.test_utils import create_product_with_Thing_type
 
 
-@pytest.mark.standalone
 def test_booking_completed_url_gets_normalized():
     # Given
 
@@ -35,7 +34,6 @@ def test_booking_completed_url_gets_normalized():
     assert completedUrl == 'http://javascript:alert("plop")'
 
 
-@pytest.mark.standalone
 class BookingIsCancellableTest:
     def test_booking_on_event_with_begining_date_in_more_than_72_hours_is_cancellable(self):
         # Given
@@ -75,7 +73,6 @@ class BookingIsCancellableTest:
         assert is_cancellable == False
 
 
-@pytest.mark.standalone
 class StatusLabelTest:
     def test_is_cancelled_label_when_booking_is_cancelled(self):
         # Given

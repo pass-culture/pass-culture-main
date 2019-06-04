@@ -5,7 +5,6 @@ from tests.test_utils import create_recommendation, create_offer_with_thing_prod
     create_mediation, create_user, create_offer_with_event_product
 
 
-@pytest.mark.standalone
 @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
 def test_model_should_have_thumbUrl_using_productId(get_storage_base_url):
     # given
@@ -22,7 +21,6 @@ def test_model_should_have_thumbUrl_using_productId(get_storage_base_url):
     assert recommendation.thumbUrl == "http://localhost/storage/thumbs/products/A9"
 
 
-@pytest.mark.standalone
 @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
 def test_model_should_use_mediation_first_as_thumbUrl(get_storage_base_url):
     # given
@@ -41,7 +39,6 @@ def test_model_should_use_mediation_first_as_thumbUrl(get_storage_base_url):
     assert recommendation.thumbUrl == "http://localhost/storage/thumbs/mediations/AE"
 
 
-@pytest.mark.standalone
 @patch('models.has_thumb_mixin.get_storage_base_url', return_value='https://passculture.app/storage/v2')
 def test_model_should_use_environment_variable(get_storage_base_url):
     # given

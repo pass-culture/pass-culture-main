@@ -31,7 +31,6 @@ from tests.test_utils import create_booking, \
 REFERENCE_DATE = '2017-10-15 09:21:34'
 
 
-@pytest.mark.standalone
 class DepartmentOrNationalOffersTest:
     @clean_database
     def test_returns_national_thing_with_different_department(self, app):
@@ -115,7 +114,6 @@ class DepartmentOrNationalOffersTest:
 
 
 @freeze_time(REFERENCE_DATE)
-@pytest.mark.standalone
 class GetOffersForRecommendationsSearchTest:
     @clean_database
     def test_search_by_one_event_type_returns_only_offers_on_events_of_that_type(self, app):
@@ -371,7 +369,6 @@ class GetOffersForRecommendationsSearchTest:
 
 
 @clean_database
-@pytest.mark.standalone
 def test_get_active_offers_by_type_when_departement_code_00(app):
     # Given
     offerer = create_offerer()
@@ -399,7 +396,6 @@ def test_get_active_offers_by_type_when_departement_code_00(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_get_active_offers_only_returns_both_EventType_and_ThingType(app):
     # Given
     user = create_user(departement_code='93')
@@ -423,7 +419,6 @@ def test_get_active_offers_only_returns_both_EventType_and_ThingType(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_find_activation_offers_returns_activation_offers_in_given_departement(app):
     # given
     offerer = create_offerer()
@@ -445,7 +440,6 @@ def test_find_activation_offers_returns_activation_offers_in_given_departement(a
 
 
 @clean_database
-@pytest.mark.standalone
 def test_find_activation_offers_returns_activation_offers_if_offer_is_national(app):
     # given
     offerer = create_offerer()
@@ -469,7 +463,6 @@ def test_find_activation_offers_returns_activation_offers_if_offer_is_national(a
 
 
 @clean_database
-@pytest.mark.standalone
 def test_find_activation_offers_returns_activation_offers_in_all_ile_de_france_if_departement_is_93(app):
     # given
     offerer = create_offerer()
@@ -492,7 +485,6 @@ def test_find_activation_offers_returns_activation_offers_in_all_ile_de_france_i
 
 
 @clean_database
-@pytest.mark.standalone
 def test_find_activation_offers_returns_activation_offers_with_available_stocks(app):
     # given
     offerer = create_offerer()
@@ -517,7 +509,6 @@ def test_find_activation_offers_returns_activation_offers_with_available_stocks(
 
 
 @clean_database
-@pytest.mark.standalone
 def test_find_activation_offers_returns_activation_offers_with_future_booking_limit_datetime(app):
     # given
     now = datetime.utcnow()
@@ -543,7 +534,6 @@ def test_find_activation_offers_returns_activation_offers_with_future_booking_li
 
 
 @clean_database
-@pytest.mark.standalone
 def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_venue(app):
     user = create_user(email='offerer@email.com')
     offerer1 = create_offerer(siren='123456789')
@@ -589,7 +579,6 @@ def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_
 
 
 @clean_database
-@pytest.mark.standalone
 def test_get_active_offers_should_not_return_activation_event(app):
     # Given
     offerer = create_offerer()
@@ -613,7 +602,6 @@ def test_get_active_offers_should_not_return_activation_event(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_get_active_offers_should_not_return_activation_thing(app):
     # Given
     offerer = create_offerer()
@@ -635,7 +623,6 @@ def test_get_active_offers_should_not_return_activation_thing(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_get_active_offers_should_return_offers_with_stock(app):
     # Given
     product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
@@ -654,7 +641,6 @@ def test_get_active_offers_should_return_offers_with_stock(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_get_active_offers_should_not_return_offers_with_no_stock(app):
     # Given
     product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
@@ -675,7 +661,6 @@ def test_get_active_offers_should_not_return_offers_with_no_stock(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_offer_remaining_stock_filter_does_not_filter_offer_with_cancelled_bookings(app):
     # Given
     product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
@@ -697,7 +682,6 @@ def test_offer_remaining_stock_filter_does_not_filter_offer_with_cancelled_booki
 
 
 @clean_database
-@pytest.mark.standalone
 def test_offer_remaining_stock_filter_filters_offer_with_no_remaining_stock(app):
     # Given
     product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
@@ -721,7 +705,6 @@ def test_offer_remaining_stock_filter_filters_offer_with_no_remaining_stock(app)
 
 
 @clean_database
-@pytest.mark.standalone
 def test_offer_remaining_stock_filter_filters_offer_with_one_full_stock_and_one_empty_stock(app):
     # Given
     product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)

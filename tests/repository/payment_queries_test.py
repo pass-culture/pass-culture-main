@@ -14,7 +14,6 @@ from tests.test_utils import create_bank_information, create_venue, create_offer
 from tests.test_utils import create_payment_message, create_payment, create_booking, create_user, create_deposit
 
 
-@pytest.mark.standalone
 class FindMessageChecksumTest:
     @clean_database
     def test_returns_a_checksum_if_message_id_is_known(self, app):
@@ -45,7 +44,6 @@ class FindMessageChecksumTest:
         assert checksum is None
 
 
-@pytest.mark.standalone
 class FindErrorPaymentsTest:
     @clean_database
     def test_returns_payments_with_last_payment_status_error(self, app):
@@ -96,7 +94,6 @@ class FindErrorPaymentsTest:
         assert payments == []
 
 
-@pytest.mark.standalone
 class FindRetryPaymentsTest:
     @clean_database
     def test_returns_payments_with_last_payment_status_retry(self, app):
@@ -149,7 +146,6 @@ class FindRetryPaymentsTest:
         assert payments == []
 
 
-@pytest.mark.standalone
 class FindPaymentsByMessageTest:
     @clean_database
     def test_returns_payments_matching_message(self, app):
@@ -212,7 +208,6 @@ class FindPaymentsByMessageTest:
         assert matching_payments == []
 
 
-@pytest.mark.standalone
 class FindAllWithStatusNotProcessableForBankInformationTest:
     @clean_database
     def test_finds_all_payments_linked_to_venue(self, app):

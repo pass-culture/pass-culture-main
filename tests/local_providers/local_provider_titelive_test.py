@@ -23,7 +23,6 @@ from tests.test_utils import create_offerer, create_venue, \
     provider_test
 
 
-@pytest.mark.standalone
 class TiteliveTest:
 
     @clean_database

@@ -1,13 +1,11 @@
-import pytest
-
 from models import PcObject, EventType, Offer, ThingType, Product
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user, API_URL, create_offerer, create_venue, create_user_offerer, create_product_with_Thing_type, \
+from tests.test_utils import create_user, API_URL, create_offerer, create_venue, create_user_offerer, \
+    create_product_with_Thing_type, \
     create_product_with_Event_type
 from utils.human_ids import humanize, dehumanize
 
 
-@pytest.mark.standalone
 class Post:
     class Returns400:
         @clean_database
@@ -360,7 +358,6 @@ class Post:
                 "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation"]
 
         @clean_database
-        @pytest.mark.standalone
         def when_creating_a_new_activation_event_offer_as_an_offerer_admin(self, app):
             # Given
             user = create_user(email='test@email.com', is_admin=False)

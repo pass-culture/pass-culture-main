@@ -18,7 +18,6 @@ five_days_from_now = now + timedelta(days=5)
 ten_days_from_now = now + timedelta(days=10)
 
 
-@pytest.mark.standalone
 class DateRangeTest:
     def test_offer_as_dict_returns_dateRange_in_ISO_8601(self):
         # Given
@@ -77,7 +76,6 @@ class DateRangeTest:
         assert offer.dateRange == DateTimes()
 
 
-@pytest.mark.standalone
 class CreateOfferTest:
     @clean_database
     def test_success_when_is_digital_and_virtual_venue(self, app):
@@ -331,7 +329,6 @@ def test_event_offer_offerType_returns_None_if_type_does_not_match_EventType_enu
     assert offer_type == None
 
 
-@pytest.mark.standalone
 class IsFullyBookedTest:
     def test_returns_true_if_all_available_stocks_are_booked(self):
         # given
@@ -393,7 +390,6 @@ class IsFullyBookedTest:
         assert offer.isFullyBooked is False
 
 
-@pytest.mark.standalone
 class IsFinishedTest:
     def test_returns_true_if_all_stocks_have_past_booking_limit_datetime(self):
         # given
@@ -431,7 +427,6 @@ class IsFinishedTest:
         assert offer.isFinished is False
 
 
-@pytest.mark.standalone
 def test_date_range_is_empty_if_offer_is_on_a_thing():
     # given
     offer = Offer()
@@ -442,7 +437,6 @@ def test_date_range_is_empty_if_offer_is_on_a_thing():
     assert offer.dateRange == DateTimes()
 
 
-@pytest.mark.standalone
 def test_date_range_matches_the_occurrence_if_only_one_occurrence():
     # given
     offer = Offer()
@@ -455,7 +449,6 @@ def test_date_range_matches_the_occurrence_if_only_one_occurrence():
     assert offer.dateRange == DateTimes(two_days_ago, five_days_from_now)
 
 
-@pytest.mark.standalone
 def test_date_range_starts_at_first_beginning_date_time_and_ends_at_last_end_date_time():
     # given
     offer = Offer()
@@ -472,7 +465,6 @@ def test_date_range_starts_at_first_beginning_date_time_and_ends_at_last_end_dat
     assert offer.dateRange.datetimes == [four_days_ago, ten_days_from_now]
 
 
-@pytest.mark.standalone
 def test_date_range_is_empty_if_event_has_no_stocks():
     # given
     offer = Offer()

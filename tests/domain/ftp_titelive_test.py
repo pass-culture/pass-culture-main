@@ -6,7 +6,6 @@ from freezegun import freeze_time
 from domain.titelive import put_today_file_at_end_of_list
 
 
-@pytest.mark.standalone
 @freeze_time('2019-01-03 12:00:00')
 def test_put_today_file_at_end_of_list_order_file_as_expected(app):
     # given

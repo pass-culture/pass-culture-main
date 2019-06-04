@@ -5,7 +5,6 @@ from tests.conftest import clean_database
 from tests.test_utils import create_user
 
 
-@pytest.mark.standalone
 @clean_database
 def test_deposit_creation_1(app):
     # given
@@ -23,7 +22,6 @@ def test_deposit_creation_1(app):
     assert Deposit.query.count() == 1
 
 
-@pytest.mark.standalone
 @clean_database
 def test_deposit_creation_2(app):
     # given

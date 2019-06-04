@@ -23,7 +23,6 @@ from utils.human_ids import humanize
 RECOMMENDATION_URL = API_URL + '/recommendations'
 
 
-@pytest.mark.standalone
 class Put:
     class Returns401:
         def when_not_logged_in(self):

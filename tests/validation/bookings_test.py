@@ -4,14 +4,13 @@ from unittest.mock import Mock
 import pytest
 
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS
+from models import ApiErrors, Booking, Stock, Offer, ThingType
 from models.api_errors import ResourceGoneError, ForbiddenError
-from models import ApiErrors, Booking, Stock, Offer, ThingType, Product
-from utils.human_ids import humanize
 from tests.test_utils import create_booking_for_thing, create_product_with_Thing_type
+from utils.human_ids import humanize
 from validation.bookings import check_expenses_limits, check_booking_is_cancellable, check_booking_is_usable
 
 
-@pytest.mark.standalone
 class CheckExpenseLimitsTest:
     def test_raises_an_error_when_physical_limit_is_reached(self):
         # given
@@ -31,7 +30,6 @@ class CheckExpenseLimitsTest:
         assert api_errors.value.errors['global'] == ['La limite de %s € pour les biens culturels ne vous permet pas ' \
                                                      'de réserver' % SUBVENTION_PHYSICAL_THINGS]
 
-    @pytest.mark.standalone
     def test_check_expenses_limits_raises_an_error_when_digital_limit_is_reached(self):
         # given
         expenses = {
@@ -50,7 +48,6 @@ class CheckExpenseLimitsTest:
         assert api_errors.value.errors['global'] == ['La limite de %s € pour les offres numériques ne vous permet pas ' \
                                                      'de réserver' % SUBVENTION_DIGITAL_THINGS]
 
-    @pytest.mark.standalone
     def test_does_not_raise_an_error_when_actual_expenses_are_lower_than_max(self):
         # given
         expenses = {
@@ -68,7 +65,6 @@ class CheckExpenseLimitsTest:
             pytest.fail('Booking for events must not raise any exceptions')
 
 
-@pytest.mark.standalone
 class CheckBookingIsCancellableTest:
     def test_raises_api_error_when_offerer_cancellation_and_used_booking(self):
         # Given

@@ -9,7 +9,6 @@ from tests.test_utils import API_URL, create_stock_with_thing_offer, \
     create_user, create_booking, create_user_offerer
 
 
-@pytest.mark.standalone
 class GetBookingsCsvTest:
     @clean_database
     def test_get_bookings_csv(self, app):

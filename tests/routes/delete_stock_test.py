@@ -12,7 +12,6 @@ from utils.human_ids import humanize
 NOW = datetime.utcnow()
 
 
-@pytest.mark.standalone
 class Delete:
     class Returns200:
         @clean_database

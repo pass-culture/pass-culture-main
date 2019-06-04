@@ -10,7 +10,6 @@ from tests.test_utils import API_URL, create_bank_information, create_stock_with
     create_recommendation, create_user, create_booking, create_offer_with_event_product, \
     create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer
 
-@pytest.mark.standalone
 class FindReimbursementDetailsTest:
     @clean_database
     def test_find_all_offerer_reimbursement_details(self, app):

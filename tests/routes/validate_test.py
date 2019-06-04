@@ -11,7 +11,6 @@ from tests.test_utils import create_user, API_URL, create_offerer, create_user_o
 
 
 @clean_database
-@pytest.mark.standalone
 def test_should_not_be_able_to_validate_offerer_with_non_existing_token(app):
     r = TestClient().with_auth(email='toto_pro@btmx.fr') \
         .get(API_URL + '/validate?modelNames=Offerer&token=123')
@@ -19,7 +18,6 @@ def test_should_not_be_able_to_validate_offerer_with_non_existing_token(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_validate_offerer(app):
     # Given
     offerer_token = secrets.token_urlsafe(20)
@@ -48,7 +46,6 @@ def test_validate_offerer(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_validate_venue_with_right_validation_token_sets_validation_token_to_none(app):
     # Given
     offerer = create_offerer()
@@ -69,7 +66,6 @@ def test_validate_venue_with_right_validation_token_sets_validation_token_to_non
 
 
 @clean_database
-@pytest.mark.standalone
 def test_validate_venue_with_no_validation_token_returns_status_code_400_and_token_in_error(app):
     # When
     r = TestClient().get('{}/validate/venue'.format(API_URL), headers={'origin': 'http://localhost:3000'})
@@ -80,7 +76,6 @@ def test_validate_venue_with_no_validation_token_returns_status_code_400_and_tok
 
 
 @clean_database
-@pytest.mark.standalone
 def test_validate_venue_with_non_existing_validation_token_returns_status_code_404_and_token_in_error(app):
     # When
     r = TestClient().get('{}/validate/venue?token={}'.format(API_URL, '12345'),
@@ -92,7 +87,6 @@ def test_validate_venue_with_non_existing_validation_token_returns_status_code_4
 
 
 @clean_database
-@pytest.mark.standalone
 def test_validate_user_when_validation_token_exists_should_put_validation_token_to_none_returns_status_code_202(app):
     # Given
     user = create_user()
@@ -110,7 +104,6 @@ def test_validate_user_when_validation_token_exists_should_put_validation_token_
 
 
 @clean_database
-@pytest.mark.standalone
 def test_validate_user_when_validation_token_not_found_returns_status_code_404(app):
     # Given
     random_token = '0987TYGHHJMJ'
@@ -124,7 +117,6 @@ def test_validate_user_when_validation_token_not_found_returns_status_code_404(a
     assert response.json()['global'] == ['Ce lien est invalide']
 
 
-@pytest.mark.standalone
 class CertifyMessageFileAuthenticityTest:
     @clean_database
     def test_returns_ok_with_checksum_if_file_authenticity_is_certified(self, app):

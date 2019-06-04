@@ -8,7 +8,6 @@ from tests.test_utils import create_user, \
 from utils.human_ids import humanize
 
 
-@pytest.mark.standalone
 class Get:
     class Return200:
         @clean_database

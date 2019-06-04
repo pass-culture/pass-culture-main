@@ -6,7 +6,6 @@ from tests.conftest import clean_database, TestClient
 from tests.test_utils import API_URL, create_user
 
 
-@pytest.mark.standalone
 class PostChangePassword:
     class Returns200:
         @clean_database

@@ -9,7 +9,6 @@ from utils.human_ids import humanize
 
 
 @clean_database
-@pytest.mark.standalone
 def test_post_storage_file_returns_bad_request_if_upload_is_not_authorized_on_model(app):
     # given
     user = create_user()
@@ -32,7 +31,6 @@ def test_post_storage_file_returns_bad_request_if_upload_is_not_authorized_on_mo
 
 
 @clean_database
-@pytest.mark.standalone
 def test_post_storage_file_update_a_thumb_for_an_user(app):
     # given
     user = create_user()
@@ -54,7 +52,6 @@ def test_post_storage_file_update_a_thumb_for_an_user(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_post_storage_file_on_a_mediation_returns_bad_request_if_user_is_not_attached_to_offerer(app):
     # given
     user = create_user()
@@ -79,7 +76,6 @@ def test_post_storage_file_on_a_mediation_returns_bad_request_if_user_is_not_att
 
 
 @clean_database
-@pytest.mark.standalone
 def test_post_storage_file_on_a_mediation_returns_200_if_user_is_attached_to_offerer(app):
     # given
     user = create_user()

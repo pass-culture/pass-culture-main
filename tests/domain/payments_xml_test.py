@@ -18,7 +18,6 @@ XML_NAMESPACE = {'ns': 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.03'}
 MESSAGE_ID = 'passCulture-SCT-20181015-114356'
 
 
-@pytest.mark.standalone
 class GenerateMessageFileTest:
     def test_file_has_custom_message_id_in_group_header(self, app):
         # Given
@@ -564,7 +563,6 @@ class GenerateMessageFileTest:
             'The initiating party id should be 0000"'
 
 
-@pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
 @patch('domain.payments.uuid.uuid4')
 def test_generate_file_checksum_returns_a_checksum_of_the_file(mocked_uuid, app):
@@ -599,7 +597,6 @@ def test_generate_file_checksum_returns_a_checksum_of_the_file(mocked_uuid, app)
     assert checksum == b'\x16\x91\x0c\x11~Hs\xc5\x1a\xa3W1\x13\xbf!jq@\xea  <h&\xef\x1f\xaf\xfc\x7fO\xc8\x82'
 
 
-@pytest.mark.standalone
 def test_validate_message_file_structure_raises_a_document_invalid_exception_with_specific_error_when_xml_is_invalid(
         app):
     # given
@@ -615,7 +612,6 @@ def test_validate_message_file_structure_raises_a_document_invalid_exception_wit
     assert str(e.value) == "Element 'broken': No matching global declaration available for the validation root., line 2"
 
 
-@pytest.mark.standalone
 def test_read_message_name_in_message_file_returns_the_content_of_message_id_tag(app):
     # given
     offerer = create_offerer()

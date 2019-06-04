@@ -8,7 +8,6 @@ from tests.test_utils import create_booking, create_deposit, create_stock, creat
     create_offer_with_thing_product, create_bank_information
 
 
-@pytest.mark.standalone
 class BookingsCSVTest:
     def test_generate_bookings_details_csv_with_headers_and_zero_bookings_lines(self):
         # given

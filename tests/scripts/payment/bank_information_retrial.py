@@ -8,7 +8,6 @@ from tests.test_utils import create_offerer, create_venue, create_bank_informati
     create_offer_with_thing_product, create_stock, create_booking, create_payment
 
 
-@pytest.mark.standalone
 class RetryLinkedPaymentsTest:
     @clean_database
     def test_changes_transaction_status_to_retry_when_finds_relevant_payments(self, app):

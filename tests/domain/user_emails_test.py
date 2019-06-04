@@ -13,7 +13,6 @@ from tests.test_utils import create_user, create_booking, create_stock_with_even
     create_offer_with_thing_product, create_stock_with_thing_offer, create_mocked_bookings
 
 
-@pytest.mark.standalone
 class SendUserDrivenCancellationEmailToUserTest:
     def when_feature_send_mail_to_users_enabled_sends_email_to_user(self):
         # Given
@@ -59,7 +58,6 @@ class SendUserDrivenCancellationEmailToUserTest:
         assert 'This is a test' in args[1]['data']['Html-part']
 
 
-@pytest.mark.standalone
 class SendUserDrivenCancellationEmailToOffererTest:
 
     def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_administration(self, app):
@@ -138,7 +136,6 @@ class SendUserDrivenCancellationEmailToOffererTest:
         assert 'This is a test' in args[1]['data']['Html-part']
 
 
-@pytest.mark.standalone
 class SendOffererDrivenCancellationEmailToUserTest:
     def when_feature_send_mail_to_users_enabled_sends_email_to_user(self, app):
         # Given
@@ -162,7 +159,6 @@ class SendOffererDrivenCancellationEmailToUserTest:
         assert args[1]['data']['To'] == 'user@email.fr'
 
 
-@pytest.mark.standalone
 class SendOffererDrivenCancellationEmailToOffererTest:
     def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_administration(self, app):
         # Given
@@ -217,7 +213,6 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         assert args[1]['data']['To'] == 'administration@passculture.app'
 
 
-@pytest.mark.standalone
 class SendBookingConfirmationEmailToUserTest:
     def when_called_calls_send_email(self, app):
         # Given
@@ -246,7 +241,6 @@ class SendBookingConfirmationEmailToUserTest:
         assert called_with_args['FromEmail'] == 'dev@passculture.app'
 
 
-@pytest.mark.standalone
 class SendBookingRecapEmailsTest:
     def when_feature_send_mail_to_users_disabled_sends_email_to_pass_culture_dev(self, app):
         # given
@@ -320,7 +314,6 @@ class SendBookingRecapEmailsTest:
         assert args[1]['data']['To'] == 'administration@passculture.app'
 
 
-@pytest.mark.standalone
 class SendFinalBookingRecapEmailTest:
     def when_feature_send_mail_to_users_disabled_sends_email_to_pass_culture_dev(self, app):
         # given
@@ -391,7 +384,6 @@ class SendFinalBookingRecapEmailTest:
         set_booking_recap_sent_and_save.assert_called_once_with(stock)
 
 
-@pytest.mark.standalone
 class SendValidationConfirmationEmailTest:
     def when_feature_send_mail_to_users_enabled_sends_email_to_all_users_linked_to_offerer(self, app):
         # Given
@@ -420,7 +412,6 @@ class SendValidationConfirmationEmailTest:
         assert args[1]['data']['To'] == 'admin1@email.com, admin2@email.com'
 
 
-@pytest.mark.standalone
 class SendCancellationEmailOneUserTest:
     def when_called_calls_send_offerer_driven_cancellation_email_to_user_for_every_booking(self):
         # Given
@@ -444,7 +435,6 @@ class SendCancellationEmailOneUserTest:
         send_cancellation_email_one_user.assert_has_calls(calls)
 
 
-@pytest.mark.standalone
 class SendBatchCancellationEmailToOffererTest:
     def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_administration_stock_case(self):
         # Given
@@ -539,7 +529,6 @@ class SendBatchCancellationEmailToOffererTest:
         assert args[1]['data']['To'] == 'administration@passculture.app'
 
 
-@pytest.mark.standalone
 class SendVenueValidationConfirmationEmailTest:
     def when_feature_send_mail_to_users_enabled_sends_email_to_all_users_linked_to_offerer(self, app):
         # Given
@@ -590,7 +579,6 @@ class SendVenueValidationConfirmationEmailTest:
         assert args[1]['data']['To'] == 'dev@passculture.app'
 
 
-@pytest.mark.standalone
 class SendUserValidationEmailTest:
     def when_feature_send_mail_to_users_enabled_sends_email_to_user(self):
         # Given
@@ -612,7 +600,6 @@ class SendUserValidationEmailTest:
         mocked_send_email.call_args[1]['To'] = user.email
 
 
-@pytest.mark.standalone
 class SendResetPasswordEmailTest:
     def when_feature_send_emails_enabled_sends_a_reset_password_email_to_user(self, app):
         # given
@@ -655,7 +642,6 @@ class SendResetPasswordEmailTest:
         assert 'This is a test' in email['Html-part']
 
 
-@pytest.mark.standalone
 class SendActivationNotificationEmailTest:
     def test_sends_a_mail_to_user_to_notify_that_its_account_is_activated_when_send_emails_enabled(self, app):
         # given

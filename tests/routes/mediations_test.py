@@ -19,7 +19,6 @@ from utils.human_ids import humanize
 
 
 @clean_database
-@pytest.mark.standalone
 def test_create_mediation_with_thumb_url(app):
     # given
     user = create_user()
@@ -47,7 +46,6 @@ def test_create_mediation_with_thumb_url(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_create_mediation_with_thumb_url_returns_400_if_url_is_not_an_image(app):
     # given
     user = create_user()
@@ -74,7 +72,6 @@ def test_create_mediation_with_thumb_url_returns_400_if_url_is_not_an_image(app)
 
 
 @clean_database
-@pytest.mark.standalone
 def test_create_mediation_with_thumb_file(app):
     # given
     user = create_user()
@@ -105,7 +102,6 @@ def test_create_mediation_with_thumb_file(app):
     assert response.status_code == 201
 
 
-@pytest.mark.standalone
 @clean_database
 def test_patch_mediation_returns_200(app):
     # given
@@ -138,7 +134,6 @@ def test_patch_mediation_returns_200(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_patch_mediation_returns_403_if_user_is_not_attached_to_offerer_of_mediation(app):
     # given
     current_user = create_user(email='bobby@test.com')
@@ -161,7 +156,6 @@ def test_patch_mediation_returns_403_if_user_is_not_attached_to_offerer_of_media
 
 
 @clean_database
-@pytest.mark.standalone
 def test_patch_mediation_returns_404_if_mediation_does_not_exist(app):
     # given
     user = create_user()
@@ -176,7 +170,6 @@ def test_patch_mediation_returns_404_if_mediation_does_not_exist(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_get_mediation_returns_200_and_the_mediation_as_json(app):
     # given
     user = create_user()
@@ -202,7 +195,6 @@ def test_get_mediation_returns_200_and_the_mediation_as_json(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_get_mediation_returns_404_if_mediation_does_not_exist(app):
     # given
     user = create_user()
@@ -216,7 +208,6 @@ def test_get_mediation_returns_404_if_mediation_does_not_exist(app):
     assert response.status_code == 404
 
 
-@pytest.mark.standalone
 @clean_database
 def test_patch_mediation_make_mediations_invalid_for_all_users_when_deactivating_mediation(app):
     # given

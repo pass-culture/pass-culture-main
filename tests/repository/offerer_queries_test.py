@@ -1,4 +1,3 @@
-import pytest
 import secrets
 from datetime import datetime, timedelta
 
@@ -15,9 +14,7 @@ from tests.test_utils import create_user, create_offerer, create_user_offerer, c
     create_stock_with_thing_offer, create_stock_from_event_occurrence, create_bank_information
 
 
-@pytest.mark.standalone
 class OffererQueriesTest:
-
     @clean_database
     def test_find_by_id_returns_the_right_offerer(self, app):
         # Given
@@ -32,7 +29,7 @@ class OffererQueriesTest:
         # Then
         assert offerer.name == "My sweet offerer"
 
-@pytest.mark.standalone
+
 @clean_database
 def test_find_all_emails_of_user_offerers_admins_returns_list_of_user_emails_having_user_offerer_with_admin_rights_on_offerer(
         app):
@@ -59,7 +56,6 @@ def test_find_all_emails_of_user_offerers_admins_returns_list_of_user_emails_hav
     assert type(emails) == list
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_all_offerers_with_managing_user_information(app):
     # given
@@ -85,7 +81,6 @@ def test_find_all_offerers_with_managing_user_information(app):
     assert user_admin2.email in offerers[3].email
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_all_offerers_with_managing_user_information_and_venue(app):
     # given
@@ -115,7 +110,6 @@ def test_find_all_offerers_with_managing_user_information_and_venue(app):
     assert offerer2.siren == offerers[3].siren
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_all_offerers_with_managing_user_information_and_not_virtual_venue(app):
     # given
@@ -142,7 +136,6 @@ def test_find_all_offerers_with_managing_user_information_and_not_virtual_venue(
     assert offerer2.siren == offerers[1].siren
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_all_offerers_with_venue(app):
     # given
@@ -164,7 +157,6 @@ def test_find_all_offerers_with_venue(app):
     assert venue1.bookingEmail in offerers[0].bookingEmail
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_all_pending_offerers_return_requested_tokens_in_case_only_venue_not_validated(app):
     # given
@@ -190,7 +182,6 @@ def test_get_all_pending_offerers_return_requested_tokens_in_case_only_venue_not
     assert venue.validationToken == venue_not_validated.validationToken
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_not_validated(app):
     # given
@@ -216,7 +207,6 @@ def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_not_
     assert venue.validationToken == venue_validated.validationToken
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_offerer_not_validated(app):
     # given
@@ -242,7 +232,6 @@ def test_get_all_pending_offerers_return_requested_tokens_in_case_only_user_offe
     assert venue.validationToken == venue_validated.validationToken
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_all_pending_offerers_return_nothing_in_case_only_offerer_not_validated(app):
     # given
@@ -267,7 +256,6 @@ def test_get_all_pending_offerers_return_nothing_in_case_only_offerer_not_valida
     assert venue.validationToken == venue_validated.validationToken
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_all_pending_offerers_return_empty_list_in_case_all_validated(app):
     # given
@@ -283,7 +271,6 @@ def test_get_all_pending_offerers_return_empty_list_in_case_all_validated(app):
     assert offerers == []
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_first_by_user_offerer_id_returns_the_first_offerer_that_was_created(app):
     # given
@@ -302,7 +289,6 @@ def test_find_first_by_user_offerer_id_returns_the_first_offerer_that_was_create
     assert offerer.id == offerer1.id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_sirens_params_return_filtered_offerers(app):
     # given
@@ -326,7 +312,6 @@ def test_find_filtered_offerers_with_sirens_params_return_filtered_offerers(app)
     assert offerer_123456784 not in query_with_sirens
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_dpts_param_return_filtered_offerers(app):
     # Given
@@ -356,7 +341,6 @@ def test_find_filtered_offerers_with_dpts_param_return_filtered_offerers(app):
     assert offerer_2A in query_with_dpts
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_zipcodes_param_return_filtered_offerers(app):
     # Given
@@ -375,7 +359,6 @@ def test_find_filtered_offerers_with_zipcodes_param_return_filtered_offerers(app
     assert offerer_34758 in query_with_zipcodes
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_date_params_return_filtered_offerers(app):
     # Given
@@ -400,7 +383,6 @@ def test_find_filtered_offerers_with_date_params_return_filtered_offerers(app):
     assert offerer_after_date_range not in query_with_date
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_has_siren_param_return_filtered_offerers(app):
     # Given
@@ -417,7 +399,6 @@ def test_find_filtered_offerers_with_has_siren_param_return_filtered_offerers(ap
     assert offerer_without_siren in query_no_siren
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_is_validated_param_return_filtered_offerers(app):
     # Given
@@ -434,7 +415,6 @@ def test_find_filtered_offerers_with_is_validated_param_return_filtered_offerers
     assert offerer_not_validated not in query_only_validated
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_is_active_param_return_filtered_offerers(app):
     # Given
@@ -451,7 +431,6 @@ def test_find_filtered_offerers_with_is_active_param_return_filtered_offerers(ap
     assert offerer_not_active not in query_only_active
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_has_bank_information_param_return_filtered_offerers(app):
     # Given
@@ -472,7 +451,6 @@ def test_find_filtered_offerers_with_has_bank_information_param_return_filtered_
     assert offerer_without_bank_information not in query_with_bank_information
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_True_has_validated_user_param_return_filtered_offerers(app):
     # Given
@@ -502,7 +480,6 @@ def test_find_filtered_offerers_with_True_has_validated_user_param_return_filter
     assert offerer_with_both in query_validated_user
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_False_has_validated_user_param_return_filtered_offerers(app):
     # Given
@@ -532,7 +509,6 @@ def test_find_filtered_offerers_with_False_has_validated_user_param_return_filte
     assert offerer_with_both not in query_not_validated
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_True_has_not_virtual_venue_param_return_filtered_offerers(app):
     # Given
@@ -553,7 +529,6 @@ def test_find_filtered_offerers_with_True_has_not_virtual_venue_param_return_fil
     assert offerer_with_both_virtual_and_not_virtual_venue in query_with_not_virtual
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_False_has_not_virtual_venue_param_return_filtered_offerers(app):
     # Given
@@ -574,7 +549,6 @@ def test_find_filtered_offerers_with_False_has_not_virtual_venue_param_return_fi
     assert offerer_with_both_virtual_and_not_virtual_venue not in query_only_virtual
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_True_has_validated_venue_param_return_filtered_offerers(app):
     # Given
@@ -603,7 +577,6 @@ def test_find_filtered_offerers_with_True_has_validated_venue_param_return_filte
     assert offerer_with_both in query_validated
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_False_has_validated_venue_param_return_filtered_offerers(app):
     # Given
@@ -632,7 +605,6 @@ def test_find_filtered_offerers_with_False_has_validated_venue_param_return_filt
     assert offerer_with_both not in query_not_validated
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_True_has_venue_with_siret_param_return_filtered_offerers(app):
     # Given
@@ -669,7 +641,6 @@ def test_find_filtered_offerers_with_True_has_venue_with_siret_param_return_filt
     assert offerer_with_both_virtual in query_with_siret
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_False_has_venue_with_siret_param_return_filtered_offerers(app):
     # Given
@@ -705,7 +676,6 @@ def test_find_filtered_offerers_with_False_has_venue_with_siret_param_return_fil
     assert offerer_with_both_virtual not in query_whitout_siret
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_True_has_validated_user_offerer_param_return_filtered_offerers(app):
     # Given
@@ -733,7 +703,6 @@ def test_find_filtered_offerers_with_True_has_validated_user_offerer_param_retur
     assert offerer_with_both in query_validated
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_False_has_validated_user_offerer_param_return_filtered_offerers(app):
     # Given
@@ -761,7 +730,6 @@ def test_find_filtered_offerers_with_False_has_validated_user_offerer_param_retu
     assert offerer_with_both not in query_not_validated
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_offer_status_with_VALID_param_return_filtered_offerers(app):
     # Given
@@ -779,9 +747,12 @@ def test_find_filtered_offerers_with_offer_status_with_VALID_param_return_filter
     venue_with_expired_event_product = create_venue(offerer_with_expired_event_product, siret='12345678912347')
     venue_with_valid_thing_product = create_venue(offerer_with_valid_thing_product, siret='12345678912348')
     venue_with_expired_thing_product = create_venue(offerer_with_expired_thing_product, siret='12345678912349')
-    venue_with_soft_deleted_thing_product = create_venue(offerer_with_soft_deleted_thing_product, siret='12345678912342')
-    venue_with_soft_deleted_event_product = create_venue(offerer_with_soft_deleted_event_product, siret='12345678912343')
-    venue_with_not_available_event_product = create_venue(offerer_with_not_available_event_product, siret='12345678912344')
+    venue_with_soft_deleted_thing_product = create_venue(offerer_with_soft_deleted_thing_product,
+                                                         siret='12345678912342')
+    venue_with_soft_deleted_event_product = create_venue(offerer_with_soft_deleted_event_product,
+                                                         siret='12345678912343')
+    venue_with_not_available_event_product = create_venue(offerer_with_not_available_event_product,
+                                                          siret='12345678912344')
 
     valid_event = create_offer_with_event_product(venue_with_valid_event_product)
     expired_event = create_offer_with_event_product(venue_with_expired_event_product)
@@ -806,8 +777,10 @@ def test_find_filtered_offerers_with_offer_status_with_VALID_param_return_filter
                                                       beginning_datetime=datetime(2018, 2, 1),
                                                       end_datetime=datetime(2018, 3, 2))
 
-    valid_stock = create_stock_with_thing_offer(offerer_with_valid_thing_product, venue_with_valid_thing_product, valid_thing)
-    expired_stock = create_stock_with_thing_offer(offerer_with_expired_thing_product, venue_with_expired_thing_product, expired_thing,
+    valid_stock = create_stock_with_thing_offer(offerer_with_valid_thing_product, venue_with_valid_thing_product,
+                                                valid_thing)
+    expired_stock = create_stock_with_thing_offer(offerer_with_expired_thing_product, venue_with_expired_thing_product,
+                                                  expired_thing,
                                                   available=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer_with_soft_deleted_thing_product,
                                                              venue_with_soft_deleted_thing_product, soft_deleted_thing,
@@ -846,7 +819,6 @@ def test_find_filtered_offerers_with_offer_status_with_VALID_param_return_filter
     assert offerer_with_not_available_event_product not in query_has_valid_offer
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_offer_status_with_EXPIRED_param_return_filtered_offerers(app):
     # Given
@@ -931,7 +903,6 @@ def test_find_filtered_offerers_with_offer_status_with_EXPIRED_param_return_filt
     assert offerer_with_not_available_event in query_has_expired_offer
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_offer_status_with_WITHOUT_param_return_filtered_offerers(app):
     # Given
@@ -1016,7 +987,6 @@ def test_find_filtered_offerers_with_offer_status_with_WITHOUT_param_return_filt
     assert offerer_with_not_available_event not in query_without_offer
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_offer_status_with_ALL_param_return_filtered_offerers(app):
     # Given
@@ -1101,7 +1071,6 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_return_filtered
     assert offerer_with_not_available_event in query_with_all_offer
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_False_has_not_virtual_venues_return_filtered_offerers(
         app):
@@ -1148,7 +1117,6 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_False_has_n
     assert offerer_with_both_venues_offer_on_not_virtual not in query_with_all_offer
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_True_has_not_virtual_venues_return_filtered_offerers(
         app):
@@ -1195,7 +1163,6 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_and_True_has_no
     assert offerer_with_both_venues_offer_on_not_virtual in query_with_all_offer
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_default_param_return_all_offerers(app):
     # Given
@@ -1242,7 +1209,6 @@ def test_find_filtered_offerers_with_default_param_return_all_offerers(app):
     assert offerer_not_active in default_query
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_one_keyword_at_venue_public_name_level(
         app):
@@ -1255,15 +1221,22 @@ def test_find_filtered_offerers_with_one_keyword_at_venue_public_name_level(
     offerer_with_both_venues_offer_on_not_virtual = create_offerer(siren="123456784")
 
     virtual_venue_with_offer_1 = create_venue(offerer_with_only_virtual_venue_with_offer, is_virtual=True, siret=None)
-    virtual_venue_without_offer_1 = create_venue(offerer_with_only_virtual_venue_without_offer, is_virtual=True, siret=None)
+    virtual_venue_without_offer_1 = create_venue(offerer_with_only_virtual_venue_without_offer, is_virtual=True,
+                                                 siret=None)
     virtual_venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, is_virtual=True, siret=None)
     venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, siret="12345678112345")
-    virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
-    venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345", publicName='chouette lieu de ouf')
-    virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
-    venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345", publicName='chouette lieu de ouf')
-    virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
-    venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345", publicName='chouette lieu de ouf')
+    virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None,
+                                              publicName='chouette lieu de ouf')
+    venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345",
+                                      publicName='chouette lieu de ouf')
+    virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None,
+                                              publicName='chouette lieu de ouf')
+    venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345",
+                                         publicName='chouette lieu de ouf')
+    virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True,
+                                                 siret=None, publicName='chouette lieu de ouf')
+    venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345",
+                                      publicName='chouette lieu de ouf')
 
     offer_1 = create_offer_with_thing_product(virtual_venue_with_offer_1, url='http://url.com')
     offer_2 = create_offer_with_thing_product(virtual_venue_with_offer_3, url='http://url.com')
@@ -1287,7 +1260,6 @@ def test_find_filtered_offerers_with_one_keyword_at_venue_public_name_level(
     assert offerer_with_both_venues_offer_on_not_virtual in offerers
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_one_partial_keyword_at_venue_public_name_level(
         app):
@@ -1300,15 +1272,22 @@ def test_find_filtered_offerers_with_one_partial_keyword_at_venue_public_name_le
     offerer_with_both_venues_offer_on_not_virtual = create_offerer(siren="123456784")
 
     virtual_venue_with_offer_1 = create_venue(offerer_with_only_virtual_venue_with_offer, is_virtual=True, siret=None)
-    virtual_venue_without_offer_1 = create_venue(offerer_with_only_virtual_venue_without_offer, is_virtual=True, siret=None)
+    virtual_venue_without_offer_1 = create_venue(offerer_with_only_virtual_venue_without_offer, is_virtual=True,
+                                                 siret=None)
     virtual_venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, is_virtual=True, siret=None)
     venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, siret="12345678112345")
-    virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
-    venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345", publicName='chouette lieu de ouf')
-    virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
-    venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345", publicName='chouette lieu de ouf')
-    virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
-    venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345", publicName='chouette lieu de ouf')
+    virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None,
+                                              publicName='chouette lieu de ouf')
+    venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345",
+                                      publicName='chouette lieu de ouf')
+    virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None,
+                                              publicName='chouette lieu de ouf')
+    venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345",
+                                         publicName='chouette lieu de ouf')
+    virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True,
+                                                 siret=None, publicName='chouette lieu de ouf')
+    venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345",
+                                      publicName='chouette lieu de ouf')
 
     offer_1 = create_offer_with_thing_product(virtual_venue_with_offer_1, url='http://url.com')
     offer_2 = create_offer_with_thing_product(virtual_venue_with_offer_3, url='http://url.com')
@@ -1332,7 +1311,6 @@ def test_find_filtered_offerers_with_one_partial_keyword_at_venue_public_name_le
     assert offerer_with_both_venues_offer_on_not_virtual in offerers
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_several_keywords_at_venue_public_name_level(
         app):
@@ -1345,15 +1323,22 @@ def test_find_filtered_offerers_with_several_keywords_at_venue_public_name_level
     offerer_with_both_venues_offer_on_not_virtual = create_offerer(siren="123456784")
 
     virtual_venue_with_offer_1 = create_venue(offerer_with_only_virtual_venue_with_offer, is_virtual=True, siret=None)
-    virtual_venue_without_offer_1 = create_venue(offerer_with_only_virtual_venue_without_offer, is_virtual=True, siret=None)
+    virtual_venue_without_offer_1 = create_venue(offerer_with_only_virtual_venue_without_offer, is_virtual=True,
+                                                 siret=None)
     virtual_venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, is_virtual=True, siret=None)
     venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, siret="12345678112345")
-    virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
-    venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345", publicName='chouette lieu de ouf')
-    virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
-    venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345", publicName='chouette lieu de ouf')
-    virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
-    venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345", publicName='chouette lieu de ouf')
+    virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None,
+                                              publicName='chouette lieu de ouf')
+    venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345",
+                                      publicName='chouette lieu de ouf')
+    virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None,
+                                              publicName='chouette lieu de ouf')
+    venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345",
+                                         publicName='chouette lieu de ouf')
+    virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True,
+                                                 siret=None, publicName='chouette lieu de ouf')
+    venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345",
+                                      publicName='chouette lieu de ouf')
 
     offer_1 = create_offer_with_thing_product(virtual_venue_with_offer_1, url='http://url.com')
     offer_2 = create_offer_with_thing_product(virtual_venue_with_offer_3, url='http://url.com')
@@ -1377,7 +1362,6 @@ def test_find_filtered_offerers_with_several_keywords_at_venue_public_name_level
     assert offerer_with_both_venues_offer_on_not_virtual in offerers
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_filtered_offerers_with_several_partial_keywords_at_venue_public_name_level(
         app):
@@ -1390,15 +1374,22 @@ def test_find_filtered_offerers_with_several_partial_keywords_at_venue_public_na
     offerer_with_both_venues_offer_on_not_virtual = create_offerer(siren="123456784")
 
     virtual_venue_with_offer_1 = create_venue(offerer_with_only_virtual_venue_with_offer, is_virtual=True, siret=None)
-    virtual_venue_without_offer_1 = create_venue(offerer_with_only_virtual_venue_without_offer, is_virtual=True, siret=None)
+    virtual_venue_without_offer_1 = create_venue(offerer_with_only_virtual_venue_without_offer, is_virtual=True,
+                                                 siret=None)
     virtual_venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, is_virtual=True, siret=None)
     venue_without_offer_2 = create_venue(offerer_with_both_venues_none_offer, siret="12345678112345")
-    virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
-    venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345", publicName='chouette lieu de ouf')
-    virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
-    venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345", publicName='chouette lieu de ouf')
-    virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True, siret=None, publicName='chouette lieu de ouf')
-    venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345", publicName='chouette lieu de ouf')
+    virtual_venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, is_virtual=True, siret=None,
+                                              publicName='chouette lieu de ouf')
+    venue_with_offer_3 = create_venue(offerer_with_both_venues_offer_on_both, siret="12345678212345",
+                                      publicName='chouette lieu de ouf')
+    virtual_venue_with_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, is_virtual=True, siret=None,
+                                              publicName='chouette lieu de ouf')
+    venue_without_offer_4 = create_venue(offerer_with_both_venues_offer_on_virtual, siret="12345678312345",
+                                         publicName='chouette lieu de ouf')
+    virtual_venue_without_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, is_virtual=True,
+                                                 siret=None, publicName='chouette lieu de ouf')
+    venue_with_offer_5 = create_venue(offerer_with_both_venues_offer_on_not_virtual, siret="12345678412345",
+                                      publicName='chouette lieu de ouf')
 
     offer_1 = create_offer_with_thing_product(virtual_venue_with_offer_1, url='http://url.com')
     offer_2 = create_offer_with_thing_product(virtual_venue_with_offer_3, url='http://url.com')

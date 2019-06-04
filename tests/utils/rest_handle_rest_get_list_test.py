@@ -9,7 +9,6 @@ from tests.test_utils import create_stock_from_event_occurrence, create_offerer,
 
 
 @clean_database
-@pytest.mark.standalone
 def test_handle_rest_get_list_should_return_only_not_soft_deleted_stock(app):
     # Given
     offerer = create_offerer()
@@ -33,7 +32,6 @@ def test_handle_rest_get_list_should_return_only_not_soft_deleted_stock(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_handle_rest_get_list_should_check_order_by(app):
     # When
     with pytest.raises(ApiErrors) as e:

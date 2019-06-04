@@ -17,7 +17,6 @@ from tests.test_utils import create_offerer, create_venue, create_offer_with_thi
     create_booking, create_user, create_deposit, create_payment, create_bank_information
 
 
-@pytest.mark.standalone
 class GenerateNewPaymentsTest:
     @clean_database
     def test_records_new_payment_lines_in_database(self, app):
@@ -77,7 +76,6 @@ class GenerateNewPaymentsTest:
         assert len(not_processable) == 1
 
 
-@pytest.mark.standalone
 class ConcatenatePaymentsWithErrorsAndRetriesTest:
     @clean_database
     def test_a_list_of_payments_is_returned_with_statuses_in_error_or_retry_or_pending(self, app):
@@ -115,7 +113,6 @@ class ConcatenatePaymentsWithErrorsAndRetriesTest:
         assert all(map(lambda p: p.currentStatus.status in allowed_statuses, payments))
 
 
-@pytest.mark.standalone
 @mocked_mail
 @clean_database
 def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_missing(app):
@@ -141,7 +138,6 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_miss
     app.mailjet_client.send.create.assert_not_called()
 
 
-@pytest.mark.standalone
 @mocked_mail
 @clean_database
 def test_send_transactions_should_not_send_an_email_if_pass_culture_bic_is_missing(app):
@@ -167,7 +163,6 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_bic_is_missi
     app.mailjet_client.send.create.assert_not_called()
 
 
-@pytest.mark.standalone
 @mocked_mail
 @clean_database
 def test_send_transactions_should_not_send_an_email_if_pass_culture_id_is_missing(app):
@@ -193,7 +188,6 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_id_is_missin
     app.mailjet_client.send.create.assert_not_called()
 
 
-@pytest.mark.standalone
 @mocked_mail
 @clean_database
 def test_send_transactions_should_send_an_email_with_xml_attachment(app):
@@ -224,7 +218,6 @@ def test_send_transactions_should_send_an_email_with_xml_attachment(app):
     assert len(args[1]['data']['Attachments']) == 1
 
 
-@pytest.mark.standalone
 @clean_database
 @mocked_mail
 @freeze_time('2018-10-15 09:21:34')
@@ -258,7 +251,6 @@ def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_p
     assert all(p.paymentMessageChecksum == payments[0].paymentMessageChecksum for p in updated_payments)
 
 
-@pytest.mark.standalone
 @clean_database
 @mocked_mail
 def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
@@ -292,7 +284,6 @@ def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
         assert payment.currentStatus.status == TransactionStatus.SENT
 
 
-@pytest.mark.standalone
 @clean_database
 @mocked_mail
 def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sent_properly(
@@ -328,7 +319,6 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
         assert payment.currentStatus.detail == "Erreur d'envoi à MailJet"
 
 
-@pytest.mark.standalone
 @clean_database
 @mocked_mail
 def test_send_transactions_with_malformed_iban_on_payments_gives_them_an_error_status_with_a_cause(
@@ -361,7 +351,6 @@ def test_send_transactions_with_malformed_iban_on_payments_gives_them_an_error_s
                                                "by the pattern '[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}'., line 76"
 
 
-@pytest.mark.standalone
 @clean_database
 @mocked_mail
 def test_send_payment_details_sends_a_csv_attachment(app):
@@ -395,7 +384,6 @@ def test_send_payment_details_sends_a_csv_attachment(app):
     assert args[1]['data']['Attachments'][0]['ContentType'] == 'text/csv'
 
 
-@pytest.mark.standalone
 @mocked_mail
 def test_send_payment_details_does_not_send_anything_if_all_payment_have_error_status(app):
     # given
@@ -423,7 +411,6 @@ def test_send_payment_details_does_not_send_anything_if_all_payment_have_error_s
     app.mailjet_client.send.create.assert_not_called()
 
 
-@pytest.mark.standalone
 @mocked_mail
 def test_send_payment_details_does_not_send_anything_if_recipients_are_missing(app):
     # given
@@ -437,7 +424,6 @@ def test_send_payment_details_does_not_send_anything_if_recipients_are_missing(a
     app.mailjet_client.send.create.assert_not_called()
 
 
-@pytest.mark.standalone
 @clean_database
 @mocked_mail
 def test_send_wallet_balances_sends_a_csv_attachment(app):
@@ -454,7 +440,6 @@ def test_send_wallet_balances_sends_a_csv_attachment(app):
     assert args[1]['data']['Attachments'][0]['ContentType'] == 'text/csv'
 
 
-@pytest.mark.standalone
 @mocked_mail
 def test_send_wallet_balances_does_not_send_anything_if_recipients_are_missing(app):
     # when
@@ -465,7 +450,6 @@ def test_send_wallet_balances_does_not_send_anything_if_recipients_are_missing(a
     app.mailjet_client.send.create.assert_not_called()
 
 
-@pytest.mark.standalone
 @mocked_mail
 @clean_database
 def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not_processable_and_in_error(app):
@@ -503,7 +487,6 @@ def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not
     assert args[1]['data']['Attachments'][1]['ContentType'] == 'text/csv'
 
 
-@pytest.mark.standalone
 @mocked_mail
 @clean_database
 def test_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_error_or_sent(app):
@@ -541,7 +524,6 @@ def test_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_er
     assert args[1]['data']['Attachments'][1]['ContentType'] == 'text/csv'
 
 
-@pytest.mark.standalone
 @mocked_mail
 @clean_database
 def test_send_payments_report_does_not_send_anything_if_no_payments_are_provided(app):

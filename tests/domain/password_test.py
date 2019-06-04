@@ -4,7 +4,6 @@ from domain.password import check_new_password_validity, check_password_strength
 from models import User, ApiErrors
 
 
-@pytest.mark.standalone
 def test_change_password_raises_and_error_if_old_password_does_not_match_existing_password():
     # given
     user = User()
@@ -20,7 +19,6 @@ def test_change_password_raises_and_error_if_old_password_does_not_match_existin
     assert e.value.errors['oldPassword'] == ['Votre ancien mot de passe est incorrect']
 
 
-@pytest.mark.standalone
 def test_change_password_raises_and_error_if_old_password_is_the_same_as_the_new_password():
     # given
     user = User()
@@ -36,7 +34,6 @@ def test_change_password_raises_and_error_if_old_password_is_the_same_as_the_new
     assert e.value.errors['newPassword'] == ['Votre nouveau mot de passe est identique à l\'ancien']
 
 
-@pytest.mark.standalone
 @pytest.mark.parametrize('password', [
     '_v4l1dP455sw0rd',
     '-v4l1dP455sw0rd',
@@ -67,7 +64,6 @@ def test_valid_passwords(password):
         assert False, 'This password=\'%s\' should be valid' % password
 
 
-@pytest.mark.standalone
 @pytest.mark.parametrize('password', [
     't00::5H0rt@',
     'n0upper_c4s3^letter',

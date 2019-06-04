@@ -20,7 +20,6 @@ from tests.test_utils import create_mediation, \
 
 
 @clean_database
-@pytest.mark.standalone
 def test_create_recommendations_for_discovery_does_not_put_mediation_ids_of_inactive_mediations(app):
     # Given
     user = create_user()
@@ -47,7 +46,6 @@ def test_create_recommendations_for_discovery_does_not_put_mediation_ids_of_inac
 
 
 @freeze_time('2019-01-31 12:00:00')
-@pytest.mark.standalone
 class GetRecommendationSearchParamsTest:
     def setup_class(self):
         self.now = datetime.utcnow()
@@ -84,7 +82,6 @@ class GetRecommendationSearchParamsTest:
 
 
 @clean_database
-@pytest.mark.standalone
 def test_create_recommendations_for_discovery_should_include_recommendations_on_offers_previously_displayed_in_search_results(app):
     # Given
     user = create_user()

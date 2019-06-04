@@ -19,7 +19,6 @@ from tests.test_utils import create_booking, create_stock, create_user, create_o
     create_offer_with_thing_product, create_bank_information
 
 
-@pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
 def test_create_payment_for_booking_with_common_information(app):
     # given
@@ -46,7 +45,6 @@ def test_create_payment_for_booking_with_common_information(app):
     assert payment.transactionLabel == 'pass Culture Pro - remboursement 2nde quinzaine 10-2018'
 
 
-@pytest.mark.standalone
 def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_info_from_venue(app):
     # given
     user = create_user()
@@ -71,7 +69,6 @@ def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_in
     assert payment.bic == 'LOKIJU76'
 
 
-@pytest.mark.standalone
 def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_info_from_offerer(app):
     # given
     user = create_user()
@@ -96,7 +93,6 @@ def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_in
     assert payment.bic == 'QSDFGH8Z555'
 
 
-@pytest.mark.standalone
 def test_create_payment_for_booking_takes_recipient_name_and_siren_from_offerer(app):
     # given
     user = create_user()
@@ -121,7 +117,6 @@ def test_create_payment_for_booking_takes_recipient_name_and_siren_from_offerer(
     assert payment.recipientSiren == '123456789'
 
 
-@pytest.mark.standalone
 def test_create_payment_for_booking_with_not_processable_status_when_no_bank_information_linked_to_venue_or_offerer():
     # given
     user = create_user()
@@ -141,7 +136,6 @@ def test_create_payment_for_booking_with_not_processable_status_when_no_bank_inf
     assert payment.statuses[0].detail == 'IBAN et BIC manquants sur l\'offreur'
 
 
-@pytest.mark.standalone
 @freeze_time('2018-10-15 09:21:34')
 def test_create_payment_for_booking_with_pending_status(app):
     # given
@@ -165,7 +159,6 @@ def test_create_payment_for_booking_with_pending_status(app):
     assert payment.statuses[0].date == datetime(2018, 10, 15, 9, 21, 34)
 
 
-@pytest.mark.standalone
 class FilterOutAlreadyPaidForBookingsTest:
     def test_it_returns_reimbursements_on_bookings_with_no_existing_payments(self):
         # Given
@@ -183,7 +176,6 @@ class FilterOutAlreadyPaidForBookingsTest:
         assert len(bookings_not_paid) == 1
         assert not bookings_not_paid[0].booking.payments
 
-    @pytest.mark.standalone
     def test_it_returns_an_empty_list_if_everything_has_been_reimbursed(self):
         # Given
         booking_paid1 = Booking()
@@ -200,7 +192,6 @@ class FilterOutAlreadyPaidForBookingsTest:
         # Then
         assert bookings_not_paid == []
 
-    @pytest.mark.standalone
     def test_it_returns_an_empty_list_if_an_empty_list_is_given(self):
         # When
         bookings_not_paid = filter_out_already_paid_for_bookings([])
@@ -209,7 +200,6 @@ class FilterOutAlreadyPaidForBookingsTest:
         assert bookings_not_paid == []
 
 
-@pytest.mark.standalone
 class FilterOutBookingsWithoutCost:
     def test_it_returns_reimbursements_on_bookings_with_reimbursed_value_greater_than_zero(self):
         # given
@@ -242,7 +232,6 @@ class FilterOutBookingsWithoutCost:
         assert bookings_reimbursements_with_cost == []
 
 
-@pytest.mark.standalone
 class KeepOnlyPendingPaymentsTest:
     def test_it_returns_only_payments_with_current_status_as_pending(self):
         # given
@@ -287,7 +276,6 @@ class KeepOnlyPendingPaymentsTest:
         assert pending_payments == []
 
 
-@pytest.mark.standalone
 class KeepOnlyNotProcessablePaymentsTest:
     def test_it_returns_only_payments_with_current_status_as_not_processable(self):
         # given
@@ -332,7 +320,6 @@ class KeepOnlyNotProcessablePaymentsTest:
         assert pending_payments == []
 
 
-@pytest.mark.standalone
 class CreatePaymentDetailsTest:
     def test_contains_info_on_bank_transaction(self):
         # given
@@ -352,7 +339,6 @@ class CreatePaymentDetailsTest:
         assert details.reimbursed_amount == 35
         assert details.reimbursement_rate == 0.5
 
-    @pytest.mark.standalone
     def test_contains_info_on_user_who_booked(self):
         # given
         user = create_user(email='jane.doe@test.com', idx=3)
@@ -367,7 +353,6 @@ class CreatePaymentDetailsTest:
         assert details.booking_user_id == 3
         assert details.booking_user_email == 'jane.doe@test.com'
 
-    @pytest.mark.standalone
     def test_contains_info_on_booking(self):
         # given
         user = create_user(email='jane.doe@test.com', idx=3)
@@ -388,7 +373,6 @@ class CreatePaymentDetailsTest:
         assert details.booking_amount == stock.price * booking.quantity
         assert details.booking_used_date == datetime(2018, 2, 19)
 
-    @pytest.mark.standalone
     def test_contains_info_on_offerer(self):
         # given
         user = create_user(email='jane.doe@test.com', idx=3)
@@ -408,7 +392,6 @@ class CreatePaymentDetailsTest:
         assert details.offerer_name == 'Joe le Libraire'
         assert details.offerer_siren == '987654321'
 
-    @pytest.mark.standalone
     def test_contains_info_on_venue(self):
         # given
         user = create_user(email='jane.doe@test.com', idx=3)
@@ -428,7 +411,6 @@ class CreatePaymentDetailsTest:
         assert details.venue_name == 'Jack le Sculpteur'
         assert details.venue_siret == '1234567891234'
 
-    @pytest.mark.standalone
     def test_contains_info_on_offer(self):
         # given
         user = create_user(email='jane.doe@test.com', idx=3)
@@ -449,7 +431,6 @@ class CreatePaymentDetailsTest:
         assert details.offer_type == 'Audiovisuel — films sur supports physiques et VOD'
 
 
-@pytest.mark.standalone
 class CreateAllPaymentsDetailsTest:
     def test_returns_an_empty_list_if_no_payments_given(self):
         # when
@@ -475,7 +456,6 @@ class CreateAllPaymentsDetailsTest:
         assert len(details) == 3
 
 
-@pytest.mark.standalone
 class PaymentTransactionLabelTest:
     @pytest.mark.parametrize('date', [datetime(2018, 7, d) for d in range(1, 15)])
     def test_in_first_half_of_a_month(self, date):
@@ -494,7 +474,6 @@ class PaymentTransactionLabelTest:
         assert message == 'pass Culture Pro - remboursement 2nde quinzaine 07-2018'
 
 
-@pytest.mark.standalone
 class GroupPaymentsByStatusTest:
     def test_payments_are_grouped_by_current_statuses_names(self):
         # given
@@ -521,7 +500,6 @@ class GroupPaymentsByStatusTest:
         assert len(groups['ERROR']) == 2
 
 
-@pytest.mark.standalone
 class ApplyBanishmentTest:
     def test_payments_matching_given_ids_must_be_banned(self):
         # given

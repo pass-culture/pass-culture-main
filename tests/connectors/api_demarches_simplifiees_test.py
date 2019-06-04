@@ -5,7 +5,6 @@ from connectors.api_demarches_simplifiees import get_all_applications_for_proced
     get_application_details
 
 
-@pytest.mark.standalone
 class GetAllApplicationsForProcedureTest:
     @patch('connectors.api_demarches_simplifiees.requests.get')
     def test_calls_demarche_simplifiee_api_with_right_link(self, requests_get):
@@ -43,7 +42,6 @@ class GetAllApplicationsForProcedureTest:
             exception.value) == 'Error getting API démarches simplifiées DATA for procedure_id: 1 and token 12345'
 
 
-@pytest.mark.standalone
 class GetApplicationDetailsTest:
     @patch('connectors.api_demarches_simplifiees.requests.get')
     def test_calls_demarche_simplifiee_api_with_right_link(self, requests_get):

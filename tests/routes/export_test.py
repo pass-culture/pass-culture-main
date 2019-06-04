@@ -15,7 +15,6 @@ from utils.human_ids import humanize
 TOKEN = os.environ.get('EXPORT_TOKEN')
 
 
-@pytest.mark.standalone
 @clean_database
 def test_export_model_returns_200_when_given_model_is_known(app):
     # given
@@ -30,7 +29,6 @@ def test_export_model_returns_200_when_given_model_is_known(app):
     assert response.status_code == 200
 
 
-@pytest.mark.standalone
 @clean_database
 def test_export_model_returns_400_when_given_model_is_not_exportable(app):
     # given
@@ -46,7 +44,6 @@ def test_export_model_returns_400_when_given_model_is_not_exportable(app):
     assert response.json()['global'] == ['Classe non exportable : VersionedMixin']
 
 
-@pytest.mark.standalone
 @clean_database
 def test_export_model_returns_bad_request_if_no_token_provided(app):
     # when
@@ -57,7 +54,6 @@ def test_export_model_returns_bad_request_if_no_token_provided(app):
     assert response.status_code == 400
 
 
-@pytest.mark.standalone
 @clean_database
 def test_export_model_returns_400_when_given_model_is_unknown(app):
     # given
@@ -73,7 +69,6 @@ def test_export_model_returns_400_when_given_model_is_unknown(app):
     assert response.json()['global'] == ['Classe inconnue : RandomStuff']
 
 
-@pytest.mark.standalone
 @clean_database
 def test_pending_validation_returns_403_when_user_is_not_admin(app):
     # given
@@ -88,7 +83,6 @@ def test_pending_validation_returns_403_when_user_is_not_admin(app):
     assert response.status_code == 403
 
 
-@pytest.mark.standalone
 @clean_database
 def test_pending_validation_returns_200_when_user_is_admin(app):
     # given
@@ -103,7 +97,6 @@ def test_pending_validation_returns_200_when_user_is_admin(app):
     assert response.status_code == 200
 
 
-@pytest.mark.standalone
 @clean_database
 def test_pending_validation_returns_403_when_user_is_structure_admin_but_not_admin(app):
     # given
@@ -120,7 +113,6 @@ def test_pending_validation_returns_403_when_user_is_structure_admin_but_not_adm
     assert response.status_code == 403
 
 
-@pytest.mark.standalone
 @clean_database
 def test_pending_validation_return_200_and_validation_token(app):
     # given
@@ -143,7 +135,6 @@ def test_pending_validation_return_200_and_validation_token(app):
     assert response.json()[0]["UserOfferers"][0]["validationToken"] == "a_token"
 
 
-@pytest.mark.standalone
 @clean_database
 def test_pending_validation_return_only_requested_data(app):
     # given
@@ -211,7 +202,6 @@ def test_pending_validation_return_only_requested_data(app):
     assert response.json()[0] == expected_result
 
 
-@pytest.mark.standalone
 @clean_database
 def test_pending_validation_returns_offerers_venues_user_and_user_offerer_with_requested_data(app):
     # given
@@ -257,7 +247,6 @@ def test_pending_validation_returns_offerers_venues_user_and_user_offerer_with_r
     assert user_offerer5.validationToken in user_offerers_validation_token
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_venues_returns_403_when_user_is_not_admin(app):
     # given
@@ -273,7 +262,6 @@ def test_get_venues_returns_403_when_user_is_not_admin(app):
     assert response.status_code == 403
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_venues_returns_403_when_user_is_structure_admin_but_not_admin(app):
     # given
@@ -292,7 +280,6 @@ def test_get_venues_returns_403_when_user_is_structure_admin_but_not_admin(app):
     assert response.status_code == 403
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_venues_return_200_and_filtered_venues(app):
     # given
@@ -419,7 +406,6 @@ def test_get_venues_return_200_and_filtered_venues(app):
     assert venue_with_not_validated_offerer_in_date_range.name not in venue_names
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(app):
     # given
@@ -499,7 +485,6 @@ def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(
     assert venue_with_validated_offerer_with_siren_with_user_offerer_without_user.name not in venue_names
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_venues_with_sirens_params_return_200_and_filtered_venues(app):
     # given
@@ -539,7 +524,6 @@ def test_get_venues_with_sirens_params_return_200_and_filtered_venues(app):
     assert venue_123456784.name not in venue_names
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_venues_return_error_when_date_param_is_wrong(app):
     # given
@@ -558,7 +542,6 @@ def test_get_venues_return_error_when_date_param_is_wrong(app):
     assert response.json()['date_format'] == ['to_date and from_date are of type yyyy-mm-dd']
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_offerers_returns_403_when_user_is_not_admin(app):
     # given
@@ -574,7 +557,6 @@ def test_get_offerers_returns_403_when_user_is_not_admin(app):
     assert response.status_code == 403
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_offerers_returns_403_when_user_is_structure_admin_but_not_admin(app):
     # given
@@ -592,7 +574,6 @@ def test_get_offerers_returns_403_when_user_is_structure_admin_but_not_admin(app
     assert response.status_code == 403
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_offerers_return_200_and_filtered_offerers(app):
     # given
@@ -741,7 +722,6 @@ def test_get_offerers_return_200_and_filtered_offerers(app):
     assert offerer_93100_in_date_range_with_virtual_venue_with_offer.name not in offerer_names
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offerers(app):
     # given
@@ -799,7 +779,6 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
     assert response_json[0]['siren'] == '123456784'
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_offerers_with_sirens_params_return_200_and_filtered_offerers(app):
     # given
@@ -833,7 +812,6 @@ def test_get_offerers_with_sirens_params_return_200_and_filtered_offerers(app):
     assert offerer_123456784.name not in offerer_names
 
 
-@pytest.mark.standalone
 @clean_database
 def test_get_offerers_return_error_when_date_param_is_wrong(app):
     # given

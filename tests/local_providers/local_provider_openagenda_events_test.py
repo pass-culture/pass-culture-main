@@ -23,7 +23,6 @@ def get_data_from_sandbox_files(page):
         return json.load(f)
 
 
-@pytest.mark.standalone
 class OpenAgendaEventsTest:
 
     @pytest.mark.skipif(check_open_agenda_api_is_down(), reason="Open Agenda API is down")

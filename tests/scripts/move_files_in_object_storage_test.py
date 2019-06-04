@@ -5,7 +5,6 @@ import pytest
 from utils.storage_utils import get_folder_content, build_new_filename
 
 
-@pytest.mark.standalone
 class MoveFilesInObjectStorageTest:
 
     def test_get_folder_content(self):

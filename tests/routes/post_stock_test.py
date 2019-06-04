@@ -10,7 +10,6 @@ from tests.test_utils import API_URL, create_user, create_offerer, create_venue,
 from utils.human_ids import dehumanize, humanize
 
 
-@pytest.mark.standalone
 class Post:
     class Returns201:
         @clean_database

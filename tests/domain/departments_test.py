@@ -4,7 +4,6 @@ from domain.departments import get_departement_codes_from_user
 from tests.test_utils import create_user
 
 
-@pytest.mark.standalone
 class GetDepartementCodesFromUser:
     def test_returns_offer_in_all_ile_de_france_for_user_from_93(self):
         # given

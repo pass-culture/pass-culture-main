@@ -4,7 +4,6 @@ import pytest
 
 from utils.json_encoder import EnumJSONEncoder
 
-@pytest.mark.standalone
 def test_json_encoder(app):
     class RightsType(Enum):
         admin = "admin"

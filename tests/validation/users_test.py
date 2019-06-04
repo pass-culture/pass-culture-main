@@ -8,7 +8,6 @@ from tests.test_utils import create_offerer, create_user, create_user_offerer
 from validation.users import check_valid_signup, check_user_can_validate_bookings
 
 
-@pytest.mark.standalone
 def test_check_valid_signup_raises_api_error_if_not_contact_ok():
     # Given
     mocked_request = Mock()
@@ -22,7 +21,6 @@ def test_check_valid_signup_raises_api_error_if_not_contact_ok():
     assert errors.value.errors['contact_ok'] == ['Vous devez obligatoirement cocher cette case.']
 
 
-@pytest.mark.standalone
 def test_check_valid_signup_raises_api_error_if_contact_ok_false():
     # Given
     mocked_request = Mock()
@@ -36,7 +34,6 @@ def test_check_valid_signup_raises_api_error_if_contact_ok_false():
     assert errors.value.errors['contact_ok'] == ['Vous devez obligatoirement cocher cette case.']
 
 
-@pytest.mark.standalone
 def test_check_valid_signup_raises_api_error_if_contact_ok_random_string():
     # Given
     mocked_request = Mock()
@@ -50,7 +47,6 @@ def test_check_valid_signup_raises_api_error_if_contact_ok_random_string():
     assert errors.value.errors['contact_ok'] == ['Vous devez obligatoirement cocher cette case.']
 
 
-@pytest.mark.standalone
 def test_check_valid_signup_raises_api_error_if_no_password():
     # Given
     mocked_request = Mock()
@@ -64,7 +60,6 @@ def test_check_valid_signup_raises_api_error_if_no_password():
     assert errors.value.errors['password'] == ['Vous devez renseigner un mot de passe.']
 
 
-@pytest.mark.standalone
 def test_check_valid_signup_raises_api_error_if_no_email():
     # Given
     mocked_request = Mock()
@@ -78,7 +73,6 @@ def test_check_valid_signup_raises_api_error_if_no_email():
     assert errors.value.errors['email'] == ['Vous devez renseigner un email.']
 
 
-@pytest.mark.standalone
 def test_check_valid_signup_does_not_raise_api_error_if_contact_ok_is_true_has_password_and_email():
     # Given
     mocked_request = Mock()
@@ -92,7 +86,6 @@ def test_check_valid_signup_does_not_raise_api_error_if_contact_ok_is_true_has_p
         assert False
 
 
-@pytest.mark.standalone
 def test_check_valid_signup_does_not_raise_api_error_if_contact_ok_is_true_has_password_and_email():
     # Given
     mocked_request = Mock()
@@ -106,7 +99,6 @@ def test_check_valid_signup_does_not_raise_api_error_if_contact_ok_is_true_has_p
         assert False
 
 
-@pytest.mark.standalone
 def test_check_user_can_validate_bookings_return_false_when_user_is_not_authenticated(app):
     # Given
     user = User()
@@ -119,7 +111,6 @@ def test_check_user_can_validate_bookings_return_false_when_user_is_not_authenti
     assert result is False
 
 
-@pytest.mark.standalone
 @clean_database
 def test_check_user_can_validate_bookings_return_true_when_user_is_authenticated_and_has_editor_rights_on_booking(app):
     # Given
@@ -135,7 +126,6 @@ def test_check_user_can_validate_bookings_return_true_when_user_is_authenticated
     assert result is True
 
 
-@pytest.mark.standalone
 def test_check_user_can_validate_bookings_raise_api_error_when_user_is_authenticated_and_does_not_have_editor_rights_on_booking(
         app):
     # Given

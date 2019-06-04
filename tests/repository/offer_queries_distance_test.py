@@ -13,7 +13,6 @@ from tests.test_utils import create_offerer, \
     create_stock_from_event_occurrence
 
 @clean_database
-@pytest.mark.standalone
 def test_get_offers_for_recommendations_search_with_distance_less_than_1km_returns_one_offer_in_venue_with_coordonnates_that_match(app):
     # Given
     offerer75 = create_offerer(
@@ -98,7 +97,6 @@ def test_get_offers_for_recommendations_search_with_distance_less_than_1km_retur
     assert concert_offer92 not in offers
 
 @clean_database
-@pytest.mark.standalone
 def test_get_offers_for_recommendations_search_with_all_distances_should_returns_all_offers(app):
         # Given
         offerer75 = create_offerer(
@@ -257,7 +255,6 @@ def test_get_offers_for_recommendations_search_with_all_distances_should_returns
         assert concert_offer973 in offers
 
 @clean_database
-@pytest.mark.standalone
 def test_get_offers_for_recommendations_search_with_distance_less_than_20kms_returns_one_offer_in_venue_with_coordonnates_that_match_with_user_in_Paris(app):
         # Given
         offerer75 = create_offerer(
@@ -402,7 +399,6 @@ def test_get_offers_for_recommendations_search_with_distance_less_than_20kms_ret
         assert concert_offer95 in offers
 
 @clean_database
-@pytest.mark.standalone
 def test_get_offers_for_recommendations_search_with_distance_less_than_50kms_returns_one_offer_in_venue_with_coordonnates_that_match_with_user_in_Paris(app):
         # Given
         offerer75 = create_offerer(
@@ -487,7 +483,6 @@ def test_get_offers_for_recommendations_search_with_distance_less_than_50kms_ret
         assert concert_offer91 in offers
 
 @clean_database
-@pytest.mark.standalone
 def test_get_offers_for_recommendations_search_with_distance_returns_offers_in_virtuals_venues_no_matter_wich_distance_with_user_in_Paris(app):
         # Given
         offerer75 = create_offerer(
@@ -556,7 +551,6 @@ def test_get_offers_for_recommendations_search_with_distance_returns_offers_in_v
         assert concert_offer973 not in offers
 
 @clean_database
-@pytest.mark.standalone
 def test_get_offers_for_recommendations_search_with_specific_distance_and_keywords(app):
         # Given
         offerer75 = create_offerer(
@@ -642,7 +636,6 @@ def test_get_offers_for_recommendations_search_with_specific_distance_and_keywor
         assert concert_offer91 not in offers
 
 @clean_database
-@pytest.mark.standalone
 def test_get_offers_for_recommendations_search_with_all_distance_and_keywords(app):
         # Given
         offerer75 = create_offerer(

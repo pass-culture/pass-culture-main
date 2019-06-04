@@ -10,7 +10,6 @@ from tests.test_utils import create_product_with_Event_type, create_product_with
     create_user
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_event_or_thing_level(app):
     # given
@@ -35,7 +34,6 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_e
     assert ok_offer3.id in found_offers_id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyword_at_event_or_thing_level(app):
     # given
@@ -60,7 +58,6 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
     assert ok_offer3.id in found_offers_id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords_at_just_event_or_just_thing_level(app):
     # given
@@ -88,7 +85,6 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     assert ko_offer4.id not in found_offers_id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_keywords_at_just_event_or_just_thing_level(
         app):
@@ -117,7 +113,6 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     assert ko_offer4.id not in found_offers_id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_venue_or_offerer_level(app):
     # given
@@ -161,7 +156,6 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_v
     assert ko_offer8.id not in found_offers_id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_venue_public_name_level(app):
     # given
@@ -204,7 +198,6 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_v
     assert ko_offer8.id not in found_offers_id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyword_at_venue_public_name_level(app):
     # given
@@ -247,7 +240,6 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
     assert ko_offer8.id not in found_offers_id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords_at_venue_public_name_level(app):
     # given
@@ -290,7 +282,6 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     assert ko_offer8.id not in found_offers_id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_keywords_at_venue_public_name_level(app):
     # given
@@ -333,7 +324,6 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     assert ko_offer8.id not in found_offers_id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyword_at_venue_or_offerer_level(app):
     # given
@@ -377,7 +367,6 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
     assert ko_offer8.id not in found_offers_id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords_at_just_venue_or_just_offerer_level(
         app):
@@ -422,7 +411,6 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     assert ko_offer8.id not in found_offers_id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords_at_mixed_venue_or_offerer_level(app):
     # given
@@ -473,7 +461,6 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     assert ko_offer8.id not in found_offers_id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_keywords_at_mixed_venue_or_offerer_level(
         app):
@@ -525,7 +512,6 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     assert ko_offer8.id not in found_offers_id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_with_one_keyword_at_mixed_event_or_thing_or_venue_or_offerer_level(app):
     # given
@@ -551,7 +537,6 @@ def test_create_filter_matching_all_keywords_with_one_keyword_at_mixed_event_or_
     assert ok_offer3.id in found_offers_id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyword_at_mixed_event_or_thing_or_venue_or_offerer_level(
         app):
@@ -578,7 +563,6 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
     assert ok_offer3.id in found_offers_id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_keywords_at_event_or_thing_or_venue_or_offerer_level(
         app):
@@ -608,7 +592,6 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     assert ko_offer4.id not in found_offers_id
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_keywords_at_event_or_thing_or_venue_or_offerer_level(
         app):

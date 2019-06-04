@@ -10,7 +10,6 @@ from tests.test_utils import API_URL, create_bank_information, create_stock_with
     create_user, create_booking, create_user_offerer
 
 
-@pytest.mark.standalone
 class GetReimbursementsCsvTest:
     @clean_database
     def test_get_reimbursements_csv(self, app):

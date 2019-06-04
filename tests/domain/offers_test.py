@@ -23,7 +23,6 @@ find_thing = Mock()
 offer = Offer()
 
 
-@pytest.mark.standalone
 class AddStockAlertMessageToOfferTest:
     class ThingOfferTest:
         @clean_database

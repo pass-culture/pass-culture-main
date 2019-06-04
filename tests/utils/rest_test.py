@@ -8,7 +8,6 @@ from utils.human_ids import humanize
 from utils.rest import check_order_by, load_or_raise_error
 
 
-@pytest.mark.standalone
 class TestLoadOrRaiseErrorTest:
     @clean_database
     def test_returns_object_if_found(self, app):
@@ -37,7 +36,6 @@ class TestLoadOrRaiseErrorTest:
             assert False
 
 
-@pytest.mark.standalone
 class TestCheckOrderByTest:
     def test_check_order_by_raises_no_exception_when_given_sqlalchemy_column(self, app):
         # When

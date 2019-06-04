@@ -7,7 +7,6 @@ from tests.test_utils import API_URL, create_user
 from utils.human_ids import humanize
 
 
-@pytest.mark.standalone
 class Patch:
     class Returns200:
         @clean_database

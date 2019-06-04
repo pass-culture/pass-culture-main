@@ -11,7 +11,6 @@ from utils.logger import logger
 
 
 @clean_database
-@pytest.mark.standalone
 def test_save_industrial_sandbox(app):
     # given
     saveCounts()
@@ -40,7 +39,6 @@ def test_save_industrial_sandbox(app):
 
 
 @clean_database
-@pytest.mark.standalone
 def test_get_all_testcafe_helpers_find_all_items(app):
     # given
     logger_info = logger.info

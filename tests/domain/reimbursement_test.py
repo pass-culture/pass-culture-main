@@ -8,7 +8,6 @@ from models import Booking, ThingType
 from tests.test_utils import create_booking_for_thing, create_booking_for_event
 
 
-@pytest.mark.standalone
 class DigitalThingsReimbursementTest:
     def test_apply_for_booking_returns_a_reimbursed_amount(self):
         # given
@@ -51,7 +50,6 @@ class DigitalThingsReimbursementTest:
         assert is_relevant is False
 
 
-@pytest.mark.standalone
 class PhysicalOffersReimbursementTest:
     def test_apply_for_booking_returns_a_reimbursed_amount(self):
         # given
@@ -104,7 +102,6 @@ class PhysicalOffersReimbursementTest:
         assert is_relevant is True
 
 
-@pytest.mark.standalone
 class MaxReimbursementByOffererTest:
     def test_apply_for_booking_returns_a_reimbursed_amount(self):
         # given
@@ -201,7 +198,6 @@ class MaxReimbursementByOffererTest:
         assert is_relevant is False
 
 
-@pytest.mark.standalone
 class ReimbursementRuleIsActiveTest:
     class DummyRule(ReimbursementRule):
         rate = Decimal(10)
@@ -287,7 +283,6 @@ class ReimbursementRuleIsActiveTest:
         assert self.DummyRule().is_active(self.booking) is False
 
 
-@pytest.mark.standalone
 class FindAllBookingsReimbursementsTest:
     def test_returns_full_reimbursement_for_all_bookings(self):
         # given

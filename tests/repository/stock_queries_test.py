@@ -10,7 +10,6 @@ from tests.test_utils import create_stock_from_event_occurrence, create_event_oc
     create_venue, create_offerer, create_offer_with_thing_product, create_stock_from_offer
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_stocks_of_finished_events_when_no_recap_sent(app):
     # Given
@@ -41,7 +40,6 @@ def test_find_stocks_of_finished_events_when_no_recap_sent(app):
     assert stock_soft_deleted not in stocks
 
 
-@pytest.mark.standalone
 @clean_database
 def test_create_stock_triggers_insert_activities(app):
     # Given
@@ -62,7 +60,6 @@ def test_create_stock_triggers_insert_activities(app):
     assert {"insert"} == set([a.verb for a in activities])
 
 
-@pytest.mark.standalone
 @clean_database
 def test_find_online_activation_stock(app):
     # given

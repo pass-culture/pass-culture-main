@@ -9,7 +9,6 @@ from tests.conftest import clean_database
 from tests.test_utils import create_venue, create_offerer
 
 
-@pytest.mark.standalone
 class UpdateVenueWithSireneDataTest:
     @clean_database
     def test_update_venue_with_sirene_data_changes_given_venue_information(self, app):

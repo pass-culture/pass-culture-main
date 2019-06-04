@@ -7,7 +7,6 @@ from tests.conftest import clean_database
 from tests.test_utils import create_offer_with_thing_product, create_venue, create_offerer, create_user_offerer, create_user
 
 
-@pytest.mark.standalone
 class FillBookingEmailTest:
     @clean_database
     def test_should_fill_with_venue_booking_email_when_exists(self, app):

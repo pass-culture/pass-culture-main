@@ -10,7 +10,6 @@ from tests.test_utils import create_product_with_Event_type, \
 
 
 @clean_database
-@pytest.mark.standalone
 def test_get_keywords_analyzer(app):
     # given
     event_name = "Rencontre avec Jacques Nuance"

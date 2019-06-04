@@ -10,7 +10,6 @@ user1 = create_user()
 user2 = create_user()
 
 
-@pytest.mark.standalone
 @freeze_time('2019-05-07 09:21:34')
 class DeleteStockAndCancelBookingsTest:
     class WhenProductIsAThing:

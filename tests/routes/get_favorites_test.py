@@ -12,7 +12,6 @@ from tests.test_utils import API_URL, \
 RECOMMENDATION_URL = API_URL + '/recommendations'
 
 
-@pytest.mark.standalone
 class Get:
     class Returns401:
         @clean_database

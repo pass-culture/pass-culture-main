@@ -4,7 +4,6 @@ from tests.conftest import TestClient
 from tests.test_utils import API_URL
 
 
-@pytest.mark.standalone
 class Post:
     class Returns200:
         def when_json_error_is_received(self, app):

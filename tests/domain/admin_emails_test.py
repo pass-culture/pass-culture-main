@@ -12,7 +12,6 @@ from tests.test_utils import create_offerer, create_user, \
 from utils.mailing import MailServiceException
 
 
-@pytest.mark.standalone
 def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_objects_to_validate_and_send_email_enabled(
         app):
     # Given
@@ -41,7 +40,6 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
     assert 'This is a test' not in email['Html-part']
 
 
-@pytest.mark.standalone
 def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_dev_when_objects_to_validate_and_send_email_disabled(
         app):
     # Given
@@ -70,7 +68,6 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_dev_whe
     assert 'This is a test' in email['Html-part']
 
 
-@pytest.mark.standalone
 def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validated(app):
     # Given
     offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
@@ -96,7 +93,6 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
     assert not mocked_send_email.called
 
 
-@pytest.mark.standalone
 def test_send_venue_validation_email_when_mailjet_status_code_200_sends_email_to_pass_culture(app):
     # Given
     offerer = create_offerer()
@@ -119,7 +115,6 @@ def test_send_venue_validation_email_when_mailjet_status_code_200_sends_email_to
     assert 'This is a test' not in email['Html-part']
 
 
-@pytest.mark.standalone
 def test_send_venue_validation_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
     # Given
     offerer = create_offerer()
@@ -142,7 +137,6 @@ def test_send_venue_validation_email_has_pass_culture_dev_as_recipient_when_send
     assert 'This is a test' in email['Html-part']
 
 
-@pytest.mark.standalone
 def test_send_payment_details_email_when_mailjet_status_code_200_sends_email_to_pass_culture(app):
     # Given
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -164,7 +158,6 @@ def test_send_payment_details_email_when_mailjet_status_code_200_sends_email_to_
     assert email['To'] == 'comptable1@culture.fr, comptable2@culture.fr'
 
 
-@pytest.mark.standalone
 def test_send_payment_details_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
     # Given
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -186,7 +179,6 @@ def test_send_payment_details_email_has_pass_culture_dev_as_recipient_when_send_
     assert email['To'] == 'dev@passculture.app'
 
 
-@pytest.mark.standalone
 def test_send_wallet_balances_email_when_mailjet_status_code_200_sends_email_to_recipients(app):
     # Given
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -208,7 +200,6 @@ def test_send_wallet_balances_email_when_mailjet_status_code_200_sends_email_to_
     assert email['To'] == 'comptable1@culture.fr, comptable2@culture.fr'
 
 
-@pytest.mark.standalone
 def test_send_wallet_balances_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
     # Given
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -230,7 +221,6 @@ def test_send_wallet_balances_email_has_pass_culture_dev_as_recipient_when_send_
     assert email['To'] == 'dev@passculture.app'
 
 
-@pytest.mark.standalone
 def test_send_payments_report_emails_when_mailjet_status_code_200_sends_email_to_recipients(app):
     # Given
     not_processable_csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -258,7 +248,6 @@ def test_send_payments_report_emails_when_mailjet_status_code_200_sends_email_to
     assert email['To'] == 'dev.team@test.com'
 
 
-@pytest.mark.standalone
 def test_send_payments_report_emails_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
     # Given
     not_processable_csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -286,7 +275,6 @@ def test_send_payments_report_emails_email_has_pass_culture_dev_as_recipient_whe
     assert email['To'] == 'dev@passculture.app'
 
 
-@pytest.mark.standalone
 class SendOfferCreationNotificationToAdministrationTest:
     def test_when_mailjet_status_code_200_sends_email_to_administration_email(self, app):
         mocked_send_email = Mock()
@@ -328,7 +316,6 @@ class SendOfferCreationNotificationToAdministrationTest:
         assert email['To'] == 'dev@passculture.app'
 
 
-@pytest.mark.standalone
 class SendPaymentMessageEmailTest:
     @patch('domain.admin_emails.make_payment_message_email',
            return_value={'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'})
@@ -361,7 +348,6 @@ class SendPaymentMessageEmailTest:
         assert not successfully_sent
 
 
-@pytest.mark.standalone
 class SendRemoteBeneficiariesImportReportEmailTest:
     @patch('domain.admin_emails.make_beneficiaries_import_email')
     def test_returns_true_if_email_was_sent(self, make_beneficiaries_import_email):

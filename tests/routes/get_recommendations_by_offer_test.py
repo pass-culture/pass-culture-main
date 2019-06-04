@@ -14,7 +14,6 @@ from utils.human_ids import humanize
 RECOMMENDATION_URL = API_URL + '/recommendations'
 
 
-@pytest.mark.standalone
 class Get:
     class Returns200:
         @clean_database
