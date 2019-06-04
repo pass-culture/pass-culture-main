@@ -1,9 +1,13 @@
-"""User model"""
 from datetime import datetime
 from decimal import Decimal
-
 import bcrypt
-from sqlalchemy import Binary, Boolean, Column, DateTime, String, func, CheckConstraint
+from sqlalchemy import Binary, \
+                       Boolean, \
+                       CheckConstraint, \
+                       Column, \
+                       func, \
+                       DateTime, \
+                       String
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
@@ -21,28 +25,26 @@ class User(PcObject,
            VersionedMixin
            ):
     email = Column(String(120), nullable=False, unique=True)
-    password = Column(Binary(60), nullable=False)
-
-    publicName = Column(String(30), nullable=False)
-
-    offerers = relationship('Offerer',
-                            secondary='user_offerer')
-
-    dateCreated = Column(DateTime,
-                         nullable=False,
-                         default=datetime.utcnow)
-
-    clearTextPassword = None
-
-    departementCode = Column(String(3), nullable=False)
 
     canBookFreeOffers = Column(Boolean,
                                nullable=False,
                                server_default=expression.true(),
                                default=True)
 
+    clearTextPassword = None
+
+    dateCreated = Column(DateTime,
+                         nullable=False,
+                         default=datetime.utcnow)
+
     dateOfBirth = Column(DateTime,
                          nullable=True)
+
+    departementCode = Column(String(3), nullable=False)
+
+    firstName = Column(String(35), nullable=True)
+
+    hasFilledCulturalSurvey = Column(Boolean, default=False)
 
     isAdmin = Column(Boolean,
                      CheckConstraint('("canBookFreeOffers" IS FALSE AND "isAdmin" IS TRUE)'
@@ -52,17 +54,22 @@ class User(PcObject,
                      server_default=expression.false(),
                      default=False)
 
-    resetPasswordToken = Column(String(10), unique=True)
-
-    resetPasswordTokenValidityLimit = Column(DateTime)
-
-    firstName = Column(String(35), nullable=True)
-
     lastName = Column(String(35), nullable=True)
+
+    offerers = relationship('Offerer',
+                            secondary='user_offerer')
+
+    password = Column(Binary(60), nullable=False)
+
+    phoneNumber = Column(String(20), nullable=True)
 
     postalCode = Column(String(5), nullable=True)
 
-    phoneNumber = Column(String(20), nullable=True)
+    publicName = Column(String(30), nullable=False)
+
+    resetPasswordToken = Column(String(10), unique=True)
+
+    resetPasswordTokenValidityLimit = Column(DateTime)
 
     def checkPassword(self, passwordToCheck):
         return bcrypt.hashpw(passwordToCheck.encode('utf-8'), self.password) == self.password
@@ -94,6 +101,23 @@ class User(PcObject,
     def get_id(self):
         return str(self.id)
 
+    def hasRights(self, rights, offerer_id):
+        if self.isAdmin:
+            return True
+
+        if rights == RightsType.editor:
+            compatible_rights = [RightsType.editor, RightsType.admin]
+        else:
+            compatible_rights = [rights]
+
+        user_offerer = UserOfferer.query.filter(
+            (UserOfferer.offererId == offerer_id)
+            & (UserOfferer.userId == self.id)
+            & (UserOfferer.validationToken.is_(None))
+            & (UserOfferer.rights.in_(compatible_rights))
+        ).first()
+        return user_offerer is not None
+
     def is_authenticated(self):
         return True
 
@@ -114,30 +138,13 @@ class User(PcObject,
         self.resetPasswordToken = None
         self.resetPasswordTokenValidityLimit = None
 
-    def hasRights(self, rights, offerer_id):
-        if self.isAdmin:
-            return True
-
-        if rights == RightsType.editor:
-            compatible_rights = [RightsType.editor, RightsType.admin]
-        else:
-            compatible_rights = [rights]
-
-        user_offerer = UserOfferer.query.filter(
-            (UserOfferer.offererId == offerer_id)
-            & (UserOfferer.userId == self.id)
-            & (UserOfferer.validationToken.is_(None))
-            & (UserOfferer.rights.in_(compatible_rights))
-        ).first()
-        return user_offerer is not None
+    @property
+    def real_wallet_balance(self):
+        return db.session.query(func.get_wallet_balance(self.id, True)).scalar()
 
     @property
     def wallet_balance(self):
         return db.session.query(func.get_wallet_balance(self.id, False)).scalar()
-
-    @property
-    def real_wallet_balance(self):
-        return db.session.query(func.get_wallet_balance(self.id, True)).scalar()
 
     @property
     def wallet_is_activated(self):
