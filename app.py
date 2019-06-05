@@ -7,7 +7,6 @@ from flask_cors import CORS
 from flask_login import LoginManager
 from mailjet_rest import Client
 from werkzeug.middleware.profiler import ProfilerMiddleware
-
 from admin.install import install_admin_views
 from repository.features import feature_request_profiling_enabled
 from local_providers.install import install_local_providers
@@ -24,9 +23,9 @@ app = Flask(__name__, static_url_path='/static')
 login_manager = LoginManager()
 admin = Admin(name='pc Back Office', url='/pc/back-office', template_mode='bootstrap3')
 
+
 if feature_request_profiling_enabled():
-    # PROFILE_REQUESTS_LINES_LIMIT = max lines in a profile table
-    profiling_restrictions = [os.environ.get('PROFILE_REQUESTS_LINES_LIMIT', 30)]
+    profiling_restrictions = [os.environ.get('PROFILE_REQUESTS_LINES_LIMIT', 100)]
     app.config['PROFILE'] = True
     app.wsgi_app = ProfilerMiddleware(app.wsgi_app,
                                       restrictions=profiling_restrictions)
@@ -44,6 +43,14 @@ app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 app.config['REMEMBER_COOKIE_SECURE'] = True
 app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
 app.config['FLASK_ADMIN_FLUID_LAYOUT'] = True
+
+@app.teardown_request
+def remove_db_session(exc):
+    try:
+        db.session.remove()
+    except AttributeError:
+        pass
+
 
 admin.init_app(app)
 db.init_app(app)
