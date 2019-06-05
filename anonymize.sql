@@ -169,7 +169,7 @@ BEGIN
 END; $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION pg_temp.disable_activity_trigger(table_name text)
+CREATE OR REPLACE FUNCTION pg_temp.enable_activity_trigger(table_name text)
  RETURNS void
  LANGUAGE plpgsql
 AS $function$
@@ -182,7 +182,7 @@ BEGIN
 END;
 $function$;
 
-CREATE OR REPLACE FUNCTION pg_temp.enable_activity_trigger(table_name text)
+CREATE OR REPLACE FUNCTION pg_temp.disable_activity_trigger(table_name text)
  RETURNS void
  LANGUAGE plpgsql
 AS $function$
