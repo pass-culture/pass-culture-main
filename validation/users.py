@@ -2,7 +2,14 @@ from models import ApiErrors, RightsType
 
 
 def check_allowed_changes_for_user(data):
-    changes_allowed = {'email', 'publicName', 'postalCode', 'phoneNumber', 'departementCode'}
+    changes_allowed = {
+        'departementCode',
+        'email',
+        'hasFilledCulturalSurvey',
+        'phoneNumber',
+        'postalCode',
+        'publicName',
+    }
     changes_asked = set(data)
     api_errors = ApiErrors()
     changes_not_allowed = changes_asked.difference(changes_allowed)
