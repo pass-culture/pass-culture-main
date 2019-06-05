@@ -165,7 +165,7 @@ def create_user(public_name='John Doe', password=None, first_name='John', last_n
 def create_stock_with_event_offer(offerer, venue, price=10, booking_email='offer.booking.email@test.com', available=10,
                                   is_soft_deleted=False, event_type=EventType.JEUX, name='Mains, sorts et papiers',
                                   offer_id=None, beginning_datetime=datetime.utcnow() + timedelta(hours=72),
-                                  end_datetime=datetime.utcnow() + timedelta(hours=74),
+                                  end_datetime=datetime.utcnow() + timedelta(hours=74), thumb_count=0,
                                   booking_limit_datetime=datetime.utcnow() + timedelta(hours=71)):
     stock = Stock()
     stock.offerer = offerer
@@ -177,7 +177,8 @@ def create_stock_with_event_offer(offerer, venue, price=10, booking_email='offer
     stock.bookingLimitDatetime = booking_limit_datetime
 
     stock.offer = create_offer_with_event_product(venue, event_name=name, event_type=event_type,
-                                                  booking_email=booking_email, is_national=False)
+                                                  booking_email=booking_email, is_national=False,
+                                                  thumb_count=thumb_count)
     stock.offer.id = offer_id
     stock.isSoftDeleted = is_soft_deleted
 
@@ -230,7 +231,7 @@ def create_stock(price=10, available=10, booking_limit_datetime=None, offer=None
     return stock
 
 
-def create_stock_with_thing_offer(offerer, venue, offer=None, price=10, available=50,
+def create_stock_with_thing_offer(offerer, venue, offer=None, price=10, available=50, name='Test Book',
                                   booking_email='offer.booking.email@test.com', soft_deleted=False,
                                   booking_limit_datetime=None) -> Stock:
     stock = Stock()
@@ -239,7 +240,7 @@ def create_stock_with_thing_offer(offerer, venue, offer=None, price=10, availabl
     if offer:
         stock.offer = offer
     else:
-        stock.offer = create_offer_with_thing_product(venue)
+        stock.offer = create_offer_with_thing_product(venue, thing_name=name)
     stock.offer.bookingEmail = booking_email
     stock.bookingLimitDatetime = booking_limit_datetime
 

@@ -1,10 +1,9 @@
-
 from models.mediation import Mediation
 
 from models.offer_type import EventType, ProductType
 from models.pc_object import PcObject
 from recommendations_engine.offers import get_departement_codes_from_user
-from repository.offer_queries import get_active_offers_by_type
+from repository.offer_queries import get_active_offers
 from sandboxes.scripts.utils.select import remove_every
 from sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 from utils.logger import logger
@@ -75,34 +74,22 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
         if not user_has_recommendation_on_something_else_than_activation_offers:
             continue
 
-
         departement_codes = get_departement_codes_from_user(user)
 
-        active_event_offer_ids = [
-            o.id for o in get_active_offers_by_type(user=user, departement_codes=departement_codes)
-        ]
-        active_thing_offer_ids = [
-            o.id for o in get_active_offers_by_type(user=user, departement_codes=departement_codes)
+        active_offer_ids = [
+            o.id for o in get_active_offers(user=user, departement_codes=departement_codes)
         ]
 
         # every (OFFER_WITH_RECOMMENDATION_PER_USER_MODULO_RATIO - 1)/OFFER_WITH_RECOMMENDATION_PER_USER_MODULO_RATIO
         # offers will have a recommendation for this user
-        already_recommended_event_offer_ids = remove_every(
-            active_event_offer_ids,
-            ACTIVE_OFFERS_WITH_RECOMMENDATION_PER_USER_REMOVE_MODULO
-        )
-        already_recommended_thing_offer_ids = remove_every(
-            active_thing_offer_ids,
+        already_recommended_offer_ids = remove_every(
+            active_offer_ids,
             ACTIVE_OFFERS_WITH_RECOMMENDATION_PER_USER_REMOVE_MODULO
         )
 
         for (offer_name, offer) in list(offers_by_name.items()):
 
-            if offer.isEvent \
-                and offer.id not in already_recommended_event_offer_ids:
-                continue
-            elif offer.isThing \
-                and offer.id not in already_recommended_thing_offer_ids:
+            if offer.id not in already_recommended_offer_ids:
                 continue
             elif offer.venue.managingOfferer.validationToken:
                 continue

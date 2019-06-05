@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
 
-from sqlalchemy import func, and_, or_
+from sqlalchemy import desc, func, and_, or_
+from sqlalchemy.orm import aliased, joinedload, Load
 
 from domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
@@ -9,10 +10,11 @@ from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     get_first_matching_keywords_string_at_column
 from models import Booking, \
     EventType, \
+    Mediation, \
     Offer, \
-    Stock, \
     Offerer, \
     Recommendation, \
+    Stock, \
     ThingType, \
     Venue,\
     Product
@@ -71,17 +73,23 @@ def not_currently_recommended_offers(query, user):
     return query
 
 
-def get_active_offers_by_type(user=None, departement_codes=None, offer_id=None):
+def get_active_offers(user=None, departement_codes=None, offer_id=None, limit=None):
     query = Offer.query.filter_by(isActive=True)
     logger.debug(lambda: '(reco) active offers count {}'.format(query.count()))
-    query = query.join(Stock, and_(Offer.id == Stock.offerId))
+    
+    query = query.join(Stock, Offer.id == Stock.offerId)
     logger.debug(lambda: '(reco) offers with stock count {}'.format(query.count()))
 
-    query = query.join(Venue, and_(Offer.venueId == Venue.id))
+    query = query.join(Venue, Offer.venueId == Venue.id)
     query = query.filter(Venue.validationToken == None)
     query = query.join(Offerer)
-    query = query.join(Product, and_(Offer.productId == Product.id))
+    query = query.join(Product, Offer.productId == Product.id)
     logger.debug(lambda: '(reco) offers with venue offerer {}'.format(query.count()))
+
+    with_active_mediation = (Mediation.query.filter((Mediation.offerId == Offer.id)
+                                                    & Mediation.isActive)
+                                            .exists())
+    query = query.filter((Product.thumbCount > 0) | with_active_mediation)
 
     if offer_id is not None:
         query = query.filter(Offer.id == offer_id)
@@ -90,15 +98,31 @@ def get_active_offers_by_type(user=None, departement_codes=None, offer_id=None):
     query = department_or_national_offers(query, departement_codes)
     logger.debug(lambda:
                  '(reco) department or national {} in {}'.format(str(departement_codes),
-                                                                    query.count()))
+                                                                 query.count()))
     query = bookable_offers(query)
     logger.debug(lambda: '(reco) bookable_offers {}'.format(query.count()))
     query = with_active_and_validated_offerer(query)
     logger.debug(lambda: '(reco) active and validated {}'.format(query.count()))
     query = not_currently_recommended_offers(query, user)
     query = not_activation_offers(query)
-    query = query.distinct(Product.id)
-    logger.debug(lambda: '(reco) distinct {}'.format(query.count()))
+    logger.debug(lambda: '(reco) not_currently_recommended and not_activation {}'.format(query.count()))
+
+    Stock2 = aliased(Stock)
+    occurs_soon_or_is_thing = (Stock.query.filter((Stock2.offerId == Offer.id)
+                                                  & ((Stock2.beginningDatetime == None)
+                                                     | ((Stock2.beginningDatetime > datetime.utcnow())
+                                                        & (Stock2.beginningDatetime < (datetime.utcnow() + timedelta(days=10))))))
+                                          .exists())
+    query = query.order_by(desc(with_active_mediation),
+                           desc(occurs_soon_or_is_thing),
+                           func.random())
+
+    query = query.options(joinedload('mediations'),
+                          joinedload('product'))
+
+    if limit:
+        query = query.limit(limit)
+
     return query.all()
 
 
