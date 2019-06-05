@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import kebabcase from 'lodash.kebabcase'
 
-import SearchPicture from '../SearchPicture'
+import { SearchPicture } from '../SearchPicture'
 
 const NavByOfferType = ({
   title,

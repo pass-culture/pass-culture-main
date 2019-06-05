@@ -96,7 +96,7 @@ const formatDate = (date, tz) =>
   )
 
 export const getRecommendationDateString = offer => {
-  if (_isEmpty(offer.dateRange) ) return 'permanent'
+  if (_isEmpty(offer.dateRange)) return 'permanent'
 
   const { departementCode } = offer.venue
   const tz = getTimezone(departementCode)
@@ -119,5 +119,15 @@ const mapWindowToApi = {
 
 export const translateBrowserUrlToApiUrl = query =>
   getObjectWithMappedKeys(query, mapWindowToApi)
+
+export const isDaysChecked = (
+  pickedDate,
+  pickedDaysInQuery = '0-1',
+  inputValue = '0-1'
+) => {
+  if (pickedDate !== null) return false
+
+  return pickedDaysInQuery.includes(inputValue)
+}
 
 export default isInitialQueryWithoutFilters

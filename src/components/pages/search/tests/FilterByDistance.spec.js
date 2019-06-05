@@ -7,15 +7,14 @@ import options, {
 import { FilterByDistance } from '../FilterByDistance'
 
 describe('src | components | pages | search | FilterByDistance', () => {
-  const fakeMethod = jest.fn()
   let props
 
   beforeEach(() => {
     props = {
       filterActions: {
-        add: fakeMethod,
-        change: fakeMethod,
-        remove: fakeMethod,
+        add: jest.fn(),
+        change: jest.fn(),
+        remove: jest.fn(),
       },
       filterState: {
         isNew: false,
@@ -48,8 +47,8 @@ describe('src | components | pages | search | FilterByDistance', () => {
   })
 
   describe('onChangeDistance()', () => {
-    describe('when I am not geolocated', () => {
-      it('should change the distance to 1', () => {
+    describe('I am not geolocated', () => {
+      it('should set the distance to 1 when I change the select field to 1', () => {
         // given
         const distance = 1
         const event = {
@@ -57,23 +56,22 @@ describe('src | components | pages | search | FilterByDistance', () => {
             value: distance,
           },
         }
-        const expected = {
-          distance,
-          latitude: null,
-          longitude: null,
-        }
+        const wrapper = shallow(<FilterByDistance {...props} />)
 
         // when
-        const wrapper = shallow(<FilterByDistance {...props} />)
         wrapper.instance().onChangeDistance(event)
 
         // then
-        expect(props.filterActions.change).toHaveBeenCalledWith(expected)
+        expect(props.filterActions.change).toHaveBeenCalledWith({
+          distance,
+          latitude: null,
+          longitude: null,
+        })
       })
     })
 
-    describe('when I am geolocated', () => {
-      it('should change the distance to 1', () => {
+    describe('I am geolocated', () => {
+      it('should set the distance to 1 when I change the select field to 1', () => {
         // given
         props.geolocation.latitude = 48.854892
         props.geolocation.longitude = 2.532037
@@ -83,22 +81,20 @@ describe('src | components | pages | search | FilterByDistance', () => {
             value: distance,
           },
         }
-        const expected = {
-          distance,
-          latitude: props.geolocation.latitude,
-          longitude: props.geolocation.longitude,
-        }
+        const wrapper = shallow(<FilterByDistance {...props} />)
 
         // when
-        const wrapper = shallow(<FilterByDistance {...props} />)
         wrapper.instance().onChangeDistance(event)
 
         // then
-        expect(props.filterActions.change).toHaveBeenCalledWith(expected)
-        props.filterActions.change.mockClear()
+        expect(props.filterActions.change).toHaveBeenCalledWith({
+          distance,
+          latitude: props.geolocation.latitude,
+          longitude: props.geolocation.longitude,
+        })
       })
 
-      it('should change the distance to infinite and clear the geolocation', () => {
+      it('should set the distance to infinite when I change the select field to infinite and clear the geolocation', () => {
         // given
         props.geolocation.latitude = 48.854892
         props.geolocation.longitude = 2.532037
@@ -108,27 +104,27 @@ describe('src | components | pages | search | FilterByDistance', () => {
             value: distance,
           },
         }
-        const expected = {
-          distance,
-          latitude: null,
-          longitude: null,
-        }
+        const wrapper = shallow(<FilterByDistance {...props} />)
 
         // when
-        const wrapper = shallow(<FilterByDistance {...props} />)
         wrapper.instance().onChangeDistance(event)
 
         // then
-        expect(props.filterActions.change).toHaveBeenCalledWith(expected)
-        props.filterActions.change.mockClear()
+        expect(props.filterActions.change).toHaveBeenCalledWith({
+          distance,
+          latitude: null,
+          longitude: null,
+        })
       })
     })
   })
 
   describe('render()', () => {
-    it('should have four options with right values', () => {
-      // when
+    it('should have four options with right values by default', () => {
+      // given
       const wrapper = shallow(<FilterByDistance {...props} />)
+
+      // when
       const optionsMarkup = wrapper.find('option')
       const { defaultValue } = wrapper.find('select').props()
 
@@ -140,12 +136,12 @@ describe('src | components | pages | search | FilterByDistance', () => {
       expect(defaultValue).toBe(20000)
     })
 
-    it('should have 50 km selected', () => {
+    it('should have 50 km selected when I have 50 in distance parameter', () => {
       // given
       props.filterState.params.distance = '50'
+      const wrapper = shallow(<FilterByDistance {...props} />)
 
       // when
-      const wrapper = shallow(<FilterByDistance {...props} />)
       const { defaultValue } = wrapper.find('select').props()
 
       // then

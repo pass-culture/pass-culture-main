@@ -4,18 +4,20 @@ import { Route } from 'react-router-dom'
 
 import { requestData } from 'redux-saga-data'
 import BookingContainer from '../../../booking/BookingContainer'
-import { recommendationNormalizer } from '../../../../utils/normalizers'
 import { SearchDetails } from '../SearchDetails'
 import RectoContainer from '../../../recto/RectoContainer'
 import VersoContainer from '../../../verso/VersoContainer'
 
+jest.mock('redux-saga-data', () => ({
+  requestData: jest.fn(),
+}))
+
 describe('src | components | pages | search | SearchDetails', () => {
-  const fakeMethod = jest.fn()
   let props
 
   beforeEach(() => {
     props = {
-      dispatch: fakeMethod,
+      dispatch: jest.fn(),
       match: {
         params: {
           mediationId: 'DU',
@@ -38,26 +40,31 @@ describe('src | components | pages | search | SearchDetails', () => {
 
   describe('handleRequestData()', () => {
     it('should dispatch the request data', () => {
-      // when
+      // given
       const wrapper = shallow(<SearchDetails {...props} />)
+      const expectedAction = {
+        type: '/recommendations/offers/',
+      }
+      requestData.mockReturnValue(expectedAction)
+
+      // when
       wrapper.instance().handleRequestData()
-      const expectedData = requestData({
-        apiPath: `/recommendations/offers/${props.match.params.offerId}`,
-        handleSuccess: wrapper.instance().handleForceDetailsVisible,
-        normalizer: recommendationNormalizer,
-        stateKeys: 'searchRecommendations',
-      })
 
       // then
-      expect(props.dispatch).toHaveBeenCalledWith(expectedData)
-      props.dispatch.mockClear()
+      const requestDataArguments = requestData.mock.calls[0][0]
+      expect(requestDataArguments.apiPath).toBe(
+        `/recommendations/offers/${props.match.params.offerId}`
+      )
+      expect(props.dispatch).toHaveBeenCalledWith(expectedAction)
     })
   })
 
   describe('handleForceDetailsVisible()', () => {
-    it('should set forceDetailsVisible to true', () => {
-      // when
+    it('should force the details to be visible', () => {
+      // given
       const wrapper = shallow(<SearchDetails {...props} />)
+
+      // when
       wrapper.instance().handleForceDetailsVisible()
 
       // then
@@ -66,15 +73,13 @@ describe('src | components | pages | search | SearchDetails', () => {
   })
 
   describe('render()', () => {
-    it('should have one BookingContainer', () => {
+    it('should have one BookingContainer when I want details', () => {
       // given
       const state = { forceDetailsVisible: true }
       const routeProps = {
         path:
           '/recherche/resultats/:option?/item/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/(booking|cancelled)/:bookingId?',
       }
-
-      // when
       const wrapper = shallow(<SearchDetails {...props} />)
 
       // then
@@ -85,12 +90,12 @@ describe('src | components | pages | search | SearchDetails', () => {
       expect(renderRoute.render().type).toBe(BookingContainer)
     })
 
-    it('should have no RectoContainer and VersoContainer', () => {
+    it('should have no RectoContainer and VersoContainer when there is no recommendation', () => {
       // given
       props.recommendation = null
+      const wrapper = shallow(<SearchDetails {...props} />)
 
       // when
-      const wrapper = shallow(<SearchDetails {...props} />)
       const rectoContainer = wrapper.find(RectoContainer)
       const versoContainer = wrapper.find(VersoContainer)
 
@@ -99,9 +104,11 @@ describe('src | components | pages | search | SearchDetails', () => {
       expect(versoContainer).toHaveLength(0)
     })
 
-    it('should have one RectoContainer and one VersoContainer', () => {
-      // when
+    it('should have one RectoContainer and one VersoContainer by default', () => {
+      // given
       const wrapper = shallow(<SearchDetails {...props} />)
+
+      // when
       const rectoContainer = wrapper.find(RectoContainer)
       const versoContainer = wrapper.find(VersoContainer)
 

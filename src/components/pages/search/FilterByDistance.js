@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import { connect } from 'react-redux'
 
 import options, {
   INFINITE_DISTANCE,
@@ -33,6 +32,7 @@ export class FilterByDistance extends PureComponent {
           <select
             className="pc-selectbox pl24 py5 fs19"
             defaultValue={distanceValue}
+            name="distance"
             onChange={this.onChangeDistance}
           >
             {options.map(({ label, value }) => (
@@ -73,11 +73,3 @@ FilterByDistance.propTypes = {
     watchId: PropTypes.number,
   }).isRequired,
 }
-
-const mapStateToProps = state => ({
-  geolocation: state.geolocation,
-})
-
-export const FilterByDistanceContainer = connect(mapStateToProps)(
-  FilterByDistance
-)

@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/components/pages/search/tests/utils --watch
 import isInitialQueryWithoutFilters, {
   getDescriptionForSublabel,
   getFirstChangingKey,
@@ -6,6 +5,7 @@ import isInitialQueryWithoutFilters, {
   INITIAL_FILTER_PARAMS,
   searchResultsTitle,
   translateBrowserUrlToApiUrl,
+  isDaysChecked,
 } from '../utils'
 
 import state from '../../../../mocks/global_state_2_Testing_10_10_18'
@@ -383,7 +383,7 @@ describe('src | components | pages | search | utils', () => {
     })
   })
 
-  describe('src | utils | translateBrowserUrlToApiUrl ', () => {
+  describe('translateBrowserUrlToApiUrl ', () => {
     describe('src | utils | translateBrowserUrlToApiUrl ', () => {
       it('should return object with french key', () => {
         const queryString = {
@@ -399,6 +399,49 @@ describe('src | components | pages | search | utils', () => {
           keywords: 'fake',
         }
         expect(translateBrowserUrlToApiUrl(queryString)).toEqual(expected)
+      })
+    })
+  })
+
+  describe('isDaysChecked()', () => {
+    describe('date is picked in calendar', () => {
+      it('should not check date', () => {
+        // given
+        const pickedDate = new Date('2019-06-02T12:41:33.680Z')
+
+        // when
+        const result = isDaysChecked(pickedDate)
+
+        // then
+        expect(result).toEqual(false)
+      })
+    })
+
+    describe('date is picked with a checkbox', () => {
+      it('should ckeck boxes', () => {
+        // given
+        const pickedDate = null
+        const pickedDaysInQuery = '0-1,5-10000'
+        const inputValue = '0-1'
+
+        // when
+        const result = isDaysChecked(pickedDate, pickedDaysInQuery, inputValue)
+
+        // then
+        expect(result).toEqual(true)
+      })
+
+      it('should not ckeck box', () => {
+        // given
+        const pickedDate = null
+        const pickedDaysInQuery = '1-5'
+        const inputValue = '0-1'
+
+        // when
+        const result = isDaysChecked(pickedDate, pickedDaysInQuery, inputValue)
+
+        // then
+        expect(result).toEqual(false)
       })
     })
   })

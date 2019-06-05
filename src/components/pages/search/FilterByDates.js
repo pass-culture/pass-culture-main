@@ -2,17 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import { DatePickerField } from '../../forms/inputs'
-import { DAYS_CHECKBOXES } from './utils'
-
-export const isDaysChecked = (
-  pickedDate,
-  pickedDaysInQuery = '0-1',
-  inputValue = '0-1'
-) => {
-  if (pickedDate !== null) return false
-
-  return pickedDaysInQuery.includes(inputValue)
-}
+import { DAYS_CHECKBOXES, isDaysChecked } from './utils'
 
 class FilterByDates extends PureComponent {
   constructor(props) {

@@ -1,20 +1,16 @@
 import PropTypes from 'prop-types'
-import React, { Component, Fragment } from 'react'
-import { connect } from 'react-redux'
-import { Route, withRouter } from 'react-router-dom'
-import { compose } from 'redux'
+import React, { PureComponent, Fragment } from 'react'
+import { Route } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
-import get from 'lodash.get'
 
 import BookingContainer from '../../booking/BookingContainer'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 import RectoContainer from '../../recto/RectoContainer'
-import { selectCurrentSearchRecommendation } from '../../../selectors'
 import VersoContainer from '../../verso/VersoContainer'
 
-export class SearchDetails extends Component {
-  constructor() {
-    super()
+export class SearchDetails extends PureComponent {
+  constructor(props) {
+    super(props)
     this.state = { forceDetailsVisible: false }
   }
 
@@ -102,21 +98,3 @@ SearchDetails.propTypes = {
   match: PropTypes.object.isRequired,
   recommendation: PropTypes.object,
 }
-
-function mapStateToProps(state, ownProps) {
-  const { match } = ownProps
-  const offerId = get(match, 'params.offerId')
-  const mediationId = get(match, 'params.mediationId')
-  const recommendation = selectCurrentSearchRecommendation(
-    state,
-    offerId,
-    mediationId
-  )
-
-  return { recommendation }
-}
-
-export const SearchDetailsContainer = compose(
-  withRouter,
-  connect(mapStateToProps)
-)(SearchDetails)

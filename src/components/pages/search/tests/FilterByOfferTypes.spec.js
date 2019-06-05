@@ -4,15 +4,14 @@ import React from 'react'
 import { FilterByOfferTypes } from '../FilterByOfferTypes'
 
 describe('src | components | pages | search | FilterByOfferTypes', () => {
-  const fakeMethod = jest.fn()
   let props
 
   beforeEach(() => {
     props = {
       filterActions: {
-        add: fakeMethod,
-        change: fakeMethod,
-        remove: fakeMethod,
+        add: jest.fn(),
+        change: jest.fn(),
+        remove: jest.fn(),
       },
       filterState: {
         isNew: false,
@@ -49,12 +48,12 @@ describe('src | components | pages | search | FilterByOfferTypes', () => {
   })
 
   describe('onChangeCategory()', () => {
-    it("should add Applaudir's category", () => {
+    it('should set the categories to Applaudir when I check Applaudir', () => {
       // given
       const category = 'Applaudir'
+      const wrapper = shallow(<FilterByOfferTypes {...props} />)
 
       // when
-      const wrapper = shallow(<FilterByOfferTypes {...props} />)
       wrapper.instance().onChangeCategory(category)()
 
       // then
@@ -62,16 +61,15 @@ describe('src | components | pages | search | FilterByOfferTypes', () => {
         'categories',
         category
       )
-      props.filterActions.add.mockClear()
     })
 
-    it("should remove Applaudir's category", () => {
+    it('should remove Applaudir within categories when I check Applaudir', () => {
       // given
       props.filterState.params.categories = 'Toto,Applaudir,Jouer'
       const category = 'Applaudir'
+      const wrapper = shallow(<FilterByOfferTypes {...props} />)
 
       // when
-      const wrapper = shallow(<FilterByOfferTypes {...props} />)
       wrapper.instance().onChangeCategory(category)()
 
       // then
@@ -79,14 +77,15 @@ describe('src | components | pages | search | FilterByOfferTypes', () => {
         'categories',
         category
       )
-      props.filterActions.remove.mockClear()
     })
   })
 
   describe('render()', () => {
-    it('should have have seven checkboxes', () => {
-      // when
+    it('should have have seven checkboxes by default', () => {
+      // given
       const wrapper = shallow(<FilterByOfferTypes {...props} />)
+
+      // when
       const checkboxes = wrapper.find('input')
 
       // then
@@ -96,11 +95,9 @@ describe('src | components | pages | search | FilterByOfferTypes', () => {
       })
     })
 
-    it('should have Applaudir and Jouer checkboxes checked', () => {
+    it('should have Applaudir and Jouer checkboxes checked when I have "Applaudir,Jouer" in categories parameter', () => {
       // given
       props.filterState.params.categories = 'Applaudir,Jouer'
-
-      // when
       const wrapper = shallow(<FilterByOfferTypes {...props} />)
       const labels = wrapper.find('label')
       const expectedLabels = labels.reduce((accumulator, label) => {
@@ -111,9 +108,15 @@ describe('src | components | pages | search | FilterByOfferTypes', () => {
         return accumulator
       }, [])
 
+      // when
+      const firstLabel = expectedLabels[0].find('i').is('.anticon-check-circle')
+      const secondLabel = expectedLabels[1]
+        .find('i')
+        .is('.anticon-check-circle')
+
       // then
-      expect(expectedLabels[0].find('i').is('.anticon-check-circle')).toBe(true)
-      expect(expectedLabels[1].find('i').is('.anticon-check-circle')).toBe(true)
+      expect(firstLabel).toBe(true)
+      expect(secondLabel).toBe(true)
       expect(expectedLabels).toHaveLength(2)
     })
   })

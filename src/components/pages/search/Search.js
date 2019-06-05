@@ -5,9 +5,6 @@ import { Route, Switch } from 'react-router-dom'
 import { assignData, requestData } from 'redux-saga-data'
 import get from 'lodash.get'
 
-import { connect } from 'react-redux'
-import { compose } from 'redux'
-import withQueryRouter from 'with-query-router'
 import BackButton from '../../layout/BackButton'
 import { Icon } from '../../layout/Icon'
 import Footer from './Footer'
@@ -15,19 +12,13 @@ import Header from './Header'
 import NavByOfferTypeContainer from './searchByType/NavByOfferTypeContainer'
 import NavResultsHeader from './NavResultsHeader'
 import SearchFilterContainer from './searchFilters/SearchFilterContainer'
-import { SearchResultsContainer as SearchResults } from './SearchResults'
-import { SearchDetailsContainer as SearchDetails } from './SearchDetails'
+import { SearchResultsContainer } from './SearchResultsContainer'
+import { SearchDetailsContainer } from './SearchDetailsContainer'
 import isInitialQueryWithoutFilters, {
   getDescriptionForSublabel,
   INITIAL_FILTER_PARAMS,
   translateBrowserUrlToApiUrl,
 } from './utils'
-
-import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
-import { selectRecommendations } from '../../../selectors'
-import selectTypeSublabels, {
-  selectTypes,
-} from '../../../selectors/selectTypes'
 
 export class Search extends PureComponent {
   constructor(props) {
@@ -191,16 +182,17 @@ export class Search extends PureComponent {
     const { keywordsKey } = this.state
     const { history } = this.props
 
-    this.setState({
-      // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
-      // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
-      // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
-      // THE INPUT WITH A SYNCED DEFAULT VALUE
-      keywordsKey: keywordsKey + 1,
-      keywordsValue: '',
-    })
-
-    history.push('/recherche/resultats')
+    this.setState(
+      {
+        // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
+        // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
+        // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
+        // THE INPUT WITH A SYNCED DEFAULT VALUE
+        keywordsKey: keywordsKey + 1,
+        keywordsValue: '',
+      },
+      () => history.push('/recherche/resultats')
+    )
   }
 
   render() {
@@ -263,7 +255,7 @@ export class Search extends PureComponent {
         <Switch location={location}>
           <Route
             path="/recherche/resultats/:option?/item/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?"
-            render={route => <SearchDetails {...route} />}
+            render={route => <SearchDetailsContainer {...route} />}
           />
           <Route
             path="/recherche/(resultats)?/:option?/:subOption(menu)?"
@@ -364,7 +356,7 @@ export class Search extends PureComponent {
                             category={category}
                             description={description}
                           />
-                          <SearchResults
+                          <SearchResultsContainer
                             cameFromOfferTypesPage
                             hasMore={hasMore}
                             items={recommendations}
@@ -378,7 +370,7 @@ export class Search extends PureComponent {
                     <Route
                       path="/recherche/resultats/:menu(menu)?"
                       render={() => (
-                        <SearchResults
+                        <SearchResultsContainer
                           cameFromOfferTypesPage={false}
                           hasMore={hasMore}
                           items={recommendations}
@@ -409,28 +401,3 @@ Search.propTypes = {
   typeSublabels: PropTypes.array.isRequired,
   typeSublabelsAndDescription: PropTypes.array.isRequired,
 }
-
-const selectSearchRecommendations = state => {
-  const recommendations = get(state, 'data.searchRecommendations', [])
-  const derivedState = { ...state, data: { ...state.data, recommendations } }
-  return selectRecommendations(derivedState)
-}
-
-const mapStateToProps = state => {
-  const recommendations = selectSearchRecommendations(state)
-  const typeSublabels = selectTypeSublabels(state)
-  const typeSublabelsAndDescription = selectTypes(state)
-  const { user } = state
-  return {
-    recommendations,
-    typeSublabels,
-    typeSublabelsAndDescription,
-    user,
-  }
-}
-
-export const SearchContainer = compose(
-  withRedirectToSigninWhenNotAuthenticated,
-  withQueryRouter,
-  connect(mapStateToProps)
-)(Search)

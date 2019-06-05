@@ -1,9 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import { connect } from 'react-redux'
 
-import SearchPicture from './SearchPicture'
-import selectTypeSublabels from '../../../selectors/selectTypes'
+import { SearchPicture } from './SearchPicture'
 
 export class FilterByOfferTypes extends PureComponent {
   onChangeCategory = category => () => {
@@ -31,8 +29,8 @@ export class FilterByOfferTypes extends PureComponent {
         <div className="pc-scroll-horizontal is-relative">
           <div className="pc-list flex-columns pt7">
             {typeSublabels.map((category, index) => {
-              const ischecked = typesValue.includes(category)
-              const className = ischecked ? 'checked' : ''
+              const isChecked = typesValue.includes(category)
+              const className = isChecked ? 'checked' : ''
               const inputId = `search-image-checkbox-${index}`
 
               return (
@@ -43,14 +41,14 @@ export class FilterByOfferTypes extends PureComponent {
                 >
                   <SearchPicture searchType={category} />
                   <input
-                    checked={ischecked}
+                    checked={isChecked}
                     className="is-hidden"
                     id={inputId}
                     onChange={this.onChangeCategory(category)}
                     type="checkbox"
                     value={category}
                   />
-                  {ischecked && (
+                  {isChecked && (
                     <span className="icon-container is-absolute">
                       <span className="is-relative">
                         <i className="anticon anticon-check-circle" />
@@ -88,11 +86,3 @@ FilterByOfferTypes.propTypes = {
   }).isRequired,
   typeSublabels: PropTypes.arrayOf(PropTypes.string).isRequired,
 }
-
-const mapStateToProps = state => ({
-  typeSublabels: selectTypeSublabels(state),
-})
-
-export const FilterByOfferTypesContainer = connect(mapStateToProps)(
-  FilterByOfferTypes
-)

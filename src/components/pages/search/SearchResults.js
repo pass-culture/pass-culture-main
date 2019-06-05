@@ -3,10 +3,9 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 
-import { SearchResultItemContainer as SearchResultItem } from './SearchResultItem'
+import { SearchResultItemContainer } from './SearchResultItemContainer'
 import Spinner from '../../layout/Spinner'
 import { searchResultsTitle } from './utils'
-import { withQueryRouter } from '../../hocs/withQueryRouter'
 
 export class SearchResults extends PureComponent {
   constructor() {
@@ -77,7 +76,7 @@ export class SearchResults extends PureComponent {
 
     return (
       <div className="search-results">
-        {resultTitle ? (
+        {resultTitle && (
           <h2
             className={classnames(
               'fs15 is-uppercase is-italic is-semi-bold mb12',
@@ -89,8 +88,6 @@ export class SearchResults extends PureComponent {
           >
             {resultTitle}
           </h2>
-        ) : (
-          ''
         )}
         {items && items.length > 0 && (
           <InfiniteScroll
@@ -104,7 +101,7 @@ export class SearchResults extends PureComponent {
             useWindow={false}
           >
             {items.map(item => (
-              <SearchResultItem key={item.id} recommendation={item} />
+              <SearchResultItemContainer key={item.id} recommendation={item} />
             ))}
           </InfiniteScroll>
         )}
@@ -126,5 +123,3 @@ SearchResults.propTypes = {
   keywords: PropTypes.string,
   query: PropTypes.object.isRequired,
 }
-
-export const SearchResultsContainer = withQueryRouter(SearchResults)

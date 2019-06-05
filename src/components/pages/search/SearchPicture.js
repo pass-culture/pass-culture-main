@@ -3,7 +3,7 @@ import React from 'react'
 
 import { ROOT_PATH } from '../../../utils/config'
 
-const SearchPicture = ({ searchType }) => {
+export const SearchPicture = ({ searchType }) => {
   const src = `${ROOT_PATH}/icons/img-${searchType}.png`
   const navigation = `Rechercher des offres de type ${searchType}`
 
@@ -27,5 +27,3 @@ SearchPicture.defaultProps = {
 SearchPicture.propTypes = {
   searchType: PropTypes.string,
 }
-
-export default SearchPicture

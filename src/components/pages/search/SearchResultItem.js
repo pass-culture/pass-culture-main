@@ -1,9 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import Dotdotdot from 'react-dotdotdot'
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
-import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import { getQueryURL } from '../../../helpers'
@@ -86,8 +83,3 @@ SearchResultItem.propTypes = {
   location: PropTypes.shape().isRequired,
   recommendation: PropTypes.shape().isRequired,
 }
-
-export const SearchResultItemContainer = compose(
-  withRouter,
-  connect()
-)(SearchResultItem)

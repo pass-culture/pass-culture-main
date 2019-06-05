@@ -3,8 +3,8 @@ import React, { Component } from 'react'
 import { Transition } from 'react-transition-group'
 
 import FilterByDates from '../FilterByDates'
-import { FilterByDistanceContainer as FilterByDistance } from '../FilterByDistance'
-import { FilterByOfferTypesContainer as FilterByOfferTypes } from '../FilterByOfferTypes'
+import { FilterByDistanceContainer } from '../FilterByDistanceContainer'
+import { FilterByOfferTypesContainer } from '../FilterByOfferTypesContainer'
 import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from '../utils'
 
 const filtersPanelHeight = 475
@@ -168,11 +168,11 @@ class SearchFilter extends Component {
                 filterState={this.state}
                 initialDateParams={initialDateParams}
               />
-              <FilterByDistance
+              <FilterByDistanceContainer
                 filterActions={this.filterActions}
                 filterState={this.state}
               />
-              <FilterByOfferTypes
+              <FilterByOfferTypesContainer
                 filterActions={this.filterActions}
                 filterState={this.state}
               />

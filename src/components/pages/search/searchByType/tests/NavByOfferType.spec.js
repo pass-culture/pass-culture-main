@@ -1,4 +1,3 @@
-// $(yarn bin)/jest --env=jsdom ./src/components/pages/search/searchByType/tests/NavByOfferType.spec.js --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 
@@ -39,9 +38,9 @@ describe('src | components | search | NavByOfferType', () => {
         typeSublabels,
         updateSearchQuery: jest.fn(),
       }
+      const wrapper = shallow(<NavByOfferType {...props} />)
 
       // when
-      const wrapper = shallow(<NavByOfferType {...props} />)
       const navitem = wrapper.find('.item')
 
       // then
@@ -66,9 +65,9 @@ describe('src | components | search | NavByOfferType', () => {
         typeSublabels,
         updateSearchQuery: jest.fn(),
       }
+      const wrapper = shallow(<NavByOfferType {...props} />)
 
       // when
-      const wrapper = shallow(<NavByOfferType {...props} />)
       const navitem = wrapper.find('#button-nav-by-offer-type-sublabel-3')
 
       // then
@@ -86,9 +85,9 @@ describe('src | components | search | NavByOfferType', () => {
         typeSublabels,
         updateSearchQuery: jest.fn(),
       }
+      const wrapper = shallow(<NavByOfferType {...props} />)
 
       // when
-      const wrapper = shallow(<NavByOfferType {...props} />)
       const navitem = wrapper.find('#button-nav-by-offer-type-sublabel-3')
 
       // then

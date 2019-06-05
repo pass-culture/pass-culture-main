@@ -25,17 +25,17 @@ describe('src | components | pages | search | NavResultsHeader', () => {
   })
 
   describe('render()', () => {
-    it('should display the background image with the right description', () => {
+    it('should display the background image with the right description by default', () => {
       // given
       props.category = 'Écouter'
       props.description = 'Lorem Ipsum'
+      const wrapper = shallow(<NavResultsHeader {...props} />)
 
       // when
-      const wrapper = shallow(<NavResultsHeader {...props} />)
       const img = wrapper.find('#nav-results-header').props()
-      const imgUrl = `${ROOT_PATH}/icons/img-Écouter-L.jpg`
 
       // then
+      const imgUrl = `${ROOT_PATH}/icons/img-Écouter-L.jpg`
       expect(img.style.backgroundImage).toBe(`url(${imgUrl})`)
       expect(img.title).toBe('Liste des offres de type Écouter')
     })

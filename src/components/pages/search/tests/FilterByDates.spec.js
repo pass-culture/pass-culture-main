@@ -2,19 +2,18 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import { DatePickerField } from '../../../forms/inputs'
-import FilterByDates, { isDaysChecked } from '../FilterByDates'
+import FilterByDates from '../FilterByDates'
 import { DAYS_CHECKBOXES } from '../utils'
 
 describe('src | components | pages | search | FilterByDates', () => {
-  const fakeMethod = jest.fn()
   let props
 
   beforeEach(() => {
     props = {
       filterActions: {
-        add: fakeMethod,
-        change: fakeMethod,
-        remove: fakeMethod,
+        add: jest.fn(),
+        change: jest.fn(),
+        remove: jest.fn(),
       },
       filterState: {
         isNew: false,
@@ -46,87 +45,36 @@ describe('src | components | pages | search | FilterByDates', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('isDaysChecked()', () => {
-    describe('date is picked in calendar', () => {
-      it('should not check date', () => {
-        // given
-        const pickedDate = new Date()
-
-        // when
-        const result = isDaysChecked(pickedDate)
-
-        // then
-        expect(result).toEqual(false)
-      })
-    })
-
-    describe('date is picked with a checkbox', () => {
-      it('should ckeck boxes', () => {
-        // given
-        const pickedDate = null
-        const pickedDaysInQuery = '0-1,5-10000'
-        const inputValue = '0-1'
-
-        // when
-        const result = isDaysChecked(pickedDate, pickedDaysInQuery, inputValue)
-
-        // then
-        expect(result).toEqual(true)
-      })
-
-      it('should not ckeck box', () => {
-        // given
-        const pickedDate = null
-        const pickedDaysInQuery = '1-5'
-        const inputValue = '0-1'
-
-        // when
-        const result = isDaysChecked(pickedDate, pickedDaysInQuery, inputValue)
-
-        // then
-        expect(result).toEqual(false)
-      })
-    })
-  })
-
   describe('onChangePickedDate()', () => {
-    it('should call change filter action function with a date', () => {
+    it('should change the input date with the new date', () => {
       // given
-      props.filterState.params.date = '2018-10-24T09:15:55.098Z'
-      props.filterState.params.jours = '0-1'
       const pickedDate = new Date('12/12/2034')
-      const expected = {
-        date: pickedDate.toISOString(),
-        jours: null,
-      }
+      const wrapper = shallow(<FilterByDates {...props} />)
 
       // when
-      const wrapper = shallow(<FilterByDates {...props} />)
       wrapper.instance().onChangePickedDate(pickedDate)
 
       // then
-      expect(props.filterActions.change).toHaveBeenCalledWith(expected)
+      expect(props.filterActions.change).toHaveBeenCalledWith({
+        date: pickedDate.toISOString(),
+        jours: null,
+      })
       expect(wrapper.state(['pickedDate'])).toBe(pickedDate)
-      props.filterActions.change.mockClear()
     })
 
-    it('should call change filter action function without a date', () => {
+    it('should remove the input date ', () => {
       // given
-      props.filterState.params.date = '2018-10-24T09:15:55.098Z'
-      props.filterState.params.jours = '0-1'
-      const expected = {
-        date: null,
-        jours: null,
-      }
+      const wrapper = shallow(<FilterByDates {...props} />)
 
       // when
-      const wrapper = shallow(<FilterByDates {...props} />)
       wrapper.instance().onChangePickedDate()
 
       // then
-      expect(props.filterActions.change).toHaveBeenCalledWith(expected)
+      expect(props.filterActions.change).toHaveBeenCalledWith({
+        date: null,
+        jours: null,
+      })
       expect(wrapper.state(['pickedDate'])).toBe(null)
-      props.filterActions.change.mockClear()
     })
   })
 
@@ -135,30 +83,28 @@ describe('src | components | pages | search | FilterByDates', () => {
       it('should initialize date in query with a random range', () => {
         // given
         const day = '1-5'
+        const wrapper = shallow(<FilterByDates {...props} />)
 
         // when
-        const wrapper = shallow(<FilterByDates {...props} />)
         wrapper.instance().onChangeDate(day)()
 
         // then
         expect(wrapper.state(['pickedDate'])).toBe(null)
         expect(props.filterActions.add).toHaveBeenCalled()
-        props.filterActions.add.mockClear()
       })
 
       it('should change date to null when more than one days checked', () => {
         // given
         const day = '0-1'
         props.filterState.params.jours = day
+        const wrapper = shallow(<FilterByDates {...props} />)
 
         // when
-        const wrapper = shallow(<FilterByDates {...props} />)
         wrapper.instance().onChangeDate(day)()
 
         // then
         expect(wrapper.state(['pickedDate'])).toBe(null)
         expect(props.filterActions.remove).toHaveBeenCalled()
-        props.filterActions.remove.mockClear()
       })
 
       it('should check another day, already checked', () => {
@@ -166,9 +112,9 @@ describe('src | components | pages | search | FilterByDates', () => {
         const day = '0-1'
         const callback = undefined
         props.filterState.params.jours = `${day},1-5`
+        const wrapper = shallow(<FilterByDates {...props} />)
 
         // when
-        const wrapper = shallow(<FilterByDates {...props} />)
         wrapper.instance().onChangeDate(day)()
 
         // then
@@ -178,7 +124,6 @@ describe('src | components | pages | search | FilterByDates', () => {
           day,
           callback
         )
-        props.filterActions.remove.mockClear()
       })
 
       it('shoud add another day not added yet to query with callback undefined ', () => {
@@ -186,9 +131,9 @@ describe('src | components | pages | search | FilterByDates', () => {
         const day = '0-1'
         const callback = undefined
         props.filterState.params.jours = '1-5'
+        const wrapper = shallow(<FilterByDates {...props} />)
 
         // when
-        const wrapper = shallow(<FilterByDates {...props} />)
         wrapper.instance().onChangeDate(day)()
 
         // then
@@ -198,15 +143,16 @@ describe('src | components | pages | search | FilterByDates', () => {
           day,
           callback
         )
-        props.filterActions.add.mockClear()
       })
     })
   })
 
   describe('componentDidUpdate()', () => {
-    it('should set the picked date', () => {
-      // when
+    it('should set the input date', () => {
+      // given
       const wrapper = shallow(<FilterByDates {...props} />)
+
+      // when
       wrapper.setProps({
         filterState: {
           params: {
@@ -222,9 +168,11 @@ describe('src | components | pages | search | FilterByDates', () => {
   })
 
   describe('render()', () => {
-    it('should have three checkboxes with right values and one DatePickerField', () => {
-      // when
+    it('should have three checkboxes with right values and one DatePickerField by default', () => {
+      // given
       const wrapper = shallow(<FilterByDates {...props} />)
+
+      // when
       const checkboxes = wrapper.find('input[type="checkbox"]')
       const datePicker = wrapper.find(DatePickerField)
 

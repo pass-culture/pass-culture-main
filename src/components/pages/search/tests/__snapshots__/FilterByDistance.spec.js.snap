@@ -61,6 +61,7 @@ ShallowWrapper {
           <select
             className="pc-selectbox pl24 py5 fs19"
             defaultValue={20000}
+            name="distance"
             onChange={[Function]}
           >
             <option
@@ -106,6 +107,7 @@ ShallowWrapper {
             <select
               className="pc-selectbox pl24 py5 fs19"
               defaultValue={20000}
+              name="distance"
               onChange={[Function]}
             >
               <option
@@ -176,6 +178,7 @@ ShallowWrapper {
               ],
               "className": "pc-selectbox pl24 py5 fs19",
               "defaultValue": 20000,
+              "name": "distance",
               "onChange": [Function],
             },
             "ref": null,
@@ -267,6 +270,7 @@ ShallowWrapper {
             <select
               className="pc-selectbox pl24 py5 fs19"
               defaultValue={20000}
+              name="distance"
               onChange={[Function]}
             >
               <option
@@ -312,6 +316,7 @@ ShallowWrapper {
               <select
                 className="pc-selectbox pl24 py5 fs19"
                 defaultValue={20000}
+                name="distance"
                 onChange={[Function]}
               >
                 <option
@@ -382,6 +387,7 @@ ShallowWrapper {
                 ],
                 "className": "pc-selectbox pl24 py5 fs19",
                 "defaultValue": 20000,
+                "name": "distance",
                 "onChange": [Function],
               },
               "ref": null,

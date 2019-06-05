@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import SearchPicture from '../SearchPicture'
+import { SearchPicture } from '../SearchPicture'
 
 describe('src | components | pages | search | SearchPicture', () => {
   let props
@@ -12,7 +12,7 @@ describe('src | components | pages | search | SearchPicture', () => {
     }
   })
 
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<SearchPicture {...props} />)
 
@@ -22,9 +22,11 @@ describe('src | components | pages | search | SearchPicture', () => {
   })
 
   describe('render()', () => {
-    it('should display image with the right url', () => {
-      // when
+    it('should display image with the right url by default', () => {
+      // given
       const wrapper = shallow(<SearchPicture {...props} />)
+
+      // when
       const img = wrapper.find('img').props()
 
       // then
