@@ -4,7 +4,7 @@
   become: true
   tasks:
     - name: Add node 8 repo
-      shell: "sudo curl --silent --location https://rpm.nodesource.com/setup_8.x | sudo bash"
+      shell: "sudo curl --silent --location https://rpm.nodesource.com/setup_10.x | sudo bash"
 
     - name: Install nodejs
       yum:
@@ -22,11 +22,8 @@
 
     - name: Install custom artillery-plugin-metrics-by-endpoint
       copy:
-        src: "artillery-plugin-metrics-by-endpoint/{{ item }}"
+        src: "artillery-plugin-metrics-by-endpoint/index.js"
         dest: /usr/lib/node_modules/artillery-plugin-metrics-by-endpoint/
-      loop:
-        - package.json
-        - index.js
 
     - name: Create artillery directory
       file:
