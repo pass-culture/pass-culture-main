@@ -1,4 +1,4 @@
-alembic==1.0.3
+alembic==1.0.3 
 apscheduler==3.5.3
 babel==2.6.0
 bcrypt==3.1.4
