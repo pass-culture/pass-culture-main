@@ -17,17 +17,27 @@ from tests.test_utils import create_stock_with_event_offer, create_stock_with_th
     create_stock_from_offer, \
     create_stock_from_event_occurrence, create_event_occurrence, create_product_with_Thing_type, create_mocked_bookings, \
     create_email
-from utils.mailing import make_user_booking_recap_email, \
-    make_offerer_booking_recap_email_after_user_action, make_final_recap_email_for_stock_with_event, \
-    write_object_validation_email, make_offerer_driven_cancellation_email_for_user, \
+from utils.mailing import make_activation_notification_email, make_batch_cancellation_email, \
+    make_beneficiaries_import_email, \
+    make_final_recap_email_for_stock_with_event, \
+    make_offer_creation_notification_email, \
+    make_offerer_driven_cancellation_email_for_offerer, \
+    make_offerer_booking_recap_email_after_user_action, \
+    make_offerer_driven_cancellation_email_for_user, \
+    make_payment_details_email, \
+    make_payment_message_email, \
+    make_payments_report_email, \
     make_reset_password_email, \
-    make_offerer_driven_cancellation_email_for_offerer, make_validation_confirmation_email, \
-    make_venue_validation_email, \
+    make_user_booking_recap_email, \
+    make_user_validation_email, \
+    make_user_waiting_for_validation_by_admin_email, \
+    make_validation_confirmation_email, \
     make_venue_validation_confirmation_email, \
-    make_batch_cancellation_email, make_payment_message_email, make_user_validation_email, \
-    make_payment_details_email, make_wallet_balances_email, make_payments_report_email, parse_email_addresses, \
-    make_activation_notification_email, make_offer_creation_notification_email, \
-    send_raw_email, resend_email, make_beneficiaries_import_email
+    make_venue_validation_email, \
+    make_wallet_balances_email, \
+    parse_email_addresses, \
+    send_raw_email, resend_email, \
+    write_object_validation_email
 
 SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
@@ -1301,7 +1311,7 @@ class UserValidationEmailsTest:
             'FromEmail': 'dev@passculture.app',
             'FromName': 'pass Culture pro',
             'Subject': '[pass Culture pro] Validation de votre adresse email pour le pass Culture',
-            'MJ-TemplateID': '778329',
+            'MJ-TemplateID': '778688',
             'MJ-TemplateLanguage': 'true',
             'Recipients': [
                 {
@@ -1319,6 +1329,36 @@ class UserValidationEmailsTest:
         # Then
         assert email['FromName'] == 'pass Culture pro'
         assert email['Vars']['lien_validation_mail'] == f'{app_origin_url}/inscription/validation/{user.validationToken}'
+        assert email == expected
+
+    def test_make_user_waiting_for_validation_by_admin_email(self, app):
+        # Given
+        user = create_user(email="test@email.com")
+        user.generate_validation_token()
+        app_origin_url = 'portail-pro'
+
+        # When
+        email = make_user_waiting_for_validation_by_admin_email(user, app_origin_url, is_webapp=False)
+        expected = {
+            'FromEmail': 'dev@passculture.app',
+            'FromName': 'pass Culture pro',
+            'Subject': f'[pass Culture pro] Votre structure {user.publicName} est en cours de validation',
+            'MJ-TemplateID': '778329',
+            'MJ-TemplateLanguage': 'true',
+            'Recipients': [
+                {
+                    'Email': 'test@email.com',
+                    'Name': 'John Doe'
+                }
+            ],
+            'Vars':
+                {
+                    'nom_structure': 'John Doe'
+                }
+            }
+
+        # Then
+        assert email['FromName'] == 'pass Culture pro'
         assert email == expected
 
 

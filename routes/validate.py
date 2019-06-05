@@ -5,6 +5,7 @@ from flask_login import login_required, current_user
 
 import models
 from domain.admin_emails import maybe_send_offerer_validation_email
+from domain.user_emails import send_user_waiting_for_validation_by_admin_email
 from domain.payments import read_message_name_in_message_file, \
     generate_file_checksum
 from domain.user_emails import send_validation_confirmation_email, send_venue_validation_confirmation_email
@@ -81,6 +82,7 @@ def validate_venue():
 
 @app.route("/validate/user/<token>", methods=["PATCH"])
 def validate_user(token):
+    app_origin_url = request.headers.get('origin')
     user_to_validate = user_queries.find_by_validation_token(token)
     check_valid_token_for_user_validation(user_to_validate)
     user_to_validate.validationToken = None
@@ -92,6 +94,11 @@ def validate_user(token):
             _validate_offerer(offerer, user_offerer)
         else:
             _ask_for_validation(offerer, user_offerer)
+
+        try:
+            send_user_waiting_for_validation_by_admin_email(user_offerer.user, send_raw_email, app_origin_url, is_webapp=False)
+        except MailServiceException as e:
+            app.logger.error('Mail service failure', e)
 
     return '', 204
 
@@ -121,6 +128,7 @@ def certify_message_file_authenticity():
 def _ask_for_validation(offerer: Offerer, user_offerer: UserOfferer):
     try:
         maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
+
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 

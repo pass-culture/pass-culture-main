@@ -106,6 +106,7 @@ def _create_initial_deposit(new_user):
 def _generate_offerer(data):
     offerer = Offerer()
     offerer.populate_from_dict(data)
+
     if not IS_INTEGRATION:
         offerer.generate_validation_token()
     return offerer
