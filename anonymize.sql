@@ -176,7 +176,9 @@ AS $function$
 DECLARE
     query text;
 BEGIN
-    EXECUTE 'ALTER TABLE ' || table_name || ' DISABLE TRIGGER audit_trigger_row;';
+    EXECUTE 'ALTER TABLE' || table_name || ' ENABLE TRIGGER audit_trigger_insert;'
+    EXECUTE 'ALTER TABLE' || table_name || ' ENABLE TRIGGER audit_trigger_update;'
+    EXECUTE 'ALTER TABLE' || table_name || ' ENABLE TRIGGER audit_trigger_delete;'
 END;
 $function$;
 
@@ -187,14 +189,15 @@ AS $function$
 DECLARE
     query text;
 BEGIN
-    EXECUTE 'ALTER TABLE ' || table_name || ' ENABLE TRIGGER audit_trigger_row;';
+    EXECUTE 'ALTER TABLE' || table_name || 'DISABLE TRIGGER audit_trigger_insert;'
+    EXECUTE 'ALTER TABLE' || table_name || 'DISABLE TRIGGER audit_trigger_update;'
+    EXECUTE 'ALTER TABLE' || table_name || 'DISABLE TRIGGER audit_trigger_delete;'
 END;
 $function$;
 
-ALTER TABLE "user" DISABLE TRIGGER audit_trigger_insert;
-ALTER TABLE "user" DISABLE TRIGGER audit_trigger_update;
-ALTER TABLE "user" DISABLE TRIGGER audit_trigger_delete;
 
+
+SELECT pg_temp.disable_activity_trigger('user');
 SELECT pg_temp.disable_activity_trigger('offerer');
 SELECT pg_temp.disable_activity_trigger('venue');
 SELECT pg_temp.disable_activity_trigger('booking');
@@ -244,6 +247,7 @@ SET
 
 TRUNCATE email;
 
+SELECT pg_temp.enable_activity_trigger('user');
 SELECT pg_temp.enable_activity_trigger('offerer');
 SELECT pg_temp.enable_activity_trigger('venue');
 SELECT pg_temp.enable_activity_trigger('booking');
@@ -254,8 +258,5 @@ SELECT pg_temp.enable_activity_trigger('offer');
 SELECT pg_temp.enable_activity_trigger('product');
 SELECT pg_temp.enable_activity_trigger('venue_provider');
 
-ALTER TABLE "user" ENABLE TRIGGER audit_trigger_insert;
-ALTER TABLE "user" ENABLE TRIGGER audit_trigger_update;
-ALTER TABLE "user" ENABLE TRIGGER audit_trigger_delete;
 
 DROP EXTENSION pgcrypto;
