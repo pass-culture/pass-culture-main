@@ -32,12 +32,17 @@ def create_industrial_webapp_users():
             else:
                 reset_password_token = None
 
+            has_filled_cultural_survey = True
+            if tag == "has-signed-up":
+                has_filled_cultural_survey = False
+
             email = "pctest.jeune{}.{}@btmx.fr".format(departement_code, tag)
 
             users_by_name['jeune{} {}'.format(departement_code, tag)] = create_user(
                 departement_code=str(departement_code),
                 email=email,
                 first_name="PC Test Jeune",
+                has_filled_cultural_survey=has_filled_cultural_survey,
                 last_name="{} {}".format(departement_code, short_tag),
                 password=get_password_from_email(email),
                 postal_code="{}100".format(departement_code),
