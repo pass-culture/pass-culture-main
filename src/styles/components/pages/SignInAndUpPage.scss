@@ -53,19 +53,9 @@
     .column {
       display: flex;
       flex-direction: column;
+      flex-shrink: inherit;
       justify-content: center;
       padding: 0;
-
-      // &.logo-column {
-      //   background-color: $red;
-      //   font-size: 3rem;
-      //   text-align: center;
-      //   padding: 2.5rem;
-      //   @media(min-width: $tablet) {
-      //     text-align: right;
-      //     padding-right: 2rem;
-      //   }
-      // }
     }
   }
 
