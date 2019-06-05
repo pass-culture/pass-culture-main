@@ -26,17 +26,4 @@ export function configureTestStore() {
   return store
 }
 
-export function configureFetchCurrentUserWithLoginFail() {
-  fetch.mockResponse(
-    JSON.stringify([{ global: ['Nobody is authenticated here'] }]),
-    { status: 400 }
-  )
-}
-
-export function configureFetchCurrentUserWithLoginSuccess() {
-  fetch.mockResponse(JSON.stringify({ email: 'michel.marx@youpi.fr' }), {
-    status: 200,
-  })
-}
-
 export default configureTestStore

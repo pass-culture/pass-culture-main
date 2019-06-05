@@ -2,7 +2,8 @@
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { withRedirectToDiscoveryWhenAlreadyAuthenticated } from '../hocs'
+
+import { withRedirectToDiscoveryOrTypeformAfterLogin } from '../hocs'
 
 export const RawBetaPage = () => (
   <div id="beta-page" className="page pc-gradient flex-rows">
@@ -38,4 +39,4 @@ export const RawBetaPage = () => (
   </div>
 )
 
-export default withRedirectToDiscoveryWhenAlreadyAuthenticated(RawBetaPage)
+export default withRedirectToDiscoveryOrTypeformAfterLogin(RawBetaPage)

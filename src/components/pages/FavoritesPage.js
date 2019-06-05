@@ -1,13 +1,9 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import React from 'react'
-import { compose } from 'redux'
 import { Scrollbars } from 'react-custom-scrollbars'
 
-import {
-  withRedirectToSigninWhenNotAuthenticated,
-  withRedirectToDiscoveryOrTypeForm,
-} from '../hocs'
+import { withRedirectToSigninOrTypeformAfterLogin } from '../hocs'
 import PageHeader from '../layout/PageHeader'
 import NavigationFooter from '../layout/NavigationFooter'
 import { ROOT_PATH } from '../../utils/config'
@@ -27,7 +23,4 @@ const FavoritesPage = () => {
   )
 }
 
-export default compose(
-  withRedirectToSigninWhenNotAuthenticated,
-  withRedirectToDiscoveryOrTypeForm
-)(FavoritesPage)
+export default withRedirectToSigninOrTypeformAfterLogin(FavoritesPage)

@@ -1,4 +1,4 @@
-import { withRedirectToDiscoveryWhenAlreadyAuthenticated } from '../../hocs/with-login'
+import { withRedirectToDiscoveryOrTypeformAfterLogin } from '../../hocs'
 import ActivationRoutes from './ActivationRoutes'
 
-export default withRedirectToDiscoveryWhenAlreadyAuthenticated(ActivationRoutes)
+export default withRedirectToDiscoveryOrTypeformAfterLogin(ActivationRoutes)

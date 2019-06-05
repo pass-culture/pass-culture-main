@@ -4,14 +4,11 @@ import React from 'react'
 import { compose } from 'redux'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Route, Switch, withRouter } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 
 import { config } from './config'
 import NotMatch from '../NotMatch'
-import {
-  withRedirectToSigninWhenNotAuthenticated,
-  withRedirectToDiscoveryOrTypeForm,
-} from '../../hocs'
+import { withRedirectToSigninOrTypeformAfterLogin } from '../../hocs'
 import { Loader } from '../../layout/Loader'
 import ProfileMainView from './ProfileMainView'
 import ProfileUpdateSuccess from './ProfileUpdateSuccess'
@@ -88,8 +85,6 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 export default compose(
-  withRedirectToSigninWhenNotAuthenticated,
-  withRedirectToDiscoveryOrTypeForm,
-  withRouter,
+  withRedirectToSigninOrTypeformAfterLogin,
   connect(mapStateToProps)
 )(ProfilePage)

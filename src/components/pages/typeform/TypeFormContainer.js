@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
 
 import TypeForm from './TypeForm'
-import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
+import { withRedirectToSigninOrTypeformAfterLogin } from '../../hocs'
 
 const mapDispatchToProps = dispatch => ({
   flagUserHasFilledTypeform: () => {
@@ -19,7 +19,7 @@ const mapDispatchToProps = dispatch => ({
 })
 
 export default compose(
-  withRedirectToSigninWhenNotAuthenticated,
+  withRedirectToSigninOrTypeformAfterLogin,
   connect(
     null,
     mapDispatchToProps

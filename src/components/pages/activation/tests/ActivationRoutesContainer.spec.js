@@ -1,12 +1,12 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 import configureStore from 'redux-mock-store'
 
 import ActivationRoutesContainer from '../ActivationRoutesContainer'
-import { withRedirectToDiscoveryWhenAlreadyAuthenticated } from '../../../hocs/with-login'
+import { withRedirectToDiscoveryOrTypeformAfterLogin } from '../../../hocs'
 
 jest.mock('../../../hocs/with-login', () => ({
-  withRedirectToDiscoveryWhenAlreadyAuthenticated: jest.fn(() => ''),
+  withRedirectToDiscoveryOrTypeformAfterLogin: jest.fn(() => ''),
 }))
 describe('src | components | pages | activation | ActivationRoutesContainer', () => {
   it('should redirect to discovery page when user is already logged in', () => {
@@ -20,6 +20,6 @@ describe('src | components | pages | activation | ActivationRoutesContainer', ()
     shallow(<ActivationRoutesContainer />, { context: { store } })
 
     // then
-    expect(withRedirectToDiscoveryWhenAlreadyAuthenticated).toHaveBeenCalled()
+    expect(withRedirectToDiscoveryOrTypeformAfterLogin).toHaveBeenCalled()
   })
 })

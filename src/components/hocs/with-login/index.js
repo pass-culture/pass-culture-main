@@ -1,5 +1,6 @@
-export * from './withRedirectToDiscoveryWhenAlreadyAuthenticated'
-export * from './withRedirectToSigninWhenNotAuthenticated'
 export {
-  withRedirectToDiscoveryOrTypeForm,
-} from './withRedirectToDiscoveryOrTypeForm'
+  default as withRedirectToDiscoveryOrTypeformAfterLogin,
+} from './withRedirectToDiscoveryOrTypeformAfterLogin'
+export {
+  default as withRedirectToSigninOrTypeformAfterLogin,
+} from './withRedirectToSigninOrTypeformAfterLogin'

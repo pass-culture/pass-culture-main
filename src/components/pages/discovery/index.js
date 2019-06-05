@@ -8,10 +8,7 @@ import { assignData, requestData } from 'redux-saga-data'
 
 import DeckContainer from './deck/DeckContainer'
 import BookingContainer from '../../booking/BookingContainer'
-import {
-  withRedirectToSigninWhenNotAuthenticated,
-  withRedirectToDiscoveryOrTypeForm,
-} from '../../hocs'
+import { withRedirectToSigninOrTypeformAfterLogin } from '../../hocs'
 import BackButton from '../../layout/BackButton'
 import { Loader } from '../../layout/Loader'
 import Footer from '../../layout/Footer'
@@ -204,8 +201,7 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const DiscoveryPage = compose(
-  withRedirectToSigninWhenNotAuthenticated,
-  withRedirectToDiscoveryOrTypeForm,
+  withRedirectToSigninOrTypeformAfterLogin,
   connect(mapStateToProps)
 )(RawDiscoveryPage)
 

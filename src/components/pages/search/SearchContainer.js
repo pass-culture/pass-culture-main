@@ -4,10 +4,7 @@ import withQueryRouter from 'with-query-router'
 import get from 'lodash.get'
 
 import Search from './Search'
-import {
-  withRedirectToSigninWhenNotAuthenticated,
-  withRedirectToDiscoveryOrTypeForm,
-} from '../../hocs'
+import { withRedirectToSigninOrTypeformAfterLogin } from '../../hocs'
 import { selectRecommendations } from '../../../selectors'
 import selectTypeSublabels, {
   selectTypes,
@@ -33,8 +30,7 @@ const mapStateToProps = state => {
 }
 
 export default compose(
-  withRedirectToSigninWhenNotAuthenticated,
-  withRedirectToDiscoveryOrTypeForm,
+  withRedirectToSigninOrTypeformAfterLogin,
   withQueryRouter,
   connect(mapStateToProps)
 )(Search)

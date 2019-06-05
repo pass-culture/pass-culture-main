@@ -5,7 +5,7 @@ import React from 'react'
 import { Portal } from 'react-portal'
 import { NavLink } from 'react-router-dom'
 
-import { withRedirectToDiscoveryWhenAlreadyAuthenticated } from '../hocs'
+import { withRedirectToDiscoveryOrTypeformAfterLogin } from '../hocs'
 import Main from '../layout/Main'
 
 export class RawSignupPage extends React.PureComponent {
@@ -119,4 +119,4 @@ export class RawSignupPage extends React.PureComponent {
   }
 }
 
-export default withRedirectToDiscoveryWhenAlreadyAuthenticated(RawSignupPage)
+export default withRedirectToDiscoveryOrTypeformAfterLogin(RawSignupPage)
