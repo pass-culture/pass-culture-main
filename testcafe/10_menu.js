@@ -52,7 +52,7 @@ test('Je vois le montant de mon pass dans le header', async t => {
 fixture('10_02 - Modal Menu - Liens vers pages').beforeEach(async t => {
   const { user } = await fetchSandbox(
     'webapp_10_menu',
-    'get_existing_webapp_validated_user'
+    'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
   )
   await t
     .useRole(createUserRole(user))
