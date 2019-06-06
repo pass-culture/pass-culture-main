@@ -6,9 +6,9 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose, bindActionCreators } from 'redux'
-import { selectCurrentUser } from 'with-login'
 
 import BackButton from './BackButton'
+import { selectCurrentUser } from '../hocs'
 
 export class RawMain extends React.PureComponent {
   constructor(props) {

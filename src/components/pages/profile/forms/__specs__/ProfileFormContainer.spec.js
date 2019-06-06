@@ -1,5 +1,5 @@
-import { selectCurrentUser } from 'with-login'
 import { mapStateToProps } from '../ProfileFormContainer'
+import { selectCurrentUser } from '../../../../hocs'
 
 describe('src | components | pages | profile | forms | ProfileFormContainer', () => {
   describe('mapStateToProps', () => {

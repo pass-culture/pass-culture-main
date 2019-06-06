@@ -1,9 +1,9 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 import { connect } from 'react-redux'
-import { selectCurrentUser } from 'with-login'
 
 import VersoWallet from './VersoWallet'
+import { selectCurrentUser } from '../../../hocs'
 import { getWalletValue } from '../../../../utils/user'
 
 export const mapStateToProps = state => {

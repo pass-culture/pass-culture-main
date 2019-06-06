@@ -6,13 +6,13 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { Transition } from 'react-transition-group'
 import { withRouter } from 'react-router-dom'
-import { selectCurrentUser } from 'with-login'
 
-import routes from '../../utils/routes'
 import MenuItem from './MenuItem'
 import MenuHeader from './MenuHeader'
 import MenuSignoutButton from './MenuSignoutButton'
+import { selectCurrentUser } from '../hocs'
 import { toggleOverlay } from '../../reducers/overlay'
+import routes from '../../utils/routes'
 import { getMainMenuItems } from '../../utils/routes-utils'
 
 const transitionDelay = 250

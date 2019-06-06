@@ -4,9 +4,11 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { selectCurrentUser } from 'with-login'
 
-import { withRedirectToSigninOrTypeformAfterLogin } from '../hocs'
+import {
+  selectCurrentUser,
+  withRedirectToSigninOrTypeformAfterLogin,
+} from '../hocs'
 import Loader from '../layout/Loader'
 import PageHeader from '../layout/PageHeader'
 import NavigationFooter from '../layout/NavigationFooter'

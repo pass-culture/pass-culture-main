@@ -3,8 +3,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
-import { selectCurrentUser } from 'with-login'
 
+import { selectCurrentUser } from '../hocs'
 import { ROOT_PATH } from '../../utils/config'
 import { getWalletValue } from '../../utils/user'
 

@@ -1,3 +1,4 @@
+export * from './selectCurrentUser'
 export {
   default as withRedirectToDiscoveryOrTypeformAfterLogin,
 } from './withRedirectToDiscoveryOrTypeformAfterLogin'

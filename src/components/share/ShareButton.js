@@ -2,11 +2,11 @@ import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import { selectCurrentUser } from 'with-login'
 
-import currentRecommendationSelector from '../../selectors/currentRecommendation'
-import { getShareURL } from '../../helpers'
 import ShareButtonContent from './ShareButtonContent'
+import { selectCurrentUser } from '../hocs'
+import { getShareURL } from '../../helpers'
+import currentRecommendationSelector from '../../selectors/currentRecommendation'
 
 // TODO Add some unit tests on this
 const mapStateToProps = (state, ownProps) => {
