@@ -79,6 +79,7 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
         active_offer_ids = [
             o.id for o in get_active_offers(user=user, departement_codes=departement_codes)
         ]
+        active_offer_ids.sort()
 
         # every (OFFER_WITH_RECOMMENDATION_PER_USER_MODULO_RATIO - 1)/OFFER_WITH_RECOMMENDATION_PER_USER_MODULO_RATIO
         # offers will have a recommendation for this user
