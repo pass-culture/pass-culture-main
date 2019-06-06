@@ -27,7 +27,7 @@ def delete_stock_and_cancel_bookings(stock: Stock) -> List[Booking]:
 class TooLateToDeleteError(ApiErrors):
     def __init__(self):
         super().__init__(
-            errors={"global": "L'événement s'est terminé il y a plus de deux jours, la suppression est impossible."}
+            errors={"global": ["L'événement s'est terminé il y a plus de deux jours, la suppression est impossible."]}
         )
 
 

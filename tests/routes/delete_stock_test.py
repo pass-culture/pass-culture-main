@@ -74,8 +74,8 @@ class Delete:
 
             # then
             assert response.status_code == 400
-            assert response.json()['global'] == "L'événement s'est terminé il y a plus de deux jours, " \
-                                                "la suppression est impossible."
+            assert response.json()['global'] == ["L'événement s'est terminé il y a plus de deux jours, " \
+                                                "la suppression est impossible."]
 
     class Returns403:
         @clean_database
