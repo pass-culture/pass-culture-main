@@ -25,7 +25,7 @@ const ProfileMainView = ({ config, currentUser }) => (
       style={{ backgroundImage: BACKGROUND_IMAGE }}
     >
       <div className="pc-scroll-container">
-        {currentUser && <MonAvatar user={currentUser} />}
+        {currentUser && <MonAvatar currentUser={currentUser} />}
         <div id="profile-page-user-passculture">
           <h3 className="dotted-bottom-primary pb8 px12">
             <span className="is-italic is-uppercase is-primary-text">
@@ -33,7 +33,7 @@ const ProfileMainView = ({ config, currentUser }) => (
             </span>
           </h3>
           <div className="mt12 px12">
-            {currentUser && <MonPassCulture user={currentUser} />}
+            {currentUser && <MonPassCulture currentUser={currentUser} />}
           </div>
         </div>
         <MesInformations user={currentUser} fields={config} />

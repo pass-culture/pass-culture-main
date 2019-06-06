@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { connect } from 'react-redux'
-import { selectCurrentUser } from 'with-login'
 
 import ProfilePicture from '../../layout/ProfilePicture'
 
@@ -20,17 +18,9 @@ const MonAvatar = ({ currentUser }) => (
   </div>
 )
 
-MonAvatar.defaultProps = {}
-
 MonAvatar.propTypes = {
   currentUser: PropTypes.oneOfType([PropTypes.bool, PropTypes.object])
     .isRequired,
 }
 
-function mapStateToProps(state) {
-  return {
-    currentUser: selectCurrentUser(state),
-  }
-}
-
-export default connect(mapStateToProps)(MonAvatar)
+export default MonAvatar
