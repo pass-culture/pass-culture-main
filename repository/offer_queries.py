@@ -80,10 +80,10 @@ def get_active_offers(user=None, departement_codes=None, offer_id=None, limit=No
     query = query.join(Stock, Offer.id == Stock.offerId)
     logger.debug(lambda: '(reco) offers with stock count {}'.format(query.count()))
 
-    query = query.join(Venue)
+    query = query.join(Venue, Offer.venueId == Venue.id)
     query = query.filter(Venue.validationToken == None)
     query = query.join(Offerer)
-    query = query.join(Product)
+    query = query.join(Product, Offer.productId == Product.id)
     logger.debug(lambda: '(reco) offers with venue offerer {}'.format(query.count()))
 
     with_active_mediation = (Mediation.query.filter((Mediation.offerId == Offer.id)
