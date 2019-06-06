@@ -1,14 +1,14 @@
-// jest --env=jsdom ./src/components/pages/profile/tests/RawMonPassCulture --watch
+// jest --env=jsdom ./src/components/pages/profile/tests/MonPassCulture --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import { RawMonPassCulture } from '../MonPassCulture'
+import MonPassCulture from '../MonPassCulture'
 
 const walletId = '#profile-wallet-balance-value'
 const digitalId = '#profile-digital-wallet-value'
 const physicalId = '#profile-physical-wallet-value'
 
-describe('src | components | RawMonPassCulture', () => {
+describe('src | components | MonPassCulture', () => {
   describe('snapshot', () => {
     it('should match snapshot with required props', () => {
       // given
@@ -23,7 +23,7 @@ describe('src | components | RawMonPassCulture', () => {
       }
 
       // when
-      const wrapper = shallow(<RawMonPassCulture {...props} />)
+      const wrapper = shallow(<MonPassCulture {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -44,7 +44,7 @@ describe('src | components | RawMonPassCulture', () => {
       }
 
       // when
-      const wrapper = shallow(<RawMonPassCulture {...props} />)
+      const wrapper = shallow(<MonPassCulture {...props} />)
       const walletElement = wrapper.find(walletId)
       const digitalElement = wrapper.find(digitalId)
       const physicalElement = wrapper.find(physicalId)
@@ -75,7 +75,7 @@ describe('src | components | RawMonPassCulture', () => {
       }
 
       // when
-      const wrapper = shallow(<RawMonPassCulture {...props} />)
+      const wrapper = shallow(<MonPassCulture {...props} />)
       const walletElement = wrapper.find(walletId)
       const digitalElement = wrapper.find(digitalId)
       const physicalElement = wrapper.find(physicalId)
@@ -106,7 +106,7 @@ describe('src | components | RawMonPassCulture', () => {
       }
 
       // when
-      const wrapper = shallow(<RawMonPassCulture {...props} />)
+      const wrapper = shallow(<MonPassCulture {...props} />)
       const walletElement = wrapper.find(walletId)
       const digitalElement = wrapper.find(digitalId)
       const physicalElement = wrapper.find(physicalId)
@@ -137,7 +137,7 @@ describe('src | components | RawMonPassCulture', () => {
       }
 
       // when
-      const wrapper = shallow(<RawMonPassCulture {...props} />)
+      const wrapper = shallow(<MonPassCulture {...props} />)
       const walletElement = wrapper.find(walletId)
       const digitalElement = wrapper.find(digitalId)
       const physicalElement = wrapper.find(physicalId)
