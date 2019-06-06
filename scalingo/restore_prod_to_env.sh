@@ -92,6 +92,9 @@ kill -9 "$DB_TUNNEL_PID"
 if grep -q 'ERROR' /var/log/restore/"$APP_NAME"_error.log; then
   echo "Restore fail.."
   echo "ERRORS found during restore backup. Please see file: /var/log/restore/"$APP_NAME"_error.log"
+
+  curl -d text="Database Restore to $APP_NAME failed !" "https://api.telegram.org/$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
+  exit 1
 elif [[ $# -gt 0 ]] && [[ "$1" == "-h" ]]; then
   echo "Upgrading Alembic Head..."
   /usr/local/bin/scalingo -a "$APP_NAME" run 'alembic upgrade head'
