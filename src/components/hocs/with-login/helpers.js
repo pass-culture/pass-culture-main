@@ -9,7 +9,11 @@ export const getRedirectToCurrentLocationOrTypeform = ({
   return hasFilledCulturalSurvey ? currentLocation : DEFAULT_TYPEFORM_LOCATION
 }
 
-export const getRedirectToDiscoveryOrTypeform = ({ currentUser }) => {
+export const getRedirectToCurrentLocationOrDiscovery = ({
+  currentUser,
+  location,
+}) => {
   const { hasFilledCulturalSurvey } = currentUser || {}
-  return hasFilledCulturalSurvey ? '/decouverte' : DEFAULT_TYPEFORM_LOCATION
+  const currentLocation = `${location.pathname}${location.search}`
+  return hasFilledCulturalSurvey ? '/decouverte' : currentLocation
 }

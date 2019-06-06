@@ -1,10 +1,10 @@
 import withLogin from './withLogin'
 
-import { getRedirectToDiscoveryOrTypeform } from './helpers'
+import { getRedirectToCurrentLocationOrDiscovery } from './helpers'
 
 const withRedirectToDiscoveryOrTypeformAfterLogin = withLogin({
   isRequired: false,
-  successRedirect: getRedirectToDiscoveryOrTypeform,
+  successRedirect: getRedirectToCurrentLocationOrDiscovery,
 })
 
 export default withRedirectToDiscoveryOrTypeformAfterLogin

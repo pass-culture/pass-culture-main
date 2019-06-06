@@ -1,10 +1,10 @@
 import {
   getRedirectToCurrentLocationOrTypeform,
-  getRedirectToDiscoveryOrTypeform,
+  getRedirectToCurrentLocationOrDiscovery,
 } from '../helpers'
 
 describe('src | hocs | with-login | helpers', () => {
-  describe('getRedirectToDiscoveryOrTypeform', () => {
+  describe('getRedirectToCurrentLocationOrDiscovery', () => {
     it('should return current location when user has filled the Typeform', () => {
       // given
       const props = {
@@ -43,7 +43,7 @@ describe('src | hocs | with-login | helpers', () => {
       expect(result).toEqual('/typeform')
     })
   })
-  describe('getRedirectToDiscoveryOrTypeform', () => {
+  describe('getRedirectToCurrentLocationOrDiscovery', () => {
     it('should return discovery location when user has filled the Typeform', () => {
       // given
       const props = {
@@ -57,13 +57,13 @@ describe('src | hocs | with-login | helpers', () => {
       }
 
       // then
-      const result = getRedirectToDiscoveryOrTypeform(props)
+      const result = getRedirectToCurrentLocationOrDiscovery(props)
 
       // when
       expect(result).toEqual('/decouverte')
     })
 
-    it('should return typeform location when user has not filled the Typeform', () => {
+    it('should return current location when user has not filled the Typeform', () => {
       // given
       const props = {
         currentUser: {
@@ -76,10 +76,10 @@ describe('src | hocs | with-login | helpers', () => {
       }
 
       // then
-      const result = getRedirectToDiscoveryOrTypeform(props)
+      const result = getRedirectToCurrentLocationOrDiscovery(props)
 
       // when
-      expect(result).toEqual('/typeform')
+      expect(result).toEqual('/my-page?any=any')
     })
   })
 })

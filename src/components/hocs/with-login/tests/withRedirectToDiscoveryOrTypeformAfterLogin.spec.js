@@ -61,7 +61,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToDiscovery
         </Provider>
       )
     })
-    it('should redirect to typeform when already authenticated and not hasFilledCulturalSurvey', done => {
+    it('should redirect to currentLocation when already authenticated and not hasFilledCulturalSurvey', () => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
@@ -84,13 +84,12 @@ describe('src | components | pages | hocs | with-login | withRedirectToDiscovery
               <Route path="/test">
                 <RedirectToDiscoveryOrTypeformAfterLoginTest />
               </Route>
-              <Route path="/typeform">
-                <OnMountCaller onMountCallback={done} />
-              </Route>
             </Switch>
           </Router>
         </Provider>
       )
+
+      expect(history.location.pathname).toBe('/test')
     })
   })
 })
