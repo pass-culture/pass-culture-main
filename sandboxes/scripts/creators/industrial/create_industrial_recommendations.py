@@ -31,7 +31,8 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
 
         user_has_no_recommendation = \
             user.firstName != "PC Test Jeune" or \
-            "has-signed-up" in user_name
+            "has-signed-up" in user_name or \
+            "has-filled-cultural-survey"
 
         if user_has_no_recommendation:
             continue

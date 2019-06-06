@@ -6,6 +6,7 @@ from utils.logger import logger
 departement_codeS = ["93", "97"]
 WEBAPP_TAGS = [
     "has-signed-up",
+    "has-filled-cultural-survey",
     "has-booked-activation",
     "has-confirmed-activation",
     "has-booked-some",
