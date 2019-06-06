@@ -4,7 +4,7 @@ from domain.departments import get_departement_codes_from_user
 from tests.test_utils import create_user
 
 class GetDepartementCodesFromUser:
-    @pytest.mark.parametrize('departement_code,expected_departement_codes', [
+    @pytest.mark.parametrize('user_department_code,expected_departement_codes', [
         ('08', {'02', '08', '51', '55', '59'}),
         ('25', {'21', '25', '39', '67', '68', '70', '71', '90'}),
         ('29', {'22', '35', '29', '56'}),
@@ -20,9 +20,9 @@ class GetDepartementCodesFromUser:
         ('973', {'97', '971', '972', '973'}),
         ('01', {'01'}),
     ])
-    def test_departments_mapping(self, departement_code, expected_departement_codes):
+    def test_departments_mapping(self, user_department_code, expected_departement_codes):
         # given
-        user = create_user(departement_code=departement_code)
+        user = create_user(departement_code=user_department_code)
 
         # when
         departement_codes = get_departement_codes_from_user(user)
