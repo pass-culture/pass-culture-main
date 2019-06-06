@@ -96,7 +96,7 @@ def validate_user(token):
             _ask_for_validation(offerer, user_offerer)
 
         try:
-            send_user_waiting_for_validation_by_admin_email(user_offerer.user, send_raw_email, app_origin_url, is_webapp=False)
+            send_user_waiting_for_validation_by_admin_email(user_to_validate, send_raw_email, app_origin_url, is_webapp=False)
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 

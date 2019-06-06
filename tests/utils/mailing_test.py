@@ -1327,8 +1327,6 @@ class UserValidationEmailsTest:
             }
 
         # Then
-        assert email['FromName'] == 'pass Culture pro'
-        assert email['Vars']['lien_validation_mail'] == f'{app_origin_url}/inscription/validation/{user.validationToken}'
         assert email == expected
 
     def test_make_user_waiting_for_validation_by_admin_email(self, app):
@@ -1358,7 +1356,6 @@ class UserValidationEmailsTest:
             }
 
         # Then
-        assert email['FromName'] == 'pass Culture pro'
         assert email == expected
 
 

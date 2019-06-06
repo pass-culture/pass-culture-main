@@ -388,58 +388,15 @@ def _make_activation_notification_email_as_plain_text(first_name: str, set_passw
     support@passculture.app • pass.culture.fr
     """
 
-def make_user_validation_email(user, app_origin_url, is_webapp):
+def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool):
     if is_webapp:
-        template = 'mails/webapp_user_validation_email.html'
-        from_name = 'pass Culture'
-        email_html = render_template(template, user=user, api_url=API_URL, app_origin_url=app_origin_url)
-        data = {'Html-part': email_html,
-                'To': user.email,
-                'Subject': 'Validation de votre adresse email pour le pass Culture',
-                'FromName': from_name,
-                'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS}
+        data = _webapp_user_validation_email(user, app_origin_url)
     else:
-        from_name = 'pass Culture pro'
-        data = {
-            'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
-            'FromName': from_name,
-            'Subject': "[pass Culture pro] Validation de votre adresse email pour le pass Culture",
-            'MJ-TemplateID': '778688',
-            'MJ-TemplateLanguage': 'true',
-            'Recipients': [
-                {
-                    "Email": user.email,
-                    "Name": user.publicName
-                }
-            ],
-            'Vars': {
-                'nom_structure': user.publicName,
-                'lien_validation_mail': f'{app_origin_url}/inscription/validation/{user.validationToken}'
-            },
-
-        }
+        data = _pro_user_validation_email(user, app_origin_url)
     return data
 
-def make_user_waiting_for_validation_by_admin_email(user, app_origin_url, is_webapp):
-    from_name = 'pass Culture pro'
-    offerer_name = user.publicName
-    data = {
-        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
-        'FromName': from_name,
-        'Subject': f'[pass Culture pro] Votre structure {offerer_name} est en cours de validation',
-        'MJ-TemplateID': '778329',
-        'MJ-TemplateLanguage': 'true',
-        'Recipients': [
-            {
-                "Email": user.email,
-                "Name": offerer_name
-            }
-        ],
-        'Vars': {
-            'nom_structure': offerer_name
-        },
-
-    }
+def make_user_waiting_for_validation_by_admin_email(user: User, app_origin_url: str, is_webapp: bool):
+    data = _pro_user_waiting_for_validation_by_admin_email(user, app_origin_url)
     return data
 
 def get_contact(user):
@@ -714,3 +671,56 @@ def _get_stock_description(stock):
         description = str(stock.resolvedOffer.product.name)
 
     return description
+
+
+def _webapp_user_validation_email(user: User, app_origin_url: str):
+    template = 'mails/webapp_user_validation_email.html'
+    from_name = 'pass Culture'
+    email_html = render_template(template, user=user, api_url=API_URL, app_origin_url=app_origin_url)
+    return {'Html-part': email_html,
+            'To': user.email,
+            'Subject': 'Validation de votre adresse email pour le pass Culture',
+            'FromName': from_name,
+            'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS}
+
+
+def _pro_user_validation_email(user: User, app_origin_url: str):
+    from_name = 'pass Culture pro'
+    return {
+        'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
+        'FromName': from_name,
+        'Subject': "[pass Culture pro] Validation de votre adresse email pour le pass Culture",
+        'MJ-TemplateID': '778688',
+        'MJ-TemplateLanguage': 'true',
+        'Recipients': [
+            {
+                "Email": user.email,
+                "Name": user.publicName
+            }
+        ],
+        'Vars': {
+            'nom_structure': user.publicName,
+            'lien_validation_mail': f'{app_origin_url}/inscription/validation/{user.validationToken}'
+        },
+    }
+
+
+def _pro_user_waiting_for_validation_by_admin_email(user: User, app_origin_url: str):
+        from_name = 'pass Culture pro'
+        offerer_name = user.publicName
+        return {
+            'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
+            'FromName': from_name,
+            'Subject': f'[pass Culture pro] Votre structure {offerer_name} est en cours de validation',
+            'MJ-TemplateID': '778329',
+            'MJ-TemplateLanguage': 'true',
+            'Recipients': [
+                {
+                    "Email": user.email,
+                    "Name": offerer_name
+                }
+            ],
+            'Vars': {
+                'nom_structure': offerer_name
+            },
+        }
