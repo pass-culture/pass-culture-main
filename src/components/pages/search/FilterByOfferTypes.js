@@ -51,7 +51,7 @@ export class FilterByOfferTypes extends PureComponent {
                   {isChecked && (
                     <span className="icon-container is-absolute">
                       <span className="is-relative">
-                        <i className="anticon anticon-check-circle" />
+                        <i className="icon-legacy-check-circled" />
                       </span>
                     </span>
                   )}

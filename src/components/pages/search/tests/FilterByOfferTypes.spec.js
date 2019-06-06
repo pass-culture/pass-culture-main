@@ -63,7 +63,7 @@ describe('src | components | pages | search | FilterByOfferTypes', () => {
       )
     })
 
-    it('should remove Applaudir within categories when I check Applaudir', () => {
+    it('should uncheck Applaudir within categories when I check Applaudir', () => {
       // given
       props.filterState.params.categories = 'Toto,Applaudir,Jouer'
       const category = 'Applaudir'

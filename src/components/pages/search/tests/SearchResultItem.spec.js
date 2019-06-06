@@ -56,10 +56,10 @@ describe('src | components | pages | search | SearchResultItem', () => {
       wrapper.instance().onSuccessLoadRecommendationDetails()
 
       // then
-      const url = `${props.location.pathname}/item/${
+      const expectedUrl = `${props.location.pathname}/item/${
         props.recommendation.offerId
       }${props.location.search}`
-      expect(props.history.push).toHaveBeenCalledWith(url)
+      expect(props.history.push).toHaveBeenCalledWith(expectedUrl)
     })
   })
 

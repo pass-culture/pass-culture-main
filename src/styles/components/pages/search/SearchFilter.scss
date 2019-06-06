@@ -174,15 +174,19 @@
   .icon-container {
     top: rem(-6px);
     right: rem(-6px);
-  }
 
-  .icon-container .anticon-check-circle {
-    @extend .is-block;
-    @extend .text-center;
+    .icon-legacy-check-circled {
+      @extend .is-block;
+      @extend .text-center;
 
-    border-radius: 50%;
-    background-color: $white;
-    color: $red;
+      background-color: $white;
+      border-radius: 50%;
+      color: $red;
+
+      &::before {
+        margin: 0;
+      }
+    }
   }
 
   .icon-ico-check {
