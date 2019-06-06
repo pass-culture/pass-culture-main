@@ -6,7 +6,10 @@ from sandboxes.scripts.utils.helpers import get_user_helper
 
 def get_existing_webapp_user_with_profile():
     query = keep_only_webapp_users(User.query)
-    query = query.filter(User.resetPasswordToken == None)
+    query = query.filter_by(
+        hasFilledCulturalSurvey=True,
+        resetPasswordToken=None
+    )
     user = query.first()
 
     return {
