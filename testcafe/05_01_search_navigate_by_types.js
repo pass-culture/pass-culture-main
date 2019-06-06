@@ -41,7 +41,7 @@ fixture(
   if (!userRole) {
     userRole = await createUserRoleFromUserSandbox(
       'webapp_05_search',
-      'get_existing_webapp_validated_user'
+      'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
     )
   }
 

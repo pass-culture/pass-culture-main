@@ -17,7 +17,7 @@ fixture("O5_02_01 Recherche | J'effectue une recherche par mot-clé").beforeEach
     if (!userRole) {
       const { user } = await fetchSandbox(
         'webapp_05_search',
-        'get_existing_webapp_validated_user'
+        'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
       )
       userRole = createUserRole(user)
     }

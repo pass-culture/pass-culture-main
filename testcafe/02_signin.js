@@ -17,7 +17,7 @@ fixture("02_01 SignIn | J'ai un compte et je me connecte")
   .beforeEach(async t => {
     t.ctx.sandbox = await fetchSandbox(
       'webapp_02_signin',
-      'get_existing_webapp_validated_user'
+      'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
     )
   })
 
@@ -44,6 +44,7 @@ test("J'ai un compte valide, je suis redirigé·e vers la page /decouverte sans 
 
   // then
   const location = await t.eval(() => window.location)
+
   await t
     .expect(identifierErrors.count)
     .eql(0)
