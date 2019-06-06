@@ -10,7 +10,7 @@ import ForgotPasswordPage from '../components/pages/ForgotPasswordPage'
 import ProfilePage from '../components/pages/profile'
 import TypeFormPage from '../components/pages/typeform/TypeFormContainer'
 import SearchContainer from '../components/pages/search/SearchContainer'
-import { Signin } from '../components/pages/signin'
+import SigninContainer from '../components/pages/signin/SigninContainer'
 import SignupPage from '../components/pages/SignupPage'
 
 import { SUPPORT_EMAIL, SUPPORT_EMAIL_SUBJECT } from './config'
@@ -31,7 +31,7 @@ const routes = [
     title: 'Activation',
   },
   {
-    component: Signin,
+    component: SigninContainer,
     path: '/connexion',
     title: 'Connexion',
   },

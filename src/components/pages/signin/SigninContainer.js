@@ -1,12 +1,12 @@
-import { compose } from 'redux'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
 
-import SigninContent from './SigninContent'
+import Signin from './Signin'
 import { withRedirectToDiscoveryOrTypeformAfterLogin } from '../../hocs'
 
-export const Signin = compose(
+const SigninContainer = compose(
   withRedirectToDiscoveryOrTypeformAfterLogin,
   connect()
-)(SigninContent)
+)(Signin)
 
-export default Signin
+export default SigninContainer
