@@ -1,8 +1,7 @@
-// jest --env=jsdom ./src/components/pages/signin/tests/SigninContent --watch
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
-import Signin from '../SigninContent'
+import Signin from '../Signin'
 
 const dispatchMock = jest.fn()
 

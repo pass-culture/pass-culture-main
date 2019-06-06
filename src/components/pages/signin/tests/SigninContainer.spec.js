@@ -1,7 +1,7 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
-import Index from '../index'
+import SigninContainer from '../SigninContainer'
 
 describe('src | components | pages | signin | Index', () => {
   describe('snapshot', () => {
@@ -10,7 +10,7 @@ describe('src | components | pages | signin | Index', () => {
       const props = {}
 
       // when
-      const wrapper = shallow(<Index {...props} />)
+      const wrapper = shallow(<SigninContainer {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
