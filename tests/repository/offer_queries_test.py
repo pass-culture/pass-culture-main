@@ -389,7 +389,6 @@ def test_get_active_offers_when_departement_code_00(app):
     offers = get_active_offers(user=user, departement_codes=['00'], offer_id=None)
 
     # Then
-    print(offers)
     assert offer_34 in offers
     assert offer_93 in offers
     assert offer_75 in offers
@@ -697,7 +696,6 @@ def test_get_active_offers_should_return_offers_that_occur_in_less_than_10_days_
                                offer_id=None)
 
     # Then
-    print([o.name for o in offers])
     assert len(offers) == 3
     assert (offers[0].name == 'event_occurs_soon'
             and offers[1].name == 'thing') \
