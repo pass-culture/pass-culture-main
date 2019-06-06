@@ -27,7 +27,12 @@ test("Lorsque l'un des deux champs est manquant, le bouton connexion est désact
   const { email } = user
 
   // when
-  await t.typeText(userIdentifier, email)
+  await t.typeText(
+    userIdentifier,
+    email,
+    // https://github.com/DevExpress/testcafe/issues/3865
+    { paste: true }
+  )
 
   // then
   await t.expect(signInButton.hasAttribute('disabled')).ok()
@@ -37,18 +42,20 @@ test("J'ai un compte valide, je suis redirigé·e vers la page /decouverte sans 
   // given
   const { user } = t.ctx.sandbox
   const { email, password } = user
-  await t.typeText(userIdentifier, email).typeText(userPassword, password)
+  await t
+    .typeText(
+      userIdentifier,
+      email,
+      // https://github.com/DevExpress/testcafe/issues/3865
+      { paste: true }
+    )
+    .typeText(userPassword, password)
 
   // when
   await t.click(signInButton).wait(1000)
 
   // then
-  const location = await t.eval(() => window.location)
-
-  await t
-    .expect(identifierErrors.count)
-    .eql(0)
-    .expect(location.pathname)
+  await t.expect(identifierErrors.count).eql(0)
   await t.expect(getPageUrl()).contains('/decouverte')
 })
 
@@ -57,7 +64,12 @@ test("J'ai un identifiant invalide, je vois un message d'erreur et je reste sur 
   const { user } = t.ctx.sandbox
   const { password } = user
   await t
-    .typeText(userIdentifier, 'wrongEmail@test.com')
+    .typeText(
+      userIdentifier,
+      'wrongEmail@test.com',
+      // https://github.com/DevExpress/testcafe/issues/3865
+      { paste: true }
+    )
     .typeText(userPassword, password)
 
   // when
@@ -84,7 +96,12 @@ test("J'ai un mot de passe vide, avant envoi à l'API, je vois un message d'erre
     .typeText(userPassword, password)
     .selectText(userPassword)
     .pressKey('delete')
-    .typeText(userIdentifier, email)
+    .typeText(
+      userIdentifier,
+      email,
+      // https://github.com/DevExpress/testcafe/issues/3865
+      { paste: true }
+    )
     .wait(1000)
 
   // then
@@ -105,7 +122,12 @@ test("J'ai un mot de passe invalide, je vois un message d'erreur et je reste sur
 
   // when
   await t
-    .typeText(userIdentifier, email)
+    .typeText(
+      userIdentifier,
+      email,
+      // https://github.com/DevExpress/testcafe/issues/3865
+      { paste: true }
+    )
     .typeText(userPassword, 'Pa$$word4242')
     .click(signInButton)
     .wait(1000)
