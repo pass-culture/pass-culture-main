@@ -21,7 +21,6 @@ def upgrade():
         """
           CREATE INDEX "ix_user_lower_email" ON "user" USING btree (lower("email"));
         """)
-    pass
 
 
 def downgrade():
@@ -29,4 +28,3 @@ def downgrade():
         """
           DROP INDEX "ix_user_lower_email";
         """)
-    pass
