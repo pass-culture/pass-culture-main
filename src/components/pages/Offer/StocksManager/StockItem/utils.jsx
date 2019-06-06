@@ -57,6 +57,8 @@ export function errorKeyToFrenchKey(errorKey) {
       return 'Date de fin'
     case 'price':
       return 'Prix'
+    case 'global':
+      return 'Erreur'
     default:
       return errorKey
   }

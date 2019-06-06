@@ -44,9 +44,7 @@ class EditAndDeleteControl extends Component {
   }
 
   onConfirmDeleteClick = () => {
-    const { dispatch, formInitialValues, handleSetErrors } = this.props
-
-    handleSetErrors()
+    const { dispatch, formInitialValues } = this.props
 
     const formSubmitPromise = new Promise(resolve => {
       dispatch(

@@ -48,7 +48,7 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('handleRequestFail()', () => {
+  describe('onConfirmDeleteClick()', () => {
     it('should dispatch the request data', () => {
       // given
       const expectedAction = {
@@ -67,6 +67,7 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
       expect(requestDataArguments.apiPath).toBe(
         `stocks/${props.formInitialValues.id}`
       )
+      expect(requestDataArguments.method).toBe('DELETE')
       expect(props.dispatch).toHaveBeenCalledWith(expectedAction)
     })
   })
