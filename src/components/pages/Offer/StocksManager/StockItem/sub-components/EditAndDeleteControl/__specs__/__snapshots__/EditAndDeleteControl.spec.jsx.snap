@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offer | StockItem | EditAndDeleteControl snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Offer | StockManager | StockItem | sub-components | EditAndDeleteControl should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Provider
@@ -17,6 +17,19 @@ ShallowWrapper {
   >
     <withRouter(_withQueryRouter)
       dispatch={[MockFunction]}
+      formInitialValues={
+        Object {
+          "id": "EA",
+        }
+      }
+      handleSetErrors={[MockFunction]}
+      isEvent={true}
+      query={Object {}}
+      stock={
+        Object {
+          "id": "EA",
+        }
+      }
     />
   </Provider>,
   Symbol(enzyme.__renderer__): Object {
@@ -34,6 +47,15 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "dispatch": [MockFunction],
+      "formInitialValues": Object {
+        "id": "EA",
+      },
+      "handleSetErrors": [MockFunction],
+      "isEvent": true,
+      "query": Object {},
+      "stock": Object {
+        "id": "EA",
+      },
     },
     "ref": null,
     "rendered": null,
@@ -46,6 +68,15 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "dispatch": [MockFunction],
+        "formInitialValues": Object {
+          "id": "EA",
+        },
+        "handleSetErrors": [MockFunction],
+        "isEvent": true,
+        "query": Object {},
+        "stock": Object {
+          "id": "EA",
+        },
       },
       "ref": null,
       "rendered": null,

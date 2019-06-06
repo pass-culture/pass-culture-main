@@ -6,6 +6,7 @@ import { requestData } from 'redux-saga-data'
 import DeleteDialog from '../DeleteDialog/DeleteDialog'
 import { withFrenchQueryRouter } from 'components/hocs'
 import Icon from 'components/layout/Icon'
+import { errorKeyToFrenchKey } from '../../utils'
 
 class EditAndDeleteControl extends Component {
   constructor(props) {
@@ -23,15 +24,40 @@ class EditAndDeleteControl extends Component {
     this.setState({ isDeleting: false })
   }
 
-  onConfirmDeleteClick = () => {
-    const { dispatch, formInitialValues } = this.props
+  handleRequestFail = formResolver => (state, action) => {
+    const { handleSetErrors } = this.props
+    const {
+      payload: { errors },
+    } = action
+    const nextState = { isRequestPending: false }
+    const frenchErrors = Object.keys(errors)
+      .filter(errorKeyToFrenchKey)
+      .reduce(
+        (result, errorKey) =>
+          Object.assign(
+            { [errorKeyToFrenchKey(errorKey)]: errors[errorKey] },
+            result
+          ),
+        null
+      )
+    this.setState(nextState, () => handleSetErrors(frenchErrors))
+  }
 
-    dispatch(
-      requestData({
-        apiPath: `stocks/${formInitialValues.id}`,
-        method: 'DELETE',
-      })
-    )
+  onConfirmDeleteClick = () => {
+    const { dispatch, formInitialValues, handleSetErrors } = this.props
+
+    handleSetErrors()
+
+    const formSubmitPromise = new Promise(resolve => {
+      dispatch(
+        requestData({
+          apiPath: `stocks/${formInitialValues.id}`,
+          handleFail: this.handleRequestFail(resolve),
+          method: 'DELETE',
+        })
+      )
+    })
+    return formSubmitPromise
   }
 
   render() {
@@ -95,6 +121,7 @@ EditAndDeleteControl.propTypes = {
   query: PropTypes.object.isRequired,
   stock: PropTypes.object.isRequired,
   formInitialValues: PropTypes.object.isRequired,
+  handleSetErrors: PropTypes.func.isRequired,
 }
 
 export default withFrenchQueryRouter(EditAndDeleteControl)

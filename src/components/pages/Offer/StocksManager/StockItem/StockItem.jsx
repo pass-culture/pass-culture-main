@@ -104,6 +104,7 @@ export class StockItem extends Component {
       stocks,
       timezone,
       venue,
+      handleSetErrors,
     } = this.props
     const { isRequestPending, tbodyElement } = this.state
     const { id: stockId } = stockPatch
@@ -187,6 +188,7 @@ export class StockItem extends Component {
                     offer={offer}
                     stock={stock}
                     tbody={tbodyElement}
+                    handleSetErrors={handleSetErrors}
                   />
                 ) : (
                   <SubmitAndCancelControlContainer

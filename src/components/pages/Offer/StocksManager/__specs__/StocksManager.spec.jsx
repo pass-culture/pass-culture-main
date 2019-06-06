@@ -20,7 +20,7 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
     offerId: 'AUSQ',
     price: 17,
   }
-  
+
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
@@ -42,6 +42,27 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
       // then
       expect(wrapper).toBeDefined()
       expect(wrapper).toMatchSnapshot()
+    })
+  })
+
+  describe('render()', () => {
+    it('should return a error message', () => {
+      // given
+      const props = {
+        query: { context: () => ({}) },
+      }
+      const wrapper = shallow(<StocksManager {...props} />)
+      wrapper.setState({
+        errors: {
+          global: ["Mon message d'erreur custom"],
+        },
+      })
+
+      // when
+      const errorMessage = wrapper.find('.is-danger').text()
+
+      // then
+      expect(errorMessage).toBe(" global : Mon message d'erreur custom")
     })
   })
 })
