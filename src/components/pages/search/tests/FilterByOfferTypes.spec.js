@@ -109,10 +109,12 @@ describe('src | components | pages | search | FilterByOfferTypes', () => {
       }, [])
 
       // when
-      const firstLabel = expectedLabels[0].find('i').is('.anticon-check-circle')
+      const firstLabel = expectedLabels[0]
+        .find('i')
+        .is('.icon-legacy-check-circled')
       const secondLabel = expectedLabels[1]
         .find('i')
-        .is('.anticon-check-circle')
+        .is('.icon-legacy-check-circled')
 
       // then
       expect(firstLabel).toBe(true)
