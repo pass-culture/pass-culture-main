@@ -1,10 +1,18 @@
 import { compose } from 'redux'
 import { connect } from 'react-redux'
-
 import { requestData } from 'redux-saga-data'
 
 import TypeForm from './TypeForm'
-import { withRedirectToSigninOrTypeformAfterLogin } from '../../hocs'
+import {
+  selectCurrentUser,
+  withRedirectToSigninOrTypeformAfterLogin,
+} from '../../hocs'
+
+const mapStateToProps = state => {
+  const currentUser = selectCurrentUser(state) || false
+  const { hasFilledCulturalSurvey } = currentUser || {}
+  return { hasFilledCulturalSurvey }
+}
 
 const mapDispatchToProps = dispatch => ({
   flagUserHasFilledTypeform: () => {
@@ -21,7 +29,7 @@ const mapDispatchToProps = dispatch => ({
 export default compose(
   withRedirectToSigninOrTypeformAfterLogin,
   connect(
-    null,
+    mapStateToProps,
     mapDispatchToProps
   )
 )(TypeForm)

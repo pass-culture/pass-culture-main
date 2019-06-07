@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
+import { Redirect } from 'react-router-dom'
 import * as typeformEmbed from '@typeform/embed'
 
 import { TYPEFORM_URL_CULTURAL_PRACTICES_POLL } from '../../../utils/config'
@@ -19,6 +20,8 @@ class TypeForm extends PureComponent {
   }
 
   componentDidMount() {
+    const { hasFilledCulturalSurvey } = this.props
+    if (hasFilledCulturalSurvey) return
     const opts = {
       ...TYPEFORM_OPTIONS,
       onSubmit: this.onSubmitTypeForm,
@@ -34,6 +37,8 @@ class TypeForm extends PureComponent {
   }
 
   render() {
+    const { hasFilledCulturalSurvey } = this.props
+    if (hasFilledCulturalSurvey) return <Redirect to="/decouverte" />
     return (
       <div
         className="is-overlay react-embed-typeform-container"
@@ -45,8 +50,13 @@ class TypeForm extends PureComponent {
   }
 }
 
+TypeForm.defaultProps = {
+  hasFilledCulturalSurvey: false,
+}
+
 TypeForm.propTypes = {
   flagUserHasFilledTypeform: PropTypes.func.isRequired,
+  hasFilledCulturalSurvey: PropTypes.bool,
 }
 
 export default TypeForm
