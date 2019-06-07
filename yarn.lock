@@ -7747,10 +7747,10 @@ pascalcase@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/pascalcase/-/pascalcase-0.1.1.tgz#b363e55e8006ca6fe21784d2db22bd15d7917f14"
 
-pass-culture-shared@0.1.0-alpha24:
-  version "0.1.0-alpha24"
-  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.1.0-alpha24.tgz#be53ba6dc7415d4293cad31b50ec64f148681f97"
-  integrity sha512-ofeWX+3+RcZfWQkz63vpeblcZGpfkILRqYyKHVYDw/Alc5r6gZhXFzD3/p74hhjLgUoXSx3sQ7iINNIbsWRUAg==
+pass-culture-shared@0.1.0-alpha25:
+  version "0.1.0-alpha25"
+  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.1.0-alpha25.tgz#60429226c12f6b91a35f574496efc1bcb9678597"
+  integrity sha512-QnPCqmE7ocqfnS3xbxfEfTdJ+r37QYIcVwCGUzJ7QZZCX/vgcHGyY6qTQEA6GVZT3F7lelrPP/FFhP7/RxPdJg==
   dependencies:
     classnames "2.2.5"
     eslint "^5.8.0"
