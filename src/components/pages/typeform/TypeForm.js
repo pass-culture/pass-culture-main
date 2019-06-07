@@ -2,17 +2,13 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import * as typeformEmbed from '@typeform/embed'
 
-// TODO -> move to constants
-const TYPEFORM_URL = 'https://passculture.typeform.com/to/T8rurj'
+import { TYPEFORM_URL_CULTURAL_PRACTICES_POLL } from '../../../utils/config'
 
 // Default values taken from official Typeform docs
 // https://developer.typeform.com/embed/modes/
 const TYPEFORM_OPTIONS = {
-  autoClose: 5,
-  autoOpen: false,
   hideFooter: true,
   hideHeaders: true,
-  mode: 'popup',
   opacity: 100,
 }
 
@@ -27,8 +23,9 @@ class TypeForm extends PureComponent {
       ...TYPEFORM_OPTIONS,
       onSubmit: this.onSubmitTypeForm,
     }
+    const url = TYPEFORM_URL_CULTURAL_PRACTICES_POLL
     const container = this.typeformElementContainer
-    typeformEmbed.makeWidget(container, TYPEFORM_URL, opts)
+    typeformEmbed.makeWidget(container, url, opts)
   }
 
   onSubmitTypeForm = () => {
