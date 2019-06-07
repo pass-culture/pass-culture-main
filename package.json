@@ -1,6 +1,6 @@
 {
   "name": "pass-culture-browser",
-  "version": "33.0.0",
+  "version": "34.0.0",
   "private": true,
   "homepage": "/",
   "engines": {
@@ -79,9 +79,9 @@
     "testcafe": "^0.20.4",
     "typeface-barlow": "^0.0.54",
     "util.promisify": "^1.0.0",
+    "uuid": "^3.3.2",
     "with-login": "2.4.0",
-    "with-query-router": "^0.1.1",
-    "uuid": "^3.3.2"
+    "with-query-router": "^0.1.1"
   },
   "devDependencies": {
     "archiver": "^2.1.1",
