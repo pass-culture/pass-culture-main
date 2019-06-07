@@ -70,6 +70,7 @@ function getClientEnvironment(publicUrl) {
         // Helpful for quick testing the dexis sync
         // system in a worker or not
         HAS_WORKERS: process.env.HAS_WORKERS || false,
+        MATOMO_SERVER_URL: process.env.MATOMO_SERVER_URL,
         // Useful for determining whether we’re running in production mode.
         // Most importantly, it switches React into the correct mode.
         NODE_ENV: process.env.NODE_ENV || 'development',
@@ -78,7 +79,7 @@ function getClientEnvironment(publicUrl) {
         // This should only be used as an escape hatch. Normally you would put
         // images into the `src` and `import` them in code to get their paths.
         PUBLIC_URL: publicUrl,
-        MATOMO_SERVER_URL: process.env.MATOMO_SERVER_URL,
+        TYPEFORM_URL_CULTURAL_PRACTICES_POLL: process.env.TYPEFORM_URL_CULTURAL_PRACTICES_POLL,
       }
     );
   // Stringify all values so we can feed into Webpack DefinePlugin
