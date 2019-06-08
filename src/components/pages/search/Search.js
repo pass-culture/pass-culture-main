@@ -3,7 +3,6 @@ import { stringify } from 'query-string'
 import React, { Fragment, PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { assignData, requestData } from 'redux-saga-data'
-import get from 'lodash.get'
 
 import BackButton from '../../layout/BackButton'
 import { Icon } from '../../layout/Icon'
@@ -15,7 +14,7 @@ import SearchFilterContainer from './searchFilters/SearchFilterContainer'
 import { SearchResultsContainer } from './SearchResultsContainer'
 import { SearchDetailsContainer } from './SearchDetailsContainer'
 import isInitialQueryWithoutFilters, {
-  getDescriptionForSublabel,
+  getDescriptionFromCategory,
   INITIAL_FILTER_PARAMS,
   translateBrowserUrlToApiUrl,
 } from './utils'
@@ -74,12 +73,12 @@ export class Search extends PureComponent {
     const { categories } = query.parse()
     if (categories) return
 
-    const option = get(match, 'params.option')
+    const { option } = match.params
     const isResultatsView = location.pathname.includes('/resultats/')
     const shouldUpdateCategories = option && isResultatsView
     if (!shouldUpdateCategories) return
 
-    const description = getDescriptionForSublabel(
+    const description = getDescriptionFromCategory(
       decodeURIComponent(option),
       typeSublabelsAndDescription
     )
@@ -101,7 +100,7 @@ export class Search extends PureComponent {
       requestData({
         apiPath,
         handleSuccess: (state, action) => {
-          const data = get(action, 'payload.data')
+          const { data } = action.payload
           const hasMore = data.length > 0
           this.setState({ hasMore })
         },
@@ -228,7 +227,7 @@ export class Search extends PureComponent {
     let description
     const category = decodeURIComponent(queryParams.categories)
     if (location.pathname.includes('/resultats/')) {
-      description = getDescriptionForSublabel(
+      description = getDescriptionFromCategory(
         category,
         typeSublabelsAndDescription
       )

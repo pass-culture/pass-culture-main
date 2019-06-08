@@ -1,15 +1,12 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import get from 'lodash.get'
 
 import { selectCurrentSearchRecommendation } from '../../../selectors'
 import { SearchDetails } from './SearchDetails'
 
 function mapStateToProps(state, ownProps) {
-  const { match } = ownProps
-  const offerId = get(match, 'params.offerId')
-  const mediationId = get(match, 'params.mediationId')
+  const { mediationId, offerId } = ownProps.match.params
   const recommendation = selectCurrentSearchRecommendation(
     state,
     offerId,

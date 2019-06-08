@@ -101,7 +101,10 @@ export class SearchResults extends PureComponent {
             useWindow={false}
           >
             {items.map(item => (
-              <SearchResultItemContainer key={item.id} recommendation={item} />
+              <SearchResultItemContainer
+                key={queryParams.page + item.id}
+                recommendation={item}
+              />
             ))}
           </InfiniteScroll>
         )}

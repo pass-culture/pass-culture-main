@@ -1,5 +1,5 @@
 import isInitialQueryWithoutFilters, {
-  getDescriptionForSublabel,
+  getDescriptionFromCategory,
   getFirstChangingKey,
   getRecommendationDateString,
   INITIAL_FILTER_PARAMS,
@@ -25,6 +25,7 @@ describe('src | components | pages | search | utils', () => {
       // then
       expect(result).toEqual('permanent')
     })
+
     it('should render date is there is a date range for Europe/Paris Timezone', () => {
       // given
       const recommendation = recommendations[5]
@@ -33,8 +34,9 @@ describe('src | components | pages | search | utils', () => {
       const result = getRecommendationDateString(recommendation.offer)
 
       // then
-      expect(result).toEqual('du Jeudi 25/10/2018 au Vendredi 26/10/2018')
+      expect(result).toEqual('du Thu 2018-10-25 au Fri 2018-10-26')
     })
+
     it('should render date is there is a date range for Cayenne Timezone', () => {
       // given
       const recommendation = {
@@ -54,7 +56,7 @@ describe('src | components | pages | search | utils', () => {
       const result = getRecommendationDateString(recommendation.offer)
 
       // then
-      expect(result).toEqual('du Jeudi 25/10/2018 au Jeudi 25/10/2018')
+      expect(result).toEqual('du Thu 2018-10-25 au Thu 2018-10-26')
     })
   })
 
@@ -104,7 +106,7 @@ describe('src | components | pages | search | utils', () => {
     })
   })
 
-  describe('getDescriptionForSublabel', () => {
+  describe('getDescriptionFromCategory', () => {
     it('should return the description corresponding to the label', () => {
       const typeSublabels = [
         {
@@ -138,7 +140,7 @@ describe('src | components | pages | search | utils', () => {
         },
       ]
       const category = 'Applaudir'
-      const result = getDescriptionForSublabel(category, typeSublabels)
+      const result = getDescriptionFromCategory(category, typeSublabels)
 
       expect(result).toEqual(typeSublabels[0].description)
     })
@@ -186,6 +188,7 @@ describe('src | components | pages | search | utils', () => {
             expected = '"keyword" : 4 résultats'
             expect(result).toEqual(expected)
           })
+
           it('should return number of results with resultat in singular and keyword searched', () => {
             // given
             cameFromOfferTypesPage = false

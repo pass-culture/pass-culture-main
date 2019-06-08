@@ -1,12 +1,6 @@
 import find from 'lodash.find'
-import get from 'lodash.get'
 import _isEmpty from 'lodash.isempty'
-import moment from 'moment'
-import {
-  capitalize,
-  pluralize,
-  getObjectWithMappedKeys,
-} from 'pass-culture-shared'
+import { pluralize, getObjectWithMappedKeys } from 'pass-culture-shared'
 
 import { getTimezone } from '../../../utils/timezone'
 import { isEmpty } from '../../../utils/strings'
@@ -88,29 +82,37 @@ export const searchResultsTitle = (
   return resultTitle
 }
 
-const formatDate = (date, tz) =>
-  capitalize(
-    moment(date)
-      .tz(tz)
-      .format('dddd DD/MM/YYYY')
-  )
+const formatDate = (date, tz) => {
+  const options = {
+    timeZone: tz,
+    weekday: 'long',
+  }
+
+  return `${date.toLocaleDateString(
+    'fr-FR',
+    options
+  )} ${date.toLocaleDateString()}`
+}
 
 export const getRecommendationDateString = offer => {
   if (_isEmpty(offer.dateRange)) return 'permanent'
 
   const { departementCode } = offer.venue
   const tz = getTimezone(departementCode)
-
   const fromDate = new Date(offer.dateRange[0])
   const toDate = new Date(offer.dateRange[1])
   const fromFormated = formatDate(fromDate, tz)
   const toFormated = formatDate(toDate, tz)
   const formatedDate = `du ${fromFormated} au ${toFormated}`
+
   return formatedDate
 }
 
-export const getDescriptionForSublabel = (category, data) =>
-  get(find(data, ['sublabel', category]), 'description')
+export const getDescriptionFromCategory = (categoryName, categories) => {
+  const category = find(categories, ['sublabel', categoryName])
+
+  return category ? category.description : ''
+}
 
 const mapWindowToApi = {
   jours: 'days',

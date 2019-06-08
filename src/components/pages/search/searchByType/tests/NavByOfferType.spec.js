@@ -8,7 +8,7 @@ describe('src | components | search | NavByOfferType', () => {
     it('should match snapshot', () => {
       // given
       const props = {
-        resetSearchReducer: jest.fn(),
+        resetSearchStore: jest.fn(),
         title: 'fake Title',
         typeSublabels: [],
         updateSearchQuery: jest.fn(),
