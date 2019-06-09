@@ -39,7 +39,7 @@ export class FilterByOfferTypes extends PureComponent {
                   htmlFor={inputId}
                   key={category}
                 >
-                  <SearchPicture searchType={category} />
+                  <SearchPicture category={category} />
                   <input
                     checked={isChecked}
                     className="is-hidden"

@@ -1,8 +1,7 @@
 import { connect } from 'react-redux'
 
-import selectTypeSublabels from '../../../selectors/selectTypes'
-
 import { FilterByOfferTypes } from './FilterByOfferTypes'
+import selectTypeSublabels from '../../../selectors/selectTypes'
 
 const mapStateToProps = state => ({
   typeSublabels: selectTypeSublabels(state),

@@ -1,12 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | search | NavByOfferType snapshot should match snapshot 1`] = `
+exports[`src | components | search | searchByType | NavByOfferType should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <NavByOfferType
+    categories={
+      Array [
+        "Category 1",
+        "Category 2",
+        "Category 3",
+        "Category 4",
+      ]
+    }
     resetSearchStore={[MockFunction]}
-    title="fake Title"
-    typeSublabels={Array []}
+    title="Fake title"
     updateSearchQuery={[MockFunction]}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -27,11 +34,48 @@ ShallowWrapper {
         <h2
           className="is-italic fs15"
         >
-          fake Title
+          Fake title
         </h2>,
         <div
           className="pc-list flex-columns wrap-2"
-        />,
+        >
+          <button
+            className="item no-border no-background no-outline mt12 col-1of2"
+            onClick={[Function]}
+            type="button"
+          >
+            <SearchPicture
+              category="Category 1"
+            />
+          </button>
+          <button
+            className="item no-border no-background no-outline mt12 col-1of2"
+            onClick={[Function]}
+            type="button"
+          >
+            <SearchPicture
+              category="Category 2"
+            />
+          </button>
+          <button
+            className="item no-border no-background no-outline mt12 col-1of2"
+            onClick={[Function]}
+            type="button"
+          >
+            <SearchPicture
+              category="Category 3"
+            />
+          </button>
+          <button
+            className="item no-border no-background no-outline mt12 col-1of2"
+            onClick={[Function]}
+            type="button"
+          >
+            <SearchPicture
+              category="Category 4"
+            />
+          </button>
+        </div>,
       ],
       "id": "nav-by-offer-type",
     },
@@ -42,11 +86,11 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "fake Title",
+          "children": "Fake title",
           "className": "is-italic fs15",
         },
         "ref": null,
-        "rendered": "fake Title",
+        "rendered": "Fake title",
         "type": "h2",
       },
       Object {
@@ -54,11 +98,153 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": Array [],
+          "children": Array [
+            <button
+              className="item no-border no-background no-outline mt12 col-1of2"
+              onClick={[Function]}
+              type="button"
+            >
+              <SearchPicture
+                category="Category 1"
+              />
+            </button>,
+            <button
+              className="item no-border no-background no-outline mt12 col-1of2"
+              onClick={[Function]}
+              type="button"
+            >
+              <SearchPicture
+                category="Category 2"
+              />
+            </button>,
+            <button
+              className="item no-border no-background no-outline mt12 col-1of2"
+              onClick={[Function]}
+              type="button"
+            >
+              <SearchPicture
+                category="Category 3"
+              />
+            </button>,
+            <button
+              className="item no-border no-background no-outline mt12 col-1of2"
+              onClick={[Function]}
+              type="button"
+            >
+              <SearchPicture
+                category="Category 4"
+              />
+            </button>,
+          ],
           "className": "pc-list flex-columns wrap-2",
         },
         "ref": null,
-        "rendered": Array [],
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": "Category 1",
+            "nodeType": "host",
+            "props": Object {
+              "children": <SearchPicture
+                category="Category 1"
+              />,
+              "className": "item no-border no-background no-outline mt12 col-1of2",
+              "onClick": [Function],
+              "type": "button",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "category": "Category 1",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "type": "button",
+          },
+          Object {
+            "instance": null,
+            "key": "Category 2",
+            "nodeType": "host",
+            "props": Object {
+              "children": <SearchPicture
+                category="Category 2"
+              />,
+              "className": "item no-border no-background no-outline mt12 col-1of2",
+              "onClick": [Function],
+              "type": "button",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "category": "Category 2",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "type": "button",
+          },
+          Object {
+            "instance": null,
+            "key": "Category 3",
+            "nodeType": "host",
+            "props": Object {
+              "children": <SearchPicture
+                category="Category 3"
+              />,
+              "className": "item no-border no-background no-outline mt12 col-1of2",
+              "onClick": [Function],
+              "type": "button",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "category": "Category 3",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "type": "button",
+          },
+          Object {
+            "instance": null,
+            "key": "Category 4",
+            "nodeType": "host",
+            "props": Object {
+              "children": <SearchPicture
+                category="Category 4"
+              />,
+              "className": "item no-border no-background no-outline mt12 col-1of2",
+              "onClick": [Function],
+              "type": "button",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "category": "Category 4",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "type": "button",
+          },
+        ],
         "type": "div",
       },
     ],
@@ -74,11 +260,48 @@ ShallowWrapper {
           <h2
             className="is-italic fs15"
           >
-            fake Title
+            Fake title
           </h2>,
           <div
             className="pc-list flex-columns wrap-2"
-          />,
+          >
+            <button
+              className="item no-border no-background no-outline mt12 col-1of2"
+              onClick={[Function]}
+              type="button"
+            >
+              <SearchPicture
+                category="Category 1"
+              />
+            </button>
+            <button
+              className="item no-border no-background no-outline mt12 col-1of2"
+              onClick={[Function]}
+              type="button"
+            >
+              <SearchPicture
+                category="Category 2"
+              />
+            </button>
+            <button
+              className="item no-border no-background no-outline mt12 col-1of2"
+              onClick={[Function]}
+              type="button"
+            >
+              <SearchPicture
+                category="Category 3"
+              />
+            </button>
+            <button
+              className="item no-border no-background no-outline mt12 col-1of2"
+              onClick={[Function]}
+              type="button"
+            >
+              <SearchPicture
+                category="Category 4"
+              />
+            </button>
+          </div>,
         ],
         "id": "nav-by-offer-type",
       },
@@ -89,11 +312,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "fake Title",
+            "children": "Fake title",
             "className": "is-italic fs15",
           },
           "ref": null,
-          "rendered": "fake Title",
+          "rendered": "Fake title",
           "type": "h2",
         },
         Object {
@@ -101,11 +324,153 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": Array [],
+            "children": Array [
+              <button
+                className="item no-border no-background no-outline mt12 col-1of2"
+                onClick={[Function]}
+                type="button"
+              >
+                <SearchPicture
+                  category="Category 1"
+                />
+              </button>,
+              <button
+                className="item no-border no-background no-outline mt12 col-1of2"
+                onClick={[Function]}
+                type="button"
+              >
+                <SearchPicture
+                  category="Category 2"
+                />
+              </button>,
+              <button
+                className="item no-border no-background no-outline mt12 col-1of2"
+                onClick={[Function]}
+                type="button"
+              >
+                <SearchPicture
+                  category="Category 3"
+                />
+              </button>,
+              <button
+                className="item no-border no-background no-outline mt12 col-1of2"
+                onClick={[Function]}
+                type="button"
+              >
+                <SearchPicture
+                  category="Category 4"
+                />
+              </button>,
+            ],
             "className": "pc-list flex-columns wrap-2",
           },
           "ref": null,
-          "rendered": Array [],
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": "Category 1",
+              "nodeType": "host",
+              "props": Object {
+                "children": <SearchPicture
+                  category="Category 1"
+                />,
+                "className": "item no-border no-background no-outline mt12 col-1of2",
+                "onClick": [Function],
+                "type": "button",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "category": "Category 1",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              "type": "button",
+            },
+            Object {
+              "instance": null,
+              "key": "Category 2",
+              "nodeType": "host",
+              "props": Object {
+                "children": <SearchPicture
+                  category="Category 2"
+                />,
+                "className": "item no-border no-background no-outline mt12 col-1of2",
+                "onClick": [Function],
+                "type": "button",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "category": "Category 2",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              "type": "button",
+            },
+            Object {
+              "instance": null,
+              "key": "Category 3",
+              "nodeType": "host",
+              "props": Object {
+                "children": <SearchPicture
+                  category="Category 3"
+                />,
+                "className": "item no-border no-background no-outline mt12 col-1of2",
+                "onClick": [Function],
+                "type": "button",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "category": "Category 3",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              "type": "button",
+            },
+            Object {
+              "instance": null,
+              "key": "Category 4",
+              "nodeType": "host",
+              "props": Object {
+                "children": <SearchPicture
+                  category="Category 4"
+                />,
+                "className": "item no-border no-background no-outline mt12 col-1of2",
+                "onClick": [Function],
+                "type": "button",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "category": "Category 4",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              "type": "button",
+            },
+          ],
           "type": "div",
         },
       ],

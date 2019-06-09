@@ -95,6 +95,6 @@ SearchDetails.defaultProps = {
 
 SearchDetails.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  match: PropTypes.object.isRequired,
+  match: PropTypes.shape().isRequired,
   recommendation: PropTypes.object,
 }

@@ -30,7 +30,7 @@ const mapStateToProps = state => {
   }
 }
 
-export default compose(
+export const SearchContainer = compose(
   withRedirectToSigninOrTypeformAfterLogin,
   withQueryRouter,
   connect(mapStateToProps)

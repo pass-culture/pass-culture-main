@@ -6,16 +6,17 @@ import { assignData, requestData } from 'redux-saga-data'
 
 import BackButton from '../../layout/BackButton'
 import { Icon } from '../../layout/Icon'
-import Footer from './Footer'
-import Header from './Header'
-import NavByOfferTypeContainer from './searchByType/NavByOfferTypeContainer'
-import NavResultsHeader from './NavResultsHeader'
-import SearchFilterContainer from './searchFilters/SearchFilterContainer'
+import { Footer } from './Footer'
+import { Header } from './Header'
+import { NavByOfferTypeContainer } from './searchByType/NavByOfferTypeContainer'
+import { NavResultsHeader } from './NavResultsHeader'
+import { SearchFilterContainer } from './searchFilters/SearchFilterContainer'
 import { SearchResultsContainer } from './SearchResultsContainer'
 import { SearchDetailsContainer } from './SearchDetailsContainer'
-import isInitialQueryWithoutFilters, {
+import {
   getDescriptionFromCategory,
   INITIAL_FILTER_PARAMS,
+  isInitialQueryWithoutFilters,
   translateBrowserUrlToApiUrl,
 } from './utils'
 
@@ -342,7 +343,7 @@ export class Search extends PureComponent {
                       render={() => (
                         <NavByOfferTypeContainer
                           title="EXPLORER LES CATÉGORIES"
-                          typeSublabels={typeSublabels}
+                          categories={typeSublabels}
                         />
                       )}
                     />
@@ -392,10 +393,10 @@ export class Search extends PureComponent {
 
 Search.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
-  location: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired,
-  query: PropTypes.object.isRequired,
+  history: PropTypes.shape().isRequired,
+  location: PropTypes.shape().isRequired,
+  match: PropTypes.shape().isRequired,
+  query: PropTypes.shape().isRequired,
   recommendations: PropTypes.array.isRequired,
   typeSublabels: PropTypes.array.isRequired,
   typeSublabelsAndDescription: PropTypes.array.isRequired,

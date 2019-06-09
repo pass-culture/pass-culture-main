@@ -124,5 +124,5 @@ SearchResults.propTypes = {
   hasMore: PropTypes.bool,
   items: PropTypes.array,
   keywords: PropTypes.string,
-  query: PropTypes.object.isRequired,
+  query: PropTypes.shape().isRequired,
 }

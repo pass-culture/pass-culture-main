@@ -3,23 +3,23 @@ import { compose } from 'redux'
 import { assignData } from 'redux-saga-data'
 import withQueryRouter from 'with-query-router'
 
-import NavByOfferType from './NavByOfferType'
+import { NavByOfferType } from './NavByOfferType'
 
 export const mapDispatchToProps = (dispatch, ownProps) => ({
   resetSearchStore: () => {
     dispatch(assignData({ searchRecommendations: [] }))
   },
 
-  updateSearchQuery: typeSublabel => {
+  updateSearchQuery: categories => {
     const { query } = ownProps
     query.change(
-      { categories: typeSublabel, page: null },
-      { pathname: `/recherche/resultats/${typeSublabel}` }
+      { categories, page: null },
+      { pathname: `/recherche/resultats/${categories}` }
     )
   },
 })
 
-export default compose(
+export const NavByOfferTypeContainer = compose(
   withQueryRouter,
   connect(
     null,

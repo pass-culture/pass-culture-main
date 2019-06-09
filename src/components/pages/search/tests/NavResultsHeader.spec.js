@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import { ROOT_PATH } from '../../../../utils/config'
-import NavResultsHeader from '../NavResultsHeader'
+import { NavResultsHeader } from '../NavResultsHeader'
 
 describe('src | components | pages | search | NavResultsHeader', () => {
   let props

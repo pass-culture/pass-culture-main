@@ -1,5 +1,3 @@
-import find from 'lodash.find'
-import _isEmpty from 'lodash.isempty'
 import { pluralize, getObjectWithMappedKeys } from 'pass-culture-shared'
 
 import { getTimezone } from '../../../utils/timezone'
@@ -31,7 +29,7 @@ export const DAYS_CHECKBOXES = [
   },
 ]
 
-const isInitialQueryWithoutFilters = (initialParams, filterParams) =>
+export const isInitialQueryWithoutFilters = (initialParams, filterParams) =>
   Object.keys(initialParams).every(
     key =>
       typeof filterParams[key] === 'undefined' ||
@@ -95,7 +93,7 @@ const formatDate = (date, tz) => {
 }
 
 export const getRecommendationDateString = offer => {
-  if (_isEmpty(offer.dateRange)) return 'permanent'
+  if (offer.dateRange.length === 0) return 'permanent'
 
   const { departementCode } = offer.venue
   const tz = getTimezone(departementCode)
@@ -109,9 +107,9 @@ export const getRecommendationDateString = offer => {
 }
 
 export const getDescriptionFromCategory = (categoryName, categories) => {
-  const category = find(categories, ['sublabel', categoryName])
+  const goodCategory = categories.find(category => category.sublabel === categoryName)
 
-  return category ? category.description : ''
+  return goodCategory ? goodCategory.description : ''
 }
 
 const mapWindowToApi = {
@@ -131,5 +129,3 @@ export const isDaysChecked = (
 
   return pickedDaysInQuery.includes(inputValue)
 }
-
-export default isInitialQueryWithoutFilters

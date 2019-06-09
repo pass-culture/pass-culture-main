@@ -163,10 +163,10 @@ describe('src | components | pages | search | SearchResults', () => {
           )
 
           // then
-          expect(resultsTitle.children).toEqual(
+          expect(resultsTitle.children).toBe(
             "Il n'y a pas d'offres dans cette catégorie pour le moment."
           )
-          expect(SearchResultItemWrapper.length).toEqual(0)
+          expect(SearchResultItemWrapper.length).toBe(0)
         })
       })
     })
@@ -190,7 +190,7 @@ describe('src | components | pages | search | SearchResults', () => {
           }
 
           // then
-          expect(resultsTitle.children).toEqual('"fakeKeywords" : 1 résultat')
+          expect(resultsTitle.children).toBe('"fakeKeywords" : 1 résultat')
           expect(SearchResultItemWrapper.props()).toEqual(item)
         })
       })
@@ -209,8 +209,8 @@ describe('src | components | pages | search | SearchResults', () => {
           )
 
           // then
-          expect(resultsTitle.children).toEqual('"fakeKeywords" : 0 résultat')
-          expect(SearchResultItemWrapper.length).toEqual(0)
+          expect(resultsTitle.children).toBe('"fakeKeywords" : 0 résultat')
+          expect(SearchResultItemWrapper.length).toBe(0)
         })
       })
     })

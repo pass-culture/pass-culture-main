@@ -1,43 +1,53 @@
-import isInitialQueryWithoutFilters, {
+import {
   getDescriptionFromCategory,
   getFirstChangingKey,
   getRecommendationDateString,
   INITIAL_FILTER_PARAMS,
+  isInitialQueryWithoutFilters,
   searchResultsTitle,
   translateBrowserUrlToApiUrl,
   isDaysChecked,
 } from '../utils'
 
-import state from '../../../../mocks/global_state_2_Testing_10_10_18'
-import { selectRecommendations } from '../../../../selectors'
-
-const recommendations = selectRecommendations(state)
-
 describe('src | components | pages | search | utils', () => {
   describe('getRecommendationDateString', () => {
-    it('should render permanent is there is no date given', () => {
+    it('should render permanent if there is no date given', () => {
       // given
-      const recommendation = recommendations[0]
+      const recommendation = {
+        offer: {
+          dateRange: [],
+        },
+      }
 
       // when
       const result = getRecommendationDateString(recommendation.offer)
 
       // then
-      expect(result).toEqual('permanent')
+      expect(result).toBe('permanent')
     })
 
-    it('should render date is there is a date range for Europe/Paris Timezone', () => {
+    it('should render date if there is a date range for Europe/Paris Timezone', () => {
       // given
-      const recommendation = recommendations[5]
+      const recommendation = {
+        offer: {
+          dateRange: [
+            'Thu, 25 Oct 2018 18:15:24 GMT',
+            'Fri, 26 Oct 2018 19:45:24 GMT'
+          ],
+          venue: {
+            departementCode: '93',
+          },
+        },
+      }
 
       // when
       const result = getRecommendationDateString(recommendation.offer)
 
       // then
-      expect(result).toEqual('du Thu 2018-10-25 au Fri 2018-10-26')
+      expect(result).toBe('du Thu 2018-10-25 au Fri 2018-10-26')
     })
 
-    it('should render date is there is a date range for Cayenne Timezone', () => {
+    it('should render date if there is a date range for Cayenne Timezone', () => {
       // given
       const recommendation = {
         offer: {
@@ -56,7 +66,7 @@ describe('src | components | pages | search | utils', () => {
       const result = getRecommendationDateString(recommendation.offer)
 
       // then
-      expect(result).toEqual('du Thu 2018-10-25 au Thu 2018-10-26')
+      expect(result).toBe('du Thu 2018-10-25 au Thu 2018-10-26')
     })
   })
 
@@ -76,7 +86,7 @@ describe('src | components | pages | search | utils', () => {
       }
       expect(
         isInitialQueryWithoutFilters(INITIAL_FILTER_PARAMS, queryParams)
-      ).toEqual(false)
+      ).toBe(false)
     })
 
     it('should return true if there is no params changed with filter', () => {
@@ -93,14 +103,14 @@ describe('src | components | pages | search | utils', () => {
       }
       expect(
         isInitialQueryWithoutFilters(INITIAL_FILTER_PARAMS, queryParams)
-      ).toEqual(true)
+      ).toBe(true)
     })
   })
 
   describe('getFirstChangingKey', () => {
     it('should return the name of the key wich value has changed', () => {
       const nextObject = { jours: '0-1,1-5' }
-      expect(getFirstChangingKey(INITIAL_FILTER_PARAMS, nextObject)).toEqual(
+      expect(getFirstChangingKey(INITIAL_FILTER_PARAMS, nextObject)).toBe(
         'jours'
       )
     })
@@ -142,7 +152,7 @@ describe('src | components | pages | search | utils', () => {
       const category = 'Applaudir'
       const result = getDescriptionFromCategory(category, typeSublabels)
 
-      expect(result).toEqual(typeSublabels[0].description)
+      expect(result).toBe(typeSublabels[0].description)
     })
   })
 
@@ -186,7 +196,7 @@ describe('src | components | pages | search | utils', () => {
 
             // then
             expected = '"keyword" : 4 résultats'
-            expect(result).toEqual(expected)
+            expect(result).toBe(expected)
           })
 
           it('should return number of results with resultat in singular and keyword searched', () => {
@@ -219,7 +229,7 @@ describe('src | components | pages | search | utils', () => {
 
             // then
             expected = '"keyword" : 1 résultat'
-            expect(result).toEqual(expected)
+            expect(result).toBe(expected)
           })
         })
 
@@ -253,7 +263,7 @@ describe('src | components | pages | search | utils', () => {
 
             // then
             expected = '"keyword" : 0 résultat'
-            expect(result).toEqual(expected)
+            expect(result).toBe(expected)
           })
         })
       })
@@ -288,7 +298,7 @@ describe('src | components | pages | search | utils', () => {
 
             // then
             expected = '"keyword" : 4 résultats'
-            expect(result).toEqual(expected)
+            expect(result).toBe(expected)
           })
         })
 
@@ -320,7 +330,7 @@ describe('src | components | pages | search | utils', () => {
 
             // then
             expected = '"keyword" : 0 résultat'
-            expect(result).toEqual(expected)
+            expect(result).toBe(expected)
           })
         })
       })
@@ -357,7 +367,7 @@ describe('src | components | pages | search | utils', () => {
 
           // then
           expected = ''
-          expect(result).toEqual(expected)
+          expect(result).toBe(expected)
         })
       })
 
@@ -380,7 +390,7 @@ describe('src | components | pages | search | utils', () => {
           // then
           expected =
             "Il n'y a pas d'offres dans cette catégorie pour le moment."
-          expect(result).toEqual(expected)
+          expect(result).toBe(expected)
         })
       })
     })
@@ -416,7 +426,7 @@ describe('src | components | pages | search | utils', () => {
         const result = isDaysChecked(pickedDate)
 
         // then
-        expect(result).toEqual(false)
+        expect(result).toBe(false)
       })
     })
 
@@ -431,7 +441,7 @@ describe('src | components | pages | search | utils', () => {
         const result = isDaysChecked(pickedDate, pickedDaysInQuery, inputValue)
 
         // then
-        expect(result).toEqual(true)
+        expect(result).toBe(true)
       })
 
       it('should not ckeck box', () => {
@@ -444,7 +454,7 @@ describe('src | components | pages | search | utils', () => {
         const result = isDaysChecked(pickedDate, pickedDaysInQuery, inputValue)
 
         // then
-        expect(result).toEqual(false)
+        expect(result).toBe(false)
       })
     })
   })

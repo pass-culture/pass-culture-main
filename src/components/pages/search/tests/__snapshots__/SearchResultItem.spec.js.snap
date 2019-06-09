@@ -20,6 +20,7 @@ ShallowWrapper {
       Object {
         "id": "QA",
         "offer": Object {
+          "dateRange": Array [],
           "name": "sur la route des migrants ; rencontres à Calais",
           "product": Object {
             "offerType": Object {

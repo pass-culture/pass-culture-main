@@ -1,9 +1,9 @@
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
 
 import { ROOT_PATH } from '../../../utils/config'
 
-const NavResultsHeader = ({ category, description }) => {
+export const NavResultsHeader = ({ category, description }) => {
   const src = `${ROOT_PATH}/icons/img-${category}-L.jpg`
   const imgDescription = `Liste des offres de type ${category}`
 
@@ -36,5 +36,3 @@ NavResultsHeader.propTypes = {
   category: PropTypes.string,
   description: PropTypes.string,
 }
-
-export default NavResultsHeader

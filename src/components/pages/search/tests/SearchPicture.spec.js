@@ -8,7 +8,7 @@ describe('src | components | pages | search | SearchPicture', () => {
 
   beforeEach(() => {
     props = {
-      searchType: 'Écouter',
+      category: 'Écouter',
     }
   })
 

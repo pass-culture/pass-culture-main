@@ -69,7 +69,7 @@ ShallowWrapper {
               htmlFor="search-image-checkbox-0"
             >
               <SearchPicture
-                searchType="Applaudir"
+                category="Applaudir"
               />
               <input
                 checked={false}
@@ -85,7 +85,7 @@ ShallowWrapper {
               htmlFor="search-image-checkbox-1"
             >
               <SearchPicture
-                searchType="Jouer"
+                category="Jouer"
               />
               <input
                 checked={false}
@@ -101,7 +101,7 @@ ShallowWrapper {
               htmlFor="search-image-checkbox-2"
             >
               <SearchPicture
-                searchType="Lire"
+                category="Lire"
               />
               <input
                 checked={false}
@@ -117,7 +117,7 @@ ShallowWrapper {
               htmlFor="search-image-checkbox-3"
             >
               <SearchPicture
-                searchType="Pratiquer"
+                category="Pratiquer"
               />
               <input
                 checked={false}
@@ -133,7 +133,7 @@ ShallowWrapper {
               htmlFor="search-image-checkbox-4"
             >
               <SearchPicture
-                searchType="Regarder"
+                category="Regarder"
               />
               <input
                 checked={false}
@@ -149,7 +149,7 @@ ShallowWrapper {
               htmlFor="search-image-checkbox-5"
             >
               <SearchPicture
-                searchType="Rencontrer"
+                category="Rencontrer"
               />
               <input
                 checked={false}
@@ -165,7 +165,7 @@ ShallowWrapper {
               htmlFor="search-image-checkbox-6"
             >
               <SearchPicture
-                searchType="Écouter"
+                category="Écouter"
               />
               <input
                 checked={false}
@@ -209,7 +209,7 @@ ShallowWrapper {
               htmlFor="search-image-checkbox-0"
             >
               <SearchPicture
-                searchType="Applaudir"
+                category="Applaudir"
               />
               <input
                 checked={false}
@@ -225,7 +225,7 @@ ShallowWrapper {
               htmlFor="search-image-checkbox-1"
             >
               <SearchPicture
-                searchType="Jouer"
+                category="Jouer"
               />
               <input
                 checked={false}
@@ -241,7 +241,7 @@ ShallowWrapper {
               htmlFor="search-image-checkbox-2"
             >
               <SearchPicture
-                searchType="Lire"
+                category="Lire"
               />
               <input
                 checked={false}
@@ -257,7 +257,7 @@ ShallowWrapper {
               htmlFor="search-image-checkbox-3"
             >
               <SearchPicture
-                searchType="Pratiquer"
+                category="Pratiquer"
               />
               <input
                 checked={false}
@@ -273,7 +273,7 @@ ShallowWrapper {
               htmlFor="search-image-checkbox-4"
             >
               <SearchPicture
-                searchType="Regarder"
+                category="Regarder"
               />
               <input
                 checked={false}
@@ -289,7 +289,7 @@ ShallowWrapper {
               htmlFor="search-image-checkbox-5"
             >
               <SearchPicture
-                searchType="Rencontrer"
+                category="Rencontrer"
               />
               <input
                 checked={false}
@@ -305,7 +305,7 @@ ShallowWrapper {
               htmlFor="search-image-checkbox-6"
             >
               <SearchPicture
-                searchType="Écouter"
+                category="Écouter"
               />
               <input
                 checked={false}
@@ -331,7 +331,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-0"
               >
                 <SearchPicture
-                  searchType="Applaudir"
+                  category="Applaudir"
                 />
                 <input
                   checked={false}
@@ -347,7 +347,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-1"
               >
                 <SearchPicture
-                  searchType="Jouer"
+                  category="Jouer"
                 />
                 <input
                   checked={false}
@@ -363,7 +363,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-2"
               >
                 <SearchPicture
-                  searchType="Lire"
+                  category="Lire"
                 />
                 <input
                   checked={false}
@@ -379,7 +379,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-3"
               >
                 <SearchPicture
-                  searchType="Pratiquer"
+                  category="Pratiquer"
                 />
                 <input
                   checked={false}
@@ -395,7 +395,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-4"
               >
                 <SearchPicture
-                  searchType="Regarder"
+                  category="Regarder"
                 />
                 <input
                   checked={false}
@@ -411,7 +411,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-5"
               >
                 <SearchPicture
-                  searchType="Rencontrer"
+                  category="Rencontrer"
                 />
                 <input
                   checked={false}
@@ -427,7 +427,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-6"
               >
                 <SearchPicture
-                  searchType="Écouter"
+                  category="Écouter"
                 />
                 <input
                   checked={false}
@@ -450,7 +450,7 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   <SearchPicture
-                    searchType="Applaudir"
+                    category="Applaudir"
                   />,
                   <input
                     checked={false}
@@ -472,7 +472,7 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "function",
                   "props": Object {
-                    "searchType": "Applaudir",
+                    "category": "Applaudir",
                   },
                   "ref": null,
                   "rendered": null,
@@ -505,7 +505,7 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   <SearchPicture
-                    searchType="Jouer"
+                    category="Jouer"
                   />,
                   <input
                     checked={false}
@@ -527,7 +527,7 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "function",
                   "props": Object {
-                    "searchType": "Jouer",
+                    "category": "Jouer",
                   },
                   "ref": null,
                   "rendered": null,
@@ -560,7 +560,7 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   <SearchPicture
-                    searchType="Lire"
+                    category="Lire"
                   />,
                   <input
                     checked={false}
@@ -582,7 +582,7 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "function",
                   "props": Object {
-                    "searchType": "Lire",
+                    "category": "Lire",
                   },
                   "ref": null,
                   "rendered": null,
@@ -615,7 +615,7 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   <SearchPicture
-                    searchType="Pratiquer"
+                    category="Pratiquer"
                   />,
                   <input
                     checked={false}
@@ -637,7 +637,7 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "function",
                   "props": Object {
-                    "searchType": "Pratiquer",
+                    "category": "Pratiquer",
                   },
                   "ref": null,
                   "rendered": null,
@@ -670,7 +670,7 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   <SearchPicture
-                    searchType="Regarder"
+                    category="Regarder"
                   />,
                   <input
                     checked={false}
@@ -692,7 +692,7 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "function",
                   "props": Object {
-                    "searchType": "Regarder",
+                    "category": "Regarder",
                   },
                   "ref": null,
                   "rendered": null,
@@ -725,7 +725,7 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   <SearchPicture
-                    searchType="Rencontrer"
+                    category="Rencontrer"
                   />,
                   <input
                     checked={false}
@@ -747,7 +747,7 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "function",
                   "props": Object {
-                    "searchType": "Rencontrer",
+                    "category": "Rencontrer",
                   },
                   "ref": null,
                   "rendered": null,
@@ -780,7 +780,7 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   <SearchPicture
-                    searchType="Écouter"
+                    category="Écouter"
                   />,
                   <input
                     checked={false}
@@ -802,7 +802,7 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "function",
                   "props": Object {
-                    "searchType": "Écouter",
+                    "category": "Écouter",
                   },
                   "ref": null,
                   "rendered": null,
@@ -859,7 +859,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-0"
               >
                 <SearchPicture
-                  searchType="Applaudir"
+                  category="Applaudir"
                 />
                 <input
                   checked={false}
@@ -875,7 +875,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-1"
               >
                 <SearchPicture
-                  searchType="Jouer"
+                  category="Jouer"
                 />
                 <input
                   checked={false}
@@ -891,7 +891,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-2"
               >
                 <SearchPicture
-                  searchType="Lire"
+                  category="Lire"
                 />
                 <input
                   checked={false}
@@ -907,7 +907,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-3"
               >
                 <SearchPicture
-                  searchType="Pratiquer"
+                  category="Pratiquer"
                 />
                 <input
                   checked={false}
@@ -923,7 +923,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-4"
               >
                 <SearchPicture
-                  searchType="Regarder"
+                  category="Regarder"
                 />
                 <input
                   checked={false}
@@ -939,7 +939,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-5"
               >
                 <SearchPicture
-                  searchType="Rencontrer"
+                  category="Rencontrer"
                 />
                 <input
                   checked={false}
@@ -955,7 +955,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-6"
               >
                 <SearchPicture
-                  searchType="Écouter"
+                  category="Écouter"
                 />
                 <input
                   checked={false}
@@ -999,7 +999,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-0"
               >
                 <SearchPicture
-                  searchType="Applaudir"
+                  category="Applaudir"
                 />
                 <input
                   checked={false}
@@ -1015,7 +1015,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-1"
               >
                 <SearchPicture
-                  searchType="Jouer"
+                  category="Jouer"
                 />
                 <input
                   checked={false}
@@ -1031,7 +1031,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-2"
               >
                 <SearchPicture
-                  searchType="Lire"
+                  category="Lire"
                 />
                 <input
                   checked={false}
@@ -1047,7 +1047,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-3"
               >
                 <SearchPicture
-                  searchType="Pratiquer"
+                  category="Pratiquer"
                 />
                 <input
                   checked={false}
@@ -1063,7 +1063,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-4"
               >
                 <SearchPicture
-                  searchType="Regarder"
+                  category="Regarder"
                 />
                 <input
                   checked={false}
@@ -1079,7 +1079,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-5"
               >
                 <SearchPicture
-                  searchType="Rencontrer"
+                  category="Rencontrer"
                 />
                 <input
                   checked={false}
@@ -1095,7 +1095,7 @@ ShallowWrapper {
                 htmlFor="search-image-checkbox-6"
               >
                 <SearchPicture
-                  searchType="Écouter"
+                  category="Écouter"
                 />
                 <input
                   checked={false}
@@ -1121,7 +1121,7 @@ ShallowWrapper {
                   htmlFor="search-image-checkbox-0"
                 >
                   <SearchPicture
-                    searchType="Applaudir"
+                    category="Applaudir"
                   />
                   <input
                     checked={false}
@@ -1137,7 +1137,7 @@ ShallowWrapper {
                   htmlFor="search-image-checkbox-1"
                 >
                   <SearchPicture
-                    searchType="Jouer"
+                    category="Jouer"
                   />
                   <input
                     checked={false}
@@ -1153,7 +1153,7 @@ ShallowWrapper {
                   htmlFor="search-image-checkbox-2"
                 >
                   <SearchPicture
-                    searchType="Lire"
+                    category="Lire"
                   />
                   <input
                     checked={false}
@@ -1169,7 +1169,7 @@ ShallowWrapper {
                   htmlFor="search-image-checkbox-3"
                 >
                   <SearchPicture
-                    searchType="Pratiquer"
+                    category="Pratiquer"
                   />
                   <input
                     checked={false}
@@ -1185,7 +1185,7 @@ ShallowWrapper {
                   htmlFor="search-image-checkbox-4"
                 >
                   <SearchPicture
-                    searchType="Regarder"
+                    category="Regarder"
                   />
                   <input
                     checked={false}
@@ -1201,7 +1201,7 @@ ShallowWrapper {
                   htmlFor="search-image-checkbox-5"
                 >
                   <SearchPicture
-                    searchType="Rencontrer"
+                    category="Rencontrer"
                   />
                   <input
                     checked={false}
@@ -1217,7 +1217,7 @@ ShallowWrapper {
                   htmlFor="search-image-checkbox-6"
                 >
                   <SearchPicture
-                    searchType="Écouter"
+                    category="Écouter"
                   />
                   <input
                     checked={false}
@@ -1240,7 +1240,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": Array [
                     <SearchPicture
-                      searchType="Applaudir"
+                      category="Applaudir"
                     />,
                     <input
                       checked={false}
@@ -1262,7 +1262,7 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "function",
                     "props": Object {
-                      "searchType": "Applaudir",
+                      "category": "Applaudir",
                     },
                     "ref": null,
                     "rendered": null,
@@ -1295,7 +1295,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": Array [
                     <SearchPicture
-                      searchType="Jouer"
+                      category="Jouer"
                     />,
                     <input
                       checked={false}
@@ -1317,7 +1317,7 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "function",
                     "props": Object {
-                      "searchType": "Jouer",
+                      "category": "Jouer",
                     },
                     "ref": null,
                     "rendered": null,
@@ -1350,7 +1350,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": Array [
                     <SearchPicture
-                      searchType="Lire"
+                      category="Lire"
                     />,
                     <input
                       checked={false}
@@ -1372,7 +1372,7 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "function",
                     "props": Object {
-                      "searchType": "Lire",
+                      "category": "Lire",
                     },
                     "ref": null,
                     "rendered": null,
@@ -1405,7 +1405,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": Array [
                     <SearchPicture
-                      searchType="Pratiquer"
+                      category="Pratiquer"
                     />,
                     <input
                       checked={false}
@@ -1427,7 +1427,7 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "function",
                     "props": Object {
-                      "searchType": "Pratiquer",
+                      "category": "Pratiquer",
                     },
                     "ref": null,
                     "rendered": null,
@@ -1460,7 +1460,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": Array [
                     <SearchPicture
-                      searchType="Regarder"
+                      category="Regarder"
                     />,
                     <input
                       checked={false}
@@ -1482,7 +1482,7 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "function",
                     "props": Object {
-                      "searchType": "Regarder",
+                      "category": "Regarder",
                     },
                     "ref": null,
                     "rendered": null,
@@ -1515,7 +1515,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": Array [
                     <SearchPicture
-                      searchType="Rencontrer"
+                      category="Rencontrer"
                     />,
                     <input
                       checked={false}
@@ -1537,7 +1537,7 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "function",
                     "props": Object {
-                      "searchType": "Rencontrer",
+                      "category": "Rencontrer",
                     },
                     "ref": null,
                     "rendered": null,
@@ -1570,7 +1570,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": Array [
                     <SearchPicture
-                      searchType="Écouter"
+                      category="Écouter"
                     />,
                     <input
                       checked={false}
@@ -1592,7 +1592,7 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "function",
                     "props": Object {
-                      "searchType": "Écouter",
+                      "category": "Écouter",
                     },
                     "ref": null,
                     "rendered": null,

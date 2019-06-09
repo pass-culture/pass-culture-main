@@ -25,6 +25,7 @@ describe('src | components | pages | search | SearchResultItem', () => {
       recommendation: {
         id: 'QA',
         offer: {
+          dateRange: [],
           name: 'sur la route des migrants ; rencontres à Calais',
           product: {
             offerType: {

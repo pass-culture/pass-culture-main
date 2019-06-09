@@ -1,12 +1,12 @@
+import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { mount, shallow } from 'enzyme'
 import { Route, Router } from 'react-router-dom'
 import configureStore from 'redux-mock-store'
 
-import SearchFilter from '../SearchFilter'
-import SearchFilterContainer from '../SearchFilterContainer'
+import { SearchFilter } from '../SearchFilter'
+import { SearchFilterContainer } from '../SearchFilterContainer'
 import { INITIAL_FILTER_PARAMS } from '../../utils'
 import REDUX_STATE from '../../../../../mocks/reduxState'
 
@@ -16,7 +16,7 @@ const queryClearMock = jest.fn()
 const middlewares = []
 const mockStore = configureStore(middlewares)
 
-describe('src | components | pages | search | SearchFilter', () => {
+describe('src | components | pages | search | searchFilters | SearchFilter', () => {
   let props
 
   beforeEach(() => {
@@ -91,7 +91,7 @@ describe('src | components | pages | search | SearchFilter', () => {
         categories: 'Sourire',
       }
       expect(updatedQuery).toEqual(expected)
-      expect(filterParamsMatchingQueryParamsKey).toEqual(false)
+      expect(filterParamsMatchingQueryParamsKey).toBe(false)
     })
   })
 
@@ -156,7 +156,7 @@ describe('src | components | pages | search | SearchFilter', () => {
       const updatedFormState = wrapper.state('filterParamsMatchingQueryParams')
 
       // then
-      expect(updatedFormState).toEqual(false)
+      expect(updatedFormState).toBe(false)
       expect(mockResetSearchStore).not.toHaveBeenCalled()
       expect(queryChangeMock).toHaveBeenCalledWith(currentQuery, {
         pathname: '/recherche/resultats',

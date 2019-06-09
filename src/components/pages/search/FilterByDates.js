@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react'
 import { DatePickerField } from '../../forms/inputs'
 import { DAYS_CHECKBOXES, isDaysChecked } from './utils'
 
-class FilterByDates extends PureComponent {
+export class FilterByDates extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -141,5 +141,3 @@ FilterByDates.propTypes = {
   }).isRequired,
   initialDateParams: PropTypes.bool.isRequired,
 }
-
-export default FilterByDates

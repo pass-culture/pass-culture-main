@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import NavByOfferType from '../NavByOfferType'
+import { NavByOfferType } from '../NavByOfferType'
 
 const middlewares = []
 const mockStore = configureStore(middlewares)

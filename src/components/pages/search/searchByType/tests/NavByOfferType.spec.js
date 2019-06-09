@@ -1,99 +1,75 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
-import NavByOfferType from '../NavByOfferType'
+import { NavByOfferType } from '../NavByOfferType'
+import { SearchPicture } from '../../SearchPicture'
 
-describe('src | components | search | NavByOfferType', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const props = {
-        resetSearchStore: jest.fn(),
-        title: 'fake Title',
-        typeSublabels: [],
-        updateSearchQuery: jest.fn(),
-      }
+describe('src | components | search | searchByType | NavByOfferType', () => {
+  let props
 
-      // when
-      const wrapper = shallow(<NavByOfferType {...props} />)
-
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+  beforeEach(() => {
+    // given
+    props = {
+      categories: [
+        'Category 1',
+        'Category 2',
+        'Category 3',
+        'Category 4',
+      ],
+      resetSearchStore: jest.fn(),
+      title: 'Fake title',
+      updateSearchQuery: jest.fn(),
+    }
   })
 
-  describe('items renderer', () => {
-    it('should render a list of items', () => {
-      // given
-      const typeSublabels = [
-        'Sublabel 1',
-        'Sublabel 2',
-        'Sublabel 3',
-        'Sublabel 4',
-      ]
-      const props = {
-        resetSearchStore: jest.fn(),
-        title: 'fake Title',
-        typeSublabels,
-        updateSearchQuery: jest.fn(),
-      }
-      const wrapper = shallow(<NavByOfferType {...props} />)
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<NavByOfferType {...props} />)
 
-      // when
-      const navitem = wrapper.find('.item')
-
-      // then
-      const len = typeSublabels.length
-      expect(navitem.length).toEqual(len)
-    })
+    // then
+    expect(wrapper).toBeDefined()
+    expect(wrapper).toMatchSnapshot()
   })
 
-  describe('items clicked', () => {
-    const typeSublabels = [
-      'Sublabel 1',
-      'Sublabel 2',
-      'Sublabel 3',
-      'Sublabel 4',
-    ]
-    it('should called resetSearchStore', () => {
+  describe('render()', () => {
+    it('should render a list of categories by default', () => {
       // given
-      const resetSearchStoreMock = jest.fn()
-      const props = {
-        resetSearchStore: resetSearchStoreMock,
-        title: 'fake Title',
-        typeSublabels,
-        updateSearchQuery: jest.fn(),
-      }
       const wrapper = shallow(<NavByOfferType {...props} />)
 
       // when
-      const navitem = wrapper.find('#button-nav-by-offer-type-sublabel-3')
+      const categories = wrapper.find('.item')
 
       // then
-      expect(navitem.length).toEqual(1)
-      navitem.first().simulate('click')
-      expect(resetSearchStoreMock).toHaveBeenCalled()
+      expect(categories.length).toBe(props.categories.length)
+      categories.forEach(category => {
+        expect(category.children().is(SearchPicture)).toBe(true)
+      })
     })
 
-    it('should called updateSearchQuery', () => {
-      // given
-      const updateSearchQueryMock = jest.fn()
-      const props = {
-        resetSearchStore: updateSearchQueryMock,
-        title: 'fake Title',
-        typeSublabels,
-        updateSearchQuery: jest.fn(),
-      }
-      const wrapper = shallow(<NavByOfferType {...props} />)
+    describe('I click on one category', () => {
+      it('should reset the search value of the store', () => {
+        // given
+        const wrapper = shallow(<NavByOfferType {...props} />)
+        const categories = wrapper.find('.item')
 
-      // when
-      const navitem = wrapper.find('#button-nav-by-offer-type-sublabel-3')
+        // when
+        categories.first().simulate('click')
 
-      // then
-      expect(navitem.length).toEqual(1)
-      navitem.first().simulate('click')
-      expect(updateSearchQueryMock).toHaveBeenCalled()
+        // then
+        expect(props.resetSearchStore).toHaveBeenCalled()
+      })
+
+      it('should update the search parameter of the query', () => {
+        // given
+        const wrapper = shallow(<NavByOfferType {...props} />)
+        const categories = wrapper.find('.item')
+
+        // when
+        categories.first().simulate('click')
+
+        // then
+        expect(props.updateSearchQuery).toHaveBeenCalledWith(props.categories[0])
+      })
     })
   })
 })

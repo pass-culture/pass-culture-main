@@ -3,27 +3,18 @@ import React from 'react'
 
 import { ROOT_PATH } from '../../../utils/config'
 
-export const SearchPicture = ({ searchType }) => {
-  const src = `${ROOT_PATH}/icons/img-${searchType}.png`
-  const navigation = `Rechercher des offres de type ${searchType}`
-
-  return (
-    <div className="search-picture is-relative">
-      <img src={src} alt={navigation} />
-      <span
-        style={{ backgroundOpacity: 0.75 }}
-        className="is-absolute text-left fs15"
-      >
-        {searchType}
-      </span>
-    </div>
-  )
-}
-
-SearchPicture.defaultProps = {
-  searchType: null,
-}
+export const SearchPicture = ({ category }) => (
+  <div className="search-picture is-relative">
+    <img
+      alt={`Rechercher des offres de type ${category}`}
+      src={`${ROOT_PATH}/icons/img-${category}.png`}
+    />
+    <span className="is-absolute text-left fs15">
+      {category}
+    </span>
+  </div>
+)
 
 SearchPicture.propTypes = {
-  searchType: PropTypes.string,
+  category: PropTypes.string.isRequired,
 }

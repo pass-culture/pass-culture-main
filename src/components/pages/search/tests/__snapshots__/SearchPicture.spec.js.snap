@@ -4,7 +4,7 @@ exports[`src | components | pages | search | SearchPicture should match the snap
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <SearchPicture
-    searchType="Écouter"
+    category="Écouter"
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -27,11 +27,6 @@ ShallowWrapper {
         />,
         <span
           className="is-absolute text-left fs15"
-          style={
-            Object {
-              "backgroundOpacity": 0.75,
-            }
-          }
         >
           Écouter
         </span>,
@@ -59,9 +54,6 @@ ShallowWrapper {
         "props": Object {
           "children": "Écouter",
           "className": "is-absolute text-left fs15",
-          "style": Object {
-            "backgroundOpacity": 0.75,
-          },
         },
         "ref": null,
         "rendered": "Écouter",
@@ -83,11 +75,6 @@ ShallowWrapper {
           />,
           <span
             className="is-absolute text-left fs15"
-            style={
-              Object {
-                "backgroundOpacity": 0.75,
-              }
-            }
           >
             Écouter
           </span>,
@@ -115,9 +102,6 @@ ShallowWrapper {
           "props": Object {
             "children": "Écouter",
             "className": "is-absolute text-left fs15",
-            "style": Object {
-              "backgroundOpacity": 0.75,
-            },
           },
           "ref": null,
           "rendered": "Écouter",

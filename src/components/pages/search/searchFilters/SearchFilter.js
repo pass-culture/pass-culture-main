@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { Transition } from 'react-transition-group'
 
-import FilterByDates from '../FilterByDates'
+import { FilterByDates } from '../FilterByDates'
 import { FilterByDistanceContainer } from '../FilterByDistanceContainer'
 import { FilterByOfferTypesContainer } from '../FilterByOfferTypesContainer'
 import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from '../utils'
@@ -23,7 +23,7 @@ const transitionStyles = {
   exiting: { marginTop: `-${filtersPanelHeight}px` },
 }
 
-class SearchFilter extends Component {
+export class SearchFilter extends Component {
   constructor(props) {
     super(props)
 
@@ -44,6 +44,7 @@ class SearchFilter extends Component {
 
   componentDidUpdate(prevProps) {
     const { location } = this.props
+
     if (location.search !== prevProps.location.search) {
       this.handleReinitializeParams()
     }
@@ -84,7 +85,9 @@ class SearchFilter extends Component {
 
   onResetClick = () => {
     const { query, resetSearchStore } = this.props
+
     resetSearchStore()
+
     this.setState({
       initialDateParams: true,
       params: {
@@ -93,6 +96,7 @@ class SearchFilter extends Component {
         jours: null,
       },
     })
+
     query.change(INITIAL_FILTER_PARAMS, {
       pathname: '/recherche/resultats',
     })
@@ -102,7 +106,6 @@ class SearchFilter extends Component {
     const { query } = this.props
     const { params } = this.state
     const queryParams = query.parse()
-
     const nextFilterParams = Object.assign({}, params, newValue)
     const filterParamsMatchingQueryParams = getFirstChangingKey(
       queryParams,
@@ -123,6 +126,7 @@ class SearchFilter extends Component {
     const encodedValue = encodeURI(value)
     let nextValue = encodedValue
     const previousValue = params[key]
+
     if (previousValue && previousValue.length) {
       const args = previousValue.split(',').concat([encodedValue])
       args.sort()
@@ -141,9 +145,11 @@ class SearchFilter extends Component {
       let nextValue = previousValue
         .replace(`,${encodedValue}`, '')
         .replace(encodedValue, '')
+
       if (nextValue[0] === ',') {
         nextValue = nextValue.slice(1)
       }
+
       this.handleQueryChange(
         { [key]: nextValue === '' ? null : nextValue },
         callback
@@ -154,13 +160,14 @@ class SearchFilter extends Component {
   render() {
     const { isVisible } = this.props
     const { initialDateParams } = this.state
+
     return (
       <div className="is-relative is-clipped">
         <Transition in={isVisible} timeout={transitionDelay}>
           {status => (
             <div
-              id="search-filter-menu"
               className={`is-full-width transition-status-${status} mb20`}
+              id="search-filter-menu"
               style={{ ...defaultStyle, ...transitionStyles[status] }}
             >
               <FilterByDates
@@ -177,20 +184,20 @@ class SearchFilter extends Component {
                 filterState={this.state}
               />
               <div
-                id="search-filter-menu-footer-controls"
                 className="flex-columns mt18"
+                id="search-filter-menu-footer-controls"
               >
                 <button
-                  id="search-filter-reset-button"
                   className="no-background no-outline col-1of2 fs20 py12"
+                  id="search-filter-reset-button"
                   onClick={this.onResetClick}
                   type="reset"
                 >
                   Réinitialiser
                 </button>
                 <button
-                  id="filter-button"
                   className="no-background no-outline col-1of2 fs20 py12"
+                  id="filter-button"
                   onClick={this.onClickFilterButton}
                   type="submit"
                 >
@@ -207,10 +214,8 @@ class SearchFilter extends Component {
 
 SearchFilter.propTypes = {
   isVisible: PropTypes.bool.isRequired,
-  location: PropTypes.object.isRequired,
+  location: PropTypes.shape().isRequired,
   onClickFilterButton: PropTypes.func.isRequired,
-  query: PropTypes.object.isRequired,
+  query: PropTypes.shape().isRequired,
   resetSearchStore: PropTypes.func.isRequired,
 }
-
-export default SearchFilter

@@ -1,5 +1,5 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 import { Switch } from 'react-router-dom'
 
 import BackButton from '../../../layout/BackButton'
@@ -109,7 +109,7 @@ describe('src | components | pages | Search', () => {
       const wrapper = shallow(<Search {...baseInitialProps} />)
 
       it('should render the page title', () => {
-        expect(wrapper.find('Header').props().title).toEqual('Recherche')
+        expect(wrapper.find('Header').props().title).toBe('Recherche')
       })
 
       it('submitButton form is disabled', () => {
@@ -120,14 +120,14 @@ describe('src | components | pages | Search', () => {
           child => child.props.id === 'search-page-keywords-field'
         ).props.children[1].props.children
         // then
-        expect(button.props.disabled).toEqual(true)
+        expect(button.props.disabled).toBe(true)
       })
 
       it('filter should be invisible', () => {
         // when
         const searchFilterComponent = getPageContentFilter(wrapper)
         // then
-        expect(searchFilterComponent.props.isVisible).toEqual(false)
+        expect(searchFilterComponent.props.isVisible).toBe(false)
       })
 
       it('filter shoud be visible when state isFilterVisible is set to true ', () => {
@@ -137,7 +137,7 @@ describe('src | components | pages | Search', () => {
         const searchFilterComponent = getPageContentFilter(wrapper)
 
         // then
-        expect(searchFilterComponent.props.isVisible).toEqual(true)
+        expect(searchFilterComponent.props.isVisible).toBe(true)
       })
 
       it('NavByOfferType with path="/recherche"', () => {
@@ -147,7 +147,7 @@ describe('src | components | pages | Search', () => {
         )(wrapper)
 
         // then
-        expect(NavByOfferTypeComponent.props.title).toEqual(
+        expect(NavByOfferTypeComponent.props.title).toBe(
           'EXPLORER LES CATÉGORIES'
         )
       })
@@ -163,7 +163,7 @@ describe('src | components | pages | Search', () => {
         const wrapper = shallow(<Search {...initialProps} />)
 
         it('should render the page title', () => {
-          expect(wrapper.find('Header').props().title).toEqual(
+          expect(wrapper.find('Header').props().title).toBe(
             'Recherche : résultats'
           )
         })
@@ -173,7 +173,7 @@ describe('src | components | pages | Search', () => {
           const SearchResults = getSearchResults(wrapper)
 
           // then
-          expect(SearchResults.props.cameFromOfferTypesPage).toEqual(false)
+          expect(SearchResults.props.cameFromOfferTypesPage).toBe(false)
         })
       })
 
@@ -212,12 +212,12 @@ describe('src | components | pages | Search', () => {
           const SearchResults = getSearchResultsFromCategory(wrapper)
 
           // then
-          expect(NavResultsHeader.props.category).toEqual('Jouer')
-          expect(NavResultsHeader.props.description).toEqual(
+          expect(NavResultsHeader.props.category).toBe('Jouer')
+          expect(NavResultsHeader.props.description).toBe(
             'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?'
           )
-          expect(SearchResults.props.keywords).toEqual('Fake')
-          expect(SearchResults.props.cameFromOfferTypesPage).toEqual(true)
+          expect(SearchResults.props.keywords).toBe('Fake')
+          expect(SearchResults.props.cameFromOfferTypesPage).toBe(true)
         })
       })
     })
@@ -260,7 +260,7 @@ describe('src | components | pages | Search', () => {
             type: 'REQUEST_DATA_GET_/TYPES',
           }
 
-          // THEN
+          // then
           expect(dispatchMock.mock.calls[1][0]).toEqual(
             expectedRequestedGetTypes
           )
@@ -269,13 +269,6 @@ describe('src | components | pages | Search', () => {
     })
 
     describe('loadMoreHandler', () => {
-      // given
-      xit('should call handleDataRequest to request more offers', () => {
-        // const handleDataRequestInstanceFc = wrapper.instance().handleDataRequest()
-        // jest.mock(handleDataRequestInstanceFc)
-        // const spy = jest.spyOn(wrapper.instance(), 'handleDataRequest')
-        // when
-      })
       xit('should change history location', () => {
         // given
         const initialProps = Object.assign({}, baseInitialProps)
@@ -357,7 +350,7 @@ describe('src | components | pages | Search', () => {
           const wrapper = shallow(<Search {...baseInitialProps} />)
 
           // then
-          expect(wrapper.contains('.back-button')).toEqual(false)
+          expect(wrapper.contains('.back-button')).toBe(false)
         })
       })
     })
@@ -483,7 +476,7 @@ describe('src | components | pages | Search', () => {
           button.props.onClick()
 
           // then
-          expect(wrapperInstance.state.keywordsValue).toEqual('')
+          expect(wrapperInstance.state.keywordsValue).toBe('')
           queryChangeMock.mockClear()
         })
       })
@@ -526,7 +519,7 @@ describe('src | components | pages | Search', () => {
         const filterToggleIcon = getFilterToggle(wrapper).props.children
 
         it('should show ico-filter', () => {
-          expect(filterToggleIcon.props.svg).toEqual('ico-filter')
+          expect(filterToggleIcon.props.svg).toBe('ico-filter')
         })
 
         it('isFilterVisible state is false', () => {
@@ -538,7 +531,7 @@ describe('src | components | pages | Search', () => {
           }
 
           // then
-          expect(filterToggleIcon.props.svg).toEqual('ico-filter')
+          expect(filterToggleIcon.props.svg).toBe('ico-filter')
           expect(wrapper.state()).toEqual(expected)
         })
       })
@@ -563,7 +556,7 @@ describe('src | components | pages | Search', () => {
         })
 
         it('should show chevron-up icon', () => {
-          expect(filterToggleIcon.props.svg).toEqual('ico-chevron-up')
+          expect(filterToggleIcon.props.svg).toBe('ico-chevron-up')
         })
       })
 
@@ -589,7 +582,7 @@ describe('src | components | pages | Search', () => {
           const filterToggleIcon = getFilterToggle(wrapper).props.children
 
           // then
-          expect(filterToggleIcon.props.svg).toEqual('ico-filter-active')
+          expect(filterToggleIcon.props.svg).toBe('ico-filter-active')
         })
       })
     })
