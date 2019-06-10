@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { StrictMode } from 'react'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
@@ -14,20 +14,27 @@ const approutes = getReactRoutes(routes)
 const { store, persistor } = configureStore()
 
 const Root = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <BrowserRouter>
-        <App>
-          <Switch>
-            {approutes &&
-              approutes.map(obj => obj && <Route {...obj} key={obj.path} />)}
-            <Route component={NotMatch} />
-          </Switch>
-          <MatomoPageTracker />
-        </App>
-      </BrowserRouter>
-    </PersistGate>
-  </Provider>
+  <StrictMode>
+    <Provider store={store}>
+      <PersistGate
+        loading={null}
+        persistor={persistor}
+      >
+        <BrowserRouter>
+          <App>
+            <Switch>
+              {approutes && approutes.map(obj => obj && <Route
+                {...obj}
+                key={obj.path}
+                                                        />)}
+              <Route component={NotMatch} />
+            </Switch>
+            <MatomoPageTracker />
+          </App>
+        </BrowserRouter>
+      </PersistGate>
+    </Provider>
+  </StrictMode>
 )
 
 export default Root
