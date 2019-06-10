@@ -242,7 +242,7 @@ describe('src | components | pages | Search', () => {
         }
 
         // then
-        expect(wrapper.state()).toEqual(expected)
+        expect(wrapper.state()).toStrictEqual(expected)
       })
     })
 
@@ -261,7 +261,7 @@ describe('src | components | pages | Search', () => {
           }
 
           // then
-          expect(dispatchMock.mock.calls[1][0]).toEqual(
+          expect(dispatchMock.mock.calls[1][0]).toStrictEqual(
             expectedRequestedGetTypes
           )
         })
@@ -315,7 +315,7 @@ describe('src | components | pages | Search', () => {
           }
 
           // then
-          expect(wrapper.state()).toEqual(expected)
+          expect(wrapper.state()).toStrictEqual(expected)
         })
 
         it('should change query', () => {
@@ -383,7 +383,7 @@ describe('src | components | pages | Search', () => {
           }
 
           // then
-          expect(wrapper.state()).toEqual(expected)
+          expect(wrapper.state()).toStrictEqual(expected)
         })
         it('should change query', () => {
           // when
@@ -466,7 +466,7 @@ describe('src | components | pages | Search', () => {
           }
 
           // then
-          expect(wrapper.state()).toEqual(expected)
+          expect(wrapper.state()).toStrictEqual(expected)
         })
 
         it('should change navigation', () => {
@@ -507,7 +507,7 @@ describe('src | components | pages | Search', () => {
         }
 
         // then
-        expect(wrapper.state()).toEqual(expected)
+        expect(wrapper.state()).toStrictEqual(expected)
       })
     })
 
@@ -532,7 +532,7 @@ describe('src | components | pages | Search', () => {
 
           // then
           expect(filterToggleIcon.props.svg).toBe('ico-filter')
-          expect(wrapper.state()).toEqual(expected)
+          expect(wrapper.state()).toStrictEqual(expected)
         })
       })
 
@@ -552,7 +552,7 @@ describe('src | components | pages | Search', () => {
           }
 
           // then
-          expect(wrapper.state()).toEqual(expected)
+          expect(wrapper.state()).toStrictEqual(expected)
         })
 
         it('should show chevron-up icon', () => {

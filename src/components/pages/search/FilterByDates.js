@@ -16,7 +16,7 @@ export class FilterByDates extends PureComponent {
   componentDidUpdate() {
     const { initialDateParams, filterState } = this.props
 
-    if (initialDateParams && filterState.params.date === null) {
+    if (initialDateParams && filterState.params.date === undefined) {
       this.setPickedDate(null)
     }
   }

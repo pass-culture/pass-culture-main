@@ -32,7 +32,7 @@ describe('src | components | pages | search | utils', () => {
         offer: {
           dateRange: [
             'Thu, 25 Oct 2018 18:15:24 GMT',
-            'Fri, 26 Oct 2018 19:45:24 GMT'
+            'Fri, 26 Oct 2018 19:45:24 GMT',
           ],
           venue: {
             departementCode: '93',
@@ -411,7 +411,7 @@ describe('src | components | pages | search | utils', () => {
           days: '1-5',
           keywords: 'fake',
         }
-        expect(translateBrowserUrlToApiUrl(queryString)).toEqual(expected)
+        expect(translateBrowserUrlToApiUrl(queryString)).toStrictEqual(expected)
       })
     })
   })

@@ -3,18 +3,16 @@ import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { Route, Router } from 'react-router-dom'
+import { Transition } from 'react-transition-group'
 import configureStore from 'redux-mock-store'
 
+import { FilterByDates } from '../../FilterByDates'
+import { FilterByDistanceContainer } from '../../FilterByDistanceContainer'
+import { FilterByOfferTypesContainer } from '../../FilterByOfferTypesContainer'
 import { SearchFilter } from '../SearchFilter'
 import { SearchFilterContainer } from '../SearchFilterContainer'
 import { INITIAL_FILTER_PARAMS } from '../../utils'
 import REDUX_STATE from '../../../../../mocks/reduxState'
-
-const queryChangeMock = jest.fn()
-const queryClearMock = jest.fn()
-
-const middlewares = []
-const mockStore = configureStore(middlewares)
 
 describe('src | components | pages | search | searchFilters | SearchFilter', () => {
   let props
@@ -25,6 +23,7 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
       location: {},
       onClickFilterButton: jest.fn(),
       query: {
+        change: jest.fn(),
         parse: jest.fn(),
       },
       resetSearchStore: jest.fn(),
@@ -40,33 +39,28 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('constructor', () => {
+  describe('constructor()', () => {
     it('should initialize state with current query arguments', () => {
       // given
-      const mockedObject = { prop: 'mocked object' }
-      const mockQueryParse = jest.fn(() => mockedObject)
-      props.isVisible = false
-      props.query.parse = mockQueryParse
+      const queryParams = { prop: 'mocked object' }
+      props.query.parse = jest.fn(() => queryParams)
       const wrapper = shallow(<SearchFilter {...props} />)
 
       // when
       const { params } = wrapper.instance().state
 
       // then
-      expect(params).toStrictEqual(mockedObject)
+      expect(params).toStrictEqual(queryParams)
     })
   })
 
   describe('onComponentDidUpdate', () => {
-    it('should update state if params has changed', () => {
+    it('should reinitialize the state if the URL has changed', () => {
       // given
       const mockOnClickFilterButton = jest.fn()
-      const initialState = REDUX_STATE
-      const store = mockStore(initialState)
+      const store = configureStore([])(REDUX_STATE)
       const history = createBrowserHistory()
       history.push('/test?categories=Jouer')
-
-      // when
       const wrapper = mount(
         <Provider store={store}>
           <Router history={history}>
@@ -79,88 +73,160 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
           </Router>
         </Provider>
       )
+
+      // when
       history.push('/test?categories=Sourire')
 
       // then
-      const searchFilter = wrapper.find('SearchFilter')
-      const updatedQuery = searchFilter.state('params')
-      const filterParamsMatchingQueryParamsKey = searchFilter.state(
-        'filterParamsMatchingQueryParams'
-      )
-      const expected = {
-        categories: 'Sourire',
-      }
-      expect(updatedQuery).toEqual(expected)
-      expect(filterParamsMatchingQueryParamsKey).toBe(false)
-    })
-  })
-
-  describe('onResetClick', () => {
-    it('should initialize default filter params when clicking on reset button', () => {
-      // given
-      props.location = { search: '?page=1&jours=0-1' }
-      props.query = {
-        change: queryChangeMock,
-        parse: () => ({
-          categories: 'Lire, Regarder',
-          distance: 50,
-          jours: '0-1',
-          page: '1',
-        }),
-      }
-      const wrapper = shallow(
-        <SearchFilterContainer.WrappedComponent.WrappedComponent {...props} />
-      )
-
-      // when
-      wrapper.instance().onResetClick()
-      const updatedFormState = wrapper.state()
-      const expected = {
+      const params = wrapper.find('SearchFilter').state()
+      expect(params).toEqual({
         filterParamsMatchingQueryParams: false,
         initialDateParams: true,
         params: {
-          date: null,
-          distance: null,
-          jours: null,
+          categories: 'Sourire',
         },
-      }
+      })
+    })
+  })
+
+  describe('onClickFilterButton()', () => {
+    it('should close the filters and change the URL by default', () => {
+      // given
+      const wrapper = shallow(<SearchFilter {...props} />)
+
+      // when
+      wrapper.instance().onClickFilterButton()
 
       // then
-      expect(updatedFormState).toEqual(expected)
-      expect(queryChangeMock).toHaveBeenCalledWith(INITIAL_FILTER_PARAMS, {
+      expect(props.onClickFilterButton).toHaveBeenCalledWith(props.isVisible)
+    })
+
+    it('should reset the store when filter params match the query params', () => {
+      // given
+      const wrapper = shallow(<SearchFilter {...props} />)
+      wrapper.setState({ filterParamsMatchingQueryParams: true })
+
+      // when
+      wrapper.instance().onClickFilterButton()
+
+      // then
+      expect(props.resetSearchStore).toHaveBeenCalled()
+    })
+  })
+
+  describe('onClickReset()', () => {
+    it('should initialize default filter params and reset the URL', () => {
+      // given
+      const wrapper = shallow(<SearchFilter {...props} />)
+
+      // when
+      wrapper.instance().onClickReset()
+
+      // then
+      const expected = {
+        filterParamsMatchingQueryParams: false,
+        initialDateParams: true,
+        params: {},
+      }
+      expect(props.resetSearchStore).toHaveBeenCalled()
+      expect(wrapper.state()).toStrictEqual(expected)
+      expect(props.query.change).toHaveBeenCalledWith(INITIAL_FILTER_PARAMS, {
         pathname: '/recherche/resultats',
       })
     })
   })
 
-  describe('onFilterClick', () => {
-    it('should call hoc withQueryRouter change method with the good parameters', () => {
+  describe('handleQueryAdd()', () => {
+    it('should add filter parameters when I have not initial parameters', () => {
       // given
-      const mockResetSearchStore = jest.fn()
-      props.location = { search: '?page=1&jours=0-1' }
-      props.query = {
-        change: queryChangeMock,
-        clear: queryClearMock,
-        parse: () => ({
+      props.query.parse = () => ({})
+      const wrapper = shallow(<SearchFilter {...props} />)
+
+      // when
+      wrapper.instance().handleQueryAdd('jours', '0-1', jest.fn())
+
+      // then
+      expect(wrapper.state()).toStrictEqual({
+        filterParamsMatchingQueryParams: 'jours',
+        initialDateParams: true,
+        params: {
           jours: '0-1',
-          page: '1',
-        }),
-      }
-      const wrapper = shallow(
-        <SearchFilterContainer.WrappedComponent.WrappedComponent {...props} />
+        },
+      })
+    })
+
+    it('should add filter parameters when I have initial parameters', () => {
+      // given
+      props.query.parse = () => ({
+        categories: 'Jouer',
+      })
+      const wrapper = shallow(<SearchFilter {...props} />)
+
+      // when
+      wrapper.instance().handleQueryAdd('categories', 'Lire', undefined)
+
+      // then
+      expect(wrapper.state()).toStrictEqual({
+        filterParamsMatchingQueryParams: 'categories',
+        initialDateParams: true,
+        params: {
+          categories: 'Jouer,Lire',
+        },
+      })
+    })
+  })
+
+  describe('handleQueryRemove()', () => {
+    it('should remove filter parameters when I have initial parameters', () => {
+      // given
+      props.query.parse = () => ({
+        categories: 'Jouer,Applaudir',
+      })
+      const wrapper = shallow(<SearchFilter {...props} />)
+
+      // when
+      wrapper.instance().handleQueryRemove('categories', 'Jouer', undefined)
+
+      // then
+      expect(wrapper.state()).toStrictEqual({
+        filterParamsMatchingQueryParams: 'categories',
+        initialDateParams: true,
+        params: {
+          categories: 'Applaudir',
+        },
+      })
+    })
+  })
+
+  describe('render()', () => {
+    it('should have three filters and one reset button and one filter button by default', () => {
+      // given
+      const store = configureStore([])(REDUX_STATE)
+      const wrapper = mount(
+        <Provider store={store}>
+          <SearchFilter {...props} />
+        </Provider>
       )
 
       // when
-      wrapper.instance().onClickFilterButton()
-      const currentQuery = wrapper.state('params')
-      const updatedFormState = wrapper.state('filterParamsMatchingQueryParams')
+      const transition = wrapper.find(Transition)
+      const filterByDates = transition.find(FilterByDates)
+      const filterByDistanceContainer = transition.find(
+        FilterByDistanceContainer
+      )
+      const filterByOfferTypesContainer = transition.find(
+        FilterByOfferTypesContainer
+      )
+      const resetButton = transition.find('#search-filter-reset-button')
+      const filterButton = transition.find('#filter-button')
 
       // then
-      expect(updatedFormState).toBe(false)
-      expect(mockResetSearchStore).not.toHaveBeenCalled()
-      expect(queryChangeMock).toHaveBeenCalledWith(currentQuery, {
-        pathname: '/recherche/resultats',
-      })
+      expect(transition).toHaveLength(1)
+      expect(filterByDates).toHaveLength(1)
+      expect(filterByDistanceContainer).toHaveLength(1)
+      expect(filterByOfferTypesContainer).toHaveLength(1)
+      expect(resetButton).toHaveLength(1)
+      expect(filterButton).toHaveLength(1)
     })
   })
 })

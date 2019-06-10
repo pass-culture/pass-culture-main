@@ -10,12 +10,10 @@ import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from '../utils'
 const filtersPanelHeight = 475
 const transitionDelay = 0
 const transitionDuration = 500
-
 const defaultStyle = {
   marginTop: `-${filtersPanelHeight}px`,
   transition: `margin-top ${transitionDuration}ms ease`,
 }
-
 const transitionStyles = {
   entered: { marginTop: 0 },
   entering: { marginTop: 0 },
@@ -28,17 +26,11 @@ export class SearchFilter extends Component {
     super(props)
 
     const { query } = props
-    const queryParams = query.parse()
 
     this.state = {
       filterParamsMatchingQueryParams: false,
       initialDateParams: true,
-      params: Object.assign({}, queryParams),
-    }
-    this.filterActions = {
-      add: this.handleQueryAdd,
-      change: this.handleQueryChange,
-      remove: this.handleQueryRemove,
+      params: query.parse() || {},
     }
   }
 
@@ -52,11 +44,11 @@ export class SearchFilter extends Component {
 
   handleReinitializeParams = () => {
     const { query } = this.props
-    const queryParams = query.parse()
 
     this.setState({
       filterParamsMatchingQueryParams: false,
-      params: queryParams,
+      initialDateParams: true,
+      params: query.parse(),
     })
   }
 
@@ -74,27 +66,22 @@ export class SearchFilter extends Component {
     }
 
     params.page = null
-
     query.change(params, { pathname: '/recherche/resultats' })
     this.setState({
       initialDateParams: false,
     })
-
     onClickFilterButton(isVisible)
   }
 
-  onResetClick = () => {
+  onClickReset = () => {
     const { query, resetSearchStore } = this.props
 
     resetSearchStore()
 
     this.setState({
+      filterParamsMatchingQueryParams: false,
       initialDateParams: true,
-      params: {
-        date: null,
-        distance: null,
-        jours: null,
-      },
+      params: {},
     })
 
     query.change(INITIAL_FILTER_PARAMS, {
@@ -105,10 +92,9 @@ export class SearchFilter extends Component {
   handleQueryChange = (newValue, callback) => {
     const { query } = this.props
     const { params } = this.state
-    const queryParams = query.parse()
-    const nextFilterParams = Object.assign({}, params, newValue)
+    const nextFilterParams = { ...params, ...newValue }
     const filterParamsMatchingQueryParams = getFirstChangingKey(
-      queryParams,
+      query.parse(),
       newValue
     )
 
@@ -121,37 +107,35 @@ export class SearchFilter extends Component {
     )
   }
 
-  handleQueryAdd = (key, value, callback) => {
+  handleQueryAdd = (paramKey, paramValue, callback) => {
     const { params } = this.state
-    const encodedValue = encodeURI(value)
+    const encodedValue = encodeURI(paramValue)
     let nextValue = encodedValue
-    const previousValue = params[key]
+    const previousValue = params[paramKey]
 
     if (previousValue && previousValue.length) {
-      const args = previousValue.split(',').concat([encodedValue])
-      args.sort()
-      nextValue = args.join(',')
+      nextValue = previousValue
+        .split(',')
+        .concat([encodedValue])
+        .join(',')
     }
 
-    this.handleQueryChange({ [key]: nextValue }, callback)
+    this.handleQueryChange({ [paramKey]: nextValue }, callback)
   }
 
-  handleQueryRemove = (key, value, callback) => {
+  handleQueryRemove = (paramKey, paramValue, callback) => {
     const { params } = this.state
-    const previousValue = params[key]
+    const previousValue = params[paramKey]
 
     if (previousValue && previousValue.length) {
-      const encodedValue = encodeURI(value)
-      let nextValue = previousValue
-        .replace(`,${encodedValue}`, '')
-        .replace(encodedValue, '')
-
-      if (nextValue[0] === ',') {
-        nextValue = nextValue.slice(1)
-      }
+      const encodedValue = encodeURI(paramValue)
+      const nextValue = previousValue
+        .split(',')
+        .filter(value => value !== encodedValue)
+        .join()
 
       this.handleQueryChange(
-        { [key]: nextValue === '' ? null : nextValue },
+        { [paramKey]: nextValue === '' ? null : nextValue },
         callback
       )
     }
@@ -160,6 +144,11 @@ export class SearchFilter extends Component {
   render() {
     const { isVisible } = this.props
     const { initialDateParams } = this.state
+    const filterActions = {
+      add: this.handleQueryAdd,
+      change: this.handleQueryChange,
+      remove: this.handleQueryRemove,
+    }
 
     return (
       <div className="is-relative is-clipped">
@@ -171,16 +160,16 @@ export class SearchFilter extends Component {
               style={{ ...defaultStyle, ...transitionStyles[status] }}
             >
               <FilterByDates
-                filterActions={this.filterActions}
+                filterActions={filterActions}
                 filterState={this.state}
                 initialDateParams={initialDateParams}
               />
               <FilterByDistanceContainer
-                filterActions={this.filterActions}
+                filterActions={filterActions}
                 filterState={this.state}
               />
               <FilterByOfferTypesContainer
-                filterActions={this.filterActions}
+                filterActions={filterActions}
                 filterState={this.state}
               />
               <div
@@ -190,7 +179,7 @@ export class SearchFilter extends Component {
                 <button
                   className="no-background no-outline col-1of2 fs20 py12"
                   id="search-filter-reset-button"
-                  onClick={this.onResetClick}
+                  onClick={this.onClickReset}
                   type="reset"
                 >
                   Réinitialiser

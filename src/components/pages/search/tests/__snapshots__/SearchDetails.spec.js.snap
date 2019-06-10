@@ -14,7 +14,11 @@ ShallowWrapper {
         },
       }
     }
-    recommendation={Object {}}
+    recommendation={
+      Object {
+        "id": "EA",
+      }
+    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -36,13 +40,21 @@ ShallowWrapper {
           <Connect(Verso)
             extraClassName="with-header"
             forceDetailsVisible={false}
-            recommendation={Object {}}
+            recommendation={
+              Object {
+                "id": "EA",
+              }
+            }
           />
           <withRouter(Connect(Recto))
             areDetailsVisible={false}
             extraClassName="with-header"
             position="current"
-            recommendation={Object {}}
+            recommendation={
+              Object {
+                "id": "EA",
+              }
+            }
           />
         </React.Fragment>,
       ],
@@ -59,13 +71,21 @@ ShallowWrapper {
             <Connect(Verso)
               extraClassName="with-header"
               forceDetailsVisible={false}
-              recommendation={Object {}}
+              recommendation={
+                Object {
+                  "id": "EA",
+                }
+              }
             />,
             <withRouter(Connect(Recto))
               areDetailsVisible={false}
               extraClassName="with-header"
               position="current"
-              recommendation={Object {}}
+              recommendation={
+                Object {
+                  "id": "EA",
+                }
+              }
             />,
           ],
         },
@@ -78,7 +98,9 @@ ShallowWrapper {
             "props": Object {
               "extraClassName": "with-header",
               "forceDetailsVisible": false,
-              "recommendation": Object {},
+              "recommendation": Object {
+                "id": "EA",
+              },
             },
             "ref": null,
             "rendered": null,
@@ -92,7 +114,9 @@ ShallowWrapper {
               "areDetailsVisible": false,
               "extraClassName": "with-header",
               "position": "current",
-              "recommendation": Object {},
+              "recommendation": Object {
+                "id": "EA",
+              },
             },
             "ref": null,
             "rendered": null,
@@ -116,13 +140,21 @@ ShallowWrapper {
             <Connect(Verso)
               extraClassName="with-header"
               forceDetailsVisible={false}
-              recommendation={Object {}}
+              recommendation={
+                Object {
+                  "id": "EA",
+                }
+              }
             />
             <withRouter(Connect(Recto))
               areDetailsVisible={false}
               extraClassName="with-header"
               position="current"
-              recommendation={Object {}}
+              recommendation={
+                Object {
+                  "id": "EA",
+                }
+              }
             />
           </React.Fragment>,
         ],
@@ -139,13 +171,21 @@ ShallowWrapper {
               <Connect(Verso)
                 extraClassName="with-header"
                 forceDetailsVisible={false}
-                recommendation={Object {}}
+                recommendation={
+                  Object {
+                    "id": "EA",
+                  }
+                }
               />,
               <withRouter(Connect(Recto))
                 areDetailsVisible={false}
                 extraClassName="with-header"
                 position="current"
-                recommendation={Object {}}
+                recommendation={
+                  Object {
+                    "id": "EA",
+                  }
+                }
               />,
             ],
           },
@@ -158,7 +198,9 @@ ShallowWrapper {
               "props": Object {
                 "extraClassName": "with-header",
                 "forceDetailsVisible": false,
-                "recommendation": Object {},
+                "recommendation": Object {
+                  "id": "EA",
+                },
               },
               "ref": null,
               "rendered": null,
@@ -172,7 +214,9 @@ ShallowWrapper {
                 "areDetailsVisible": false,
                 "extraClassName": "with-header",
                 "position": "current",
-                "recommendation": Object {},
+                "recommendation": Object {
+                  "id": "EA",
+                },
               },
               "ref": null,
               "rendered": null,

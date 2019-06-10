@@ -146,7 +146,7 @@ describe('src | components | pages | search | SearchResults', () => {
 
           // then
           expect(resultsTitle).toBe(false)
-          expect(SearchResultItemWrapper.props()).toEqual(item)
+          expect(SearchResultItemWrapper.props()).toStrictEqual(item)
         })
       })
 
@@ -191,7 +191,7 @@ describe('src | components | pages | search | SearchResults', () => {
 
           // then
           expect(resultsTitle.children).toBe('"fakeKeywords" : 1 résultat')
-          expect(SearchResultItemWrapper.props()).toEqual(item)
+          expect(SearchResultItemWrapper.props()).toStrictEqual(item)
         })
       })
 

@@ -222,8 +222,9 @@ export class Search extends PureComponent {
     const isOneCharInKeywords = keywordsValue && keywordsValue.length > 0
 
     let headerTitle = 'Recherche'
-    if (location.pathname.includes('/resultats'))
+    if (location.pathname.includes('/resultats')) {
       headerTitle = `${headerTitle} : résultats`
+    }
 
     let description
     const category = decodeURIComponent(queryParams.categories)

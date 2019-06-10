@@ -9,6 +9,7 @@ ShallowWrapper {
     onClickFilterButton={[MockFunction]}
     query={
       Object {
+        "change": [MockFunction],
         "parse": [MockFunction] {
           "calls": Array [
             Array [],

@@ -2,15 +2,11 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import { Route } from 'react-router-dom'
 
-import { requestData } from 'redux-saga-data'
 import BookingContainer from '../../../booking/BookingContainer'
+import { recommendationNormalizer } from '../../../../utils/normalizers'
 import { SearchDetails } from '../SearchDetails'
 import RectoContainer from '../../../recto/RectoContainer'
 import VersoContainer from '../../../verso/VersoContainer'
-
-jest.mock('redux-saga-data', () => ({
-  requestData: jest.fn(),
-}))
 
 describe('src | components | pages | search | SearchDetails', () => {
   let props
@@ -25,7 +21,9 @@ describe('src | components | pages | search | SearchDetails', () => {
           option: 'Applaudir',
         },
       },
-      recommendation: {},
+      recommendation: {
+        id: 'EA',
+      },
     }
   })
 
@@ -42,20 +40,23 @@ describe('src | components | pages | search | SearchDetails', () => {
     it('should dispatch the request data', () => {
       // given
       const wrapper = shallow(<SearchDetails {...props} />)
-      const expectedAction = {
-        type: '/recommendations/offers/',
-      }
-      requestData.mockReturnValue(expectedAction)
 
       // when
       wrapper.instance().handleRequestData()
 
       // then
-      const requestDataArguments = requestData.mock.calls[0][0]
-      expect(requestDataArguments.apiPath).toBe(
-        `/recommendations/offers/${props.match.params.offerId}`
-      )
-      expect(props.dispatch).toHaveBeenCalledWith(expectedAction)
+      expect(props.dispatch).toHaveBeenCalledWith({
+        config: {
+          apiPath: `/recommendations/offers/${props.recommendation.id}`,
+          handleSuccess: expect.any(Function),
+          method: 'GET',
+          normalizer: recommendationNormalizer,
+          stateKeys: 'searchRecommendations',
+        },
+        type: `REQUEST_DATA_GET_/RECOMMENDATIONS/OFFERS/${
+          props.recommendation.id
+        }`,
+      })
     })
   })
 

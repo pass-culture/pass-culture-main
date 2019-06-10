@@ -1,6 +1,4 @@
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
-import { compose } from 'redux'
 
 import { selectCurrentSearchRecommendation } from '../../../selectors'
 import { SearchDetails } from './SearchDetails'
@@ -16,7 +14,4 @@ function mapStateToProps(state, ownProps) {
   return { recommendation }
 }
 
-export const SearchDetailsContainer = compose(
-  withRouter,
-  connect(mapStateToProps)
-)(SearchDetails)
+export const SearchDetailsContainer = connect(mapStateToProps)(SearchDetails)

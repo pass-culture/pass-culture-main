@@ -1,13 +1,9 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
-import { requestData } from 'redux-saga-data'
 
+import { recommendationNormalizer } from '../../../../utils/normalizers'
 import { SearchResultItem } from '../SearchResultItem'
-
-jest.mock('redux-saga-data', () => ({
-  requestData: jest.fn(),
-}))
 
 describe('src | components | pages | search | SearchResultItem', () => {
   let props
@@ -68,20 +64,21 @@ describe('src | components | pages | search | SearchResultItem', () => {
     it('should dispatch the request data', () => {
       // given
       const wrapper = shallow(<SearchResultItem {...props} />)
-      const expectedAction = {
-        type: '/recommendations/',
-      }
-      requestData.mockReturnValue(expectedAction)
 
       // when
       wrapper.instance().markSearchRecommendationsAsClicked()
 
       // then
-      const requestDataArguments = requestData.mock.calls[0][0]
-      expect(requestDataArguments.apiPath).toBe(
-        `/recommendations/${props.recommendation.id}`
-      )
-      expect(props.dispatch).toHaveBeenCalledWith(expectedAction)
+      expect(props.dispatch).toHaveBeenCalledWith({
+        config: {
+          apiPath: `/recommendations/${props.recommendation.id}`,
+          body: { isClicked: true },
+          handleSuccess: expect.any(Function),
+          method: 'PATCH',
+          normalizer: recommendationNormalizer,
+        },
+        type: `REQUEST_DATA_PATCH_/RECOMMENDATIONS/${props.recommendation.id}`,
+      })
     })
   })
 
