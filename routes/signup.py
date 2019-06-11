@@ -71,6 +71,7 @@ def signup_pro():
     objects_to_save.append(user_offerer)
     new_user.canBookFreeOffers = False
     new_user.isAdmin = False
+    new_user.hasFilledCulturalSurvey = True
     new_user = _set_offerer_departement_code(new_user, offerer)
 
     new_user.generate_validation_token()

@@ -202,6 +202,34 @@ class Post:
             assert user_offerer.validationToken is not None
             assert user_offerer.rights == RightsType.editor
 
+        @clean_database
+        def when_successful_and_mark_pro_user_as_no_cultural_survey_needed(self,
+                                                                                     app):
+            # Given
+            json_offerer = {
+                "name": "Test Offerer",
+                "siren": "349974931",
+                "address": "Test adresse",
+                "postalCode": "75000",
+                "city": "Paris"
+            }
+            offerer = Offerer(from_dict=json_offerer)
+            PcObject.save(offerer)
+
+            data = BASE_DATA_PRO.copy()
+
+            # When
+            response = TestClient() \
+                .post(API_URL + '/users/signup/pro',
+                                json=data, headers={'origin': 'http://localhost:3000'})
+
+            # Then
+            assert response.status_code == 201
+            user = User.query \
+                .filter_by(email='toto_pro@btmx.fr') \
+                .first()
+            assert user.hasFilledCulturalSurvey == True
+
     class Returns400:
         @clean_database
         def when_email_is_missing(self, app):

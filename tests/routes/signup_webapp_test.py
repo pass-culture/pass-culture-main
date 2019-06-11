@@ -100,6 +100,21 @@ class Post:
             assert not created_user.isAdmin
 
         @clean_database
+        def test_created_user_does_not_have_validation_token_and_cannot_book_free_offers(self, app):
+            data = BASE_DATA.copy()
+
+            # When
+            response = TestClient() \
+                .post(API_URL + '/users/signup/webapp',
+                      json=data, headers={'origin': 'http://localhost:3000'})
+
+            # Then
+            assert response.status_code == 201
+            assert 'validationToken' not in response.json()
+            created_user = User.query.filter_by(email='toto@btmx.fr').first()
+            assert created_user.hasFilledCulturalSurvey == False
+
+        @clean_database
         def when_calling_old_route(self, app):
             # Given
             data = BASE_DATA.copy()
