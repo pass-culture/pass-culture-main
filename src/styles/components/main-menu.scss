@@ -46,6 +46,15 @@ $main-menu-height-with-padding: (592px + 24px); // 24 === padding (2 * 12)
     width: 55%;
     border-left: 1px solid $white;
   }
+
+  .wallet-value {
+    letter-spacing: -0.1rem;
+    line-height: 42px;
+  }
+
+  .currency {
+    line-height: 42px;
+  }
 }
 
 #main-menu-header-avatar img {

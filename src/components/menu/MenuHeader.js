@@ -28,15 +28,8 @@ export const RawMenuHeader = ({ currentUser }) => {
           <span>Mon Pass</span>
         </p>
         <p id="main-menu-header-wallet-value">
-          <span
-            className="fs44 is-semi-bold"
-            style={{ letterSpacing: '-0.1rem', lineHeight: '42px' }}
-          >
-            {walletValue}
-          </span>
-          <span className="fs30" style={{ lineHeight: '42px' }}>
-            &nbsp;€
-          </span>
+          <span className="fs44 is-semi-bold wallet-value">{walletValue}</span>
+          <span className="fs30 currency">&nbsp;€</span>
         </p>
       </div>
     </div>
