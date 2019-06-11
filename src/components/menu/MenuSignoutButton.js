@@ -13,18 +13,18 @@ const MenuSignoutButton = ({ onSignoutClick, ...ownProps }) => (
   <button
     type="button"
     id="main-menu-logout-button"
-    className="pc-text-button flex-columns text-left p16"
+    className="pc-text-button flex-columns text-left px16 py8"
     onClick={onSignoutClick(ownProps)}
   >
     <span className="menu-icon mr16 text-center">
       <Icon svg="ico-deconnect-w" alt="" />
     </span>
-    <span>Déconnexion</span>
+    <span className="pt5">Déconnexion</span>
   </button>
 )
 
 MenuSignoutButton.propTypes = {
-  onSignoutClick: PropTypes.func.isRequired
+  onSignoutClick: PropTypes.func.isRequired,
 }
 
 export default compose(

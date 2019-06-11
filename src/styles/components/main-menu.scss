@@ -25,9 +25,6 @@ $main-menu-height-with-padding: (592px + 24px); // 24 === padding (2 * 12)
 
 #main-menu-fixed-container {
   border-radius: rem(16px);
-  height: $main-menu-height;
-  max-height: $main-menu-height;
-  min-height: $main-menu-height;
 }
 
 #main-menu-close-button {
@@ -37,13 +34,11 @@ $main-menu-height-with-padding: (592px + 24px); // 24 === padding (2 * 12)
 }
 
 #main-menu-header {
-  height: $main-menu-header-height;
-  max-height: $main-menu-header-height;
   min-height: $main-menu-header-height;
   border-bottom: 1px solid rgba(0, 0, 0, 0.4);
 
   .column-profile {
-    width: 45%;
+    width: 38%;
     min-width: 108px;
   }
 
@@ -67,9 +62,10 @@ $main-menu-height-with-padding: (592px + 24px); // 24 === padding (2 * 12)
 
 #main-menu-navigation button,
 #main-menu-navigation .navlink {
-  @extend .fs19;
+  @extend .fs16;
   @extend .flex-columns;
   @extend .is-white-text;
+  @extend .is-medium;
   cursor: pointer;
 
   .menu-icon {
@@ -84,10 +80,10 @@ $main-menu-height-with-padding: (592px + 24px); // 24 === padding (2 * 12)
 }
 
 #main-menu-navigation .navlink {
-  height: 52px;
-  min-height: 52px;
-  max-height: 52px;
-  line-height: 52px;
+  height: 44px;
+  min-height: 44px;
+  max-height: 44px;
+  line-height: 44px;
 
   & + .navlink {
     @extend .dotted-top-black;

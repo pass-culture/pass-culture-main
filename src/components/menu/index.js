@@ -102,7 +102,7 @@ class MainMenu extends React.PureComponent {
                 >
                   {this.renderCloseButton()}
                   <MenuHeader currentUser={currentUser} />
-                  <nav id="main-menu-navigation" className="flex-rows mt16 pb0">
+                  <nav id="main-menu-navigation" className="flex-rows pb0">
                     {this.renderNavigationLinks()}
                   </nav>
                 </div>

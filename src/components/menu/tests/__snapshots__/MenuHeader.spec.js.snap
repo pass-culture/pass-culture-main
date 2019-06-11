@@ -51,17 +51,18 @@ ShallowWrapper {
           className="column-account flex-1 flex-rows flex-center px12"
         >
           <p
-            className="fs30 mb12"
+            className="fs30"
           >
             <span>
               Mon Pass
             </span>
           </p>
           <p
+            className="text-center"
             id="main-menu-header-wallet-value"
           >
             <span
-              className="fs52 is-normal"
+              className="fs39 is-semi-bold"
               style={
                 Object {
                   "lineHeight": "42px",
@@ -170,17 +171,18 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <p
-              className="fs30 mb12"
+              className="fs30"
             >
               <span>
                 Mon Pass
               </span>
             </p>,
             <p
+              className="text-center"
               id="main-menu-header-wallet-value"
             >
               <span
-                className="fs52 is-normal"
+                className="fs39 is-semi-bold"
                 style={
                   Object {
                     "lineHeight": "42px",
@@ -204,7 +206,7 @@ ShallowWrapper {
               "children": <span>
                 Mon Pass
               </span>,
-              "className": "fs30 mb12",
+              "className": "fs30",
             },
             "ref": null,
             "rendered": Object {
@@ -226,7 +228,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": <span
-                className="fs52 is-normal"
+                className="fs39 is-semi-bold"
                 style={
                   Object {
                     "lineHeight": "42px",
@@ -236,6 +238,7 @@ ShallowWrapper {
                 500
                  €
               </span>,
+              "className": "text-center",
               "id": "main-menu-header-wallet-value",
             },
             "ref": null,
@@ -248,7 +251,7 @@ ShallowWrapper {
                   500,
                   " €",
                 ],
-                "className": "fs52 is-normal",
+                "className": "fs39 is-semi-bold",
                 "style": Object {
                   "lineHeight": "42px",
                 },
@@ -300,17 +303,18 @@ ShallowWrapper {
             className="column-account flex-1 flex-rows flex-center px12"
           >
             <p
-              className="fs30 mb12"
+              className="fs30"
             >
               <span>
                 Mon Pass
               </span>
             </p>
             <p
+              className="text-center"
               id="main-menu-header-wallet-value"
             >
               <span
-                className="fs52 is-normal"
+                className="fs39 is-semi-bold"
                 style={
                   Object {
                     "lineHeight": "42px",
@@ -419,17 +423,18 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               <p
-                className="fs30 mb12"
+                className="fs30"
               >
                 <span>
                   Mon Pass
                 </span>
               </p>,
               <p
+                className="text-center"
                 id="main-menu-header-wallet-value"
               >
                 <span
-                  className="fs52 is-normal"
+                  className="fs39 is-semi-bold"
                   style={
                     Object {
                       "lineHeight": "42px",
@@ -453,7 +458,7 @@ ShallowWrapper {
                 "children": <span>
                   Mon Pass
                 </span>,
-                "className": "fs30 mb12",
+                "className": "fs30",
               },
               "ref": null,
               "rendered": Object {
@@ -475,7 +480,7 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": <span
-                  className="fs52 is-normal"
+                  className="fs39 is-semi-bold"
                   style={
                     Object {
                       "lineHeight": "42px",
@@ -485,6 +490,7 @@ ShallowWrapper {
                   500
                    €
                 </span>,
+                "className": "text-center",
                 "id": "main-menu-header-wallet-value",
               },
               "ref": null,
@@ -497,7 +503,7 @@ ShallowWrapper {
                     500,
                     " €",
                   ],
-                  "className": "fs52 is-normal",
+                  "className": "fs39 is-semi-bold",
                   "style": Object {
                     "lineHeight": "42px",
                   },
