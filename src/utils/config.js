@@ -9,7 +9,8 @@ import { getMobileOperatingSystem } from '../helpers'
 moment.locale('fr-fr')
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
-export const TYPEFORM_URL_CULTURAL_PRACTICES_POLL = process.env.TYPEFORM_URL_CULTURAL_PRACTICES_POLL || ''
+export const TYPEFORM_URL_CULTURAL_PRACTICES_POLL =
+  process.env.TYPEFORM_URL_CULTURAL_PRACTICES_POLL || ''
 export const APP_VERSION = version
 export const USE_REDUX_PERSIST = false
 export const PERSIST_STORE_KEY = 'app-passculture'
@@ -17,6 +18,8 @@ export const PROJECT_NAME = 'Pass Culture'
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
 export const MOBILE_OS = getMobileOperatingSystem()
+export const WEBAPP_CONTACT_EXTERNAL_PAGE =
+  'https://docs.passculture.app/experimentateurs'
 
 // NOTE: valeur également présente en dur dans:
 // - ./webapp/README.md

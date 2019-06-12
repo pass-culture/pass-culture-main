@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/utils/tests/routes-utils --watch
 import { filterRoutes, getMainMenuItems } from '../routes-utils'
 
 import routes from '../routes'
@@ -8,7 +7,6 @@ import FavoritesPage from '../../components/pages/FavoritesPage'
 import MyBookingsPage from '../../components/pages/my-bookings'
 import ProfilePage from '../../components/pages/profile'
 import SearchContainer from '../../components/pages/search/SearchContainer'
-import { SUPPORT_EMAIL, SUPPORT_EMAIL_SUBJECT } from '../config'
 
 describe('filterRoutes', () => {
   it('filter routes pour react-router', () => {
@@ -109,7 +107,7 @@ describe('getMainMenuItems', () => {
       },
       {
         disabled: false,
-        href: `mailto:${SUPPORT_EMAIL}?subject=${SUPPORT_EMAIL_SUBJECT}`,
+        href: 'https://docs.passculture.app/experimentateurs',
         icon: 'mail-w',
         title: 'Nous contacter',
       },

@@ -2,7 +2,7 @@ import { ClientFunction, Selector } from 'testcafe'
 
 import { fetchSandbox } from './helpers/sandboxes'
 import { createUserRole } from './helpers/roles'
-import { ROOT_PATH, SUPPORT_EMAIL } from '../src/utils/config'
+import { ROOT_PATH } from '../src/utils/config'
 import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 
 const menuButton = Selector('#open-menu-button')
@@ -117,10 +117,10 @@ test('Menu | Liens | Mon profil', async t => {
 })
 
 test('Menu | Liens | Nous contacter', async t => {
-  const mailto = `mailto:${SUPPORT_EMAIL}`
+  const expected = `https://docs.passculture.app/experimentateurs`
   const menuContact = Selector('.navlink').withText('Nous contacter')
   await t.expect(menuContact.exists).ok()
-  await t.expect(menuContact.getAttribute('href')).contains(mailto)
+  await t.expect(menuContact.getAttribute('href')).contains(expected)
 })
 
 test('Menu | Liens | Mentions légales', async t => {

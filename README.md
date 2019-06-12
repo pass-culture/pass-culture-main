@@ -76,4 +76,4 @@ La commande ci-dessous permet de mettre à jour le dossier dans `public/static/f
 yarn fontello
 ```
 
-[Nous Contacter](support@passculture.app)
+[Nous Contacter](https://docs.passculture.app/experimentateurs)

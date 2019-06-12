@@ -1,6 +1,7 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
 
+import { WEBAPP_CONTACT_EXTERNAL_PAGE } from './config'
 import ActivationRoutesContainer from '../components/pages/activation/ActivationRoutesContainer'
 import BetaPage from '../components/pages/BetaPage'
 import MyBookingsPage from '../components/pages/my-bookings'
@@ -12,8 +13,6 @@ import TypeFormPage from '../components/pages/typeform/TypeFormContainer'
 import SearchContainer from '../components/pages/search/SearchContainer'
 import SigninContainer from '../components/pages/signin/SigninContainer'
 import SignupPage from '../components/pages/SignupPage'
-
-import { SUPPORT_EMAIL, SUPPORT_EMAIL_SUBJECT } from './config'
 
 const routes = [
   {
@@ -98,7 +97,7 @@ const routes = [
   },
   {
     disabled: false,
-    href: `mailto:${SUPPORT_EMAIL}?subject=${SUPPORT_EMAIL_SUBJECT}`,
+    href: WEBAPP_CONTACT_EXTERNAL_PAGE,
     icon: 'mail-w',
     title: 'Nous contacter',
   },
