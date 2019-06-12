@@ -1,4 +1,4 @@
-import withLogin from 'with-login'
+import withLogin from './withLogin'
 
 import { getRedirectToCurrentLocationOrTypeform } from './helpers'
 

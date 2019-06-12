@@ -284,6 +284,7 @@ export class Search extends PureComponent {
                             placeholder="Un mot-clé"
                             type="text"
                           />
+
                           {isOneCharInKeywords && (
                             <span className="icon is-small is-right">
                               <button
