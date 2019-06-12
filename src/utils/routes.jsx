@@ -9,10 +9,10 @@ import Mediation from '../components/pages/Mediation'
 import Offers from '../components/pages/Offers'
 import Offer from '../components/pages/Offer/OfferContainer'
 import OffererContainer from '../components/pages/Offerer/OffererContainer'
-import Offerers from '../components/pages/Offerers'
+import Offerers from '../components/pages/Offerers/OfferersContainer'
 import ProfilContainer from '../components/pages/Profil/ProfilContainer'
 import ReimbursementsContainer from '../components/pages/Reimbursements/ReimbursementsContainer'
-import Signin from '../components/pages/Signin/Signin'
+import SigninContainer from '../components/pages/Signin/SigninContainer'
 import Signup from '../components/pages/Signup'
 import Terms from '../components/pages/Terms'
 import VenueContainer from '../components/pages/Venue/VenueContainer'
@@ -36,7 +36,7 @@ const routes = [
     title: 'Comptabilité',
   },
   {
-    component: Signin,
+    component: SigninContainer,
     path: '/connexion',
     title: 'Connexion',
   },
