@@ -5,11 +5,10 @@ import DownloadButtonContainer from 'components/layout/DownloadButton/DownloadBu
 import Main from 'components/layout/Main'
 import HeroSection from 'components/layout/HeroSection/HeroSection'
 import { API_URL } from 'utils/config'
-import {FilterByVenue} from "./FilterByVenue"
-import {SelectDigitalOffer} from "./SelectDigitalOffer"
-import {FilterByOffer} from "./FilterByOffer"
-import {FilterByDigitalOffer} from "./FilterByDigitalOffer"
-import {FilterByDate} from "./FilterByDate"
+import {FilterByVenue} from './FilterByVenue'
+import {FilterByOffer} from './FilterByOffer'
+import {FilterByDigitalOffer} from './FilterByDigitalOffer'
+import {FilterByDate} from './FilterByDate'
 
 class Bookings extends Component {
   componentDidMount() {

@@ -1,9 +1,9 @@
-import {compose} from "redux"
-import {connect} from "react-redux"
+import {compose} from 'redux'
+import {connect} from 'react-redux'
 import { withFrenchQueryRouter } from 'components/hocs'
 
-import StockItem from "../Offer/StocksManager/StockItem/StockItem"
-import selectOffersByVenueId from "../../../selectors/selectOffersByVenueId"
+import StockItem from '../Offer/StocksManager/StockItem/StockItem'
+import selectOffersByVenueId from './selectOffersByVenueId'
 
 export const mapStateToProps = (state, ownProps) => {
   const venueId = "AM"
