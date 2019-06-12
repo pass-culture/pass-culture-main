@@ -16,12 +16,12 @@ def find_user_by_email(email: str) -> User:
         .first()
 
 
-def find_by_first_and_last_names_and_birth_date_and_email(first_name: str, last_name: str, birth_date: datetime, email: str) -> List[User]:
+def find_by_first_and_last_names_and_birth_date_or_email(first_name: str, last_name: str, birth_date: datetime, email: str) -> List[User]:
+    civility_predicate = (_matching(User.firstName, first_name)) & (_matching(User.lastName,last_name)) & (User.dateOfBirth == birth_date)
+    email_predicate = _matching(User.email, email)
+
     return User.query \
-        .filter(_matching(User.firstName, first_name)) \
-        .filter(_matching(User.lastName, last_name)) \
-        .filter(User.dateOfBirth == birth_date) \
-        .filter(_matching(User.email, email)) \
+        .filter(civility_predicate | email_predicate) \
         .all()
 
 

@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, MINYEAR
 
 from models import PcObject
-from repository.user_queries import get_all_users_wallet_balances, find_by_first_and_last_names_and_birth_date_and_email, \
+from repository.user_queries import get_all_users_wallet_balances, find_by_first_and_last_names_and_birth_date_or_email, \
     find_most_recent_beneficiary_creation_date
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_deposit, \
@@ -98,7 +98,7 @@ class GetAllUsersWalletBalancesTest:
         assert balances[1].real_balance == 200
 
 
-class FindByFirstAndLastNamesAndEmailTest:
+class FindByFirstAndLastNamesOrEmailTest:
     @clean_database
     def test_returns_users_with_matching_criteria_ignoring_case(self, app):
         # given
@@ -109,7 +109,7 @@ class FindByFirstAndLastNamesAndEmailTest:
         PcObject.save(user1, user2)
 
         # when
-        users = find_by_first_and_last_names_and_birth_date_and_email('john', 'doe', datetime(2000, 5, 1), 'john@test.com')
+        users = find_by_first_and_last_names_and_birth_date_or_email('john', 'doe', datetime(2000, 5, 1), 'john@test.com')
 
         # then
         assert len(users) == 1
@@ -125,7 +125,7 @@ class FindByFirstAndLastNamesAndEmailTest:
         PcObject.save(user1, user2)
 
         # when
-        users = find_by_first_and_last_names_and_birth_date_and_email('johnbob', 'doe', datetime(2000, 5, 1), 'john.b@test.com')
+        users = find_by_first_and_last_names_and_birth_date_or_email('johnbob', 'doe', datetime(2000, 5, 1), 'john.b@test.com')
 
         # then
         assert len(users) == 1
@@ -141,7 +141,7 @@ class FindByFirstAndLastNamesAndEmailTest:
         PcObject.save(user1, user2)
 
         # when
-        users = find_by_first_and_last_names_and_birth_date_and_email('johnbob', 'doe', datetime(2000, 5, 1), 'john.b@test.com')
+        users = find_by_first_and_last_names_and_birth_date_or_email('johnbob', 'doe', datetime(2000, 5, 1), 'john.b@test.com')
 
         # then
         assert len(users) == 1
@@ -157,7 +157,7 @@ class FindByFirstAndLastNamesAndEmailTest:
         PcObject.save(user1, user2)
 
         # when
-        users = find_by_first_and_last_names_and_birth_date_and_email('jöhn bób', 'doe', datetime(2000, 5, 1), 'john.b@test.com')
+        users = find_by_first_and_last_names_and_birth_date_or_email('jöhn bób', 'doe', datetime(2000, 5, 1), 'john.b@test.com')
 
         # then
         assert len(users) == 1
@@ -170,11 +170,42 @@ class FindByFirstAndLastNamesAndEmailTest:
         PcObject.save(user)
 
         # when
-        users = find_by_first_and_last_names_and_birth_date_and_email('john', 'doe', datetime(2000, 5, 1), 'johnny')
+        users = find_by_first_and_last_names_and_birth_date_or_email('john', 'doe', datetime(2000, 5, 1), 'johnny')
 
         # then
         assert not users
 
+    @clean_database
+    def test_returns_users_with_matching_criteria_email_and_invalid_first_and_last_names_and_birthdate(self, app):
+        # given
+        user1 = create_user(first_name="john", last_name='DOe', email='john@test.com',
+                            date_of_birth=datetime(2000, 5, 1))
+        user2 = create_user(first_name="jaNE", last_name='DOe', email='jane@test.com',
+                            date_of_birth=datetime(2000, 3, 20))
+        PcObject.save(user1, user2)
+
+        # when
+        users = find_by_first_and_last_names_and_birth_date_or_email('jean', 'frimousse', datetime(1998, 5, 1), 'john@test.com')
+
+        # then
+        assert len(users) == 1
+        assert users[0].email == 'john@test.com'
+
+    @clean_database
+    def test_returns_users_with_matching_criteria_first_and_last_names_and_birthdate_and_invalid_email(self, app):
+        # given
+        user1 = create_user(first_name="john", last_name='DOe', email='john@test.com',
+                            date_of_birth=datetime(2000, 5, 1))
+        user2 = create_user(first_name="jaNE", last_name='DOe', email='jane@test.com',
+                            date_of_birth=datetime(2000, 3, 20))
+        PcObject.save(user1, user2)
+
+        # when
+        users = find_by_first_and_last_names_and_birth_date_or_email('john', 'doe', datetime(2000, 5, 1), 'invalid.email@test.com')
+
+        # then
+        assert len(users) == 1
+        assert users[0].email == 'john@test.com'
 
 class FindMostRecentBeneficiaryCreationDateTest:
     @clean_database

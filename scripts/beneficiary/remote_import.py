@@ -8,7 +8,7 @@ from domain.admin_emails import send_remote_beneficiaries_import_report_email
 from domain.password import generate_reset_token, random_password
 from domain.user_emails import send_activation_notification_email
 from models import User, PcObject, Deposit
-from repository.user_queries import find_by_first_and_last_names_and_birth_date_and_email, find_user_by_email
+from repository.user_queries import find_by_first_and_last_names_and_birth_date_or_email, find_user_by_email
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from utils.logger import logger
 from utils.mailing import send_raw_email
@@ -62,7 +62,7 @@ class DuplicateBeneficiaryError(Exception):
 
 def process_beneficiary_application(
         information: dict, error_messages: List[str], new_beneficiaries,
-        find_duplicate_users: Callable[[str, str, str], User] = find_by_first_and_last_names_and_birth_date_and_email
+        find_duplicate_users: Callable[[str, str, str], User] = find_by_first_and_last_names_and_birth_date_or_email
 ):
     try:
         new_beneficiary = create_beneficiary_from_application(information, find_duplicate_users=find_duplicate_users)
@@ -103,7 +103,7 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
 
 def create_beneficiary_from_application(
         application_detail: dict,
-        find_duplicate_users: Callable[[str, str, str, str], User] = find_by_first_and_last_names_and_birth_date_and_email
+        find_duplicate_users: Callable[[str, str, str, str], User] = find_by_first_and_last_names_and_birth_date_or_email
 ) -> User:
     duplicate_users = find_duplicate_users(
         application_detail['first_name'],
