@@ -15,7 +15,7 @@ export class FilterByVenue extends PureComponent {
   }
 
   render() {
-    const { venues } = this.props
+    const { venuesOptions } = this.props
     const isDisabled=false
 
     return (
@@ -31,7 +31,7 @@ export class FilterByVenue extends PureComponent {
             id="venues"
             onChange={this.onChangeVenue}
           >
-            {venues.map(({ name, id }) => (
+            {venuesOptions.map(({ name, id }) => (
               <option key={id} value={id}>
                 {name}
               </option>
@@ -46,5 +46,5 @@ export class FilterByVenue extends PureComponent {
 }
 
 FilterByVenue.propTypes = {
-  venues: PropTypes.array.isRequired,
+  venuesOptions: PropTypes.array.isRequired,
 }

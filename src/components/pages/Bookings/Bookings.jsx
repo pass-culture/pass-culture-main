@@ -18,8 +18,8 @@ class Bookings extends Component {
   }
 
   render () {
-    const {venues} = this.props
-    const {offers} = this.props
+    const {venuesOptions} = this.props
+    const {offersOptions} = this.props
 
     return(
       <Main name="Bookings">
@@ -35,16 +35,16 @@ class Bookings extends Component {
         </HeroSection>
         <hr/>
         <FilterByVenue
-          venues={venues}
+          venuesOptions={venuesOptions}
         />
         <SelectDigitalOffer
           filterState={this.state}
         />
         <FilterByOffer
-          offers={offers}
+          offers={offersOptions}
         />
         <FilterByDigitalOffer
-          offers={offers}
+          offers={offersOptions}
         />
         <FilterByDate
         />
@@ -62,13 +62,13 @@ class Bookings extends Component {
 }
 
 Bookings.defaultProps = {
-  venues: [],
-  offers: [],
+  venuesOptions: [],
+  offersOptions: [],
 }
 
 Bookings.propTypes = {
-  venues: PropTypes.array.isRequired,
-  offers: PropTypes.array.isRequired,
+  venuesOptions: PropTypes.array.isRequired,
+  offersOptions: PropTypes.array.isRequired,
   loadVenues: PropTypes.func.isRequired,
   loadOffers: PropTypes.func.isRequired
 }

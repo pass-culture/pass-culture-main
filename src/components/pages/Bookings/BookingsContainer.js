@@ -24,21 +24,22 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 })
 
 const mapStateToProps = state => {
-  const { shouldLoadVenue, shouldLoadOffers, venues, offers } = state.data
+  const { venues, offers } = state.data
 
-  const allVenues = {
+  const allVenuesOption = {
     name: "Tous les lieux",
     id: "all",
   }
-  venues.unshift(allVenues)
+  const venuesOptions = [allVenuesOption, ...venues]
 
-  const allOffers = {
+  const allOffersOption = {
     name: "Toutes les offres",
     id: "all",
   }
-  offers.unshift(allOffers)
+  const offersOptions = [allOffersOption, ...offers]
 
-  console.log("allOffers",allOffers)
+  // TO DO : sortir du container et mettre dans un selector
+  // mettre les selector dans le même dossier
 
   /*
   const digitalOffers = selectDigitalOffers()
@@ -46,10 +47,8 @@ const mapStateToProps = state => {
   */
 
   return {
-    shouldLoadVenue,
-    shouldLoadOffers,
-    venues,
-    offers
+    venuesOptions,
+    offersOptions
   }
 }
 

@@ -6,9 +6,8 @@ import {FilterByOffer} from "./FilterByOffer";
 export class FilterByDigitalOffer extends PureComponent {
 
   onChangeDigitalOffer = event => {
-    const selectedOffer = document.getElementById("offers")
-    const offerId = selectedOffer[selectedOffer.selectedIndex].value
-    console.log("OfferId", offerId)
+    //const selectedOffer = document.getElementById("offers")
+    //const offerId = selectedOffer[selectedOffer.selectedIndex].value
   }
 
   render() {
