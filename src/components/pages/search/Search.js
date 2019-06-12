@@ -262,7 +262,7 @@ class Search extends PureComponent {
             path="/recherche/(resultats)?/:option?/:subOption(menu)?"
             render={() => (
               <Fragment>
-                <div className="page-content is-relative">
+                <div className="page-content">
                   <form onSubmit={this.onSubmit}>
                     <div className="flex-columns items-start">
                       <div
