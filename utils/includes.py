@@ -202,6 +202,8 @@ USER_INCLUDES = [
     '-resetPasswordToken',
     '-resetPasswordTokenValidityLimit',
     '-validationToken',
+    'hasPhysicalVenues',
+    'hasOffers',
     'wallet_balance',
     'wallet_is_activated'
 ]

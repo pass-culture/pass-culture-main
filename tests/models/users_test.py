@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from models import ApiErrors, PcObject, RightsType
+from models import ApiErrors, PcObject, RightsType, ThingType
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_deposit, create_booking, \
     create_stock, create_venue, create_offer_with_thing_product
@@ -225,3 +225,87 @@ class RealWalletBalanceTest:
 
         # then
         assert balance == Decimal(50)
+
+
+class hasPhysicalVenuesTest:
+    @clean_database
+    def test_webapp_user_has_no_venue(self, app):
+        # given
+        user = create_user()
+
+        PcObject.save(user)
+
+        # then
+        assert user.hasPhysicalVenues is False
+
+    @clean_database
+    def test_pro_user_has_one_digital_venue_by_default(self, app):
+        # given
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        offerer_venue = create_venue(offerer, is_virtual=True, siret=None)
+        PcObject.save(offerer_venue, user_offerer)
+
+        # then
+        assert user.hasPhysicalVenues is False
+
+    @clean_database
+    def test_pro_user_has_one_digital_venue_and_a_physical_venue(self, app):
+        # given
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        offerer_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        offerer_physical_venue = create_venue(offerer)
+        PcObject.save(offerer_virtual_venue, offerer_physical_venue, user_offerer)
+
+        # then
+        assert user.hasPhysicalVenues is True
+
+    @clean_database
+    def test_pro_user_has_one_digital_venue_and_a_physical_venue(self, app):
+        # given
+        user = create_user()
+        offerer = create_offerer()
+        offerer2 = create_offerer(siren='123456788')
+        user_offerer = create_user_offerer(user, offerer)
+        user_offerer2 = create_user_offerer(user, offerer2)
+        offerer_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        offerer2_physical_venue = create_venue(offerer2, siret='12345678856734')
+        offerer2_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        PcObject.save(offerer_virtual_venue, offerer2_physical_venue, user_offerer, user_offerer2)
+
+        # then
+        assert user.hasPhysicalVenues is True
+
+
+class nOffersTest:
+    @clean_database
+    def test_webapp_user_has_no_offerers(self, app):
+        # given
+        user = create_user()
+
+        PcObject.save(user)
+
+        # then
+        assert user.hasOffers is False
+
+    @clean_database
+    def test_pro_user_with_offers_from_many_offerers(self, app):
+        # given
+        user = create_user()
+        offerer = create_offerer()
+        offerer2 = create_offerer(siren='123456788')
+        user_offerer = create_user_offerer(user, offerer)
+        user_offerer2 = create_user_offerer(user, offerer2)
+        offerer_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        offerer2_physical_venue = create_venue(offerer2, siret='12345678856734')
+        offerer2_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        offer = create_offer_with_thing_product(offerer_virtual_venue, thing_type=ThingType.JEUX_VIDEO_ABO, url='http://fake.url')
+        offer2 = create_offer_with_thing_product(offerer2_physical_venue)
+
+        PcObject.save(offer, offer2, user_offerer, user_offerer2)
+
+        # then
+        assert user.hasOffers is True

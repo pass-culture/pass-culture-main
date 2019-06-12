@@ -158,6 +158,18 @@ class User(PcObject,
     def wallet_is_activated(self):
         return len(self.deposits) > 0
 
+    @property
+    def hasPhysicalVenues(self):
+        all_offerers = self.offerers
+        for offerer in all_offerers:
+            for venue in offerer.managedVenues:
+                if not venue.isVirtual:
+                    return True
+        return False
+
+    @property
+    def hasOffers(self):
+        return sum(map(lambda offerer: offerer.nOffers, self.offerers)) > 0
 
 class WalletBalance:
     CSV_HEADER = [

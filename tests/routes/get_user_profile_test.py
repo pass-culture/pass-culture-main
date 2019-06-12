@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 
-from models import PcObject
+from models import PcObject, ThingType
 from tests.conftest import clean_database, TestClient
+
 from tests.test_utils import create_offer_with_thing_product, create_user, create_offerer, \
     create_venue, \
     create_stock_with_thing_offer, create_recommendation, create_deposit, create_booking
-
 
 class Get:
     class Returns200:
@@ -73,6 +73,29 @@ class Get:
                 'physical': {'max': 200, 'actual': 5.0},
                 'digital': {'max': 200, 'actual': 0}
             }
+
+        @clean_database
+        def test_returns_has_physical_venues_and_has_offers(self, app):
+            # given
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            offerer2 = create_offerer(siren='123456788')
+            user_offerer = create_user_offerer(user, offerer)
+            user_offerer2 = create_user_offerer(user, offerer2)
+            offerer_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+            offerer2_physical_venue = create_venue(offerer2, siret='12345678856734')
+            offerer2_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+            offer = create_offer_with_thing_product(offerer_virtual_venue, thing_type=ThingType.JEUX_VIDEO_ABO, url='http://fake.url')
+            offer2 = create_offer_with_thing_product(offerer2_physical_venue)
+
+            PcObject.save(offer, offer2, offerer2_virtual_venue, user_offerer, user_offerer2)
+
+            # when
+            response = TestClient().with_auth('test@email.com').get(API_URL + '/users/current')
+
+            # Then
+            assert response.json()['hasPhysicalVenues'] is True
+            assert response.json()['hasOffers'] is True
 
     class Returns400:
         @clean_database
