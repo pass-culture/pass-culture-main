@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 
 import { selectCurrentSearchRecommendation } from '../../../selectors'
-import { SearchDetails } from './SearchDetails'
+import SearchDetails from './SearchDetails'
 
 function mapStateToProps(state, ownProps) {
   const { mediationId, offerId } = ownProps.match.params
@@ -14,4 +14,4 @@ function mapStateToProps(state, ownProps) {
   return { recommendation }
 }
 
-export const SearchDetailsContainer = connect(mapStateToProps)(SearchDetails)
+export default connect(mapStateToProps)(SearchDetails)

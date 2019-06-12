@@ -3,7 +3,7 @@ import React from 'react'
 import { Switch } from 'react-router-dom'
 
 import BackButton from '../../../layout/BackButton'
-import { Search } from '../Search'
+import Search from '../Search'
 
 const getPageContentRoute = wrapper =>
   wrapper

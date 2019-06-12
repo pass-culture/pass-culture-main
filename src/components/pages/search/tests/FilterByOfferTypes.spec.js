@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import { FilterByOfferTypes } from '../FilterByOfferTypes'
+import FilterByOfferTypes from '../FilterByOfferTypes'
 
 describe('src | components | pages | search | FilterByOfferTypes', () => {
   let props

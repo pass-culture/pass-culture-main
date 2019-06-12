@@ -7,7 +7,7 @@ import { getQueryURL } from '../../../helpers'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 import { getRecommendationDateString } from './utils'
 
-export class SearchResultItem extends Component {
+class SearchResultItem extends Component {
   onSuccessLoadRecommendationDetails = () => {
     const { history, location, recommendation } = this.props
     const offerId = recommendation && recommendation.offerId
@@ -83,3 +83,5 @@ SearchResultItem.propTypes = {
   location: PropTypes.shape().isRequired,
   recommendation: PropTypes.shape().isRequired,
 }
+
+export default SearchResultItem

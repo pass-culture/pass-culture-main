@@ -80,9 +80,9 @@ export const searchResultsTitle = (
   return resultTitle
 }
 
-const formatDate = (date, tz) => {
+const formatDate = (date, timeZone) => {
   const options = {
-    timeZone: tz,
+    timeZone,
     weekday: 'long',
   }
 
@@ -96,18 +96,20 @@ export const getRecommendationDateString = offer => {
   if (offer.dateRange.length === 0) return 'permanent'
 
   const { departementCode } = offer.venue
-  const tz = getTimezone(departementCode)
+  const timeZone = getTimezone(departementCode)
   const fromDate = new Date(offer.dateRange[0])
   const toDate = new Date(offer.dateRange[1])
-  const fromFormated = formatDate(fromDate, tz)
-  const toFormated = formatDate(toDate, tz)
+  const fromFormated = formatDate(fromDate, timeZone)
+  const toFormated = formatDate(toDate, timeZone)
   const formatedDate = `du ${fromFormated} au ${toFormated}`
 
   return formatedDate
 }
 
 export const getDescriptionFromCategory = (categoryName, categories) => {
-  const goodCategory = categories.find(category => category.sublabel === categoryName)
+  const goodCategory = categories.find(
+    category => category.sublabel === categoryName
+  )
 
   return goodCategory ? goodCategory.description : ''
 }

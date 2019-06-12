@@ -1,8 +1,8 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import { NavByOfferType } from '../NavByOfferType'
-import { SearchPicture } from '../../SearchPicture'
+import NavByOfferType from '../NavByOfferType'
+import SearchPicture from '../../SearchPicture'
 
 describe('src | components | search | searchByType | NavByOfferType', () => {
   let props
@@ -10,12 +10,7 @@ describe('src | components | search | searchByType | NavByOfferType', () => {
   beforeEach(() => {
     // given
     props = {
-      categories: [
-        'Category 1',
-        'Category 2',
-        'Category 3',
-        'Category 4',
-      ],
+      categories: ['Category 1', 'Category 2', 'Category 3', 'Category 4'],
       resetSearchStore: jest.fn(),
       title: 'Fake title',
       updateSearchQuery: jest.fn(),
@@ -68,7 +63,9 @@ describe('src | components | search | searchByType | NavByOfferType', () => {
         categories.first().simulate('click')
 
         // then
-        expect(props.updateSearchQuery).toHaveBeenCalledWith(props.categories[0])
+        expect(props.updateSearchQuery).toHaveBeenCalledWith(
+          props.categories[0]
+        )
       })
     })
   })

@@ -3,7 +3,7 @@ import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 
 import { recommendationNormalizer } from '../../../../utils/normalizers'
-import { SearchResultItem } from '../SearchResultItem'
+import SearchResultItem from '../SearchResultItem'
 
 describe('src | components | pages | search | SearchResultItem', () => {
   let props
@@ -53,9 +53,7 @@ describe('src | components | pages | search | SearchResultItem', () => {
       wrapper.instance().onSuccessLoadRecommendationDetails()
 
       // then
-      const expectedUrl = `${props.location.pathname}/item/${
-        props.recommendation.offerId
-      }${props.location.search}`
+      const expectedUrl = `${props.location.pathname}/item/${props.recommendation.offerId}${props.location.search}`
       expect(props.history.push).toHaveBeenCalledWith(expectedUrl)
     })
   })

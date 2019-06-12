@@ -3,11 +3,11 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 
-import { SearchResultItemContainer } from './SearchResultItemContainer'
+import SearchResultItemContainer from './SearchResultItemContainer'
 import Spinner from '../../layout/Spinner'
 import { searchResultsTitle } from './utils'
 
-export class SearchResults extends PureComponent {
+class SearchResults extends PureComponent {
   constructor() {
     super()
     this.state = {
@@ -126,3 +126,5 @@ SearchResults.propTypes = {
   keywords: PropTypes.string,
   query: PropTypes.shape().isRequired,
 }
+
+export default SearchResults

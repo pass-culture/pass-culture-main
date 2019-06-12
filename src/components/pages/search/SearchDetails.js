@@ -8,7 +8,7 @@ import { recommendationNormalizer } from '../../../utils/normalizers'
 import RectoContainer from '../../recto/RectoContainer'
 import VersoContainer from '../../verso/VersoContainer'
 
-export class SearchDetails extends PureComponent {
+class SearchDetails extends PureComponent {
   constructor(props) {
     super(props)
     this.state = { forceDetailsVisible: false }
@@ -98,3 +98,5 @@ SearchDetails.propTypes = {
   match: PropTypes.shape().isRequired,
   recommendation: PropTypes.object,
 }
+
+export default SearchDetails

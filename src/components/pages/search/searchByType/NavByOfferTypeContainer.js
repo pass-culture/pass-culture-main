@@ -3,7 +3,7 @@ import { compose } from 'redux'
 import { assignData } from 'redux-saga-data'
 import withQueryRouter from 'with-query-router'
 
-import { NavByOfferType } from './NavByOfferType'
+import NavByOfferType from './NavByOfferType'
 
 export const mapDispatchToProps = (dispatch, ownProps) => ({
   resetSearchStore: () => {
@@ -19,7 +19,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
   },
 })
 
-export const NavByOfferTypeContainer = compose(
+export default compose(
   withQueryRouter,
   connect(
     null,

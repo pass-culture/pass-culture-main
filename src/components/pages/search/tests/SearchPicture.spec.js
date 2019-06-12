@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import { SearchPicture } from '../SearchPicture'
+import SearchPicture from '../SearchPicture'
 
 describe('src | components | pages | search | SearchPicture', () => {
   let props

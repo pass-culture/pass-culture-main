@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import { SearchPicture } from './SearchPicture'
+import SearchPicture from './SearchPicture'
 
-export class FilterByOfferTypes extends PureComponent {
+class FilterByOfferTypes extends PureComponent {
   onChangeCategory = category => () => {
     const { filterActions, filterState } = this.props
     const typesValue = decodeURI(filterState.params.categories || '')
@@ -86,3 +86,5 @@ FilterByOfferTypes.propTypes = {
   }).isRequired,
   typeSublabels: PropTypes.arrayOf(PropTypes.string).isRequired,
 }
+
+export default FilterByOfferTypes

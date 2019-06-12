@@ -6,13 +6,13 @@ import { assignData, requestData } from 'redux-saga-data'
 
 import BackButton from '../../layout/BackButton'
 import { Icon } from '../../layout/Icon'
-import { Footer } from './Footer'
-import { Header } from './Header'
-import { NavByOfferTypeContainer } from './searchByType/NavByOfferTypeContainer'
-import { NavResultsHeader } from './NavResultsHeader'
-import { SearchFilterContainer } from './searchFilters/SearchFilterContainer'
-import { SearchResultsContainer } from './SearchResultsContainer'
-import { SearchDetailsContainer } from './SearchDetailsContainer'
+import Footer from './Footer'
+import Header from './Header'
+import NavByOfferTypeContainer from './searchByType/NavByOfferTypeContainer'
+import NavResultsHeader from './NavResultsHeader'
+import SearchFilterContainer from './searchFilters/SearchFilterContainer'
+import SearchResultsContainer from './SearchResultsContainer'
+import SearchDetailsContainer from './SearchDetailsContainer'
 import {
   getDescriptionFromCategory,
   INITIAL_FILTER_PARAMS,
@@ -20,7 +20,7 @@ import {
   translateBrowserUrlToApiUrl,
 } from './utils'
 
-export class Search extends PureComponent {
+class Search extends PureComponent {
   constructor(props) {
     super(props)
 
@@ -403,3 +403,5 @@ Search.propTypes = {
   typeSublabels: PropTypes.array.isRequired,
   typeSublabelsAndDescription: PropTypes.array.isRequired,
 }
+
+export default Search

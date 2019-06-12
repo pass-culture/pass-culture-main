@@ -4,7 +4,7 @@ import { Route } from 'react-router-dom'
 
 import BookingContainer from '../../../booking/BookingContainer'
 import { recommendationNormalizer } from '../../../../utils/normalizers'
-import { SearchDetails } from '../SearchDetails'
+import SearchDetails from '../SearchDetails'
 import RectoContainer from '../../../recto/RectoContainer'
 import VersoContainer from '../../../verso/VersoContainer'
 
@@ -53,9 +53,7 @@ describe('src | components | pages | search | SearchDetails', () => {
           normalizer: recommendationNormalizer,
           stateKeys: 'searchRecommendations',
         },
-        type: `REQUEST_DATA_GET_/RECOMMENDATIONS/OFFERS/${
-          props.recommendation.id
-        }`,
+        type: `REQUEST_DATA_GET_/RECOMMENDATIONS/OFFERS/${props.recommendation.id}`,
       })
     })
   })

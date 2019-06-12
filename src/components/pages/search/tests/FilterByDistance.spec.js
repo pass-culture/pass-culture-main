@@ -4,7 +4,7 @@ import React from 'react'
 import options, {
   INFINITE_DISTANCE,
 } from '../../../../helpers/search/distanceOptions'
-import { FilterByDistance } from '../FilterByDistance'
+import FilterByDistance from '../FilterByDistance'
 
 describe('src | components | pages | search | FilterByDistance', () => {
   let props
@@ -133,7 +133,7 @@ describe('src | components | pages | search | FilterByDistance', () => {
       optionsMarkup.forEach((option, index) => {
         expect(option.props().value).toBe(options[index].value)
       })
-      expect(defaultValue).toBe(20000)
+      expect(defaultValue).toBe(INFINITE_DISTANCE)
     })
 
     it('should have 50 km selected when I have 50 in distance parameter', () => {

@@ -1,8 +1,8 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import { SearchResults } from '../SearchResults'
-import { SearchResultItemContainer } from '../SearchResultItemContainer'
+import SearchResults from '../SearchResults'
+import SearchResultItemContainer from '../SearchResultItemContainer'
 
 describe('src | components | pages | search | SearchResults', () => {
   let props

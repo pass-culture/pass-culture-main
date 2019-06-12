@@ -2,9 +2,9 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { Transition } from 'react-transition-group'
 
-import { FilterByDates } from '../FilterByDates'
-import { FilterByDistanceContainer } from '../FilterByDistanceContainer'
-import { FilterByOfferTypesContainer } from '../FilterByOfferTypesContainer'
+import FilterByDates from '../FilterByDates'
+import FilterByDistanceContainer from '../FilterByDistanceContainer'
+import FilterByOfferTypesContainer from '../FilterByOfferTypesContainer'
 import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from '../utils'
 
 const filtersPanelHeight = 475
@@ -21,7 +21,7 @@ const transitionStyles = {
   exiting: { marginTop: `-${filtersPanelHeight}px` },
 }
 
-export class SearchFilter extends Component {
+class SearchFilter extends Component {
   constructor(props) {
     super(props)
 
@@ -208,3 +208,5 @@ SearchFilter.propTypes = {
   query: PropTypes.shape().isRequired,
   resetSearchStore: PropTypes.func.isRequired,
 }
+
+export default SearchFilter

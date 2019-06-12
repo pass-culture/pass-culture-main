@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import { Header } from '../Header'
+import Header from '../Header'
 
 describe('src | components | pages | search | Header', () => {
   it('should match the snapshot', () => {

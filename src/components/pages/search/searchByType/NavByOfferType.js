@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { SearchPicture } from '../SearchPicture'
+import SearchPicture from '../SearchPicture'
 
-export const NavByOfferType = ({
+const NavByOfferType = ({
   title,
   categories,
   resetSearchStore,
@@ -35,3 +35,5 @@ NavByOfferType.propTypes = {
   title: PropTypes.string.isRequired,
   updateSearchQuery: PropTypes.func.isRequired,
 }
+
+export default NavByOfferType

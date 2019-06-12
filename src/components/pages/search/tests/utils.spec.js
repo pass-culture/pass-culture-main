@@ -44,6 +44,7 @@ describe('src | components | pages | search | utils', () => {
       const result = getRecommendationDateString(recommendation.offer)
 
       // then
+      // https://github.com/nodejs/node-v0.x-archive/issues/4689
       expect(result).toBe('du Thu 2018-10-25 au Fri 2018-10-26')
     })
 
@@ -66,6 +67,7 @@ describe('src | components | pages | search | utils', () => {
       const result = getRecommendationDateString(recommendation.offer)
 
       // then
+      // https://github.com/nodejs/node-v0.x-archive/issues/4689
       expect(result).toBe('du Thu 2018-10-25 au Thu 2018-10-26')
     })
   })
@@ -431,7 +433,7 @@ describe('src | components | pages | search | utils', () => {
     })
 
     describe('date is picked with a checkbox', () => {
-      it('should ckeck boxes', () => {
+      it('should check box when chosen date is in date range', () => {
         // given
         const pickedDate = null
         const pickedDaysInQuery = '0-1,5-10000'
@@ -444,7 +446,7 @@ describe('src | components | pages | search | utils', () => {
         expect(result).toBe(true)
       })
 
-      it('should not ckeck box', () => {
+      it('should not check when chosen date is not in date range', () => {
         // given
         const pickedDate = null
         const pickedDaysInQuery = '1-5'

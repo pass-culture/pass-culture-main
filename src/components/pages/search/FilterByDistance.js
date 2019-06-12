@@ -5,7 +5,7 @@ import options, {
   INFINITE_DISTANCE,
 } from '../../../helpers/search/distanceOptions'
 
-export class FilterByDistance extends PureComponent {
+class FilterByDistance extends PureComponent {
   onChangeDistance = event => {
     const { filterActions, geolocation } = this.props
     const distance = event.target.value
@@ -21,7 +21,7 @@ export class FilterByDistance extends PureComponent {
 
   render() {
     const { filterState } = this.props
-    const distanceValue = filterState.params.distance || 20000
+    const distanceValue = filterState.params.distance || INFINITE_DISTANCE
 
     return (
       <React.Fragment>
@@ -73,3 +73,5 @@ FilterByDistance.propTypes = {
     watchId: PropTypes.number,
   }).isRequired,
 }
+
+export default FilterByDistance

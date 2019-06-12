@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import { DatePickerField } from '../../../forms/inputs'
-import { FilterByDates } from '../FilterByDates'
+import FilterByDates from '../FilterByDates'
 import { DAYS_CHECKBOXES } from '../utils'
 
 describe('src | components | pages | search | FilterByDates', () => {

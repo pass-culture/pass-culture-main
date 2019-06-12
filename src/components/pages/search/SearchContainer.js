@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import withQueryRouter from 'with-query-router'
 
-import { Search } from './Search'
+import Search from './Search'
 import { withRedirectToSigninOrTypeformAfterLogin } from '../../hocs'
 import { selectRecommendations } from '../../../selectors'
 import selectTypeSublabels, {
@@ -30,7 +30,7 @@ const mapStateToProps = state => {
   }
 }
 
-export const SearchContainer = compose(
+export default compose(
   withQueryRouter,
   withRedirectToSigninOrTypeformAfterLogin,
   connect(mapStateToProps)
