@@ -144,7 +144,7 @@ class RunTest:
 
     @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
-    def test_application_with_known_emails_are_not_processed(self, process_beneficiary_application, send_report_email):
+    def test_application_with_known_demarche_simplifiee_application_id_are_not_processed(self, process_beneficiary_application, send_report_email):
         # given
         get_all_applications = Mock()
         number_of_pages = 3
@@ -156,14 +156,44 @@ class RunTest:
             ], current_page, number_of_pages
         )
         get_details = Mock(return_value=make_application_detail(123, 'closed'))
-        find_user_by_email = Mock(return_value=User())
+        user = User()
+        user.email = 'john.doe@test.com'
+        user.demarcheSimplifieeApplicationId = 123
+        find_user_by_demarche_simplifiee_application_id = Mock(return_value=user)
 
         # when
         remote_import.run(
             ONE_WEEK_AGO,
             get_all_applications=get_all_applications,
             get_details=get_details,
-            existing_user=find_user_by_email
+            existing_user=find_user_by_demarche_simplifiee_application_id
+        )
+
+        # then
+        process_beneficiary_application.assert_not_called()
+
+    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
+    @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
+    def test_application_with_known_demarche_simplifiee_application_id_are_not_processed(self, process_beneficiary_application, send_report_email):
+        # given
+        get_all_applications = Mock()
+        number_of_pages = 3
+        current_page = 1
+        get_all_applications.return_value = make_applications_list(
+            [
+                (123, 'closed', FOUR_HOURS_AGO),
+                (456, 'initiated', EIGHT_HOURS_AGO)
+            ], current_page, number_of_pages
+        )
+        get_details = Mock(return_value=make_application_detail(123, 'closed'))
+        find_user_by_demarche_simplifiee_application_id = Mock(return_value=User())
+
+        # when
+        remote_import.run(
+            ONE_WEEK_AGO,
+            get_all_applications=get_all_applications,
+            get_details=get_details,
+            existing_user=find_user_by_demarche_simplifiee_application_id
         )
 
         # then
@@ -324,6 +354,7 @@ class CreateBeneficiaryFromApplicationTest:
         beneficiary = create_beneficiary_from_application(beneficiary_information, find_duplicate_users)
 
         # then
+        assert beneficiary.demarcheSimplifieeApplicationId == 123
         assert beneficiary.lastName == 'Doe'
         assert beneficiary.firstName == 'Jane'
         assert beneficiary.publicName == 'Jane Doe'

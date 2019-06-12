@@ -134,7 +134,7 @@ def create_user(public_name='John Doe', password=None, first_name='John', last_n
                 email='john.doe@test.com', can_book_free_offers=True, has_filled_cultural_survey=False, validation_token=None, is_admin=False,
                 reset_password_token=None, reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
                 date_created=datetime.utcnow(), phone_number='0612345678', date_of_birth=datetime(2001, 1, 1),
-                idx=None):
+                idx=None, demarcheSimplifieeApplicationId=None):
     user = User()
     user.publicName = public_name
     user.firstName = first_name
@@ -144,6 +144,7 @@ def create_user(public_name='John Doe', password=None, first_name='John', last_n
     user.postalCode = postal_code
     user.departementCode = departement_code
     user.validationToken = validation_token
+    user.demarcheSimplifieeApplicationId = demarcheSimplifieeApplicationId
 
     if password:
         user.setPassword(password)

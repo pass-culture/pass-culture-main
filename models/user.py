@@ -2,12 +2,13 @@ from datetime import datetime
 from decimal import Decimal
 import bcrypt
 from sqlalchemy import Binary, \
-                       Boolean, \
-                       CheckConstraint, \
-                       Column, \
-                       func, \
-                       DateTime, \
-                       String
+    Boolean, \
+    CheckConstraint, \
+    Column, \
+    func, \
+    DateTime, \
+    String, \
+    BigInteger
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
@@ -39,6 +40,8 @@ class User(PcObject,
 
     dateOfBirth = Column(DateTime,
                          nullable=True)
+
+    demarcheSimplifieeApplicationId = Column(BigInteger, nullable=True)
 
     departementCode = Column(String(3), nullable=False)
 

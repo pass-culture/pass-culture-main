@@ -16,11 +16,12 @@ def find_user_by_email(email: str) -> User:
         .first()
 
 
-def find_by_first_and_last_names_and_birth_date(first_name: str, last_name: str, birth_date: datetime) -> List[User]:
+def find_by_first_and_last_names_and_birth_date_and_email(first_name: str, last_name: str, birth_date: datetime, email: str) -> List[User]:
     return User.query \
         .filter(_matching(User.firstName, first_name)) \
         .filter(_matching(User.lastName, last_name)) \
         .filter(User.dateOfBirth == birth_date) \
+        .filter(_matching(User.email, email)) \
         .all()
 
 
@@ -107,6 +108,7 @@ def find_most_recent_beneficiary_creation_date():
     most_recent_beneficiary = User.query \
         .filter(User.canBookFreeOffers == True) \
         .filter(User.offerers == None) \
+        .filter(User.demarcheSimplifieeApplicationId != None) \
         .order_by(User.dateCreated.desc()) \
         .first()
 
