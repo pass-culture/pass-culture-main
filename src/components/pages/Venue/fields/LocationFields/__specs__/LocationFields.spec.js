@@ -1,7 +1,8 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 import LocationFields from '../LocationFields'
-import { HiddenField } from '../../../../../layout/form/fields'
+import { HiddenField, NumberField, TextField } from '../../../../../layout/form/fields'
+import AddressField from '../AddressField'
 
 describe('src | components | pages | Venue | fields | LocationFields', () => {
   let props
@@ -27,7 +28,7 @@ describe('src | components | pages | Venue | fields | LocationFields', () => {
   })
 
   describe('render', () => {
-    it('should render an HiddenField component with the right props', () => {
+    it('should display an HiddenField component with the right props', () => {
       // when
       const wrapper = shallow(<LocationFields {...props}/>)
 
@@ -36,5 +37,63 @@ describe('src | components | pages | Venue | fields | LocationFields', () => {
       expect(hiddenField).toHaveLength(1)
       expect(hiddenField.prop('name')).toBe('isLocationFrozen')
     })
+
+    it('should display an AddressField component with the right props', () => {
+      // when
+      const wrapper = shallow(<LocationFields {...props}/>)
+
+      // then
+      const addressField = wrapper.find(AddressField)
+      expect(addressField).toHaveLength(1)
+      expect(addressField.prop('form')).toEqual({})
+      expect(addressField.prop('label')).toBe('Numéro et voie : ')
+      expect(addressField.prop('latitude')).toBe(1)
+      expect(addressField.prop('longitude')).toBe(1)
+      expect(addressField.prop('name')).toBe('address')
+      expect(addressField.prop('readOnly')).toBe(false)
+      expect(addressField.prop('required')).toBe(true)
+      expect(addressField.prop('withMap')).toBe(true)
+    })
+
+    it('should display two TextField components with the right props', () => {
+      // when
+      const wrapper = shallow(<LocationFields {...props}/>)
+
+      // then
+      const textFields = wrapper.find(TextField)
+      expect(textFields).toHaveLength(2)
+      expect(textFields.at(0).prop('autoComplete')).toBe('postal-code')
+      expect(textFields.at(0).prop('innerClassName')).toBe('col-33')
+      expect(textFields.at(0).prop('label')).toBe('Code postal : ')
+      expect(textFields.at(0).prop('name')).toBe('postalCode')
+      expect(textFields.at(0).prop('readOnly')).toBe(true)
+      expect(textFields.at(0).prop('required')).toBe(true)
+      expect(textFields.at(1).prop('autoComplete')).toBe('address-level2')
+      expect(textFields.at(1).prop('innerClassName')).toBe('col-66')
+      expect(textFields.at(1).prop('label')).toBe('Ville : ')
+      expect(textFields.at(1).prop('name')).toBe('city')
+      expect(textFields.at(1).prop('readOnly')).toBe(true)
+      expect(textFields.at(1).prop('required')).toBe(true)
+    })
+
+    it('should display two NumberField with the right props', () => {
+      // when
+      const wrapper = shallow(<LocationFields {...props}/>)
+
+      // then
+      const numberFields = wrapper.find(NumberField)
+      expect(numberFields).toHaveLength(2)
+      expect(numberFields.at(0).prop('innerClassName')).toBe('col-33')
+      expect(numberFields.at(0).prop('label')).toBe('Latitude : ')
+      expect(numberFields.at(0).prop('name')).toBe('latitude')
+      expect(numberFields.at(0).prop('readOnly')).toBe(true)
+      expect(numberFields.at(0).prop('required')).toBe(true)
+      expect(numberFields.at(1).prop('innerClassName')).toBe('col-33')
+      expect(numberFields.at(1).prop('label')).toBe('Longitude : ')
+      expect(numberFields.at(1).prop('name')).toBe('longitude')
+      expect(numberFields.at(1).prop('readOnly')).toBe(true)
+      expect(numberFields.at(1).prop('required')).toBe(true)
+    })
+
   })
 })

@@ -2,11 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import AddressField from './AddressField'
-import {
-  HiddenField,
-  NumberField,
-  TextField,
-} from 'components/layout/form/fields'
+import { HiddenField, NumberField, TextField, } from 'components/layout/form/fields'
 
 const LocationFields = ({
   fieldReadOnlyBecauseFrozenFormSiret,
@@ -16,8 +12,7 @@ const LocationFields = ({
   formIsLocationFrozen,
   readOnly,
 }) => {
-  const readOnlyFromAddressOrSiren = formIsLocationFrozen || fieldReadOnlyBecauseFrozenFormSiret
-  const fieldReadOnly = readOnly || readOnlyFromAddressOrSiren
+  const fieldIsFrozen = readOnly || formIsLocationFrozen || fieldReadOnlyBecauseFrozenFormSiret
 
   return (
     <div className="section">
@@ -30,7 +25,6 @@ const LocationFields = ({
           latitude={formLatitude}
           longitude={formLongitude}
           name="address"
-          readOnly={readOnly || fieldReadOnlyBecauseFrozenFormSiret}
           required
           withMap
         />
@@ -39,7 +33,7 @@ const LocationFields = ({
           innerClassName="col-33"
           label="Code postal : "
           name="postalCode"
-          readOnly={fieldReadOnly}
+          readOnly={fieldIsFrozen}
           required
         />
         <TextField
@@ -47,21 +41,21 @@ const LocationFields = ({
           innerClassName="col-66"
           label="Ville : "
           name="city"
-          readOnly={fieldReadOnly}
+          readOnly={fieldIsFrozen}
           required
         />
         <NumberField
           innerClassName="col-33"
           label="Latitude : "
           name="latitude"
-          readOnly={fieldReadOnly}
+          readOnly={fieldIsFrozen}
           required
         />
         <NumberField
           innerClassName="col-33"
           label="Longitude : "
           name="longitude"
-          readOnly={fieldReadOnly}
+          readOnly={fieldIsFrozen}
           required
         />
       </div>

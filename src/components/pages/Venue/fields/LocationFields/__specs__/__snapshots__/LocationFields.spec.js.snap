@@ -51,7 +51,7 @@ ShallowWrapper {
             name="address"
             parse={null}
             placeholder=""
-            readOnly={true}
+            readOnly={false}
             required={true}
             type="text"
             validate={null}
@@ -148,7 +148,7 @@ ShallowWrapper {
               name="address"
               parse={null}
               placeholder=""
-              readOnly={true}
+              readOnly={false}
               required={true}
               type="text"
               validate={null}
@@ -238,7 +238,7 @@ ShallowWrapper {
               "name": "address",
               "parse": null,
               "placeholder": "",
-              "readOnly": true,
+              "readOnly": false,
               "required": true,
               "type": "text",
               "validate": null,
@@ -368,7 +368,7 @@ ShallowWrapper {
               name="address"
               parse={null}
               placeholder=""
-              readOnly={true}
+              readOnly={false}
               required={true}
               type="text"
               validate={null}
@@ -465,7 +465,7 @@ ShallowWrapper {
                 name="address"
                 parse={null}
                 placeholder=""
-                readOnly={true}
+                readOnly={false}
                 required={true}
                 type="text"
                 validate={null}
@@ -555,7 +555,7 @@ ShallowWrapper {
                 "name": "address",
                 "parse": null,
                 "placeholder": "",
-                "readOnly": true,
+                "readOnly": false,
                 "required": true,
                 "type": "text",
                 "validate": null,
