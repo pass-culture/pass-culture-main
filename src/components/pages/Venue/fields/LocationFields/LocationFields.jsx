@@ -16,9 +16,7 @@ const LocationFields = ({
   formIsLocationFrozen,
   readOnly,
 }) => {
-  const readOnlyFromAddressOrSiren =
-    formIsLocationFrozen || fieldReadOnlyBecauseFrozenFormSiret
-
+  const readOnlyFromAddressOrSiren = formIsLocationFrozen || fieldReadOnlyBecauseFrozenFormSiret
   const fieldReadOnly = readOnly || readOnlyFromAddressOrSiren
 
   return (
