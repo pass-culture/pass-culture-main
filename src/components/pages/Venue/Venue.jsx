@@ -1,23 +1,16 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { Form } from 'react-final-form'
-import {
-  getCanSubmit,
-  parseSubmitErrors,
-  removeWhitespaces,
-} from 'react-final-form-utils'
+import { getCanSubmit, parseSubmitErrors, removeWhitespaces, } from 'react-final-form-utils'
 import { NavLink } from 'react-router-dom'
 
-import BankFieldsContainer from './BankFields/BankFieldsContainer'
-import CreateOfferControl from './CreateOfferControl'
-import LocationFields from './LocationFields/LocationFields'
-import {
-  bindGetSuggestionsToLatitude,
-  bindGetSuggestionsToLongitude,
-} from './LocationFields/decorators'
-import { FRANCE_POSITION } from './LocationFields/utils/positions'
-import IdentifierFields from './IdentifierFields/IdentifierFields'
-import { bindGetSiretInfoToSiret } from './IdentifierFields/decorators'
+import BankFieldsContainer from './fields/BankFields/BankFieldsContainer'
+import CreateControl from './controls/CreateControl/CreateControl'
+import LocationFields from './fields/LocationFields/LocationFields'
+import { bindGetSuggestionsToLatitude, bindGetSuggestionsToLongitude, } from './fields/LocationFields/decorators'
+import { FRANCE_POSITION } from './fields/LocationFields/utils/positions'
+import IdentifierFields from './fields/IdentifierFields/IdentifierFields'
+import { bindGetSiretInfoToSiret } from './fields/IdentifierFields/decorators'
 import ModifyOrCancelControl from './controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from './controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
 import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
@@ -74,6 +67,7 @@ class Venue extends Component {
 
     this.setState(nextState, () => {
       handleSubmitRequestSuccess(state, action)
+
       if (isCreatedEntity) {
         history.push(`/structures/${offererId}`)
       } else {
@@ -89,15 +83,13 @@ class Venue extends Component {
 
     this.setState({ isRequestPending: true })
 
-    const formSubmitPromise = new Promise(resolve => {
+    return new Promise(resolve => {
       handleSubmitRequest({
         formValues,
         handleFail: this.handleFormFail(resolve),
         handleSuccess: this.handleFormSuccess(resolve),
       })
     })
-
-    return formSubmitPromise
   }
 
   render() {
@@ -240,7 +232,7 @@ class Venue extends Component {
                       venueId={venueId}
                       readOnly={readOnly}
                     />
-                    {readOnly && <CreateOfferControl venueId={venueId} />}
+                    {readOnly && <CreateControl venueId={venueId} />}
                     <ReturnOrSubmitControl
                       canSubmit={canSubmit}
                       isCreatedEntity={isCreatedEntity}

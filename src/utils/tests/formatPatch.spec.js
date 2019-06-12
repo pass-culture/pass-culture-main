@@ -3,7 +3,7 @@ import { formatPatch } from '../formatPatch'
 import {
   VENUE_MODIFICATION_PATCH_KEYS,
   VENUE_CREATION_PATCH_KEYS,
-} from '../../components/pages/Venue/utils'
+} from '../../components/pages/Venue/utils/utils'
 
 describe('formatPatch', () => {
   describe('when creating new form', () => {

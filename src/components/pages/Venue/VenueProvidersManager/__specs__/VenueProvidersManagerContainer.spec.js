@@ -1,6 +1,6 @@
 import { selectCurrentUser } from 'with-login'
 
-import mapStateToProps from '../mapStateToProps'
+import { mapStateToProps } from '../VenueProvidersManagerContainer'
 
 describe('src | components | pages | Venue | VenueProvidersManager', () => {
   describe('mapStateToProps', () => {
@@ -11,11 +11,11 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       const state = {
         data: {
           providers: [
-            { id: 'AF', localClass: 'a' },
-            { id: 'AG', localClass: 'b' },
+            {id: 'AF', localClass: 'a'},
+            {id: 'AG', localClass: 'b'},
           ],
-          venueProviders: [{ id: 'EE' }],
-          users: [{ currentUserUUID, id: 'RR' }],
+          venueProviders: [{id: 'EE'}],
+          users: [{currentUserUUID, id: 'RR'}],
         },
         form: {
           venueProvider: {
@@ -24,7 +24,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         },
       }
       const props = {
-        venue: { id: 'AE' },
+        venue: {id: 'AE'},
       }
 
       // when
@@ -36,7 +36,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
           currentUserUUID: 'BABA',
           id: 'RR',
         },
-        provider: { id: 'AG', localClass: 'b' },
+        provider: {id: 'AG', localClass: 'b'},
         providers: [
           {
             id: 'AF',

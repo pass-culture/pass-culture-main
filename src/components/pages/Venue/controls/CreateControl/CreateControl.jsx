@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
-const CreateOfferControl = ({ venueId }) => (
+const CreateControl = ({ venueId }) => (
   <div className="control">
     <div
       className="field is-grouped is-grouped-centered"
@@ -17,4 +17,4 @@ const CreateOfferControl = ({ venueId }) => (
   </div>
 )
 
-export default CreateOfferControl
+export default CreateControl

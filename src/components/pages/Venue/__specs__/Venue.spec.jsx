@@ -3,7 +3,7 @@ import React from 'react'
 import { Form } from 'react-final-form'
 
 import Venue from '../Venue'
-import mapDispatchToProps from '../mapDispatchToProps'
+import { mapDispatchToProps } from '../VenueContainer'
 import VenueProvidersManagerContainer from '../VenueProvidersManager/VenueProvidersManagerContainer'
 import HeroSection from 'components/layout/HeroSection'
 

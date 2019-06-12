@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import { Route, Router, Switch } from 'react-router-dom'
 import { assignData } from 'redux-saga-data'
 
-import VenueContainer from '../VenueContainer'
+import VenueContainer, { mapDispatchToProps, mapStateToProps } from '../VenueContainer'
 import { venueNormalizer } from 'utils/normalizers'
 import { configureStore } from 'utils/store'
 
@@ -681,3 +681,104 @@ describe('src | components | pages | VenueContainer', () => {
     })
   })
 })
+
+describe('src | components | pages | VenueContainer | mapStateToProps', () => {
+  describe('mapStateToProps', () => {
+    it('should return an object with props', () => {
+      // given
+      const state = {
+        data: {
+          offerers: [{ id: 1 }],
+          userOfferers: [
+            { offererId: 1, rights: 'RightsType.admin', userId: 1 },
+          ],
+          venues: [],
+        },
+        user: { email: 'john.doe@email.com' },
+      }
+      const props = {
+        currentUser: { id: 1 },
+        match: {
+          params: {
+            offererId: 1,
+            venueId: 1,
+          },
+        },
+        query: {
+          context: () => ({
+            isCreatedEntity: true,
+          }),
+        },
+      }
+
+      // when
+      const result = mapStateToProps(state, props)
+
+      // then
+      expect(result).toEqual({
+        adminUserOfferer: {
+          offererId: 1,
+          rights: 'RightsType.admin',
+          userId: 1,
+        },
+        offerer: { id: 1 },
+        formInitialValues: {
+          bookingEmail: 'john.doe@email.com',
+          managingOffererId: 1,
+        },
+      })
+    })
+  })
+})
+
+describe('src | components | pages | VenueContainer | mapDispatchToProps', () => {
+  let dispatch
+  const ownProps = {
+    match: {
+      params: {
+        offererId: 'APEQ',
+      },
+    },
+    query: {
+      context: () => ({
+        isCreatedEntity: true,
+      }),
+    },
+  }
+
+  beforeEach(() => {
+    dispatch = jest.fn()
+  })
+
+  describe('handleInitialRequest', () => {
+    it('should dispatch action to update existing venue', () => {
+      // when
+      mapDispatchToProps(dispatch, ownProps).handleInitialRequest(
+        jest.fn(),
+        jest.fn()
+      )
+
+      // then
+      expect(dispatch.mock.calls[0][0]).toEqual({
+        config: {
+          apiPath: '/offerers/APEQ',
+          handleSuccess: expect.any(Function),
+          method: 'GET',
+          normalizer: {
+            managedVenues: {
+              normalizer: { offers: 'offers' },
+              stateKey: 'venues',
+            },
+          },
+        },
+        type: 'REQUEST_DATA_GET_/OFFERERS/APEQ',
+      })
+      expect(dispatch.mock.calls[1][0]).toEqual({
+        config: { apiPath: '/userOfferers/APEQ', method: 'GET' },
+        type: 'REQUEST_DATA_GET_/USEROFFERERS/APEQ',
+      })
+    })
+  })
+})
+
+
