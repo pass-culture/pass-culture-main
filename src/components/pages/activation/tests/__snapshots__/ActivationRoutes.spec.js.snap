@@ -34,6 +34,7 @@ ShallowWrapper {
           path="/activation/:token"
         />
         <Redirect
+          push={false}
           to="/activation/error"
         />
       </Switch>,
@@ -62,6 +63,7 @@ ShallowWrapper {
             path="/activation/:token"
           />,
           <Redirect
+            push={false}
             to="/activation/error"
           />,
         ],
@@ -109,8 +111,9 @@ ShallowWrapper {
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "function",
+          "nodeType": "class",
           "props": Object {
+            "push": false,
             "to": "/activation/error",
           },
           "ref": null,
@@ -144,6 +147,7 @@ ShallowWrapper {
             path="/activation/:token"
           />
           <Redirect
+            push={false}
             to="/activation/error"
           />
         </Switch>,
@@ -172,6 +176,7 @@ ShallowWrapper {
               path="/activation/:token"
             />,
             <Redirect
+              push={false}
               to="/activation/error"
             />,
           ],
@@ -219,8 +224,9 @@ ShallowWrapper {
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "function",
+            "nodeType": "class",
             "props": Object {
+              "push": false,
               "to": "/activation/error",
             },
             "ref": null,
@@ -245,6 +251,7 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
+          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },
@@ -255,6 +262,8 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
 }
 `;

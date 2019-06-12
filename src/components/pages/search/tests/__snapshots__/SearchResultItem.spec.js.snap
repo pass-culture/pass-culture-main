@@ -181,7 +181,7 @@ ShallowWrapper {
                   clamp="2"
                   tagName="div"
                   truncationChar="…"
-                  useNativeClamp={true}
+                  useNativeClamp={false}
                 >
                   sur la route des migrants ; rencontres à Calais
                 </Dotdotdot>
@@ -240,7 +240,7 @@ ShallowWrapper {
                     clamp="2"
                     tagName="div"
                     truncationChar="…"
-                    useNativeClamp={true}
+                    useNativeClamp={false}
                   >
                     sur la route des migrants ; rencontres à Calais
                   </Dotdotdot>
@@ -309,7 +309,7 @@ ShallowWrapper {
                       clamp="2"
                       tagName="div"
                       truncationChar="…"
-                      useNativeClamp={true}
+                      useNativeClamp={false}
                     >
                       sur la route des migrants ; rencontres à Calais
                     </Dotdotdot>
@@ -376,7 +376,7 @@ ShallowWrapper {
                       clamp="2"
                       tagName="div"
                       truncationChar="…"
-                      useNativeClamp={true}
+                      useNativeClamp={false}
                     >
                       sur la route des migrants ; rencontres à Calais
                     </Dotdotdot>
@@ -405,7 +405,7 @@ ShallowWrapper {
                         clamp="2"
                         tagName="div"
                         truncationChar="…"
-                        useNativeClamp={true}
+                        useNativeClamp={false}
                       >
                         sur la route des migrants ; rencontres à Calais
                       </Dotdotdot>
@@ -429,7 +429,7 @@ ShallowWrapper {
                         clamp="2"
                         tagName="div"
                         truncationChar="…"
-                        useNativeClamp={true}
+                        useNativeClamp={false}
                       >
                         sur la route des migrants ; rencontres à Calais
                       </Dotdotdot>,
@@ -446,7 +446,7 @@ ShallowWrapper {
                         "clamp": "2",
                         "tagName": "div",
                         "truncationChar": "…",
-                        "useNativeClamp": true,
+                        "useNativeClamp": false,
                       },
                       "ref": null,
                       "rendered": "sur la route des migrants ; rencontres à Calais",
@@ -547,7 +547,7 @@ ShallowWrapper {
                     clamp="2"
                     tagName="div"
                     truncationChar="…"
-                    useNativeClamp={true}
+                    useNativeClamp={false}
                   >
                     sur la route des migrants ; rencontres à Calais
                   </Dotdotdot>
@@ -606,7 +606,7 @@ ShallowWrapper {
                       clamp="2"
                       tagName="div"
                       truncationChar="…"
-                      useNativeClamp={true}
+                      useNativeClamp={false}
                     >
                       sur la route des migrants ; rencontres à Calais
                     </Dotdotdot>
@@ -675,7 +675,7 @@ ShallowWrapper {
                         clamp="2"
                         tagName="div"
                         truncationChar="…"
-                        useNativeClamp={true}
+                        useNativeClamp={false}
                       >
                         sur la route des migrants ; rencontres à Calais
                       </Dotdotdot>
@@ -742,7 +742,7 @@ ShallowWrapper {
                         clamp="2"
                         tagName="div"
                         truncationChar="…"
-                        useNativeClamp={true}
+                        useNativeClamp={false}
                       >
                         sur la route des migrants ; rencontres à Calais
                       </Dotdotdot>
@@ -771,7 +771,7 @@ ShallowWrapper {
                           clamp="2"
                           tagName="div"
                           truncationChar="…"
-                          useNativeClamp={true}
+                          useNativeClamp={false}
                         >
                           sur la route des migrants ; rencontres à Calais
                         </Dotdotdot>
@@ -795,7 +795,7 @@ ShallowWrapper {
                           clamp="2"
                           tagName="div"
                           truncationChar="…"
-                          useNativeClamp={true}
+                          useNativeClamp={false}
                         >
                           sur la route des migrants ; rencontres à Calais
                         </Dotdotdot>,
@@ -812,7 +812,7 @@ ShallowWrapper {
                           "clamp": "2",
                           "tagName": "div",
                           "truncationChar": "…",
-                          "useNativeClamp": true,
+                          "useNativeClamp": false,
                         },
                         "ref": null,
                         "rendered": "sur la route des migrants ; rencontres à Calais",
@@ -887,6 +887,7 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
+          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },
@@ -897,7 +898,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;

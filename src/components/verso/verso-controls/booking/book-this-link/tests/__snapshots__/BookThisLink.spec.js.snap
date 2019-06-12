@@ -44,6 +44,7 @@ ShallowWrapper {
       ],
       "className": "flex-columns is-bold is-white-text fs18",
       "id": "verso-booking-button",
+      "replace": false,
       "to": "/path/to/page/",
     },
     "ref": null,
@@ -104,6 +105,7 @@ ShallowWrapper {
         ],
         "className": "flex-columns is-bold is-white-text fs18",
         "id": "verso-booking-button",
+        "replace": false,
         "to": "/path/to/page/",
       },
       "ref": null,
@@ -152,6 +154,7 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
+          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },
@@ -162,6 +165,8 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
 }
 `;

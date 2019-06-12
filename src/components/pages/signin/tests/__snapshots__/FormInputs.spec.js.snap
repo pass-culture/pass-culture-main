@@ -47,6 +47,7 @@ ShallowWrapper {
         />,
         <Link
           className="is-white-text is-underline fs16"
+          replace={false}
           to="/mot-de-passe-perdu"
         >
           <span>
@@ -116,6 +117,7 @@ ShallowWrapper {
             Mot de passe oublié ?
           </span>,
           "className": "is-white-text is-underline fs16",
+          "replace": false,
           "to": "/mot-de-passe-perdu",
         },
         "ref": null,
@@ -170,6 +172,7 @@ ShallowWrapper {
           />,
           <Link
             className="is-white-text is-underline fs16"
+            replace={false}
             to="/mot-de-passe-perdu"
           >
             <span>
@@ -239,6 +242,7 @@ ShallowWrapper {
               Mot de passe oublié ?
             </span>,
             "className": "is-white-text is-underline fs16",
+            "replace": false,
             "to": "/mot-de-passe-perdu",
           },
           "ref": null,
@@ -271,6 +275,7 @@ ShallowWrapper {
           "getChildContext": Object {
             "calledByRenderer": false,
           },
+          "getDerivedStateFromError": true,
           "getDerivedStateFromProps": Object {
             "hasShouldComponentUpdateBug": false,
           },
@@ -281,6 +286,8 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
 }
 `;
