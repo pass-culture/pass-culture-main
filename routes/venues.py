@@ -1,9 +1,8 @@
 """ venues """
 from flask import current_app as app, jsonify, request
-from flask_login import login_required, current_user
+from flask_login import login_required
 
 from domain.admin_emails import send_venue_validation_email
-from models import ApiErrors
 from models.user_offerer import RightsType
 from models.venue import Venue
 from repository.venue_queries import save_venue
@@ -15,13 +14,20 @@ from utils.rest import ensure_current_user_has_rights, \
 from validation.venues import validate_coordinates, check_valid_edition
 
 
-
 @app.route('/venues/<venueId>', methods=['GET'])
 @login_required
 def get_venue(venueId):
     venue = load_or_404(Venue, venueId)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     return jsonify(venue.as_dict(include=VENUE_INCLUDES))
+
+
+@app.route('/venues', methods=['GET'])
+@login_required
+def get_venues():
+    venues = Venue.query.all()
+    return jsonify([venue.as_dict(include=VENUE_INCLUDES)
+                    for venue in venues]), 200
 
 
 @app.route('/venues', methods=['POST'])
