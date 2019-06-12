@@ -388,14 +388,14 @@ def _make_activation_notification_email_as_plain_text(first_name: str, set_passw
     support@passculture.app • pass.culture.fr
     """
 
-def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool):
+def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool) -> dict:
     if is_webapp:
-        data = _webapp_user_validation_email(user, app_origin_url)
+        data = make_webapp_user_validation_email(user, app_origin_url)
     else:
-        data = _pro_user_validation_email(user, app_origin_url)
+        data = make_pro_user_validation_email(user, app_origin_url)
     return data
 
-def make_user_waiting_for_validation_by_admin_email(user: User, app_origin_url: str, is_webapp: bool):
+def make_user_waiting_for_validation_by_admin_email(user: User, app_origin_url: str, is_webapp: bool) -> dict:
     data = _pro_user_waiting_for_validation_by_admin_email(user, app_origin_url)
     return data
 
@@ -673,7 +673,7 @@ def _get_stock_description(stock):
     return description
 
 
-def _webapp_user_validation_email(user: User, app_origin_url: str):
+def make_webapp_user_validation_email(user: User, app_origin_url: str) -> dict:
     template = 'mails/webapp_user_validation_email.html'
     from_name = 'pass Culture'
     email_html = render_template(template, user=user, api_url=API_URL, app_origin_url=app_origin_url)
@@ -684,7 +684,7 @@ def _webapp_user_validation_email(user: User, app_origin_url: str):
             'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS}
 
 
-def _pro_user_validation_email(user: User, app_origin_url: str):
+def make_pro_user_validation_email(user: User, app_origin_url: str) -> dict:
     from_name = 'pass Culture pro'
     return {
         'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,

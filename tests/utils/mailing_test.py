@@ -1275,7 +1275,7 @@ class MakePaymentsReportEmailTest:
 
 
 class UserValidationEmailsTest:
-    def test_make_webapp_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
+    def test_makemake_webapp_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
         user = create_user(email="test@email.com")
         user.generate_validation_token()
@@ -1299,7 +1299,7 @@ class UserValidationEmailsTest:
         assert email['Subject'] == 'Validation de votre adresse email pour le pass Culture'
         assert email['FromEmail'] == 'support@passculture.app'
 
-    def test_make_pro_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
+    def test_makemake_pro_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
         user = create_user(email="test@email.com")
         user.generate_validation_token()
