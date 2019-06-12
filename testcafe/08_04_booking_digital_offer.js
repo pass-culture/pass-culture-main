@@ -94,6 +94,7 @@ test("Parcours complet de réservation d'une offre digitale", async t => {
     .click(sendBookingButton)
     .expect(bookingErrorReasons.count)
     .eql(0)
+    .wait(1000)
     .expect(bookingOnlineButton.exists)
     .ok()
 
