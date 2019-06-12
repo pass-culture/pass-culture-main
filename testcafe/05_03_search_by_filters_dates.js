@@ -109,37 +109,50 @@ test('Quand on choisit un range de date après une date précise, le date picker
     .contains('')
 })
 
-test('Je sélectionne les checkboxes par range de date', async t => {
+// TODO: this is a not well understood test crashing sometimes because of mysterious wait
+// This test is therefore skipped and has to be internalized inside jest tests.
+test.skip('Je sélectionne les checkboxes par range de date', async t => {
+  // when
+  await t.click(checkboxDate1)
+
+  // then
   await t
-    .click(checkboxDate1)
     .expect(checkboxDate1.checked)
     .ok()
     .expect(checkboxDate2.checked)
     .notOk()
     .expect(checkboxDate3.checked)
     .notOk()
-    .click(filterButton)
 
+  // when
+  await t.click(filterButton)
+
+  // then
+  await t.expect(getPageUrl()).contains(`&jours=0-1`)
+
+  // when
+  await t.click(toggleFilterButton).wait(1000)
+  await t.click(checkboxDate2).wait(200)
+  await t.click(checkboxDate3).wait(200)
+
+  // then
   await t
-    .expect(getPageUrl())
-    .contains(`&jours=0-1`)
-    .wait(200)
-    .click(toggleFilterButton)
-    .click(checkboxDate2)
-    .click(checkboxDate3)
-    .wait(100)
     .expect(checkboxDate1.checked)
     .ok()
     .expect(checkboxDate2.checked)
     .ok()
     .expect(checkboxDate3.checked)
     .ok()
-    .click(filterButton)
 
+  // when
+  await t.click(filterButton)
+
+  // then
   await t.expect(getPageUrl()).contains(`&jours=0-1%2C1-5%2C5-100000`)
 })
 
 test('Je sélectionne plusieurs dates, je filtre puis je clique sur réinitialiser', async t => {
+  // when
   await t
     .click(checkboxDate1)
     .click(checkboxDate2)
@@ -150,6 +163,9 @@ test('Je sélectionne plusieurs dates, je filtre puis je clique sur réinitialis
     .click(toggleFilterButton)
     .click(resetButton)
     .wait(200)
+
+  // then
+  await t
     .expect(checkboxDate1.checked)
     .notOk()
     .expect(checkboxDate2.checked)
