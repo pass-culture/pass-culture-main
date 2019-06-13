@@ -7,7 +7,6 @@ import HeroSection from 'components/layout/HeroSection/HeroSection'
 import { API_URL } from 'utils/config'
 import {FilterByVenue} from './FilterByVenue'
 import {FilterByOffer} from './FilterByOffer'
-import {FilterByDigitalOffer} from './FilterByDigitalOffer'
 import {FilterByDate} from './FilterByDate'
 
 class Bookings extends Component {
@@ -36,13 +35,7 @@ class Bookings extends Component {
         <FilterByVenue
           venuesOptions={venuesOptions}
         />
-        <SelectDigitalOffer
-          filterState={this.state}
-        />
         <FilterByOffer
-          offers={offersOptions}
-        />
-        <FilterByDigitalOffer
           offers={offersOptions}
         />
         <FilterByDate
