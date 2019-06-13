@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import classnames from 'classnames'
 import React from 'react'
 import PropTypes from 'prop-types'

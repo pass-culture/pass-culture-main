@@ -1,6 +1,6 @@
 import createCachedSelector from 're-reselect'
 
-import fetchAddressData from './fetchAddressData'
+import fetchAddressData from '../utils/fetchAddressData'
 
 function mapArgsToCacheKey(latitude, longitude, maxSuggestions) {
   return `${latitude || ''}/${longitude || ''}/${maxSuggestions || ''}`

@@ -1,6 +1,6 @@
 import createDecorator from 'final-form-calculate'
 
-import getSuggestionsFromLatitudeAndLongitude from '../utils/getSuggestionsFromLatitudeAndLongitude'
+import getSuggestionsFromLatitudeAndLongitude from '../selectors/getSuggestionsFromLatitudeAndLongitude'
 
 export const bindGetSuggestionsToLongitude = createDecorator({
   field: 'longitude',

@@ -94,6 +94,5 @@ describe('src | components | pages | Venue | fields | LocationFields', () => {
       expect(numberFields.at(1).prop('readOnly')).toBe(true)
       expect(numberFields.at(1).prop('required')).toBe(true)
     })
-
   })
 })
