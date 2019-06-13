@@ -1,6 +1,5 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import get from 'lodash.get'
 
 import Search from './Search'
 import { withRedirectToSigninOrTypeformAfterLogin } from '../../hocs'
