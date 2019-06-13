@@ -85,7 +85,7 @@ ShallowWrapper {
             id="deck-footer"
           />
         </main>,
-        <withRouter(RawLoader)
+        <withRouter(Loader)
           hasError={false}
           isEmpty={null}
           isLoading={true}
@@ -224,7 +224,7 @@ ShallowWrapper {
               id="deck-footer"
             />
           </main>,
-          <withRouter(RawLoader)
+          <withRouter(Loader)
             hasError={false}
             isEmpty={null}
             isLoading={true}

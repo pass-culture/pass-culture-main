@@ -29,6 +29,8 @@ ShallowWrapper {
           >
             <Icon
               alt="erreur"
+              name={null}
+              src={null}
               svg="picto-echec"
             />
           </span>
@@ -58,6 +60,8 @@ ShallowWrapper {
           >
             <Icon
               alt="erreur"
+              name={null}
+              src={null}
               svg="picto-echec"
             />
           </span>,
@@ -71,6 +75,8 @@ ShallowWrapper {
           "props": Object {
             "children": <Icon
               alt="erreur"
+              name={null}
+              src={null}
               svg="picto-echec"
             />,
             "className": "is-block",
@@ -82,6 +88,8 @@ ShallowWrapper {
             "nodeType": "function",
             "props": Object {
               "alt": "erreur",
+              "name": null,
+              "src": null,
               "svg": "picto-echec",
             },
             "ref": null,
@@ -143,6 +151,8 @@ ShallowWrapper {
             >
               <Icon
                 alt="erreur"
+                name={null}
+                src={null}
                 svg="picto-echec"
               />
             </span>
@@ -172,6 +182,8 @@ ShallowWrapper {
             >
               <Icon
                 alt="erreur"
+                name={null}
+                src={null}
                 svg="picto-echec"
               />
             </span>,
@@ -185,6 +197,8 @@ ShallowWrapper {
             "props": Object {
               "children": <Icon
                 alt="erreur"
+                name={null}
+                src={null}
                 svg="picto-echec"
               />,
               "className": "is-block",
@@ -196,6 +210,8 @@ ShallowWrapper {
               "nodeType": "function",
               "props": Object {
                 "alt": "erreur",
+                "name": null,
+                "src": null,
                 "svg": "picto-echec",
               },
               "ref": null,

@@ -2,7 +2,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import VersoContentOffer from '../VersoContentOffer'
-import { Icon } from '../../../../layout/Icon'
+import Icon from '../../../../layout/Icon'
 import { navigationLink } from '../../../../../utils/geolocation'
 
 jest.mock('../../../../../utils/geolocation', () => ({

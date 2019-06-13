@@ -1,9 +1,10 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
 // jest --env=jsdom ./src/components/layout/error-catcher/tests/index --watch
-import React from 'react'
 import { shallow } from 'enzyme'
-import { RawErrorCatcher } from '../index'
+import React from 'react'
+
+import ErrorCatcher from '../ErrorCatcher'
 
 const routerProps = {
   history: { replace: jest.fn() },
@@ -17,9 +18,9 @@ describe('src | components | layout | ErrorCatcher', () => {
 
     // when
     const wrapper = shallow(
-      <RawErrorCatcher {...props}>
+      <ErrorCatcher {...props}>
         <Children />
-      </RawErrorCatcher>
+      </ErrorCatcher>
     ).dive()
 
     // then
@@ -34,9 +35,9 @@ describe('src | components | layout | ErrorCatcher', () => {
 
     // when
     const wrapper = shallow(
-      <RawErrorCatcher {...props}>
+      <ErrorCatcher {...props}>
         <Children />
-      </RawErrorCatcher>
+      </ErrorCatcher>
     )
     wrapper.find(Children).simulateError(error)
 
@@ -52,9 +53,9 @@ describe('src | components | layout | ErrorCatcher', () => {
 
     // when
     const wrapper = shallow(
-      <RawErrorCatcher {...props}>
+      <ErrorCatcher {...props}>
         <Children />
-      </RawErrorCatcher>
+      </ErrorCatcher>
     )
     wrapper.find(Children).simulateError(error)
 
@@ -69,9 +70,9 @@ describe('src | components | layout | ErrorCatcher', () => {
 
     // when
     const wrapper = shallow(
-      <RawErrorCatcher {...props}>
+      <ErrorCatcher {...props}>
         <Children />
-      </RawErrorCatcher>
+      </ErrorCatcher>
     )
     wrapper.find(Children).simulateError(error)
 

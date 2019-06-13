@@ -31,6 +31,7 @@ ShallowWrapper {
           name="publicName"
           placeholder="Veuillez saisir une valeur"
           required={true}
+          sublabel={null}
         />
       </div>,
       "className": "pc-scroll-container",
@@ -49,6 +50,7 @@ ShallowWrapper {
           name="publicName"
           placeholder="Veuillez saisir une valeur"
           required={true}
+          sublabel={null}
         />,
         "className": "py30 px12 flex-1",
       },
@@ -65,6 +67,7 @@ ShallowWrapper {
           "name": "publicName",
           "placeholder": "Veuillez saisir une valeur",
           "required": true,
+          "sublabel": null,
         },
         "ref": null,
         "rendered": null,
@@ -91,6 +94,7 @@ ShallowWrapper {
             name="publicName"
             placeholder="Veuillez saisir une valeur"
             required={true}
+            sublabel={null}
           />
         </div>,
         "className": "pc-scroll-container",
@@ -109,6 +113,7 @@ ShallowWrapper {
             name="publicName"
             placeholder="Veuillez saisir une valeur"
             required={true}
+            sublabel={null}
           />,
           "className": "py30 px12 flex-1",
         },
@@ -125,6 +130,7 @@ ShallowWrapper {
             "name": "publicName",
             "placeholder": "Veuillez saisir une valeur",
             "required": true,
+            "sublabel": null,
           },
           "ref": null,
           "rendered": null,

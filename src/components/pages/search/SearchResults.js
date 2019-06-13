@@ -5,7 +5,6 @@ import InfiniteScroll from 'react-infinite-scroller'
 
 import SearchResultItemContainer from './SearchResultItemContainer'
 import { searchResultsTitle } from './utils'
-import withFrenchQueryRouter from '../../hocs/withFrenchQueryRouter'
 import Spinner from '../../layout/Spinner'
 
 class SearchResults extends PureComponent {
@@ -128,4 +127,4 @@ SearchResults.propTypes = {
   query: PropTypes.shape().isRequired,
 }
 
-export default withFrenchQueryRouter(SearchResults)
+export default SearchResults

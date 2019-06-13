@@ -33,6 +33,7 @@ ShallowWrapper {
           name="identifier"
           placeholder="Identifiant (email)"
           required={true}
+          sublabel={null}
         />,
         <PasswordField
           autoComplete={false}
@@ -44,6 +45,7 @@ ShallowWrapper {
           name="password"
           placeholder="Mot de passe"
           required={[Function]}
+          sublabel={null}
         />,
         <Link
           className="is-white-text is-underline fs16"
@@ -84,6 +86,7 @@ ShallowWrapper {
           "name": "identifier",
           "placeholder": "Identifiant (email)",
           "required": true,
+          "sublabel": null,
         },
         "ref": null,
         "rendered": null,
@@ -103,6 +106,7 @@ ShallowWrapper {
           "name": "password",
           "placeholder": "Mot de passe",
           "required": [Function],
+          "sublabel": null,
         },
         "ref": null,
         "rendered": null,
@@ -158,6 +162,7 @@ ShallowWrapper {
             name="identifier"
             placeholder="Identifiant (email)"
             required={true}
+            sublabel={null}
           />,
           <PasswordField
             autoComplete={false}
@@ -169,6 +174,7 @@ ShallowWrapper {
             name="password"
             placeholder="Mot de passe"
             required={[Function]}
+            sublabel={null}
           />,
           <Link
             className="is-white-text is-underline fs16"
@@ -209,6 +215,7 @@ ShallowWrapper {
             "name": "identifier",
             "placeholder": "Identifiant (email)",
             "required": true,
+            "sublabel": null,
           },
           "ref": null,
           "rendered": null,
@@ -228,6 +235,7 @@ ShallowWrapper {
             "name": "password",
             "placeholder": "Mot de passe",
             "required": [Function],
+            "sublabel": null,
           },
           "ref": null,
           "rendered": null,

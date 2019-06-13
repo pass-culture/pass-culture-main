@@ -146,6 +146,8 @@ ShallowWrapper {
               </span>
               <Icon
                 alt="Géolocalisation dans Open Street Map"
+                name={null}
+                src={null}
                 svg="ico-geoloc-solid2"
               />
             </a>
@@ -386,6 +388,8 @@ ShallowWrapper {
                 </span>
                 <Icon
                   alt="Géolocalisation dans Open Street Map"
+                  name={null}
+                  src={null}
                   svg="ico-geoloc-solid2"
                 />
               </a>
@@ -444,6 +448,8 @@ ShallowWrapper {
                   </span>
                   <Icon
                     alt="Géolocalisation dans Open Street Map"
+                    name={null}
+                    src={null}
                     svg="ico-geoloc-solid2"
                   />
                 </a>,
@@ -546,6 +552,8 @@ ShallowWrapper {
                     </span>,
                     <Icon
                       alt="Géolocalisation dans Open Street Map"
+                      name={null}
+                      src={null}
                       svg="ico-geoloc-solid2"
                     />,
                   ],
@@ -577,6 +585,8 @@ ShallowWrapper {
                     "nodeType": "function",
                     "props": Object {
                       "alt": "Géolocalisation dans Open Street Map",
+                      "name": null,
+                      "src": null,
                       "svg": "ico-geoloc-solid2",
                     },
                     "ref": null,
@@ -677,6 +687,8 @@ ShallowWrapper {
                 </span>
                 <Icon
                   alt="Géolocalisation dans Open Street Map"
+                  name={null}
+                  src={null}
                   svg="ico-geoloc-solid2"
                 />
               </a>
@@ -917,6 +929,8 @@ ShallowWrapper {
                   </span>
                   <Icon
                     alt="Géolocalisation dans Open Street Map"
+                    name={null}
+                    src={null}
                     svg="ico-geoloc-solid2"
                   />
                 </a>
@@ -975,6 +989,8 @@ ShallowWrapper {
                     </span>
                     <Icon
                       alt="Géolocalisation dans Open Street Map"
+                      name={null}
+                      src={null}
                       svg="ico-geoloc-solid2"
                     />
                   </a>,
@@ -1077,6 +1093,8 @@ ShallowWrapper {
                       </span>,
                       <Icon
                         alt="Géolocalisation dans Open Street Map"
+                        name={null}
+                        src={null}
                         svg="ico-geoloc-solid2"
                       />,
                     ],
@@ -1108,6 +1126,8 @@ ShallowWrapper {
                       "nodeType": "function",
                       "props": Object {
                         "alt": "Géolocalisation dans Open Street Map",
+                        "name": null,
+                        "src": null,
                         "svg": "ico-geoloc-solid2",
                       },
                       "ref": null,

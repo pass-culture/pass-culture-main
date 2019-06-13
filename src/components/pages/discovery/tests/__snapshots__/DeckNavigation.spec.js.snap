@@ -288,6 +288,9 @@ ShallowWrapper {
               >
                 <Icon
                   alt="Plus d'infos"
+                  className=" "
+                  name={null}
+                  src={null}
                   svg="ico-slideup-w"
                 />
               </button>
@@ -391,6 +394,9 @@ ShallowWrapper {
                 >
                   <Icon
                     alt="Plus d'infos"
+                    className=" "
+                    name={null}
+                    src={null}
                     svg="ico-slideup-w"
                   />
                 </button>
@@ -499,6 +505,9 @@ ShallowWrapper {
                 >
                   <Icon
                     alt="Plus d'infos"
+                    className=" "
+                    name={null}
+                    src={null}
                     svg="ico-slideup-w"
                   />
                 </button>
@@ -561,6 +570,9 @@ ShallowWrapper {
                 >
                   <Icon
                     alt="Plus d'infos"
+                    className=" "
+                    name={null}
+                    src={null}
                     svg="ico-slideup-w"
                   />
                 </button>
@@ -632,6 +644,9 @@ ShallowWrapper {
                   >
                     <Icon
                       alt="Plus d'infos"
+                      className=" "
+                      name={null}
+                      src={null}
                       svg="ico-slideup-w"
                     />
                   </button>,
@@ -675,6 +690,9 @@ ShallowWrapper {
                   "props": Object {
                     "children": <Icon
                       alt="Plus d'infos"
+                      className=" "
+                      name={null}
+                      src={null}
                       svg="ico-slideup-w"
                     />,
                     "className": "button to-recto",
@@ -690,6 +708,9 @@ ShallowWrapper {
                     "nodeType": "function",
                     "props": Object {
                       "alt": "Plus d'infos",
+                      "className": " ",
+                      "name": null,
+                      "src": null,
                       "svg": "ico-slideup-w",
                     },
                     "ref": null,
@@ -887,6 +908,9 @@ ShallowWrapper {
                 >
                   <Icon
                     alt="Plus d'infos"
+                    className=" "
+                    name={null}
+                    src={null}
                     svg="ico-slideup-w"
                   />
                 </button>
@@ -990,6 +1014,9 @@ ShallowWrapper {
                   >
                     <Icon
                       alt="Plus d'infos"
+                      className=" "
+                      name={null}
+                      src={null}
                       svg="ico-slideup-w"
                     />
                   </button>
@@ -1098,6 +1125,9 @@ ShallowWrapper {
                   >
                     <Icon
                       alt="Plus d'infos"
+                      className=" "
+                      name={null}
+                      src={null}
                       svg="ico-slideup-w"
                     />
                   </button>
@@ -1160,6 +1190,9 @@ ShallowWrapper {
                   >
                     <Icon
                       alt="Plus d'infos"
+                      className=" "
+                      name={null}
+                      src={null}
                       svg="ico-slideup-w"
                     />
                   </button>
@@ -1231,6 +1264,9 @@ ShallowWrapper {
                     >
                       <Icon
                         alt="Plus d'infos"
+                        className=" "
+                        name={null}
+                        src={null}
                         svg="ico-slideup-w"
                       />
                     </button>,
@@ -1274,6 +1310,9 @@ ShallowWrapper {
                     "props": Object {
                       "children": <Icon
                         alt="Plus d'infos"
+                        className=" "
+                        name={null}
+                        src={null}
                         svg="ico-slideup-w"
                       />,
                       "className": "button to-recto",
@@ -1289,6 +1328,9 @@ ShallowWrapper {
                       "nodeType": "function",
                       "props": Object {
                         "alt": "Plus d'infos",
+                        "className": " ",
+                        "name": null,
+                        "src": null,
                         "svg": "ico-slideup-w",
                       },
                       "ref": null,

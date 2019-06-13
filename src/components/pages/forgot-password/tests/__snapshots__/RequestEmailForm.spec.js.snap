@@ -59,6 +59,7 @@ ShallowWrapper {
                   name="email"
                   placeholder="Ex. : nom@domaine.fr"
                   required={true}
+                  sublabel={null}
                   theme="primary"
                 />
               </div>
@@ -126,6 +127,7 @@ ShallowWrapper {
                   name="email"
                   placeholder="Ex. : nom@domaine.fr"
                   required={true}
+                  sublabel={null}
                   theme="primary"
                 />
               </div>
@@ -169,6 +171,7 @@ ShallowWrapper {
                   name="email"
                   placeholder="Ex. : nom@domaine.fr"
                   required={true}
+                  sublabel={null}
                   theme="primary"
                 />
               </div>
@@ -208,6 +211,7 @@ ShallowWrapper {
                     name="email"
                     placeholder="Ex. : nom@domaine.fr"
                     required={true}
+                    sublabel={null}
                     theme="primary"
                   />
                 </div>,
@@ -299,6 +303,7 @@ ShallowWrapper {
                       name="email"
                       placeholder="Ex. : nom@domaine.fr"
                       required={true}
+                      sublabel={null}
                       theme="primary"
                     />,
                     false,
@@ -318,6 +323,7 @@ ShallowWrapper {
                       "name": "email",
                       "placeholder": "Ex. : nom@domaine.fr",
                       "required": true,
+                      "sublabel": null,
                       "theme": "primary",
                     },
                     "ref": null,
@@ -403,6 +409,7 @@ ShallowWrapper {
                     name="email"
                     placeholder="Ex. : nom@domaine.fr"
                     required={true}
+                    sublabel={null}
                     theme="primary"
                   />
                 </div>
@@ -470,6 +477,7 @@ ShallowWrapper {
                     name="email"
                     placeholder="Ex. : nom@domaine.fr"
                     required={true}
+                    sublabel={null}
                     theme="primary"
                   />
                 </div>
@@ -513,6 +521,7 @@ ShallowWrapper {
                     name="email"
                     placeholder="Ex. : nom@domaine.fr"
                     required={true}
+                    sublabel={null}
                     theme="primary"
                   />
                 </div>
@@ -552,6 +561,7 @@ ShallowWrapper {
                       name="email"
                       placeholder="Ex. : nom@domaine.fr"
                       required={true}
+                      sublabel={null}
                       theme="primary"
                     />
                   </div>,
@@ -643,6 +653,7 @@ ShallowWrapper {
                         name="email"
                         placeholder="Ex. : nom@domaine.fr"
                         required={true}
+                        sublabel={null}
                         theme="primary"
                       />,
                       false,
@@ -662,6 +673,7 @@ ShallowWrapper {
                         "name": "email",
                         "placeholder": "Ex. : nom@domaine.fr",
                         "required": true,
+                        "sublabel": null,
                         "theme": "primary",
                       },
                       "ref": null,
