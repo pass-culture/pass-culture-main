@@ -1,10 +1,6 @@
 /* eslint-disable */
-import {
-  watchErrorsActions,
-  watchModalActions,
-  watchUserActions,
-} from 'pass-culture-shared'
 import { all } from 'redux-saga/effects'
+import { watchModalActions } from 'react-redux-modals'
 import { watchDataActions } from 'redux-saga-data'
 
 import rootSaga from './index'
@@ -21,8 +17,6 @@ describe('src | components | sagas ', () => {
       const expected = all([
         watchModalActions(),
         watchDataActions({ rootUrl: API_URL }),
-        watchErrorsActions(),
-        watchUserActions(),
       ])
 
       expect(allDescriptor.ALL[0]).toEqual(watchModalActions())

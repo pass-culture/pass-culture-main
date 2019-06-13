@@ -1036,11 +1036,6 @@ autoprefixer@^9.0.0:
     postcss "^7.0.16"
     postcss-value-parser "^3.3.1"
 
-autosize@^4.0.0:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/autosize/-/autosize-4.0.2.tgz#073cfd07c8bf45da4b9fd153437f5bafbba1e4c9"
-  integrity sha512-jnSyH2d+qdfPGpWlcuhGiHmqBJ6g3X+8T+iRwFrHPLVcdoGJE/x6Qicm6aDHfTsbgZKxyV8UU/YB2p4cjKDRRA==
-
 aws-sign2@~0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/aws-sign2/-/aws-sign2-0.7.0.tgz#b46e890934a9591f2d2f6f86d7e6a9f1b3fe76a8"
@@ -3067,11 +3062,6 @@ compression@^1.5.2:
     safe-buffer "5.1.2"
     vary "~1.1.2"
 
-computed-style@~0.1.3:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/computed-style/-/computed-style-0.1.4.tgz#7f344fd8584b2e425bedca4a1afc0e300bb05d74"
-  integrity sha1-fzRP2FhLLkJb7cpKGvwOMAuwXXQ=
-
 concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
@@ -3981,11 +3971,6 @@ dom-matches@>=1.0.1:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/dom-matches/-/dom-matches-2.0.0.tgz#d2728b416a87533980eb089b848d253cf23a758c"
   integrity sha1-0nKLQWqHUzmA6wibhI0lPPI6dYw=
-
-dom-scroll-into-view@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/dom-scroll-into-view/-/dom-scroll-into-view-1.0.1.tgz#32abb92f0d8feca6215162aef43e4b449ab8d99c"
-  integrity sha1-Mqu5Lw2P7KYhUWKu9D5LRJq42Zw=
 
 dom-scroll-into-view@1.x, dom-scroll-into-view@^1.2.0:
   version "1.2.1"
@@ -6134,7 +6119,7 @@ http-errors@~1.6.2:
     setprototypeof "1.1.0"
     statuses ">= 1.4.0 < 2"
 
-"http-parser-js@>= 0.4.0, < 0.4.11":
+"http-parser-js@>=0.4.0 <0.4.11":
   version "0.4.10"
   resolved "https://registry.yarnpkg.com/http-parser-js/-/http-parser-js-0.4.10.tgz#92c9c1374c35085f75db359ec56cc257cbb93fa4"
   integrity sha1-ksnBN0w1CF912zWexWzCV8u5P6Q=
@@ -7810,13 +7795,6 @@ license-reporter@^1.2.2:
     xml2js "^0.4.19"
     yargs "^12.0.5"
 
-line-height@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/line-height/-/line-height-0.3.1.tgz#4b1205edde182872a5efa3c8f620b3187a9c54c9"
-  integrity sha1-SxIF7d4YKHKl76PI9iCzGHqcVMk=
-  dependencies:
-    computed-style "~0.1.3"
-
 linux-platform-info@^0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/linux-platform-info/-/linux-platform-info-0.0.3.tgz#2dae324385e66e3d755bec83f86c7beea61ceb83"
@@ -8022,7 +8000,7 @@ lodash.memoize@^4.1.2:
   resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
   integrity sha1-vMbEmkKihA7Zl/Mj6tpezRguC/4=
 
-lodash.merge@^4.6.0, lodash.merge@^4.6.1:
+lodash.merge@^4.6.0:
   version "4.6.1"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.1.tgz#adc25d9cb99b9391c59624f379fbba60d7111d54"
   integrity sha512-AOYza4+Hf5z1/0Hztxpm2/xiPZgi/cjMqdnKTUWTBSKchJlxXXuUSxCCl8rJlf4g6yww/j6mA8nC8Hw/EZWxKQ==
@@ -9560,37 +9538,6 @@ pascalcase@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/pascalcase/-/pascalcase-0.1.1.tgz#b363e55e8006ca6fe21784d2db22bd15d7917f14"
   integrity sha1-s2PlXoAGym/iF4TS2yK9FdeRfxQ=
-
-pass-culture-shared@0.1.0-alpha12:
-  version "0.1.0-alpha12"
-  resolved "https://registry.yarnpkg.com/pass-culture-shared/-/pass-culture-shared-0.1.0-alpha12.tgz#737e2ce9921c3499a69c9f6e6d1c1bb8a7faae17"
-  integrity sha512-vO0NZVUUp96Oxc0us5lSgvRTw4hWNGP4B0qb44Mm1PvPTnU0y9Jkz6ObhKuO8ZJA08ZL3t9e2WU2av9udBgeJQ==
-  dependencies:
-    classnames "2.2.5"
-    eslint "^5.8.0"
-    lodash.get "^4.4.2"
-    lodash.merge "^4.6.1"
-    lodash.set "^4.3.2"
-    lodash.uniqby "^4.7.0"
-    moment "^2.18.1"
-    moment-locale-fr "^1.0.0"
-    moment-timezone "^0.5.21"
-    prop-types "^15.6.2"
-    re-reselect "^2.1.0"
-    react "^16.5.2"
-    react-autocomplete "^1.8.1"
-    react-autosize-textarea "^4.0.0"
-    react-datepicker "^1.6.0"
-    react-dom "^16.5.2"
-    react-dotdotdot "^1.2.3"
-    react-redux "^5.0.7"
-    react-router-dom "^4.3.1"
-    react-time-input "^0.0.19"
-    redux "^4.0.0"
-    redux-saga "^0.15.3"
-    redux-saga-data "^1.8.0"
-    reselect "^3.0.1"
-    uuid "^3.3.2"
 
 path-browserify@0.0.1:
   version "0.0.1"
@@ -11158,23 +11105,6 @@ re-reselect@^2.1.0:
   resolved "https://registry.yarnpkg.com/re-reselect/-/re-reselect-2.3.0.tgz#96bb8dcb6d45b16902cea496b048e1fa00925490"
   integrity sha512-B3j54+0QyvAWGioJxeaq8BJ7XdwSuiyglbHgnWk6v5GpYJDlA8JvsGXixFOXF7txnEm3QuaCQ0LP1gUKR6Tc9w==
 
-react-autocomplete@^1.8.1:
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/react-autocomplete/-/react-autocomplete-1.8.1.tgz#ebbbc400006aa91ad538b2d14727b9e7e5d06310"
-  integrity sha1-67vEAABqqRrVOLLRRye55+XQYxA=
-  dependencies:
-    dom-scroll-into-view "1.0.1"
-    prop-types "^15.5.10"
-
-react-autosize-textarea@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/react-autosize-textarea/-/react-autosize-textarea-4.0.0.tgz#893d43606b1efe820c71476f25d141c6b25deaab"
-  integrity sha512-QVLgrvLZIjWNX4o5cHcsJuIjVg7JCNyxzObcFb08PWepDImeKenJt3yhjruEBFyZZyWtPAb65OPKbF1v79MhvQ==
-  dependencies:
-    autosize "^4.0.0"
-    line-height "^0.3.1"
-    prop-types "^15.5.6"
-
 react-copy-to-clipboard@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/react-copy-to-clipboard/-/react-copy-to-clipboard-5.0.1.tgz#8eae107bb400be73132ed3b6a7b4fb156090208e"
@@ -11192,7 +11122,7 @@ react-custom-scrollbars@^4.2.1:
     prop-types "^15.5.10"
     raf "^3.1.0"
 
-react-datepicker@1.8.0, react-datepicker@^1.6.0:
+react-datepicker@1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-1.8.0.tgz#ee46148aa10234d42e22ab969d1110f74263ba56"
   integrity sha512-N4LdVTtqJCsZyKXBQ/AqSEcH6FyhgsY1gD07zECNu60nGt5s4ngRlhYdHoE34VNFO+ZY+pvljZRLwSC8LS9RxQ==
@@ -11459,13 +11389,6 @@ react-test-renderer@^16.0.0-0:
     prop-types "^15.6.2"
     react-is "^16.8.6"
     scheduler "^0.13.6"
-
-react-time-input@^0.0.19:
-  version "0.0.19"
-  resolved "https://registry.yarnpkg.com/react-time-input/-/react-time-input-0.0.19.tgz#7f4d72bb278505c7e31f28bcc2ad3be4a0031aa0"
-  integrity sha512-XZk/XoAWCgTEbdy5b7Fjstmaw9LtSre8a/os2EBvsMlyglPqybZmkxGnoLWPEoQ1fje8MEF8nh3qINAVKKE6NA==
-  dependencies:
-    user "0.0.0"
 
 react-timeago@^3.4.3:
   version "3.4.3"
@@ -12333,7 +12256,7 @@ rxjs@^6.4.0:
   dependencies:
     tslib "^1.9.0"
 
-safe-buffer@5.1.2, "safe-buffer@>= 5.1.0", safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@^5.1.2, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
+safe-buffer@5.1.2, safe-buffer@>=5.1.0, safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@^5.1.2, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
   integrity sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==
@@ -12927,9 +12850,9 @@ sprintf-js@~1.0.2:
   integrity sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=
 
 sqlite3@^4.0.0:
-  version "4.0.8"
-  resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-4.0.8.tgz#81ee60d54befaa52f5421fe6337050bd43d4bb95"
-  integrity sha512-kgwHu4j10KhpCHtx//dejd/tVQot7jc3sw+Sn0vMuKOw0X00Ckyg9VceKgzPyGmmz+zEoYue9tOLriWTvYy0ww==
+  version "4.0.9"
+  resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-4.0.9.tgz#cff74550fa5a1159956815400bdef69245557640"
+  integrity sha512-IkvzjmsWQl9BuBiM4xKpl5X8WCR4w0AeJHRdobCdXZ8dT/lNc1XS6WqvY35N6+YzIIgzSBeY5prdFObID9F9tA==
   dependencies:
     nan "^2.12.1"
     node-pre-gyp "^0.11.0"
@@ -14428,11 +14351,6 @@ use@^3.1.0:
   resolved "https://registry.yarnpkg.com/use/-/use-3.1.1.tgz#d50c8cac79a19fbc20f2911f56eb973f4e10070f"
   integrity sha512-cwESVXlO3url9YWlFW/TA9cshCEhtu7IKJ/p5soJ/gGpj7vbvFrAY/eIioQ6Dw23KjZhYgiIo8HOs1nQ2vr/oQ==
 
-user@0.0.0:
-  version "0.0.0"
-  resolved "https://registry.yarnpkg.com/user/-/user-0.0.0.tgz#f27f1b23fc511f2a8efa40db55cfba123824e02a"
-  integrity sha1-8n8bI/xRHyqO+kDbVc+6Ejgk4Co=
-
 useragent@^2.1.7:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/useragent/-/useragent-2.3.0.tgz#217f943ad540cb2128658ab23fc960f6a88c9972"
@@ -14747,15 +14665,15 @@ webpack@3.8.1:
     yargs "^8.0.2"
 
 websocket-driver@>=0.5.1:
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/websocket-driver/-/websocket-driver-0.7.2.tgz#373303067d1dbefa3fddfa228a32b2a098957fa6"
-  integrity sha512-RRTAkzsGiOP8PwGwLfd/H0NbotLXyS5zxg4EbuQ2K3aNqgUOVbOzBKKvTXzUsKiwVs+pBpBtqBYHj6PS6JVXDQ==
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/websocket-driver/-/websocket-driver-0.7.3.tgz#a2d4e0d4f4f116f1e6297eba58b05d430100e9f9"
+  integrity sha512-bpxWlvbbB459Mlipc5GBzzZwhoZgGEZLuqPaR0INBGnPAY1vdBX6hPnoFXiw+3yWxDuHyQjO2oXTMyS8A5haFg==
   dependencies:
-    http-parser-js ">= 0.4.0, < 0.4.11"
-    safe-buffer ">= 5.1.0"
-    websocket-extensions ">= 0.1.1"
+    http-parser-js ">=0.4.0 <0.4.11"
+    safe-buffer ">=5.1.0"
+    websocket-extensions ">=0.1.1"
 
-"websocket-extensions@>= 0.1.1":
+websocket-extensions@>=0.1.1:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/websocket-extensions/-/websocket-extensions-0.1.3.tgz#5d2ff22977003ec687a4b87073dfbbac146ccf29"
   integrity sha512-nqHUnMXmBzT0w570r2JpJxfiSD1IzoI+HGVdd3aZ0yNi3ngvQ4jv1dtHt5VGxfI2yj5yqImPhOK4vmIh2xMbGg==

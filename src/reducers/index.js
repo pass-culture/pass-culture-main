@@ -1,5 +1,5 @@
-import { errors, form, loading, modal } from 'pass-culture-shared'
 import { combineReducers } from 'redux'
+import { modal } from 'redux-react-modals'
 
 import data from './data'
 import geolocation from './geolocation'
@@ -13,10 +13,7 @@ import token from './token'
 const rootReducer = combineReducers({
   card,
   data,
-  errors,
-  form,
   geolocation,
-  loading,
   menu,
   modal,
   overlay,
