@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, MINYEAR
 
 from models import PcObject
 from repository.user_queries import get_all_users_wallet_balances, find_by_first_and_last_names_and_birth_date_or_email, \
-    find_most_recent_beneficiary_creation_date
+    find_most_recent_beneficiary_creation_date, find_user_by_demarche_simplifiee_application_id
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_deposit, \
     create_stock, create_booking, create_user_offerer
@@ -109,7 +109,8 @@ class FindByFirstAndLastNamesOrEmailTest:
         PcObject.save(user1, user2)
 
         # when
-        users = find_by_first_and_last_names_and_birth_date_or_email('john', 'doe', datetime(2000, 5, 1), 'john@test.com')
+        users = find_by_first_and_last_names_and_birth_date_or_email('john', 'doe', datetime(2000, 5, 1),
+                                                                     'john@test.com')
 
         # then
         assert len(users) == 1
@@ -125,7 +126,8 @@ class FindByFirstAndLastNamesOrEmailTest:
         PcObject.save(user1, user2)
 
         # when
-        users = find_by_first_and_last_names_and_birth_date_or_email('johnbob', 'doe', datetime(2000, 5, 1), 'john.b@test.com')
+        users = find_by_first_and_last_names_and_birth_date_or_email('johnbob', 'doe', datetime(2000, 5, 1),
+                                                                     'john.b@test.com')
 
         # then
         assert len(users) == 1
@@ -141,7 +143,8 @@ class FindByFirstAndLastNamesOrEmailTest:
         PcObject.save(user1, user2)
 
         # when
-        users = find_by_first_and_last_names_and_birth_date_or_email('johnbob', 'doe', datetime(2000, 5, 1), 'john.b@test.com')
+        users = find_by_first_and_last_names_and_birth_date_or_email('johnbob', 'doe', datetime(2000, 5, 1),
+                                                                     'john.b@test.com')
 
         # then
         assert len(users) == 1
@@ -157,7 +160,8 @@ class FindByFirstAndLastNamesOrEmailTest:
         PcObject.save(user1, user2)
 
         # when
-        users = find_by_first_and_last_names_and_birth_date_or_email('jöhn bób', 'doe', datetime(2000, 5, 1), 'john.b@test.com')
+        users = find_by_first_and_last_names_and_birth_date_or_email('jöhn bób', 'doe', datetime(2000, 5, 1),
+                                                                     'john.b@test.com')
 
         # then
         assert len(users) == 1
@@ -185,7 +189,8 @@ class FindByFirstAndLastNamesOrEmailTest:
         PcObject.save(user1, user2)
 
         # when
-        users = find_by_first_and_last_names_and_birth_date_or_email('jean', 'frimousse', datetime(1998, 5, 1), 'john@test.com')
+        users = find_by_first_and_last_names_and_birth_date_or_email('jean', 'frimousse', datetime(1998, 5, 1),
+                                                                     'john@test.com')
 
         # then
         assert len(users) == 1
@@ -201,15 +206,18 @@ class FindByFirstAndLastNamesOrEmailTest:
         PcObject.save(user1, user2)
 
         # when
-        users = find_by_first_and_last_names_and_birth_date_or_email('john', 'doe', datetime(2000, 5, 1), 'invalid.email@test.com')
+        users = find_by_first_and_last_names_and_birth_date_or_email('john', 'doe', datetime(2000, 5, 1),
+                                                                     'invalid.email@test.com')
 
         # then
         assert len(users) == 1
         assert users[0].email == 'john@test.com'
 
+
 class FindMostRecentBeneficiaryCreationDateTest:
     @clean_database
-    def test_returns_created_at_date_of_most_recent_beneficiary_user_that_has_an_demarche_simplifiee_application_id(self, app):
+    def test_returns_created_at_date_of_most_recent_beneficiary_user_that_has_an_demarche_simplifiee_application_id(
+            self, app):
         # given
         now = datetime.utcnow()
 
@@ -217,9 +225,12 @@ class FindMostRecentBeneficiaryCreationDateTest:
         two_days_ago = now - timedelta(days=2)
         three_days_ago = now - timedelta(days=3)
 
-        user1 = create_user(email='user1@test.com', date_created=yesterday, can_book_free_offers=False, demarcheSimplifieeApplicationId=1)
-        user2 = create_user(email='user2@test.com', date_created=two_days_ago, can_book_free_offers=True, demarcheSimplifieeApplicationId=None)
-        user3 = create_user(email='user3@test.com', date_created=three_days_ago, can_book_free_offers=True, demarcheSimplifieeApplicationId=3)
+        user1 = create_user(email='user1@test.com', date_created=yesterday, can_book_free_offers=False,
+                            demarcheSimplifieeApplicationId=1)
+        user2 = create_user(email='user2@test.com', date_created=two_days_ago, can_book_free_offers=True,
+                            demarcheSimplifieeApplicationId=None)
+        user3 = create_user(email='user3@test.com', date_created=three_days_ago, can_book_free_offers=True,
+                            demarcheSimplifieeApplicationId=3)
         offerer = create_offerer()
         user_offerer = create_user_offerer(user1, offerer)
 
@@ -245,6 +256,50 @@ class FindMostRecentBeneficiaryCreationDateTest:
 
         # then
         assert most_recent_creation_date == datetime(MINYEAR, 1, 1)
+
+
+class FindUserByDemarcheSimplifieeApplicationIdTest:
+    @clean_database
+    def test_returns_user_matching_the_given_demarche_simplifiee_application_id(self, app):
+        # given
+        now = datetime.utcnow()
+        user1 = create_user(email='user1@test.com', date_created=now, can_book_free_offers=False,
+                            demarcheSimplifieeApplicationId=1)
+        user2 = create_user(email='user2@test.com', date_created=now, can_book_free_offers=True,
+                            demarcheSimplifieeApplicationId=2)
+        user3 = create_user(email='user3@test.com', date_created=now, can_book_free_offers=True,
+                            demarcheSimplifieeApplicationId=3)
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user1, offerer)
+
+        PcObject.save(user_offerer, user2, user3)
+
+        # when
+        result = find_user_by_demarche_simplifiee_application_id(2)
+
+        # then
+        assert result == user2
+
+    @clean_database
+    def test_returns_no_user_when_the_given_demarche_simplifiee_application_id_does_not_match(self, app):
+        # given
+        now = datetime.utcnow()
+        user1 = create_user(email='user1@test.com', date_created=now, can_book_free_offers=False,
+                            demarcheSimplifieeApplicationId=1)
+        user2 = create_user(email='user2@test.com', date_created=now, can_book_free_offers=True,
+                            demarcheSimplifieeApplicationId=2)
+        user3 = create_user(email='user3@test.com', date_created=now, can_book_free_offers=True,
+                            demarcheSimplifieeApplicationId=3)
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user1, offerer)
+
+        PcObject.save(user_offerer, user2, user3)
+
+        # when
+        result = find_user_by_demarche_simplifiee_application_id(5)
+
+        # then
+        assert result is None
 
 
 def _create_balances_for_user2(stock3, user2, venue):

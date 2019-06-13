@@ -16,6 +16,11 @@ def find_user_by_email(email: str) -> User:
         .first()
 
 
+def find_user_by_demarche_simplifiee_application_id(application_id: int) -> User:
+    return User.query \
+        .filter(User.demarcheSimplifieeApplicationId == application_id) \
+        .first()
+
 def find_by_first_and_last_names_and_birth_date_or_email(first_name: str, last_name: str, birth_date: datetime, email: str) -> List[User]:
     civility_predicate = (_matching(User.firstName, first_name)) & (_matching(User.lastName,last_name)) & (User.dateOfBirth == birth_date)
     email_predicate = _matching(User.email, email)
