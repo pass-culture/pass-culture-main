@@ -7,7 +7,6 @@ const ModifyOrCancelControl = ({
   form,
   history,
   offererId,
-  query,
   venueId,
   readOnly,
 }) => (
