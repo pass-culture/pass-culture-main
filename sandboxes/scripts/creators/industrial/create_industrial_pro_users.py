@@ -18,13 +18,14 @@ def create_industrial_pro_users():
             users_by_name['pro{} {}'.format(departement_code, pro_count)] = create_user(
                 can_book_free_offers=False,
                 departement_code=str(departement_code),
+                date_of_birth=None,
                 email=email,
                 first_name="PC Test Pro",
                 is_admin=False,
                 last_name="{} {}".format(departement_code, pro_count),
                 password=get_password_from_email(email),
                 postal_code="{}100".format(departement_code),
-                public_name="PC Test Pro {} {}".format(departement_code, pro_count)
+                public_name="PC Test Pro {} {}".format(departement_code, pro_count),
             )
 
     PcObject.save(*users_by_name.values())

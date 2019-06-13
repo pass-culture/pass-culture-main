@@ -18,6 +18,7 @@ def create_industrial_admin_users():
             users_by_name['admin{} {}'.format(departement_code, admin_count)] = create_user(
                 can_book_free_offers=False,
                 departement_code=str(departement_code),
+                date_of_birth=None,
                 email=email,
                 first_name="PC Test Admin",
                 is_admin=True,
