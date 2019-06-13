@@ -7,10 +7,10 @@ import { compose } from 'redux'
 import {
   withFrenchQueryRouter,
   withRedirectToOffersWhenAlreadyAuthenticated,
-} from '../hocs'
-import Logo from '../layout/Logo'
-import Main from '../layout/Main'
-import { mapApiToBrowser } from '../../utils/translate'
+} from '../../hocs'
+import Logo from '../../layout/Logo'
+import Main from '../../layout/Main'
+import { mapApiToBrowser } from '../../../utils/translate'
 
 class Signin extends Component {
   handleSuccessRedirect = () => {
