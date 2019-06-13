@@ -3,16 +3,6 @@ import PropTypes from 'prop-types'
 import { Redirect } from 'react-router-dom'
 import * as typeformEmbed from '@typeform/embed'
 
-import { TYPEFORM_URL_CULTURAL_PRACTICES_POLL } from '../../../utils/config'
-
-// Default values taken from official Typeform docs
-// https://developer.typeform.com/embed/modes/
-const TYPEFORM_OPTIONS = {
-  hideFooter: true,
-  hideHeaders: true,
-  opacity: 100,
-}
-
 class TypeForm extends PureComponent {
   constructor(props) {
     super(props)
@@ -20,20 +10,22 @@ class TypeForm extends PureComponent {
   }
 
   componentDidMount() {
-    const { hasFilledCulturalSurvey } = this.props
+    const { hasFilledCulturalSurvey, typeformUrl } = this.props
     if (hasFilledCulturalSurvey) return
-    const opts = {
-      ...TYPEFORM_OPTIONS,
-      onSubmit: this.onSubmitTypeForm,
-    }
-    const url = TYPEFORM_URL_CULTURAL_PRACTICES_POLL
     const container = this.typeformElementContainer
-    typeformEmbed.makeWidget(container, url, opts)
+    // NOTE Typeform Documentation
+    // https://developer.typeform.com/embed/modes/
+    typeformEmbed.makeWidget(container, typeformUrl, {
+      hideFooter: true,
+      hideHeaders: true,
+      onSubmit: this.onSubmitTypeForm,
+      opacity: 100,
+    })
   }
 
   onSubmitTypeForm = () => {
-    const { flagUserHasFilledTypeform } = this.props
-    flagUserHasFilledTypeform()
+    const { flagUserHasFilledTypeform, uniqId } = this.props
+    flagUserHasFilledTypeform(uniqId)
   }
 
   render() {
@@ -57,6 +49,8 @@ TypeForm.defaultProps = {
 TypeForm.propTypes = {
   flagUserHasFilledTypeform: PropTypes.func.isRequired,
   hasFilledCulturalSurvey: PropTypes.bool,
+  typeformUrl: PropTypes.string.isRequired,
+  uniqId: PropTypes.string.isRequired,
 }
 
 export default TypeForm

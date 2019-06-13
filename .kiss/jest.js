@@ -1,9 +1,6 @@
-/* eslint no-console: 0 */
-
-// ./node_modules/.bin/jest --env=jsdom ./path/to/file.spec.js --watch
-import MyHelper from './my/helper/relative/path'
-
-describe('path | to | my | helper', function() {
+// $(yarn bin)/jest --env=jsdom ./src/components/tests/component.spec.js --watch
+import MyHelper from './src/components/component'
+describe('src | components | component', function() {
   beforeEach(function() {})
   afterEach(function() {})
   it('it expect something', function() {
