@@ -919,6 +919,9 @@ const state = {
         value: 'ThingType.PRESSE_ABO',
       },
     ],
+    things: [{
+      lastProviderId: 123
+    }],
     users: [
       {
         currentUserUUID: '22a18e44-710c-45cd-b442-34d8ff417fac',

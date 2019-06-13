@@ -1,0 +1,538 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | Venue | VenueProvidersManager | VenueProviderItem should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <VenueProviderItem
+    dispatch={[MockFunction]}
+    events={
+      Array [
+        Object {},
+      ]
+    }
+    things={
+      Array [
+        Object {},
+      ]
+    }
+    venue={
+      Object {
+        "id": 1,
+      }
+    }
+    venueProvider={
+      Object {
+        "id": 1,
+        "isActive": true,
+        "lastSyncDate": "2018-01-01",
+        "provider": Object {
+          "localClass": "fake local class",
+        },
+        "venueIdAtOfferProvider": 1,
+      }
+    }
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <div
+          className="picto"
+        >
+          <Icon
+            svg="picto-db-default"
+          />
+        </div>,
+        <div
+          className="has-text-weight-bold is-size-3"
+        >
+          fake local class
+        </div>,
+        <div>
+          Compte :
+           
+          <strong
+            className="has-text-weight-bold"
+          >
+            [
+            1
+            ]
+          </strong>
+        </div>,
+        Array [
+          <NavLink
+            activeClassName="active"
+            aria-current="page"
+            className="has-text-primary"
+            to="/offres?lieu=1"
+          >
+            <Icon
+              svg="ico-offres-r"
+            />
+            2 offres
+          </NavLink>,
+          <div>
+            <button
+              className="button is-secondary"
+              onClick={[Function]}
+            >
+              Désactiver
+            </button>
+          </div>,
+        ],
+        <div
+          className="is-pulled-right"
+        >
+          <button
+            className="delete is-small"
+            onClick={[Function]}
+          />
+        </div>,
+      ],
+      "className": "is-disabled",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <Icon
+            svg="picto-db-default"
+          />,
+          "className": "picto",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "svg": "picto-db-default",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "fake local class",
+          "className": "has-text-weight-bold is-size-3",
+        },
+        "ref": null,
+        "rendered": "fake local class",
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            "Compte :",
+            " ",
+            <strong
+              className="has-text-weight-bold"
+            >
+              [
+              1
+              ]
+            </strong>,
+          ],
+        },
+        "ref": null,
+        "rendered": Array [
+          "Compte :",
+          " ",
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                "[",
+                1,
+                "]",
+              ],
+              "className": "has-text-weight-bold",
+            },
+            "ref": null,
+            "rendered": Array [
+              "[",
+              1,
+              "]",
+            ],
+            "type": "strong",
+          },
+        ],
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": "0",
+        "nodeType": "function",
+        "props": Object {
+          "activeClassName": "active",
+          "aria-current": "page",
+          "children": Array [
+            <Icon
+              svg="ico-offres-r"
+            />,
+            "2 offres",
+          ],
+          "className": "has-text-primary",
+          "to": "/offres?lieu=1",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "svg": "ico-offres-r",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          "2 offres",
+        ],
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": "1",
+        "nodeType": "host",
+        "props": Object {
+          "children": <button
+            className="button is-secondary"
+            onClick={[Function]}
+          >
+            Désactiver
+          </button>,
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Désactiver",
+            "className": "button is-secondary",
+            "onClick": [Function],
+          },
+          "ref": null,
+          "rendered": "Désactiver",
+          "type": "button",
+        },
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": "2",
+        "nodeType": "host",
+        "props": Object {
+          "children": <button
+            className="delete is-small"
+            onClick={[Function]}
+          />,
+          "className": "is-pulled-right",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "className": "delete is-small",
+            "onClick": [Function],
+          },
+          "ref": null,
+          "rendered": null,
+          "type": "button",
+        },
+        "type": "div",
+      },
+    ],
+    "type": "li",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <div
+            className="picto"
+          >
+            <Icon
+              svg="picto-db-default"
+            />
+          </div>,
+          <div
+            className="has-text-weight-bold is-size-3"
+          >
+            fake local class
+          </div>,
+          <div>
+            Compte :
+             
+            <strong
+              className="has-text-weight-bold"
+            >
+              [
+              1
+              ]
+            </strong>
+          </div>,
+          Array [
+            <NavLink
+              activeClassName="active"
+              aria-current="page"
+              className="has-text-primary"
+              to="/offres?lieu=1"
+            >
+              <Icon
+                svg="ico-offres-r"
+              />
+              2 offres
+            </NavLink>,
+            <div>
+              <button
+                className="button is-secondary"
+                onClick={[Function]}
+              >
+                Désactiver
+              </button>
+            </div>,
+          ],
+          <div
+            className="is-pulled-right"
+          >
+            <button
+              className="delete is-small"
+              onClick={[Function]}
+            />
+          </div>,
+        ],
+        "className": "is-disabled",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <Icon
+              svg="picto-db-default"
+            />,
+            "className": "picto",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "svg": "picto-db-default",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "fake local class",
+            "className": "has-text-weight-bold is-size-3",
+          },
+          "ref": null,
+          "rendered": "fake local class",
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              "Compte :",
+              " ",
+              <strong
+                className="has-text-weight-bold"
+              >
+                [
+                1
+                ]
+              </strong>,
+            ],
+          },
+          "ref": null,
+          "rendered": Array [
+            "Compte :",
+            " ",
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  "[",
+                  1,
+                  "]",
+                ],
+                "className": "has-text-weight-bold",
+              },
+              "ref": null,
+              "rendered": Array [
+                "[",
+                1,
+                "]",
+              ],
+              "type": "strong",
+            },
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": "0",
+          "nodeType": "function",
+          "props": Object {
+            "activeClassName": "active",
+            "aria-current": "page",
+            "children": Array [
+              <Icon
+                svg="ico-offres-r"
+              />,
+              "2 offres",
+            ],
+            "className": "has-text-primary",
+            "to": "/offres?lieu=1",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "svg": "ico-offres-r",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "2 offres",
+          ],
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": "1",
+          "nodeType": "host",
+          "props": Object {
+            "children": <button
+              className="button is-secondary"
+              onClick={[Function]}
+            >
+              Désactiver
+            </button>,
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Désactiver",
+              "className": "button is-secondary",
+              "onClick": [Function],
+            },
+            "ref": null,
+            "rendered": "Désactiver",
+            "type": "button",
+          },
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": "2",
+          "nodeType": "host",
+          "props": Object {
+            "children": <button
+              className="delete is-small"
+              onClick={[Function]}
+            />,
+            "className": "is-pulled-right",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "className": "delete is-small",
+              "onClick": [Function],
+            },
+            "ref": null,
+            "rendered": null,
+            "type": "button",
+          },
+          "type": "div",
+        },
+      ],
+      "type": "li",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+  Symbol(enzyme.__childContext__): null,
+}
+`;

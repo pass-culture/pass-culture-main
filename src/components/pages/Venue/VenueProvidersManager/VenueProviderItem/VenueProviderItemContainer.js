@@ -8,6 +8,7 @@ export const mapStateToProps = (state, ownProps) => {
   const {
     venueProvider: { providerId },
   } = ownProps
+
   return {
     events: selectEventsByProviderId(state, providerId),
     things: selectThingsByProviderId(state, providerId),
