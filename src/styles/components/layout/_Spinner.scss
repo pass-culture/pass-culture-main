@@ -1,0 +1,26 @@
+@-webkit-keyframes rotation {
+    from {-webkit-transform: rotate(0deg);}
+    to   {-webkit-transform: rotate(359deg);}
+}
+
+.spinner {
+  text-align: center;
+  img {
+    vertical-align: middle;
+    margin-right: 1rem;
+    -webkit-animation: rotation 1s infinite linear;
+  }
+
+  .content {
+    position: relative;
+    display: inline-block;
+    &:after {
+      content: attr(data-dots);
+      position: absolute;
+      right: -1.5rem;
+      width: 1rem;
+      height: 100%;
+      text-align: left;
+    }
+  }
+}
