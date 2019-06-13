@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { all } from 'redux-saga/effects'
-import { watchModalActions } from 'react-redux-modals'
+import { watchModalActions } from 'redux-react-modals'
 import { watchDataActions } from 'redux-saga-data'
 
 import rootSaga from './index'
