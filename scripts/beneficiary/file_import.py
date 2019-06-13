@@ -76,7 +76,7 @@ def create_booking_for(user: User, stock: Stock, token: str) -> Booking:
 def fill_user_from(csv_row: List[str], user: User) -> User:
     user.lastName = csv_row[LAST_NAME_COLUMN_INDEX]
     user.firstName = csv_row[FIRST_NAME_COLUMN_INDEX].split(' ')[0]
-    user.publicName = '%s %s.' % (user.firstName, csv_row[LAST_NAME_COLUMN_INDEX][:1].upper())
+    user.publicName = '%s %s.' % (user.firstName, user.lastName)
     user.dateOfBirth = datetime.strptime(csv_row[BIRTHDATE_COLUMN_INDEX], "%Y-%m-%d")
     user.email = csv_row[EMAIL_COLUMN_INDEX]
     user.phoneNumber = ''.join(filter(lambda d: d in '+1234567890', csv_row[PHONE_COLUMN_INDEX]))
