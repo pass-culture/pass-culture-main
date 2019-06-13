@@ -70,6 +70,7 @@ hr[class^='dotted-bottom-'] {
   @extend .no-margin;
   @extend .no-padding;
   @extend .no-background;
+  @extend .no-border;
 }
 
 hr[class^='dotted-top-'],

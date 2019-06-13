@@ -270,7 +270,7 @@ class Search extends PureComponent {
                         id="search-page-keywords-field"
                       >
                         <p
-                          className="flex-columns flex-1 items-center input search-input"
+                          className="control has-icons-right flex-1"
                           key={keywordsKey}
                         >
                           <label className="is-hidden" htmlFor="keywords">
@@ -286,7 +286,7 @@ class Search extends PureComponent {
                           />
 
                           {isOneCharInKeywords && (
-                            <span className="icon is-small">
+                            <span className="icon flex-columns flex-center items-center is-right">
                               <button
                                 className="no-border no-background is-red-text"
                                 id="refresh-keywords-button"
