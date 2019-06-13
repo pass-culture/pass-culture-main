@@ -5,6 +5,7 @@ import { requestData } from 'redux-saga-data'
 import Bookings from './Bookings'
 import { withFrenchQueryRouter, withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
 import selectNonVirtualVenues from './selectNonVirtualVenues'
+import selectDigitalOffers from './selectDigitalOffers'
 
 const mapDispatchToProps = (dispatch) => ({
   loadVenues: () => {
@@ -38,7 +39,8 @@ const mapStateToProps = state => {
     name: "Toutes les offres",
     id: "all",
   }
-  const offersOptions = [allOffersOption, ...offers]
+  const digitalOffers = selectDigitalOffers(state, offers)
+  const offersOptions = [allOffersOption, ...digitalOffers]
 
   return {
     venuesOptions,
