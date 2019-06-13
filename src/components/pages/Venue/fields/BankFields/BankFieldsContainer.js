@@ -14,13 +14,15 @@ export const mapStateToProps = (state, ownProps) => {
   const currentUser = selectCurrentUser(state)
   const { id: currentUserId } = currentUser || {}
 
+  const adminUserOfferer = selectUserOffererByOffererIdAndUserIdAndRightsType(
+    state,
+    offererId,
+    currentUserId,
+    'admin'
+  )
+
   return {
-    adminUserOfferer: selectUserOffererByOffererIdAndUserIdAndRightsType(
-      state,
-      offererId,
-      currentUserId,
-      'admin'
-    ),
+    adminUserOfferer: adminUserOfferer,
   }
 }
 

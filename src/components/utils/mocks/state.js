@@ -958,7 +958,13 @@ const state = {
         wallet_is_activated: false,
       },
     ],
-    userOfferers: [],
+    userOfferers: [
+      {
+        offererId: 'FE',
+        userId: 'FE',
+        rights: 'RightsType.admin'
+      }
+    ],
     venues: [
       {
         id: 'DA',

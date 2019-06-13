@@ -18,16 +18,17 @@ import HeroSection from 'components/layout/HeroSection'
 import Icon from 'components/layout/Icon'
 import Main from 'components/layout/Main'
 
-const noop = () => {}
+const noop = () => {
+}
 
 class Venue extends Component {
   constructor() {
     super()
-    this.state = { isRequestPending: false }
+    this.state = {isRequestPending: false}
   }
 
   componentDidMount() {
-    const { handleInitialRequest } = this.props
+    const {handleInitialRequest} = this.props
     handleInitialRequest()
   }
 
@@ -43,9 +44,9 @@ class Venue extends Component {
   }
 
   handleFormFail = formResolver => (state, action) => {
-    const { handleSubmitRequestFail } = this.props
-    const { payload } = action
-    const nextState = { isRequestPending: false }
+    const {handleSubmitRequestFail} = this.props
+    const {payload} = action
+    const nextState = {isRequestPending: false}
     const errors = parseSubmitErrors(payload.errors)
     handleSubmitRequestFail(state, action)
     this.setState(nextState, () => formResolver(errors))
@@ -57,13 +58,13 @@ class Venue extends Component {
       handleSubmitRequestSuccess,
       history,
       match: {
-        params: { offererId },
+        params: {offererId},
       },
       query,
     } = this.props
-    const { id: venueId } = formInitialValues
-    const nextState = { isRequestPending: false }
-    const { isCreatedEntity } = query.context({ id: venueId })
+    const {id: venueId} = formInitialValues
+    const nextState = {isRequestPending: false}
+    const {isCreatedEntity} = query.context({id: venueId})
 
     this.setState(nextState, () => {
       handleSubmitRequestSuccess(state, action)
@@ -71,7 +72,7 @@ class Venue extends Component {
       if (isCreatedEntity) {
         history.push(`/structures/${offererId}`)
       } else {
-        query.changeToReadOnly(null, { id: venueId })
+        query.changeToReadOnly(null, {id: venueId})
       }
 
       formResolver()
@@ -79,9 +80,9 @@ class Venue extends Component {
   }
 
   onFormSubmit = formValues => {
-    const { handleSubmitRequest } = this.props
+    const {handleSubmitRequest} = this.props
 
-    this.setState({ isRequestPending: true })
+    this.setState({isRequestPending: true})
 
     return new Promise(resolve => {
       handleSubmitRequest({
@@ -97,25 +98,23 @@ class Venue extends Component {
       formInitialValues,
       history,
       match: {
-        params: { offererId, venueId },
+        params: {offererId, venueId},
       },
       query,
       offerer,
     } = this.props
 
-    const { name: offererName } = offerer || {}
+    const {name: offererName} = offerer || {}
     const {
-      iban: initialIban,
       id: initialId,
       isVirtual: initialIsVirtual,
       name: initialName,
       siret: initialSiret,
-      thumbCount: initialThumbCount,
     } = formInitialValues || {}
-    const { isCreatedEntity, isModifiedEntity, readOnly } = query.context({
+    const {isCreatedEntity, isModifiedEntity, readOnly} = query.context({
       id: venueId,
     })
-    const { isRequestPending } = this.state
+    const {isRequestPending} = this.state
 
     const decorators = [
       bindGetSuggestionsToLatitude,
@@ -142,7 +141,7 @@ class Venue extends Component {
               to={`/offres/creation?lieu=${initialId}`}
               className="cta button is-primary">
               <span className="icon">
-                <Icon svg="ico-offres-w" />
+                <Icon svg="ico-offres-w"/>
               </span>
               <span>Créer une offre</span>
             </NavLink>
@@ -150,7 +149,7 @@ class Venue extends Component {
         </HeroSection>
 
         {!isCreatedEntity && (
-          <VenueProvidersManagerContainer venue={formInitialValues} />
+          <VenueProvidersManagerContainer venue={formInitialValues}/>
         )}
 
         {showForm && (
@@ -161,7 +160,7 @@ class Venue extends Component {
             onSubmit={this.onFormSubmit}
             render={formProps => {
               const canSubmit = getCanSubmit(formProps)
-              const { form, handleSubmit, values } = formProps
+              const {form, handleSubmit, values} = formProps
               const {
                 isLocationFrozen: formIsLocationFrozen,
                 latitude: formLatitude,
@@ -198,8 +197,6 @@ class Venue extends Component {
                     readOnly={readOnly}
                   />
                   <BankFieldsContainer
-                    initialIban={initialIban}
-                    initialThumbCount={initialThumbCount}
                     readOnly={readOnly}
                   />
                   <LocationFields
@@ -220,10 +217,10 @@ class Venue extends Component {
                     }
                     readOnly={readOnly}
                   />
-                  <hr />
+                  <hr/>
                   <div
                     className="field is-grouped is-grouped-centered"
-                    style={{ justifyContent: 'space-between' }}>
+                    style={{justifyContent: 'space-between'}}>
                     <ModifyOrCancelControl
                       form={form}
                       history={history}
@@ -232,7 +229,7 @@ class Venue extends Component {
                       venueId={venueId}
                       readOnly={readOnly}
                     />
-                    {readOnly && <CreateControl venueId={venueId} />}
+                    {readOnly && <CreateControl venueId={venueId}/>}
                     <ReturnOrSubmitControl
                       canSubmit={canSubmit}
                       isCreatedEntity={isCreatedEntity}

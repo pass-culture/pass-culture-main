@@ -5,8 +5,6 @@ import { TextField } from 'components/layout/form/fields'
 
 const BankFields = ({
   adminUserOfferer,
-  initialIban,
-  initialThumbCount,
   readOnly,
 }) => {
   const areBankInfosReadOnly = readOnly || !adminUserOfferer
@@ -21,34 +19,28 @@ const BankFields = ({
         </span>
       </h2>
       <div className="field-group">
-        <TextField label="BIC : " name="bic" readOnly={areBankInfosReadOnly} />
+        <TextField
+          label="BIC : "
+          name="bic"
+          readOnly={areBankInfosReadOnly}
+        />
         <TextField
           label="IBAN : "
           name="iban"
           readOnly={areBankInfosReadOnly}
         />
-        {false && (
-          <TextField
-            label="Justificatif"
-            name="rib"
-            readOnly={readOnly || areBankInfosReadOnly}
-            type="file"
-          />
-        )}
       </div>
     </div>
   )
 }
 
 BankFields.defaultProps = {
-  initialIban: null,
-  initialThumbCount: null,
+  adminUserOfferer: false,
   readOnly: true,
 }
 
 BankFields.propTypes = {
-  initialIban: PropTypes.string,
-  initialThumbCount: PropTypes.number,
+  adminUserOfferer: PropTypes.bool,
   readOnly: PropTypes.bool,
 }
 
