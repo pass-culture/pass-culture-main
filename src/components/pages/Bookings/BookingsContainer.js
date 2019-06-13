@@ -4,9 +4,9 @@ import { requestData } from 'redux-saga-data'
 
 import Bookings from './Bookings'
 import { withFrenchQueryRouter, withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
+import selectNonVirtualVenues from './selectNonVirtualVenues'
 
-
-const mapDispatchToProps = (dispatch, ownProps) => ({
+const mapDispatchToProps = (dispatch) => ({
   loadVenues: () => {
     dispatch(requestData({
       apiPath: `/venues`,
@@ -30,21 +30,15 @@ const mapStateToProps = state => {
     name: "Tous les lieux",
     id: "all",
   }
-  const venuesOptions = [allVenuesOption, ...venues]
+
+  const nonVirtualVenues = selectNonVirtualVenues(state, venues)
+  const venuesOptions = [allVenuesOption, ...nonVirtualVenues]
 
   const allOffersOption = {
     name: "Toutes les offres",
     id: "all",
   }
   const offersOptions = [allOffersOption, ...offers]
-
-  // TO DO : sortir du container et mettre dans un selector
-  // mettre les selector dans le même dossier
-
-  /*
-  const digitalOffers = selectDigitalOffers()
-  console.log('digitalOffers', digitalOffers)
-  */
 
   return {
     venuesOptions,
