@@ -1,5 +1,8 @@
 import React, { PureComponent } from 'react'
-import classnames from "classnames";
+import classnames from 'classnames'
+
+import { MONTH_OPTIONS, YEAR_OPTIONS } from './utils'
+
 
 export class FilterByDate extends PureComponent {
 
@@ -18,72 +21,6 @@ export class FilterByDate extends PureComponent {
   render() {
     const isDigitalChecked = false
 
-    const months = [
-      {
-        label: 'janvier',
-        value: 1,
-      },
-      {
-        label: 'fevruer',
-        value: 2,
-      },
-      {
-        label: 'mars',
-        value: 3,
-      },
-      {
-        label: 'avril',
-        value: 4,
-      },
-      {
-        label: 'mai',
-        value: 5,
-      },
-      {
-        label: 'juin',
-        value: 6,
-      },
-      {
-        label: 'juillet',
-        value: 7,
-      },
-      {
-        label: 'aout',
-        value: 8,
-      },
-      {
-        label: 'septembre',
-        value: 9,
-      },
-      {
-        label: 'ocotbre',
-        value: 10,
-      },
-      {
-        label: 'novembre',
-        value: 11,
-      },
-      {
-        label: 'décembre',
-        value: 12,
-      },
-    ]
-
-    const year = [
-      {
-        label: '2019',
-        value: 2019,
-      },
-      {
-        label: '2020',
-        value: 2020,
-      },
-      {
-        label: '2021',
-        value: 2021,
-      }
-    ]
-
     return (
       <React.Fragment>
         <div id="filter-by-date"
@@ -97,7 +34,7 @@ export class FilterByDate extends PureComponent {
             defaultValue="all"
             id="month"
           >
-            {months.map(({ label, value }) => (
+            {MONTH_OPTIONS.map(({ label, value }) => (
               <option key={value} value={value}>
                 {label}
               </option>
@@ -109,7 +46,7 @@ export class FilterByDate extends PureComponent {
             defaultValue="all"
             id="year"
           >
-            {year.map(({ label, value }) => (
+            {YEAR_OPTIONS.map(({ label, value }) => (
               <option key={value} value={value}>
                 {label}
               </option>
