@@ -198,6 +198,7 @@ ShallowWrapper {
         >
           <Icon
             alt=""
+            className={null}
             name={null}
             src={null}
             svg="ico-undefined"
@@ -224,6 +225,7 @@ ShallowWrapper {
           >
             <Icon
               alt=""
+              className={null}
               name={null}
               src={null}
               svg="ico-undefined"
@@ -243,6 +245,7 @@ ShallowWrapper {
           "props": Object {
             "children": <Icon
               alt=""
+              className={null}
               name={null}
               src={null}
               svg="ico-undefined"
@@ -257,6 +260,7 @@ ShallowWrapper {
             "nodeType": "function",
             "props": Object {
               "alt": "",
+              "className": null,
               "name": null,
               "src": null,
               "svg": "ico-undefined",
@@ -298,6 +302,7 @@ ShallowWrapper {
           >
             <Icon
               alt=""
+              className={null}
               name={null}
               src={null}
               svg="ico-undefined"
@@ -324,6 +329,7 @@ ShallowWrapper {
             >
               <Icon
                 alt=""
+                className={null}
                 name={null}
                 src={null}
                 svg="ico-undefined"
@@ -343,6 +349,7 @@ ShallowWrapper {
             "props": Object {
               "children": <Icon
                 alt=""
+                className={null}
                 name={null}
                 src={null}
                 svg="ico-undefined"
@@ -357,6 +364,7 @@ ShallowWrapper {
               "nodeType": "function",
               "props": Object {
                 "alt": "",
+                "className": null,
                 "name": null,
                 "src": null,
                 "svg": "ico-undefined",
