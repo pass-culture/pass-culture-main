@@ -33,11 +33,13 @@ describe('src | components | pages | search | NavResultsHeader', () => {
 
       // when
       const img = wrapper.find('#nav-results-header').props()
+      const title = wrapper.find('h2')
 
       // then
       const imgUrl = `${ROOT_PATH}/icons/img-Écouter-L.jpg`
       expect(img.style.backgroundImage).toBe(`url(${imgUrl})`)
       expect(img.title).toBe('Liste des offres de type Écouter')
+      expect(title.text()).toBe('Écouter')
     })
   })
 })
