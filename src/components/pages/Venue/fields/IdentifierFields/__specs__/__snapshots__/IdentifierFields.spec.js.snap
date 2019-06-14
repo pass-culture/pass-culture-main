@@ -1,0 +1,772 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | Venue | fields | IdentifierFields snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <IdentifierFields
+    fieldReadOnlyBecauseFrozenFormSiret={true}
+    formSiret="form siret"
+    initialSiret="form siret"
+    isCreatedEntity={true}
+    isModifiedEntity={true}
+    readOnly={true}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <h2
+          className="main-list-title is-relative"
+        >
+          IDENTIFIANTS
+        </h2>,
+        <div
+          className="field-group"
+        >
+          <Unknown
+            name="managingOffererId"
+            validator={[Function]}
+          />
+          <TextField
+            className=""
+            disabled={false}
+            format={[Function]}
+            id={null}
+            innerClassName="col-50"
+            label="SIRET (si applicable) : "
+            name="siret"
+            parse={null}
+            placeholder=""
+            readOnly={true}
+            renderInner={[Function]}
+            renderValue={[Function]}
+            required={false}
+            type="siret"
+            validate={null}
+          />
+          <TextField
+            className=""
+            disabled={false}
+            format={null}
+            id={null}
+            innerClassName={null}
+            label="Nom : "
+            name="name"
+            parse={null}
+            placeholder=""
+            readOnly={true}
+            renderInner={[Function]}
+            renderValue={[Function]}
+            required={true}
+            type="text"
+            validate={null}
+          />
+          <TextField
+            className=""
+            disabled={false}
+            format={null}
+            id={null}
+            innerClassName={null}
+            label="Nom d'usage : "
+            name="publicName"
+            parse={null}
+            placeholder=""
+            readOnly={true}
+            renderInner={[Function]}
+            renderValue={[Function]}
+            required={false}
+            type="text"
+            validate={null}
+          />
+          <TextField
+            className=""
+            disabled={false}
+            format={null}
+            id={null}
+            innerClassName="col-75"
+            label="E-mail : "
+            name="bookingEmail"
+            parse={null}
+            placeholder=""
+            readOnly={true}
+            renderInner={[Function]}
+            renderValue={[Function]}
+            required={true}
+            type="email"
+            validate={null}
+          />
+          <TextareaField
+            autoComplete={false}
+            className=""
+            disabled={false}
+            label="Commentaire (si pas de SIRET) : "
+            maxLength={1000}
+            name="comment"
+            placeholder=""
+            readOnly={true}
+            required={true}
+            rows={1}
+            validate={null}
+            validating={false}
+          />
+        </div>,
+      ],
+      "className": "section",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            "IDENTIFIANTS",
+            false,
+          ],
+          "className": "main-list-title is-relative",
+        },
+        "ref": null,
+        "rendered": Array [
+          "IDENTIFIANTS",
+          false,
+        ],
+        "type": "h2",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <Unknown
+              name="managingOffererId"
+              validator={[Function]}
+            />,
+            <TextField
+              className=""
+              disabled={false}
+              format={[Function]}
+              id={null}
+              innerClassName="col-50"
+              label="SIRET (si applicable) : "
+              name="siret"
+              parse={null}
+              placeholder=""
+              readOnly={true}
+              renderInner={[Function]}
+              renderValue={[Function]}
+              required={false}
+              type="siret"
+              validate={null}
+            />,
+            <TextField
+              className=""
+              disabled={false}
+              format={null}
+              id={null}
+              innerClassName={null}
+              label="Nom : "
+              name="name"
+              parse={null}
+              placeholder=""
+              readOnly={true}
+              renderInner={[Function]}
+              renderValue={[Function]}
+              required={true}
+              type="text"
+              validate={null}
+            />,
+            <TextField
+              className=""
+              disabled={false}
+              format={null}
+              id={null}
+              innerClassName={null}
+              label="Nom d'usage : "
+              name="publicName"
+              parse={null}
+              placeholder=""
+              readOnly={true}
+              renderInner={[Function]}
+              renderValue={[Function]}
+              required={false}
+              type="text"
+              validate={null}
+            />,
+            <TextField
+              className=""
+              disabled={false}
+              format={null}
+              id={null}
+              innerClassName="col-75"
+              label="E-mail : "
+              name="bookingEmail"
+              parse={null}
+              placeholder=""
+              readOnly={true}
+              renderInner={[Function]}
+              renderValue={[Function]}
+              required={true}
+              type="email"
+              validate={null}
+            />,
+            <TextareaField
+              autoComplete={false}
+              className=""
+              disabled={false}
+              label="Commentaire (si pas de SIRET) : "
+              maxLength={1000}
+              name="comment"
+              placeholder=""
+              readOnly={true}
+              required={true}
+              rows={1}
+              validate={null}
+              validating={false}
+            />,
+          ],
+          "className": "field-group",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "name": "managingOffererId",
+              "validator": [Function],
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "className": "",
+              "disabled": false,
+              "format": [Function],
+              "id": null,
+              "innerClassName": "col-50",
+              "label": "SIRET (si applicable) : ",
+              "name": "siret",
+              "parse": null,
+              "placeholder": "",
+              "readOnly": true,
+              "renderInner": [Function],
+              "renderValue": [Function],
+              "required": false,
+              "type": "siret",
+              "validate": null,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "className": "",
+              "disabled": false,
+              "format": null,
+              "id": null,
+              "innerClassName": null,
+              "label": "Nom : ",
+              "name": "name",
+              "parse": null,
+              "placeholder": "",
+              "readOnly": true,
+              "renderInner": [Function],
+              "renderValue": [Function],
+              "required": true,
+              "type": "text",
+              "validate": null,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "className": "",
+              "disabled": false,
+              "format": null,
+              "id": null,
+              "innerClassName": null,
+              "label": "Nom d'usage : ",
+              "name": "publicName",
+              "parse": null,
+              "placeholder": "",
+              "readOnly": true,
+              "renderInner": [Function],
+              "renderValue": [Function],
+              "required": false,
+              "type": "text",
+              "validate": null,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "className": "",
+              "disabled": false,
+              "format": null,
+              "id": null,
+              "innerClassName": "col-75",
+              "label": "E-mail : ",
+              "name": "bookingEmail",
+              "parse": null,
+              "placeholder": "",
+              "readOnly": true,
+              "renderInner": [Function],
+              "renderValue": [Function],
+              "required": true,
+              "type": "email",
+              "validate": null,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "autoComplete": false,
+              "className": "",
+              "disabled": false,
+              "label": "Commentaire (si pas de SIRET) : ",
+              "maxLength": 1000,
+              "name": "comment",
+              "placeholder": "",
+              "readOnly": true,
+              "required": true,
+              "rows": 1,
+              "validate": null,
+              "validating": false,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+        ],
+        "type": "div",
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <h2
+            className="main-list-title is-relative"
+          >
+            IDENTIFIANTS
+          </h2>,
+          <div
+            className="field-group"
+          >
+            <Unknown
+              name="managingOffererId"
+              validator={[Function]}
+            />
+            <TextField
+              className=""
+              disabled={false}
+              format={[Function]}
+              id={null}
+              innerClassName="col-50"
+              label="SIRET (si applicable) : "
+              name="siret"
+              parse={null}
+              placeholder=""
+              readOnly={true}
+              renderInner={[Function]}
+              renderValue={[Function]}
+              required={false}
+              type="siret"
+              validate={null}
+            />
+            <TextField
+              className=""
+              disabled={false}
+              format={null}
+              id={null}
+              innerClassName={null}
+              label="Nom : "
+              name="name"
+              parse={null}
+              placeholder=""
+              readOnly={true}
+              renderInner={[Function]}
+              renderValue={[Function]}
+              required={true}
+              type="text"
+              validate={null}
+            />
+            <TextField
+              className=""
+              disabled={false}
+              format={null}
+              id={null}
+              innerClassName={null}
+              label="Nom d'usage : "
+              name="publicName"
+              parse={null}
+              placeholder=""
+              readOnly={true}
+              renderInner={[Function]}
+              renderValue={[Function]}
+              required={false}
+              type="text"
+              validate={null}
+            />
+            <TextField
+              className=""
+              disabled={false}
+              format={null}
+              id={null}
+              innerClassName="col-75"
+              label="E-mail : "
+              name="bookingEmail"
+              parse={null}
+              placeholder=""
+              readOnly={true}
+              renderInner={[Function]}
+              renderValue={[Function]}
+              required={true}
+              type="email"
+              validate={null}
+            />
+            <TextareaField
+              autoComplete={false}
+              className=""
+              disabled={false}
+              label="Commentaire (si pas de SIRET) : "
+              maxLength={1000}
+              name="comment"
+              placeholder=""
+              readOnly={true}
+              required={true}
+              rows={1}
+              validate={null}
+              validating={false}
+            />
+          </div>,
+        ],
+        "className": "section",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              "IDENTIFIANTS",
+              false,
+            ],
+            "className": "main-list-title is-relative",
+          },
+          "ref": null,
+          "rendered": Array [
+            "IDENTIFIANTS",
+            false,
+          ],
+          "type": "h2",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <Unknown
+                name="managingOffererId"
+                validator={[Function]}
+              />,
+              <TextField
+                className=""
+                disabled={false}
+                format={[Function]}
+                id={null}
+                innerClassName="col-50"
+                label="SIRET (si applicable) : "
+                name="siret"
+                parse={null}
+                placeholder=""
+                readOnly={true}
+                renderInner={[Function]}
+                renderValue={[Function]}
+                required={false}
+                type="siret"
+                validate={null}
+              />,
+              <TextField
+                className=""
+                disabled={false}
+                format={null}
+                id={null}
+                innerClassName={null}
+                label="Nom : "
+                name="name"
+                parse={null}
+                placeholder=""
+                readOnly={true}
+                renderInner={[Function]}
+                renderValue={[Function]}
+                required={true}
+                type="text"
+                validate={null}
+              />,
+              <TextField
+                className=""
+                disabled={false}
+                format={null}
+                id={null}
+                innerClassName={null}
+                label="Nom d'usage : "
+                name="publicName"
+                parse={null}
+                placeholder=""
+                readOnly={true}
+                renderInner={[Function]}
+                renderValue={[Function]}
+                required={false}
+                type="text"
+                validate={null}
+              />,
+              <TextField
+                className=""
+                disabled={false}
+                format={null}
+                id={null}
+                innerClassName="col-75"
+                label="E-mail : "
+                name="bookingEmail"
+                parse={null}
+                placeholder=""
+                readOnly={true}
+                renderInner={[Function]}
+                renderValue={[Function]}
+                required={true}
+                type="email"
+                validate={null}
+              />,
+              <TextareaField
+                autoComplete={false}
+                className=""
+                disabled={false}
+                label="Commentaire (si pas de SIRET) : "
+                maxLength={1000}
+                name="comment"
+                placeholder=""
+                readOnly={true}
+                required={true}
+                rows={1}
+                validate={null}
+                validating={false}
+              />,
+            ],
+            "className": "field-group",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "name": "managingOffererId",
+                "validator": [Function],
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "className": "",
+                "disabled": false,
+                "format": [Function],
+                "id": null,
+                "innerClassName": "col-50",
+                "label": "SIRET (si applicable) : ",
+                "name": "siret",
+                "parse": null,
+                "placeholder": "",
+                "readOnly": true,
+                "renderInner": [Function],
+                "renderValue": [Function],
+                "required": false,
+                "type": "siret",
+                "validate": null,
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "className": "",
+                "disabled": false,
+                "format": null,
+                "id": null,
+                "innerClassName": null,
+                "label": "Nom : ",
+                "name": "name",
+                "parse": null,
+                "placeholder": "",
+                "readOnly": true,
+                "renderInner": [Function],
+                "renderValue": [Function],
+                "required": true,
+                "type": "text",
+                "validate": null,
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "className": "",
+                "disabled": false,
+                "format": null,
+                "id": null,
+                "innerClassName": null,
+                "label": "Nom d'usage : ",
+                "name": "publicName",
+                "parse": null,
+                "placeholder": "",
+                "readOnly": true,
+                "renderInner": [Function],
+                "renderValue": [Function],
+                "required": false,
+                "type": "text",
+                "validate": null,
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "className": "",
+                "disabled": false,
+                "format": null,
+                "id": null,
+                "innerClassName": "col-75",
+                "label": "E-mail : ",
+                "name": "bookingEmail",
+                "parse": null,
+                "placeholder": "",
+                "readOnly": true,
+                "renderInner": [Function],
+                "renderValue": [Function],
+                "required": true,
+                "type": "email",
+                "validate": null,
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "autoComplete": false,
+                "className": "",
+                "disabled": false,
+                "label": "Commentaire (si pas de SIRET) : ",
+                "maxLength": 1000,
+                "name": "comment",
+                "placeholder": "",
+                "readOnly": true,
+                "required": true,
+                "rows": 1,
+                "validate": null,
+                "validating": false,
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+          ],
+          "type": "div",
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;
