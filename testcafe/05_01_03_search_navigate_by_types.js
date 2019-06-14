@@ -4,6 +4,7 @@ import getPageUrl from './helpers/getPageUrl'
 import { ROOT_PATH } from '../src/utils/config'
 import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 
+const searchUrl = `${ROOT_PATH}recherche`
 let userRole
 
 fixture(
@@ -14,12 +15,12 @@ fixture(
       'webapp_05_search',
       'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
     )
-
-    await t.useRole(userRole).navigateTo(`${ROOT_PATH}recherche/`)
   }
+
+  await t.useRole(userRole).navigateTo(searchUrl)
 })
 
-test("Je clique sur la vignette 'Lire' et je suis redirigé vers la page de résultats de la recherche", async t => {
+test("Je clique sur la vignette 'Lire' et je suis redirigé vers la page de résultats de la recherche, puis je clique sur la première offre et je regarde si le titre correspond", async t => {
   const buttonNavByOfferType = Selector('button').withText('Lire')
 
   await t
@@ -28,26 +29,24 @@ test("Je clique sur la vignette 'Lire' et je suis redirigé vers la page de rés
     .contains('/recherche/resultats/Lire')
 
   const resultsForLireCategory = Selector('.search-results')
-  const firstResultTitle = resultsForLireCategory.find('h5').nth(0)
-  const linkResult = resultsForLireCategory.find('.to-details')
+  const firstResultTitle = resultsForLireCategory.find('h5').nth(0).textContent
+  const firstResultLink = resultsForLireCategory.find('.to-details').nth(0)
 
   await t
     .expect(resultsForLireCategory.exists)
     .ok()
-    .expect(resultsForLireCategory.find('h5').exists)
-    .ok()
-    .click(linkResult)
+    .expect(firstResultTitle)
+    .eql('Mensch ! Où sont les Hommes ?')
+    .click(firstResultLink)
+    .expect(getPageUrl())
+    .contains('/item')
 
-  await t.expect(getPageUrl()).contains('/item')
+  const offerDetailsTitle = Selector('#verso-offer-name').textContent
 
-  const offerDetailsTitle = Selector('#verso-offer-name')
-
-  await t
-    .expect(offerDetailsTitle.textContent)
-    .eql(firstResultTitle.textContent)
+  await t.expect(offerDetailsTitle).eql(await firstResultTitle)
 })
 
-test('Depuis des résultats par catégorie, je peux revenir à la page des catégories', async t => {
+test("Je suis sur la page 'Lire', je clique sur le bouton de retour et j'arrive sur la page des catégories", async t => {
   const buttonNavByOfferType = Selector('button').withText('Lire')
 
   await t
@@ -55,12 +54,12 @@ test('Depuis des résultats par catégorie, je peux revenir à la page des caté
     .expect(getPageUrl())
     .contains('/recherche/resultats/Lire')
 
-  const backButton = Selector('button.back-button')
+  const backButton = Selector('.back-button')
 
   await t
     .expect(backButton.exists)
     .ok()
     .click(backButton)
     .expect(getPageUrl())
-    .eql(`${ROOT_PATH}recherche`)
+    .eql(searchUrl)
 })
