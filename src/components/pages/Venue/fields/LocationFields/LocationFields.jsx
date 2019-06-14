@@ -25,6 +25,7 @@ const LocationFields = ({
           latitude={formLatitude}
           longitude={formLongitude}
           name="address"
+          readOnly={readOnly}
           required
           withMap
         />

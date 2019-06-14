@@ -24,7 +24,7 @@ export const mapStateToProps = (state, ownProps) => {
     },
     query,
   } = ownProps
-  const { id: currentUserId } = currentUser || {}
+  const { id: currentUserId } = currentUser
   const { isCreatedEntity } = query.context()
 
   const formInitialValues = selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity(

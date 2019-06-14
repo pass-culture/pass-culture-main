@@ -49,9 +49,8 @@ ShallowWrapper {
             latitude={1}
             longitude={1}
             name="address"
-            parse={null}
             placeholder=""
-            readOnly={false}
+            readOnly={true}
             required={true}
             type="text"
             validate={null}
@@ -146,9 +145,8 @@ ShallowWrapper {
               latitude={1}
               longitude={1}
               name="address"
-              parse={null}
               placeholder=""
-              readOnly={false}
+              readOnly={true}
               required={true}
               type="text"
               validate={null}
@@ -236,9 +234,8 @@ ShallowWrapper {
               "latitude": 1,
               "longitude": 1,
               "name": "address",
-              "parse": null,
               "placeholder": "",
-              "readOnly": false,
+              "readOnly": true,
               "required": true,
               "type": "text",
               "validate": null,
@@ -366,9 +363,8 @@ ShallowWrapper {
               latitude={1}
               longitude={1}
               name="address"
-              parse={null}
               placeholder=""
-              readOnly={false}
+              readOnly={true}
               required={true}
               type="text"
               validate={null}
@@ -463,9 +459,8 @@ ShallowWrapper {
                 latitude={1}
                 longitude={1}
                 name="address"
-                parse={null}
                 placeholder=""
-                readOnly={false}
+                readOnly={true}
                 required={true}
                 type="text"
                 validate={null}
@@ -553,9 +548,8 @@ ShallowWrapper {
                 "latitude": 1,
                 "longitude": 1,
                 "name": "address",
-                "parse": null,
                 "placeholder": "",
-                "readOnly": false,
+                "readOnly": true,
                 "required": true,
                 "type": "text",
                 "validate": null,

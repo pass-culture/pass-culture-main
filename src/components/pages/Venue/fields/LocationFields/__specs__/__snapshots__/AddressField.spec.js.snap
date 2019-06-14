@@ -68,7 +68,6 @@ ShallowWrapper {
     innerClassName={null}
     label=""
     name="fake name"
-    parse={null}
     placeholder=""
     readOnly={false}
     required={false}

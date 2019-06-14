@@ -118,7 +118,6 @@ AddressField.defaultProps = {
   id: null,
   innerClassName: null,
   label: '',
-  parse: null,
   placeholder: '',
   readOnly: false,
   required: false,
@@ -127,7 +126,6 @@ AddressField.defaultProps = {
 }
 
 AddressField.propTypes = {
-  autoComplete: PropTypes.string,
   className: PropTypes.string,
   disabled: PropTypes.bool,
   form: PropTypes.object.isRequired,
@@ -136,11 +134,8 @@ AddressField.propTypes = {
   innerClassName: PropTypes.string,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
-  parse: PropTypes.func,
   placeholder: PropTypes.string,
   readOnly: PropTypes.bool,
-  renderInner: PropTypes.func,
-  renderValue: PropTypes.func,
   required: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
   validate: PropTypes.func,
 }
