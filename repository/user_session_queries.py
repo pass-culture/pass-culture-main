@@ -1,3 +1,4 @@
+from pprint import pprint
 from uuid import UUID
 
 from models import UserSession, PcObject
@@ -14,7 +15,9 @@ def delete_user_session(user_id: int, session_uuid: UUID):
     session = UserSession.query \
         .filter_by(userId=user_id, uuid=session_uuid) \
         .first()
-    PcObject.delete(session)
+
+    if session:
+        PcObject.delete(session)
 
 
 def existing_user_session(user_id: int, session_uuid: UUID) -> bool:
