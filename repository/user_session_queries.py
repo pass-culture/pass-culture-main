@@ -1,4 +1,3 @@
-from pprint import pprint
 from uuid import UUID
 
 from models import UserSession, PcObject
