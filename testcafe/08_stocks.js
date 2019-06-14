@@ -21,99 +21,42 @@ let userRoleOne
 let userRoleTwo
 let userRoleThree
 let userRoleFour
-let userRoleFive
 let dataFromSandboxOne
 let dataFromSandboxTwo
 let dataFromSandboxThree
 let dataFromSandboxFour
-let dataFromSandboxFive
 test('Création des données', async () => {
   dataFromSandboxOne = await fetchSandbox(
     'pro_08_stocks',
-    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_no_stock'
+    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock'
   )
   userRoleOne = createUserRole(dataFromSandboxOne.user)
 
   dataFromSandboxTwo = await fetchSandbox(
     'pro_08_stocks',
-    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock'
+    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_thing_offer_with_stock'
   )
   userRoleTwo = createUserRole(dataFromSandboxTwo.user)
 
   dataFromSandboxThree = await fetchSandbox(
     'pro_08_stocks',
-    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_thing_offer_with_stock'
+    'get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_thing_offer_with_no_stock'
   )
   userRoleThree = createUserRole(dataFromSandboxThree.user)
 
   dataFromSandboxFour = await fetchSandbox(
     'pro_08_stocks',
-    'get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_thing_offer_with_no_stock'
-  )
-  userRoleFour = createUserRole(dataFromSandboxFour.user)
-
-  dataFromSandboxFive = await fetchSandbox(
-    'pro_08_stocks',
     'get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_event_offer'
   )
-  userRoleFive = createUserRole(dataFromSandboxFive.user)
+  userRoleFour = createUserRole(dataFromSandboxFour.user)
 })
 
 fixture('Offer Gestion A | Créer des dates et des stocks')
 
-test("Je peux créer un stock d'événement d'une offre vide sans remplir de champ", async t => {
-  // given
-  const { offer, user } = dataFromSandboxOne
-  await navigateToOfferAs(user, offer, userRoleOne)(t)
-
-  // when
-  await t.click(manageStockAnchor).click(addAnchor)
-
-  // then
-  let location = await t.eval(() => window.location)
-  let queryParams = parse(location.search)
-  await t.expect(queryParams.gestion).eql(null)
-  await t.expect(queryParams.stock).eql('creation')
-
-  // when
-  await t.click(submitButton)
-
-  // then
-  location = await t.eval(() => window.location)
-  queryParams = parse(location.search)
-  await t.expect(queryParams.gestion).eql(null)
-  await t.expect(queryParams.stock).eql(undefined)
-})
-
-test('Je peux créer un autre stock et remplir des champs', async t => {
-  // given
-  const { offer, user } = dataFromSandboxOne
-  await navigateToOfferAs(user, offer, userRoleOne)(t)
-
-  // when
-  await t.click(manageStockAnchor).click(addAnchor)
-
-  // then
-  let location = await t.eval(() => window.location)
-  let queryParams = parse(location.search)
-  await t.expect(queryParams.gestion).eql(null)
-  await t.expect(queryParams.stock).eql('creation')
-
-  // when
-  await t.typeText(priceInput, '10').typeText(availableInput, '50')
-  await t.click(submitButton)
-
-  // then
-  location = await t.eval(() => window.location)
-  queryParams = parse(location.search)
-  await t.expect(queryParams.gestion).eql(null)
-  await t.expect(queryParams.stock).eql(undefined)
-})
-
 test('Je peux créer un stock en utilisant la touche Entrée', async t => {
   // given
-  const { offer, user } = dataFromSandboxTwo
-  await navigateToOfferAs(user, offer, userRoleTwo)(t)
+  const { offer, user } = dataFromSandboxOne
+  await navigateToOfferAs(user, offer, userRoleOne)(t)
 
   // when
   await t.click(manageStockAnchor).pressKey('Enter')
@@ -136,8 +79,8 @@ test('Je peux créer un stock en utilisant la touche Entrée', async t => {
 
 test('Je peux fermer la fenêtre en utilisant la touche Escape', async t => {
   // given
-  const { offer, user } = dataFromSandboxTwo
-  await navigateToOfferAs(user, offer, userRoleTwo)(t)
+  const { offer, user } = dataFromSandboxOne
+  await navigateToOfferAs(user, offer, userRoleOne)(t)
 
   // when
   await t.click(manageStockAnchor).pressKey('esc')
@@ -152,8 +95,8 @@ test('Je peux fermer la fenêtre en utilisant la touche Escape', async t => {
 test('Je peux fermer la fenêtre en cliquant sur le bouton Fermer', async t => {
   // given
   const scheduleCloseButton = Selector('button.button').withText('Fermer')
-  const { offer, user } = dataFromSandboxTwo
-  await navigateToOfferAs(user, offer, userRoleTwo)(t)
+  const { offer, user } = dataFromSandboxOne
+  await navigateToOfferAs(user, offer, userRoleOne)(t)
 
   // when
   await t.click(manageStockAnchor).click(scheduleCloseButton)
@@ -166,8 +109,8 @@ test('Je peux fermer la fenêtre en cliquant sur le bouton Fermer', async t => {
 
 test('Je peux interrompre la saisie en utilisant la touche Escape', async t => {
   // given
-  const { offer, user } = dataFromSandboxTwo
-  await navigateToOfferAs(user, offer, userRoleTwo)(t)
+  const { offer, user } = dataFromSandboxOne
+  await navigateToOfferAs(user, offer, userRoleOne)(t)
 
   // when
   await t.click(manageStockAnchor).pressKey('Enter')
@@ -190,8 +133,8 @@ test('Je peux interrompre la saisie en utilisant la touche Escape', async t => {
 
 test('Je ne peux pas rentrer un nouveau stock pour un objet avec déjà un stock', async t => {
   // given
-  const { offer, user } = dataFromSandboxThree
-  await navigateToOfferAs(user, offer, userRoleThree)(t)
+  const { offer, user } = dataFromSandboxTwo
+  await navigateToOfferAs(user, offer, userRoleTwo)(t)
 
   // when
   await t.click(manageStockAnchor)
@@ -204,8 +147,8 @@ fixture('Offer Gestion B | Avertissement pour les offres sans iban')
 
 test("J'ai une info quand je rentre un prix non nul pour l'objet d'une structure et un lieu sans iban", async t => {
   // given
-  const { offer, user } = dataFromSandboxFour
-  await navigateToOfferAs(user, offer, userRoleFour)(t)
+  const { offer, user } = dataFromSandboxThree
+  await navigateToOfferAs(user, offer, userRoleThree)(t)
   await t.click(manageStockAnchor).click(addAnchor)
 
   // when
@@ -226,8 +169,8 @@ test("J'ai une info quand je rentre un prix non nul pour l'objet d'une structure
 
 test("J'ai une info quand je rentre un prix non nul pour l'évènement d'une structure et un lieu sans iban", async t => {
   // given
-  const { offer, user } = dataFromSandboxFive
-  await navigateToOfferAs(user, offer, userRoleFive)(t)
+  const { offer, user } = dataFromSandboxFour
+  await navigateToOfferAs(user, offer, userRoleFour)(t)
   await t.click(manageStockAnchor).click(addAnchor)
 
   // when
@@ -255,9 +198,9 @@ test('Je peux modifier un stock', async t => {
   const datePickerLastDay = Selector(
     '.react-datepicker__week:last-child .react-datepicker__day:last-child'
   )
-  const { offer, stock, user } = dataFromSandboxTwo
+  const { offer, stock, user } = dataFromSandboxOne
   const editAnchor = Selector(`#edit-stock-${stock.id}-button`)
-  await navigateToOfferAs(user, offer, userRoleTwo)(t)
+  await navigateToOfferAs(user, offer, userRoleOne)(t)
   await t.click(manageStockAnchor)
 
   // when
@@ -293,8 +236,8 @@ test('Je peux modifier un stock', async t => {
 
 test('Je peux aller sur le stock manager et revenir aux offres pour chercher une nouvelle offre sans bug de modal en appuyant sur Enter', async t => {
   // given
-  const { offer, user } = dataFromSandboxTwo
-  await navigateToOfferAs(user, offer, userRoleTwo)(t)
+  const { offer, user } = dataFromSandboxOne
+  await navigateToOfferAs(user, offer, userRoleOne)(t)
   const searchInput = Selector('#search')
   await t
     .click(manageStockAnchor)
@@ -313,6 +256,6 @@ test('Je peux aller sur le stock manager et revenir aux offres pour chercher une
 fixture.skip('TODO: Offer Gestion D | Effacer des dates et des stocks')
 
 test('Je peux effacer un stock', async t => {
-  const { offer, user } = dataFromSandboxTwo
-  await navigateToOfferAs(user, offer, userRoleTwo)(t)
+  const { offer, user } = dataFromSandboxOne
+  await navigateToOfferAs(user, offer, userRoleOne)(t)
 })

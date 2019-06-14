@@ -4,6 +4,8 @@ import { shallow } from 'enzyme'
 import StocksManager from '../StocksManager'
 
 describe('src | components | pages | Offer | StocksManager | StocksManager', () => {
+  let props
+  let query
   const stock = {
     available: 10,
     bookingLimitDatetime: '2019-03-06T23:00:00Z',
@@ -21,27 +23,46 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
     price: 17,
   }
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
+  beforeEach(() => {
+    query = {
+      changeToCreation: jest.fn(),
+      context: () => ({}),
+    }
+    props = {
+      location: {
+        pathname: '/offres/AWHA',
+        search: '?gestion',
+        hash: '',
+        state: undefined,
+        key: '4c2v7m',
+      },
+      query,
+      stocks: [stock],
+    }
+  })
+
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<StocksManager {...props} />)
+
+    // then
+    expect(wrapper).toBeDefined()
+    expect(wrapper).toMatchSnapshot()
+  })
+
+  describe('onClickCreateStockItem()', () => {
+    it('should update URL query param when click on add stock button', () => {
       // given
-      const initialProps = {
-        location: {
-          pathname: '/offres/AWHA',
-          search: '?gestion',
-          hash: '',
-          state: undefined,
-          key: '4c2v7m',
-        },
-        query: { context: () => ({}) },
-        stocks: [stock],
-      }
+      const wrapper = shallow(<StocksManager {...props} />)
+      const button = wrapper.find('#add-stock')
 
       // when
-      const wrapper = shallow(<StocksManager {...initialProps} />)
+      button.simulate('click')
 
       // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
+      expect(query.changeToCreation).toHaveBeenCalledWith(null, {
+        key: 'stock'
+      })
     })
   })
 

@@ -3,70 +3,108 @@ import React from 'react'
 
 import StockItem from '../StockItem'
 
-const dispatchMock = jest.fn()
-
-global.fetch = url => {
-  return new Response(JSON.stringify({}))
-}
-
 describe('src | components | pages | Offer | StocksManager | StockItem', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
+  let props
+
+  beforeEach(() => {
+    props = {
+      closeInfo: jest.fn(),
+      dispatch: jest.fn(),
+      handleSetErrors: jest.fn(),
+      hasIban: false,
+      history: { push: jest.fn() },
+      isEvent: false,
+      offer: {
+        id: 'TY',
+      },
+      query: {
+        changeToReadOnly: jest.fn(),
+        context: () => ({ method: 'POST' })
+      },
+      stockPatch: {
+        id: 'DG',
+      },
+      stocks: [],
+    }
+  })
+
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<StockItem {...props} />)
+
+    // then
+    expect(wrapper).toBeDefined()
+    expect(wrapper).toMatchSnapshot()
+  })
+
+  describe('onFormSubmit()', () => {
+    it('should set state isRequestPending to true', () => {
       // given
-      const initialProps = {
-        closeInfo: jest.fn(),
-        dispatch: dispatchMock,
-        hasIban: false,
-        history: { push: jest.fn() },
-        isEvent: false,
-        query: { context: () => ({}) },
-        stockPatch: {},
-        stocks: [],
+      const wrapper = shallow(<StockItem {...props} />)
+
+      // when
+      wrapper.instance().onFormSubmit({})
+
+      // then
+      expect(wrapper.state(['isRequestPending'])).toBe(true)
+    })
+
+    it('should called handleSetErrors function', () => {
+      // given
+      const wrapper = shallow(<StockItem {...props} />)
+
+      // when
+      wrapper.instance().onFormSubmit({})
+
+      // then
+      expect(props.handleSetErrors).toHaveBeenCalled()
+    })
+
+    it('should dispatch request data', () => {
+      // given
+      const wrapper = shallow(<StockItem {...props} />)
+      const formValues = {
+        available: '',
+        price: '',
       }
 
       // when
-      const wrapper = shallow(<StockItem {...initialProps} />)
+      wrapper.instance().onFormSubmit(formValues)
 
       // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
+      const result = {
+        config: {
+          apiPath: '/stocks/DG',
+          body: {
+            available: null,
+            price: 0
+          },
+          handleFail: expect.any(Function),
+          handleSuccess: expect.any(Function),
+          method: 'POST'
+        },
+        type: 'REQUEST_DATA_POST_/STOCKS/DG'
+      }
+      expect(props.dispatch).toHaveBeenCalledWith(result)
     })
   })
-  describe('functions', () => {
-    describe('handleRequestSuccess', () => {
-      it('redirect to gestion at patch success', () => {
-        // given
-        const initialProps = {
-          closeInfo: jest.fn(),
-          dispatch: jest.fn(),
-          history: {},
-          hasIban: false,
-          isEvent: false,
-          offer: {
-            id: 'TY',
-          },
-          query: { changeToReadOnly: jest.fn(), context: () => ({}) },
-          stockPatch: {
-            id: 'DG',
-          },
-          stocks: [],
-        }
-        const wrapper = shallow(<StockItem {...initialProps} />)
 
-        return new Promise((resolve, reject) => {
-          // when
-          wrapper.instance().handleRequestSuccess(resolve)()
-        }).then(() => {
-          // then
-          expect(initialProps.query.changeToReadOnly).toHaveBeenCalledWith(
-            null,
-            {
-              id: 'DG',
-              key: 'stock',
-            }
-          )
-        })
-      })
+  describe('handleRequestSuccess()', () => {
+    it('redirect to gestion at patch success', () => {
+      // given
+      const wrapper = shallow(<StockItem {...props} />)
+
+      // when
+      wrapper.instance().handleRequestSuccess(jest.fn())()
+
+      // then
+      expect(props.query.changeToReadOnly).toHaveBeenCalledWith(
+        null,
+        {
+          id: 'DG',
+          key: 'stock',
+        }
+      )
     })
   })
 })

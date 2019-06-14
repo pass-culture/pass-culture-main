@@ -149,6 +149,14 @@ class StocksManager extends Component {
     )
   }
 
+  onClickCreateStockItem = () => {
+    const { query } = this.props
+
+    query.changeToCreation(null, {
+      key: 'stock'
+    })
+  }
+
   render() {
     const {
       isEvent,
@@ -214,9 +222,7 @@ class StocksManager extends Component {
                       className="button is-secondary"
                       disabled={!readOnly}
                       id="add-stock"
-                      onClick={() =>
-                        query.changeToCreation(null, { key: 'stock' })
-                      }
+                      onClick={this.onClickCreateStockItem}
                       type="button">
                       {this.getStocksManagerButtonTitle(isEvent, stocks)}
                     </button>

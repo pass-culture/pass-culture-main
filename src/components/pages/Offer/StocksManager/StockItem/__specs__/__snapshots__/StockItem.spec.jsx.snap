@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offer | StocksManager | StockItem snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Offer | StocksManager | StockItem should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <StockItem
@@ -9,6 +9,7 @@ ShallowWrapper {
     formBeginningDatetime={null}
     formBookingLimitDatetime={null}
     formEndDatetime={null}
+    handleSetErrors={[MockFunction]}
     hasIban={false}
     history={
       Object {
@@ -16,14 +17,23 @@ ShallowWrapper {
       }
     }
     isEvent={false}
-    offer={null}
+    offer={
+      Object {
+        "id": "TY",
+      }
+    }
     query={
       Object {
+        "changeToReadOnly": [MockFunction],
         "context": [Function],
       }
     }
     showInfo={[Function]}
-    stockPatch={Object {}}
+    stockPatch={
+      Object {
+        "id": "DG",
+      }
+    }
     stocks={Array []}
     timezone={null}
   />,
@@ -47,7 +57,11 @@ ShallowWrapper {
             [Function],
           ]
         }
-        initialValues={Object {}}
+        initialValues={
+          Object {
+            "id": "DG",
+          }
+        }
         onSubmit={[Function]}
         render={[Function]}
       />,
@@ -61,7 +75,9 @@ ShallowWrapper {
         "decorators": Array [
           [Function],
         ],
-        "initialValues": Object {},
+        "initialValues": Object {
+          "id": "DG",
+        },
         "onSubmit": [Function],
         "render": [Function],
       },
@@ -83,7 +99,11 @@ ShallowWrapper {
               [Function],
             ]
           }
-          initialValues={Object {}}
+          initialValues={
+            Object {
+              "id": "DG",
+            }
+          }
           onSubmit={[Function]}
           render={[Function]}
         />,
@@ -97,7 +117,9 @@ ShallowWrapper {
           "decorators": Array [
             [Function],
           ],
-          "initialValues": Object {},
+          "initialValues": Object {
+            "id": "DG",
+          },
           "onSubmit": [Function],
           "render": [Function],
         },
