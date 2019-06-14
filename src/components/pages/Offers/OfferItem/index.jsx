@@ -18,6 +18,7 @@ function mapStateToProps(state, ownProps) {
   const product = selectProductById(state, productId)
   const venue = selectVenueById(state, venueId)
   const offerer = offererSelector(state, venue.managingOffererId)
+
   const stockAlertMessage = offer.stockAlertMessage
 
   return {

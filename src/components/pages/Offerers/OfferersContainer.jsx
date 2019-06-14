@@ -5,9 +5,9 @@ import {
   withFrenchQueryRouter,
   withRedirectToSigninWhenNotAuthenticated,
 } from 'components/hocs'
-import RawOfferers from './RawOfferers'
+import Offerers from './Offerers'
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
   return {
     pendingOfferers: state.data.pendingOfferers,
     offerers: state.data.offerers,
@@ -18,4 +18,4 @@ export default compose(
   withRedirectToSigninWhenNotAuthenticated,
   withFrenchQueryRouter,
   connect(mapStateToProps)
-)(RawOfferers)
+)(Offerers)

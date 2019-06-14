@@ -2,7 +2,6 @@ import classnames from 'classnames'
 import get from 'lodash.get'
 import { closeNotification, Icon } from 'pass-culture-shared'
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import ReactTooltip from 'react-tooltip'
 
 class Notification extends Component {
@@ -15,7 +14,7 @@ class Notification extends Component {
 
   render() {
     const { dispatch, isFullscreen, notification } = this.props
-    const { text, tooltip, type } = notification || {}
+    const { text, tooltip, type, url, urlLabel } = notification || {}
 
     let svg
     if (type === 'success') {
@@ -47,6 +46,9 @@ class Notification extends Component {
           </span>
           <span>{text}</span>
         </div>
+        {url && (
+          <a className='url-link' href={url}>{urlLabel}</a>
+        )}
         {tooltip ? (
           <span
             className={classnames({
@@ -63,18 +65,13 @@ class Notification extends Component {
               'column is-1': !isFullscreen,
             })}
             onClick={() => dispatch(closeNotification())}>
-            OK
+            {url ? 'Fermer' : 'OK'}
           </button>
         )}
+
       </div>
     )
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    notification: state.notification,
-  }
-}
-
-export default connect(mapStateToProps)(Notification)
+export default Notification

@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'
+import { showNotification } from 'pass-culture-shared'
 import { stringify } from 'query-string'
 import React, { Component, Fragment } from 'react'
 import { Form } from 'react-final-form'
@@ -19,7 +20,7 @@ import {
   translateQueryParamsToApiParams,
 } from '../../../utils/translate'
 
-class RawOfferers extends Component {
+class Offerers extends Component {
   constructor(props) {
     super(props)
     const { dispatch } = props
@@ -35,19 +36,29 @@ class RawOfferers extends Component {
   componentDidMount() {
     this.handleRequestData()
   }
-
   componentDidUpdate(prevProps) {
     const { location } = this.props
-
     if (location.search !== prevProps.location.search) {
       this.handleRequestData()
     }
   }
 
-  handleRequestData = (handleSuccess, handleFail) => {
-    const { currentUser, dispatch, query } = this.props
-    const { isAdmin } = currentUser || {}
+  dispatchNotification = (firstOffererIdWithOffers) => {
+    const { dispatch } = this.props
+    dispatch(
+      showNotification({
+        tag: 'offerers',
+        text: 'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
+        type: 'info',
+        url: `/structures/${firstOffererIdWithOffers}/lieux/creation`,
+        urlLabel: 'Nouveau lieu'
+      })
+    )
+  }
 
+  handleRequestData = (handleSuccess, handleFail) => {
+    const { currentUser, dispatch, offerers, query } = this.props
+    const { isAdmin } = currentUser || {}
     const queryParams = query.parse()
     const apiParams = translateQueryParamsToApiParams(queryParams)
     const apiParamsString = stringify(apiParams)
@@ -71,11 +82,18 @@ class RawOfferers extends Component {
               hasMore: data.length > 0,
               isLoading: false,
             })
+
           },
           normalizer: offererNormalizer,
         })
       )
     })
+
+    const firstOffererIdWithOffers = offerers.length > 0 ? offerers[0].id : ''
+
+    if (!currentUser.hasOffers) {
+       this.dispatchNotification(firstOffererIdWithOffers)
+    }
 
     if (!isAdmin) {
       const notValidatedUserOfferersParams = Object.assign(
@@ -205,4 +223,4 @@ PropTypes.propTypes = {
   query: PropTypes.object.isRequired,
 }
 
-export default RawOfferers
+export default Offerers

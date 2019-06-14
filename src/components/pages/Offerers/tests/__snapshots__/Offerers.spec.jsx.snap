@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | RawOfferers snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Offerers snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawOfferers
+  Symbol(enzyme.__unrendered__): <Offerers
     currentUser={Object {}}
     dispatch={
       [MockFunction] {
@@ -38,6 +38,18 @@ ShallowWrapper {
           ],
           Array [
             Object {
+              "patch": Object {
+                "tag": "offerers",
+                "text": "Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)",
+                "type": "info",
+                "url": "/structures/AE/lieux/creation",
+                "urlLabel": "Nouveau lieu",
+              },
+              "type": "SHOW_NOTIFICATION",
+            },
+          ],
+          Array [
+            Object {
               "config": Object {
                 "apiPath": "/offerers?keywords&validated=false",
                 "method": "GET",
@@ -56,6 +68,10 @@ ShallowWrapper {
           ],
         ],
         "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
           Object {
             "type": "return",
             "value": undefined,

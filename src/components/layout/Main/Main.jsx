@@ -12,7 +12,7 @@ import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
 import HeaderContainer from 'components/layout/Header/HeaderContainer'
-import Notification from 'components/layout/Notification'
+import NotificationContainer from 'components/layout/NotificationContainer'
 
 class Main extends Component {
   constructor() {
@@ -120,13 +120,13 @@ class Main extends Component {
           })}>
           {fullscreen ? (
             <Fragment>
-              <Notification isFullscreen />
+              <NotificationContainer isFullscreen />
               {$content}
             </Fragment>
           ) : (
             <div className="columns is-gapless">
               <div className="page-content column is-10 is-offset-1">
-                <Notification />
+                <NotificationContainer />
                 <div
                   className={classnames('after-notification-content', {
                     'with-padding': backTo,
