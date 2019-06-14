@@ -1,11 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | signin | component snapshot should match snapshot 1`] = `
+exports[`src | components | pages | signin | Signin should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Signin
     dispatch={[MockFunction]}
     history={Object {}}
+    query={Object {}}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

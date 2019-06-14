@@ -6,13 +6,18 @@ import Finishable from '../Finishable'
 
 describe('src | components | layout | Finishable', () => {
   const finishableClass = '.finishable'
+  let props
 
-  it('should match snapshot with required props', () => {
-    // given
-    const props = {
-      children: <div>cette offre n&apos;est pas terminée</div>,
+  beforeEach(() => {
+    props = {
+      children: (
+        <div className="content">cette offre n&apos;est pas terminée</div>
+      ),
+      finished: true,
     }
+  })
 
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<Finishable {...props} />)
 
@@ -23,14 +28,10 @@ describe('src | components | layout | Finishable', () => {
 
   it('should not contains finishable element', () => {
     // given
-    const props = {
-      children: (
-        <div className="content">cette offre n&apos;est pas terminée</div>
-      ),
-    }
+    props.finished = false
+    const wrapper = shallow(<Finishable {...props} />)
 
     // when
-    const wrapper = shallow(<Finishable {...props} />)
     const content = wrapper.find('.content')
     const icon = wrapper.find(Icon)
     const finishable = wrapper.find(finishableClass)
@@ -43,13 +44,9 @@ describe('src | components | layout | Finishable', () => {
 
   it('should contains finishable element', () => {
     // given
-    const props = {
-      children: <div className="content">cette offre est terminée</div>,
-      finished: true,
-    }
+    const wrapper = shallow(<Finishable {...props} />)
 
     // when
-    const wrapper = shallow(<Finishable {...props} />)
     const content = wrapper.find('.content')
     const icon = wrapper.find(Icon)
     const finishable = wrapper.find(finishableClass)

@@ -3,106 +3,76 @@ import { shallow } from 'enzyme'
 
 import { RawDiscoveryPage } from '../index'
 
-describe('src | components | pages | discovery | Index | DiscoveryPage', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const props = {
-        backButton: true,
-        dispatch: jest.fn(),
-        history: {},
-        location: {
-          search: '',
-        },
-        match: {
-          params: {},
-        },
-      }
+describe('src | components | pages | discovery | RawDiscoveryPage', () => {
+  let props
 
-      // when
+  beforeEach(() => {
+    props = {
+      backButton: true,
+      dispatch: jest.fn(),
+      fromPassword: true,
+      history: {},
+      location: {
+        search: '',
+      },
+      match: {
+        params: {},
+      },
+    }
+  })
+
+  it('should match the snapshot', () => {
+    // given
+    const wrapper = shallow(<RawDiscoveryPage {...props} />)
+
+    // then
+    expect(wrapper).toBeDefined()
+    expect(wrapper).toMatchSnapshot()
+  })
+
+  describe('constructor', () => {
+    it('should initialize state correctly', () => {
+      // given
       const wrapper = shallow(<RawDiscoveryPage {...props} />)
 
       // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
+      const expected = {
+        atWorldsEnd: false,
+        hasError: false,
+        isEmpty: null,
+        isLoading: true,
+      }
+      expect(wrapper.state()).toEqual(expected)
     })
   })
-  describe('function', () => {
-    describe('constructor', () => {
-      it('should initialize state correctly', () => {
-        // given
-        const props = {
-          backButton: true,
-          dispatch: jest.fn(),
-          history: {},
-          location: {
-            search: '',
-          },
-          match: {
-            params: {},
-          },
-        }
 
-        // when
-        const wrapper = shallow(<RawDiscoveryPage {...props} />)
-        const expected = {
-          atWorldsEnd: false,
-          hasError: false,
-          isEmpty: null,
-          isLoading: true,
-        }
+  describe('handleDataRequest', () => {
+    describe('One case', () => {
+      it('should update recommendation infos using API when Main component is rendered', () => {
+        // given
+        shallow(<RawDiscoveryPage {...props} />)
 
         // then
-        expect(wrapper.state()).toEqual(expected)
-      })
-    })
-
-    describe('handleDataRequest', () => {
-      describe('One case', () => {
-        it('should first dispatch requestData when  Main component is rendered', () => {
-          // given
-          const dispatchMock = jest.fn()
-          const props = {
-            backButton: true,
-            dispatch: dispatchMock,
-            history: {},
-            location: {
-              search: '',
+        const expectedRequestDataAction = {
+          config: {
+            apiPath: '/recommendations?',
+            body: {
+              readRecommendations: null,
+              seenRecommendationIds: null,
             },
-            match: {
-              params: {},
+            handleFail: expect.any(Function),
+            handleSuccess: expect.any(Function),
+            method: 'PUT',
+            normalizer: {
+              bookings: 'bookings',
             },
-          }
-
-          // when
-          shallow(<RawDiscoveryPage {...props} />)
-          const expectedRequestDataAction = {
-            config: {
-              apiPath: '/recommendations?',
-              body: {
-                readRecommendations: null,
-                seenRecommendationIds: null,
-              },
-              method: 'PUT',
-              normalizer: {
-                bookings: 'bookings',
-              },
-            },
-            type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?',
-          }
-
-          // THEN
-          const receivedRequestDataAction = Object.assign(
-            {},
-            dispatchMock.mock.calls[0][0]
-          )
-          delete receivedRequestDataAction.config.handleFail
-          delete receivedRequestDataAction.config.handleSuccess
-          expect(dispatchMock.mock.calls.length).toBe(1)
-          expect(dispatchMock.mock.calls[0][0]).toEqual(
-            expectedRequestDataAction
-          )
-        })
+          },
+          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?',
+        }
+        expect(props.dispatch.mock.calls.length).toBe(1)
+        expect(props.dispatch.mock.calls[0][0]).toEqual(
+          expectedRequestDataAction
+        )
       })
     })
   })
