@@ -1,8 +1,7 @@
 """mark all user as typeform validated
 
 Revision ID: 67307cd6ee1b
-Revises: a6bdec6dde59
-Create Date: 2019-06-07 08:59:33.971272
+:Create Date: 2019-06-07 08:59:33.971272
 
 """
 from alembic import op
