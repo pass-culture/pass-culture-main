@@ -1,6 +1,5 @@
-import React, { PureComponent } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import PropTypes from 'prop-types'
-import {Field, Form} from 'pass-culture-shared';
 
 export class FilterByVenue extends PureComponent {
   constructor() {
@@ -13,41 +12,33 @@ export class FilterByVenue extends PureComponent {
   }
 
   handleIsDigitalChecked = event => {
-
-    var isDigitalChecked = document.getElementById("isDigital").checked
-    var selectVenue = document.getElementById('venues')
-    selectVenue.disabled = isDigitalChecked
-    this.setState({isDigital: isDigitalChecked })
-    const { checked } = this.props
-    console.log("isDigitalChecked", isDigitalChecked)
-    console.log("checked", checked)
+    const isDigital = document.getElementById("isDigital").checked
+    const labelClassName = isDigital ?  "has-text-grey" :  "has-text-black"
+    this.setState({isDigital, labelClassName })
   }
 
   onChangeVenue = event => {
     const selectedVenue = document.getElementById("venues")
     const venueId = selectedVenue[selectedVenue.selectedIndex].value
-    this.setState({venueId: venueId })
-    console.log("venueId", venueId)
+    this.setState({venueId })
   }
 
   render() {
     const { venuesOptions } = this.props
-    const {isDigital} = this.state
-    console.log(this.state.isDigital)
-    const venueSelectionIsDisabled=isDigital
+    const {labelClassName, isDigital} = this.state
 
     return (
-      <React.Fragment>
-        <h2 disabled={venueSelectionIsDisabled}>
-          {'Sélectionner le lieu qui acceuille l\'offre :'}
-        </h2>
+      <Fragment>
         <div id="filter-by-venue">
+          <label htmlFor="venues" className={labelClassName} >
+            {"Sélectionner le lieu qui acceuille l'offre :"}
+          </label>
           <select
-            disabled={venueSelectionIsDisabled}
+            id="venues"
             className="pc-selectbox pl24 py5 fs19"
             defaultValue="all"
-            id="venues"
             onChange={this.onChangeVenue}
+            disabled={isDigital}
           >
             {venuesOptions.map(({ name, id }) => (
               <option key={id} value={id}>
@@ -56,29 +47,26 @@ export class FilterByVenue extends PureComponent {
             ))}
           </select>
         </div>
-        <hr className="dotted-bottom-primary" />
-        <Form
-          action="/bookings"
-          name="digitalOffer"
-          Tag={null}>
-          <h2>
+        <div className="field-group">
+          <div>
             {'ou :'}
-          </h2>
-          <div className="field-group">
-            <Field
-              id="isDigital"
-              name="isDigital"
-              type="checkbox"
-              label="Cocher cette case pour voir les offres numériques"
-              checked={this.state.isDigital}
-              onChange={this.handleIsDigitalChecked}
-            />
           </div>
-        </Form>
-      </React.Fragment>
+          <label htmlFor="isDigital">
+            {"Cocher cette case pour voir les offres numériques"}
+          </label>
+          <input
+            id="isDigital"
+            type="checkbox"
+            onClick={this.handleIsDigitalChecked}
+          />
+        </div>
+      </Fragment>
     )
-
   }
+}
+
+FilterByVenue.defaultProps = {
+  venuesOptions: [],
 }
 
 FilterByVenue.propTypes = {
