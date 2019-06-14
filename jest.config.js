@@ -2,7 +2,6 @@ module.exports = {
   collectCoverageFrom: [
     '**/*.{js,jsx}',
     '!**/*Mock.jsx',
-    '!reselect.js',
     '!jest.setup.js',
     '!.jest-polyfill.js',
     // "!**/node_modules/**",
