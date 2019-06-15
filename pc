@@ -186,12 +186,12 @@ function exit_success_restoring_branch {
 # Need to specify what alembic command you want to execute
 # Example: ./pc alembic upgrade head
 if [[ "$CMD" == "alembic" ]]; then
-  RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src && PYTHONPATH=. alembic '"$*"'"'
+  RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src && PYTHONPATH=. alembic '"$*"'"'
 
 # Connect to API container
 elif [[ "$CMD" == "bash" ]]; then
   if [[ "$ENV" == "development" ]]; then
-      RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash'
+      RUN='docker exec -it pc-flask bash'
   else
       if [ "$FILE_TO_UPLOAD" == 'none' ]; then
         scalingo -a "$SCALINGO_APP" run bash
@@ -203,7 +203,7 @@ elif [[ "$CMD" == "bash" ]]; then
 
 # Create diff output between schema in staging & local backend
 elif [[ "$CMD" == "diff-schema" ]]; then
-  docker exec "$(docker ps | grep postgres | cut -d" " -f 1)" pg_dump -d pass_culture -U pass_culture -s > /tmp/pc_schema_local
+  docker exec pc-postgres pg_dump -d pass_culture -U pass_culture -s > /tmp/pc_schema_local
   scalingo -a pass-culture-api-staging run 'dbclient-fetcher postgresql 10.4 && pg_dump "$SCALINGO_POSTGRESQL_URL" -s' > /tmp/pc_schema_staging
   diff /tmp/pc_schema_staging /tmp/pc_schema_local
   exit
@@ -211,7 +211,7 @@ elif [[ "$CMD" == "diff-schema" ]]; then
 # Dump pass_culture database into pgdump file
 elif [[ "$CMD" == "dump-db" ]]; then
   RUN='mkdir -p "$ROOT_PATH/db_dumps";
-       docker exec `docker ps | grep postgres | cut -d" " -f 1` pg_dump -d pass_culture -U pass_culture -F c > "$ROOT_PATH"/db_dumps/`date +%Y%m%d_%H%M%S`.pgdump'
+       docker exec pc-postgres pg_dump -d pass_culture -U pass_culture -F c > "$ROOT_PATH"/db_dumps/`date +%Y%m%d_%H%M%S`.pgdump'
 
 # Force docker-compose to build the docker images
 elif [[ "$CMD" == "rebuild-backend" ]]; then
@@ -222,7 +222,7 @@ elif [[ "$CMD" == "rebuild-backend" ]]; then
 # Execute request from specified file
 elif [[ "$CMD" == "psql-file" ]]; then
   COLUMNS=${COLUMNS:-''};
-  RUN='docker exec -t `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture -f $1"'
+  RUN='docker exec -t pc-postgres bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture -f $1"'
 
 # Restart API after removing the database and files
 elif [[ "$CMD" == "restart-backend" ]]; then
@@ -232,16 +232,16 @@ elif [[ "$CMD" == "restart-backend" ]]; then
 
 # Clear all data in postgresql database
 elif [[ "$CMD" == "reset-all-db" ]]; then
-  RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "rm -rf /opt/services/flaskapp/src/static/object_store_data/*";
-       docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py clean"'
+  RUN='docker exec -it pc-flask bash -c "rm -rf /opt/services/flaskapp/src/static/object_store_data/*";
+       docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py clean"'
 
 # Remove all booking & reco from database
 elif [[ "$CMD" == "reset-reco-db" ]]; then
-  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE booking,recommendation RESTART IDENTITY;\""'
+  RUN='docker exec -it pc-postgres bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE booking,recommendation RESTART IDENTITY;\""'
 
 # Remove all booking, reco & user_offerer from database
 elif [[ "$CMD" == "reset-users-db" ]]; then
-  RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,recommendation,user_offerer RESTART IDENTITY CASCADE;\""'
+  RUN='docker exec -it pc-postgres bash -c "psql -U pass_culture pass_culture -c \"TRUNCATE \\\"user\\\",booking,recommendation,user_offerer RESTART IDENTITY CASCADE;\""'
 
 # Delete all local images
 elif [[ "$CMD" == "reset-all-storage" ]]; then
@@ -256,7 +256,7 @@ elif [[ "$CMD" == "restore-db" ]]; then
     exit
   fi
   backup_file="$1"
-  RUN='cat "'$backup_file'" | docker exec -i `docker ps | grep postgres | cut -d" " -f 1` pg_restore -d pass_culture -U pass_culture -c;
+  RUN='cat "'$backup_file'" | docker exec -i pc-postgres pg_restore -d pass_culture -U pass_culture -c;
               ./anonymize_database.sh -p Password_ ;
               rm $backup_file'
 
@@ -269,7 +269,7 @@ elif [[ "$CMD" == "restore-db-intact" ]]; then
     exit
   fi
   backup_file="$1"
-  RUN='cat "'$backup_file'" | docker exec -i `docker ps | grep postgres | cut -d" " -f 1` pg_restore -d pass_culture -U pass_culture -c'
+  RUN='cat "'$backup_file'" | docker exec -i pc-postgres pg_restore -d pass_culture -U pass_culture -c'
 
 
 # Prepare backend for local use
@@ -313,9 +313,9 @@ elif [[ "$CMD" == "test-backend" ]]; then
   if [[ $# == 0 ]]; then
     confirm "Warning: your database will be wiped. Is this OK ?"
      "$ROOT_PATH"/pc -e "$ENV" reset-all-db
-     RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest --color=yes -rsx -v tests"'
+     RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest --color=yes -rsx -v tests"'
   else
-     RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest --color=yes -rsx -v '"$*"'"'
+     RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest --color=yes -rsx -v '"$*"'"'
   fi
 
 # Run only local providers tests for API
@@ -570,7 +570,7 @@ elif [[ "$CMD" == "symlink" ]]; then
 elif [[ "$CMD" == "api-licenses" ]]; then
     COLUMNS=${COLUMNS:-''};
 	if [[ "$ENV" == "development" ]]; then
-		RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. pip-licenses --format-html >> licenses.html"'
+		RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. pip-licenses --format-html >> licenses.html"'
 	else
     echo_error "These command is only available in DEV"
 		exit
@@ -595,7 +595,7 @@ elif [[ "$CMD" == "logs" ]]; then
 elif [[ "$CMD" == "psql" ]]; then
 	COLUMNS=${COLUMNS:-''};
 	if [[ "$ENV" == "development" ]]; then
-		RUN='docker exec -it `docker ps | grep postgres | cut -d" " -f 1` bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
+		RUN='docker exec -it pc-postgres bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
 	else
 		scalingo -a "$SCALINGO_APP" pgsql-console
 		exit
@@ -606,7 +606,7 @@ elif [[ "$CMD" == "pgcli" ]]; then
 	COLUMNS=${COLUMNS:-''};
 	if [[ "$ENV" == "development" ]]; then
 	    source "$ROOT_PATH"/env_file
-	    RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "pgcli $DATABASE_URL"'
+	    RUN='docker exec -it pc-flask bash -c "pgcli $DATABASE_URL"'
 	else
 		scalingo -a "$SCALINGO_APP" run 'pgcli $DATABASE_URL'
 		exit
@@ -617,7 +617,7 @@ elif [[ "$CMD" == "pgcli" ]]; then
 elif [[ "$CMD" == "python" ]]; then
     COLUMNS=${COLUMNS:-''};
 	if [[ "$ENV" == "development" ]]; then
-		RUN='docker exec -it `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python -i scripts/interact.py '"$CMD $*"'"'
+		RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python -i scripts/interact.py '"$CMD $*"'"'
 	else
 	    if [ "$FILE_TO_UPLOAD" == 'none' ]; then
 		    scalingo -a "$SCALINGO_APP" run "python -i scripts/interact.py"
@@ -655,7 +655,7 @@ elif [[ "$CMD" == "start-ios" ]]; then
 # Run python scripts from api/scripts
 else
   if [[ "$ENV" == "development" ]]; then
-    RUN='docker exec `docker ps | grep flask | cut -d" " -f 1` bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '"$CMD $*"'"'
+    RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && PYTHONPATH=. python scripts/pc.py '"$CMD $*"'"'
   else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
         scalingo -a "$SCALINGO_APP" run 'python scripts/pc.py '"$CMD $*"''

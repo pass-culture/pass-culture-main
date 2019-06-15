@@ -1,8 +1,9 @@
-version: '3.2'
+version: "3.7"
 
 services:
   postgres:
     image: postgres:10.1
+    container_name: pc-postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
@@ -15,6 +16,7 @@ services:
     build:
       context: ./api
       dockerfile: ../dockerfiles/flask/Dockerfile
+    container_name: pc-flask
     command: >
       bash -c "set -x;
                cd /opt/services/flaskapp/src;
@@ -65,9 +67,10 @@ services:
 
   nginx:
     build: dockerfiles/nginx
+    container_name: pc-nginx
     ports:
-      - "80:80"
-      - "443:443"
+      - 80:80
+      - 443:443
     volumes:
       - ./dockerfiles/nginx/conf.d:/etc/nginx/conf.d
       - ./certs:/etc/letsencrypt
