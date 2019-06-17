@@ -1,10 +1,19 @@
 #!/usr/bin/env bash
 
+
+if [[ $# -ge 1 ]];
+then
+    environment="$1"
+else
+    echo "You need to specify an environment"
+    exit 1
+fi
+
 counter=0
 
 while [ "$counter" -lt 30 ]; do
   rm ./public/static/fontello/.fontello.session
-  set -a; source node_modules/pass-culture-shared/config/run_envs/testing && yarn build && break
+  set -a; source ../config/run_envs/"$environment" && yarn build && break
   echo "Waiting for Fontello to be nice with us :("
   counter=$[$counter+1]
   sleep 2
