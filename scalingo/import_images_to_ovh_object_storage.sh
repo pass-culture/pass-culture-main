@@ -51,7 +51,7 @@ function get_thread_count(){
 }
 
 cd "$absolute_path_to_directory"
-titelive_directories=$(find "titelive/images" -mindepth 1 -maxdepth 1 -type d | sort)
+titelive_directories=$(find "thumbs" -mindepth 1 -maxdepth 1 -type d | sort)
 
 IFS='
 ' read -d '' -a images_directories <<< "${titelive_directories}"
@@ -75,7 +75,9 @@ do
           --os-username "$OVH_USER" \
           --os-password "$OVH_PASSWORD" \
           --os-region-name "$OVH_REGION" \
-          -V 2 upload "$CONTAINER_NAME" "$directory"
+          -V 2 upload "$CONTAINER_NAME" \
+          --object-name 'thumbs/products' \
+          --ignore-checksum "$directory"
 done
 
 deactivate

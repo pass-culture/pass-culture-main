@@ -8,6 +8,7 @@ from local_providers.init_titelive_thing_descriptions import InitTiteLiveThingDe
 from local_providers.init_titelive_things import InitTiteLiveThings
 from scripts.init_titelive.clean_images_in_object_storage import clean_remaining_titelive_images_in_object_storage
 from scripts.init_titelive.import_thumbs import import_init_titelive_thumbs
+from scripts.init_titelive.local_format_thumbs import format_all_thumbs
 from scripts.update_providables import do_update
 from utils.storage_utils import swift_con
 
@@ -22,6 +23,25 @@ from utils.storage_utils import swift_con
 def import_titelive_full_table(limit: int, file: str):
     provider = InitTiteLiveThings(file)
     return do_update(provider, limit)
+
+
+@app.manager.option('-s',
+                    '--source_directory',
+                    help='Source directory')
+@app.manager.option('-d',
+                    '--destination_directory',
+                    help='Destination directory')
+@app.manager.option('-i',
+                    '--start_index',
+                    type=int,
+                    help='Start at specified sub directory index')
+def format_local_thumbs(source_directory, destination_directory, start_index):
+    try:
+        format_all_thumbs(source_directory, destination_directory, start_index)
+    except Exception as e:
+        print('ERROR: ' + str(e))
+        traceback.print_tb(e.__traceback__)
+        pprint(vars(e))
 
 
 @app.manager.option('-c',

@@ -4,21 +4,23 @@ from typing import List
 
 import os
 
+import time
 from models import Product
 from utils.human_ids import humanize
 
 
-# TODO: /media/daniel.baudry/Dell Portable Hard Drive/MediaLivre/thumbs/products/
-
-def format_all_thumbs(source_directory: str, destination_directory: str):
+def format_all_thumbs(source_directory: str, destination_directory: str, start_index=0):
     sub_directories = get_all_sub_directories(source_directory)
-    for directory in sub_directories:
+
+    for directory in sub_directories[start_index:]:
         files_in_directory = get_files_from_folder(directory)
+        time1 = time.time()
         for filename in files_in_directory:
             book_ean13 = extract_book_ean13(filename)
             existing_product = Product.query \
                 .filter(Product.idAtProviders == book_ean13) \
                 .first()
+
             if not existing_product:
                 continue
 
@@ -29,6 +31,8 @@ def format_all_thumbs(source_directory: str, destination_directory: str):
                                     product_humanized_id,
                                     thumb_content)
             thumb_content.close()
+        time2 = time.time()
+        print("Folder [%s], processing time : %s" % (directory, str(time2 - time1)))
 
 
 def extract_book_ean13(filename):
@@ -54,7 +58,6 @@ def write_file_to_directory(directory_identifier: str, filename: str, file_conte
                                  + str(file_index)
         file_index = file_index + 1
 
-    print("Saving file %s" % destination_path_filename)
     file = open(destination_path_filename, "wb")
     file.write(file_content.read())
     file.close()
