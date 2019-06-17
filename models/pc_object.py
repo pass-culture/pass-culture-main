@@ -63,12 +63,12 @@ class PcObject:
                     and "-" + key in options['include']:
                 continue
             value = getattr(self, key)
-            keyIsHumanizable = key == 'id' or (key.endswith('Id') and type(value) is not uuid.UUID)
+            value_needs_humanizing = key == 'id' or (key.endswith('Id') and type(value) is not uuid.UUID)
             if options and options.get('cut'):
                 if isinstance(value, str):
                     if len(value) > options['cut']:
                         value = value[:options['cut']] + '...'
-            if keyIsHumanizable:
+            if value_needs_humanizing:
                 result[key] = humanize(value)
                 if options \
                         and 'dehumanize' in options \
