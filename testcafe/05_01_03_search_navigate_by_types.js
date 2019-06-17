@@ -29,13 +29,12 @@ test("Je clique sur la vignette 'Lire' et je suis redirigé vers la page de rés
     .contains('/recherche/resultats/Lire')
 
   const resultsForLireCategory = Selector('.search-results')
-  const firstResultTitle = resultsForLireCategory.find('h5').nth(0).textContent
+  const firstResultTitle = await resultsForLireCategory.find('h5').nth(0)
+    .textContent
   const firstResultLink = resultsForLireCategory.find('.to-details').nth(0)
 
   await t
     .expect(resultsForLireCategory.exists)
-    .ok()
-    .expect(firstResultTitle)
     .ok()
     .click(firstResultLink)
     .expect(getPageUrl())
@@ -43,7 +42,7 @@ test("Je clique sur la vignette 'Lire' et je suis redirigé vers la page de rés
 
   const offerDetailsTitle = Selector('#verso-offer-name').textContent
 
-  await t.expect(offerDetailsTitle).eql(await firstResultTitle)
+  await t.expect(offerDetailsTitle).eql(firstResultTitle)
 })
 
 test("Je suis sur la page 'Lire', je clique sur le bouton de retour et j'arrive sur la page des catégories", async t => {
