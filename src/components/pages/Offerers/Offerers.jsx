@@ -20,6 +20,8 @@ import {
   translateQueryParamsToApiParams,
 } from '../../../utils/translate'
 
+import createVenueForOffererUrl from './utils'
+
 class Offerers extends Component {
   constructor(props) {
     super(props)
@@ -44,14 +46,14 @@ class Offerers extends Component {
     }
   }
 
-  dispatchNotification = (firstOffererIdWithOffers) => {
+  dispatchNotification = (url) => {
     const { dispatch } = this.props
     dispatch(
       showNotification({
         tag: 'offerers',
         text: 'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
         type: 'info',
-        url: `/structures/${firstOffererIdWithOffers}/lieux/creation`,
+        url: url,
         urlLabel: 'Nouveau lieu'
       })
     )
@@ -90,10 +92,13 @@ class Offerers extends Component {
       )
     })
 
-    const firstOffererIdWithOffers = offerers.length > 0 ? offerers[0].id : ''
+    // const firstOffererIdOnList = offerers.length > 0 ? offerers[0].id : ''
+
+    const url = createVenueForOffererUrl(offerers)
+
 
     if (!currentUser.hasOffers) {
-       this.dispatchNotification(firstOffererIdWithOffers)
+       this.dispatchNotification(url)
     }
 
     if (!isAdmin) {
@@ -138,6 +143,7 @@ class Offerers extends Component {
     const queryParams = query.parse()
     const { hasMore, isLoading } = this.state
 
+
     const sectionTitle =
       offerers.length > 1
         ? 'Vos structures juridiques'
@@ -147,20 +153,33 @@ class Offerers extends Component {
       keywords: queryParams[mapApiToBrowser.keywords],
     }
 
+    const url = createVenueForOffererUrl(offerers)
+
+
     return (
       <Main name="offerers">
         <HeroSection title={sectionTitle}>
+          <span className="page-illustration" />
           <p className="subtitle">
-            Pour présenter vos offres, vous devez d'abord créer un{' '}
-            <b> nouveau lieu </b> lié à une structure.
+            Pour présenter vos offres, vous devez d'abord <a href={url} className="has-text-primary has-text-weight-semibold">créer un{' '}
+            nouveau lieu </a> lié à une structure.
             <br />
-            Sans lieu, vous ne pouvez ajouter que des offres numériques.
+            Sans lieu, vous pouvez uniquement <a href="/offres/creation" className="has-text-primary">ajouter des offres numériques.</a>
           </p>
+          <div className="title-action-links">
           <NavLink
             to="/structures/creation"
             className="cta button is-primary is-outlined">
-            + Rattacher une structure supplémentaire
+            + Ajouter une structure
+            <span
+              className="tip-icon"
+              data-place="bottom"
+              data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exmple, un réseau de grande distribution ou de franchisés).</p>"
+              data-type="info">
+              <Icon svg="picto-tip" />
+            </span>
           </NavLink>
+          </div>
         </HeroSection>
 
         <Form

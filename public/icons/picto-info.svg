@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: sketchtool 51.2 (57519) - http://www.bohemiancoding.com/sketch -->
-    <title>AE3F8559-8E44-493C-A58F-ED1FD910059B</title>
+    <!-- Generator: sketchtool 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>AE312226-10EA-453E-918B-C5E4BD33FC2B</title>
     <desc>Created with sketchtool.</desc>
     <defs></defs>
     <g id="Portail-pro" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -14,9 +14,9 @@
                                 <g id="Group-12-[6h]" transform="translate(0.000000, 42.000000)">
                                     <g id="PICTOS/picto-info-S" transform="translate(364.000000, 3.000000)">
                                         <rect id="Background" x="0" y="0" width="18" height="18"></rect>
-                                        <circle id="Oval" stroke="#0066FF" cx="9" cy="9" r="8.5"></circle>
-                                        <polyline id="Stroke-3" stroke="#0066FF" stroke-linecap="round" stroke-linejoin="round" transform="translate(8.750001, 10.500000) scale(-1, 1) translate(-8.750001, -10.500000) " points="8 13 8 8 9.50000191 8"></polyline>
-                                        <path d="M9.49999809,5.58113883 L9.49999809,4.58113883" id="Stroke-3-Copy" stroke="#0066FF" stroke-linecap="round" stroke-linejoin="round" transform="translate(9.499998, 5.081139) scale(-1, 1) translate(-9.499998, -5.081139) "></path>
+                                        <circle id="Oval" fill="#0066FF" cx="9" cy="9" r="9"></circle>
+                                        <polyline id="Stroke-3" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" transform="translate(8.750001, 10.500000) scale(-1, 1) translate(-8.750001, -10.500000) " points="8 13 8 8 9.50000191 8"></polyline>
+                                        <path d="M9.49999809,5.58113883 L9.49999809,4.58113883" id="Stroke-3-Copy" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" transform="translate(9.499998, 5.081139) scale(-1, 1) translate(-9.499998, -5.081139) "></path>
                                     </g>
                                 </g>
                             </g>

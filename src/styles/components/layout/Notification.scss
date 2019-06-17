@@ -1,26 +1,31 @@
 .notification {
-  margin: 2px;
+  margin: 6px;
   overflow-y: hidden;
   padding: 6px;
   position: relative;
 
+
+  .small-padding {
+    padding: 0.2rem;
+  }
+
   img {
-    width: 20px;
+    align-self: baseline;
   }
 
-  span {
-    margin-right: 12px;
+  &.is-info {
+    background-color: #B3E7FF;
+    color: $black;
   }
 
-  button.close {
+  a.close, button.close {
     background: none;
     border: none;
     cursor: pointer;
     float: right;
     font-size: $font-size;
-    font-weight: $weight-normal;
+    font-weight: $weight-semibold;
     height: auto;
-    padding: 0;
     text-decoration: underline;
 
     &:hover {
@@ -32,9 +37,23 @@
   &.fullscreen {
     margin-left: calc(50% + 1px);
     width: auto;
-
-    .container {
-      display: inline;
-    }
   }
+}
+
+.is-flex {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+
+  .notification-action-links {
+    display: flex;
+  }
+
+  .notification-description {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-grow: 1;
+  }
+
 }

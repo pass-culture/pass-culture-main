@@ -16,7 +16,6 @@ class Notification extends Component {
     const { dispatch, isFullscreen, notification } = this.props
     const { text, tooltip, type, url, urlLabel } = notification || {}
 
-
     let svg
     if (type === 'success') {
       svg = 'picto-validation'
@@ -24,6 +23,8 @@ class Notification extends Component {
       svg = 'picto-warning'
     } else if (type === 'info') {
       svg = 'picto-info'
+    } else if (type === 'tip') {
+      svg = 'picto-tip'
     } else {
       svg = 'picto-echec'
     }
@@ -34,41 +35,40 @@ class Notification extends Component {
 
     return (
       <div
-        className={classnames(`notification is-${type || 'info'}`, {
-          fullscreen: isFullscreen,
-          columns: !isFullscreen,
-        })}>
+      className={classnames(`notification is-${type || 'info'}`, {
+        fullscreen: isFullscreen
+      })}>
         <div
-          className={classnames('container', {
-            column: !isFullscreen,
-          })}>
-          <span className="mr12">
+        className={classnames('is-flex fullscreen', {
+          'small-padding': !isFullscreen,
+        })}>
+          <div className="notification-description">
             <Icon svg={svg} />
-          </span>
-          <span>{text}</span>
+            <span className="ml8">{text}</span>
+          </div>
+          <div className="notification-action-links">
+            {url && (
+              <a className="close" href={url}>{urlLabel}</a>
+            )}
+            {tooltip ? (
+              <span
+              className={classnames({
+                'has-text-weight-semibold tooltip small-padding is-2': !isFullscreen,
+              })}
+              data-place={tooltip.place}
+              data-tip={tooltip.tip}
+              data-type={tooltip.type}>
+              {tooltip.children}
+              </span>
+            ) : (
+              <button
+              className="close pl8"
+              onClick={() => dispatch(closeNotification())}>
+              {url ? 'Fermer' : 'OK'}
+            </button>
+            )}
+          </div>
         </div>
-        {url && (
-          <a className='url-link' href={url}>{urlLabel}</a>
-        )}
-        {tooltip ? (
-          <span
-            className={classnames({
-              'tooltip column is-2': !isFullscreen,
-            })}
-            data-place={tooltip.place}
-            data-tip={tooltip.tip}
-            data-type={tooltip.type}>
-            {tooltip.children}
-          </span>
-        ) : (
-          <button
-            className={classnames('close', {
-              'column is-1': !isFullscreen,
-            })}
-            onClick={() => dispatch(closeNotification())}>
-            {url ? 'Fermer' : 'OK'}
-          </button>
-        )}
       </div>
     )
   }
