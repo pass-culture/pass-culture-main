@@ -206,7 +206,8 @@ jobs:
             nvm use "$NODE_VERSION"
             cd pro
             yarn install
-            set -a; source ~/node_modules/pass-culture-shared/config/run_envs/${CIRCLE_BRANCH}" && yarn build
+            cd ~/pass-culture
+            set -a; source config/run_envs/${CIRCLE_BRANCH}" && yarn build
       - run:
           name: Deploy Pro
           command: |
@@ -238,7 +239,7 @@ jobs:
             nvm use "$NODE_VERSION"
             cd webapp
             yarn install
-            ./scripts/build_with_fontello.sh
+            ./scripts/build_with_fontello.sh "${CIRCLE_BRANCH}"
       - run:
           name: Deploy WEBAPP
           command: |
