@@ -19,7 +19,7 @@ export class FilterByOffer extends PureComponent {
 
   render() {
     const { offers } = this.props
-    const isDigitalChecked = false
+    const isDigitalChecked = true
 
     if (!isDigitalChecked){
       return (

@@ -16,8 +16,9 @@ class Bookings extends Component {
   }
 
   render () {
-    const {venuesOptions} = this.props
-    const {offersOptions} = this.props
+    const {digitalOffersOptions, isDigital, venueId, venuesOptions} = this.props
+
+    console.log("venueId", venueId)
 
     return(
       <Main name="Bookings">
@@ -36,7 +37,9 @@ class Bookings extends Component {
           venuesOptions={venuesOptions}
         />
         <FilterByOffer
-          offers={offersOptions}
+          offers={digitalOffersOptions}
+          isDigital={isDigital}
+          venueId={venueId}
         />
         <FilterByDate
         />
@@ -54,13 +57,15 @@ class Bookings extends Component {
 }
 
 Bookings.defaultProps = {
+  digitalOffersOptions: [],
   venuesOptions: [],
-  offersOptions: [],
 }
 
 Bookings.propTypes = {
+  isDigital: PropTypes.bool.isRequired,
+  venueId: PropTypes.array.isRequired,
+  digitalOffersOptions: PropTypes.array.isRequired,
   venuesOptions: PropTypes.array.isRequired,
-  offersOptions: PropTypes.array.isRequired,
   loadVenues: PropTypes.func.isRequired,
   loadOffers: PropTypes.func.isRequired
 }

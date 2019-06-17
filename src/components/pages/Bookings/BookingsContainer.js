@@ -40,11 +40,11 @@ const mapStateToProps = state => {
     id: "all",
   }
   const digitalOffers = selectDigitalOffers(state, offers)
-  const offersOptions = [allOffersOption, ...digitalOffers]
+  const digitalOffersOptions = [allOffersOption, ...digitalOffers]
 
   return {
     venuesOptions,
-    offersOptions
+    digitalOffersOptions
   }
 }
 

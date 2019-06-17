@@ -2,13 +2,12 @@ import React, { PureComponent, Fragment } from 'react'
 import PropTypes from 'prop-types'
 
 export class FilterByVenue extends PureComponent {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       isDigital: false,
       venueID: null,
     }
-    this.handleIsDigitalChecked = this.handleIsDigitalChecked.bind(this)
   }
 
   handleIsDigitalChecked = event => {
@@ -52,7 +51,7 @@ export class FilterByVenue extends PureComponent {
             {'ou :'}
           </div>
           <label htmlFor="isDigital">
-            {"Cocher cette case pour voir les offres numériques"}
+            {"Cocher cette case les offres numériques"}
           </label>
           <input
             id="isDigital"
@@ -72,3 +71,4 @@ FilterByVenue.defaultProps = {
 FilterByVenue.propTypes = {
   venuesOptions: PropTypes.array.isRequired,
 }
+
