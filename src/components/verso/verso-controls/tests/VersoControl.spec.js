@@ -16,10 +16,8 @@ describe('src | components | verso | verso-controls | VersoControl', () => {
     const finishable = wrapper.find(Finishable)
     const cancel = wrapper.find(CancelButton)
     const bookThis = wrapper.find(BookThisButton)
-    const blocker = wrapper.find('.finishable-click-blocker')
 
     // then
-    expect(blocker).toHaveLength(0)
     expect(finishable).toHaveLength(1)
     expect(finishable.prop('finished')).toBe(false)
     expect(cancel).toHaveLength(0)
@@ -35,10 +33,8 @@ describe('src | components | verso | verso-controls | VersoControl', () => {
     const finishable = wrapper.find(Finishable)
     const cancel = wrapper.find(CancelButton)
     const bookthis = wrapper.find(BookThisButton)
-    const blocker = wrapper.find('.finishable-click-blocker')
 
     // then
-    expect(blocker).toHaveLength(0)
     expect(finishable).toHaveLength(1)
     expect(finishable.prop('finished')).toBe(false)
     expect(cancel).toHaveLength(1)
@@ -54,10 +50,8 @@ describe('src | components | verso | verso-controls | VersoControl', () => {
     const finishable = wrapper.find(Finishable)
     const cancel = wrapper.find(CancelButton)
     const bookthis = wrapper.find(BookThisButton)
-    const blocker = wrapper.find('.finishable-click-blocker')
 
     // then
-    expect(blocker).toHaveLength(1)
     expect(finishable).toHaveLength(1)
     expect(finishable.prop('finished')).toBe(true)
     expect(cancel).toHaveLength(1)

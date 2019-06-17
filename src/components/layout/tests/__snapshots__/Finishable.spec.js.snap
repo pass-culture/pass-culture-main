@@ -41,6 +41,8 @@ ShallowWrapper {
           <Icon
             alt="Terminé"
             className="finish-ribon-img"
+            name={null}
+            src={null}
             svg="badge-termine"
           />
         </span>,
@@ -73,6 +75,8 @@ ShallowWrapper {
             <Icon
               alt="Terminé"
               className="finish-ribon-img"
+              name={null}
+              src={null}
               svg="badge-termine"
             />,
           ],
@@ -98,6 +102,8 @@ ShallowWrapper {
             "props": Object {
               "alt": "Terminé",
               "className": "finish-ribon-img",
+              "name": null,
+              "src": null,
               "svg": "badge-termine",
             },
             "ref": null,
@@ -131,6 +137,8 @@ ShallowWrapper {
             <Icon
               alt="Terminé"
               className="finish-ribon-img"
+              name={null}
+              src={null}
               svg="badge-termine"
             />
           </span>,
@@ -163,6 +171,8 @@ ShallowWrapper {
               <Icon
                 alt="Terminé"
                 className="finish-ribon-img"
+                name={null}
+                src={null}
                 svg="badge-termine"
               />,
             ],
@@ -188,6 +198,8 @@ ShallowWrapper {
               "props": Object {
                 "alt": "Terminé",
                 "className": "finish-ribon-img",
+                "name": null,
+                "src": null,
                 "svg": "badge-termine",
               },
               "ref": null,

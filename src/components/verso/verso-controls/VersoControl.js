@@ -10,14 +10,6 @@ import VersoButtonFavorite from './favorite/VersoButtonFavoriteContainer'
 import CancelThisLinkContainer from './booking/cancel-this-link/CancelThisLinkContainer'
 import BookThisLinkContainer from './booking/book-this-link/BookThisLinkContainer'
 
-const renderClickBlockerIfFinished = () => (
-  <button
-    type="button"
-    onClick={() => {}}
-    className="finishable-click-blocker"
-  />
-)
-
 const VersoControl = ({ booking, isFinished }) => (
   <div className="verso-control is-relative">
     <ul className="py8 px12 is-medium is-flex flex-0 flex-between items-center pc-theme-red">
@@ -31,9 +23,10 @@ const VersoControl = ({ booking, isFinished }) => (
         <ShareButton />
       </li>
       <li className="is-relative">
-        {isFinished && renderClickBlockerIfFinished()}
-        {booking && <CancelThisLinkContainer booking={booking} />}
-        {!booking && <BookThisLinkContainer />}
+        {booking && (
+          <CancelThisLinkContainer isFinished={isFinished} booking={booking} />
+        )}
+        {!booking && <BookThisLinkContainer isFinished={isFinished} />}
       </li>
     </ul>
     <Finishable finished={isFinished} />

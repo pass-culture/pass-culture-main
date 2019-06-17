@@ -89,14 +89,15 @@ class CancelThisLink extends React.PureComponent {
   }
 
   render() {
-    const { booking, isCancelled, priceValue } = this.props
+    const { booking, isCancelled, isFinished, priceValue } = this.props
 
     return (
       <button
+        disabled={isFinished}
         id="verso-cancel-booking-button"
         type="button"
         className="flex-columns no-border no-background"
-        onClick={() => this.openCancelPopin(booking)}
+        onClick={() => !isFinished && this.openCancelPopin(booking)}
       >
         <span className="pc-ticket-button-price reserved">
           <Price free="Gratuit" value={priceValue} />
@@ -113,13 +114,16 @@ class CancelThisLink extends React.PureComponent {
   }
 }
 
-CancelThisLink.defaultProps = {}
+CancelThisLink.defaultProps = {
+  isFinished: false,
+}
 
 CancelThisLink.propTypes = {
   booking: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   isCancelled: PropTypes.bool.isRequired,
+  isFinished: PropTypes.bool,
   priceValue: PropTypes.number.isRequired,
 }
 

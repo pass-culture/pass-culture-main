@@ -13,9 +13,10 @@ export const formatOutputPrice = ([startingPrice, endingPrice], devise) => (
   />
 )
 
-const BookThisLink = ({ linkDestination, priceValue }) => (
+const BookThisLink = ({ isFinished, linkDestination, priceValue }) => (
   <Link
     to={linkDestination}
+    disabled={isFinished}
     id="verso-booking-button"
     className="flex-columns is-bold is-white-text fs18"
   >
@@ -29,7 +30,12 @@ const BookThisLink = ({ linkDestination, priceValue }) => (
   </Link>
 )
 
+BookThisLink.defaultProps = {
+  isFinished: false,
+}
+
 BookThisLink.propTypes = {
+  isFinished: PropTypes.bool,
   linkDestination: PropTypes.string.isRequired,
   priceValue: PropTypes.array.isRequired,
 }

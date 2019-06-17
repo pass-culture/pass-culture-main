@@ -34,6 +34,10 @@
   }
 }
 
+#verso-cancel-booking-button:disabled {
+  opacity: 1;
+}
+
 @media screen and (max-width: 370px) {
   .verso-control span[class^='icon-'] {
     font-size: 28px;
