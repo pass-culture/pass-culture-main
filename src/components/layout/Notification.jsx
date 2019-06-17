@@ -16,6 +16,7 @@ class Notification extends Component {
     const { dispatch, isFullscreen, notification } = this.props
     const { text, tooltip, type, url, urlLabel } = notification || {}
 
+
     let svg
     if (type === 'success') {
       svg = 'picto-validation'
@@ -52,7 +53,7 @@ class Notification extends Component {
         {tooltip ? (
           <span
             className={classnames({
-              'column is-2': !isFullscreen,
+              'tooltip column is-2': !isFullscreen,
             })}
             data-place={tooltip.place}
             data-tip={tooltip.tip}
@@ -68,7 +69,6 @@ class Notification extends Component {
             {url ? 'Fermer' : 'OK'}
           </button>
         )}
-
       </div>
     )
   }

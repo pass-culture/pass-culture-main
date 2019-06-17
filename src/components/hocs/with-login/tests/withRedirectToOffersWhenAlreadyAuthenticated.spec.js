@@ -6,6 +6,7 @@ import { Route, Router, Switch } from 'react-router-dom'
 
 import {
   configureFetchCurrentUserWithLoginSuccess,
+  configureFetchCurrentUserWithLoginSuccessAndOffers,
   configureTestStore,
 } from './configure'
 import { OnMountCaller } from './OnMountCaller'
@@ -33,12 +34,36 @@ describe('src | components | pages | hocs | with-login | withRedirectToOffersWhe
   })
 
   describe('functions', () => {
-    it('should redirect to discovery when already authenticated', done => {
+    it('should redirect to structures when when pro already authenticated but without offers', done => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
       const store = configureTestStore()
       configureFetchCurrentUserWithLoginSuccess()
+
+      // when
+      mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <Switch>
+              <Route path="/test">
+                <RedirectToOffersWhenAlreadyAuthenticatedTest />
+              </Route>
+              <Route path="/structures">
+                <OnMountCaller onMountCallback={done} />
+              </Route>
+            </Switch>
+          </Router>
+        </Provider>
+      )
+    })
+
+    it('should redirect to offers when pro already authenticated with offers', done => {
+      // given
+      const history = createBrowserHistory()
+      history.push('/test')
+      const store = configureTestStore()
+      configureFetchCurrentUserWithLoginSuccessAndOffers()
 
       // when
       mount(
