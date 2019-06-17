@@ -44,7 +44,10 @@ def signup_webapp():
     PcObject.save(*objects_to_save)
 
     if request.json.get('contact_ok'):
-        subscribe_newsletter(new_user)
+        try:
+            subscribe_newsletter(new_user)
+        except MailServiceException as e:
+            app.logger.error('Mail service failure', e)
 
     return jsonify(new_user.as_dict(include=USER_INCLUDES)), 201
 
