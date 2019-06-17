@@ -36,7 +36,7 @@ test("Je clique sur la vignette 'Lire' et je suis redirigé vers la page de rés
     .expect(resultsForLireCategory.exists)
     .ok()
     .expect(firstResultTitle)
-    .eql('Mensch ! Où sont les Hommes ?')
+    .ok()
     .click(firstResultLink)
     .expect(getPageUrl())
     .contains('/item')
