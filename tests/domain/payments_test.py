@@ -327,7 +327,7 @@ class CreatePaymentDetailsTest:
         booking = create_booking(user)
         offerer = create_offerer()
         payment = create_payment(booking, offerer, 35, payment_message_name='1234',
-                                 transaction_end_ot_end_id=uuid.uuid4(), iban='123456789')
+                                 transaction_end_to_end_id=uuid.uuid4(), iban='123456789')
 
         # when
         details = create_payment_details(payment, find_booking_date_used=Mock())

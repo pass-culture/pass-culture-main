@@ -2,6 +2,7 @@
 import enum
 import re
 import traceback
+import uuid
 from collections import OrderedDict
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
@@ -66,7 +67,7 @@ class PcObject:
                 if isinstance(value, str):
                     if len(value) > options['cut']:
                         value = value[:options['cut']] + '...'
-            if key == 'id' or key.endswith('Id'):
+            if key == 'id' or (key.endswith('Id') and type(value) is not uuid.UUID):
                 result[key] = humanize(value)
                 if options \
                         and 'dehumanize' in options \

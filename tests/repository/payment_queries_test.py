@@ -160,11 +160,11 @@ class FindPaymentsByMessageTest:
         uuid1, uuid2, uuid3 = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
 
         payments = [
-            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction1),
-            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid2, payment_message=transaction2),
-            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction3),
-            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid3, payment_message=transaction1),
-            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction1)
+            create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=transaction1),
+            create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid2, payment_message=transaction2),
+            create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=transaction3),
+            create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid3, payment_message=transaction1),
+            create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=transaction1)
         ]
 
         PcObject.save(deposit, *payments)
@@ -192,9 +192,9 @@ class FindPaymentsByMessageTest:
         uuid1, uuid2, uuid3 = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
 
         payments = [
-            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=message1),
-            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid2, payment_message=message2),
-            create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid3, payment_message=message3)
+            create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=message1),
+            create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid2, payment_message=message2),
+            create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid3, payment_message=message3)
         ]
 
         PcObject.save(deposit, *payments)

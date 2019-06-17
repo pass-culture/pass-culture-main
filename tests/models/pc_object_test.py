@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timedelta
 from decimal import Decimal
 
@@ -9,7 +10,7 @@ from models import ThingType
 from models.api_errors import DecimalCastError, DateTimeCastError
 from models.db import Model
 from models.pc_object import serialize
-from tests.test_utils import create_stock
+from tests.test_utils import create_stock, create_user, create_payment, create_booking, create_offerer
 
 
 class TimeInterval(PcObject, Model):
@@ -221,3 +222,32 @@ class PopulateFromDictTest:
 
         # Then
         assert errors.value.errors['end'] == ["Invalid value for end (datetime): 'abcdef'"]
+
+
+class AsDictTest:
+    def test_on_payment_model_humanize_payment_id(self):
+        # Given
+        user = create_user(email='user@example.com')
+        booking = create_booking(user)
+        offerer = create_offerer()
+        payment = create_payment(booking, offerer, 500, idx=1)
+
+        # When
+        result = payment.as_dict()
+
+        # Then
+        assert result['id'] == 'AE'
+
+    def test_on_payment_model_does_not_humanize_transaction_end_to_end_id(self):
+        # Given
+        user = create_user(email='user@example.com')
+        booking = create_booking(user)
+        offerer = create_offerer()
+        transaction_end_to_end_id = uuid.uuid4()
+        payment = create_payment(booking, offerer, 500, idx=1, transaction_end_to_end_id=transaction_end_to_end_id)
+
+        # When
+        result = payment.as_dict()
+
+        # Then
+        assert result['transactionEndToEndId'] == transaction_end_to_end_id

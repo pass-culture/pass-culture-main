@@ -45,12 +45,12 @@ class DoBanPaymentsTest:
 
         uuid1, uuid2, uuid3 = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
 
-        payment1 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction1)
-        payment2 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid2, payment_message=transaction2)
-        payment3 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction3)
-        payment4 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid3, payment_message=transaction1)
-        payment5 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction1)
-        payment6 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction1)
+        payment1 = create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=transaction1)
+        payment2 = create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid2, payment_message=transaction2)
+        payment3 = create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=transaction3)
+        payment4 = create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid3, payment_message=transaction1)
+        payment5 = create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=transaction1)
+        payment6 = create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=transaction1)
 
         PcObject.save(deposit, payment1, payment2, payment3, payment4, payment5, payment6)
 
@@ -78,8 +78,8 @@ class DoBanPaymentsTest:
 
         uuid1, uuid2 = uuid.uuid4(), uuid.uuid4()
 
-        payment1 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid1, payment_message=transaction1)
-        payment2 = create_payment(booking, offerer, 5, transaction_end_ot_end_id=uuid2, payment_message=transaction2)
+        payment1 = create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid1, payment_message=transaction1)
+        payment2 = create_payment(booking, offerer, 5, transaction_end_to_end_id=uuid2, payment_message=transaction2)
 
         PcObject.save(deposit, payment1, payment2)
 
