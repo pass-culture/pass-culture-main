@@ -7,7 +7,7 @@ import {
 } from 'components/hocs'
 import Offerers from './Offerers'
 
-function mapStateToProps(state) {
+export function mapStateToProps(state) {
   return {
     pendingOfferers: state.data.pendingOfferers,
     offerers: state.data.offerers,

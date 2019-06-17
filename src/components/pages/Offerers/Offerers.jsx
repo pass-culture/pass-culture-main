@@ -7,7 +7,7 @@ import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { NavLink } from 'react-router-dom'
 import { assignData, requestData } from 'redux-saga-data'
 
-import OffererItem from './OffererItem'
+import OffererItemContainer from './OffererItemContainer'
 import PendingOffererItem from './PendingOffererItem'
 import HeroSection from '../../layout/HeroSection'
 import Icon from '../../layout/Icon'
@@ -36,6 +36,7 @@ class Offerers extends Component {
   componentDidMount() {
     this.handleRequestData()
   }
+
   componentDidUpdate(prevProps) {
     const { location } = this.props
     if (location.search !== prevProps.location.search) {
@@ -209,7 +210,7 @@ class Offerers extends Component {
           isLoading={isLoading}
           useWindow>
           {offerers.map(offerer => (
-            <OffererItem key={offerer.id} offerer={offerer} />
+            <OffererItemContainer key={offerer.id} offerer={offerer} />
           ))}
         </LoadingInfiniteScroll>
       </Main>

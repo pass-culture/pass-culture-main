@@ -7,7 +7,10 @@ const dispatchMock = jest.fn()
 const parseMock = () => ({ 'mots-cles': null })
 const queryChangeMock = jest.fn()
 
-describe('src | components | pages | Offerers', () => {
+describe('src | components | pages | Offerers | Offerers', () => {
+  afterEach(
+    dispatchMock.mockClear()
+  )
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
@@ -40,7 +43,7 @@ describe('src | components | pages | Offerers', () => {
   })
 
   describe('render', () => {
-    describe('should pluralize offerers menu link', () => {
+    describe('pluralize offerers menu link', () => {
       it('should display Votre structure when one offerer', () => {
         // given
         const props = {
@@ -97,6 +100,44 @@ describe('src | components | pages | Offerers', () => {
 
         // then
         expect(heroSection.title).toEqual('Vos structures juridiques')
+      })
+    })
+    describe('display a notification ', () => {
+      it('should display a notification when no mediation', () => {
+        // given
+        const props = {
+          currentUser: {
+            hasOffers: false,
+            isAdmin: true,
+          },
+          dispatch: dispatchMock,
+          location: {
+            search: '',
+          },
+          offerers : [],
+          pendingOfferers: [],
+          query: {
+            parse: parseMock,
+          },
+        }
+
+        // when
+        shallow(<Offerers {...props} />)
+
+        // then
+        const expected = [
+          {
+          	"patch": {
+          		"tag": "offerers",
+          		"text": "Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)",
+          		"type": "info",
+          		"url": "/structures/AE/lieux/creation",
+          		"urlLabel": "Nouveau lieu"
+          	},
+          	"type": "SHOW_NOTIFICATION"
+          }
+        ]
+        expect(dispatchMock.mock.calls[2]).toEqual(expected)
       })
     })
   })

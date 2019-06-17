@@ -1,10 +1,6 @@
 import { Icon, pluralize } from 'pass-culture-shared'
 import React, { Fragment } from 'react'
-import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
-
-import selectPhysicalVenuesByOffererId from '../../../selectors/selectPhysicalVenuesByOffererId'
-import selectVenuesByOffererIdAndOfferType from '../../../selectors/selectVenuesByOffererIdAndOfferType'
 
 const OffererItem = ({ offerer, physicalVenues, venues }) => {
   const { id, name, nOffers, isValidated } = offerer || {}
@@ -86,12 +82,4 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
   )
 }
 
-function mapStateToProps(state, ownProps) {
-  const offererId = ownProps.offerer.id
-  return {
-    physicalVenues: selectPhysicalVenuesByOffererId(state, offererId),
-    venues: selectVenuesByOffererIdAndOfferType(state, offererId),
-  }
-}
-
-export default connect(mapStateToProps)(OffererItem)
+export default OffererItem
