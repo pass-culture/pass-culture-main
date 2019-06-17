@@ -1,4 +1,4 @@
-from scripts.users import run
+from scripts.beneficiary.file_import import run
 import sys
 
 if len(sys.argv) == 1:
