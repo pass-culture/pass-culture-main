@@ -25,10 +25,6 @@ services:
                while true; do python app.py; done;"
     volumes:
       - ./api:/opt/services/flaskapp/src
-      - type: bind
-        source: ./api/ftp_mirrors
-        target: /opt/services/flaskapp/src/ftp_mirrors
-        read_only: true
     env_file:
       - env_file
       - ${ENV:-development}_env_file
