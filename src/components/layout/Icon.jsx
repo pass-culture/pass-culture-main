@@ -3,11 +3,10 @@ import React from 'react'
 
  import { ICONS_URL } from '../../utils/config'
 
- const Icon = ({ className, name, src, svg, ...imgProps }) => (
+ const Icon = ({ alt, name, src, svg, ...imgProps }) => (
    <img
      {...imgProps}
-     alt={svg}
-     className={className || 'icon'}
+     alt={alt || svg}
      src={src || `${ICONS_URL}/${svg}.svg`}
    />
 )

@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { modal } from 'redux-react-modals'
+import { modals } from 'redux-react-modals'
 
 import data from './data'
 import geolocation from './geolocation'
@@ -15,7 +15,7 @@ const rootReducer = combineReducers({
   data,
   geolocation,
   menu,
-  modal,
+  modals,
   overlay,
   share,
   splash,
