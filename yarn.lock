@@ -14865,10 +14865,10 @@ with-react-login@1.3.1:
     reselect "^3.0.1"
     uuid "^3.3.2"
 
-with-react-redux-login@1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/with-react-redux-login/-/with-react-redux-login-1.4.1.tgz#6502764eb4565945756c5ec0eae5d432a0cf5f61"
-  integrity sha512-PtlWkjCrjkevgpSbtk+bZuZzrLVRbjS9fKxoXeUmOVk+Cs9Ei9T2SpTaKCs9MUnwkVLT9iGDSNVqKmXLnptTEA==
+with-react-redux-login@1.4.4:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/with-react-redux-login/-/with-react-redux-login-1.4.4.tgz#3628914df367d902044dbed04a14a9d75d388597"
+  integrity sha512-latT37/D9TJVRVMD6nEHcS8KtYGdhCL4IPrHcwHdrh/suVdEkHdSHp8b24FGwYUQ/pn999M4hqZPsZXAEZgfzQ==
   dependencies:
     eslint "^5.8.0"
     react-redux "^5.0.3"

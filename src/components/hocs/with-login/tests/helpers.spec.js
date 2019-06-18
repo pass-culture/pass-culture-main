@@ -11,10 +11,8 @@ describe('src | hocs | with-login | helpers', () => {
         currentUser: {
           needsToFillCulturalSurvey: false,
         },
-        location: {
-          pathname: '/my-page',
-          search: '?any=any',
-        },
+        pathname: '/my-page',
+        search: '?any=any',
       }
 
       // then
@@ -30,10 +28,8 @@ describe('src | hocs | with-login | helpers', () => {
         currentUser: {
           needsToFillCulturalSurvey: true,
         },
-        location: {
-          pathname: '/my-page',
-          search: '?any=any',
-        },
+        pathname: '/my-page',
+        search: '?any=any',
       }
 
       // then
@@ -50,10 +46,8 @@ describe('src | hocs | with-login | helpers', () => {
         currentUser: {
           needsToFillCulturalSurvey: false,
         },
-        location: {
-          pathname: '/my-page',
-          search: '?any=any',
-        },
+        pathname: '/my-page',
+        search: '?any=any',
       }
 
       // then
@@ -69,10 +63,8 @@ describe('src | hocs | with-login | helpers', () => {
         currentUser: {
           needsToFillCulturalSurvey: true,
         },
-        location: {
-          pathname: '/my-page',
-          search: '?any=any',
-        },
+        pathname: '/my-page',
+        search: '?any=any',
       }
 
       // then

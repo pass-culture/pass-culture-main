@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Form as FinalForm } from 'react-final-form'
 import { requestData } from 'redux-saga-data'
+import { resolveCurrentUser } from 'with-react-redux-login'
 
 import { ROOT_PATH } from '../../../../utils/config'
 import { parseSubmitErrors } from '../../../forms/utils'
@@ -51,8 +52,8 @@ class ProfileForm extends React.PureComponent {
         body: { ...formValues },
         handleFail: this.handleRequestFail(resolve),
         handleSuccess: this.handleRequestSuccess(resolve),
-        isMergingDatum: true,
         method: routeMethod,
+        resolve: resolveCurrentUser,
       }
 
       if (stateKey) {

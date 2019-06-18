@@ -1,7 +1,7 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux'
 import createSagaMiddleware from 'redux-saga'
 import { all } from 'redux-saga/effects'
-import { createData, watchDataActions } from 'redux-saga-data'
+import { createDataReducer, watchDataActions } from 'redux-saga-data'
 
 export function configureTestStore() {
   const sagaMiddleware = createSagaMiddleware()
@@ -16,7 +16,7 @@ export function configureTestStore() {
   }
 
   const rootReducer = combineReducers({
-    data: createData({ users: [] }),
+    data: createDataReducer({ users: [] }),
   })
 
   const store = createStore(rootReducer, storeEnhancer)

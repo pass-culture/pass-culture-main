@@ -3,7 +3,7 @@
 exports[`src | components | pages | hocs | with-login | withNotRequiredLogin snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <withRouter(Connect(_withLogin)) />,
+  Symbol(enzyme.__unrendered__): <withRouter(_withQueryRouter) />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],

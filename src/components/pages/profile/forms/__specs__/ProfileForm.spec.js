@@ -67,9 +67,9 @@ describe('src | components | pages | profile | forms | ProfileForm', () => {
             body: {},
             handleFail: expect.any(Function),
             handleSuccess: expect.any(Function),
-            isMergingDatum: true,
             key: 'fake state key',
             method: 'fake method',
+            resolve: expect.any(Function),
           },
           type: 'REQUEST_DATA_FAKE METHOD_FAKE URL',
         })
