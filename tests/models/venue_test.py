@@ -23,12 +23,12 @@ def test_offerer_cannot_have_address_and_isVirtual(app):
 
 
 @clean_database
-def test_offerer_not_isVirtual_can_have_null_address(app):
+def test_offerer_not_isVirtual_and_has_siret_can_have_null_address(app):
     # Given
     offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
     PcObject.save(offerer)
 
-    venue = create_venue(offerer, name='Venue_name', booking_email='booking@email.com', address=None, postal_code='75000', city='Paris', departement_code='75', is_virtual=False)
+    venue = create_venue(offerer, siret='12345678912345', name='Venue_name', booking_email='booking@email.com', address=None, postal_code='75000', city='Paris', departement_code='75', is_virtual=False)
 
     # When
     try:
@@ -39,16 +39,46 @@ def test_offerer_not_isVirtual_can_have_null_address(app):
 
 
 @clean_database
-def test_offerer_not_isVirtual_cannot_have_null_postal_code_nor_city_nor_departement_code(app):
+def test_offerer_not_isVirtual_and_has_siret_cannot_have_null_postal_code_nor_city_nor_departement_code(app):
     # Given
     offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
     PcObject.save(offerer)
 
-    venue = create_venue(offerer, name='Venue_name', booking_email='booking@email.com', address='3 rue de valois', postal_code=None, city=None, departement_code=None, is_virtual=False)
+    venue = create_venue(offerer, siret='12345678912345', name='Venue_name', booking_email='booking@email.com', address='3 rue de valois', postal_code=None, city=None, departement_code=None, is_virtual=False)
 
     # When
     with pytest.raises(ApiErrors):
         PcObject.save(venue)
+
+
+@clean_database
+def test_offerer_not_isVirtual_and_has_no_siret_cannot_have_null_address_nor_postal_code_nor_city_nor_departement_code(app):
+    # Given
+    offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
+    PcObject.save(offerer)
+
+    venue = create_venue(offerer, siret=None, name='Venue_name', booking_email='booking@email.com', address=None, postal_code=None, city=None, departement_code=None, is_virtual=False)
+
+    # When
+    with pytest.raises(ApiErrors):
+        PcObject.save(venue)
+
+
+@clean_database
+def test_offerer_not_isVirtual_and_has_no_siret_and_has_address_and_postal_code_and_city_and_departement_code(app):
+    # Given
+    offerer = create_offerer('123456789', '1 rue Test', 'Test city', '93000', 'Test offerer')
+    PcObject.save(offerer)
+
+    venue = create_venue(offerer, siret=None, comment="fake comment", name='Venue_name', booking_email='booking@email.com', address='3 rue valois', postal_code='75000', city='Paris', departement_code='75', is_virtual=False)
+
+    # When
+    try:
+        PcObject.save(venue)
+
+    except ApiErrors:
+        # Then
+        assert pytest.fail("Should not fail with no siret and not virtual but address, postal code, city and departement code are given")
 
 
 @clean_database

@@ -30,8 +30,16 @@ CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
 OR
 (
     "isVirtual" IS FALSE
+    AND siret is NOT NULL
     AND ("postalCode" IS NOT NULL AND city IS NOT NULL AND "departementCode" IS NOT NULL)
 )
+OR
+(
+    "isVirtual" IS FALSE
+    AND (siret is NULL and comment is NOT NULL)
+    AND (address IS NOT NULL AND "postalCode" IS NOT NULL AND city IS NOT NULL AND "departementCode" IS NOT NULL)
+)
+
 """
 
 CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
