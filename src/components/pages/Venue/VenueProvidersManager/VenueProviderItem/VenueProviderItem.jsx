@@ -8,13 +8,15 @@ import PropTypes from 'prop-types'
 
 class VenueProviderItem extends Component {
   onDeactivateClick = () => {
-    const {dispatch, isActive, venueProvider} = this.props
-    const {id} = venueProvider || {}
+    const {dispatch, venueProvider} = this.props
+    const {id, isActive} = venueProvider || {}
 
     dispatch(
       requestData({
         apiPath: `/venueProviders/${id}`,
-        body: {isActive: !isActive},
+        body: {
+          isActive: !isActive
+        },
         method: 'PATCH',
       })
     )
@@ -37,7 +39,7 @@ class VenueProviderItem extends Component {
     const {events, things, venue, venueProvider} = this.props
     const {isActive, lastSyncDate, provider, venueIdAtOfferProvider} = venueProvider || {}
     const numberOfOffers = (events || []).concat(things).length
-    const providerLocalClass = get(provider, 'localClass')
+    const providerName = get(provider, 'name')
     const venueId = get(venue, 'id')
 
     return (
@@ -46,12 +48,12 @@ class VenueProviderItem extends Component {
           <Icon svg="picto-db-default"/>
         </div>
         <div className="has-text-weight-bold is-size-3">
-          {providerLocalClass}
+          {providerName}
         </div>
         <div>
-          Compte :{' '}
+          Compte : {' '}
           <strong className="has-text-weight-bold">
-            [{venueIdAtOfferProvider}]
+            {venueIdAtOfferProvider}
           </strong>
         </div>
         {lastSyncDate ? (
@@ -88,7 +90,6 @@ class VenueProviderItem extends Component {
 
 VenueProviderItem.propTypes = {
   events: PropTypes.array,
-  isActive: PropTypes.bool,
   things: PropTypes.array,
   venue: PropTypes.object,
   venueProvider: PropTypes.object

@@ -1,13 +1,9 @@
-import { selectCurrentUser } from 'with-login'
-
 import { mapStateToProps } from '../VenueProvidersManagerContainer'
 
 describe('src | components | pages | Venue | VenueProvidersManager', () => {
   describe('mapStateToProps', () => {
     it('should return an object with props', () => {
       // given
-      const currentUserUUID = 'BABA'
-      selectCurrentUser.currentUserUUID = currentUserUUID
       const state = {
         data: {
           providers: [
@@ -15,7 +11,6 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
             {id: 'AG', localClass: 'b'},
           ],
           venueProviders: [{id: 'EE'}],
-          users: [{currentUserUUID, id: 'RR'}],
         },
         form: {
           venueProvider: {
@@ -32,10 +27,6 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
 
       // then
       expect(result).toEqual({
-        currentUser: {
-          currentUserUUID: 'BABA',
-          id: 'RR',
-        },
         provider: {id: 'AG', localClass: 'b'},
         providers: [
           {

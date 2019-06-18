@@ -1,67 +1,202 @@
 import classnames from 'classnames'
-import get from 'lodash.get'
-import { Field, Form, Icon, mergeForm, SubmitButton } from 'pass-culture-shared'
 import React, { Component } from 'react'
-import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
+import { Field, Form } from 'react-final-form'
+import { showNotification } from 'pass-culture-shared'
+import PropTypes from 'prop-types'
 
 import VenueProviderItemContainer from './VenueProviderItem/VenueProviderItemContainer'
+import Icon from '../../../layout/Icon'
+import { HiddenField, TextField } from '../../../layout/form/fields'
+
+const DEFAULT_OPTION = {
+  id: 'default',
+  name: 'Choix de la source'
+}
+
+export const FormRendered = ({
+                               providers,
+                               isProviderSelected,
+                               isLoadingMode,
+                               isCreationMode,
+                               selectedValue,
+                               handleChange
+                             }) => {
+  return ({handleSubmit}) => (
+    <form onSubmit={handleSubmit}>
+      <div className="provider-table">
+        <HiddenField name="venueId"/>
+
+        {providers && providers.length > 1 && (
+          <React.Fragment>
+            <div className="provider-picto">
+              <span className="field picto">
+                <Icon svg="picto-db-default"/>
+              </span>
+            </div>
+
+            <Field
+              name="providerId"
+              required
+              render={({input}) => {
+                return (
+                  <select
+                    {...input}
+                    className="field-select select-provider"
+                    onChange={handleChange}
+                    value={selectedValue.id}
+                  >
+                    <option value={DEFAULT_OPTION.id} key={DEFAULT_OPTION.id}>{DEFAULT_OPTION.name}</option>
+                    {providers.map((provider) => (
+                      <option value={provider.id} key={provider.id}>{provider.name}</option>
+                    ))}
+                  </select>
+                )
+              }}
+            >
+            </Field>
+
+          </React.Fragment>
+        )}
+
+        {isProviderSelected && (
+          <div className="venue-id-at-offer-provider-container">
+            <TextField
+              className={classnames('field-text fs12', {
+                'field-is-read-only': isLoadingMode,
+              })}
+              label="Compte : "
+              name="venueIdAtOfferProvider"
+              readOnly={isLoadingMode}
+              required
+            />
+
+            {isLoadingMode && (
+              <div className="import-label-container">
+                <span className="fs12 has-text-weight-semibold">
+                    Importation en cours. Cette étape peut durer plusieurs dizaines de minutes.
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {isProviderSelected && !isLoadingMode && (
+          <span
+            className="button tooltip tooltip-info"
+            data-place="bottom"
+            data-tip="<p>Veuillez saisir un identifiant.</p>"
+          >
+            <Icon svg="picto-info"/>
+          </span>
+        )}
+
+        {isProviderSelected && isCreationMode && !isLoadingMode && (
+          <div className="button-provider-import-container">
+            <button
+              className="button is-intermediate button-provider-import"
+              type="submit"
+            >
+              Importer
+            </button>
+          </div>
+        )}
+      </div>
+    </form>
+  )
+}
 
 class VenueProvidersManager extends Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
-      withError: false,
+      isCreationMode: false,
+      isLoadingMode: false,
+      isProviderSelected: false,
+      selectedValue: DEFAULT_OPTION.id
     }
   }
 
   static getDerivedStateFromProps(nextProps) {
     const {
       match: {
-        params: { venueProviderId },
+        params: {venueProviderId},
       },
     } = nextProps
-    const isNew = venueProviderId === 'nouveau'
+    const isCreationMode = venueProviderId === 'nouveau'
+
     return {
-      isNew,
+      isCreationMode,
     }
   }
 
-  onAddClick = () => {
+  addVenueProvider = () => {
     const {
       history,
       match: {
-        params: { offererId, venueId },
+        params: {offererId, venueId},
       },
     } = this.props
-    history.push(
-      `/structures/${offererId}/lieux/${venueId}/fournisseurs/nouveau`
+    this.setState({
+      isCreationMode: true
+    })
+    history.push(`/structures/${offererId}/lieux/${venueId}/fournisseurs/nouveau`)
+  }
+
+  loadProvidersAndVenueProviders = () => {
+    const {
+      dispatch,
+      match: {
+        params: {venueId},
+      },
+    } = this.props
+
+    dispatch(
+      requestData({
+        apiPath: '/providers'
+      })
     )
-  }
-
-  handleMergeForm = () => {
-    const {
-      dispatch,
-      match: {
-        params: { venueId },
-      },
-    } = this.props
-    const { isNew } = this.state
-    isNew && dispatch(mergeForm('venueProviders', 'nouveau', { venueId }))
-  }
-
-  handleDataRequest = () => {
-    const {
-      dispatch,
-      match: {
-        params: { venueId },
-      },
-    } = this.props
-    dispatch(requestData({ apiPath: '/providers' }))
     dispatch(
       requestData({
         apiPath: `/venueProviders?venueId=${venueId}`,
-        stateKey: 'venueProviders',
+      })
+    )
+  }
+
+  resetFormState = () => {
+    this.setState({
+      isCreationMode: false,
+      isLoadingMode: false,
+      isProviderSelected: false,
+      selectedValue: DEFAULT_OPTION
+    })
+  }
+
+  handleSubmit = (formValues) => {
+    const {dispatch} = this.props
+    this.setState({isLoadingMode: true})
+    const {venueId, venueIdAtOfferProvider} = formValues
+    const providerId = this.state.selectedValue.id
+
+    const payload = {
+      providerId: providerId,
+      venueIdAtOfferProvider,
+      venueId
+    }
+
+    // TODO
+    // 1. Afficher la bonne image en fonction du provider
+    // 2. Déclencher le POST sur /venueProviders avec le bon payload
+    // 3. Afficher l'icone de DB
+    // 4. Côté API : déclencher la création des n offres associés aux n stocks
+    // 5. Refaire un appel pour récupérer le nombre d'offres créés (afin de les afficher sur le front) -> this.loadProvidersAndVenueProviders()
+
+    dispatch(requestData({
+        apiPath: `/venueProviders`,
+        body: payload,
+        handleFail: this.handleFail,
+        handleSuccess: this.handleSuccess,
+        method: 'POST',
       })
     )
   }
@@ -70,44 +205,49 @@ class VenueProvidersManager extends Component {
     const {
       history,
       match: {
-        params: { offererId, venueId },
+        params: {offererId, venueId},
       },
     } = this.props
     history.push(`/structures/${offererId}/lieux/${venueId}`)
   }
 
-  componentDidMount() {
-    const {
-      match: {
-        params: { venueProviderId },
-      },
-    } = this.props
-    this.handleDataRequest()
-    venueProviderId === 'nouveau' && this.handleMergeForm()
+  handleFail = () => {
+    const {dispatch} = this.props
+
+    dispatch(showNotification({
+      text: 'Une erreur est survenue lors de l\'import.',
+      type: 'fail',
+    }))
+    this.resetFormState()
   }
 
-  componentDidUpdate(prevProps) {
-    if (
-      prevProps.match.params.venueProviderId === 'nouveau' ||
-      this.props.match.params.venueProviderId !== 'nouveau'
-    ) {
-      this.handleMergeForm()
+  handleChange = (event) => {
+    const valueFromSelectInput = event.target.value
+
+    if (valueFromSelectInput && valueFromSelectInput !== DEFAULT_OPTION.id) {
+      this.setState({
+        isProviderSelected: true,
+        selectedValue: {
+          id: valueFromSelectInput
+        },
+      })
+    } else {
+      this.resetFormState()
     }
+  }
+
+  componentDidMount() {
+    this.loadProvidersAndVenueProviders()
   }
 
   render() {
     const {
-      match: {
-        params: { offererId, venueId },
-      },
-      provider,
       providers,
       venue,
       venueProvider,
       venueProviders,
     } = this.props
-    const { identifierDescription, identifierRegexp } = provider || {}
-    const { isNew, withError } = this.state
+    const {isCreationMode, isLoadingMode, isProviderSelected, selectedValue} = this.state
 
     return (
       <div className="venue-providers-manager section">
@@ -118,87 +258,60 @@ class VenueProvidersManager extends Component {
             successivement.
           </span>
         </h2>
+
         <ul
-          className={classnames('main-list', {
-            'is-marginless': !get(venueProviders, 'lenght') && !isNew,
-          })}>
-          {venueProviders.map((vp, index) => (
+          className="main-list">
+          {venueProviders.map((venueProvider) => (
             <VenueProviderItemContainer
+              key={venueProvider.id}
               venue={venue}
-              venueProvider={vp}
-              key={vp.id}
+              venueProvider={venueProvider}
             />
           ))}
-          {isNew && (
+
+          {isCreationMode && (
             <li>
               <Form
-                action="/venueProviders"
-                className="level"
-                handleSuccess={this.handleSuccess}
-                name="venueProvider"
-                patch={venueProvider}>
-                <Field type="hidden" name="venueId" />
-                {withError && (
-                  <p
-                    className={
-                      withError ? 'has-text-weight-bold has-text-danger' : ''
-                    }>
-                    Il faut un identifiant ou celui-ci existe déjà
-                  </p>
-                )}
-                <div className="level-left">
-                  <div className="field picto level-item">
-                    <Icon svg="picto-db-default" />
-                  </div>
-                  <Field
-                    name="providerId"
-                    options={providers}
-                    optionValue="id"
-                    placeholder="Source d\'importation"
-                    required
-                    size="small"
-                    type="select"
-                  />
-                  {provider && identifierRegexp && (
-                    <Field
-                      name="venueIdAtOfferProvider"
-                      placeholder="identifiant"
-                      required
-                      size="small"
-                      title={identifierDescription}
-                    />
-                  )}
-                </div>
-                <div className="field level-item level-right">
-                  <NavLink
-                    className="button is-secondary"
-                    to={`/structures/${offererId}/lieux/${venueId}`}>
-                    Annuler
-                  </NavLink>
-                </div>
-                {provider && (
-                  <div className="field level-item level-right">
-                    <SubmitButton className="button is-secondary">
-                      Importer
-                    </SubmitButton>
-                  </div>
-                )}
-                <div />
-              </Form>
+                onSubmit={this.handleSubmit}
+                initialValues={venueProvider}
+                render={FormRendered({
+                  providers,
+                  isProviderSelected,
+                  isLoadingMode,
+                  isCreationMode,
+                  selectedValue,
+                  handleChange: this.handleChange
+                })}
+              />
             </li>
           )}
         </ul>
         <div className="has-text-centered">
           <button
             className="button is-secondary"
-            disabled={isNew}
-            onClick={this.onAddClick}>
+            disabled={isCreationMode}
+            id="add-offer-btn"
+            onClick={this.addVenueProvider}
+            type="button"
+          >
             + Importer des offres
           </button>
         </div>
       </div>
     )
   }
+}
+
+VenueProvidersManager.propTypes = {
+  dispatch: PropTypes.func,
+  history: PropTypes.shape(),
+  match: PropTypes.shape({
+    params: PropTypes.shape()
+  }),
+  providers: PropTypes.array,
+  venue: PropTypes.shape(),
+  venueProvider: PropTypes.shape(),
+  venueProviders: PropTypes.array
 }
 
 export default VenueProvidersManager

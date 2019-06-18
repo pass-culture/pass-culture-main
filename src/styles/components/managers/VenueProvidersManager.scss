@@ -9,3 +9,66 @@
     }
   }
 }
+
+.provider-table {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+
+  .field-select {
+    font-size: small;
+    height: 24px !important;
+    min-height: 24px !important;
+    min-width: 174px !important;
+    width: 174px !important;
+  }
+
+  .venue-id-at-offer-provider-container {
+    margin-left: 10px;
+
+    .field-text {
+      height: 24px !important;
+      min-height: 24px !important;
+      min-width: 120px !important;
+      width: 174px !important;
+
+      .field-label {
+        font-size: small;
+        padding-bottom: 0;
+      }
+    }
+  }
+
+  .select-provider {
+    border-radius: 17px;
+    border: 2px solid $grey-dark;
+    background-image: url('/icons/dropdown-disclosure-down-s-w.svg');
+  }
+
+  .field-is-read-only {
+    margin-left: 0;
+    font-size: small;
+  }
+
+  .provider-picto {
+    width: 30px;
+  }
+
+  .tooltip-info {
+    display: initial !important;
+    padding-top: 4px;
+  }
+
+  .button-provider-import-container {
+    margin-left: auto;
+
+    .button-provider-import {
+      height: 28px;
+      width: 91px;
+    }
+  }
+
+  .import-label-container {
+    margin-top:0;
+  }
+}

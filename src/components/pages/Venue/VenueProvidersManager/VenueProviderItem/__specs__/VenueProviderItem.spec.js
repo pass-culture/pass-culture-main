@@ -22,6 +22,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
         isActive: true,
         lastSyncDate: '2018-01-01',
         provider: {
+          name: 'fake local class',
           localClass: 'fake local class'
         },
         venueIdAtOfferProvider: 1
@@ -64,7 +65,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
 
       // then
       const venueIdAtOfferProvider = wrapper.find('strong.has-text-weight-bold')
-      expect(venueIdAtOfferProvider.text()).toBe('[1]')
+      expect(venueIdAtOfferProvider.text()).toBe('1')
     })
 
     it('should render the number of offers when data of provider were already synced and offers are provided', () => {
@@ -136,7 +137,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
         expect(dispatch).toHaveBeenCalledWith({
           config: {
             apiPath: '/venueProviders/1',
-            body: {isActive: true},
+            body: {isActive: false},
             method: 'PATCH'
           },
           type: 'REQUEST_DATA_PATCH_/VENUEPROVIDERS/1'

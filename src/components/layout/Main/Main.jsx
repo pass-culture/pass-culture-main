@@ -39,13 +39,13 @@ class Main extends Component {
   }
 
   handleDataRequest = () => {
-    if (this.props.handleDataRequest) {
+    if (this.props.loadProvidersAndVenueProviders) {
       // possibility of the handleDataRequest to return
       // false in order to not trigger the loading
       this.setState({
         loading: true,
       })
-      this.props.handleDataRequest(this.handleDataSuccess, this.handleDataFail)
+      this.props.loadProvidersAndVenueProviders(this.handleDataSuccess, this.handleDataFail)
     }
   }
 

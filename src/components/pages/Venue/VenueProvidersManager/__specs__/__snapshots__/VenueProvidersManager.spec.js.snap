@@ -1,0 +1,538 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | Venue | VenueProvidersManager snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <VenueProvidersManager
+    dispatch={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            Object {
+              "config": Object {
+                "apiPath": "/providers",
+                "method": "GET",
+              },
+              "type": "REQUEST_DATA_GET_/PROVIDERS",
+            },
+          ],
+          Array [
+            Object {
+              "config": Object {
+                "apiPath": "/venueProviders?venueId=AB",
+                "method": "GET",
+              },
+              "type": "REQUEST_DATA_GET_/VENUEPROVIDERS?VENUEID=AB",
+            },
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
+    history={
+      Object {
+        "push": [MockFunction],
+      }
+    }
+    match={
+      Object {
+        "params": Object {
+          "offererId": "CC",
+          "venueId": "AB",
+          "venueProviderId": "AE",
+        },
+      }
+    }
+    provider={Object {}}
+    providers={
+      Array [
+        Object {
+          "id": "DD",
+        },
+        Object {
+          "id": "EE",
+        },
+      ]
+    }
+    venue={
+      Object {
+        "id": "AB",
+      }
+    }
+    venueProvider={
+      Object {
+        "id": "AE",
+      }
+    }
+    venueProviders={
+      Array [
+        Object {
+          "id": "AA",
+        },
+        Object {
+          "id": "BB",
+        },
+      ]
+    }
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <h2
+          className="main-list-title"
+        >
+          IMPORTATIONS D'OFFRES
+          <span
+            className="is-pulled-right is-size-7 has-text-grey"
+          >
+            Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.
+          </span>
+        </h2>,
+        <ul
+          className="main-list"
+        >
+          <Connect(VenueProviderItem)
+            venue={
+              Object {
+                "id": "AB",
+              }
+            }
+            venueProvider={
+              Object {
+                "id": "AA",
+              }
+            }
+          />
+          <Connect(VenueProviderItem)
+            venue={
+              Object {
+                "id": "AB",
+              }
+            }
+            venueProvider={
+              Object {
+                "id": "BB",
+              }
+            }
+          />
+        </ul>,
+        <div
+          className="has-text-centered"
+        >
+          <button
+            className="button is-secondary"
+            disabled={false}
+            id="add-offer-btn"
+            onClick={[Function]}
+            type="button"
+          >
+            + Importer des offres
+          </button>
+        </div>,
+      ],
+      "className": "venue-providers-manager section",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            "IMPORTATIONS D'OFFRES",
+            <span
+              className="is-pulled-right is-size-7 has-text-grey"
+            >
+              Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.
+            </span>,
+          ],
+          "className": "main-list-title",
+        },
+        "ref": null,
+        "rendered": Array [
+          "IMPORTATIONS D'OFFRES",
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.",
+              "className": "is-pulled-right is-size-7 has-text-grey",
+            },
+            "ref": null,
+            "rendered": "Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.",
+            "type": "span",
+          },
+        ],
+        "type": "h2",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            Array [
+              <Connect(VenueProviderItem)
+                venue={
+                  Object {
+                    "id": "AB",
+                  }
+                }
+                venueProvider={
+                  Object {
+                    "id": "AA",
+                  }
+                }
+              />,
+              <Connect(VenueProviderItem)
+                venue={
+                  Object {
+                    "id": "AB",
+                  }
+                }
+                venueProvider={
+                  Object {
+                    "id": "BB",
+                  }
+                }
+              />,
+            ],
+            false,
+          ],
+          "className": "main-list",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": "AA",
+            "nodeType": "class",
+            "props": Object {
+              "venue": Object {
+                "id": "AB",
+              },
+              "venueProvider": Object {
+                "id": "AA",
+              },
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": "BB",
+            "nodeType": "class",
+            "props": Object {
+              "venue": Object {
+                "id": "AB",
+              },
+              "venueProvider": Object {
+                "id": "BB",
+              },
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          false,
+        ],
+        "type": "ul",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <button
+            className="button is-secondary"
+            disabled={false}
+            id="add-offer-btn"
+            onClick={[Function]}
+            type="button"
+          >
+            + Importer des offres
+          </button>,
+          "className": "has-text-centered",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "+ Importer des offres",
+            "className": "button is-secondary",
+            "disabled": false,
+            "id": "add-offer-btn",
+            "onClick": [Function],
+            "type": "button",
+          },
+          "ref": null,
+          "rendered": "+ Importer des offres",
+          "type": "button",
+        },
+        "type": "div",
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <h2
+            className="main-list-title"
+          >
+            IMPORTATIONS D'OFFRES
+            <span
+              className="is-pulled-right is-size-7 has-text-grey"
+            >
+              Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.
+            </span>
+          </h2>,
+          <ul
+            className="main-list"
+          >
+            <Connect(VenueProviderItem)
+              venue={
+                Object {
+                  "id": "AB",
+                }
+              }
+              venueProvider={
+                Object {
+                  "id": "AA",
+                }
+              }
+            />
+            <Connect(VenueProviderItem)
+              venue={
+                Object {
+                  "id": "AB",
+                }
+              }
+              venueProvider={
+                Object {
+                  "id": "BB",
+                }
+              }
+            />
+          </ul>,
+          <div
+            className="has-text-centered"
+          >
+            <button
+              className="button is-secondary"
+              disabled={false}
+              id="add-offer-btn"
+              onClick={[Function]}
+              type="button"
+            >
+              + Importer des offres
+            </button>
+          </div>,
+        ],
+        "className": "venue-providers-manager section",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              "IMPORTATIONS D'OFFRES",
+              <span
+                className="is-pulled-right is-size-7 has-text-grey"
+              >
+                Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.
+              </span>,
+            ],
+            "className": "main-list-title",
+          },
+          "ref": null,
+          "rendered": Array [
+            "IMPORTATIONS D'OFFRES",
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.",
+                "className": "is-pulled-right is-size-7 has-text-grey",
+              },
+              "ref": null,
+              "rendered": "Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.",
+              "type": "span",
+            },
+          ],
+          "type": "h2",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              Array [
+                <Connect(VenueProviderItem)
+                  venue={
+                    Object {
+                      "id": "AB",
+                    }
+                  }
+                  venueProvider={
+                    Object {
+                      "id": "AA",
+                    }
+                  }
+                />,
+                <Connect(VenueProviderItem)
+                  venue={
+                    Object {
+                      "id": "AB",
+                    }
+                  }
+                  venueProvider={
+                    Object {
+                      "id": "BB",
+                    }
+                  }
+                />,
+              ],
+              false,
+            ],
+            "className": "main-list",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": "AA",
+              "nodeType": "class",
+              "props": Object {
+                "venue": Object {
+                  "id": "AB",
+                },
+                "venueProvider": Object {
+                  "id": "AA",
+                },
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": "BB",
+              "nodeType": "class",
+              "props": Object {
+                "venue": Object {
+                  "id": "AB",
+                },
+                "venueProvider": Object {
+                  "id": "BB",
+                },
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            false,
+          ],
+          "type": "ul",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <button
+              className="button is-secondary"
+              disabled={false}
+              id="add-offer-btn"
+              onClick={[Function]}
+              type="button"
+            >
+              + Importer des offres
+            </button>,
+            "className": "has-text-centered",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "+ Importer des offres",
+              "className": "button is-secondary",
+              "disabled": false,
+              "id": "add-offer-btn",
+              "onClick": [Function],
+              "type": "button",
+            },
+            "ref": null,
+            "rendered": "+ Importer des offres",
+            "type": "button",
+          },
+          "type": "div",
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+  Symbol(enzyme.__childContext__): null,
+}
+`;

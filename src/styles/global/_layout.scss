@@ -53,7 +53,7 @@ ul.main-list {
       margin-bottom: 0;
     }
 
-    @include dotted($red, bottom) > * {
+    @include dotted($red, bottom); > * {
       padding: 0 0.5rem;
       align-items: center;
       display: flex;

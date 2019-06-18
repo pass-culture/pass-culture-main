@@ -4,7 +4,6 @@ import { compose } from 'redux'
 
 import VenueProvidersManager from './VenueProvidersManager'
 import get from 'lodash.get'
-import { selectCurrentUser } from 'with-login'
 import selectVenueProviderByVenueIdAndVenueProviderId from './selectors/selectVenueProviderByVenueIdAndVenueProviderId'
 import selectVenueProvidersByVenueId from './selectors/selectVenueProvidersByVenueId'
 import { selectProviders } from '../../../../selectors/selectProviders'
@@ -14,7 +13,6 @@ export const mapStateToProps = (state, ownProps) => {
   const { venue } = ownProps
   const { id: venueId } = venue || {}
   const providers = selectProviders(state)
-
   const formPatch = get(state, 'form.venueProvider')
 
   let provider
@@ -26,7 +24,6 @@ export const mapStateToProps = (state, ownProps) => {
   }
 
   return {
-    currentUser: selectCurrentUser(state),
     provider,
     providers,
     venueProvider: selectVenueProviderByVenueIdAndVenueProviderId(
