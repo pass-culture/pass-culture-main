@@ -102,12 +102,13 @@ describe('src | components | pages | Offerers | Offerers', () => {
         expect(heroSection.title).toEqual('Vos structures juridiques')
       })
     })
-    describe('display a notification ', () => {
-      it('should display a notification when no mediation', () => {
+    describe('display a notification', () => {
+      it("should display a notification when current user's has one virtual offer so no physical venues yet", () => {
         // given
         const props = {
           currentUser: {
-            hasOffers: false,
+            hasOffers: true,
+            hasPhysicalVenues: true,
             isAdmin: true,
           },
           dispatch: dispatchMock,

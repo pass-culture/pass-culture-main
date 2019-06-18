@@ -92,12 +92,10 @@ class Offerers extends Component {
       )
     })
 
-    // const firstOffererIdOnList = offerers.length > 0 ? offerers[0].id : ''
-
     const url = createVenueForOffererUrl(offerers)
+    const currentUserHasOffersOrOffersWithoutPhysicalVenues = !currentUser.hasOffers || !currentUser.hasPhysicalVenues
 
-
-    if (!currentUser.hasOffers) {
+    if (currentUserHasOffersOrOffersWithoutPhysicalVenues) {
        this.dispatchNotification(url)
     }
 
@@ -154,7 +152,6 @@ class Offerers extends Component {
     }
 
     const url = createVenueForOffererUrl(offerers)
-
 
     return (
       <Main name="offerers">
