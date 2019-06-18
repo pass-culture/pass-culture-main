@@ -34,7 +34,6 @@ export function configureFetchCurrentUserWithLoginFail() {
 }
 
 export function configureFetchCurrentUserWithLoginSuccess() {
-  console.log('inside confiure %*************');
   fetch.mockResponse(JSON.stringify({ email: 'michel.marx@youpi.fr', hasOffers: false }), {
     status: 200,
   })

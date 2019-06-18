@@ -90,7 +90,7 @@ describe('src | components | layout | Notification', () => {
 
         // then
         expect(icon.prop('svg')).toBe('picto-echec')
-        expect(spans.at(2).prop('data-tip')).toEqual(props.notification.tooltip.tip)
+        expect(spans.at(1).prop('data-tip')).toEqual(props.notification.tooltip.tip)
       })
     })
   })
