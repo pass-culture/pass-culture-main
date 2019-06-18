@@ -3,7 +3,6 @@ import { compose } from 'redux'
 
 import Search from './Search'
 import { withRequiredLogin } from '../../hocs'
-import withFrenchQueryRouter from '../../hocs/withFrenchQueryRouter'
 import { selectRecommendations } from '../../../selectors'
 import selectTypeSublabels, {
   selectTypes,
@@ -32,6 +31,5 @@ const mapStateToProps = state => {
 
 export default compose(
   withRequiredLogin,
-  withFrenchQueryRouter,
   connect(mapStateToProps)
 )(Search)

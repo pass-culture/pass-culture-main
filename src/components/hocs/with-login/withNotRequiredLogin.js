@@ -1,5 +1,5 @@
-import withLogin from 'with-react-redux-login'
 import { compose } from 'redux'
+import withLogin from 'with-react-redux-login'
 
 import { getRedirectToCurrentLocationOrDiscovery } from './helpers'
 import withFrenchQueryRouter from '../withFrenchQueryRouter'

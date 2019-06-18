@@ -34,7 +34,7 @@ test('Je suis redirigé·e vers le typeform', async t => {
     .click(submitButton)
     .wait(10000)
     .expect(getPageUrl())
-    .eql(`${ROOT_PATH}typeform?from=password`)
+    .eql(`${ROOT_PATH}typeform`)
 })
 
 fixture("01_02 Activation | erreurs avec l'activation")
