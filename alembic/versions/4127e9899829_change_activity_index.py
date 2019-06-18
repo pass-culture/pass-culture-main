@@ -1,7 +1,7 @@
-"""change activity index from changed_data ->> id to old_data ->> id
+"""add activity index on old_data ->> id
 
 Revision ID: 4127e9899829
-Revises: 0df577e35e9f
+Revises: 83132c357143
 Create Date: 2019-06-18 08:41:38.228124
 
 """
@@ -9,7 +9,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '4127e9899829'
-down_revision = '0df577e35e9f'
+down_revision = '83132c357143'
 branch_labels = None
 depends_on = None
 

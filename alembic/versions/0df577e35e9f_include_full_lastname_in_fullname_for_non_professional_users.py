@@ -1,7 +1,7 @@
 """include_full_lastname_in_fullname_for_non_professional_users
 
 Revision ID: 0df577e35e9f
-Revises: 83132c357143
+Revises: 4127e9899829
 Create Date: 2019-06-13 14:38:46.600200
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '0df577e35e9f'
-down_revision = '83132c357143'
+down_revision = '4127e9899829'
 branch_labels = None
 depends_on = None
 
