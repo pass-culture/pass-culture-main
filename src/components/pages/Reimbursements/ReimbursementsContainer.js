@@ -1,6 +1,6 @@
 import { compose } from 'redux'
 
 import Reimbursements from './Reimbursements'
-import withRedirectToSigninWhenNotAuthenticated from '../../hocs/with-login/withRedirectToSigninWhenNotAuthenticated'
+import { withRequiredLogin } from 'components/hocs'
 
-export default compose(withRedirectToSigninWhenNotAuthenticated)(Reimbursements)
+export default compose(withRequiredLogin)(Reimbursements)

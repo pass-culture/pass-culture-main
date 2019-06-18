@@ -3,7 +3,7 @@ import withLogin from 'with-react-redux-login'
 
 import withFrenchQueryRouter from '../withFrenchQueryRouter'
 
-export const withRedirectToOffersWhenAlreadyAuthenticated = compose(
+const withNotRequiredLogin = compose(
   withFrenchQueryRouter,
   withLogin({
     handleSuccess: (state, action, ownProps) => {
@@ -19,4 +19,4 @@ export const withRedirectToOffersWhenAlreadyAuthenticated = compose(
   })
 )
 
-export default withRedirectToOffersWhenAlreadyAuthenticated
+export default withNotRequiredLogin

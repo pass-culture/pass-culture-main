@@ -1,9 +1,8 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
+import { withRequiredLogin } from 'components/hocs'
 import Bookings from './Bookings'
-import withFrenchQueryRouter from '../../hocs/withFrenchQueryRouter'
-import withRedirectToSigninWhenNotAuthenticated from '../../hocs/with-login/withRedirectToSigninWhenNotAuthenticated'
 import { API_URL } from '../../../utils/config'
 
 const buildPathToReservationFile = (isFilterByDigitalVenues, selectedVenue) => {
@@ -40,7 +39,6 @@ export const mapStateToProps = state => {
 }
 
 export default compose(
-  withRedirectToSigninWhenNotAuthenticated,
-  withFrenchQueryRouter,
+  withRequiredLogin,
   connect(mapStateToProps)
 )(Bookings)

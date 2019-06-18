@@ -1,8 +1,8 @@
 import React from 'react'
 
-import withRedirectToSigninWhenNotAuthenticated from '../../hocs/with-login/withRedirectToSigninWhenNotAuthenticated'
-import Card from './Card'
-import Main from '../../layout/Main'
+import { withRequiredLogin } from 'components/hocs'
+import Icon from 'components/layout/Icon'
+import Main from 'components/layout/Main'
 
 const Home = () => (
   <Main
@@ -26,4 +26,4 @@ const Home = () => (
   </Main>
 )
 
-export default withRedirectToSigninWhenNotAuthenticated(Home)
+export default withRequiredLogin(Home)

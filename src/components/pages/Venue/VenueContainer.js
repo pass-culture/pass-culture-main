@@ -5,9 +5,10 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
-
 import Venue from './Venue'
-import selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity from './selectors/selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity'
+import selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity
+  from './selectors/selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity'
+import { withRequiredLogin, } from 'components/hocs'
 import { VENUE_CREATION_PATCH_KEYS, VENUE_MODIFICATION_PATCH_KEYS } from './utils/utils'
 import withFrenchQueryRouter, { CREATION } from '../../hocs/withFrenchQueryRouter'
 import withRedirectToSigninWhenNotAuthenticated from '../../hocs/with-login/withRedirectToSigninWhenNotAuthenticated'
@@ -158,7 +159,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 }
 
 export default compose(
-  withRedirectToSigninWhenNotAuthenticated,
+  withRequiredLogin,
   withFrenchQueryRouter,
   connect(
     mapStateToProps,

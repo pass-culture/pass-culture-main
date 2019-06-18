@@ -5,22 +5,20 @@ import { Provider } from 'react-redux'
 import { Route, Router, Switch } from 'react-router-dom'
 
 import {
-  configureFetchCurrentUserWithLoginSuccess,
   configureTestStore,
+  configureFetchCurrentUserWithLoginFail,
 } from './configure'
 import { OnMountCaller } from './OnMountCaller'
-import { withRedirectToOffersWhenAlreadyAuthenticated } from '../withRedirectToOffersWhenAlreadyAuthenticated'
+import withRequiredLogin from '../withRequiredLogin'
 
 const Test = () => null
-const RedirectToOffersWhenAlreadyAuthenticatedTest = withRedirectToOffersWhenAlreadyAuthenticated(
-  Test
-)
+const RequiredLoginTest = withRequiredLogin(Test)
 
-describe('src | components | pages | hocs | with-login | withRedirectToOffersWhenAlreadyAuthenticated', () => {
+describe('src | components | pages | hocs | with-login | withRequiredLogin', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // when
-      const wrapper = shallow(<RedirectToOffersWhenAlreadyAuthenticatedTest />)
+      const wrapper = shallow(<RequiredLoginTest />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -33,12 +31,12 @@ describe('src | components | pages | hocs | with-login | withRedirectToOffersWhe
   })
 
   describe('functions', () => {
-    it('should redirect to offers when already authenticated', done => {
+    it('should redirect to signin when not authenticated', done => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
       const store = configureTestStore()
-      configureFetchCurrentUserWithLoginSuccess()
+      configureFetchCurrentUserWithLoginFail()
 
       // when
       mount(
@@ -46,9 +44,9 @@ describe('src | components | pages | hocs | with-login | withRedirectToOffersWhe
           <Router history={history}>
             <Switch>
               <Route path="/test">
-                <RedirectToOffersWhenAlreadyAuthenticatedTest />
+                <RequiredLoginTest />
               </Route>
-              <Route path="/offres">
+              <Route path="/connexion">
                 <OnMountCaller onMountCallback={done} />
               </Route>
             </Switch>

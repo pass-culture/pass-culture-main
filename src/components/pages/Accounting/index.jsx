@@ -5,9 +5,9 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
 import RawAccounting from './RawAccounting'
-import withRedirectToSigninWhenNotAuthenticated from '../../hocs/with-login/withRedirectToSigninWhenNotAuthenticated'
-import selectOffererById from '../../../selectors/selectOffererById'
-import { mapApiToWindow, windowToApiQuery } from '../../../utils/pagination'
+import { withRequiredLogin } from 'components/hocs'
+import selectOffererById from 'selectors/selectOffererById'
+import { mapApiToWindow, windowToApiQuery } from 'utils/pagination'
 
 const mapStateToProps = (state, ownProps) => {
   const offererId = get(ownProps, `pagination.windowQuery.${mapApiToWindow.offererId}`)
@@ -20,7 +20,7 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 export default compose(
-  withRedirectToSigninWhenNotAuthenticated,
+  withRequiredLogin,
   withRouter,
   withPagination({
     dataKey: 'bookings',
