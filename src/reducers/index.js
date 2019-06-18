@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import { modals } from 'redux-react-modals'
 
-import data from './data'
+import { data, lastRecommendationsRequestTimestamp } from './data'
 import geolocation from './geolocation'
 import { menu } from './menu'
 import { share } from './share'
@@ -14,6 +14,7 @@ const rootReducer = combineReducers({
   card,
   data,
   geolocation,
+  lastRecommendationsRequestTimestamp,
   menu,
   modals,
   overlay,

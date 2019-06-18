@@ -51,9 +51,9 @@ describe('src | components | pages | search | SearchDetails', () => {
           handleSuccess: expect.any(Function),
           method: 'GET',
           normalizer: recommendationNormalizer,
-          stateKeys: 'searchRecommendations',
+          stateKey: 'searchRecommendations',
         },
-        type: `REQUEST_DATA_GET_/RECOMMENDATIONS/OFFERS/${props.recommendation.id}`,
+        type: 'REQUEST_DATA_GET_SEARCHRECOMMENDATIONS',
       })
     })
   })

@@ -1,4 +1,4 @@
-import data from '../data'
+import { data } from '../data'
 
 describe('src | reducers | data  ', () => {
   it('should return the initial state by default', () => {

@@ -5,7 +5,7 @@ import { WEBAPP_CONTACT_EXTERNAL_PAGE } from './config'
 import ActivationRoutesContainer from '../components/pages/activation/ActivationRoutesContainer'
 import BetaPage from '../components/pages/BetaPage'
 import MyBookingsContainer from '../components/pages/my-bookings/MyBookingsContainer'
-import DiscoveryPage from '../components/pages/discovery'
+import DiscoveryContainer from '../components/pages/discovery/DiscoveryContainer'
 import FavoritesPage from '../components/pages/FavoritesPage'
 import ForgotPasswordPage from '../components/pages/ForgotPasswordPage'
 import ProfilePage from '../components/pages/profile'
@@ -59,7 +59,7 @@ const routes = [
    *
    ---------------------------------------------------  */
   {
-    component: DiscoveryPage,
+    component: DiscoveryContainer,
     disabled: false,
     icon: 'offres-w',
     // exemple d'URL optimale qui peut être partagée
