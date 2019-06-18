@@ -2,7 +2,7 @@ import { filterRoutes, getMainMenuItems } from '../routes-utils'
 
 import routes from '../routes'
 
-import DiscoveryPage from '../../components/pages/discovery'
+import DiscoveryContainer from '../../components/pages/discovery/DiscoveryContainer'
 import FavoritesPage from '../../components/pages/FavoritesPage'
 import MyBookingsPage from '../../components/pages/my-bookings'
 import ProfilePage from '../../components/pages/profile'
@@ -71,7 +71,7 @@ describe('getMainMenuItems', () => {
       null, // Activation
       null, // Typeform
       {
-        component: DiscoveryPage,
+        component: DiscoveryContainer,
         disabled: false,
         icon: 'offres-w',
         path: '/decouverte',
