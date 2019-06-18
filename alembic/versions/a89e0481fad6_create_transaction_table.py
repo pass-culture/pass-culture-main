@@ -1,7 +1,7 @@
 """create transaction table
 
 Revision ID: a89e0481fad6
-Revises: 67307cd6ee1b
+Revises: a6bdec6dde59
 Create Date: 2019-06-12 13:15:26.579574
 
 """
