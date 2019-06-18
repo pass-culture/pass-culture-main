@@ -35,7 +35,7 @@ def test_offerer_not_isVirtual_and_has_siret_can_have_null_address(app):
         PcObject.save(venue)
     except ApiErrors:
         # Then
-        assert pytest.fail("Should not fail with null address and not virtual and postal code, city, departement code are given")
+        assert pytest.fail("Should not fail with siret, not virtual, null address and postal code, city, departement code are given")
 
 
 @clean_database
@@ -78,7 +78,7 @@ def test_offerer_not_isVirtual_and_has_no_siret_and_has_address_and_postal_code_
 
     except ApiErrors:
         # Then
-        assert pytest.fail("Should not fail with no siret and not virtual but address, postal code, city and departement code are given")
+        assert pytest.fail("Should not fail with no siret, not virtual but address, postal code, city and departement code are given")
 
 
 @clean_database
