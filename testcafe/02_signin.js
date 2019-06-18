@@ -44,7 +44,7 @@ test("Lorsque l'un des deux champs est manquant, le bouton connexion est désact
   await t.expect(signInButton.hasAttribute('disabled')).ok()
 })
 
-test("J'ai un compte valide, en cliquant sur 'se connecter' je suis redirigé·e vers la page /offres sans erreurs", async t => {
+test("J'ai un compte valide, en cliquant sur 'se connecter' je suis redirigé·e vers la page /structures sans erreurs", async t => {
   // given
   const { user } = dataFromSandboxSigninA
   const { email, password } = user
@@ -57,11 +57,11 @@ test("J'ai un compte valide, en cliquant sur 'se connecter' je suis redirigé·e
 
   // then
   const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/offres')
-  await t.expect(pageTitle.innerText).eql('Vos offres')
+  await t.expect(location.pathname).eql('/structures')
+  await t.expect(pageTitle.innerText).eql('Votre structure juridique')
 })
 
-test("J'ai un compte valide, en appuyant sur la touche 'Entrée' je suis redirigé·e vers la page /offres sans erreurs", async t => {
+test("J'ai un compte valide, en appuyant sur la touche 'Entrée' je suis redirigé·e vers la page /structures sans erreurs", async t => {
   // given
   const { user } = dataFromSandboxSigninA
   const { email, password } = user
@@ -71,6 +71,26 @@ test("J'ai un compte valide, en appuyant sur la touche 'Entrée' je suis redirig
     .typeText(inputUsersIdentifier, email)
     .typeText(inputUsersPassword, password)
     .pressKey('Enter')
+
+  // then
+  const location = await t.eval(() => window.location)
+  await t.expect(location.pathname).eql('/structures')
+  await t.expect(pageTitle.innerText).eql('Votre structure juridique')
+})
+
+test("J'ai un compte valide, j'ai déjà des offres, en cliquant sur 'se connecter' je suis redirigé·e vers la page /offres sans erreurs", async t => {
+  // given
+  const { user } = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
+  )
+  const { email, password } = user
+
+  // when
+  await t
+    .typeText(inputUsersIdentifier, email)
+    .typeText(inputUsersPassword, password)
+    .click(signInButton)
 
   // then
   const location = await t.eval(() => window.location)

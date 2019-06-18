@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe'
 
 import { fetchSandbox } from './helpers/sandboxes'
-import { navigateToOfferAs } from './helpers/navigations'
+import { navigateToOfferAs, navigateToOffersAs } from './helpers/navigations'
 import { createUserRole } from './helpers/roles'
 
 let dataFromSandbox
@@ -19,6 +19,7 @@ fixture('Offers A | Lister les offres').beforeEach(async t => {
 test("Lorsque je clique sur `Mes offres`, j'accède à la liste des offres", async t => {
   // given
   await t.useRole(userRole)
+  await navigateToOffersAs(dataFromSandbox.user)(t)
   const offerItem = Selector('li.offer-item')
 
   // then
@@ -41,6 +42,7 @@ test('Je peux désactiver ou activer une offre', async t => {
     .parent('li.offer-item')
     .find('button.activ-switch')
   await t.useRole(userRole)
+  await navigateToOffersAs(dataFromSandbox.user)(t)
   await t.typeText(searchInput, offer.keywordsString).click(submitButton)
 
   // when
@@ -59,6 +61,7 @@ test('Je peux désactiver ou activer une offre', async t => {
 test('Je peux chercher une offre et aller sur sa page', async t => {
   // when
   const { offer, user } = dataFromSandbox
+
   await navigateToOfferAs(user, offer, userRole)(t)
 
   // then

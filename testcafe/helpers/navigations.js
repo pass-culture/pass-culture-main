@@ -38,6 +38,22 @@ export const navigateToBookingsAs = user => async t => {
   await t.click(navbarAnchor).click(bookingsNavbarAnchor)
 }
 
+export const navigateToOffersAs = user => async t => {
+  const navbarAnchor = Selector(
+    'a.navbar-link, span.navbar-burger'
+  ).filterVisible()
+  const offersNavbarAnchor = Selector("a.navbar-item[href='/offres']")
+
+  await t.useRole(createUserRole(user))
+  await t.click(navbarAnchor).click(offersNavbarAnchor)
+
+
+  // await t.useRole(createUserRole(user))
+  // await t.navigateTo('/offres')
+}
+
+
+
 export const navigateToNewOffererAs = (user, userRole) => async t => {
   const newOffererAnchor = Selector(
     "a.button.is-primary[href='/structures/creation']"
@@ -168,6 +184,8 @@ export const navigateToOfferAs = (user, offer, userRole) => async t => {
   } else {
     await t.useRole(userRole)
   }
+
+  await t.navigateTo('/offres')
 
   await t
     .typeText(searchInput, offer.keywordsString)
