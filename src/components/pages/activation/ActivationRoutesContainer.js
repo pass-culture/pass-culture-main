@@ -1,4 +1,4 @@
-import { withRedirectToDiscoveryOrTypeformAfterLogin } from '../../hocs'
+import { withNotRequiredLogin } from '../../hocs'
 import ActivationRoutes from './ActivationRoutes'
 
-export default withRedirectToDiscoveryOrTypeformAfterLogin(ActivationRoutes)
+export default withNotRequiredLogin(ActivationRoutes)

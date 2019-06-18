@@ -14851,10 +14851,10 @@ with-query-router@3.1.0:
     redux "^4.0.0"
     reselect "^3.0.1"
 
-with-react-login@1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/with-react-login/-/with-react-login-1.3.0.tgz#af0a0dcc50b9b80097b009ae120e1b900c4ed3ea"
-  integrity sha512-61fic5lpH/B1snfCb7Jnd1a5j/IMHjVxq9TZgR7VDBqBQJwBrFDusgVVmzRXZz5IwrzDpmeuwhjdjWo/wXhZWQ==
+with-react-login@1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/with-react-login/-/with-react-login-1.3.1.tgz#48065b032308d53f8b60f196ca171b7d338495ac"
+  integrity sha512-+BCdqgCAAf0vALvKn2AD7aYA9FpJMzXhOa7xD8EkE7TRX3wWMFSQHRdutyCUSVYx8SVnSHecH7W2rauwvnL/KQ==
   dependencies:
     classnames "2.2.5"
     eslint "^5.8.0"
@@ -14865,14 +14865,14 @@ with-react-login@1.3.0:
     reselect "^3.0.1"
     uuid "^3.3.2"
 
-with-react-redux-login@1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/with-react-redux-login/-/with-react-redux-login-1.4.0.tgz#da41fee9f4e6318679971a10aa1aa7f96a19fcc5"
-  integrity sha512-d2cMY5kvvTZ4paKZNrH9LgUTQDf6lItKs5HBX7hNoJ22sJ+Z7VSiKYGU2sVxzdUup/KCT1q+C0ffvAeLmsFYaA==
+with-react-redux-login@1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/with-react-redux-login/-/with-react-redux-login-1.4.1.tgz#6502764eb4565945756c5ec0eae5d432a0cf5f61"
+  integrity sha512-PtlWkjCrjkevgpSbtk+bZuZzrLVRbjS9fKxoXeUmOVk+Cs9Ei9T2SpTaKCs9MUnwkVLT9iGDSNVqKmXLnptTEA==
   dependencies:
     eslint "^5.8.0"
     react-redux "^5.0.3"
-    with-react-login "1.3.0"
+    with-react-login "1.3.1"
 
 wordwrap@0.0.2:
   version "0.0.2"

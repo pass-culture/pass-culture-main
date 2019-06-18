@@ -3,7 +3,7 @@
 import React from 'react'
 import { Scrollbars } from 'react-custom-scrollbars'
 
-import { withRedirectToSigninOrTypeformAfterLogin } from '../hocs'
+import { withRequiredLogin } from '../hocs'
 import PageHeader from '../layout/PageHeader'
 import NavigationFooter from '../layout/NavigationFooter'
 import { ROOT_PATH } from '../../utils/config'
@@ -23,4 +23,4 @@ const FavoritesPage = () => {
   )
 }
 
-export default withRedirectToSigninOrTypeformAfterLogin(FavoritesPage)
+export default withRequiredLogin(FavoritesPage)

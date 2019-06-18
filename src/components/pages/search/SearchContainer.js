@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import Search from './Search'
-import { withRedirectToSigninOrTypeformAfterLogin } from '../../hocs'
+import { withRequiredLogin } from '../../hocs'
 import withFrenchQueryRouter from '../../hocs/withFrenchQueryRouter'
 import { selectRecommendations } from '../../../selectors'
 import selectTypeSublabels, {
@@ -31,7 +31,7 @@ const mapStateToProps = state => {
 }
 
 export default compose(
-  withRedirectToSigninOrTypeformAfterLogin,
+  withRequiredLogin,
   withFrenchQueryRouter,
   connect(mapStateToProps)
 )(Search)

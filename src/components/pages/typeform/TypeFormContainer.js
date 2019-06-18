@@ -4,10 +4,7 @@ import { requestData } from 'redux-saga-data'
 import { selectCurrentUser } from 'with-react-redux-login'
 
 import TypeForm from './TypeForm'
-import {
-  selectCurrentUser,
-  withRedirectToSigninOrTypeformAfterLogin,
-} from '../../hocs'
+import { withRequiredLogin } from '../../hocs'
 
 export const mapStateToProps = state => {
   const currentUser = selectCurrentUser(state)
@@ -31,7 +28,7 @@ export const mapDispatchToProps = dispatch => ({
 })
 
 export default compose(
-  withRedirectToSigninOrTypeformAfterLogin,
+  withRequiredLogin,
   connect(
     mapStateToProps,
     mapDispatchToProps

@@ -6,18 +6,16 @@ import { Route, Router, Switch } from 'react-router-dom'
 
 import { configureTestStore } from './configure'
 import { OnMountCaller } from './OnMountCaller'
-import withRedirectToDiscoveryOrTypeformAfterLogin from '../withRedirectToDiscoveryOrTypeformAfterLogin'
+import withNotRequiredLogin from '../withNotRequiredLogin'
 
 const Test = () => null
-const RedirectToDiscoveryOrTypeformAfterLoginTest = withRedirectToDiscoveryOrTypeformAfterLogin(
-  Test
-)
+const NotRequiredLoginTest = withNotRequiredLogin(Test)
 
-describe('src | components | pages | hocs | with-login | withRedirectToDiscoveryOrTypeformAfterLogin', () => {
+describe('src | components | pages | hocs | with-login | withNotRequiredLogin', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // when
-      const wrapper = shallow(<RedirectToDiscoveryOrTypeformAfterLoginTest />)
+      const wrapper = shallow(<NotRequiredLoginTest />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -51,7 +49,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToDiscovery
           <Router history={history}>
             <Switch>
               <Route path="/test">
-                <RedirectToDiscoveryOrTypeformAfterLoginTest />
+                <NotRequiredLoginTest />
               </Route>
               <Route path="/decouverte">
                 <OnMountCaller onMountCallback={done} />
@@ -82,7 +80,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToDiscovery
           <Router history={history}>
             <Switch>
               <Route path="/test">
-                <RedirectToDiscoveryOrTypeformAfterLoginTest />
+                <NotRequiredLoginTest />
               </Route>
             </Switch>
           </Router>

@@ -1,5 +1,5 @@
-import { withRedirectToDiscoveryOrTypeformAfterLogin } from '../../hocs'
+import { withNotRequiredLogin } from '../../hocs'
 
 import Signup from './Signup'
 
-export default withRedirectToDiscoveryOrTypeformAfterLogin(Signup)
+export default withNotRequiredLogin(Signup)

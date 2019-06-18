@@ -1,6 +1,2 @@
-export {
-  default as withRedirectToDiscoveryOrTypeformAfterLogin,
-} from './withRedirectToDiscoveryOrTypeformAfterLogin'
-export {
-  default as withRedirectToSigninOrTypeformAfterLogin,
-} from './withRedirectToSigninOrTypeformAfterLogin'
+export { default as withNotRequiredLogin } from './withNotRequiredLogin'
+export { default as withRequiredLogin } from './withRequiredLogin'

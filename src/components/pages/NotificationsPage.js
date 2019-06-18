@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { selectCurrentUser } from 'with-react-redux-login'
 
-import { withRedirectToSigninOrTypeformAfterLogin } from '../hocs'
+import { withRequiredLogin } from '../hocs'
 import LoaderContainer from '../layout/Loader/LoaderContainer'
 import PageHeader from '../layout/PageHeader'
 import NavigationFooter from '../layout/NavigationFooter'
@@ -39,6 +39,6 @@ const mapStateToProps = state => ({
 })
 
 export default compose(
-  withRedirectToSigninOrTypeformAfterLogin,
+  withRequiredLogin,
   connect(mapStateToProps)
 )(NotificationsPage)

@@ -1,21 +1,22 @@
 import withLogin from 'with-react-redux-login'
-import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
+
+import withFrenchQueryRouter from '../withFrenchQueryRouter'
 
 import {
   getRedirectToSignin,
   getRedirectToCurrentLocationOrTypeform,
 } from './helpers'
 
-const withRedirectToSigninOrTypeformAfterLogin = compose(
-  withRouter,
+const withRequiredLogin = compose(
+  withFrenchQueryRouter,
   withLogin({
     handleFail: (state, action, { history, location }) =>
       history.push(getRedirectToSignin(location)),
-    handleSuccess: (state, action, { currentUser, history, location }) =>
+    handleSuccess: (state, { payload: { datum } }, { history, location }) =>
       history.push(
         getRedirectToCurrentLocationOrTypeform({
-          currentUser,
+          currentUser: datum,
           ...location,
         })
       ),
@@ -23,4 +24,4 @@ const withRedirectToSigninOrTypeformAfterLogin = compose(
   })
 )
 
-export default withRedirectToSigninOrTypeformAfterLogin
+export default withRequiredLogin

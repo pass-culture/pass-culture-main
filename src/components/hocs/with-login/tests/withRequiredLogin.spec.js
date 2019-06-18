@@ -6,18 +6,16 @@ import { Route, Router, Switch } from 'react-router-dom'
 
 import { configureTestStore } from './configure'
 import { OnMountCaller } from './OnMountCaller'
-import withRedirectToSigninOrTypeformAfterLogin from '../withRedirectToSigninOrTypeformAfterLogin'
+import withRequiredLogin from '../withRequiredLogin'
 
 const Test = () => null
-const RedirectToSigninOrTypeformAfterLoginTest = withRedirectToSigninOrTypeformAfterLogin(
-  Test
-)
+const RequiredLoginTest = withRequiredLogin(Test)
 
-describe('src | components | pages | hocs | with-login | withRedirectToSigninOrTypeformAfterLogin', () => {
+describe('src | components | pages | hocs | with-login | withRequiredLogin', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // when
-      const wrapper = shallow(<RedirectToSigninOrTypeformAfterLoginTest />)
+      const wrapper = shallow(<RequiredLoginTest />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -46,7 +44,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToSigninOrT
           <Router history={history}>
             <Switch>
               <Route path="/test">
-                <RedirectToSigninOrTypeformAfterLoginTest />
+                <RequiredLoginTest />
               </Route>
               <Route path="/connexion">
                 <OnMountCaller onMountCallback={done} />
@@ -77,7 +75,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToSigninOrT
           <Router history={history}>
             <Switch>
               <Route path="/test">
-                <RedirectToSigninOrTypeformAfterLoginTest />
+                <RequiredLoginTest />
               </Route>
               <Route path="/typeform">
                 <OnMountCaller onMountCallback={done} />
@@ -109,7 +107,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToSigninOrT
           <Router history={history}>
             <Switch>
               <Route path="/test">
-                <RedirectToSigninOrTypeformAfterLoginTest />
+                <RequiredLoginTest />
               </Route>
             </Switch>
           </Router>

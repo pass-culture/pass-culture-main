@@ -10,7 +10,7 @@ import { config } from './config'
 import ProfileMainView from './ProfileMainView'
 import ProfileUpdateSuccess from './ProfileUpdateSuccess'
 import NotMatch from '../NotMatch'
-import { withRedirectToSigninOrTypeformAfterLogin } from '../../hocs'
+import { withRequiredLogin } from '../../hocs'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 
 const parseRoutesWithComponent = () => {
@@ -85,6 +85,6 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 export default compose(
-  withRedirectToSigninOrTypeformAfterLogin,
+  withRequiredLogin,
   connect(mapStateToProps)
 )(ProfilePage)

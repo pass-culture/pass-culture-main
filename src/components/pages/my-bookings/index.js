@@ -1,6 +1,6 @@
 /* eslint
   react/jsx-one-expression-per-line: 0 */
-  import get from 'lodash.get'
+import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
@@ -10,7 +10,7 @@ import { requestData } from 'redux-saga-data'
 import MyBookingItemContainer from './MyBookingItemContainer'
 import NoBookingView from './NoBookingView'
 import { mapStateToProps } from './connect'
-import { withRedirectToSigninOrTypeformAfterLogin } from '../../hocs'
+import { withRequiredLogin } from '../../hocs'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import PageHeader from '../../layout/PageHeader'
 import { toggleMainMenu } from '../../../reducers/menu'
@@ -118,6 +118,6 @@ RawMyBookingsPage.propTypes = {
 }
 
 export default compose(
-  withRedirectToSigninOrTypeformAfterLogin,
+  withRequiredLogin,
   connect(mapStateToProps)
 )(RawMyBookingsPage)

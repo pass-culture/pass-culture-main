@@ -3,7 +3,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { withRedirectToDiscoveryOrTypeformAfterLogin } from '../hocs'
+import { withNotRequiredLogin } from '../hocs'
 
 export const RawBetaPage = () => (
   <div id="beta-page" className="page pc-gradient flex-rows">
@@ -39,4 +39,4 @@ export const RawBetaPage = () => (
   </div>
 )
 
-export default withRedirectToDiscoveryOrTypeformAfterLogin(RawBetaPage)
+export default withNotRequiredLogin(RawBetaPage)

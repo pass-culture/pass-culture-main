@@ -3,10 +3,10 @@ import React from 'react'
 import configureStore from 'redux-mock-store'
 
 import ActivationRoutesContainer from '../ActivationRoutesContainer'
-import { withRedirectToDiscoveryOrTypeformAfterLogin } from '../../../hocs'
+import { withNotRequiredLogin } from '../../../hocs'
 
 jest.mock('../../../hocs/with-login', () => ({
-  withRedirectToDiscoveryOrTypeformAfterLogin: jest.fn(() => ''),
+  withNotRequiredLogin: jest.fn(() => ''),
 }))
 describe('src | components | pages | activation | ActivationRoutesContainer', () => {
   it('should redirect to discovery page when user is already logged in', () => {
@@ -20,6 +20,6 @@ describe('src | components | pages | activation | ActivationRoutesContainer', ()
     shallow(<ActivationRoutesContainer />, { context: { store } })
 
     // then
-    expect(withRedirectToDiscoveryOrTypeformAfterLogin).toHaveBeenCalled()
+    expect(withNotRequiredLogin).toHaveBeenCalled()
   })
 })
