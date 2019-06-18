@@ -68,3 +68,13 @@
     }
   }
 }
+
+#deck-navigation .clue {
+  .finishable .finish-ribon {
+    @extend .is-absolute;
+
+    top: 0;
+    left: 50%;
+    margin-left: -40px;
+  }
+}
