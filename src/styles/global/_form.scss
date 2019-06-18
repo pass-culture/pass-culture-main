@@ -7,6 +7,7 @@
 input.input,
 .select select,
 textarea.textarea {
+  border-radius: $control-radius;
   font-weight: 500;
 
   &[readonly]:not([type='checkbox']) {
@@ -15,7 +16,6 @@ textarea.textarea {
     padding-left: 0.125rem;
     resize: none;
   }
-
 }
 
 .field-profil-input {
