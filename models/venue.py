@@ -30,7 +30,7 @@ CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
 OR
 (
     "isVirtual" IS FALSE
-    AND (address IS NOT NULL AND "postalCode" IS NOT NULL AND city IS NOT NULL AND "departementCode" IS NOT NULL)
+    AND ("postalCode" IS NOT NULL AND city IS NOT NULL AND "departementCode" IS NOT NULL)
 )
 """
 
