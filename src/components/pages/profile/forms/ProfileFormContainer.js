@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
-import ProfileForm from './ProfileForm'
+import { selectCurrentUser } from 'with-react-redux-login'
 
-import { selectCurrentUser } from '../../../hocs'
+import ProfileForm from './ProfileForm'
 
 export const mapStateToProps = state => {
   const currentUser = selectCurrentUser(state)

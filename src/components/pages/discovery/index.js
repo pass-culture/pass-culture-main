@@ -1,10 +1,11 @@
+import { assignData } from 'fetch-normalize-data'
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { Route } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { assignData, requestData } from 'redux-saga-data'
+import { requestData } from 'redux-saga-data'
 
 import DeckContainer from './deck/DeckContainer'
 import BookingContainer from '../../booking/BookingContainer'

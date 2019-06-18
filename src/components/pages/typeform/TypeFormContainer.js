@@ -1,6 +1,7 @@
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
+import { selectCurrentUser } from 'with-react-redux-login'
 
 import TypeForm from './TypeForm'
 import {

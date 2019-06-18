@@ -1,15 +1,26 @@
-import withLogin from './withLogin'
+import withLogin from 'with-react-redux-login'
+import { withRouter } from 'react-router-dom'
+import { compose } from 'redux'
 
-import { getRedirectToCurrentLocationOrTypeform } from './helpers'
+import {
+  getRedirectToSignin,
+  getRedirectToCurrentLocationOrTypeform,
+} from './helpers'
 
-const withRedirectToSigninOrTypeformAfterLogin = withLogin({
-  failRedirect: ({ location }) => {
-    const { pathname, search } = location
-    const fromUrl = encodeURIComponent(`${pathname}${search}`)
-    return `/connexion?de=${fromUrl}`
-  },
-  isRequired: true,
-  successRedirect: getRedirectToCurrentLocationOrTypeform,
-})
+const withRedirectToSigninOrTypeformAfterLogin = compose(
+  withRouter,
+  withLogin({
+    handleFail: (state, action, { history, location }) =>
+      history.push(getRedirectToSignin(location)),
+    handleSuccess: (state, action, { currentUser, history, location }) =>
+      history.push(
+        getRedirectToCurrentLocationOrTypeform({
+          currentUser,
+          ...location,
+        })
+      ),
+    isRequired: true,
+  })
+)
 
 export default withRedirectToSigninOrTypeformAfterLogin

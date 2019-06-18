@@ -1,5 +1,6 @@
+import { mergeData } from 'fetch-normalize-data'
 import moment from 'moment'
-import { mergeData, requestData } from 'redux-saga-data'
+import { requestData } from 'redux-saga-data'
 
 import currentRecommendationSelector from '../../../../selectors/currentRecommendation'
 import nextRecommendationSelector from '../../../../selectors/nextRecommendation'

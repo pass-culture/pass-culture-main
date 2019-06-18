@@ -5062,6 +5062,22 @@ fetch-jsonp@^1.0.6:
   resolved "https://registry.yarnpkg.com/fetch-jsonp/-/fetch-jsonp-1.1.3.tgz#9eb9e585ba08aaf700563538d17bbebbcd5a3db2"
   integrity sha1-nrnlhboIqvcAVjU40Xu+u81aPbI=
 
+fetch-normalize-data@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.1.0.tgz#25c6e1689f422052c71733295910bafc3c3a990a"
+  integrity sha512-nzWxblp6eQDJfNlB6gJxp6CanwAD6ZVLcxJRdgwppr+2c108LPDLXfOwN9xp+i4AhiOWtVyiVKdHeZTyta6pmg==
+  dependencies:
+    eslint "^5.8.0"
+    lodash.uniqby "^4.7.0"
+
+fetch-normalize-data@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.1.1.tgz#908c37855470f1b9ea37f24515f261bf0929b692"
+  integrity sha512-8e31M6im1MvYkbc76JWJ0upZZM6dGdG2Cq+d8JiYznsF3QQVC2Cqcz+XtfNwWrSlOgwoWO/nBztcYbANmAzb2w==
+  dependencies:
+    eslint "^5.8.0"
+    lodash.uniqby "^4.7.0"
+
 figures@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/figures/-/figures-2.0.0.tgz#3ab1a2d2a62c8bfb431a0c94cb797a2fce27c962"
@@ -11648,6 +11664,18 @@ redux-react-modals@^0.0.11:
     react-router-dom "^4.3.1"
     redux "^4.0.0"
 
+redux-saga-data@2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/redux-saga-data/-/redux-saga-data-2.3.2.tgz#0fe11caf81654182217a551dc1fd12fb070a67d3"
+  integrity sha512-iKcmFn3JnLiz4L+9f41kRvWNZjBxTomHnUJTgsl1IsD0ZPGoPACldgqokJS4Nb8FAXuki6ygKnT+5l50MOl/Mw==
+  dependencies:
+    eslint "^5.8.0"
+    fetch-normalize-data "1.1.1"
+    prop-types "^15.6.2"
+    redux "^4.0.0"
+    redux-saga "^0.15.3"
+    uuid "^3.3.2"
+
 redux-saga-data@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/redux-saga-data/-/redux-saga-data-1.8.0.tgz#282fb029cf2cb811124e11a4426a0016f597694d"
@@ -14822,6 +14850,29 @@ with-query-router@3.1.0:
     react-router-dom "^4.3.1"
     redux "^4.0.0"
     reselect "^3.0.1"
+
+with-react-login@1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/with-react-login/-/with-react-login-1.3.0.tgz#af0a0dcc50b9b80097b009ae120e1b900c4ed3ea"
+  integrity sha512-61fic5lpH/B1snfCb7Jnd1a5j/IMHjVxq9TZgR7VDBqBQJwBrFDusgVVmzRXZz5IwrzDpmeuwhjdjWo/wXhZWQ==
+  dependencies:
+    classnames "2.2.5"
+    eslint "^5.8.0"
+    fetch-normalize-data "1.1.0"
+    lodash.uniq "^4.5.0"
+    prop-types "^15.6.2"
+    react "^16.5.2"
+    reselect "^3.0.1"
+    uuid "^3.3.2"
+
+with-react-redux-login@1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/with-react-redux-login/-/with-react-redux-login-1.4.0.tgz#da41fee9f4e6318679971a10aa1aa7f96a19fcc5"
+  integrity sha512-d2cMY5kvvTZ4paKZNrH9LgUTQDf6lItKs5HBX7hNoJ22sJ+Z7VSiKYGU2sVxzdUup/KCT1q+C0ffvAeLmsFYaA==
+  dependencies:
+    eslint "^5.8.0"
+    react-redux "^5.0.3"
+    with-react-login "1.3.0"
 
 wordwrap@0.0.2:
   version "0.0.2"

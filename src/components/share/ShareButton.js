@@ -2,9 +2,9 @@ import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
+import { selectCurrentUser } from 'with-react-redux-login'
 
 import ShareButtonContent from './ShareButtonContent'
-import { selectCurrentUser } from '../hocs'
 import { getShareURL } from '../../helpers'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 

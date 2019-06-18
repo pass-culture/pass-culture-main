@@ -1,19 +1,26 @@
 export const DEFAULT_TYPEFORM_LOCATION = '/typeform'
 
+export const getRedirectToSignin = ({ pathname, search }) => {
+  const fromUrl = encodeURIComponent(`${pathname}${search}`)
+  return `/connexion?de=${fromUrl}`
+}
+
 export const getRedirectToCurrentLocationOrTypeform = ({
   currentUser,
-  location,
+  pathname,
+  search,
 }) => {
   const { needsToFillCulturalSurvey } = currentUser || {}
-  const currentLocation = `${location.pathname}${location.search}`
+  const currentLocation = `${pathname}${search}`
   return needsToFillCulturalSurvey ? DEFAULT_TYPEFORM_LOCATION : currentLocation
 }
 
 export const getRedirectToCurrentLocationOrDiscovery = ({
   currentUser,
-  location,
+  pathname,
+  search,
 }) => {
   const { needsToFillCulturalSurvey } = currentUser || {}
-  const currentLocation = `${location.pathname}${location.search}`
+  const currentLocation = `${pathname}${search}`
   return needsToFillCulturalSurvey ? currentLocation : '/decouverte'
 }

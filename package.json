@@ -15,6 +15,7 @@
     "enzyme": "^3.6.0",
     "enzyme-adapter-react-15": "^1.1.0",
     "enzyme-adapter-react-16": "^1.5.0",
+    "fetch-normalize-data": "1.1.1",
     "final-form": "^4.9.1",
     "final-form-calculate": "^1.2.1",
     "history": "^4.7.2",
@@ -76,14 +77,15 @@
     "redux-persist": "^5.10.0",
     "redux-react-modals": "^0.0.11",
     "redux-saga": "^0.15.3",
-    "redux-saga-data": "^1.8.0",
+    "redux-saga-data": "2.3.2",
     "reselect": "^3.0.1",
     "testcafe": "^0.20.4",
     "typeface-barlow": "^0.0.54",
     "util.promisify": "^1.0.0",
     "uuid": "^3.3.2",
     "with-login": "2.4.0",
-    "with-query-router": "3.1.0"
+    "with-query-router": "3.1.0",
+    "with-react-redux-login": "1.4.0"
   },
   "devDependencies": {
     "archiver": "^2.1.1",

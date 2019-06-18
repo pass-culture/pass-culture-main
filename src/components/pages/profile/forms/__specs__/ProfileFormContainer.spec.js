@@ -1,17 +1,16 @@
+import { currentUserUUID } from 'with-react-redux-login'
+
 import { mapStateToProps } from '../ProfileFormContainer'
-import { selectCurrentUser } from '../../../../hocs'
 
 describe('src | components | pages | profile | forms | ProfileFormContainer', () => {
   describe('mapStateToProps', () => {
     it('should return an object of props', () => {
       // given
       const id = '1'
-      const currentUserUUID = 'ABC'
       const publicName = 'fake name'
       const state = {
         data: { users: [{ currentUserUUID, id, publicName }] },
       }
-      selectCurrentUser.currentUserUUID = currentUserUUID
 
       // when
       const result = mapStateToProps(state)

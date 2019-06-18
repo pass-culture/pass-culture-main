@@ -1,6 +1,6 @@
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
-import { createData } from 'redux-saga-data'
+import { createDataReducer } from 'redux-saga-data'
 
 const dataPersistConfig = {
   key: 'passculture-webapp-data',
@@ -8,7 +8,7 @@ const dataPersistConfig = {
   whitelist: ['readRecommendations'],
 }
 
-const dataReducer = createData({
+const dataReducer = createDataReducer({
   bookings: [],
   readRecommendations: [],
   recommendations: [],
