@@ -1,3 +1,5 @@
+import { currentUserUUID } from 'with-react-redux-login'
+
 const state = {
   data: {
     bookings: [],
@@ -924,7 +926,7 @@ const state = {
     ],
     users: [
       {
-        currentUserUUID: '22a18e44-710c-45cd-b442-34d8ff417fac',
+        currentUserUUID,
         id: 'FE',
         canBookFreeOffers: false,
         dateCreated: '2019-03-07T10:39:23.560374Z',
@@ -1081,7 +1083,7 @@ const state = {
   notification: null,
   tracker: {},
   user: {
-    currentUserUUID: '22a18e44-710c-45cd-b442-34d8ff417fac',
+    currentUserUUID,
     id: 'FE',
     canBookFreeOffers: false,
     dateCreated: '2019-03-07T10:39:23.560374Z',

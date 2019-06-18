@@ -11,7 +11,7 @@ import withRedirectToSigninWhenNotAuthenticated from '../withRedirectToSigninWhe
 const Test = () => null
 const RedirectToSigninWhenNotAuthenticatedTest = withRedirectToSigninWhenNotAuthenticated(Test)
 
-describe('src | components | pages | hocs | with-react-redux-login | withRedirectToSigninWhenNotAuthenticated', () => {
+describe('src | components | pages | hocs | with-login | withRedirectToSigninWhenNotAuthenticated', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // when

@@ -1,20 +1,20 @@
+import { closeNotification, showNotification } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
-import { closeNotification, showNotification } from 'pass-culture-shared'
+
 
 import Venue from './Venue'
 import selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity from './selectors/selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity'
-import withFrenchQueryRouter from '../../hocs/withFrenchQueryRouter'
-import withRedirectToSigninWhenNotAuthenticated from '../../hocs/with-login/withRedirectToSigninWhenNotAuthenticated'
 import { VENUE_CREATION_PATCH_KEYS, VENUE_MODIFICATION_PATCH_KEYS } from './utils/utils'
+import withFrenchQueryRouter, { CREATION } from '../../hocs/withFrenchQueryRouter'
+import withRedirectToSigninWhenNotAuthenticated from '../../hocs/with-login/withRedirectToSigninWhenNotAuthenticated'
 import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
 import selectOffererById from '../../../selectors/selectOffererById'
 import { offererNormalizer, venueNormalizer } from '../../../utils/normalizers'
 import { formatPatch } from '../../../utils/formatPatch'
-import { CREATION } from '../../hocs/withFrenchQueryRouter'
 
 const handleOnClick = dispatch => () => dispatch(closeNotification())
 

@@ -1,5 +1,4 @@
 import { mapStateToProps } from '../BankFieldsContainer'
-import { selectCurrentUser } from 'with-react-redux-login'
 import state from '../../../../../utils/mocks/state'
 
 describe('src | components | pages | Venue | fields | BankFieldsContainer', () => {
@@ -13,7 +12,6 @@ describe('src | components | pages | Venue | fields | BankFieldsContainer', () =
           },
         },
       }
-      selectCurrentUser.currentUserUUID = '22a18e44-710c-45cd-b442-34d8ff417fac'
 
       // when
       const result = mapStateToProps(state, props)

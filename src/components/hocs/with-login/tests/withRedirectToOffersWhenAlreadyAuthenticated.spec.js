@@ -16,7 +16,7 @@ const RedirectToOffersWhenAlreadyAuthenticatedTest = withRedirectToOffersWhenAlr
   Test
 )
 
-describe('src | components | pages | hocs | with-react-redux-login | withRedirectToOffersWhenAlreadyAuthenticated', () => {
+describe('src | components | pages | hocs | with-login | withRedirectToOffersWhenAlreadyAuthenticated', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // when
@@ -33,7 +33,7 @@ describe('src | components | pages | hocs | with-react-redux-login | withRedirec
   })
 
   describe('functions', () => {
-    it('should redirect to discovery when already authenticated', done => {
+    it('should redirect to offers when already authenticated', done => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
