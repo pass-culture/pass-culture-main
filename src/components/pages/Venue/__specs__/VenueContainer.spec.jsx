@@ -203,7 +203,7 @@ describe('src | components | pages | VenueContainer', () => {
           wrapper.find("textarea[name='comment']").props().required
         ).toEqual(false)
         expect(wrapper.find("input[name='address']").props().readOnly).toEqual(
-          false
+          true
         )
         expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
           true
@@ -295,7 +295,7 @@ describe('src | components | pages | VenueContainer', () => {
           wrapper.find("textarea[name='comment']").props().required
         ).toEqual(false)
         expect(wrapper.find("input[name='address']").props().readOnly).toEqual(
-          false
+          true
         )
         expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
           true
@@ -303,7 +303,7 @@ describe('src | components | pages | VenueContainer', () => {
         expect(
           wrapper.find("input[name='postalCode']").props().readOnly
         ).toEqual(true)
-        expect(wrapper.find('Marker').props().draggable).toEqual(true)
+        expect(wrapper.find('Marker').props().draggable).toEqual(false)
 
         // when (siret has filled other inputs, submit button is not anymore disabled)
         wrapper
