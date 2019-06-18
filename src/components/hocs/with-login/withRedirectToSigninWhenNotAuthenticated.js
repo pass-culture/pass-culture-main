@@ -1,9 +1,16 @@
-import withLogin from 'with-login'
+import { compose } from 'redux'
+import withLogin from 'with-react-redux-login'
 
-const withRedirectToSigninWhenNotAuthenticated = withLogin({
-  failRedirect: ({ location }) =>
-    `/connexion?de=${encodeURIComponent(`${location.pathname}${location.search}`)}`,
-  isRequired: true,
-})
+import { getRedirectToSignin } from './helpers'
+import withFrenchQueryRouter from '../withFrenchQueryRouter'
+
+export const withRedirectToSigninWhenNotAuthenticated = compose(
+  withFrenchQueryRouter,
+  withLogin({
+    handleFail: (state, action, { history, location }) =>
+      history.push(getRedirectToSignin(location)),
+    isRequired: true,
+  })
+)
 
 export default withRedirectToSigninWhenNotAuthenticated

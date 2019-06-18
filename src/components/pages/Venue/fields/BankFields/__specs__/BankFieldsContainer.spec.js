@@ -1,5 +1,5 @@
 import { mapStateToProps } from '../BankFieldsContainer'
-import { selectCurrentUser } from 'with-login'
+import { selectCurrentUser } from 'with-react-redux-login'
 import state from '../../../../../utils/mocks/state'
 
 describe('src | components | pages | Venue | fields | BankFieldsContainer', () => {

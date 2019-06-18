@@ -3,7 +3,7 @@ import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { Route, Router, Switch } from 'react-router-dom'
-import { assignData } from 'fetch-normalize-data'
+import { assignData } from 'redux-saga-data'
 
 import { venueNormalizer } from '../../../../utils/normalizers'
 import configureStore from '../../../../utils/store'

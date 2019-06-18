@@ -1,4 +1,4 @@
-import { selectCurrentUser } from 'with-login'
+import { selectCurrentUser } from 'with-react-redux-login'
 
 function mapStateToProps(state) {
   return {

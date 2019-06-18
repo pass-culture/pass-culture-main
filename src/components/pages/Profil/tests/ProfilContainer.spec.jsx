@@ -1,5 +1,5 @@
 import { mapStateToProps } from '../ProfilContainer'
-import { selectCurrentUser } from 'with-login'
+import { selectCurrentUser } from 'with-react-redux-login'
 
 describe('src | components | pages | Profil | ProfilContainer', () => {
   describe('mapStateToProps', () => {

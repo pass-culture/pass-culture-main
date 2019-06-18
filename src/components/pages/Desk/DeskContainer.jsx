@@ -2,7 +2,7 @@ import Desk from './Desk'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 
-import withRedirectToSigninWhenNotAuthenticated from '../../hocs/with-login/withRedirectToSigninWhenNotAuthenticated'
+import { withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
 
 export default compose(
   withRedirectToSigninWhenNotAuthenticated,
