@@ -11664,10 +11664,10 @@ redux-react-modals@^0.0.11:
     react-router-dom "^4.3.1"
     redux "^4.0.0"
 
-redux-saga-data@2.3.2:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/redux-saga-data/-/redux-saga-data-2.3.2.tgz#0fe11caf81654182217a551dc1fd12fb070a67d3"
-  integrity sha512-iKcmFn3JnLiz4L+9f41kRvWNZjBxTomHnUJTgsl1IsD0ZPGoPACldgqokJS4Nb8FAXuki6ygKnT+5l50MOl/Mw==
+redux-saga-data@2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/redux-saga-data/-/redux-saga-data-2.4.0.tgz#797ac1a3850090881d930e7cec391938ca52e65e"
+  integrity sha512-4sniYFlvYEof52X7RVWwWRFKPRS3tYk8hSUzzYIPwjRe0/gsk+VukPz8tDdcKcQ/gFnNwYdElTeHJeTkwBDRsg==
   dependencies:
     eslint "^5.8.0"
     fetch-normalize-data "1.1.1"
