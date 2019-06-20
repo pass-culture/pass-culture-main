@@ -131,7 +131,7 @@ def create_booking_for_event(
 
 
 def create_user(public_name='John Doe', password=None, first_name='John', last_name='Doe', postal_code='93100', departement_code='93',
-                email='john.doe@test.com', can_book_free_offers=True, needs_to_fill_cultural_survey=False, validation_token=None, is_admin=False,
+                email='john.doe@test.com', can_book_free_offers=True, needs_to_fill_cultural_survey=False, cultural_survey_id=None, validation_token=None, is_admin=False,
                 reset_password_token=None, reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
                 date_created=datetime.utcnow(), phone_number='0612345678', date_of_birth=datetime(2001, 1, 1),
                 idx=None, demarcheSimplifieeApplicationId=None):
@@ -159,6 +159,7 @@ def create_user(public_name='John Doe', password=None, first_name='John', last_n
     user.phoneNumber = phone_number
     user.dateOfBirth = date_of_birth
     user.needsToFillCulturalSurvey = needs_to_fill_cultural_survey
+    user.culturalSurveyId = cultural_survey_id
     user.id = idx
     return user
 

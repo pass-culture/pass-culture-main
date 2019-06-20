@@ -9,6 +9,7 @@ from sqlalchemy import Binary, \
     DateTime, \
     String, \
     BigInteger
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
@@ -33,6 +34,8 @@ class User(PcObject,
                                default=True)
 
     clearTextPassword = None
+
+    culturalSurveyId = Column(UUID(as_uuid=True), nullable=True)
 
     dateCreated = Column(DateTime,
                          nullable=False,

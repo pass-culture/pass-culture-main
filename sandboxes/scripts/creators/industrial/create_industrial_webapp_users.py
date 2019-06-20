@@ -1,3 +1,5 @@
+import uuid
+
 from models.pc_object import PcObject
 from sandboxes.scripts.utils.helpers import get_password_from_email
 from tests.test_utils import create_user
@@ -33,13 +35,16 @@ def create_industrial_webapp_users():
             else:
                 reset_password_token = None
 
+            cultural_survey_id = None
             has_filled_cultural_survey = True
             if tag == "has-signed-up":
+                cultural_survey_id = uuid.uuid4()
                 has_filled_cultural_survey = False
 
             email = "pctest.jeune{}.{}@btmx.fr".format(departement_code, tag)
 
             users_by_name['jeune{} {}'.format(departement_code, tag)] = create_user(
+                cultural_survey_id=cultural_survey_id,
                 departement_code=str(departement_code),
                 email=email,
                 first_name="PC Test Jeune",
