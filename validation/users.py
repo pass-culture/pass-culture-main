@@ -3,6 +3,7 @@ from models import ApiErrors, RightsType
 
 def check_allowed_changes_for_user(data):
     changes_allowed = {
+        'culturalSurveyId',
         'departementCode',
         'email',
         'needsToFillCulturalSurvey',
