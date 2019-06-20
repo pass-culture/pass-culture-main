@@ -234,18 +234,19 @@ def create_stock(price=10, available=10, booking_limit_datetime=None, offer=None
 
 
 def create_stock_with_thing_offer(offerer, venue, offer=None, price=10, available=50, name='Test Book',
-                                  booking_email='offer.booking.email@test.com', soft_deleted=False,
-                                  booking_limit_datetime=None) -> Stock:
+                                  booking_email='offer.booking.email@test.com', soft_deleted=False, url=None,
+                                  booking_limit_datetime=None, thing_type=ThingType.AUDIOVISUEL) -> Stock:
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
     if offer:
         stock.offer = offer
     else:
-        stock.offer = create_offer_with_thing_product(venue, thing_name=name)
+        stock.offer = create_offer_with_thing_product(venue, thing_name=name, thing_type=thing_type)
     stock.offer.bookingEmail = booking_email
     stock.bookingLimitDatetime = booking_limit_datetime
 
+    stock.offer.url = url
     stock.offer.venue = venue
     stock.available = available
     stock.isSoftDeleted = soft_deleted

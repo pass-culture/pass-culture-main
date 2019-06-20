@@ -113,9 +113,11 @@ def get_active_offers(user=None, departement_codes=None, offer_id=None, limit=No
                                                      | ((Stock2.beginningDatetime > datetime.utcnow())
                                                         & (Stock2.beginningDatetime < (datetime.utcnow() + timedelta(days=10))))))
                                           .exists())
+    round_robin_by_type_and_onlineness = func.row_number()\
+                                             .over(partition_by=[Offer.type, Offer.url == None],
+                                                   order_by=[desc(occurs_soon_or_is_thing), func.random()])
     query = query.order_by(desc(with_active_mediation),
-                           desc(occurs_soon_or_is_thing),
-                           func.random())
+                           round_robin_by_type_and_onlineness)
 
     query = query.options(joinedload('mediations'),
                           joinedload('product'))

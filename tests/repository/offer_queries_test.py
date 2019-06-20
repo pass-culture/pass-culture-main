@@ -706,6 +706,36 @@ def test_get_active_offers_should_return_offers_that_occur_in_less_than_10_days_
 
 @clean_database
 @pytest.mark.standalone
+def test_get_active_offers_should_return_offers_with_varying_types(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer, postal_code='34000', departement_code='34')
+
+    stock1 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
+    stock2 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO, url='http://example.com')
+    stock3 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
+    stock4 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
+    stock5 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.AUDIOVISUEL)
+    stock6 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX)
+
+    PcObject.save(stock1, stock2, stock3, stock4, stock5, stock6)
+
+    def first_four_offers_have_different_type_and_onlineness(offers):
+        return len(set([o.type + (o.url or '')
+                        for o in offers[:4]])) == 4
+
+    # When
+    offers = get_active_offers(user=create_user(email="plop@plop.com"),
+                               departement_codes=['00'],
+                               offer_id=None)
+
+    # Then
+    assert len(offers) == 6
+    assert first_four_offers_have_different_type_and_onlineness(offers)
+
+
+@clean_database
+@pytest.mark.standalone
 def test_get_active_offers_should_not_return_offers_with_no_stock(app):
     # Given
     product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
