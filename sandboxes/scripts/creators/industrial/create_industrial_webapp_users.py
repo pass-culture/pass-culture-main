@@ -36,10 +36,10 @@ def create_industrial_webapp_users():
                 reset_password_token = None
 
             cultural_survey_id = None
-            has_filled_cultural_survey = True
+            needs_to_fill_cultural_survey = False
             if tag == "has-signed-up":
                 cultural_survey_id = uuid.uuid4()
-                has_filled_cultural_survey = False
+                needs_to_fill_cultural_survey = True
 
             email = "pctest.jeune{}.{}@btmx.fr".format(departement_code, tag)
 
@@ -48,8 +48,8 @@ def create_industrial_webapp_users():
                 departement_code=str(departement_code),
                 email=email,
                 first_name="PC Test Jeune",
-                has_filled_cultural_survey=has_filled_cultural_survey,
                 last_name="{} {}".format(departement_code, short_tag),
+                needs_to_fill_cultural_survey=needs_to_fill_cultural_survey,
                 password=get_password_from_email(email),
                 postal_code="{}100".format(departement_code),
                 public_name="PC Test Jeune {} {}".format(departement_code, short_tag),
