@@ -1,4 +1,4 @@
-from utils.includes import RECOMMENDATION_INCLUDES
+from utils.includes import RECOMMENDATION_INCLUDES, USER_INCLUDES
 
 def get_booking_helper(booking):
     return dict(booking.as_dict(), **{
@@ -64,7 +64,7 @@ def get_password_from_email(email):
     return minimal_password
 
 def get_user_helper(user):
-    return dict(user.as_dict(), **{
+    return dict(user.as_dict(include=USER_INCLUDES), **{
         "password": get_password_from_email(user.email)
     })
 
