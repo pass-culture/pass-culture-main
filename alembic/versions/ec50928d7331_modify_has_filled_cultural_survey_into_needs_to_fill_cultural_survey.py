@@ -1,7 +1,7 @@
 """modify_has_filled_cultural_survey_into_needs_to_fill_cultural_survey
 
 Revision ID: ec50928d7331
-Revises: 4127e9899829
+Revises: 0df577e35e9f
 Create Date: 2019-06-20 07:46:29.856135
 
 """
@@ -12,7 +12,7 @@ from sqlalchemy.sql import expression
 
 # revision identifiers, used by Alembic.
 revision = 'ec50928d7331'
-down_revision = '4127e9899829'
+down_revision = '0df577e35e9f'
 branch_labels = None
 depends_on = None
 
