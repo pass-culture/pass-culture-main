@@ -13,21 +13,21 @@ def find_all():
     return Feature.query.all()
 
 
-def is_active(feature_toggle: FeatureToggle):
+def is_active(feature_toggle: FeatureToggle) -> bool:
     return Feature.query \
-        .filter_by(name=feature_toggle.value['name']) \
+        .filter_by(name=feature_toggle) \
         .first() \
         .isActive
 
 
 def deactivate(feature_toggle: FeatureToggle):
-    feature = Feature.query.filter_by(name=feature_toggle.value['name']).first()
+    feature = Feature.query.filter_by(name=feature_toggle).first()
     feature.isActive = False
     PcObject.save(feature)
 
 
 def activate(feature_toggle: FeatureToggle):
-    feature = Feature.query.filter_by(name=feature_toggle.value['name']).first()
+    feature = Feature.query.filter_by(name=feature_toggle).first()
     feature.isActive = True
     PcObject.save(feature)
 

@@ -29,6 +29,7 @@ from models import Booking, \
     Venue, PaymentMessage, VenueProvider, Provider, Product, Feature
 from models.db import db
 from models.email import Email, EmailStatus
+from models.feature import FeatureToggle
 from models.payment import PaymentDetails
 from models.payment_status import PaymentStatus, TransactionStatus
 from models.pc_object import PcObject
@@ -695,7 +696,7 @@ def create_email(content, status=EmailStatus.ERROR, time=datetime.utcnow()):
     return email_failed
 
 
-def create_feature(name='Feature A', description='This is a nice feature', is_active=True):
+def create_feature(name: FeatureToggle=FeatureToggle.WEBAPP_SIGNUP, description: str='This is a nice feature', is_active: bool=True) -> Feature:
     feature = Feature()
     feature.name = name
     feature.description = description

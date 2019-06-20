@@ -47,8 +47,10 @@ def clean_all_database(*args, **kwargs):
     Feature.query.delete()
     db.session.commit()
 
+    features = []
     for toggle in FeatureToggle:
         feature = create_feature(
-            name=toggle.value['name'], description=toggle.value['description'], is_active=True
+            name=toggle, description=toggle.value, is_active=True
         )
-        PcObject.save(feature)
+        features.append(feature)
+    PcObject.save(*features)
