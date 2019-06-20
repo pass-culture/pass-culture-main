@@ -13,7 +13,7 @@ ShallowWrapper {
   >
     <TypeForm
       flagUserHasFilledTypeform={[MockFunction]}
-      hasFilledCulturalSurvey={false}
+      needsToFillCulturalSurvey={true}
       typeformUrl="http://domain.com?any=value"
     />
   </MemoryRouter>,
@@ -33,7 +33,7 @@ ShallowWrapper {
     "props": Object {
       "children": <TypeForm
         flagUserHasFilledTypeform={[MockFunction]}
-        hasFilledCulturalSurvey={false}
+        needsToFillCulturalSurvey={true}
         typeformUrl="http://domain.com?any=value"
       />,
       "history": Object {
@@ -72,7 +72,7 @@ ShallowWrapper {
       "nodeType": "class",
       "props": Object {
         "flagUserHasFilledTypeform": [MockFunction],
-        "hasFilledCulturalSurvey": false,
+        "needsToFillCulturalSurvey": true,
         "typeformUrl": "http://domain.com?any=value",
       },
       "ref": null,
@@ -89,7 +89,7 @@ ShallowWrapper {
       "props": Object {
         "children": <TypeForm
           flagUserHasFilledTypeform={[MockFunction]}
-          hasFilledCulturalSurvey={false}
+          needsToFillCulturalSurvey={true}
           typeformUrl="http://domain.com?any=value"
         />,
         "history": Object {
@@ -128,7 +128,7 @@ ShallowWrapper {
         "nodeType": "class",
         "props": Object {
           "flagUserHasFilledTypeform": [MockFunction],
-          "hasFilledCulturalSurvey": false,
+          "needsToFillCulturalSurvey": true,
           "typeformUrl": "http://domain.com?any=value",
         },
         "ref": null,

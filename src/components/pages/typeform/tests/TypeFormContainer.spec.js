@@ -17,7 +17,7 @@ describe('src | components |pages | typeform | TypeFormContainer', () => {
 
     // then
     const expected = {
-      hasFilledCulturalSurvey: undefined,
+      needsToFillCulturalSurvey: undefined,
       typeformUrl: `mocked_typeform_uri?userId=mocked_uuid`,
       uniqId: 'mocked_uuid',
     }
@@ -32,7 +32,7 @@ describe('src | components |pages | typeform | TypeFormContainer', () => {
       data: {
         users: [
           {
-            hasFilledCulturalSurvey: false,
+            needsToFillCulturalSurvey: true,
           },
         ],
       },
@@ -43,7 +43,7 @@ describe('src | components |pages | typeform | TypeFormContainer', () => {
 
     // then
     const expected = {
-      hasFilledCulturalSurvey: false,
+      needsToFillCulturalSurvey: true,
       typeformUrl: `mocked_typeform_uri?userId=mocked_uuid`,
       uniqId: 'mocked_uuid',
     }

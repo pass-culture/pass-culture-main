@@ -13,7 +13,7 @@ describe('src | components | pages | typeform | TypeForm', () => {
     // given
     const props = {
       flagUserHasFilledTypeform: jest.fn(),
-      hasFilledCulturalSurvey: false,
+      needsToFillCulturalSurvey: true,
       typeformUrl: 'http://domain.com?any=value',
     }
 

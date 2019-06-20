@@ -4,16 +4,16 @@ export const getRedirectToCurrentLocationOrTypeform = ({
   currentUser,
   location,
 }) => {
-  const { hasFilledCulturalSurvey } = currentUser || {}
+  const { needsToFillCulturalSurvey } = currentUser || {}
   const currentLocation = `${location.pathname}${location.search}`
-  return hasFilledCulturalSurvey ? currentLocation : DEFAULT_TYPEFORM_LOCATION
+  return needsToFillCulturalSurvey ? DEFAULT_TYPEFORM_LOCATION : currentLocation
 }
 
 export const getRedirectToCurrentLocationOrDiscovery = ({
   currentUser,
   location,
 }) => {
-  const { hasFilledCulturalSurvey } = currentUser || {}
+  const { needsToFillCulturalSurvey } = currentUser || {}
   const currentLocation = `${location.pathname}${location.search}`
-  return hasFilledCulturalSurvey ? '/decouverte' : currentLocation
+  return needsToFillCulturalSurvey ? currentLocation : '/decouverte'
 }

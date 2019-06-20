@@ -9,7 +9,7 @@ describe('src | hocs | with-login | helpers', () => {
       // given
       const props = {
         currentUser: {
-          hasFilledCulturalSurvey: true,
+          needsToFillCulturalSurvey: false,
         },
         location: {
           pathname: '/my-page',
@@ -28,7 +28,7 @@ describe('src | hocs | with-login | helpers', () => {
       // given
       const props = {
         currentUser: {
-          hasFilledCulturalSurvey: false,
+          needsToFillCulturalSurvey: true,
         },
         location: {
           pathname: '/my-page',
@@ -48,7 +48,7 @@ describe('src | hocs | with-login | helpers', () => {
       // given
       const props = {
         currentUser: {
-          hasFilledCulturalSurvey: true,
+          needsToFillCulturalSurvey: false,
         },
         location: {
           pathname: '/my-page',
@@ -67,7 +67,7 @@ describe('src | hocs | with-login | helpers', () => {
       // given
       const props = {
         currentUser: {
-          hasFilledCulturalSurvey: false,
+          needsToFillCulturalSurvey: true,
         },
         location: {
           pathname: '/my-page',

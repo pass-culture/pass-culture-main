@@ -21,8 +21,8 @@ export const mapStateToProps = state => {
   const uniqId = uuid()
   const currentUser = selectCurrentUser(state)
   const typeformUrl = buildTypeformURLWithHiddenFields(uniqId)
-  const { hasFilledCulturalSurvey } = currentUser || {}
-  return { hasFilledCulturalSurvey, typeformUrl, uniqId }
+  const { needsToFillCulturalSurvey } = currentUser || {}
+  return { needsToFillCulturalSurvey, typeformUrl, uniqId }
 }
 
 export const mapDispatchToProps = dispatch => ({
@@ -31,7 +31,7 @@ export const mapDispatchToProps = dispatch => ({
       apiPath: '/users/current',
       body: {
         culturalSurveyId: uniqId,
-        hasFilledCulturalSurvey: true,
+        needsToFillCulturalSurvey: false,
       },
       isMergingDatum: true,
       method: 'PATCH',

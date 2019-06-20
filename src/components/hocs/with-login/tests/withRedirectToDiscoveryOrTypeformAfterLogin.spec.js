@@ -30,7 +30,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToDiscovery
   })
 
   describe('functions', () => {
-    it('should redirect to discovery when already authenticated and hasFilledCulturalSurvey', done => {
+    it('should redirect to discovery when already authenticated and needsToFillCulturalSurvey', done => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
@@ -38,7 +38,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToDiscovery
       fetch.mockResponse(
         JSON.stringify({
           email: 'michel.marx@youpi.fr',
-          hasFilledCulturalSurvey: true,
+          needsToFillCulturalSurvey: false,
         }),
         {
           status: 200,
@@ -61,7 +61,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToDiscovery
         </Provider>
       )
     })
-    it('should redirect to currentLocation when already authenticated and not hasFilledCulturalSurvey', () => {
+    it('should redirect to currentLocation when already authenticated and not needsToFillCulturalSurvey', () => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
@@ -69,7 +69,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToDiscovery
       fetch.mockResponse(
         JSON.stringify({
           email: 'michel.marx@youpi.fr',
-          hasFilledCulturalSurvey: false,
+          needsToFillCulturalSurvey: true,
         }),
         {
           status: 200,

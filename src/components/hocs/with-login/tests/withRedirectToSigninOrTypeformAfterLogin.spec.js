@@ -9,7 +9,9 @@ import { OnMountCaller } from './OnMountCaller'
 import withRedirectToSigninOrTypeformAfterLogin from '../withRedirectToSigninOrTypeformAfterLogin'
 
 const Test = () => null
-const RedirectToSigninOrTypeformAfterLoginTest = withRedirectToSigninOrTypeformAfterLogin(Test)
+const RedirectToSigninOrTypeformAfterLoginTest = withRedirectToSigninOrTypeformAfterLogin(
+  Test
+)
 
 describe('src | components | pages | hocs | with-login | withRedirectToSigninOrTypeformAfterLogin', () => {
   describe('snapshot', () => {
@@ -54,7 +56,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToSigninOrT
         </Provider>
       )
     })
-    it('should redirect to typeform when authenticated and not hasFilledCulturalSurvey', done => {
+    it('should redirect to typeform when authenticated and not needsToFillCulturalSurvey', done => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
@@ -62,7 +64,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToSigninOrT
       fetch.mockResponse(
         JSON.stringify({
           email: 'michel.marx@youpi.fr',
-          hasFilledCulturalSurvey: false,
+          needsToFillCulturalSurvey: true,
         }),
         {
           status: 200,
@@ -86,7 +88,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToSigninOrT
       )
     })
 
-    it('should not redirect when authenticated and hasFilledCulturalSurvey', () => {
+    it('should not redirect when authenticated and needsToFillCulturalSurvey', () => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
@@ -94,7 +96,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToSigninOrT
       fetch.mockResponse(
         JSON.stringify({
           email: 'michel.marx@youpi.fr',
-          hasFilledCulturalSurvey: true,
+          needsToFillCulturalSurvey: false,
         }),
         {
           status: 200,
