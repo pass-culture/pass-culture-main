@@ -197,10 +197,11 @@ PRO_BOOKING_INCLUDES = [
 ]
 
 USER_INCLUDES = [
-    '-validationToken',
+    '-culturalSurveyId',
     '-password',
     '-resetPasswordToken',
     '-resetPasswordTokenValidityLimit',
+    '-validationToken',
     'wallet_balance',
     'wallet_is_activated'
 ]
