@@ -1,7 +1,7 @@
 """change_venue_constraint
 
 Revision ID: e945f921cc69
-Revises: 0df577e35e9f
+Revises: de36871d256e
 Create Date: 2019-06-20 13:07:07.348459
 
 """
@@ -9,7 +9,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = 'e945f921cc69'
-down_revision = '0df577e35e9f'
+down_revision = 'de36871d256e'
 branch_labels = None
 depends_on = None
 
