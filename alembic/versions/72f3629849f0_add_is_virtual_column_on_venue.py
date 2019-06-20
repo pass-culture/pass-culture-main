@@ -11,8 +11,6 @@ import sqlalchemy as sa
 # revision identifiers, used by Alembic.
 from sqlalchemy.sql import expression
 
-from models.venue import CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS
-
 revision = '72f3629849f0'
 down_revision = 'e2960d28528f'
 branch_labels = None
@@ -30,7 +28,17 @@ def upgrade():
     op.create_check_constraint(
         constraint_name='check_is_virtual_xor_has_address',
         table_name='venue',
-        condition=CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS
+        condition="""
+            (
+                "isVirtual" IS TRUE
+                AND (address IS NULL AND "postalCode" IS NULL AND city IS NULL AND "departementCode" IS NULL)
+            )
+            OR
+            (
+                "isVirtual" IS FALSE
+                AND (address IS NOT NULL AND "postalCode" IS NOT NULL AND city IS NOT NULL AND "departementCode" IS NOT NULL)
+            )
+        """
     )
 
 
