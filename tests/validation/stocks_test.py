@@ -85,7 +85,7 @@ class CheckDatesAreAllowedOnNewStockTest:
             # When
             try:
                 check_dates_are_allowed_on_new_stock(data, offer)
-            
+
             except ApiErrors:
                 # Then
                 assert pytest.fail("Should not fail with valid params")
@@ -102,11 +102,10 @@ class CheckDatesAreAllowedOnNewStockTest:
             # Then
             try:
                 check_dates_are_allowed_on_new_stock(data, offer)
-            
+
             except ApiErrors:
                 # Then
                 assert pytest.fail("Should not fail with valid params")
-
 
     class OfferIsOnEventTest:
         def test_raises_error_with_missing_end_datetime(self):
@@ -265,7 +264,6 @@ class CheckDatesAreAllowedOnExistingStockTest:
                 'Impossible de mettre des dates de début et fin si l\'offre ne porte pas sur un évenement'
             ]
 
-
         def test_doesnt_raise_error_with_missing_booking_limit_datetime(self):
             # Given
             offer = create_offer_with_thing_product(Venue())
@@ -283,7 +281,6 @@ class CheckDatesAreAllowedOnExistingStockTest:
                 # Then
                 assert pytest.fail("Should not fail with valid params")
 
-
         def test_doesnt_raise_error_with_none_booking_limit_datetime(self):
             # Given
             offer = create_offer_with_thing_product(Venue())
@@ -296,11 +293,10 @@ class CheckDatesAreAllowedOnExistingStockTest:
             # Then
             try:
                 check_dates_are_allowed_on_existing_stock(data, offer)
-            
+
             except ApiErrors:
                 # Then
                 assert pytest.fail("Should not fail with valid params")
-
 
     class OfferIsOnEventTest:
         def test_raises_error_with_none_beginning_datetime(self):
@@ -350,4 +346,3 @@ class CheckDatesAreAllowedOnExistingStockTest:
             assert e.value.errors['bookingLimitDatetime'] == [
                 'Ce paramètre est obligatoire'
             ]
-

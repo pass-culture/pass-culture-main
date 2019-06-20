@@ -1,6 +1,7 @@
 from models import PcObject, ApiErrors
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, create_offer_with_event_product, \
+from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, \
+    create_offer_with_event_product, \
     create_bank_information
 
 

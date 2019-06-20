@@ -496,7 +496,7 @@ class GenerateMessageFileTest:
 
     @patch('domain.payments.uuid.uuid4')
     def test_file_has_hexadecimal_uuids_as_end_to_end_ids_in_transaction_info(self, mocked_uuid,
-                                                                                                   app):
+                                                                              app):
         # Given
         user = create_user()
         offerer1 = create_offerer(name='first offerer')

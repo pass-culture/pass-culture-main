@@ -1,7 +1,6 @@
-from models import PcObject
-from models.db import db
+from models import PcObject, Venue
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_venue, create_offerer, create_user, create_user_offerer
+from tests.test_utils import create_venue, create_offerer, create_user, create_user_offerer
 from utils.human_ids import humanize
 
 
@@ -20,14 +19,14 @@ class Patch:
                 'siret': siret,
             }
 
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id), json=venue_data)
+            response = auth_request.patch('/venues/%s' % humanize(venue.id), json=venue_data)
 
             # Then
             assert response.status_code == 200
-            assert response.json()['siret'] == siret
+            assert response.json['siret'] == siret
 
         @clean_database
         def when_patch_siret_when_there_is_one_already_but_equal(self, app):
@@ -41,14 +40,14 @@ class Patch:
             venue_data = {
                 'siret': siret,
             }
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id), json=venue_data)
+            response = auth_request.patch('/venues/%s' % humanize(venue.id), json=venue_data)
 
             # Then
             assert response.status_code == 200
-            assert response.json()['siret'] == siret
+            assert response.json['siret'] == siret
 
         @clean_database
         def when_user_has_rights_on_managing_offerer(self, app):
@@ -58,16 +57,17 @@ class Patch:
             venue = create_venue(offerer, name='L\'encre et la plume')
             user_offerer = create_user_offerer(user, offerer)
             PcObject.save(user_offerer, venue)
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+            venue_id = venue.id
 
             # when
-            response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id), json={'name': 'Ma librairie'})
+            response = auth_request.patch('/venues/%s' % humanize(venue.id), json={'name': 'Ma librairie'})
 
             # then
             assert response.status_code == 200
-            db.session.refresh(venue)
+            venue = Venue.query.get(venue_id)
             assert venue.name == 'Ma librairie'
-            json = response.json()
+            json = response.json
             assert json['isValidated'] == True
             assert 'validationToken' not in json
             assert venue.isValidated
@@ -85,14 +85,14 @@ class Patch:
             venue_data = {
                 'siret': offerer.siren + '12345',
             }
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id), json=venue_data)
+            response = auth_request.patch('/venues/%s' % humanize(venue.id), json=venue_data)
 
             # Then
             assert response.status_code == 400
-            assert response.json()['siret'] == ['Vous ne pouvez pas modifier le siret d\'un lieu']
+            assert response.json['siret'] == ['Vous ne pouvez pas modifier le siret d\'un lieu']
 
         @clean_database
         def when_editing_is_virtual_and_managing_offerer_already_has_virtual_venue(self, app):
@@ -103,14 +103,14 @@ class Patch:
             venue2 = create_venue(offerer, name='L\'encre et la plume', is_virtual=False)
             user_offerer = create_user_offerer(user, offerer)
             PcObject.save(user_offerer, venue1, venue2)
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue2.id), json={'isVirtual': True})
+            response = auth_request.patch('/venues/%s' % humanize(venue2.id), json={'isVirtual': True})
 
             # then
             assert response.status_code == 400
-            assert response.json() == {
+            assert response.json == {
                 'isVirtual': ['Un lieu pour les offres numériques existe déjà pour cette structure']}
 
         @clean_database
@@ -121,16 +121,16 @@ class Patch:
             venue = create_venue(offerer, name='Les petits papiers', is_virtual=False)
             user_offerer = create_user_offerer(user, offerer)
             PcObject.save(user_offerer, venue)
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             data = {'latitude': -98.82387, 'longitude': '112°3534'}
 
             # when
-            response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id), json=data)
+            response = auth_request.patch('/venues/%s' % humanize(venue.id), json=data)
 
             # then
             assert response.status_code == 400
-            assert response.json()['latitude'] == ['La latitude doit être comprise entre -90.0 et +90.0']
-            assert response.json()['longitude'] == ['Format incorrect']
+            assert response.json['latitude'] == ['La latitude doit être comprise entre -90.0 et +90.0']
+            assert response.json['longitude'] == ['Format incorrect']
 
         @clean_database
         def when_trying_to_edit_managing_offerer(self, app):
@@ -141,12 +141,12 @@ class Patch:
             venue = create_venue(offerer, name='Les petits papiers', is_virtual=False)
             user_offerer = create_user_offerer(user, offerer)
             PcObject.save(user_offerer, venue, other_offerer)
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # When
-            response = auth_request.patch(API_URL + '/venues/%s' % humanize(venue.id),
+            response = auth_request.patch('/venues/%s' % humanize(venue.id),
                                           json={'managingOffererId': humanize(other_offerer.id)})
 
             # Then
             assert response.status_code == 400
-            assert response.json()['managingOffererId'] == ['Vous ne pouvez pas changer la structure d\'un lieu']
+            assert response.json['managingOffererId'] == ['Vous ne pouvez pas changer la structure d\'un lieu']

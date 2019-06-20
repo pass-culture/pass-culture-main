@@ -1,10 +1,9 @@
-from os import path
-from pathlib import Path
+from io import BytesIO
 
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, \
-    create_user, \
+from tests.files.images import ONE_PIXEL_PNG
+from tests.test_utils import create_user, \
     create_offer_with_event_product, \
     create_offerer, \
     create_user_offerer, \
@@ -26,7 +25,7 @@ class Post:
             PcObject.save(offer)
             PcObject.save(user, venue, offerer, user_offerer)
 
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             data = {
                 'offerId': humanize(offer.id),
@@ -35,13 +34,13 @@ class Post:
             }
 
             # when
-            response = auth_request.post(API_URL + '/mediations', form=data)
+            response = auth_request.post('/mediations', form=data)
 
             # then
             assert response.status_code == 201
 
         @clean_database
-        def when_mediation_is_created_with_with_thumb_file(self, app):
+        def when_mediation_is_created_with_thumb_file(self, app):
             # given
             user = create_user()
             offerer = create_offerer()
@@ -52,20 +51,16 @@ class Post:
             PcObject.save(offer)
             PcObject.save(user, venue, offerer, user_offerer)
 
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
-            with open(Path(path.dirname(path.realpath(__file__))) / '..' / '..'
-                      / 'sandboxes' / 'thumbs' / 'mediations' / 'FranckLepage', 'rb') as thumb_file:
-                data = {
-                    'offerId': humanize(offer.id),
-                    'offererId': humanize(offerer.id)
-                }
-                # WE NEED TO GIVE AN EXTENSION TO THE FILE
-                # IF WE WANT TO MAKE THE TEST PASS
-                files = {'thumb': ('FranckLepage.jpg', thumb_file)}
+            files = {
+                'offerId': humanize(offer.id),
+                'offererId': humanize(offerer.id),
+                'thumb': (BytesIO(ONE_PIXEL_PNG), 'image.png')
+            }
 
-                # when
-                response = auth_request.post(API_URL + '/mediations', form=data, files=files)
+            # when
+            response = auth_request.post('/mediations', files=files)
 
             # then
             assert response.status_code == 201
@@ -81,7 +76,7 @@ class Post:
             user_offerer = create_user_offerer(user, offerer)
             PcObject.save(user, venue, user_offerer)
 
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             data = {
                 'offerId': humanize(offer.id),
@@ -90,8 +85,8 @@ class Post:
             }
 
             # when
-            response = auth_request.post(API_URL + '/mediations', form=data)
+            response = auth_request.post('/mediations', form=data)
 
             # then
             assert response.status_code == 400
-            assert response.json()['thumbUrl'] == ["L'adresse saisie n'est pas valide"]
+            assert response.json['thumbUrl'] == ["L'adresse saisie n'est pas valide"]

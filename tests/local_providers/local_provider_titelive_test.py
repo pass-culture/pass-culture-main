@@ -52,7 +52,6 @@ class TiteliveTest:
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
         PcObject.save(venue)
 
-
         # Import things
         provider_test(app,
                       TiteLiveThings,

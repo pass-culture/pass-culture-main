@@ -33,6 +33,5 @@ def test_save_activation_sandbox(app):
 
     assert Stock.query.first().available == 10000
 
-
     # teardown
     logger.info = logger_info

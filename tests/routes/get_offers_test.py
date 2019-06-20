@@ -5,8 +5,7 @@ from datetime import datetime, timedelta
 from models import PcObject, Venue, EventType, ThingType
 from models.offer_type import ProductType
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, \
-    create_offer_with_event_product, \
+from tests.test_utils import create_offer_with_event_product, \
     create_offerer, \
     create_offer_with_thing_product, \
     create_user, \
@@ -25,10 +24,10 @@ class Get:
             create_offers_for(user, 20)
 
             # when
-            response = TestClient().with_auth(email='user@test.com').get(API_URL + '/offers')
+            response = TestClient(app.test_client()).with_auth(email='user@test.com').get('/offers')
 
             # then
-            offers = response.json()
+            offers = response.json
             assert response.status_code == 200
             assert len(offers) == 10
 
@@ -37,15 +36,15 @@ class Get:
             # given
             user = create_user(email='user@test.com')
             create_offers_for(user, 20)
-            auth_request = TestClient().with_auth(email='user@test.com')
-            offers = auth_request.get(API_URL + '/offers').json()
+            auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
+            offers = auth_request.get('/offers').json
             first_id = dehumanize(offers[0]['id'])
 
             # when
-            response = auth_request.get(API_URL + '/offers?page=1')
+            response = auth_request.get('/offers?page=1')
 
             # then
-            result = response.json()
+            result = response.json
             assert response.status_code == 200
             assert dehumanize(result[0]['id']) == first_id
 
@@ -54,15 +53,15 @@ class Get:
             # given
             user = create_user(email='user@test.com')
             create_offers_for(user, 20)
-            auth_request = TestClient().with_auth(email='user@test.com')
-            response_1 = auth_request.get(API_URL + '/offers?page=1')
+            auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
+            response_1 = auth_request.get('/offers?page=1')
 
             # when
-            response_2 = auth_request.get(API_URL + '/offers?page=2')
+            response_2 = auth_request.get('/offers?page=2')
 
             # then
-            offers_1 = response_1.json()
-            offers_2 = response_2.json()
+            offers_1 = response_1.json
+            offers_2 = response_2.json
             assert offers_1[-1]['dateCreated'] > offers_2[0]['dateCreated']
 
         @clean_database
@@ -70,15 +69,15 @@ class Get:
             # given
             user = create_user(email='user@test.com')
             create_offers_for(user, 20)
-            auth_request = TestClient().with_auth(email='user@test.com')
-            first_page_response = auth_request.get(API_URL + '/offers?page=1')
+            auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
+            first_page_response = auth_request.get('/offers?page=1')
 
             # when
-            second_page_response = auth_request.get(API_URL + '/offers?page=2&orderBy=offer.id%20desc')
+            second_page_response = auth_request.get('/offers?page=2&orderBy=offer.id%20desc')
 
             # then
-            first_page_offers = first_page_response.json()
-            second_page_offers = second_page_response.json()
+            first_page_offers = first_page_response.json
+            second_page_offers = second_page_response.json
             assert first_page_offers[-1]['dateCreated'] > second_page_offers[0]['dateCreated']
 
         @clean_database
@@ -87,14 +86,14 @@ class Get:
             user = create_user(email='user@test.com')
             create_offers_for(user, 20, siren='123456789')
             create_offers_for(user, 20, siren='987654321')
-            auth_request = TestClient().with_auth(email='user@test.com')
+            auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
             venue_id = Venue.query.first().id
 
             # when
-            response = auth_request.get(API_URL + '/offers?venueId=' + humanize(venue_id))
+            response = auth_request.get('/offers?venueId=' + humanize(venue_id))
 
             # then
-            offers = response.json()
+            offers = response.json
             assert response.status_code == 200
             for offer in offers:
                 assert offer['venueId'] == humanize(venue_id)
@@ -104,14 +103,14 @@ class Get:
             # given
             user = create_user(email='user@test.com')
             create_offers_for(user, 20, siren='987654321')
-            auth_request = TestClient().with_auth(email='user@test.com')
+            auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
             venue_id = Venue.query.first().id
 
             # when
-            response = auth_request.get(API_URL + '/offers?venueId=' + humanize(venue_id) + '&page=2')
+            response = auth_request.get('/offers?venueId=' + humanize(venue_id) + '&page=2')
 
             # then
-            offers = response.json()
+            offers = response.json
             assert response.status_code == 200
             for offer in offers:
                 assert offer['venueId'] == humanize(venue_id)
@@ -121,14 +120,14 @@ class Get:
             # given
             user = create_user(email='user@test.com')
             create_offers_for(user, 20, siren='987654321')
-            auth_request = TestClient().with_auth(email='user@test.com')
+            auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
             venue_id = Venue.query.first().id
 
             # when
-            response = auth_request.get(API_URL + '/offers?venueId=' + humanize(venue_id) + '&page=1&keywords=Event')
+            response = auth_request.get('/offers?venueId=' + humanize(venue_id) + '&page=1&keywords=Event')
 
             # then
-            offers = response.json()
+            offers = response.json
             assert response.status_code == 200
             assert len(offers) == 10
             for offer in offers:
@@ -141,15 +140,15 @@ class Get:
             # given
             user = create_user(email='user@test.com')
             create_offers_for(user, 20, siren='987654321')
-            auth_request = TestClient().with_auth(email='user@test.com')
+            auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
             venue_id = Venue.query.first().id
 
             # when
             response = auth_request.get(
-                API_URL + '/offers?venueId=' + humanize(venue_id) + '&page=1&search=Event Offer')
+                '/offers?venueId=' + humanize(venue_id) + '&page=1&search=Event Offer')
 
             # then
-            offers = response.json()
+            offers = response.json
             assert response.status_code == 200
             assert len(offers) == 10
             assert len([o for o in offers if ProductType.is_event(o['type'])]) > 0
@@ -160,7 +159,7 @@ class Get:
             # given
             user = create_user()
             PcObject.save(user)
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             now = datetime.utcnow()
             five_days_ago = now - timedelta(days=5)
             next_week = now + timedelta(days=7)
@@ -177,10 +176,10 @@ class Get:
             PcObject.save(stock1, stock2, stock3)
 
             # when
-            response = auth_request.get(API_URL + '/offers/activation')
+            response = auth_request.get('/offers/activation')
 
             # then
-            json = response.json()
+            json = response.json
             event_ids = [info['productId'] for info in json if ProductType.is_event(info['type'])]
             assert len(json) == 2
             assert response.status_code == 200
@@ -222,13 +221,13 @@ class Get:
                 'value': 'EventType.SPECTACLE_VIVANT'
             }
 
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.get(API_URL + '/offers')
+            response = auth_request.get('/offers')
 
             # then
-            json = response.json()
+            json = response.json
             types = list(map(lambda x: x['product']['offerType'], json))
             thing_or_event_keys = list(map(lambda x: x['product'].keys(), json))
             assert response.status_code == 200
@@ -245,13 +244,13 @@ class Get:
             user_offerer = create_user_offerer(user, offerer, validation_token=secrets.token_urlsafe(20))
             offer = create_offer_with_thing_product(venue)
             PcObject.save(user_offerer, offer)
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             # When
-            response = auth_request.get(API_URL + '/offers')
+            response = auth_request.get('/offers')
 
             # Then
             assert response.status_code == 200
-            assert response.json() == []
+            assert response.json == []
 
 
 def create_offers_for(user, n, siren='123456789'):
@@ -268,6 +267,8 @@ def create_n_mixed_offers_with_same_venue(venue, n=10):
     offers = []
     for i in range(n // 2, 0, -1):
         date_created = datetime.utcnow() - timedelta(days=i)
-        offers.append(create_offer_with_thing_product(venue, date_created=date_created, thing_name='Thing Offer %s' % i))
-        offers.append(create_offer_with_event_product(venue, event_name='Event Offer %s' % i, date_created=date_created))
+        offers.append(
+            create_offer_with_thing_product(venue, date_created=date_created, thing_name='Thing Offer %s' % i))
+        offers.append(
+            create_offer_with_event_product(venue, event_name='Event Offer %s' % i, date_created=date_created))
     return offers

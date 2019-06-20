@@ -294,19 +294,24 @@ class PcObject:
             db.session.commit()
         except DataError as de:
             api_errors.addError(*PcObject.restize_data_error(de))
+            db.session.rollback()
             raise api_errors
         except IntegrityError as ie:
             api_errors.addError(*PcObject.restize_integrity_error(ie))
+            db.session.rollback()
             raise api_errors
         except InternalError as ie:
             for obj in objects:
                 api_errors.addError(*obj.restize_internal_error(ie))
+            db.session.rollback()
             raise api_errors
         except TypeError as te:
             api_errors.addError(*PcObject.restize_type_error(te))
+            db.session.rollback()
             raise api_errors
         except ValueError as ve:
             api_errors.addError(*PcObject.restize_value_error(ve))
+            db.session.rollback()
             raise api_errors
 
         if api_errors.errors.keys():

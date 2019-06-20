@@ -1,19 +1,26 @@
-import os
 from functools import wraps
 from pprint import pprint
+from time import sleep
 from unittest.mock import Mock
 
+import docker
 import pytest
-import requests
-from flask import Flask
+from docker.errors import NotFound
+from flask import Flask, jsonify
+from flask_login import LoginManager, login_user
 from mailjet_rest import Client
 from requests import Response
+from requests.auth import _basic_auth_str
 
+from local_providers.install import install_local_providers
 from models.db import db
+from models.install import install_models
+from models.mediation import upsertTutoMediations
 from repository.clean_database import clean_all_database
+from repository.user_queries import find_user_by_email
+from routes import install_routes
 from tests.test_utils import PLAIN_DEFAULT_TESTING_PASSWORD
-
-items_by_category = {'first': [], 'last': []}
+from utils.json_encoder import EnumJSONEncoder
 
 
 def pytest_configure(config):
@@ -21,12 +28,67 @@ def pytest_configure(config):
         TestClient.WITH_DOC = True
 
 
+def setup_test_database():
+    client = docker.from_env()
+    print('<<<<<|   STARTING DATABASE   |>>>>>')
+
+    try:
+        database = client.containers.get('pass-culture-pytest')
+    except NotFound as e:
+        client.containers.run(
+            'postgres',
+            name='pass-culture-pytest',
+            ports={
+                '5432/tcp': 5432
+            },
+            environment={
+                'POSTGRES_USER': 'pytest',
+                'POSTGRES_PASSWORD': 'pytest',
+                'POSTGRES_DB': 'pass-culture'
+            },
+            detach=True
+        )
+        sleep(3)
+    else:
+        if database.attrs['State']['Running'] is False:
+            database.start()
+            sleep(3)
+
+    print('<<<<<|   DATABASE STARTED   |>>>>>')
+
+
 @pytest.fixture(scope='session')
 def app():
     app = Flask(__name__, template_folder='../templates')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+    setup_test_database()
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://pytest:pytest@localhost:5432/pass-culture'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SECRET_KEY'] = '@##&6cweafhv3426445'
+    app.config['REMEMBER_COOKIE_HTTPONLY'] = False
+    app.config['SESSION_COOKIE_HTTPONLY'] = False
+    app.config['TESTING'] = True
+    app.url_map.strict_slashes = False
+    app.json_encoder = EnumJSONEncoder
+
+    login_manager = LoginManager()
+    login_manager.init_app(app)
     db.init_app(app)
+
+    app.app_context().push()
+    install_models()
+    install_routes()
+    install_local_providers()
+    app.mailjet_client = Mock()
+
+    @app.route('/test/signin', methods=['POST'])
+    def test_signin():
+        from flask import request
+        identifier = request.get_json().get("identifier")
+        user = find_user_by_email(identifier)
+        login_user(user, remember=True)
+        return jsonify({}), 204
+
     return app
 
 
@@ -43,6 +105,7 @@ def mocked_mail(f):
 def clean_database(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        db.session.rollback()
         clean_all_database()
         return f(*args, **kwargs)
 
@@ -54,70 +117,66 @@ class TestClient:
     USER_TEST_ADMIN_EMAIL = "pctest.admin93.0@btmx.fr"
     LOCAL_ORIGIN_HEADER = {'origin': 'http://localhost:3000'}
 
-    def __init__(self):
-        self.session = None
+    def __init__(self, client=None):
+        self.client = client if client else None
+        self.auth_header = {}
 
-    def with_auth(self, email: str = None, headers: dict = LOCAL_ORIGIN_HEADER):
-        self.session = requests.Session()
-        self.session.headers = headers
+    def with_auth(self, email: str = None):
+        self.email = email
         if email is None:
-            self.session.auth = (TestClient.USER_TEST_ADMIN_EMAIL, PLAIN_DEFAULT_TESTING_PASSWORD)
+            self.auth_header = {
+                'Authorization': _basic_auth_str(TestClient.USER_TEST_ADMIN_EMAIL, PLAIN_DEFAULT_TESTING_PASSWORD),
+            }
         else:
-            self.session.auth = (email, PLAIN_DEFAULT_TESTING_PASSWORD)
+            self.auth_header = {
+                'Authorization': _basic_auth_str(email, PLAIN_DEFAULT_TESTING_PASSWORD),
+            }
+
         return self
 
     def delete(self, route: str, headers=LOCAL_ORIGIN_HEADER):
-        sender = self._get_sender()
-        result = sender.delete(route, headers=headers)
+        result = self.client.delete(route, headers={**self.auth_header, **headers})
         self._print_spec('DELETE', route, None, result)
         return result
 
     def get(self, route: str, headers=LOCAL_ORIGIN_HEADER):
-        sender = self._get_sender()
-        result = sender.get(route, headers=headers)
+        result = self.client.get(route, headers={**self.auth_header, **headers})
         self._print_spec('GET', route, None, result)
         return result
 
     def post(self, route: str, json: dict = None, form: dict = None, files: dict = None, headers=LOCAL_ORIGIN_HEADER):
-        sender = self._get_sender()
-        if form:
-            result = sender.post(route, data=form, files=files, headers=headers)
+        if form or files:
+            result = self.client.post(route, data=form if form else files, headers={**self.auth_header, **headers})
         else:
-            result = sender.post(route, json=json, files=files, headers=headers)
+            result = self.client.post(route, json=json, headers={**self.auth_header, **headers})
+
         self._print_spec('POST', route, json, result)
         return result
 
     def patch(self, route: str, json: dict = None, headers=LOCAL_ORIGIN_HEADER):
-        sender = self._get_sender()
-        result = sender.patch(route, json=json, headers=headers)
+        result = self.client.patch(route, json=json, headers={**self.auth_header, **headers})
         self._print_spec('PATCH', route, json, result)
         return result
 
     def put(self, route: str, json: dict = None, headers=LOCAL_ORIGIN_HEADER):
-        sender = self._get_sender()
-        result = sender.put(route, json=json, headers=headers)
+        result = self.client.put(route, json=json, headers={**self.auth_header, **headers})
         self._print_spec('PUT', route, json, result)
         return result
 
-    def _get_sender(self):
-        if self.session:
-            sender = self.session
-        else:
-            sender = requests
-        return sender
-
     def _print_spec(self, verb: str, route: str, request_body: dict, result: Response):
-        if TestClient.WITH_DOC:
-            print('\n===========================================')
-            print('%s :: %s' % (verb, route))
-            print('STATUS CODE :: %s' % result.status_code)
-    
-            if request_body:
-                print('REQUEST BODY')
-                pprint(request_body)
+        if not TestClient.WITH_DOC:
+            return
 
-            if result.content:
-                print('RESPONSE BODY')
-                pprint(result.json())
+        print('\n===========================================')
+        print('%s :: %s' % (verb, route))
+        print('STATUS CODE :: %s' % result.status_code)
 
-            print('===========================================\n')
+        if request_body:
+            print('REQUEST BODY')
+            pprint(request_body)
+
+        if result.data:
+            print('RESPONSE BODY')
+            pprint(result.json)
+
+        print('===========================================\n')

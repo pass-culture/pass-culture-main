@@ -93,7 +93,7 @@ class TiteliveThingsTest:
                       erroredThumbs=0,
                       Product=1
                       )
-        
+
         product = Product.query.one()
         assert product.extraData.get('bookFormat') == BookFormat.BEAUX_LIVRES.value
 
@@ -165,9 +165,9 @@ class TiteliveThingsTest:
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
 
         product = create_product_with_Thing_type(id_at_providers='9782895026310',
-                                               thing_name='Toto à la playa',
-                                               date_modified_at_last_provider=datetime(2001, 1, 1),
-                                               last_provider_id=titelive_things_provider.id)
+                                                 thing_name='Toto à la playa',
+                                                 date_modified_at_last_provider=datetime(2001, 1, 1),
+                                                 last_provider_id=titelive_things_provider.id)
         PcObject.save(venue, product)
 
         provider_test(app,

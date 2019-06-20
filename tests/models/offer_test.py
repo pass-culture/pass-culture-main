@@ -203,7 +203,6 @@ class CreateOfferTest:
         assert offer.isEvent == False
         assert offer.isThing == False
 
-
     @clean_database
     def test_create_digital_offer_success(self, app):
         # Given

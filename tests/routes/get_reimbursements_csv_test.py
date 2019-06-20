@@ -3,7 +3,7 @@ from datetime import datetime
 from models import PcObject
 from scripts.payment.batch_steps import generate_new_payments
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_bank_information, create_stock_with_thing_offer, \
+from tests.test_utils import create_bank_information, create_stock_with_thing_offer, \
     create_deposit, create_venue, create_offerer, \
     create_user, create_booking, create_user_offerer
 
@@ -40,9 +40,9 @@ class Get:
             generate_new_payments()
 
             # When
-            response = TestClient().with_auth(user.email).get(
-                API_URL + '/reimbursements/csv')
-            response_lines = response.text.split('\n')
+            response = TestClient(app.test_client()).with_auth(user.email).get(
+                '/reimbursements/csv')
+            response_lines = response.data.decode('utf-8').split('\n')
 
             # Then
             assert response.status_code == 200
@@ -57,9 +57,9 @@ class Get:
             PcObject.save(user)
 
             # When
-            response = TestClient().with_auth(user.email).get(
-                API_URL + '/reimbursements/csv')
-            response_lines = response.text.split('\n')
+            response = TestClient(app.test_client()).with_auth(user.email).get(
+                '/reimbursements/csv')
+            response_lines = response.data.decode('utf-8').split('\n')
 
             # Then
             assert response.status_code == 200

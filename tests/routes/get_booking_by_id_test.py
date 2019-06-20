@@ -1,6 +1,6 @@
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_stock_with_thing_offer, \
+from tests.test_utils import create_stock_with_thing_offer, \
     create_offer_with_thing_product, create_venue, create_offerer, \
     create_user, create_booking
 from utils.human_ids import humanize
@@ -22,12 +22,12 @@ class Get:
             PcObject.save(booking)
 
             # When
-            response = TestClient().with_auth(user.email).get(
-                API_URL + '/bookings/' + humanize(booking.id))
+            response = TestClient(app.test_client()).with_auth(user.email).get(
+                '/bookings/' + humanize(booking.id))
 
             # Then
             assert response.status_code == 200
-            response_json = response.json()
+            response_json = response.json
             assert response_json[
                        'completedUrl'] == 'https://host/path/ABCDEF?offerId=%s&email=user+plus@email.fr' % humanize(
                 offer.id)

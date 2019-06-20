@@ -2,7 +2,8 @@ from models import PcObject
 from models.db import db
 from scripts.fill_offer_email import fill_booking_email
 from tests.conftest import clean_database
-from tests.test_utils import create_offer_with_thing_product, create_venue, create_offerer, create_user_offerer, create_user
+from tests.test_utils import create_offer_with_thing_product, create_venue, create_offerer, create_user_offerer, \
+    create_user
 
 
 class FillBookingEmailTest:

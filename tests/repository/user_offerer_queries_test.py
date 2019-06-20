@@ -1,16 +1,16 @@
 from models import Offer, Offerer, PcObject, UserOfferer, Venue
 from repository.user_offerer_queries import find_first_by_user_id, \
-                                            find_user_offerer_email, \
-                                            filter_query_where_user_is_user_offerer_and_is_validated
+    find_user_offerer_email, \
+    filter_query_where_user_is_user_offerer_and_is_validated
 from tests.conftest import clean_database
 from tests.test_utils import create_product_with_Event_type, \
-                             create_offer_with_event_product, \
-                             create_product_with_Thing_type, \
-                             create_offer_with_thing_product, \
-                             create_offerer, \
-                             create_user, \
-                             create_user_offerer, \
-                             create_venue
+    create_offer_with_event_product, \
+    create_product_with_Thing_type, \
+    create_offer_with_thing_product, \
+    create_offerer, \
+    create_user, \
+    create_user_offerer, \
+    create_venue
 
 
 @clean_database
@@ -46,6 +46,7 @@ def test_find_first_by_user_id_should_return_one_user_offerers_with_user_id(app)
     assert type(first_user_offerer) == UserOfferer
     assert first_user_offerer.id == user_offerer1.id
 
+
 @clean_database
 def test_filter_query_where_user_is_user_offerer_and_is_validated(app):
     # Given
@@ -62,7 +63,8 @@ def test_filter_query_where_user_is_user_offerer_and_is_validated(app):
     thing2 = create_product_with_Thing_type(thing_name='Belle du Seigneur')
     venue1 = create_venue(offerer1, name='Bataclan', city='Paris', siret=offerer1.siren + '12345')
     venue2 = create_venue(offerer2, name='Librairie la Rencontre', city='Saint Denis', siret=offerer2.siren + '54321')
-    venue3 = create_venue(offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis', siret=offerer3.siren + '54321')
+    venue3 = create_venue(offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis',
+                          siret=offerer3.siren + '54321')
     offer1 = create_offer_with_event_product(venue1, event1)
     offer2 = create_offer_with_event_product(venue1, event2)
     offer3 = create_offer_with_thing_product(venue2, thing1)

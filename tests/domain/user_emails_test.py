@@ -435,7 +435,8 @@ class SendCancellationEmailOneUserTest:
 
 
 class SendBatchCancellationEmailToOffererTest:
-    def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_administration_stock_case(self):
+    def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_administration_stock_case(
+            self):
         # Given
         num_bookings = 5
         bookings = create_mocked_bookings(num_bookings, 'offerer@email.com')

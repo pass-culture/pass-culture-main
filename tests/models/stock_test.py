@@ -88,7 +88,7 @@ def test_stock_cannot_have_a_negative_available_stock(app):
         PcObject.save(stock)
 
     # then
-    assert e.value.errors['available']  == ["Le stock doit être positif"]
+    assert e.value.errors['available'] == ["Le stock doit être positif"]
 
 
 @clean_database
@@ -146,5 +146,3 @@ def test_available_stocks_cannot_be_changed_when_exceeding_bookings_quantity_2(a
     # When
     with pytest.raises(ApiErrors):
         PcObject.save(stock)
-
-

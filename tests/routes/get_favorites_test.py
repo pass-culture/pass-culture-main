@@ -1,13 +1,12 @@
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, \
-    create_offer_with_event_product, \
+from tests.test_utils import create_offer_with_event_product, \
     create_offerer, \
     create_recommendation, \
     create_user, \
     create_venue
 
-RECOMMENDATION_URL = API_URL + '/recommendations'
+RECOMMENDATION_URL = '/recommendations'
 
 
 class Get:
@@ -15,7 +14,7 @@ class Get:
         @clean_database
         def when_not_logged_in(self, app):
             # when
-            response = TestClient().get(RECOMMENDATION_URL + '/favorites')
+            response = TestClient(app.test_client()).get(RECOMMENDATION_URL + '/favorites')
 
             # then
             assert response.status_code == 401
@@ -37,12 +36,12 @@ class Get:
             PcObject.save(user1, user2, recommendation1, recommendation2, recommendation3, recommendation4)
 
             # when
-            response = TestClient().with_auth(user1.email) \
+            response = TestClient(app.test_client()).with_auth(user1.email) \
                 .get(RECOMMENDATION_URL + '/favorites')
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 2
+            assert len(response.json) == 2
 
         @clean_database
         def when_current_user_has_no_favorites(self, app):
@@ -56,9 +55,9 @@ class Get:
             PcObject.save(user1, user2, recommendation1)
 
             # when
-            response = TestClient().with_auth(user1.email) \
+            response = TestClient(app.test_client()).with_auth(user1.email) \
                 .get(RECOMMENDATION_URL + '/favorites')
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 0
+            assert len(response.json) == 0

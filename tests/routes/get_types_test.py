@@ -1,6 +1,6 @@
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_user
+from tests.test_utils import create_user
 
 
 class Get:
@@ -8,8 +8,8 @@ class Get:
         @clean_database
         def when_user_is_anonymous(self, app):
             # when
-            response = TestClient().get(
-                API_URL + '/types/')
+            response = TestClient(app.test_client()).get(
+                '/types')
 
             # then
             assert response.status_code == 401
@@ -23,11 +23,11 @@ class Get:
             PcObject.save(user)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth('test@email.com') \
                 .get(
-                API_URL + '/types/')
-            types = response.json()
+                '/types')
+            types = response.json
 
             # then
             assert response.status_code == 200
@@ -45,11 +45,11 @@ class Get:
             PcObject.save(admin_user)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth('pctest.admin93.0@btmx.fr') \
                 .get(
-                API_URL + '/types/')
-            types = response.json()
+                '/types')
+            types = response.json
 
             # then
             assert response.status_code == 200
@@ -65,11 +65,11 @@ class Get:
             PcObject.save(user)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth('test@email.com') \
                 .get(
-                API_URL + '/types/')
-            types = response.json()
+                '/types')
+            types = response.json
 
             # then
             assert response.status_code == 200

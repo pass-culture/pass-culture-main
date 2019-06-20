@@ -99,7 +99,6 @@ class FillUserFromTest:
         assert user.resetPasswordToken is not None
         assert user.resetPasswordTokenValidityLimit is not None
 
-
     @patch('scripts.beneficiary.file_import.random_password')
     def test_returns_an_user_with_computed_password(self, random_password):
         # given
@@ -112,7 +111,6 @@ class FillUserFromTest:
 
         # then
         assert user.password == 'random_string'
-
 
 
 class CreateBookingForTest:

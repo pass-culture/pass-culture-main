@@ -1,7 +1,6 @@
-from models import PcObject
-from models.db import db
+from models import PcObject, User
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_user
+from tests.test_utils import create_user
 
 
 class PostChangePassword:
@@ -12,14 +11,15 @@ class PostChangePassword:
             user = create_user(email='user@test.com')
             PcObject.save(user)
             data = {'oldPassword': user.clearTextPassword, 'newPassword': 'N3W_p4ssw0rd'}
+            user_id = user.id
 
             # when
-            response = TestClient() \
-                .with_auth(user.email).post(API_URL + '/users/current/change-password',
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email).post('/users/current/change-password',
                                             json=data)
 
             # then
-            db.session.refresh(user)
+            user = User.query.get(user_id)
             assert user.checkPassword('N3W_p4ssw0rd') is True
             assert response.status_code == 204
 
@@ -32,13 +32,13 @@ class PostChangePassword:
             data = {'newPassword': 'N3W_p4ssw0rd'}
 
             # when
-            response = TestClient() \
-                .with_auth(user.email).post(API_URL + '/users/current/change-password',
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email).post('/users/current/change-password',
                                             json=data)
 
             # then
             assert response.status_code == 400
-            assert response.json()['oldPassword'] == ['Ancien mot de passe manquant']
+            assert response.json['oldPassword'] == ['Ancien mot de passe manquant']
 
         @clean_database
         def when_new_password_is_missing(self, app):
@@ -48,13 +48,13 @@ class PostChangePassword:
             data = {'oldPassword': '0ldp4ssw0rd'}
 
             # when
-            response = TestClient() \
-                .with_auth(user.email).post(API_URL + '/users/current/change-password',
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email).post('/users/current/change-password',
                                             json=data)
 
             # then
             assert response.status_code == 400
-            assert response.json()['newPassword'] == ['Nouveau mot de passe manquant']
+            assert response.json['newPassword'] == ['Nouveau mot de passe manquant']
 
         @clean_database
         def when_new_password_is_not_strong_enough(self, app):
@@ -64,13 +64,13 @@ class PostChangePassword:
             data = {'oldPassword': '0ldp4ssw0rd', 'newPassword': 'weakpassword'}
 
             # when
-            response = TestClient() \
-                .with_auth(user.email).post(API_URL + '/users/current/change-password',
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email).post('/users/current/change-password',
                                             json=data)
 
             # then
             assert response.status_code == 400
-            assert response.json()['newPassword'] == [
+            assert response.json['newPassword'] == [
                 'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
                 '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
             ]

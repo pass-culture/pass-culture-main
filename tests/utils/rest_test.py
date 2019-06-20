@@ -85,7 +85,6 @@ class TestCheckOrderByTest:
             # Then
             assert pytest.fail("Should not fail with valid params")
 
-
     def test_check_order_by_raises_no_exception_when_given_colum_name_as_string_with_quotes(self, app):
         # When
         try:
@@ -110,7 +109,8 @@ class TestCheckOrderByTest:
             # Then
             assert pytest.fail("Should not fail with valid params")
 
-    def test_check_order_by_raises_no_exception_when_given_colum_name_as_string_with_quotes_and_table_name_with_quotes(self, app):
+    def test_check_order_by_raises_no_exception_when_given_colum_name_as_string_with_quotes_and_table_name_with_quotes(
+            self, app):
         # When
         try:
             check_order_by('"Offer"."venueId" DESC')

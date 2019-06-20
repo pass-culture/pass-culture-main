@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 from models import PcObject, EventType
 from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_stock_with_thing_offer, \
+from tests.test_utils import create_stock_with_thing_offer, \
     create_venue, create_offerer, \
     create_user, create_booking, create_offer_with_event_product, \
     create_event_occurrence, create_stock_from_event_occurrence, create_user_offerer, create_stock_with_event_offer
@@ -37,11 +37,11 @@ class Get:
                              'venueDepartementCode': '93'}
 
             # When
-            response = TestClient().with_auth('admin@email.fr').get(
-                API_URL + '/bookings/token/{}'.format(booking.token))
+            response = TestClient(app.test_client()).with_auth('admin@email.fr').get(
+                '/bookings/token/{}'.format(booking.token))
             # Then
             assert response.status_code == 200
-            response_json = response.json()
+            response_json = response.json
             assert response_json == expected_json
 
         @clean_database
@@ -51,7 +51,8 @@ class Get:
             admin_user = create_user(email='admin@email.fr', is_admin=True, can_book_free_offers=False)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Offre d\'activation', event_type=EventType.ACTIVATION)
+            offer = create_offer_with_event_product(venue, event_name='Offre d\'activation',
+                                                    event_type=EventType.ACTIVATION)
             event_occurrence = create_event_occurrence(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0)
             booking = create_booking(user, stock, venue=venue)
@@ -69,13 +70,13 @@ class Get:
                              'venueDepartementCode': '93'}
 
             # When
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth('admin@email.fr') \
-                .get(API_URL + '/bookings/token/{}'.format(booking.token))
+                .get('/bookings/token/{}'.format(booking.token))
 
             # Then
             assert response.status_code == 200
-            response_json = response.json()
+            response_json = response.json
             assert response_json == expected_json
 
         @clean_database
@@ -93,10 +94,10 @@ class Get:
 
             PcObject.save(user_offerer, booking)
             url_email = urlencode({'email': 'user+plus@email.fr'})
-            url = API_URL + '/bookings/token/{}?{}'.format(booking.token, url_email)
+            url = '/bookings/token/{}?{}'.format(booking.token, url_email)
 
             # When
-            response = TestClient().with_auth('admin@email.fr').get(url)
+            response = TestClient(app.test_client()).with_auth('admin@email.fr').get(url)
             # Then
             assert response.status_code == 200
 
@@ -115,9 +116,9 @@ class Get:
 
             PcObject.save(admin_user, booking)
 
-            url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'user@email.fr')
+            url = '/bookings/token/{}?email={}'.format(booking.token, 'user@email.fr')
             # When
-            response = TestClient().get(url)
+            response = TestClient(app.test_client()).get(url)
             # Then
             assert response.status_code == 204
 
@@ -134,11 +135,11 @@ class Get:
             booking = create_booking(user, stock, venue=venue)
 
             PcObject.save(admin_user, booking)
-            url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
-                                                                             humanize(offer.id))
+            url = '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
+                                                                   humanize(offer.id))
 
             # When
-            response = TestClient().get(url)
+            response = TestClient(app.test_client()).get(url)
 
             # Then
             assert response.status_code == 204
@@ -154,11 +155,11 @@ class Get:
             booking = create_booking(user, stock, venue=venue)
 
             PcObject.save(admin_user, booking)
-            url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
-                                                                             humanize(stock.offerId))
+            url = '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
+                                                                   humanize(stock.offerId))
 
             # When
-            response = TestClient().get(url)
+            response = TestClient(app.test_client()).get(url)
             # Then
             assert response.status_code == 204
 
@@ -171,11 +172,11 @@ class Get:
             PcObject.save(admin_user)
 
             # When
-            response = TestClient().with_auth('admin@email.fr').get(
-                API_URL + '/bookings/token/{}'.format('12345'))
+            response = TestClient(app.test_client()).with_auth('admin@email.fr').get(
+                '/bookings/token/{}'.format('12345'))
             # Then
             assert response.status_code == 404
-            assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
+            assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
 
         @clean_database
         def when_user_not_logged_in_and_wrong_email(self, app):
@@ -192,11 +193,11 @@ class Get:
             PcObject.save(admin_user, booking)
 
             # When
-            url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'toto@email.fr')
-            response = TestClient().with_auth('admin@email.fr').get(url)
+            url = '/bookings/token/{}?email={}'.format(booking.token, 'toto@email.fr')
+            response = TestClient(app.test_client()).with_auth('admin@email.fr').get(url)
             # Then
             assert response.status_code == 404
-            assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
+            assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
 
         @clean_database
         def when_user_not_logged_in_right_email_and_wrong_offer(self, app):
@@ -209,15 +210,15 @@ class Get:
             booking = create_booking(user, stock, venue=venue)
 
             PcObject.save(admin_user, booking)
-            url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
-                                                                             humanize(123))
+            url = '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
+                                                                   humanize(123))
 
             # When
-            response = TestClient().get(url)
+            response = TestClient(app.test_client()).get(url)
 
             # Then
             assert response.status_code == 404
-            assert response.json()['global'] == ["Cette contremarque n'a pas été trouvée"]
+            assert response.json['global'] == ["Cette contremarque n'a pas été trouvée"]
 
         @clean_database
         def when_user_has_rights_and_email_with_special_characters_not_url_encoded(self, app):
@@ -233,10 +234,10 @@ class Get:
             booking = create_booking(user, stock, venue=venue)
 
             PcObject.save(user_offerer, booking)
-            url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
+            url = '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
             # When
-            response = TestClient().with_auth('admin@email.fr').get(url)
+            response = TestClient(app.test_client()).with_auth('admin@email.fr').get(url)
             # Then
             assert response.status_code == 404
 
@@ -256,15 +257,14 @@ class Get:
 
             PcObject.save(admin_user, booking)
 
-            url = API_URL + '/bookings/token/{}'.format(booking.token)
+            url = '/bookings/token/{}'.format(booking.token)
             # When
-            response = TestClient().get(url)
+            response = TestClient(app.test_client()).get(url)
             # Then
             assert response.status_code == 400
-            error_message = response.json()
+            error_message = response.json
             assert error_message['email'] == [
                 'Vous devez préciser l\'email de l\'utilisateur quand vous n\'êtes pas connecté(e)']
-
 
         @clean_database
         def when_user_doesnt_have_rights_and_token_exists(self, app):
@@ -281,8 +281,8 @@ class Get:
             PcObject.save(querying_user, booking)
 
             # When
-            response = TestClient().with_auth('querying@email.fr').get(
-                API_URL + '/bookings/token/{}'.format(booking.token))
+            response = TestClient(app.test_client()).with_auth('querying@email.fr').get(
+                '/bookings/token/{}'.format(booking.token))
             # Then
             assert response.status_code == 400
 
@@ -297,18 +297,20 @@ class Get:
             admin_user = create_user(email='admin@email.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=in_73_hours, end_datetime=in_74_hours, booking_limit_datetime=in_72_hours)
+            stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=in_73_hours,
+                                                  end_datetime=in_74_hours, booking_limit_datetime=in_72_hours)
             booking = create_booking(user, stock, venue=venue)
 
             PcObject.save(admin_user, booking)
-            url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
-                                                                             humanize(stock.offerId))
+            url = '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
+                                                                   humanize(stock.offerId))
 
             # When
-            response = TestClient().get(url)
+            response = TestClient(app.test_client()).get(url)
             # Then
             assert response.status_code == 403
-            assert response.json()['beginningDatetime'] == ['Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement']
+            assert response.json['beginningDatetime'] == [
+                'Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement']
 
     class Returns410:
         @clean_database
@@ -322,14 +324,14 @@ class Get:
             booking = create_booking(user, stock, venue=venue, is_used=True)
 
             PcObject.save(admin_user, booking)
-            url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
-                                                                             humanize(stock.offerId))
+            url = '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
+                                                                   humanize(stock.offerId))
 
             # When
-            response = TestClient().get(url)
+            response = TestClient(app.test_client()).get(url)
             # Then
             assert response.status_code == 410
-            assert response.json()['booking'] == ['Cette réservation a déjà été validée']
+            assert response.json['booking'] == ['Cette réservation a déjà été validée']
 
         @clean_database
         def when_booking_is_cancelled(self, app):
@@ -342,11 +344,11 @@ class Get:
             booking = create_booking(user, stock, venue=venue, is_cancelled=True)
 
             PcObject.save(admin_user, booking)
-            url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
-                                                                             humanize(stock.offerId))
+            url = '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'user@email.fr',
+                                                                   humanize(stock.offerId))
 
             # When
-            response = TestClient().get(url)
+            response = TestClient(app.test_client()).get(url)
             # Then
             assert response.status_code == 410
-            assert response.json()['booking'] == ['Cette réservation a été annulée']
+            assert response.json['booking'] == ['Cette réservation a été annulée']

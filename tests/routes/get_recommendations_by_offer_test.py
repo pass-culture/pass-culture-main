@@ -1,7 +1,6 @@
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, \
-    create_offer_with_event_product, \
+from tests.test_utils import create_offer_with_event_product, \
     create_mediation, \
     create_offerer, \
     create_recommendation, \
@@ -9,7 +8,7 @@ from tests.test_utils import API_URL, \
     create_venue
 from utils.human_ids import humanize
 
-RECOMMENDATION_URL = API_URL + '/recommendations'
+RECOMMENDATION_URL = '/recommendations'
 
 
 class Get:
@@ -26,14 +25,14 @@ class Get:
 
             # When
             path = '/recommendations/offers/{}'.format(humanize(offer.id))
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(email='user@test.com') \
-                .get(API_URL + path)
+                .get(path)
 
             # Then
             assert response.status_code == 200
-            assert response.json()['id'] == humanize(recommendation.id)
-            assert response.json()['offerId'] == humanize(offer.id)
+            assert response.json['id'] == humanize(recommendation.id)
+            assert response.json['offerId'] == humanize(offer.id)
 
         @clean_database
         def when_mediation_id_is_given(self, app):
@@ -53,16 +52,16 @@ class Get:
                 humanize(offer.id),
                 humanize(recommendation1.mediationId)
             )
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(email='user@test.com') \
-                .get(API_URL + path)
+                .get(path)
 
             # Then
             assert response.status_code == 200
-            assert response.json()['id'] == humanize(recommendation1.id)
-            assert response.json()['offerId'] == humanize(offer.id)
-            assert response.json()['mediationId'] == humanize(mediation1.id)
-            assert response.json()['offer']['product']['offerType']['proLabel'] == 'Spectacle vivant'
+            assert response.json['id'] == humanize(recommendation1.id)
+            assert response.json['offerId'] == humanize(offer.id)
+            assert response.json['mediationId'] == humanize(mediation1.id)
+            assert response.json['offer']['product']['offerType']['proLabel'] == 'Spectacle vivant'
 
     class Returns404:
         @clean_database
@@ -73,10 +72,10 @@ class Get:
 
             # When
             path = '/recommendations/offers/AE'
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(email='user@test.com') \
-                .get(API_URL + path)
+                .get(path)
 
             # Then
             assert response.status_code == 404
-            assert response.json()['global'] == ["Offre ou médiation introuvable"]
+            assert response.json['global'] == ["Offre ou médiation introuvable"]

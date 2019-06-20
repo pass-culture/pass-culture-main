@@ -25,11 +25,12 @@ def test_remove_special_character():
 
 
 def test_tokenize_url():
-    assert tokenize_for_search('http://www.t_est-toto.fr') == ['http', 'www', 't', 'est', 'toto', 'fr' ]
+    assert tokenize_for_search('http://www.t_est-toto.fr') == ['http', 'www', 't', 'est', 'toto', 'fr']
 
 
 def test_tokenize_url():
-    assert remove_single_letters_for_search(['http', 'www', 't', 'est', 'toto', 'fr' ]) == ['http', 'www', 'est', 'toto', 'fr']
+    assert remove_single_letters_for_search(['http', 'www', 't', 'est', 'toto', 'fr']) == ['http', 'www', 'est', 'toto',
+                                                                                           'fr']
 
 
 def test_format_decimal():

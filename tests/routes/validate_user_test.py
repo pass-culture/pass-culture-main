@@ -1,7 +1,6 @@
-from models import PcObject
-from models.db import db
+from models import PcObject, User
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user, API_URL
+from tests.test_utils import create_user
 
 
 class Patch:
@@ -12,15 +11,15 @@ class Patch:
             user = create_user()
             user.generate_validation_token()
             PcObject.save(user)
+            user_id = user.id
 
             # When
-            response = TestClient().patch(API_URL + '/validate/user/' + user.validationToken,
-                                          headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).patch('/validate/user/' + user.validationToken,
+                                                           headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 204
-            db.session.refresh(user)
-            assert user.isValidated
+            assert User.query.get(user_id).isValidated
 
     class Returns404:
         @clean_database
@@ -29,9 +28,9 @@ class Patch:
             random_token = '0987TYGHHJMJ'
 
             # When
-            response = TestClient().patch(API_URL + '/validate/user/' + random_token,
-                                          headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).patch('/validate/user/' + random_token,
+                                                           headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 404
-            assert response.json()['global'] == ['Ce lien est invalide']
+            assert response.json['global'] == ['Ce lien est invalide']

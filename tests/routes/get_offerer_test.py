@@ -1,7 +1,6 @@
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, \
-    create_user, create_offerer, create_venue, create_bank_information, create_user_offerer
+from tests.test_utils import create_user, create_offerer, create_venue, create_bank_information, create_user_offerer
 from utils.human_ids import humanize
 
 
@@ -15,13 +14,13 @@ class Get:
             invalid_id = 12
 
             # When
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .get(API_URL + '/offerers/%s' % invalid_id)
+                .get('/offerers/%s' % invalid_id)
 
             # then
             assert response.status_code == 404
-            assert response.json()['global'] == ['La page que vous recherchez n\'existe pas']
+            assert response.json['global'] == ['La page que vous recherchez n\'existe pas']
 
     class Returns200:
         @clean_database
@@ -34,12 +33,12 @@ class Get:
             user_offerer = create_user_offerer(user, offerer)
             PcObject.save(user_offerer, venue)
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .get(API_URL + f'/offerers/{humanize(offerer.id)}')
+                .get(f'/offerers/{humanize(offerer.id)}')
 
             # then
             assert response.status_code == 200
-            response_json = response.json()
+            response_json = response.json
             assert 'bic' in response_json['managedVenues'][0]
             assert 'iban' in response_json['managedVenues'][0]

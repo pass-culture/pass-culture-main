@@ -4,8 +4,7 @@ from models import PcObject
 from models.db import db
 from models.mediation import Mediation, upsertTutoMediations
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, \
-    create_event_occurrence, \
+from tests.test_utils import create_event_occurrence, \
     create_offer_with_event_product, \
     create_mediation, \
     create_offerer, \
@@ -18,14 +17,14 @@ from tests.test_utils import API_URL, \
     create_stock_with_thing_offer
 from utils.human_ids import humanize
 
-RECOMMENDATION_URL = API_URL + '/recommendations'
+RECOMMENDATION_URL = '/recommendations'
 
 
 class Put:
     class Returns401:
-        def when_not_logged_in(self):
+        def when_not_logged_in(self, app):
             # when
-            response = TestClient().put(
+            response = TestClient(app.test_client()).put(
                 RECOMMENDATION_URL,
                 headers={'origin': 'http://localhost:3000'}
             )
@@ -47,7 +46,7 @@ class Put:
             mediation_1 = create_mediation(offer_thing_1)
             mediation_2 = create_mediation(offer_thing_2)
             PcObject.save(user, stock_thing_1, stock_thing_2, mediation_1, mediation_2)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
@@ -69,7 +68,7 @@ class Put:
             stock_with_thing = create_stock_with_thing_offer(offerer, venue, offer_with_thing, price=0)
             mediation = create_mediation(offer_with_thing)
             PcObject.save(user, stock_with_thing, mediation)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
@@ -91,7 +90,7 @@ class Put:
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
             PcObject.save(user, stock_thing, mediation)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
@@ -108,7 +107,7 @@ class Put:
             # given
             user = create_user(email='user1@user.fr')
             PcObject.save(user)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
@@ -130,7 +129,7 @@ class Put:
             offer1 = create_offer_with_thing_product(venue, thumb_count=1)
             stock1 = create_stock_from_offer(offer1, price=0)
             PcObject.save(user, stock1)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             data = {'seenRecommendationIds': []}
             # when
@@ -175,11 +174,11 @@ class Put:
             ]
 
             # When
-            response = TestClient().with_auth('test@email.com') \
+            response = TestClient(app.test_client()).with_auth('test@email.com') \
                 .put('{}/read'.format(RECOMMENDATION_URL), json=read_recommendation_data)
 
             # Then
-            read_recommendation_date_reads = [r['dateRead'] for r in response.json()]
+            read_recommendation_date_reads = [r['dateRead'] for r in response.json]
             assert len(read_recommendation_date_reads) == 2
             assert {"2018-12-17T15:59:11.689000Z", "2018-12-17T15:59:14.689000Z"} == set(read_recommendation_date_reads)
 
@@ -203,7 +202,7 @@ class Put:
             recommendation3 = create_recommendation(thing_offer2, user)
             PcObject.save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
 
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             reads = [
                 {"id": humanize(recommendation1.id), "dateRead": "2018-12-17T15:59:11.689000Z"},
@@ -217,7 +216,7 @@ class Put:
             # then
             assert response.status_code == 200
             previous_date_reads = set([r['dateRead'] for r in reads])
-            next_date_reads = set([r['dateRead'] for r in response.json()])
+            next_date_reads = set([r['dateRead'] for r in response.json])
             assert previous_date_reads.issubset(next_date_reads)
 
         @clean_database
@@ -240,12 +239,12 @@ class Put:
             PcObject.save(user, stock1, stock2, stock3, stock4)
 
             # when
-            response = TestClient().with_auth(user.email) \
+            response = TestClient(app.test_client()).with_auth(user.email) \
                 .put(RECOMMENDATION_URL, json={'readRecommendations': []})
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 0
+            assert len(response.json) == 0
 
         @clean_database
         def when_user_has_one_offer_in_his_department(self, app):
@@ -261,12 +260,12 @@ class Put:
             PcObject.save(user, stock1, stock2)
 
             # when
-            response = TestClient().with_auth(user.email) \
+            response = TestClient(app.test_client()).with_auth(user.email) \
                 .put(RECOMMENDATION_URL, json={'readRecommendations': []})
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 1
+            assert len(response.json) == 1
 
         @clean_database
         def when_offers_have_soft_deleted_stocks(self, app):
@@ -287,15 +286,18 @@ class Put:
             recommendation2 = create_recommendation(thing_offer1, user)
             recommendation3 = create_recommendation(thing_offer2, user)
             PcObject.save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
+            recommendation1_id = recommendation1.id
+            recommendation2_id = recommendation2.id
+            recommendation3_id = recommendation3.id
 
             # When
-            response = TestClient().with_auth('test@email.com').put(RECOMMENDATION_URL, json={})
+            response = TestClient(app.test_client()).with_auth('test@email.com').put(RECOMMENDATION_URL, json={})
 
             # Then
-            recommendation_ids = [r['id'] for r in (response.json())]
-            assert humanize(recommendation1.id) in recommendation_ids
-            assert humanize(recommendation2.id) not in recommendation_ids
-            assert humanize(recommendation3.id) in recommendation_ids
+            recommendation_ids = [r['id'] for r in (response.json)]
+            assert humanize(recommendation1_id) in recommendation_ids
+            assert humanize(recommendation2_id) not in recommendation_ids
+            assert humanize(recommendation3_id) in recommendation_ids
 
         @clean_database
         def when_offers_have_no_stocks(self, app):
@@ -305,14 +307,14 @@ class Put:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             PcObject.save(user, offer)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 0
+            assert len(response.json) == 0
 
         @clean_database
         def when_offers_have_a_thumb_count_for_thing_and_no_mediation(self, app):
@@ -323,14 +325,14 @@ class Put:
             offer = create_offer_with_thing_product(venue, thumb_count=1)
             stock = create_stock_from_offer(offer, price=0)
             PcObject.save(user, stock)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 1
+            assert len(response.json) == 1
 
         @clean_database
         def when_offers_have_no_thumb_count_for_thing_and_no_mediation(self, app):
@@ -341,14 +343,14 @@ class Put:
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             stock = create_stock_from_offer(offer, price=0)
             PcObject.save(user, stock)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 0
+            assert len(response.json) == 0
 
         @clean_database
         def when_offers_have_no_thumb_count_for_thing_and_a_mediation(
@@ -361,14 +363,14 @@ class Put:
             stock = create_stock_from_offer(offer, price=0)
             mediation = create_mediation(offer)
             PcObject.save(user, stock, mediation)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 1
+            assert len(response.json) == 1
 
         @clean_database
         def when_offers_have_no_thumb_count_for_event_and_no_mediation(self, app):
@@ -388,14 +390,14 @@ class Put:
             )
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
             PcObject.save(user, stock)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 0
+            assert len(response.json) == 0
 
         @clean_database
         def when_offers_have_no_thumb_count_for_event_and_no_mediation(
@@ -417,14 +419,14 @@ class Put:
             mediation = create_mediation(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
             PcObject.save(user, stock, mediation)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 1
+            assert len(response.json) == 1
 
         @clean_database
         def when_offers_have_a_thumb_count_for_event_and_no_mediation(
@@ -445,14 +447,14 @@ class Put:
             )
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
             PcObject.save(user, stock)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 1
+            assert len(response.json) == 1
 
         @clean_database
         def when_offers_have_non_validated_venues(self, app):
@@ -467,17 +469,19 @@ class Put:
             stock_venue_validated = create_stock_from_offer(offer_venue_validated)
             user = create_user(email='test@email.com')
             PcObject.save(stock_venue_not_validated, stock_venue_validated, user)
-            auth_request = TestClient().with_auth(user.email)
+            venue_validated_id = venue_validated.id
+            venue_not_validated_id = venue_not_validated.id
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # Then
             assert response.status_code == 200
-            recommendations = response.json()
+            recommendations = response.json
             venue_ids = set(map(lambda x: x['offer']['venue']['id'], recommendations))
-            assert humanize(venue_validated.id) in venue_ids
-            assert humanize(venue_not_validated.id) not in venue_ids
+            assert humanize(venue_validated_id) in venue_ids
+            assert humanize(venue_not_validated_id) not in venue_ids
 
         @clean_database
         def when_offers_have_active_mediations(self, app):
@@ -493,18 +497,21 @@ class Put:
             mediation2 = create_mediation(offer2, is_active=False)
             mediation3 = create_mediation(offer2, is_active=True)
             PcObject.save(user, stock1, mediation1, stock2, mediation2, mediation3)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
+            mediation3_id = mediation3.id
+            mediation2_id = mediation2.id
+            mediation1_id = mediation1.id
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
-            json = response.json()
+            json = response.json
             mediation_ids = list(map(lambda x: x['mediationId'], json))
-            assert humanize(mediation3.id) in mediation_ids
-            assert humanize(mediation2.id) not in mediation_ids
-            assert humanize(mediation1.id) not in mediation_ids
+            assert humanize(mediation3_id) in mediation_ids
+            assert humanize(mediation2_id) not in mediation_ids
+            assert humanize(mediation1_id) not in mediation_ids
 
         @clean_database
         def when_a_recommendation_is_requested(self, app):
@@ -529,7 +536,13 @@ class Put:
             recommendation_offer4 = create_recommendation(offer4, user, date_read=now - timedelta(days=1))
             PcObject.save(user, stock1, stock2, stock3, stock4, mediation,
                           recommendation_offer3, recommendation_offer4)
-            auth_request = TestClient().with_auth(user.email)
+            offer1_id = offer1.id
+            offer2_id = offer2.id
+            offer3_id = offer3.id
+            recommendation_offer4_id = recommendation_offer4.id
+            recommendation_offer3_id = recommendation_offer3.id
+
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL + '?offerId=%s' % humanize(offer1.id),
@@ -537,16 +550,16 @@ class Put:
 
             # then
             assert response.status_code == 200
-            response_json = response.json()
+            response_json = response.json
             assert len(response_json) == 4
             offer_ids = set(map(lambda x: x['offer']['id'], response_json))
             recommendation_ids = set(map(lambda x: x['id'], response_json))
             assert response_json[0]['offer']['id'] == humanize(offer1.id)
-            assert humanize(offer1.id) in offer_ids
-            assert humanize(offer2.id) in offer_ids
-            assert humanize(offer3.id) in offer_ids
-            assert humanize(recommendation_offer4.id) in recommendation_ids
-            assert humanize(recommendation_offer3.id) in recommendation_ids
+            assert humanize(offer1_id) in offer_ids
+            assert humanize(offer2_id) in offer_ids
+            assert humanize(offer3_id) in offer_ids
+            assert humanize(recommendation_offer4_id) in recommendation_ids
+            assert humanize(recommendation_offer3_id) in recommendation_ids
 
         @clean_database
         def when_existing_recommendations_are_invalid(self, app):
@@ -575,7 +588,12 @@ class Put:
                                                           valid_until_date=fifteen_min_ago)
             PcObject.save(stock1, stock2, stock3, stock4, mediation, recommendation_offer3,
                           recommendation_offer4, recommendation_offer1, recommendation_offer2)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
+
+            recommendation_offer1_id = recommendation_offer1.id
+            recommendation_offer2_id = recommendation_offer2.id
+            recommendation_offer3_id = recommendation_offer3.id
+            recommendation_offer4_id = recommendation_offer4.id
 
             # when
             response = auth_request.put(RECOMMENDATION_URL + '?offerId=%s' % humanize(offer1.id),
@@ -583,13 +601,13 @@ class Put:
 
             # then
             assert response.status_code == 200
-            response_json = response.json()
+            response_json = response.json
             assert len(response_json) == 4
             recommendation_ids = set(map(lambda x: x['id'], response_json))
-            assert humanize(recommendation_offer1.id) not in recommendation_ids
-            assert humanize(recommendation_offer2.id) not in recommendation_ids
-            assert humanize(recommendation_offer3.id) not in recommendation_ids
-            assert humanize(recommendation_offer4.id) not in recommendation_ids
+            assert humanize(recommendation_offer1_id) not in recommendation_ids
+            assert humanize(recommendation_offer2_id) not in recommendation_ids
+            assert humanize(recommendation_offer3_id) not in recommendation_ids
+            assert humanize(recommendation_offer4_id) not in recommendation_ids
 
         @clean_database
         def test_returns_two_recommendations_with_one_event_and_one_thing(self, app):
@@ -610,14 +628,14 @@ class Put:
             offer_thing = create_offer_with_thing_product(venue, thumb_count=1, dominant_color=b'123')
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             PcObject.save(user, event_stock, stock_thing)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 2
+            assert len(response.json) == 2
 
         @clean_database
         def test_discovery_recommendations_should_not_include_search_recommendations(self, app):
@@ -638,14 +656,14 @@ class Put:
             PcObject.save(user, stock1, mediation1, stock2, mediation2, recommendation)
             db.session.refresh(offer2)
             db.session.refresh(recommendation)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # When
             recommendations_req = auth_request.put(RECOMMENDATION_URL, json={})
 
             # Then
             assert recommendations_req.status_code == 200
-            recommendations = recommendations_req.json()
+            recommendations = recommendations_req.json
             assert len(recommendations) == 1
             assert recommendations[0]['id'] != recommendation.id
             assert recommendations[0]['offerId'] != offer2.id
@@ -660,7 +678,7 @@ class Put:
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
             PcObject.save(user, stock_thing, mediation)
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
@@ -670,7 +688,7 @@ class Put:
                                         humanize(mediation.id), json={'seenRecommendationIds': []})
             # then
             assert response.status_code == 200
-            recos = response.json()
+            recos = response.json
             assert recos[0]['mediationId'] == humanize(mediation.id)
 
         @clean_database
@@ -683,7 +701,8 @@ class Put:
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
             PcObject.save(user, stock_thing, mediation)
-            auth_request = TestClient().with_auth(user.email)
+            mediation_id = mediation.id
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
@@ -692,8 +711,8 @@ class Put:
 
             # then
             assert response.status_code == 200
-            recos = response.json()
-            assert recos[0]['mediationId'] == humanize(mediation.id)
+            recos = response.json
+            assert recos[0]['mediationId'] == humanize(mediation_id)
 
         @clean_database
         def when_a_recommendation_with_no_offer_and_a_mediation_is_requested(self, app):
@@ -705,7 +724,8 @@ class Put:
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             mediation = create_mediation(offer_thing)
             PcObject.save(user, stock_thing, mediation)
-            auth_request = TestClient().with_auth(user.email)
+            offer_thing_id = offer_thing.id
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
@@ -714,8 +734,8 @@ class Put:
 
             # then
             assert response.status_code == 200
-            recos = response.json()
-            assert recos[0]['offerId'] == humanize(offer_thing.id)
+            recos = response.json
+            assert recos[0]['offerId'] == humanize(offer_thing_id)
 
         @clean_database
         def test_returns_new_recommendation_with_active_mediation_for_already_existing_but_invalid_recommendations(
@@ -731,18 +751,21 @@ class Put:
             invalid_recommendation = create_recommendation(offer1, user, inactive_mediation,
                                                            valid_until_date=datetime.utcnow() - timedelta(hours=2))
             PcObject.save(user, stock1, inactive_mediation, active_mediation, invalid_recommendation)
-            auth_request = TestClient().with_auth(user.email)
+            active_mediation_id = active_mediation.id
+            inactive_mediation_id = inactive_mediation.id
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             data = {'seenRecommendationIds': []}
+
             # when
             response = auth_request.put(RECOMMENDATION_URL, json=data)
 
             # then
             assert response.status_code == 200
-            json = response.json()
+            json = response.json
             mediation_ids = list(map(lambda x: x['mediationId'], json))
-            assert humanize(active_mediation.id) in mediation_ids
-            assert humanize(inactive_mediation.id) not in mediation_ids
+            assert humanize(active_mediation_id) in mediation_ids
+            assert humanize(inactive_mediation_id) not in mediation_ids
 
         @clean_database
         def when_tutos_are_not_already_read(self, app):
@@ -763,12 +786,12 @@ class Put:
             upsertTutoMediations()
 
             # when
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
             response = auth_request.put(RECOMMENDATION_URL, json={})
 
             # then
             assert response.status_code == 200
-            recommendations = response.json()
+            recommendations = response.json
             assert recommendations[0]['mediation']['tutoIndex'] == 0
             assert recommendations[1]['mediation']['tutoIndex'] == 1
 
@@ -813,14 +836,14 @@ class Put:
                 }
             ]
             data = {'readRecommendations': reads}
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json=data)
 
             # then
             assert response.status_code == 200
-            recommendations = response.json()
+            recommendations = response.json
             recommendation_ids = [r['id'] for r in recommendations]
             assert humanized_tuto_recommendation0_id not in recommendation_ids
             assert humanized_tuto_recommendation1_id not in recommendation_ids
@@ -840,12 +863,12 @@ class Put:
             PcObject.save(stock, recommendation)
 
             # When
-            recommendations = TestClient().with_auth(user.email).put(RECOMMENDATION_URL,
-                                                                     json={})
+            recommendations = TestClient(app.test_client()).with_auth(user.email).put(RECOMMENDATION_URL,
+                                                                                      json={})
 
             # Then
             assert recommendations.status_code == 200
-            assert not recommendations.json()
+            assert not recommendations.json
 
         @clean_database
         def when_user_has_already_seen_recommendation(self, app):
@@ -860,12 +883,12 @@ class Put:
             PcObject.save(stock, recommendation)
 
             # when
-            response = TestClient().with_auth(user.email) \
+            response = TestClient(app.test_client()).with_auth(user.email) \
                 .put(RECOMMENDATION_URL, json={'seenRecommendationIds': [humanize(recommendation.id)]})
 
             # then
             assert response.status_code == 200
-            assert response.json() == []
+            assert response.json == []
 
         @clean_database
         def test_returns_same_quantity_of_recommendations_in_different_orders(self, app):
@@ -890,7 +913,7 @@ class Put:
                 stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
                 PcObject.save(event_stock, stock_thing)
 
-            auth_request = TestClient().with_auth(user.email)
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             recommendations1 = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
@@ -899,8 +922,8 @@ class Put:
             # then
             assert recommendations1.status_code == 200
             assert recommendations2.status_code == 200
-            assert len(recommendations1.json()) == 20
-            assert len(recommendations1.json()) == len(recommendations2.json())
+            assert len(recommendations1.json) == 20
+            assert len(recommendations1.json) == len(recommendations2.json)
             assert any(
-                [recommendations1.json()[i]['id'] != recommendations2.json()[i]['id'] for i in
-                 range(0, len(recommendations1.json()))])
+                [recommendations1.json[i]['id'] != recommendations2.json[i]['id'] for i in
+                 range(0, len(recommendations1.json))])

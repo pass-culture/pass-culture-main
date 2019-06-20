@@ -39,7 +39,7 @@ def test_check_get_venues_params_doesnt_raise_api_error_for_valid_dpts_in(app):
     # when
     try:
         check_get_venues_params(valid_dpts)
-    
+
     except ApiErrors:
         # Then
         assert pytest.fail("Should not fail with valid params")
@@ -69,7 +69,7 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_zip_codes(app):
 
     # then
     assert errors.value.errors['zip_codes'] == \
-        ['zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
+           ['zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
         ["78140", "69007"]']
 
 
@@ -84,7 +84,7 @@ def test_check_get_venues_params_raises_api_error_if_too_long_zip_codes(app):
 
     # then
     assert errors.value.errors['zip_codes'] == \
-        ['zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
+           ['zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
         ["78140", "69007"]']
 
 
@@ -99,7 +99,7 @@ def test_check_get_venues_params_raises_api_error_if_too_short_zip_codes(app):
 
     # then
     assert errors.value.errors['zip_codes'] == \
-        ['zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
+           ['zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
         ["78140", "69007"]']
 
 
@@ -114,7 +114,7 @@ def test_check_get_venues_params_raises_api_error_if_not_list_zip_codes(app):
 
     # then
     assert errors.value.errors['zip_codes'] == \
-        ['zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
+           ['zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
         ["78140", "69007"]']
 
 
@@ -126,7 +126,7 @@ def test_check_get_venues_params_doesnt_raise_api_error_for_valid_zip_codes(app)
     # when
     try:
         check_get_venues_params(valid_zip_codes)
-    
+
     except ApiErrors:
         # Then
         assert pytest.fail("Should not fail with valid params")
@@ -140,7 +140,7 @@ def test_check_get_venues_params_doesnt_raise_api_error_for_valid_siren(app):
     # when
     try:
         check_get_venues_params(valid_siren)
-    
+
     except ApiErrors:
         # Then
         assert pytest.fail("Should not fail with valid params")
@@ -157,7 +157,7 @@ def test_check_get_venues_params_raises_api_error_if_too_short_siren(app):
 
     # then
     assert errors.value.errors['sirens'] == \
-        ['sirens is a list of 9 digits : ["123456789", "789654123"]']
+           ['sirens is a list of 9 digits : ["123456789", "789654123"]']
 
 
 def test_check_get_venues_params_raises_api_error_if_too_long_siren(app):
@@ -171,7 +171,7 @@ def test_check_get_venues_params_raises_api_error_if_too_long_siren(app):
 
     # then
     assert errors.value.errors['sirens'] == \
-        ['sirens is a list of 9 digits : ["123456789", "789654123"]']
+           ['sirens is a list of 9 digits : ["123456789", "789654123"]']
 
 
 def test_check_get_venues_params_raises_api_error_if_not_list_siren(app):
@@ -185,7 +185,7 @@ def test_check_get_venues_params_raises_api_error_if_not_list_siren(app):
 
     # then
     assert errors.value.errors['sirens'] == \
-        ['sirens is a list of 9 digits : ["123456789", "789654123"]']
+           ['sirens is a list of 9 digits : ["123456789", "789654123"]']
 
 
 def test_check_get_venues_params_raises_api_error_if_letter_in_siren(app):
@@ -199,7 +199,7 @@ def test_check_get_venues_params_raises_api_error_if_letter_in_siren(app):
 
     # then
     assert errors.value.errors['sirens'] == \
-        ['sirens is a list of 9 digits : ["123456789", "789654123"]']
+           ['sirens is a list of 9 digits : ["123456789", "789654123"]']
 
 
 def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_offerer_params(app):
@@ -212,14 +212,15 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_off
         check_get_venues_params(not_valid_has_validated_offerer_param)
 
     # then
-    assert errors.value.errors['has_validated_offerer'] == ['has_validated_offerer is a boolean, it accepts True or False']
+    assert errors.value.errors['has_validated_offerer'] == [
+        'has_validated_offerer is a boolean, it accepts True or False']
 
 
 def test_check_get_venues_params_raises_api_error_if_not_valid_has_siret_params(app):
     # given
     not_valid_has_siret_param = {}
     not_valid_has_siret_param['has_siret'] = "peut-être"
-    
+
     # when
     with pytest.raises(ApiErrors) as errors:
         check_get_venues_params(not_valid_has_siret_param)
@@ -264,7 +265,8 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_has_offerer_with_
         check_get_venues_params(not_valid_has_offerer_with_siren_param)
 
     # then
-    assert errors.value.errors['has_offerer_with_siren'] == ['has_offerer_with_siren is a boolean, it accepts True or False']
+    assert errors.value.errors['has_offerer_with_siren'] == [
+        'has_offerer_with_siren is a boolean, it accepts True or False']
 
 
 def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_user_offerer_params(app):
@@ -277,7 +279,8 @@ def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_use
         check_get_venues_params(not_valid_has_validated_user_offerer_param)
 
     # then
-    assert errors.value.errors['has_validated_user_offerer'] == ['has_validated_user_offerer is a boolean, it accepts True or False']
+    assert errors.value.errors['has_validated_user_offerer'] == [
+        'has_validated_user_offerer is a boolean, it accepts True or False']
 
 
 def test_check_get_venues_params_raises_api_error_if_not_valid_has_validated_user_params(app):
@@ -320,12 +323,12 @@ def test_check_get_venues_params_does_not_raise_api_error_if_good_params(app):
     params['offer_status'] = 'VALID'
     params["has_offerer_with_siren"] = True
     params["has_validated_user_offerer"] = True
-    params["has_validated_user"] = False  
+    params["has_validated_user"] = False
 
     # when
     try:
         check_get_venues_params(params)
-    
+
     except ApiErrors:
         # Then
         assert pytest.fail("Should not fail with valid params")
@@ -334,11 +337,11 @@ def test_check_get_venues_params_does_not_raise_api_error_if_good_params(app):
 def test_check_get_venues_params_does_not_raise_api_error_if_empty_params(app):
     # given
     params = {}
-    
+
     # when
     try:
         check_get_venues_params(params)
-    
+
     except ApiErrors:
         # Then
         assert pytest.fail("Should not fail with valid params")
@@ -379,7 +382,7 @@ def test_check_get_offerers_params_doesnt_raise_api_error_for_valid_dpts_in(app)
     # when
     try:
         check_get_offerers_params(valid_dpts)
-    
+
     except ApiErrors:
         # Then
         assert pytest.fail("Should not fail with valid params")
@@ -409,7 +412,7 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_zip_codes(app):
 
     # then
     assert errors.value.errors['zip_codes'] == \
-        ['zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
+           ['zip_codes is a list of type xxxxx (5 digits, ex: 78140 ou 2a000) : \
         ["78140", "69007"]']
 
 
@@ -421,7 +424,7 @@ def test_check_get_offerers_params_doesnt_raise_api_error_for_valid_siren(app):
     # when
     try:
         check_get_offerers_params(valid_siren)
-    
+
     except ApiErrors:
         # Then
         assert pytest.fail("Should not fail with valid params")
@@ -438,7 +441,7 @@ def test_check_get_offerers_params_raises_api_error_if_too_short_siren(app):
 
     # then
     assert errors.value.errors['sirens'] == \
-        ['sirens is a list of 9 digits : ["123456789", "789654123"]']
+           ['sirens is a list of 9 digits : ["123456789", "789654123"]']
 
 
 def test_check_get_offerers_params_raises_api_error_if_too_long_siren(app):
@@ -452,7 +455,7 @@ def test_check_get_offerers_params_raises_api_error_if_too_long_siren(app):
 
     # then
     assert errors.value.errors['sirens'] == \
-        ['sirens is a list of 9 digits : ["123456789", "789654123"]']
+           ['sirens is a list of 9 digits : ["123456789", "789654123"]']
 
 
 def test_check_get_offerers_params_raises_api_error_if_not_list_siren(app):
@@ -466,7 +469,7 @@ def test_check_get_offerers_params_raises_api_error_if_not_list_siren(app):
 
     # then
     assert errors.value.errors['sirens'] == \
-        ['sirens is a list of 9 digits : ["123456789", "789654123"]']
+           ['sirens is a list of 9 digits : ["123456789", "789654123"]']
 
 
 def test_check_get_offerers_params_raises_api_error_if_letter_in_siren(app):
@@ -480,7 +483,7 @@ def test_check_get_offerers_params_raises_api_error_if_letter_in_siren(app):
 
     # then
     assert errors.value.errors['sirens'] == \
-        ['sirens is a list of 9 digits : ["123456789", "789654123"]']
+           ['sirens is a list of 9 digits : ["123456789", "789654123"]']
 
 
 def test_check_get_offerers_params_doesnt_raise_api_error_for_valid_zip_codes(app):
@@ -491,7 +494,7 @@ def test_check_get_offerers_params_doesnt_raise_api_error_for_valid_zip_codes(ap
     # when
     try:
         check_get_offerers_params(valid_zip_codes)
-    
+
     except ApiErrors:
         # Then
         assert pytest.fail("Should not fail with valid params")
@@ -507,7 +510,8 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_has_validated_u
         check_get_offerers_params(not_valid_has_validated_user_offerer_param)
 
     # then
-    assert errors.value.errors['has_validated_user_offerer'] == ['has_validated_user_offerer is a boolean, it accepts True or False']
+    assert errors.value.errors['has_validated_user_offerer'] == [
+        'has_validated_user_offerer is a boolean, it accepts True or False']
 
 
 def test_check_get_offerers_params_raises_api_error_if_not_valid_has_siren_params(app):
@@ -533,7 +537,8 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_has_not_virtual
         check_get_offerers_params(not_valid_has_not_virtual_venue_param)
 
     # then
-    assert errors.value.errors['has_not_virtual_venue'] == ['has_not_virtual_venue is a boolean, it accepts True or False']
+    assert errors.value.errors['has_not_virtual_venue'] == [
+        'has_not_virtual_venue is a boolean, it accepts True or False']
 
 
 def test_check_get_offerers_params_raises_api_error_if_not_valid_has_validated_venue_params(app):
@@ -559,7 +564,8 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_has_venue_with_
         check_get_offerers_params(not_valid_has_venue_with_siret_param)
 
     # then
-    assert errors.value.errors['has_venue_with_siret'] == ['has_venue_with_siret is a boolean, it accepts True or False']
+    assert errors.value.errors['has_venue_with_siret'] == [
+        'has_venue_with_siret is a boolean, it accepts True or False']
 
 
 def test_check_get_offerers_params_raises_api_error_if_not_valid_is_validated_params(app):
@@ -598,7 +604,8 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_has_bank_inform
         check_get_offerers_params(not_valid_has_bank_information_param)
 
     # then
-    assert errors.value.errors['has_bank_information'] == ['has_bank_information is a boolean, it accepts True or False']
+    assert errors.value.errors['has_bank_information'] == [
+        'has_bank_information is a boolean, it accepts True or False']
 
 
 def test_check_get_offerers_params_raises_api_error_if_not_valid_is_active_params(app):
@@ -625,7 +632,7 @@ def test_check_get_offerers_params_raises_api_error_if_not_valid_offer_status_pa
 
     # then
     assert errors.value.errors['offer_status'] == ['offer_status accepte ALL ou VALID ou WITHOUT ou EXPIRED']
-    
+
 
 def test_check_get_offerers_params_does_not_raise_api_error_if_good_params(app):
     # given
@@ -635,8 +642,8 @@ def test_check_get_offerers_params_does_not_raise_api_error_if_good_params(app):
     params['zip_codes'] = ['12111', '2A250', '56698']
     params['from_date'] = '2018-05-30'
     params['to_date'] = '2018-12-31'
-    params['has_siren'] = True 
-    params['has_not_virtual_venue'] = False 
+    params['has_siren'] = True
+    params['has_not_virtual_venue'] = False
     params['has_validated_venue'] = True
     params['has_venue_with_siret'] = True
     params['offer_status'] = 'EXPIRED'
@@ -649,7 +656,7 @@ def test_check_get_offerers_params_does_not_raise_api_error_if_good_params(app):
     # when
     try:
         check_get_offerers_params(params)
-    
+
     except ApiErrors:
         # Then
         assert pytest.fail("Should not fail with valid params")

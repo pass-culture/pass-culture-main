@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from models import Offerer, PcObject, EventType, ThingType
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_stock_with_thing_offer, \
+from tests.test_utils import create_stock_with_thing_offer, \
     create_offer_with_thing_product, create_deposit, create_stock_with_event_offer, create_venue, create_offerer, \
     create_recommendation, create_user, create_booking, create_offer_with_event_product, \
     create_event_occurrence, create_stock_from_event_occurrence
@@ -30,13 +30,13 @@ class Post:
             }
 
             # When
-            r_create = TestClient() \
+            r_create = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .post(API_URL + '/bookings', json=booking_json)
+                .post('/bookings', json=booking_json)
 
             # Then
             assert r_create.status_code == 400
-            assert r_create.json()['stockId'] == [
+            assert r_create.json['stockId'] == [
                 'Vous ne pouvez pas encore réserver cette offre, son lieu est en attente de validation']
 
         @clean_database
@@ -65,14 +65,14 @@ class Post:
             }
 
             # when
-            r_create = TestClient() \
+            r_create = TestClient(app.test_client()) \
                 .with_auth('test@mail.com') \
-                .post(API_URL + '/bookings', json=booking_json)
+                .post('/bookings', json=booking_json)
 
             # then
             assert r_create.status_code == 400
-            assert 'global' in r_create.json()
-            assert 'date limite' in r_create.json()['global'][0]
+            assert 'global' in r_create.json
+            assert 'date limite' in r_create.json['global'][0]
 
         @clean_database
         def when_too_many_bookings(self, app):
@@ -102,14 +102,14 @@ class Post:
             }
 
             # when
-            r_create = TestClient() \
+            r_create = TestClient(app.test_client()) \
                 .with_auth('test@email.com') \
-                .post(API_URL + '/bookings', json=booking_json)
+                .post('/bookings', json=booking_json)
 
             # then
             assert r_create.status_code == 400
-            assert 'global' in r_create.json()
-            assert 'quantité disponible' in r_create.json()['global'][0]
+            assert 'global' in r_create.json
+            assert 'quantité disponible' in r_create.json['global'][0]
 
         @clean_database
         def when_user_cannot_book_free_offers_and_free_offer(self, app):
@@ -145,14 +145,14 @@ class Post:
             }
 
             # When
-            r_create = TestClient() \
+            r_create = TestClient(app.test_client()) \
                 .with_auth('cannotBook_freeOffers@email.com') \
-                .post(API_URL + '/bookings', json=booking_json)
+                .post('/bookings', json=booking_json)
 
             # Then
             assert r_create.status_code == 400
-            assert 'cannotBookFreeOffers' in r_create.json()
-            assert r_create.json()['cannotBookFreeOffers'] == [
+            assert 'cannotBookFreeOffers' in r_create.json
+            assert r_create.json['cannotBookFreeOffers'] == [
                 "Votre compte ne vous permet pas de faire de réservation."]
 
         @clean_database
@@ -180,14 +180,14 @@ class Post:
             }
 
             # When
-            r_create = TestClient() \
+            r_create = TestClient(app.test_client()) \
                 .with_auth('insufficient_funds_test@email.com') \
-                .post(API_URL + '/bookings', json=booking_json)
+                .post('/bookings', json=booking_json)
 
             # Then
             assert r_create.status_code == 400
-            assert 'insufficientFunds' in r_create.json()
-            assert r_create.json()['insufficientFunds'] == [
+            assert 'insufficientFunds' in r_create.json
+            assert r_create.json['insufficientFunds'] == [
                 "Le solde de votre pass n'est pas suffisant pour effectuer cette réservation."]
 
         @clean_database
@@ -230,12 +230,12 @@ class Post:
             }
 
             # When
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth('test@email.com') \
-                .post(API_URL + '/bookings', json=booking_thing_price_12_json)
+                .post('/bookings', json=booking_thing_price_12_json)
 
             # Then
-            error_message = response.json()
+            error_message = response.json
             assert response.status_code == 400
             assert error_message['global'] == ['La limite de 200 € pour les biens culturels ' \
                                                'ne vous permet pas de réserver']
@@ -253,12 +253,12 @@ class Post:
             }
 
             # When
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth('test@email.com') \
-                .post(API_URL + '/bookings', json=booking_json)
+                .post('/bookings', json=booking_json)
 
             # Then
-            error_message = response.json()
+            error_message = response.json
             assert response.status_code == 400
             assert error_message['stockId'] == ['Vous devez préciser un identifiant d\'offre']
 
@@ -278,10 +278,10 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
-                                                                     json=booking_json)
+            response = TestClient(app.test_client()).with_auth('test@email.com').post('/bookings',
+                                                                                      json=booking_json)
             # Then
-            error_message = response.json()
+            error_message = response.json
             assert response.status_code == 400
             assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
 
@@ -302,10 +302,10 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
-                                                                     json=booking_json)
+            response = TestClient(app.test_client()).with_auth('test@email.com').post('/bookings',
+                                                                                      json=booking_json)
             # Then
-            error_message = response.json()
+            error_message = response.json
             assert response.status_code == 400
             assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
 
@@ -327,10 +327,10 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
-                                                                     json=booking_json)
+            response = TestClient(app.test_client()).with_auth('test@email.com').post('/bookings',
+                                                                                      json=booking_json)
             # Then
-            error_message = response.json()
+            error_message = response.json
             assert response.status_code == 400
             assert error_message['stockId'] == ["Cette offre a été retirée. Elle n'est plus valable."]
 
@@ -352,10 +352,10 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
-                                                                     json=booking_json)
+            response = TestClient(app.test_client()).with_auth('test@email.com').post('/bookings',
+                                                                                      json=booking_json)
             # Then
-            error_message = response.json()
+            error_message = response.json
             assert response.status_code == 400
             assert error_message['stockId'] == ["Cette offre a été retirée. Elle n'est plus valable."]
 
@@ -377,10 +377,10 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
-                                                                     json=booking_json)
+            response = TestClient(app.test_client()).with_auth('test@email.com').post('/bookings',
+                                                                                      json=booking_json)
             # Then
-            error_message = response.json()
+            error_message = response.json
             assert response.status_code == 400
             assert error_message['stockId'] == ["Cette date a été retirée. Elle n'est plus disponible."]
 
@@ -401,10 +401,10 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
-                                                                     json=booking_json)
+            response = TestClient(app.test_client()).with_auth('test@email.com').post('/bookings',
+                                                                                      json=booking_json)
             # Then
-            error_message = response.json()
+            error_message = response.json
             assert response.status_code == 400
             assert error_message['quantity'] == ['Vous devez préciser une quantité pour la réservation']
 
@@ -425,10 +425,10 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
-                                                                     json=booking_json)
+            response = TestClient(app.test_client()).with_auth('test@email.com').post('/bookings',
+                                                                                      json=booking_json)
             # Then
-            error_message = response.json()
+            error_message = response.json
             assert response.status_code == 400
             assert error_message['quantity'] == ["Vous ne pouvez pas réserver plus d'une offre à la fois"]
 
@@ -456,11 +456,11 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
-                                                                     json=booking_json)
+            response = TestClient(app.test_client()).with_auth('test@email.com').post('/bookings',
+                                                                                      json=booking_json)
 
             # Then
-            error_message = response.json()
+            error_message = response.json
             assert response.status_code == 400
             assert error_message['date'] == ["Cette offre n'est plus valable car sa date est passée"]
 
@@ -486,11 +486,11 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
-                                                                     json=booking_json)
+            response = TestClient(app.test_client()).with_auth('test@email.com').post('/bookings',
+                                                                                      json=booking_json)
 
             # Then
-            error_message = response.json()
+            error_message = response.json
             assert response.status_code == 400
             assert error_message['global'] == ["La date limite de réservation de cette offre est dépassée"]
 
@@ -514,12 +514,12 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
-                                                                     json=booking_json)
+            response = TestClient(app.test_client()).with_auth('test@email.com').post('/bookings',
+                                                                                      json=booking_json)
 
             # Then
             assert response.status_code == 400
-            error_message = response.json()
+            error_message = response.json
             assert error_message['stockId'] == ["Cette offre a déja été reservée par l'utilisateur"]
 
     class Returns201:
@@ -545,13 +545,13 @@ class Post:
                 'quantity': 1
             }
 
-            r_create = TestClient().with_auth(email='test@mail.com').post(API_URL + '/bookings',
-                                                                          json=booking_json)
+            r_create = TestClient(app.test_client()).with_auth(email='test@mail.com').post('/bookings',
+                                                                                           json=booking_json)
             assert r_create.status_code == 201
-            id = r_create.json()['id']
-            r_check = TestClient().with_auth(email='test@mail.com').get(
-                API_URL + '/bookings/' + id)
-            created_booking_json = r_check.json()
+            id = r_create.json['id']
+            r_check = TestClient(app.test_client()).with_auth(email='test@mail.com').get(
+                '/bookings/' + id)
+            created_booking_json = r_check.json
             for (key, value) in booking_json.items():
                 assert created_booking_json[key] == booking_json[key]
 
@@ -575,10 +575,10 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
-                                                                     json=booking_json)
+            response = TestClient(app.test_client()).with_auth('test@email.com').post('/bookings',
+                                                                                      json=booking_json)
             # Then
-            error_message = response.json()
+            error_message = response.json
             assert response.status_code == 201
 
         @clean_database
@@ -608,9 +608,9 @@ class Post:
             }
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth('test@email.com') \
-                .post(API_URL + '/bookings', json=booking_json)
+                .post('/bookings', json=booking_json)
 
             # then
             assert response.status_code == 201
@@ -642,9 +642,9 @@ class Post:
             }
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth('test@email.com') \
-                .post(API_URL + '/bookings', json=booking_json)
+                .post('/bookings', json=booking_json)
 
             # then
             assert response.status_code == 201
@@ -679,9 +679,9 @@ class Post:
             }
 
             # when
-            r_create = TestClient() \
+            r_create = TestClient(app.test_client()) \
                 .with_auth('test@email.com') \
-                .post(API_URL + '/bookings', json=booking_json)
+                .post('/bookings', json=booking_json)
 
             # then
             assert r_create.status_code == 201
@@ -719,12 +719,12 @@ class Post:
             }
 
             # When
-            r_create = TestClient() \
+            r_create = TestClient(app.test_client()) \
                 .with_auth('can_book_paid_offers@email.com') \
-                .post(API_URL + '/bookings', json=booking_json)
+                .post('/bookings', json=booking_json)
 
             # Then
-            r_create_json = r_create.json()
+            r_create_json = r_create.json
             assert r_create.status_code == 201
             assert r_create_json['amount'] == 10.0
             assert r_create_json['quantity'] == 1
@@ -749,7 +749,7 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth('test@email.com').post(API_URL + '/bookings',
-                                                                     json=booking_json)
+            response = TestClient(app.test_client()).with_auth('test@email.com').post('/bookings',
+                                                                                      json=booking_json)
             # Then
             assert response.status_code == 201

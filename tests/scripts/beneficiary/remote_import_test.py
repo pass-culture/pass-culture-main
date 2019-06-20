@@ -144,7 +144,9 @@ class RunTest:
 
     @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
-    def test_application_with_known_demarche_simplifiee_application_id_are_not_processed(self, process_beneficiary_application, send_report_email):
+    def test_application_with_known_demarche_simplifiee_application_id_are_not_processed(self,
+                                                                                         process_beneficiary_application,
+                                                                                         send_report_email):
         # given
         get_all_applications = Mock()
         number_of_pages = 3
@@ -174,7 +176,9 @@ class RunTest:
 
     @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
-    def test_application_with_known_demarche_simplifiee_application_id_are_not_processed(self, process_beneficiary_application, send_report_email):
+    def test_application_with_known_demarche_simplifiee_application_id_are_not_processed(self,
+                                                                                         process_beneficiary_application,
+                                                                                         send_report_email):
         # given
         get_all_applications = Mock()
         number_of_pages = 3

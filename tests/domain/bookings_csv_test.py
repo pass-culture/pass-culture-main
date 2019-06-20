@@ -26,7 +26,8 @@ class BookingsCSVTest:
         csv = generate_bookings_details_csv(bookings)
 
         # then
-        assert _get_header(csv) == 'Raison sociale du lieu;Nom de l\'offre;Nom utilisateur;Prénom utilisateur;E-mail utilisateur;Date de la réservation;Tarif pass Culture;Statut'
+        assert _get_header(
+            csv) == 'Raison sociale du lieu;Nom de l\'offre;Nom utilisateur;Prénom utilisateur;E-mail utilisateur;Date de la réservation;Tarif pass Culture;Statut'
 
     @clean_database
     def test_generate_bookings_details_csv_with_headers_and_three_bookings_lines(self, app):

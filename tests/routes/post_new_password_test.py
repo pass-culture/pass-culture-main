@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta
 
-from models import PcObject
-from models.db import db
+from models import PcObject, User
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_user
+from tests.test_utils import create_user
 
 
 class PostNewPassword:
@@ -21,12 +20,12 @@ class PostNewPassword:
             }
 
             # when
-            response = TestClient().post(API_URL + '/users/new-password', json=data,
-                                         headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).post('/users/new-password', json=data,
+                                                          headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 400
-            assert response.json()['token'] == [
+            assert response.json['token'] == [
                 'Votre lien de changement de mot de passe est périmé. Veuillez effecture une nouvelle demande.'
             ]
 
@@ -42,12 +41,12 @@ class PostNewPassword:
             }
 
             # when
-            response = TestClient().post(API_URL + '/users/new-password', json=data,
-                                         headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).post('/users/new-password', json=data,
+                                                          headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 400
-            assert response.json()['token'] == [
+            assert response.json['token'] == [
                 'Votre lien de changement de mot de passe est invalide.'
             ]
 
@@ -60,12 +59,12 @@ class PostNewPassword:
             data = {'newPassword': 'N3W_p4ssw0rd'}
 
             # when
-            response = TestClient().post(API_URL + '/users/new-password', json=data,
-                                         headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).post('/users/new-password', json=data,
+                                                          headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 400
-            assert response.json()['token'] == [
+            assert response.json['token'] == [
                 'Votre lien de changement de mot de passe est invalide.'
             ]
 
@@ -78,12 +77,12 @@ class PostNewPassword:
             data = {'token': 'KL89PBNG51'}
 
             # when
-            response = TestClient().post(API_URL + '/users/new-password', json=data,
-                                         headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).post('/users/new-password', json=data,
+                                                          headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 400
-            assert response.json()['newPassword'] == [
+            assert response.json['newPassword'] == [
                 'Vous devez renseigner un nouveau mot de passe.'
             ]
 
@@ -96,12 +95,12 @@ class PostNewPassword:
             data = {'token': 'KL89PBNG51', 'newPassword': 'weak_password'}
 
             # when
-            response = TestClient().post(API_URL + '/users/new-password', json=data,
-                                         headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).post('/users/new-password', json=data,
+                                                          headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 400
-            assert response.json()['newPassword'] == [
+            assert response.json['newPassword'] == [
                 'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
                 '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
             ]
@@ -112,18 +111,18 @@ class PostNewPassword:
             # given
             user = create_user(reset_password_token='KL89PBNG51')
             PcObject.save(user)
-
+            user_id = user.id
             data = {
                 'token': 'KL89PBNG51',
                 'newPassword': 'N3W_p4ssw0rd'
             }
 
             # when
-            response = TestClient().post(API_URL + '/users/new-password', json=data,
-                                         headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).post('/users/new-password', json=data,
+                                                          headers={'origin': 'http://localhost:3000'})
 
             # then
-            db.session.refresh(user)
+            user = User.query.get(user_id)
             assert response.status_code == 204
             assert user.checkPassword('N3W_p4ssw0rd')
             assert user.resetPasswordToken is None

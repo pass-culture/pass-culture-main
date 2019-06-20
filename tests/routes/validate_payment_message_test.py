@@ -1,7 +1,9 @@
+from io import BytesIO
+
 from models import PcObject
 from tests.conftest import clean_database, TestClient
 from tests.files.transactions import VALID_MESSAGE
-from tests.test_utils import create_user, API_URL, create_payment_message
+from tests.test_utils import create_user, create_payment_message
 
 
 class Post:
@@ -16,18 +18,17 @@ class Post:
             )
             PcObject.save(user, payment_message)
 
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
             response = auth_request.post(
-                API_URL + '/validate/payment_message/',
-                json={},
-                files={'file': ('message.xml', VALID_MESSAGE)}
+                '/validate/payment_message',
+                files={'file': (BytesIO(VALID_MESSAGE.encode('utf-8')), 'message.xml')}
             )
 
             # then
             assert response.status_code == 200
-            assert response.json()['checksum'] == '86055b286afd11316cd7cacd00e61034fddedda50c234c0157a8f0da6e30931e'
+            assert response.json['checksum'] == '86055b286afd11316cd7cacd00e61034fddedda50c234c0157a8f0da6e30931e'
 
     class Returns400:
         @clean_database
@@ -40,18 +41,17 @@ class Post:
             )
             PcObject.save(user, payment_message)
 
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
             response = auth_request.post(
-                API_URL + '/validate/payment_message/',
-                json={},
-                files={'file': ('message.xml', VALID_MESSAGE)}
+                '/validate/payment_message',
+                files={'file': (BytesIO(VALID_MESSAGE.encode('utf-8')), 'message.xml')}
             )
 
             # then
             assert response.status_code == 400
-            assert response.json()['xml'] == [
+            assert response.json['xml'] == [
                 "L'intégrité du document n'est pas validée car la somme de contrôle est invalide : "
                 "86055b286afd11316cd7cacd00e61034fddedda50c234c0157a8f0da6e30931e"
             ]
@@ -60,10 +60,9 @@ class Post:
         @clean_database
         def when_current_user_is_not_logged_in(self, app):
             # when
-            response = TestClient().post(
-                API_URL + '/validate/payment_message/',
-                json={},
-                files={'file': ('message.xml', VALID_MESSAGE)},
+            response = TestClient(app.test_client()).post(
+                '/validate/payment_message',
+                files={'file': (BytesIO(VALID_MESSAGE.encode('utf-8')), 'message.xml')},
                 headers={'origin': 'http://localhost:3000'}
             )
 
@@ -81,13 +80,12 @@ class Post:
             )
             PcObject.save(user, message)
 
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
             response = auth_request.post(
-                API_URL + '/validate/payment_message/',
-                json={},
-                files={'file': ('message.xml', VALID_MESSAGE)}
+                '/validate/payment_message',
+                files={'file': (BytesIO(VALID_MESSAGE.encode('utf-8')), 'message.xml')}
             )
 
             # then
@@ -100,17 +98,16 @@ class Post:
             user = create_user(can_book_free_offers=False, is_admin=True)
             PcObject.save(user)
 
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
             response = auth_request.post(
-                API_URL + '/validate/payment_message/',
-                json={},
-                files={'file': ('message.xml', VALID_MESSAGE)}
+                '/validate/payment_message',
+                files={'file': (BytesIO(VALID_MESSAGE.encode('utf-8')), 'message.xml')}
             )
 
             # then
             assert response.status_code == 404
-            assert response.json()['xml'] == [
+            assert response.json['xml'] == [
                 "L'identifiant du document XML 'MsgId' est inconnu"
             ]

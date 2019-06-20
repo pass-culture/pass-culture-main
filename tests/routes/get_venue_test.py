@@ -1,6 +1,6 @@
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_venue, create_offerer, create_user, create_user_offerer, \
+from tests.test_utils import create_venue, create_offerer, create_user, create_user_offerer, \
     create_bank_information
 from utils.human_ids import humanize
 
@@ -17,14 +17,14 @@ class Get:
             bank_information = create_bank_information(bic='QSDFGH8Z555', iban='FR7630006000011234567890189',
                                                        venue=venue)
             PcObject.save(user_offerer, bank_information)
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.get(API_URL + '/venues/%s' % humanize(venue.id))
+            response = auth_request.get('/venues/%s' % humanize(venue.id))
 
             # then
             assert response.status_code == 200
-            response_json = response.json()
+            response_json = response.json
             assert response_json['bic'] == 'QSDFGH8Z555'
             assert response_json['iban'] == 'FR7630006000011234567890189'
             assert 'validationToken' not in response_json
@@ -37,11 +37,11 @@ class Get:
             user = create_user(email='user.pro@test.com')
             venue = create_venue(offerer, name='L\'encre et la plume')
             PcObject.save(user, venue)
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.get(API_URL + '/venues/%s' % humanize(venue.id))
+            response = auth_request.get('/venues/%s' % humanize(venue.id))
 
             # then
             assert response.status_code == 403
-            assert response.json()['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
+            assert response.json['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]

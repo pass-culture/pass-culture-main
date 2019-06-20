@@ -1,6 +1,6 @@
 from models import PcObject, Provider
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_offerer, create_venue, create_user, create_venue_provider
+from tests.test_utils import create_offerer, create_venue, create_user, create_venue_provider
 from utils.human_ids import humanize
 
 
@@ -17,12 +17,12 @@ class Get:
 
             user = create_user()
             PcObject.save(user)
-            auth_request = TestClient() \
+            auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
             humanized_venue_provider_id = humanize(venue_provider.id)
 
             # when
-            response = auth_request.get(API_URL + '/venueProviders/' + humanized_venue_provider_id)
+            response = auth_request.get('/venueProviders/' + humanized_venue_provider_id)
 
             # then
             assert response.status_code == 200
@@ -39,12 +39,12 @@ class Get:
 
             user = create_user()
             PcObject.save(user)
-            auth_request = TestClient() \
+            auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
             non_existing_venue_provider_id = 'ABCDEF'
 
             # when
-            response = auth_request.get(API_URL + '/venueProviders/' + non_existing_venue_provider_id)
+            response = auth_request.get('/venueProviders/' + non_existing_venue_provider_id)
 
             # then
             assert response.status_code == 404

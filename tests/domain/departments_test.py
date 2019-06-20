@@ -3,6 +3,7 @@ import pytest
 from domain.departments import get_departement_codes_from_user
 from tests.test_utils import create_user
 
+
 class GetDepartementCodesFromUser:
     @pytest.mark.parametrize('user_department_code,expected_departement_codes', [
         ('08', {'02', '08', '51', '55', '59'}),

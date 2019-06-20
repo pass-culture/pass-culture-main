@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
-from models import PcObject
-from models.db import db
+from models import PcObject, Offer, Recommendation, Product
 from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
@@ -28,14 +27,13 @@ class Patch:
             }
 
             # When
-            response = TestClient().with_auth(user.email).patch(
+            response = TestClient(app.test_client()).with_auth(user.email).patch(
                 f'{API_URL}/offers/{humanize(offer.id)}',
                 json=json)
 
             # Then
             assert response.status_code == 200
-            db.session.refresh(offer)
-            assert offer.bookingEmail == 'offer@email.com'
+            assert Offer.query.get(offer.id).bookingEmail == 'offer@email.com'
 
         @clean_database
         def when_deactivating_offer_and_makes_recommendations_outdated(self, app):
@@ -47,22 +45,21 @@ class Patch:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, booking_email='old@email.com')
             recommendation = create_recommendation(offer, user, valid_until_date=seven_days_from_now)
-
             PcObject.save(offer, user, user_offerer, recommendation)
+            recommendation_id = recommendation.id
 
             json = {
                 'isActive': False,
             }
 
             # When
-            response = TestClient().with_auth(user.email).patch(
+            response = TestClient(app.test_client()).with_auth(user.email).patch(
                 f'{API_URL}/offers/{humanize(offer.id)}',
                 json=json)
 
             # Then
             assert response.status_code == 200
-            db.session.refresh(recommendation)
-            assert recommendation.validUntilDate < datetime.utcnow()
+            assert Recommendation.query.get(recommendation_id).validUntilDate < datetime.utcnow()
 
         @clean_database
         def when_user_updating_thing_offer_is_linked_to_same_owning_offerer(self, app):
@@ -73,24 +70,23 @@ class Patch:
             venue = create_venue(owning_offerer)
             product = create_product_with_Thing_type(thing_name='Old Name', owning_offerer=owning_offerer)
             offer = create_offer_with_thing_product(venue, product)
-
             PcObject.save(offer, user_offerer)
+            offer_id = offer.id
+            product_id = product.id
 
             json = {
                 'name': 'New Name'
             }
 
             # When
-            response = TestClient().with_auth(user.email).patch(
-                f'{API_URL}/offers/{humanize(offer.id)}',
+            response = TestClient(app.test_client()).with_auth(user.email).patch(
+                f'{API_URL}/offers/{humanize(offer_id)}',
                 json=json)
 
             # Then
             assert response.status_code == 200
-            db.session.refresh(offer)
-            db.session.refresh(product)
-            assert offer.name == 'New Name'
-            assert product.name == 'New Name'
+            assert Offer.query.get(offer_id).name == 'New Name'
+            assert Product.query.get(product_id).name == 'New Name'
 
         @clean_database
         def when_user_updating_thing_offer_is_not_linked_to_owning_offerer(self, app):
@@ -102,24 +98,23 @@ class Patch:
             venue = create_venue(editor_offerer)
             product = create_product_with_Thing_type(thing_name='Old Name', owning_offerer=owning_offerer)
             offer = create_offer_with_thing_product(venue, product)
-
             PcObject.save(offer, editor_user_offerer, owning_offerer)
+            offer_id = offer.id
+            product_id = product.id
 
             json = {
                 'name': 'New Name'
             }
 
             # When
-            response = TestClient().with_auth(user.email).patch(
+            response = TestClient(app.test_client()).with_auth(user.email).patch(
                 f'{API_URL}/offers/{humanize(offer.id)}',
                 json=json)
 
             # Then
             assert response.status_code == 200
-            db.session.refresh(offer)
-            db.session.refresh(product)
-            assert offer.name == 'New Name'
-            assert product.name == 'Old Name'
+            assert Offer.query.get(offer_id).name == 'New Name'
+            assert Product.query.get(product_id).name == 'Old Name'
 
         @clean_database
         def when_user_updating_thing_offer_has_rights_on_offer_but_no_owningOfferer_for_thing(self, app):
@@ -130,24 +125,23 @@ class Patch:
             venue = create_venue(offerer)
             product = create_product_with_Thing_type(thing_name='Old Name', owning_offerer=None)
             offer = create_offer_with_thing_product(venue, product)
-
             PcObject.save(offer, user_offerer)
+            offer_id = offer.id
+            product_id = product.id
 
             json = {
                 'name': 'New Name'
             }
 
             # When
-            response = TestClient().with_auth(user.email).patch(
+            response = TestClient(app.test_client()).with_auth(user.email).patch(
                 f'{API_URL}/offers/{humanize(offer.id)}',
                 json=json)
 
             # Then
             assert response.status_code == 200
-            db.session.refresh(offer)
-            db.session.refresh(product)
-            assert offer.name == 'New Name'
-            assert product.name == 'Old Name'
+            assert Offer.query.get(offer_id).name == 'New Name'
+            assert Product.query.get(product_id).name == 'Old Name'
 
     class Returns400:
         @clean_database
@@ -177,15 +171,15 @@ class Patch:
             }
 
             # When
-            response = TestClient().with_auth(user.email).patch(
+            response = TestClient(app.test_client()).with_auth(user.email).patch(
                 f'{API_URL}/offers/{humanize(offer.id)}',
                 json=json)
 
             # Then
             assert response.status_code == 400
-            assert response.json()['owningOffererId'] == ['Vous ne pouvez pas modifier cette information']
+            assert response.json['owningOffererId'] == ['Vous ne pouvez pas modifier cette information']
             for key in forbidden_keys:
-                assert key in response.json()
+                assert key in response.json
 
     class Returns403:
         @clean_database
@@ -205,13 +199,13 @@ class Patch:
             }
 
             # When
-            response = TestClient().with_auth(user.email).patch(
+            response = TestClient(app.test_client()).with_auth(user.email).patch(
                 f'{API_URL}/offers/{humanize(offer.id)}',
                 json=json)
 
             # Then
             assert response.status_code == 403
-            assert response.json()['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
+            assert response.json['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
 
     class Returns404:
         @clean_database
@@ -219,10 +213,10 @@ class Patch:
             # given
             user = create_user()
             PcObject.save(user)
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.patch(API_URL + '/offers/ADFGA', json={})
+            response = auth_request.patch('/offers/ADFGA', json={})
 
             # then
             assert response.status_code == 404

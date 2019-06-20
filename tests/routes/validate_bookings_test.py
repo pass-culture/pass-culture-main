@@ -1,10 +1,9 @@
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
-from models import PcObject, EventType, ThingType, Deposit
-from models.db import db
+from models import PcObject, EventType, ThingType, Deposit, Booking, User
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_offer_with_thing_product, create_deposit, create_stock_with_event_offer, \
+from tests.test_utils import create_offer_with_thing_product, create_deposit, create_stock_with_event_offer, \
     create_venue, \
     create_offerer, \
     create_user, create_booking, create_offer_with_event_product, \
@@ -32,15 +31,15 @@ class Patch:
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
             PcObject.save(booking, user_offerer)
-            url = API_URL + '/bookings/token/{}'.format(booking.token)
+            booking_id = booking.id
+            url = '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('admin@email.fr').patch(url)
+            response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
 
             # Then
             assert response.status_code == 204
-            db.session.refresh(booking)
-            assert booking.isUsed
+            assert Booking.query.get(booking_id).isUsed
 
         @clean_database
         def when_header_is_not_standard_but_request_is_valid(self, app):
@@ -55,16 +54,17 @@ class Patch:
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
             PcObject.save(booking, user_offerer)
-            url = API_URL + '/bookings/token/{}'.format(booking.token)
+            booking_id = booking.id
+            url = '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('admin@email.fr',
-                                              headers={'origin': 'http://random_header.fr'}).patch(url)
+            response = TestClient(app.test_client()) \
+                .with_auth('admin@email.fr') \
+                .patch(url, headers={'origin': 'http://random_header.fr'})
 
             # Then
             assert response.status_code == 204
-            db.session.refresh(booking)
-            assert booking.isUsed
+            assert Booking.query.get(booking_id).isUsed
 
         @clean_database
         def when_booking_user_email_has_special_character_url_encoded(self, app):
@@ -83,10 +83,10 @@ class Patch:
 
             PcObject.save(user_offerer, booking)
             url_email = urlencode({'email': 'user+plus@email.fr'})
-            url = API_URL + '/bookings/token/{}?{}'.format(booking.token, url_email)
+            url = '/bookings/token/{}?{}'.format(booking.token, url_email)
 
             # When
-            response = TestClient().with_auth('admin@email.fr').patch(url)
+            response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
             # Then
             assert response.status_code == 204
 
@@ -105,13 +105,14 @@ class Patch:
                                                        booking_limit_date=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
             PcObject.save(booking, user_offerer)
-            url = API_URL + '/bookings/token/{}'.format(booking.token)
+            user_id = user.id
+            url = '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('pro@email.fr').patch(url)
+            response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
 
             # Then
-            db.session.refresh(user)
+            user = User.query.get(user_id)
             assert response.status_code == 204
             assert user.canBookFreeOffers
             deposits_for_user = Deposit.query.filter_by(userId=user.id).all()
@@ -134,13 +135,14 @@ class Patch:
                                                        booking_limit_date=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
             PcObject.save(booking, user_offerer)
-            url = API_URL + '/bookings/token/{}'.format(booking.token)
+            user_id = user.id
+            url = '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('pro@email.fr').patch(url)
+            response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
 
             # Then
-            db.session.refresh(user)
+            user = User.query.get(user_id)
             assert response.status_code == 204
             assert user.canBookFreeOffers
             deposits_for_user = Deposit.query.filter_by(userId=user.id).all()
@@ -161,16 +163,16 @@ class Patch:
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
             PcObject.save(booking, admin_user)
-            url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
+            booking_id = booking.id
+            url = '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
             # When
-            response = TestClient().with_auth('admin@email.fr').patch(url)
+            response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
 
             # Then
             assert response.status_code == 403
-            assert response.json()['global'] == ["Cette structure n'est pas enregistr\u00e9e chez cet utilisateur."]
-            db.session.refresh(booking)
-            assert not booking.isUsed
+            assert response.json['global'] == ["Cette structure n'est pas enregistr\u00e9e chez cet utilisateur."]
+            assert not Booking.query.get(booking_id).isUsed
 
         @clean_database
         def when_booking_beginning_datetime_in_more_than_72_hours(self, app):
@@ -185,14 +187,14 @@ class Patch:
             stock = create_stock_from_offer(offer, price=0, beginning_datetime=four_days_from_now)
             booking = create_booking(user, stock, venue=venue)
             PcObject.save(booking, user_offerer)
-            url = API_URL + '/bookings/token/{}'.format(booking.token)
+            url = '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('admin@email.fr').patch(url)
+            response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
 
             # Then
             assert response.status_code == 403
-            assert response.json()['beginningDatetime'] == [
+            assert response.json['beginningDatetime'] == [
                 'Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement']
 
         @clean_database
@@ -213,10 +215,10 @@ class Patch:
                                                        booking_limit_date=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
             PcObject.save(booking, user_offerer)
-            url = API_URL + '/bookings/token/{}'.format(booking.token)
+            url = '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('pro@email.fr').patch(url)
+            response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
 
             # Then
             assert response.status_code == 403
@@ -234,15 +236,15 @@ class Patch:
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
             PcObject.save(booking, admin_user)
-            url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, 'wrong@email.fr')
+            booking_id = booking.id
+            url = '/bookings/token/{}?email={}'.format(booking.token, 'wrong@email.fr')
 
             # When
-            response = TestClient().with_auth('admin@email.fr').patch(url)
+            response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
 
             # Then
             assert response.status_code == 404
-            db.session.refresh(booking)
-            assert booking.isUsed == False
+            assert Booking.query.get(booking_id).isUsed == False
 
         @clean_database
         def when_booking_user_email_with_special_character_not_url_encoded(self, app):
@@ -260,10 +262,11 @@ class Patch:
             booking = create_booking(user, stock, venue=venue)
 
             PcObject.save(user_offerer, booking)
-            url = API_URL + '/bookings/token/{}?email={}'.format(booking.token, user.email)
+            url = '/bookings/token/{}?email={}'.format(booking.token, user.email)
 
             # When
-            response = TestClient().with_auth('admin@email.fr').patch(url)
+            response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
+
             # Then
             assert response.status_code == 404
 
@@ -279,15 +282,15 @@ class Patch:
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
             PcObject.save(booking, admin_user)
-            url = API_URL + '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(123))
+            booking_id = booking.id
+            url = '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email, humanize(123))
 
             # When
-            response = TestClient().with_auth('admin@email.fr').patch(url)
+            response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
 
             # Then
             assert response.status_code == 404
-            db.session.refresh(booking)
-            assert not booking.isUsed
+            assert not Booking.query.get(booking_id).isUsed
 
     class Returns405:
         @clean_database
@@ -308,13 +311,14 @@ class Patch:
             booking = create_booking(user, stock, venue=venue)
             deposit = create_deposit(user, datetime.utcnow(), amount=500)
             PcObject.save(booking, user_offerer, deposit)
-            url = API_URL + '/bookings/token/{}'.format(booking.token)
+            user_id = user.id
+            url = '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('pro@email.fr').patch(url)
+            response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
 
             # Then
-            deposits_for_user = Deposit.query.filter_by(userId=user.id).all()
+            deposits_for_user = Deposit.query.filter_by(userId=user_id).all()
             assert response.status_code == 405
             assert len(deposits_for_user) == 1
             assert deposits_for_user[0].amount == 500
@@ -334,16 +338,16 @@ class Patch:
             booking = create_booking(user, stock, venue=venue)
             booking.isCancelled = True
             PcObject.save(booking, user_offerer)
-            url = API_URL + '/bookings/token/{}'.format(booking.token)
+            booking_id = booking.id
+            url = '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('admin@email.fr').patch(url)
+            response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
 
             # Then
             assert response.status_code == 410
-            assert response.json()['booking'] == ['Cette réservation a été annulée']
-            db.session.refresh(booking)
-            assert not booking.isUsed
+            assert response.json['booking'] == ['Cette réservation a été annulée']
+            assert not Booking.query.get(booking_id).isUsed
 
         @clean_database
         def when_booking_already_validated(self, app):
@@ -359,13 +363,14 @@ class Patch:
             booking = create_booking(user, stock, venue=venue)
             booking.isUsed = True
             PcObject.save(booking, user_offerer)
-            url = API_URL + '/bookings/token/{}'.format(booking.token)
+            booking_id = booking.id
+
+            url = '/bookings/token/{}'.format(booking.token)
 
             # When
-            response = TestClient().with_auth('admin@email.fr').patch(url)
+            response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
 
             # Then
             assert response.status_code == 410
-            assert response.json()['booking'] == ['Cette réservation a déjà été validée']
-            db.session.refresh(booking)
-            assert booking.isUsed
+            assert response.json['booking'] == ['Cette réservation a déjà été validée']
+            assert Booking.query.get(booking_id).isUsed

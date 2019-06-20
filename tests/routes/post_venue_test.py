@@ -1,6 +1,6 @@
 from models import PcObject, Venue
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_venue, create_offerer, create_user, create_user_offerer
+from tests.test_utils import create_venue, create_offerer, create_user, create_user_offerer
 from utils.human_ids import humanize, dehumanize
 
 
@@ -13,7 +13,7 @@ class Post:
             user = create_user(email='user.pro@test.com')
             user_offerer = create_user_offerer(user, offerer)
             PcObject.save(user_offerer)
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             venue_data = {
                 'name': 'Ma venue',
                 'siret': '30255917810045',
@@ -28,11 +28,11 @@ class Post:
             }
 
             # when
-            response = auth_request.post(API_URL + '/venues/', json=venue_data)
+            response = auth_request.post('/venues', json=venue_data)
 
             # then
             assert response.status_code == 201
-            id = response.json()['id']
+            id = response.json['id']
 
             venue = Venue.query.filter_by(id=dehumanize(id)).one()
             assert venue.name == 'Ma venue'
@@ -58,16 +58,16 @@ class Post:
                 'latitude': 48.82387,
                 'longitude': 2.35284
             }
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.post(API_URL + '/venues/', json=venue_data)
+            response = auth_request.post('/venues', json=venue_data)
 
             # Then
             assert response.status_code == 201
             venue = Venue.query.first()
             assert not venue.isValidated
-            json = response.json()
+            json = response.json
             assert json['isValidated'] == False
             assert 'validationToken' not in json
 
@@ -94,14 +94,14 @@ class Post:
                 'isVirtual': True
             }
 
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.post(API_URL + '/venues/', json=venue_data)
+            response = auth_request.post('/venues', json=venue_data)
 
             # then
             assert response.status_code == 400
-            assert response.json() == {
+            assert response.json == {
                 'isVirtual': ['Un lieu pour les offres numériques existe déjà pour cette structure']}
 
         @clean_database
@@ -125,12 +125,12 @@ class Post:
                 'isVirtual': False
             }
 
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.post(API_URL + '/venues/', json=data)
+            response = auth_request.post('/venues', json=data)
 
             # then
             assert response.status_code == 400
-            assert response.json()['latitude'] == ['La latitude doit être comprise entre -90.0 et +90.0']
-            assert response.json()['longitude'] == ['Format incorrect']
+            assert response.json['latitude'] == ['La latitude doit être comprise entre -90.0 et +90.0']
+            assert response.json['longitude'] == ['Format incorrect']

@@ -1,7 +1,9 @@
+from io import BytesIO
+
 from models import PcObject
 from tests.conftest import clean_database, TestClient
 from tests.files.images import ONE_PIXEL_PNG
-from tests.test_utils import API_URL, create_venue, create_offerer, create_user, \
+from tests.test_utils import create_venue, create_offerer, create_user, \
     create_mediation, create_offer_with_event_product, create_user_offerer
 from utils.human_ids import humanize
 
@@ -19,13 +21,12 @@ class Post:
             mediation = create_mediation(offer)
             PcObject.save(user_offerer, mediation)
 
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
             response = auth_request.post(
-                API_URL + '/storage/thumb/%s/%s/%s' % ('mediations', humanize(mediation.id), '0'),
-                json={},
-                files={'file': ('1.png', ONE_PIXEL_PNG)}
+                '/storage/thumb/%s/%s/%s' % ('mediations', humanize(mediation.id), '0'),
+                files={'file': (BytesIO(ONE_PIXEL_PNG), '1.png')}
             )
 
             # then
@@ -40,18 +41,17 @@ class Post:
             venue = create_venue(offerer)
             PcObject.save(user, venue, offerer)
 
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
             response = auth_request.post(
-                API_URL + '/storage/thumb/%s/%s/%s' % ('venues', humanize(venue.id), '1'),
-                json={},
-                files={'file': ('1.png', b'123')}
+                '/storage/thumb/%s/%s/%s' % ('venues', humanize(venue.id), '1'),
+                files={'file': (BytesIO(b'123'), '1.png')}
             )
 
             # then
             assert response.status_code == 400
-            assert response.json()['text'] == 'upload is not authorized for this model'
+            assert response.json['text'] == 'upload is not authorized for this model'
 
     class Returns403:
         @clean_database
@@ -64,15 +64,14 @@ class Post:
             mediation = create_mediation(offer)
             PcObject.save(user, offer, mediation, venue, offerer)
 
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
             response = auth_request.post(
-                API_URL + '/storage/thumb/%s/%s/%s' % ('mediations', humanize(mediation.id), '0'),
-                json={},
-                files={'file': ('1.png', ONE_PIXEL_PNG)}
+                '/storage/thumb/%s/%s/%s' % ('mediations', humanize(mediation.id), '0'),
+                files={'file': (BytesIO(ONE_PIXEL_PNG), '1.png')}
             )
 
             # then
             assert response.status_code == 403
-            assert response.json()['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
+            assert response.json['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]

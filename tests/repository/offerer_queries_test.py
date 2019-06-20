@@ -1210,8 +1210,7 @@ def test_find_filtered_offerers_with_default_param_return_all_offerers(app):
 
 
 @clean_database
-def test_find_filtered_offerers_with_one_keyword_at_venue_public_name_level(
-        app):
+def test_find_filtered_offerers_with_one_keyword_at_venue_public_name_level(app):
     # given
     offerer_with_only_virtual_venue_with_offer = create_offerer(siren="123456785")
     offerer_with_only_virtual_venue_without_offer = create_offerer(siren="123456786")
@@ -1261,8 +1260,7 @@ def test_find_filtered_offerers_with_one_keyword_at_venue_public_name_level(
 
 
 @clean_database
-def test_find_filtered_offerers_with_one_partial_keyword_at_venue_public_name_level(
-        app):
+def test_find_filtered_offerers_with_one_partial_keyword_at_venue_public_name_level(app):
     # given
     offerer_with_only_virtual_venue_with_offer = create_offerer(siren="123456785")
     offerer_with_only_virtual_venue_without_offer = create_offerer(siren="123456786")
@@ -1312,8 +1310,7 @@ def test_find_filtered_offerers_with_one_partial_keyword_at_venue_public_name_le
 
 
 @clean_database
-def test_find_filtered_offerers_with_several_keywords_at_venue_public_name_level(
-        app):
+def test_find_filtered_offerers_with_several_keywords_at_venue_public_name_level(app):
     # given
     offerer_with_only_virtual_venue_with_offer = create_offerer(siren="123456785")
     offerer_with_only_virtual_venue_without_offer = create_offerer(siren="123456786")
@@ -1363,8 +1360,7 @@ def test_find_filtered_offerers_with_several_keywords_at_venue_public_name_level
 
 
 @clean_database
-def test_find_filtered_offerers_with_several_partial_keywords_at_venue_public_name_level(
-        app):
+def test_find_filtered_offerers_with_several_partial_keywords_at_venue_public_name_level(app):
     # given
     offerer_with_only_virtual_venue_with_offer = create_offerer(siren="123456785")
     offerer_with_only_virtual_venue_without_offer = create_offerer(siren="123456786")

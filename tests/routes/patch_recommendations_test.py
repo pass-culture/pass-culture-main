@@ -1,14 +1,13 @@
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, \
-    create_mediation, \
+from tests.test_utils import create_mediation, \
     create_offerer, \
     create_recommendation, \
     create_user, \
     create_venue, create_offer_with_thing_product
 from utils.human_ids import humanize
 
-RECOMMENDATION_URL = API_URL + '/recommendations'
+RECOMMENDATION_URL = '/recommendations'
 
 
 class Patch:
@@ -25,10 +24,10 @@ class Patch:
             PcObject.save(recommendation)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .patch(API_URL + '/recommendations/%s' % humanize(recommendation.id), json={'isClicked': True})
+                .patch('/recommendations/%s' % humanize(recommendation.id), json={'isClicked': True})
 
             # then
             assert response.status_code == 200
-            assert response.json()['isClicked'] is True
+            assert response.json['isClicked'] is True

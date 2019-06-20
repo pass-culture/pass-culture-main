@@ -1,6 +1,6 @@
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_user
+from tests.test_utils import create_user
 
 
 class Get:
@@ -13,7 +13,7 @@ class Get:
             PcObject.save(user)
 
             # when
-            request = TestClient().get(API_URL + '/users/token/' + token)
+            request = TestClient(app.test_client()).get('/users/token/' + token)
 
             # then
             assert request.status_code == 200
@@ -22,7 +22,7 @@ class Get:
         @clean_database
         def when_activation_token_does_not_exist(self, app):
             # when
-            request = TestClient().get(API_URL + '/users/token/3YU26FS')
+            request = TestClient(app.test_client()).get('/users/token/3YU26FS')
 
             # then
             assert request.status_code == 404

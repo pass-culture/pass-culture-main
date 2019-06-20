@@ -61,7 +61,8 @@ class Get:
             create_offers_for(user, 20)
 
             # when
-            response = TestClient().with_auth(email='user@test.com', password='azerty123') \
+            response = TestClient(app.test_client()) \
+                .with_auth(email='user@test.com', password='azerty123') \
                 .get(API_URL + '/offers')
 
             # then

@@ -1,6 +1,6 @@
 from models import UserSession, PcObject
 from tests.conftest import TestClient, clean_database
-from tests.test_utils import API_URL, create_user
+from tests.test_utils import create_user
 
 
 class Get:
@@ -10,12 +10,12 @@ class Get:
             # given
             user = create_user(email='test@mail.com')
             PcObject.save(user)
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
-            assert auth_request.get(API_URL + '/bookings').status_code == 200
+            assert auth_request.get('/bookings').status_code == 200
 
             # when
-            response = auth_request.get(API_URL + '/users/signout')
+            response = auth_request.get('/users/signout')
 
             # then
             assert response.status_code == 200

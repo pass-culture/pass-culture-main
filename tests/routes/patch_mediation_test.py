@@ -1,10 +1,8 @@
 from datetime import datetime, timedelta
 
-from models import PcObject
-from models.db import db
+from models import PcObject, Mediation, Recommendation
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, \
-    create_user, \
+from tests.test_utils import create_user, \
     create_offer_with_event_product, \
     create_mediation, \
     create_offerer, \
@@ -26,21 +24,21 @@ class Patch:
             mediation = create_mediation(offer)
             PcObject.save(mediation)
             PcObject.save(user, venue, offerer, user_offerer)
-
-            auth_request = TestClient().with_auth(email=user.email)
+            mediation_id = mediation.id
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             data = {'frontText': 'new front text', 'backText': 'new back text', 'isActive': False}
 
             # when
-            response = auth_request.patch(API_URL + '/mediations/%s' % humanize(mediation.id), json=data)
+            response = auth_request.patch('/mediations/%s' % humanize(mediation.id), json=data)
 
             # then
-            db.session.refresh(mediation)
+            mediation = Mediation.query.get(mediation_id)
             assert response.status_code == 200
-            assert response.json()['id'] == humanize(mediation.id)
-            assert response.json()['frontText'] == mediation.frontText
-            assert response.json()['backText'] == mediation.backText
-            assert response.json()['isActive'] == mediation.isActive
-            assert response.json()['thumbUrl'] == mediation.thumbUrl
+            assert response.json['id'] == humanize(mediation.id)
+            assert response.json['frontText'] == mediation.frontText
+            assert response.json['backText'] == mediation.backText
+            assert response.json['isActive'] == mediation.isActive
+            assert response.json['thumbUrl'] == mediation.thumbUrl
             assert mediation.isActive == data['isActive']
             assert mediation.frontText == data['frontText']
             assert mediation.backText == data['backText']
@@ -65,20 +63,25 @@ class Patch:
                                                          valid_until_date=original_validity_date)
             PcObject.save(other_user, user_offerer, recommendation1, recommendation2, other_recommendation)
 
-            auth_request = TestClient().with_auth(email=user_pro.email)
+            mediation1_id = mediation1.id
+            recommendation1_id = recommendation1.id
+            recommendation2_id = recommendation2.id
+            other_recommendation_id = other_recommendation.id
+
+            auth_request = TestClient(app.test_client()).with_auth(email=user_pro.email)
             data = {'isActive': False}
 
             # when
-            response = auth_request.patch(API_URL + '/mediations/%s' % humanize(mediation1.id), json=data)
+            response = auth_request.patch('/mediations/%s' % humanize(mediation1.id), json=data)
 
             # then
-            db.session.refresh(mediation1)
+            mediation1 = Mediation.query.get(mediation1_id)
+            recommendation1 = Recommendation.query.get(recommendation1_id)
+            recommendation2 = Recommendation.query.get(recommendation2_id)
+            other_recommendation = Recommendation.query.get(other_recommendation_id)
             assert response.status_code == 200
-            assert response.json()['isActive'] == mediation1.isActive
+            assert response.json['isActive'] == mediation1.isActive
             assert mediation1.isActive == data['isActive']
-            db.session.refresh(recommendation1)
-            db.session.refresh(recommendation2)
-            db.session.refresh(other_recommendation)
             assert recommendation1.validUntilDate < datetime.utcnow()
             assert recommendation2.validUntilDate < datetime.utcnow()
             assert other_recommendation.validUntilDate == original_validity_date
@@ -97,10 +100,10 @@ class Patch:
             PcObject.save(mediation)
             PcObject.save(other_user, current_user, venue, offerer, user_offerer)
 
-            auth_request = TestClient().with_auth(email=current_user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=current_user.email)
 
             # when
-            response = auth_request.patch(API_URL + '/mediations/%s' % humanize(mediation.id), json={})
+            response = auth_request.patch('/mediations/%s' % humanize(mediation.id), json={})
 
             # then
             assert response.status_code == 403
@@ -111,10 +114,10 @@ class Patch:
             # given
             user = create_user()
             PcObject.save(user)
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.patch(API_URL + '/mediations/ADFGA', json={})
+            response = auth_request.patch('/mediations/ADFGA', json={})
 
             # then
             assert response.status_code == 404

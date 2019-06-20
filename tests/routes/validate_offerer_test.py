@@ -2,7 +2,7 @@ import secrets
 
 from models import Offerer, PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user, API_URL, create_offerer, create_user_offerer
+from tests.test_utils import create_user, create_offerer, create_user_offerer
 
 
 class Get:
@@ -24,8 +24,8 @@ class Get:
                 .first().validationToken
 
             # When
-            response = TestClient().get(API_URL + '/validate?modelNames=Offerer&token=' + token,
-                                        headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).get('/validate?modelNames=Offerer&token=' + token,
+                                                         headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 202
@@ -38,8 +38,8 @@ class Get:
         @clean_database
         def expect_offerer_not_to_be_validated_with_unknown_token(self, app):
             # when
-            response = TestClient().with_auth(email='toto_pro@btmx.fr') \
-                .get(API_URL + '/validate?modelNames=Offerer&token=123')
+            response = TestClient(app.test_client()).with_auth(email='toto_pro@btmx.fr') \
+                .get('/validate?modelNames=Offerer&token=123')
 
             # then
             assert response.status_code == 404

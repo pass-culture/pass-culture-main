@@ -1,12 +1,10 @@
 """ routes offerer """
 from datetime import timedelta, datetime
 
-from models import PcObject
-from models.db import db
+from models import PcObject, Recommendation, Offerer
 from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, \
-    create_offer_with_event_product, \
+from tests.test_utils import create_offer_with_event_product, \
     create_offerer, \
     create_recommendation, \
     create_offer_with_thing_product, \
@@ -28,9 +26,9 @@ class Patch:
             body = {'isActive': False}
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .patch(API_URL + '/offerers/%s' % humanize(offerer.id), json=body)
+                .patch('/offerers/%s' % humanize(offerer.id), json=body)
 
             # then
             assert response.status_code == 403
@@ -51,14 +49,14 @@ class Patch:
                     'name': 'Nouveau Nom', 'siren': '989807829', 'lastProviderId': humanize(1)}
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .patch(API_URL + '/offerers/%s' % humanize(offerer.id), json=body)
+                .patch('/offerers/%s' % humanize(offerer.id), json=body)
 
             # then
             assert response.status_code == 400
             for key in body:
-                assert response.json()[key] == ['Vous ne pouvez pas modifier ce champ']
+                assert response.json[key] == ['Vous ne pouvez pas modifier ce champ']
 
     class Returns200:
         @clean_database
@@ -85,24 +83,31 @@ class Patch:
             PcObject.save(recommendation1, recommendation2, recommendation3, recommendation4,
                           other_recommendation,
                           user_offerer)
+            offerer_id = offerer.id
+            recommendation1_id = recommendation1.id
+            recommendation2_id = recommendation2.id
+            recommendation3_id = recommendation3.id
+            recommendation4_id = recommendation4.id
+            other_recommendation_id = other_recommendation.id
 
             data = {'isActive': False}
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .patch(API_URL + '/offerers/%s' % humanize(offerer.id), json=data)
+                .patch('/offerers/%s' % humanize(offerer.id), json=data)
 
             # then
-            db.session.refresh(offerer)
+            offerer = Offerer.query.get(offerer_id)
+            recommendation1 = Recommendation.query.get(recommendation1_id)
+            recommendation2 = Recommendation.query.get(recommendation2_id)
+            recommendation3 = Recommendation.query.get(recommendation3_id)
+            recommendation4 = Recommendation.query.get(recommendation4_id)
+            other_recommendation = Recommendation.query.get(other_recommendation_id)
+
             assert response.status_code == 200
-            assert response.json()['isActive'] == offerer.isActive
+            assert response.json['isActive'] == offerer.isActive
             assert offerer.isActive == data['isActive']
-            db.session.refresh(recommendation1)
-            db.session.refresh(recommendation2)
-            db.session.refresh(recommendation3)
-            db.session.refresh(recommendation4)
-            db.session.refresh(other_recommendation)
             assert recommendation1.validUntilDate < datetime.utcnow()
             assert recommendation2.validUntilDate < datetime.utcnow()
             assert recommendation3.validUntilDate < datetime.utcnow()

@@ -6,6 +6,7 @@ beautifulsoup4==4.6.3
 colorthief==0.2.1
 coveralls==1.6.0
 dateparser==0.7.0
+docker==4.0.2
 freezegun==0.3.11
 Flask==1.0.2
 flask_cors==3.0.7

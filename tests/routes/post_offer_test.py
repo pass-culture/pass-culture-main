@@ -1,4 +1,4 @@
-from models import PcObject, EventType, Offer, ThingType, Product
+from models import PcObject, EventType, Offer, ThingType, Product, Offerer
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, API_URL, create_offerer, create_venue, create_user_offerer, \
     create_product_with_Thing_type, \
@@ -21,13 +21,13 @@ class Post:
             PcObject.save(user)
 
             # When
-            request = TestClient().with_auth(user.email).post(
-                f'{API_URL}/offers/',
+            request = TestClient(app.test_client()).with_auth(user.email).post(
+                f'{API_URL}/offers',
                 json=json)
 
             # Then
             assert request.status_code == 400
-            assert request.json()['venueId'] == ['Vous devez préciser un identifiant de lieu']
+            assert request.json['venueId'] == ['Vous devez préciser un identifiant de lieu']
 
         @clean_database
         def when_no_duration_given_for_an_event(self, app):
@@ -46,8 +46,8 @@ class Post:
             }
 
             # When
-            request = TestClient().with_auth(user.email).post(
-                f'{API_URL}/offers/',
+            request = TestClient(app.test_client()).with_auth(user.email).post(
+                f'{API_URL}/offers',
                 json=json)
 
             # Then
@@ -65,13 +65,13 @@ class Post:
             PcObject.save(user)
 
             # When
-            request = TestClient().with_auth(user.email).post(
-                f'{API_URL}/offers/',
+            request = TestClient(app.test_client()).with_auth(user.email).post(
+                f'{API_URL}/offers',
                 json=json)
 
             # Then
             assert request.status_code == 400
-            assert request.json()['global'] == [
+            assert request.json['global'] == [
                 'Aucun objet ne correspond à cet identifiant dans notre base de données']
 
         @clean_database
@@ -91,13 +91,13 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth(user.email).post(
-                f'{API_URL}/offers/',
+            response = TestClient(app.test_client()).with_auth(user.email).post(
+                f'{API_URL}/offers',
                 json=json)
 
             # Then
             assert response.status_code == 400
-            assert response.json()['url'] == ['Une offre de type Jeux (support physique) ne peut pas être numérique']
+            assert response.json['url'] == ['Une offre de type Jeux (support physique) ne peut pas être numérique']
 
         @clean_database
         def when_offer_type_is_unknown(self, app):
@@ -118,13 +118,13 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth(user.email).post(
-                f'{API_URL}/offers/',
+            response = TestClient(app.test_client()).with_auth(user.email).post(
+                f'{API_URL}/offers',
                 json=json)
 
             # Then
             assert response.status_code == 400
-            assert response.json()['type'] == ['Le type de cette offre est inconnu']
+            assert response.json['type'] == ['Le type de cette offre est inconnu']
 
     class Returns201:
         @clean_database
@@ -135,6 +135,7 @@ class Post:
             venue = create_venue(offerer)
             user_offerer = create_user_offerer(user, offerer)
             PcObject.save(user, user_offerer, venue)
+            offerer_id = offerer.id
 
             json = {
                 'venueId': humanize(venue.id),
@@ -145,13 +146,13 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth(user.email).post(
-                f'{API_URL}/offers/',
+            response = TestClient(app.test_client()).with_auth(user.email).post(
+                f'{API_URL}/offers',
                 json=json)
 
             # Then
             assert response.status_code == 201
-            assert response.json()['product']['offerType'] == {
+            assert response.json['product']['offerType'] == {
                 'conditionalFields': ["author", "showType", "stageDirector", "performer"],
                 'description': 'Suivre un géant de 12 mètres dans la ville ? '
                                'Rire aux éclats devant un stand up ? '
@@ -166,19 +167,19 @@ class Post:
                 'type': 'Event',
                 'value': 'EventType.SPECTACLE_VIVANT'
             }
-            assert response.json()['isEvent'] is True
-            assert response.json()['isThing'] is False
+            assert response.json['isEvent'] is True
+            assert response.json['isThing'] is False
 
-            offer_id = dehumanize(response.json()['id'])
+            offer_id = dehumanize(response.json['id'])
             offer = Offer.query.filter_by(id=offer_id).first()
             assert offer.bookingEmail == 'offer@email.com'
             assert offer.venueId == venue.id
-            event_id = dehumanize(response.json()['product']['id'])
+            event_id = dehumanize(response.json['product']['id'])
             event_product = Product.query.filter_by(id=event_id).first()
             assert event_product.durationMinutes == 60
             assert event_product.name == 'La pièce de théâtre'
             assert offer.type == str(EventType.SPECTACLE_VIVANT)
-            assert offer.product.owningOfferer == offerer
+            assert offer.product.owningOfferer == Offerer.query.get(offerer_id)
 
         @clean_database
         def when_creating_a_new_event_offer_without_booking_email(self, app):
@@ -197,12 +198,12 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth(user.email).post(
-                f'{API_URL}/offers/',
+            response = TestClient(app.test_client()).with_auth(user.email).post(
+                f'{API_URL}/offers',
                 json=json)
 
             # Then
-            offer_id = dehumanize(response.json()['id'])
+            offer_id = dehumanize(response.json['id'])
             offer = Offer.query.filter_by(id=offer_id).first()
             assert response.status_code == 201
             assert offer.bookingEmail == None
@@ -216,6 +217,7 @@ class Post:
             venue = create_venue(offerer, is_virtual=True, siret=None)
             thing_product = create_product_with_Thing_type()
             PcObject.save(user, venue, thing_product, user_offerer)
+            offerer_id = offerer.id
             json = {
                 'type': 'ThingType.JEUX_VIDEO',
                 'name': 'Les lapins crétins',
@@ -226,16 +228,16 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth(user.email).post(
-                f'{API_URL}/offers/',
+            response = TestClient(app.test_client()).with_auth(user.email).post(
+                f'{API_URL}/offers',
                 json=json)
 
             # Then
             assert response.status_code == 201
-            offer_id = dehumanize(response.json()['id'])
+            offer_id = dehumanize(response.json['id'])
             offer = Offer.query.filter_by(id=offer_id).first()
             assert offer.bookingEmail == 'offer@email.com'
-            assert response.json()['product']['offerType'] == {
+            assert response.json['product']['offerType'] == {
                 'conditionalFields': [],
                 'description': 'Résoudre l’énigme d’un jeu de piste dans votre ville ? '
                                'Jouer en ligne entre amis ? '
@@ -248,11 +250,11 @@ class Post:
                 'type': 'Thing',
                 'value': 'ThingType.JEUX_VIDEO'
             }
-            offer_id = dehumanize(response.json()['id'])
+            offer_id = dehumanize(response.json['id'])
             offer = Offer.query.filter_by(id=offer_id).first()
             assert offer.bookingEmail == 'offer@email.com'
             assert offer.venueId == venue.id
-            thing_id = dehumanize(response.json()['product']['id'])
+            thing_id = dehumanize(response.json['product']['id'])
             thing_product = Product.query.filter_by(id=thing_id).first()
             assert thing_product.name == 'Les lapins crétins'
             assert offer.type == str(ThingType.JEUX_VIDEO)
@@ -261,7 +263,7 @@ class Post:
             assert offer.isDigital
             assert offer.isNational
             assert thing_product.isNational
-            assert offer.product.owningOfferer == offerer
+            assert offer.product.owningOfferer == Offerer.query.get(offerer_id)
 
         @clean_database
         def when_creating_a_new_offer_from_an_existing_thing(self, app):
@@ -277,10 +279,10 @@ class Post:
                 'venueId': humanize(venue.id),
                 'productId': humanize(thing_product.id)
             }
-            auth_request = TestClient().with_auth(email='user@test.com')
+            auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
 
             # when
-            response = auth_request.post(API_URL + '/offers', json=data)
+            response = auth_request.post('/offers', json=data)
 
             # then
             assert response.status_code == 201
@@ -299,10 +301,10 @@ class Post:
                 'venueId': humanize(venue.id),
                 'productId': humanize(event_product.id)
             }
-            auth_request = TestClient().with_auth(email='user@test.com')
+            auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
 
             # when
-            response = auth_request.post(API_URL + '/offers', json=data)
+            response = auth_request.post('/offers', json=data)
 
             # then
             assert response.status_code == 201
@@ -323,8 +325,8 @@ class Post:
             }
 
             # When
-            request = TestClient().with_auth(user.email).post(
-                f'{API_URL}/offers/',
+            request = TestClient(app.test_client()).with_auth(user.email).post(
+                f'{API_URL}/offers',
                 json=json)
 
             # Then
@@ -348,13 +350,13 @@ class Post:
             }
 
             # When
-            request = TestClient().with_auth(user.email).post(
-                f'{API_URL}/offers/',
+            request = TestClient(app.test_client()).with_auth(user.email).post(
+                f'{API_URL}/offers',
                 json=json)
 
             # Then
             assert request.status_code == 403
-            assert request.json()['type'] == [
+            assert request.json['type'] == [
                 "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation"]
 
         @clean_database
@@ -374,13 +376,13 @@ class Post:
             }
 
             # When
-            request = TestClient().with_auth(user.email).post(
-                f'{API_URL}/offers/',
+            request = TestClient(app.test_client()).with_auth(user.email).post(
+                f'{API_URL}/offers',
                 json=json)
 
             # Then
             assert request.status_code == 403
-            assert request.json()['type'] == [
+            assert request.json['type'] == [
                 "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation"]
 
         @clean_database
@@ -400,10 +402,10 @@ class Post:
             }
 
             # When
-            request = TestClient().with_auth(user.email).post(
-                f'{API_URL}/offers/',
+            request = TestClient(app.test_client()).with_auth(user.email).post(
+                f'{API_URL}/offers',
                 json=json)
 
             # Then
             assert request.status_code == 403
-            assert request.json()['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
+            assert request.json['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]

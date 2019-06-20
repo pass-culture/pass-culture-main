@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta
 
-from models import PcObject
-from models.db import db
+from models import PcObject, Booking
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_deposit, create_venue, create_offerer, \
+from tests.test_utils import create_deposit, create_venue, create_offerer, \
     create_user, create_booking, create_offer_with_event_product, \
     create_event_occurrence, create_stock_from_event_occurrence
 from utils.human_ids import humanize
@@ -27,15 +26,15 @@ class Patch:
             stock = create_stock_from_event_occurrence(event_occurrence)
             booking = create_booking(user, stock, venue)
             PcObject.save(user, deposit, booking)
+            booking_id = booking.id
 
             # When
-            response = TestClient().with_auth(user.email) \
-                .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": True})
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .patch('/bookings/' + humanize(booking.id), json={"isCancelled": True})
 
             # Then
             assert response.status_code == 200
-            db.session.refresh(booking)
-            assert booking.isCancelled
+            assert Booking.query.get(booking_id).isCancelled
 
         @clean_database
         def expect_the_booking_to_be_cancelled_by_admin_for_someone_else(self, app):
@@ -46,15 +45,15 @@ class Patch:
             deposit = create_deposit(other_user, deposit_date, amount=500)
             booking = create_booking(other_user)
             PcObject.save(admin_user, other_user, deposit, booking)
+            booking_id = booking.id
 
             # When
-            response = TestClient().with_auth(admin_user.email) \
-                .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": True})
+            response = TestClient(app.test_client()).with_auth(admin_user.email) \
+                .patch('/bookings/' + humanize(booking.id), json={"isCancelled": True})
 
             # Then
             assert response.status_code == 200
-            db.session.refresh(booking)
-            assert booking.isCancelled
+            assert Booking.query.get(booking_id).isCancelled
 
     class Returns400:
         @clean_database
@@ -65,16 +64,16 @@ class Patch:
             deposit = create_deposit(user, deposit_date, amount=500)
             booking = create_booking(user, is_used=True)
             PcObject.save(user, deposit, booking)
+            booking_id = booking.id
 
             # When
-            response = TestClient().with_auth(user.email) \
-                .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": True})
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .patch('/bookings/' + humanize(booking.id), json={"isCancelled": True})
 
             # Then
             assert response.status_code == 400
-            assert response.json()['booking'] == ["Impossible d\'annuler une réservation consommée"]
-            db.session.refresh(booking)
-            assert not booking.isCancelled
+            assert response.json['booking'] == ["Impossible d\'annuler une réservation consommée"]
+            assert not Booking.query.get(booking_id).isCancelled
 
         @clean_database
         def when_trying_to_patch_something_else_than_is_cancelled(self, app):
@@ -84,14 +83,14 @@ class Patch:
             deposit = create_deposit(user, deposit_date, amount=500)
             booking = create_booking(user, quantity=1)
             PcObject.save(user, deposit, booking)
+            booking_id = booking.id
 
             # When
-            response = TestClient().with_auth(user.email) \
-                .patch(API_URL + '/bookings/' + humanize(booking.id), json={"quantity": 3})
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .patch('/bookings/' + humanize(booking.id), json={"quantity": 3})
 
             # Then
             assert response.status_code == 400
-            db.session.refresh(booking)
             assert booking.quantity == 1
 
         @clean_database
@@ -103,15 +102,15 @@ class Patch:
             booking = create_booking(user)
             booking.isCancelled = True
             PcObject.save(user, deposit, booking)
+            booking_id = booking.id
 
             # When
-            response = TestClient().with_auth(user.email) \
-                .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": False})
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .patch('/bookings/' + humanize(booking.id), json={"isCancelled": False})
 
             # Then
             assert response.status_code == 400
-            db.session.refresh(booking)
-            assert booking.isCancelled
+            assert Booking.query.get(booking_id).isCancelled
 
         @clean_database
         def when_event_beginning_date_time_is_in_less_than_72_hours(self, app):
@@ -130,8 +129,8 @@ class Patch:
             PcObject.save(user, deposit, booking)
 
             # When
-            response = TestClient().with_auth(user.email) \
-                .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": True})
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .patch('/bookings/' + humanize(booking.id), json={"isCancelled": True})
 
             # Then
             assert response.status_code == 400
@@ -146,15 +145,15 @@ class Patch:
             booking = create_booking(other_user)
             user = create_user(email='test@email.com')
             PcObject.save(user, other_user, deposit, booking)
+            booking_id = booking.id
 
             # When
-            response = TestClient().with_auth(user.email) \
-                .patch(API_URL + '/bookings/' + humanize(booking.id), json={"isCancelled": True})
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .patch('/bookings/' + humanize(booking.id), json={"isCancelled": True})
 
             # Then
             assert response.status_code == 403
-            db.session.refresh(booking)
-            assert not booking.isCancelled
+            assert not Booking.query.get(booking_id).isCancelled
 
     class Returns404:
         @clean_database
@@ -164,8 +163,8 @@ class Patch:
             PcObject.save(user)
 
             # When
-            response = TestClient().with_auth(user.email) \
-                .patch(API_URL + '/bookings/AX', json={"isCancelled": True})
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .patch('/bookings/AX', json={"isCancelled": True})
 
             # Then
             assert response.status_code == 404

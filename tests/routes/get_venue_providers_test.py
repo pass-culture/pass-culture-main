@@ -1,6 +1,6 @@
 from models import PcObject, Provider
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_offerer, create_venue, create_user, create_venue_provider
+from tests.test_utils import create_offerer, create_venue, create_user, create_venue_provider
 from utils.human_ids import humanize
 from utils.logger import logger
 
@@ -18,17 +18,17 @@ class Get:
 
             user = create_user()
             PcObject.save(user)
-            auth_request = TestClient() \
+            auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
 
             # when
-            response = auth_request.get(API_URL + '/venueProviders?venueId=' + humanize(venue.id))
+            response = auth_request.get('/venueProviders?venueId=' + humanize(venue.id))
 
             # then
             assert response.status_code == 200
             logger.info(response.json)
-            assert response.json()[0].get('id') == humanize(venue_provider.id)
-            assert response.json()[0].get('venueId') == humanize(venue.id)
+            assert response.json[0].get('id') == humanize(venue_provider.id)
+            assert response.json[0].get('venueId') == humanize(venue.id)
 
     class Returns400:
         @clean_database
@@ -42,11 +42,11 @@ class Get:
 
             user = create_user()
             PcObject.save(user)
-            auth_request = TestClient() \
+            auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
 
             # when
-            response = auth_request.get(API_URL + '/venueProviders')
+            response = auth_request.get('/venueProviders')
 
             # then
             assert response.status_code == 400

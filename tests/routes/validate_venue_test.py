@@ -1,7 +1,7 @@
 from models import PcObject
 from models.db import db
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_offerer, create_venue
+from tests.test_utils import create_offerer, create_venue
 
 
 class Get:
@@ -17,8 +17,7 @@ class Get:
             token = venue.validationToken
 
             # When
-            response = TestClient().get('{}/validate/venue?token={}'.format(API_URL, token),
-                                        headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).get('/validate/venue?token={}'.format(token))
 
             # Then
             assert response.status_code == 202
@@ -29,20 +28,18 @@ class Get:
         @clean_database
         def when_no_validation_token_is_provided(self, app):
             # When
-            response = TestClient().get('{}/validate/venue'.format(API_URL),
-                                        headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).get('/validate/venue')
 
             # Then
             assert response.status_code == 400
-            assert response.json()['token'] == ['Vous devez fournir un jeton de validation']
+            assert response.json['token'] == ['Vous devez fournir un jeton de validation']
 
     class Returns404:
         @clean_database
         def when_validation_token_is_unknown(self, app):
             # When
-            response = TestClient().get('{}/validate/venue?token={}'.format(API_URL, '12345'),
-                                        headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).get('/validate/venue?token={}'.format('12345'))
 
             # Then
             assert response.status_code == 404
-            assert response.json()['token'] == ['Jeton inconnu']
+            assert response.json['token'] == ['Jeton inconnu']

@@ -1,12 +1,10 @@
 import os
 from datetime import datetime
 
-import requests
-
-from models import PcObject
+from models import PcObject, Venue, Offerer
 from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_user, create_user_offerer, \
+from tests.test_utils import create_user, create_user_offerer, \
     create_offerer, create_venue, create_event_occurrence, create_offer_with_event_product, \
     create_venue_activity, create_stock_with_thing_offer, create_stock_with_event_offer, \
     save_all_activities, create_bank_information, create_stock_from_event_occurrence
@@ -20,10 +18,10 @@ def test_export_model_returns_200_when_given_model_is_known(app):
     # given
     user = create_user()
     PcObject.save(user)
-    auth_request = TestClient().with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.get(API_URL + '/exports/models/%s?token=%s' % ('Venue', TOKEN))
+    response = auth_request.get('/exports/models/%s?token=%s' % ('Venue', TOKEN))
 
     # then
     assert response.status_code == 200
@@ -34,21 +32,21 @@ def test_export_model_returns_400_when_given_model_is_not_exportable(app):
     # given
     user = create_user()
     PcObject.save(user)
-    auth_request = TestClient().with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.get(API_URL + '/exports/models/%s?token=%s' % ('VersionedMixin', TOKEN))
+    response = auth_request.get('/exports/models/%s?token=%s' % ('VersionedMixin', TOKEN))
 
     # then
     assert response.status_code == 400
-    assert response.json()['global'] == ['Classe non exportable : VersionedMixin']
+    assert response.json['global'] == ['Classe non exportable : VersionedMixin']
 
 
 @clean_database
 def test_export_model_returns_bad_request_if_no_token_provided(app):
     # when
-    response = requests.get(API_URL + '/exports/models/%s' % ('Venue'), headers={'origin':
-                                                                                     'http://localhost:3000'})
+    response = TestClient(app.test_client()).get('/exports/models/%s' % ('Venue'), headers={'origin':
+                                                                                                'http://localhost:3000'})
 
     # then
     assert response.status_code == 400
@@ -59,14 +57,14 @@ def test_export_model_returns_400_when_given_model_is_unknown(app):
     # given
     user = create_user()
     PcObject.save(user)
-    auth_request = TestClient().with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.get(API_URL + '/exports/models/%s?token=%s' % ('RandomStuff', TOKEN))
+    response = auth_request.get('/exports/models/%s?token=%s' % ('RandomStuff', TOKEN))
 
     # then
     assert response.status_code == 400
-    assert response.json()['global'] == ['Classe inconnue : RandomStuff']
+    assert response.json['global'] == ['Classe inconnue : RandomStuff']
 
 
 @clean_database
@@ -74,10 +72,10 @@ def test_pending_validation_returns_403_when_user_is_not_admin(app):
     # given
     user = create_user(is_admin=False)
     PcObject.save(user)
-    auth_request = TestClient().with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
+    response = auth_request.get('/exports/pending_validation')
 
     # then
     assert response.status_code == 403
@@ -88,10 +86,10 @@ def test_pending_validation_returns_200_when_user_is_admin(app):
     # given
     user = create_user(can_book_free_offers=False, is_admin=True)
     PcObject.save(user)
-    auth_request = TestClient().with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
+    response = auth_request.get('/exports/pending_validation')
 
     # then
     assert response.status_code == 200
@@ -104,10 +102,10 @@ def test_pending_validation_returns_403_when_user_is_structure_admin_but_not_adm
     offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer, is_admin=True)
     PcObject.save(user_offerer)
-    auth_request = TestClient().with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
+    response = auth_request.get('/exports/pending_validation')
 
     # then
     assert response.status_code == 403
@@ -124,15 +122,15 @@ def test_pending_validation_return_200_and_validation_token(app):
                          validation_token="venue_validation_token")
 
     PcObject.save(user_offerer, user)
-    auth_request = TestClient().with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
+    response = auth_request.get('/exports/pending_validation')
 
     # then
     assert response.status_code == 200
-    assert response.json()[0]["validationToken"] == "first_token"
-    assert response.json()[0]["UserOfferers"][0]["validationToken"] == "a_token"
+    assert response.json[0]["validationToken"] == "first_token"
+    assert response.json[0]["UserOfferers"][0]["validationToken"] == "a_token"
 
 
 @clean_database
@@ -193,13 +191,13 @@ def test_pending_validation_return_only_requested_data(app):
               }]
     }
 
-    auth_request = TestClient().with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
     # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
+    response = auth_request.get('/exports/pending_validation')
 
     # then
     assert response.status_code == 200
-    assert response.json()[0] == expected_result
+    assert response.json[0] == expected_result
 
 
 @clean_database
@@ -226,13 +224,13 @@ def test_pending_validation_returns_offerers_venues_user_and_user_offerer_with_r
 
     PcObject.save(connexion_user, user_offerer1, user_offerer2, user_offerer3, user_offerer4)
 
-    auth_request = TestClient().with_auth(email=connexion_user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=connexion_user.email)
     # when
-    response = auth_request.get(API_URL + '/exports/pending_validation')
+    response = auth_request.get('/exports/pending_validation')
 
     # then
     assert response.status_code == 200
-    response_json = response.json()
+    response_json = response.json
     assert len(response_json) == 3
     assert response_json[0]['validationToken'] == offerer1.validationToken
     assert response_json[0]['UserOfferers'][0]['validationToken'] == user_offerer1.validationToken
@@ -253,10 +251,10 @@ def test_get_venues_returns_403_when_user_is_not_admin(app):
     data = {}
     user = create_user(is_admin=False)
     PcObject.save(user)
-    auth_request = TestClient().with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.post(API_URL + '/exports/venues', json=data)
+    response = auth_request.post('/exports/venues', json=data)
 
     # then
     assert response.status_code == 403
@@ -271,10 +269,10 @@ def test_get_venues_returns_403_when_user_is_structure_admin_but_not_admin(app):
     user_offerer = create_user_offerer(user, offerer, is_admin=True)
     venue = create_venue(offerer)
     PcObject.save(user_offerer, venue)
-    auth_request = TestClient().with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.post(API_URL + '/exports/venues', json=data)
+    response = auth_request.post('/exports/venues', json=data)
 
     # then
     assert response.status_code == 403
@@ -358,6 +356,9 @@ def test_get_venues_return_200_and_filtered_venues(app):
         venue67_without_offer_in_date_range, *stocks
     )
 
+    venue67_with_offer_in_date_range_id = venue67_with_offer_in_date_range.id
+    venue93_with_offer_in_date_range_id = venue93_with_offer_in_date_range.id
+
     activity_in_date_range1 = create_venue_activity(venue93_with_offer_in_date_range, 'venue', 'insert',
                                                     issued_at=datetime(2018, 11, 30))
     activity_in_date_range2 = create_venue_activity(venue67_with_offer_in_date_range, 'venue', 'insert',
@@ -384,26 +385,18 @@ def test_get_venues_return_200_and_filtered_venues(app):
                         activity_in_date_range7, activity_before_date_range1, activity_before_date_range2,
                         activity_after_date_range)
 
-    auth_request = TestClient().with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.post(API_URL + '/exports/venues', json=data)
+    response = auth_request.post('/exports/venues', json=data)
 
     # then
-    venue_names = list(map(lambda x: x['name'], response.json()))
+    venue_names = list(map(lambda x: x['name'], response.json))
 
     assert response.status_code == 200
-    assert venue67_with_offer_in_date_range.name in venue_names
-    assert venue93_with_offer_in_date_range.name in venue_names
-    assert venue93_with_offer_before_date_range.name not in venue_names
-    assert venue93_with_offer_after_date_range.name not in venue_names
-    assert venue67_with_offer_before_date_range.name not in venue_names
-    assert venue67_without_offer_in_date_range.name not in venue_names
-    assert venue34_with_offer_in_date_range.name not in venue_names
-    assert venue_without_siret_with_offer_in_date_range.name not in venue_names
-    assert venue_virtual_with_offer_in_date_range.name not in venue_names
-    assert venue_not_validated_with_offer_in_date_range.name not in venue_names
-    assert venue_with_not_validated_offerer_in_date_range.name not in venue_names
+    assert len(venue_names) == 2
+    assert Venue.query.get(venue67_with_offer_in_date_range_id).name in venue_names
+    assert Venue.query.get(venue93_with_offer_in_date_range_id).name in venue_names
 
 
 @clean_database
@@ -468,21 +461,18 @@ def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(
                   validated_user_offerer_with_validated_user_with_not_validated_offerer_with_siren,
                   validated_user_offerer_with_validated_user_with_validated_offerer_without_siren,
                   not_validated_user_offerer_with_validated_user_with_validated_offerer_with_siren)
-
-    auth_request = TestClient().with_auth(email=query_user.email)
+    expected_venue_id = venue_with_validated_offerer_with_siren_with_user_offerer_with_user.id
+    auth_request = TestClient(app.test_client()).with_auth(email=query_user.email)
 
     # when
-    response = auth_request.post(API_URL + '/exports/venues', json=data)
+    response = auth_request.post('/exports/venues', json=data)
 
     # then
-    venue_names = list(map(lambda x: x['name'], response.json()))
+    venue_names = list(map(lambda x: x['name'], response.json))
 
     assert response.status_code == 200
-    assert venue_with_validated_offerer_with_siren_with_user_offerer_with_user.name in venue_names
-    assert venue_without_validated_offerer_with_siren_with_user_offerer_with_user.name not in venue_names
-    assert venue_with_validated_offerer_without_siren_with_user_offerer_with_user.name not in venue_names
-    assert venue_with_validated_offerer_with_siren_without_user_offerer_with_user.name not in venue_names
-    assert venue_with_validated_offerer_with_siren_with_user_offerer_without_user.name not in venue_names
+    assert len(venue_names) == 1
+    assert Venue.query.get(expected_venue_id).name in venue_names
 
 
 @clean_database
@@ -508,20 +498,22 @@ def test_get_venues_with_sirens_params_return_200_and_filtered_venues(app):
 
     PcObject.save(query_user, venue_123456789, venue_123456781, venue_123456782, venue_123456783,
                   venue_123456784)
-    auth_request = TestClient().with_auth(email=query_user.email)
+    venue_123456781_id = venue_123456781.id
+    venue_123456782_id = venue_123456782.id
+    venue_123456783_id = venue_123456783.id
+    auth_request = TestClient(app.test_client()).with_auth(email=query_user.email)
 
     # when
-    response = auth_request.post(API_URL + '/exports/venues', json=data)
+    response = auth_request.post('/exports/venues', json=data)
 
     # then
-    venue_names = list(map(lambda x: x['name'], response.json()))
+    venue_names = list(map(lambda x: x['name'], response.json))
 
     assert response.status_code == 200
-    assert venue_123456789.name not in venue_names
-    assert venue_123456781.name in venue_names
-    assert venue_123456782.name in venue_names
-    assert venue_123456783.name in venue_names
-    assert venue_123456784.name not in venue_names
+    assert len(venue_names) == 3
+    assert Venue.query.get(venue_123456781_id).name in venue_names
+    assert Venue.query.get(venue_123456782_id).name in venue_names
+    assert Venue.query.get(venue_123456783_id).name in venue_names
 
 
 @clean_database
@@ -532,14 +524,14 @@ def test_get_venues_return_error_when_date_param_is_wrong(app):
     user = create_user(can_book_free_offers=False, is_admin=True)
 
     PcObject.save(user)
-    auth_request = TestClient().with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.post(API_URL + '/exports/venues', json=data)
+    response = auth_request.post('/exports/venues', json=data)
 
     # then
     assert response.status_code == 400
-    assert response.json()['date_format'] == ['to_date and from_date are of type yyyy-mm-dd']
+    assert response.json['date_format'] == ['to_date and from_date are of type yyyy-mm-dd']
 
 
 @clean_database
@@ -548,10 +540,10 @@ def test_get_offerers_returns_403_when_user_is_not_admin(app):
     data = {}
     user = create_user(is_admin=False)
     PcObject.save(user)
-    auth_request = TestClient().with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.post(API_URL + '/exports/offerers', json=data)
+    response = auth_request.post('/exports/offerers', json=data)
 
     # then
     assert response.status_code == 403
@@ -565,10 +557,10 @@ def test_get_offerers_returns_403_when_user_is_structure_admin_but_not_admin(app
     offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer, is_admin=True)
     PcObject.save(user_offerer)
-    auth_request = TestClient().with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.post(API_URL + '/exports/offerers', json=data)
+    response = auth_request.post('/exports/offerers', json=data)
 
     # then
     assert response.status_code == 403
@@ -698,28 +690,16 @@ def test_get_offerers_return_200_and_filtered_offerers(app):
                   stock_offer_8, stock_offer_9, stock_offer_10, stock_active_offer_thing,
                   stock_expired_offer_thing, validated_venue_with_siret_without_offer)
 
-    auth_request = TestClient().with_auth(email=query_user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=query_user.email)
 
     # when
-    response = auth_request.post(API_URL + '/exports/offerers', json=data)
+    response = auth_request.post('/exports/offerers', json=data)
 
     # then
-    offerer_names = list(map(lambda x: x['name'], response.json()))
+    offerer_names = list(map(lambda x: x['name'], response.json))
 
     assert response.status_code == 200
-    assert offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer.name in offerer_names
-    assert offerer_93100_in_date_range_with_validated_venue_with_siret_and_venue_without_siret_with_offer.name in offerer_names
-    assert not_validated_offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer.name in offerer_names
-    assert offerer_93100_in_date_range_with_validated_venue_with_siret_with_offer_without_siren.name in offerer_names
-    assert offerer_2A450_in_date_range_with_validated_venue_with_siret_with_active_offer_thing.name in offerer_names
-    assert offerer_2A450_in_date_range_with_validated_venue_with_siret_with_expired_offer_thing.name in offerer_names
-    assert offerer_66666_in_date_range_with_validated_venue_with_siret_with_offer.name not in offerer_names
-    assert offerer_93100_before_date_range_with_validated_venue_with_siret_with_offer.name not in offerer_names
-    assert offerer_93100_after_date_range_with_validated_venue_with_siret_with_offer.name not in offerer_names
-    assert offerer_2A450_in_date_range_with_validated_venue_without_siret_with_offer.name not in offerer_names
-    assert offerer_2A450_in_date_range_without_validated_venue_with_siret_with_offer.name not in offerer_names
-    assert offerer_2A450_in_date_range_with_validated_venue_with_siret_without_offer.name not in offerer_names
-    assert offerer_93100_in_date_range_with_virtual_venue_with_offer.name not in offerer_names
+    assert len(offerer_names) == 6
 
 
 @clean_database
@@ -767,14 +747,14 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
 
     PcObject.save(bank_information)
 
-    auth_request = TestClient().with_auth(email=user_querying.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=user_querying.email)
 
     # when
-    response = auth_request.post(API_URL + '/exports/offerers', json=data)
+    response = auth_request.post('/exports/offerers', json=data)
 
     # then
     assert response.status_code == 200
-    response_json = response.json()
+    response_json = response.json
     assert len(response_json) == 1
     assert response_json[0]['siren'] == '123456784'
 
@@ -796,20 +776,22 @@ def test_get_offerers_with_sirens_params_return_200_and_filtered_offerers(app):
 
     PcObject.save(query_user, offerer_123456789, offerer_123456781, offerer_123456782, offerer_123456783,
                   offerer_123456784)
-    auth_request = TestClient().with_auth(email=query_user.email)
+    offerer_123456781_id = offerer_123456781.id
+    offerer_123456782_id = offerer_123456782.id
+    offerer_123456783_id = offerer_123456783.id
+    auth_request = TestClient(app.test_client()).with_auth(email=query_user.email)
 
     # when
-    response = auth_request.post(API_URL + '/exports/offerers', json=data)
+    response = auth_request.post('/exports/offerers', json=data)
 
     # then
-    offerer_names = list(map(lambda x: x['name'], response.json()))
+    offerer_names = list(map(lambda x: x['name'], response.json))
 
     assert response.status_code == 200
-    assert offerer_123456789.name not in offerer_names
-    assert offerer_123456781.name in offerer_names
-    assert offerer_123456782.name in offerer_names
-    assert offerer_123456783.name in offerer_names
-    assert offerer_123456784.name not in offerer_names
+    assert len(offerer_names) == 3
+    assert Offerer.query.get(offerer_123456781_id).name in offerer_names
+    assert Offerer.query.get(offerer_123456782_id).name in offerer_names
+    assert Offerer.query.get(offerer_123456783_id).name in offerer_names
 
 
 @clean_database
@@ -820,11 +802,11 @@ def test_get_offerers_return_error_when_date_param_is_wrong(app):
     user = create_user(can_book_free_offers=False, is_admin=True)
 
     PcObject.save(user)
-    auth_request = TestClient().with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.post(API_URL + '/exports/offerers', json=data)
+    response = auth_request.post('/exports/offerers', json=data)
 
     # then
     assert response.status_code == 400
-    assert response.json()['date_format'] == ['to_date and from_date are of type yyyy-mm-dd']
+    assert response.json['date_format'] == ['to_date and from_date are of type yyyy-mm-dd']

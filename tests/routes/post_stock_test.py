@@ -3,7 +3,7 @@ from datetime import timedelta, datetime
 from models import Stock
 from models.pc_object import PcObject, serialize
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_user, create_offerer, create_venue, \
+from tests.test_utils import create_user, create_offerer, create_venue, \
     create_offer_with_event_product, create_user_offerer, create_offer_with_thing_product
 from utils.human_ids import dehumanize, humanize
 
@@ -24,12 +24,12 @@ class Post:
             PcObject.save(user)
 
             # When
-            response = TestClient().with_auth('test@email.fr') \
-                .post(API_URL + '/stocks/', json=stock_data)
+            response = TestClient(app.test_client()).with_auth('test@email.fr') \
+                .post('/stocks', json=stock_data)
 
             # Then
             assert response.status_code == 201
-            id = response.json()['id']
+            id = response.json['id']
 
             stock = Stock.query.filter_by(id=dehumanize(id)).first()
             assert stock.price == 1222
@@ -50,15 +50,15 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth(user.email) \
-                .post(API_URL + '/stocks/', json=data)
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .post('/stocks', json=data)
 
             # Then
             assert response.status_code == 201
-            assert response.json()["price"] == 0
-            assert response.json()["bookingLimitDatetime"] is None
+            assert response.json["price"] == 0
+            assert response.json["bookingLimitDatetime"] is None
 
-            id = response.json()['id']
+            id = response.json['id']
             stock = Stock.query.filter_by(id=dehumanize(id)).first()
             assert stock.price == 0
             assert stock.bookingLimitDatetime is None
@@ -74,12 +74,12 @@ class Post:
             PcObject.save(user, offer)
 
             # When
-            response = TestClient().with_auth(user.email) \
-                .post(API_URL + '/stocks/', json={'price': 1222})
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .post('/stocks', json={'price': 1222})
 
             # Then
             assert response.status_code == 400
-            assert response.json()["offerId"] == ['Ce paramètre est obligatoire']
+            assert response.json["offerId"] == ['Ce paramètre est obligatoire']
 
         @clean_database
         def when_booking_limit_datetime_after_beginning_datetime(self, app):
@@ -101,12 +101,12 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth(user.email) \
-                .post(API_URL + '/stocks/', json=data)
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .post('/stocks', json=data)
 
             # Then
             assert response.status_code == 400
-            assert response.json()['bookingLimitDatetime'] == [
+            assert response.json['bookingLimitDatetime'] == [
                 'La date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement'
             ]
 
@@ -126,12 +126,12 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth(user.email) \
-                .post(API_URL + '/stocks/', json=data)
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .post('/stocks', json=data)
 
             # Then
             assert response.status_code == 400
-            assert response.json()["bookingLimitDatetime"] == ["Format de date invalide"]
+            assert response.json["bookingLimitDatetime"] == ["Format de date invalide"]
 
         @clean_database
         def when_booking_limit_datetime_is_none_for_event(self, app):
@@ -152,12 +152,12 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth(user.email) \
-                .post(API_URL + '/stocks/', json=data)
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .post('/stocks', json=data)
 
             # Then
             assert response.status_code == 400
-            assert response.json()["bookingLimitDatetime"] == ['Ce paramètre est obligatoire']
+            assert response.json["bookingLimitDatetime"] == ['Ce paramètre est obligatoire']
 
         @clean_database
         def when_setting_beginning_and_end_datetimes_on_offer_with_thing(self, app):
@@ -178,12 +178,12 @@ class Post:
             }
 
             # When
-            response = TestClient().with_auth(user.email) \
-                .post(API_URL + '/stocks/', json=data)
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .post('/stocks', json=data)
 
             # Then
             assert response.status_code == 400
-            assert response.json()['global'] == [
+            assert response.json['global'] == [
                 'Impossible de mettre des dates de début et fin si l\'offre ne porte pas sur un évenement'
             ]
 
@@ -200,9 +200,9 @@ class Post:
             data = {'price': 1222, 'offerId': humanize(offer.id)}
 
             # When
-            response = TestClient().with_auth(user.email) \
-                .post(API_URL + '/stocks/', json=data)
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .post('/stocks', json=data)
 
             # Then
             assert response.status_code == 403
-            assert response.json()["global"] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
+            assert response.json["global"] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]

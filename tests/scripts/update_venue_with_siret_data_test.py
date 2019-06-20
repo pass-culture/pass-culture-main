@@ -13,17 +13,17 @@ class UpdateVenueWithSireneDataTest:
         # Given
         sirene_data = {
             "etablissement": {
-            "id": 1,
-            "siren": "123456789",
-            "siret": "12345678900001",
-            "l1_normalisee": 'Nouveau nom',
-            "l4_normalisee": '1 rue Nouvelle Adresse',
-            "l1_declaree": 'Pas le bon nouveau nom',
-            "code_postal": "29001",
-            "libelle_commune": "Nouvelleville",
-            "longitude": "-4.48",
-            "latitude": "48.39",
-          }
+                "id": 1,
+                "siren": "123456789",
+                "siret": "12345678900001",
+                "l1_normalisee": 'Nouveau nom',
+                "l4_normalisee": '1 rue Nouvelle Adresse',
+                "l1_declaree": 'Pas le bon nouveau nom',
+                "code_postal": "29001",
+                "libelle_commune": "Nouvelleville",
+                "longitude": "-4.48",
+                "latitude": "48.39",
+            }
         }
         offerer = create_offerer("123456789")
         venue = create_venue(
@@ -55,16 +55,16 @@ class UpdateVenueWithSireneDataTest:
         # Given
         sirene_data = {
             "etablissement": {
-            "id": 1,
-            "siren": "123456789",
-            "siret": "12345678900001",
-            "l1_normalisee": 'Nouveau nom',
-            "l4_normalisee": '1 rue Nouvelle Adresse',
-            "l1_declaree": 'Pas le bon nouveau nom',
-            "code_postal": "29001",
-            "longitude": "-4.48",
-            "latitude": "48.39",
-          }
+                "id": 1,
+                "siren": "123456789",
+                "siret": "12345678900001",
+                "l1_normalisee": 'Nouveau nom',
+                "l4_normalisee": '1 rue Nouvelle Adresse',
+                "l1_declaree": 'Pas le bon nouveau nom',
+                "code_postal": "29001",
+                "longitude": "-4.48",
+                "latitude": "48.39",
+            }
         }
         offerer = create_offerer("123456789")
         venue = create_venue(

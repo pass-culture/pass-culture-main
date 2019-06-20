@@ -22,7 +22,8 @@ class FindReimbursementDetailsTest:
         bank_information1 = create_bank_information(id_at_providers='79387501900056', venue=venue1)
         bank_information2 = create_bank_information(id_at_providers='79387501900057', venue=venue2)
 
-        offer1 = create_offer_with_thing_product(venue1, url='https://host/path/{token}?offerId={offerId}&email={email}')
+        offer1 = create_offer_with_thing_product(venue1,
+                                                 url='https://host/path/{token}?offerId={offerId}&email={email}')
         offer2 = create_offer_with_thing_product(venue2)
         stock1 = create_stock_with_thing_offer(offerer=offerer1, venue=venue1, price=10)
         stock2 = create_stock_with_thing_offer(offerer=offerer1, venue=venue2, price=11)
@@ -35,7 +36,6 @@ class FindReimbursementDetailsTest:
 
         # When
         reimbursement_details = find_all_offerer_reimbursement_details(offerer1.id)
-
 
         # Then
         assert len(reimbursement_details) == 2

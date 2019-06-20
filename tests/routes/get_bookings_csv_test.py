@@ -2,7 +2,7 @@ from datetime import datetime
 
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_stock_with_thing_offer, \
+from tests.test_utils import create_stock_with_thing_offer, \
     create_deposit, create_venue, create_offerer, \
     create_user, create_booking, create_user_offerer
 
@@ -37,9 +37,9 @@ class Get:
                           user_offerer2)
 
             # When
-            response = TestClient().with_auth(user.email).get(
-                API_URL + '/bookings/csv')
-            response_lines = response.text.split('\n')
+            response = TestClient(app.test_client()).with_auth(user.email).get(
+                '/bookings/csv')
+            response_lines = response.data.decode('utf-8').split('\n')
 
             # Then
             assert response.status_code == 200
@@ -54,9 +54,9 @@ class Get:
             PcObject.save(user)
 
             # When
-            response = TestClient().with_auth(user.email).get(
-                API_URL + '/bookings/csv')
-            response_lines = response.text.split('\n')
+            response = TestClient(app.test_client()).with_auth(user.email).get(
+                '/bookings/csv')
+            response_lines = response.data.decode('utf-8').split('\n')
 
             # Then
             assert response.status_code == 200

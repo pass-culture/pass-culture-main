@@ -1324,7 +1324,7 @@ class UserValidationEmailsTest:
                     'nom_structure': 'John Doe',
                     'lien_validation_mail': f'{app_origin_url}/inscription/validation/{user.validationToken}'
                 }
-            }
+        }
 
         # Then
         assert email == expected
@@ -1353,7 +1353,7 @@ class UserValidationEmailsTest:
                 {
                     'nom_structure': 'John Doe'
                 }
-            }
+        }
 
         # Then
         assert email == expected

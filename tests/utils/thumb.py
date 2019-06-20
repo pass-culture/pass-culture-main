@@ -12,8 +12,8 @@ from utils.thumb import read_thumb
 def test_read_thumb_returns_api_error_when_no_extension_in_filename():
     dir_path = Path(os.path.dirname(os.path.realpath(__file__)))
 
-    thumb_path = dir_path / '..' / 'sandboxes'\
-                 / 'thumbs' / 'events'\
+    thumb_path = dir_path / '..' / 'sandboxes' \
+                 / 'thumbs' / 'events' \
                  / str(1)
     files = {
         'thumb': FileStorage(open(thumb_path, mode='rb'))

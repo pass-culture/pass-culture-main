@@ -65,12 +65,15 @@ def test_filter_out_recommendation_with_not_bookable_stocks_returns_recos_with_v
 
     invalid_booking_date_stock = create_stock_from_offer(invalid_booking_date_offer, booking_limit_datetime=one_day_ago)
     valid_booking_date_stock_valid = create_stock_from_offer(valid_booking_date_offer, booking_limit_datetime=tomorrow)
-    valid_booking_date_stock_invalid = create_stock_from_offer(valid_booking_date_offer, booking_limit_datetime=one_day_ago)
+    valid_booking_date_stock_invalid = create_stock_from_offer(valid_booking_date_offer,
+                                                               booking_limit_datetime=one_day_ago)
 
     recommendation_on_invalid_booking_date_stock = create_recommendation(invalid_booking_date_offer, user)
     recommendation_on_valid_booking_date_stock = create_recommendation(valid_booking_date_offer, user)
 
-    PcObject.save(invalid_booking_date_stock, recommendation_on_invalid_booking_date_stock, recommendation_on_valid_booking_date_stock, valid_booking_date_stock_valid, valid_booking_date_stock_invalid)
+    PcObject.save(invalid_booking_date_stock, recommendation_on_invalid_booking_date_stock,
+                  recommendation_on_valid_booking_date_stock, valid_booking_date_stock_valid,
+                  valid_booking_date_stock_invalid)
 
     # When
     result = keep_only_bookable_stocks().all()

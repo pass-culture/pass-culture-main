@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from dateutil.tz import tzlocal
+from dateutil.tz import tzutc
 from freezegun import freeze_time
 
 from models import PcObject
@@ -53,33 +53,36 @@ class GetRecommendationSearchParamsTest:
     def test_when_days_0_1_and_date_today_returns_dictionary_with_days_intervals_today_and_in_one_day(self):
         # Given
         request_args = {'days': '0-1', 'date': strftime(self.now)}
+
         # When
         search_params = get_recommendation_search_params(request_args)
 
         # Then
         assert search_params == {'days_intervals': [
-            [datetime(2019, 1, 31, 12, 0, tzinfo=tzlocal()), datetime(2019, 2, 1, 12, 0, tzinfo=tzlocal())]]}
+            [datetime(2019, 1, 31, 12, 0, tzinfo=tzutc()), datetime(2019, 2, 1, 12, 0, tzinfo=tzutc())]]}
 
     def test_when_days_1_5_and_date_today_returns_dictionary_with_days_intervals_in_one_day_and_in_five_days(self):
         # Given
         request_args = {'days': '1-5', 'date': strftime(self.now)}
+
         # When
         search_params = get_recommendation_search_params(request_args)
 
         # Then
         assert search_params == {'days_intervals': [
-            [datetime(2019, 2, 1, 12, 0, tzinfo=tzlocal()), datetime(2019, 2, 5, 12, 0, tzinfo=tzlocal())]]}
+            [datetime(2019, 2, 1, 12, 0, tzinfo=tzutc()), datetime(2019, 2, 5, 12, 0, tzinfo=tzutc())]]}
 
     def test_when_days_more_than_5_and_date_today_returns_dictionary_with_days_intervals_in_five_days_and_100000_days(
             self):
         # Given
         request_args = {'days': '5-100000', 'date': strftime(self.now)}
+
         # When
         search_params = get_recommendation_search_params(request_args)
 
         # Then
         assert search_params == {'days_intervals': [
-            [datetime(2019, 2, 5, 12, 0, tzinfo=tzlocal()), datetime(2292, 11, 15, 12, 0, tzinfo=tzlocal())]]}
+            [datetime(2019, 2, 5, 12, 0, tzinfo=tzutc()), datetime(2292, 11, 15, 12, 0, tzinfo=tzutc())]]}
 
 
 @clean_database

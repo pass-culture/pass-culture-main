@@ -1,6 +1,6 @@
 from models import PcObject, Offerer, RightsType
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_user, API_URL
+from tests.test_utils import create_user
 
 
 class Post:
@@ -19,16 +19,16 @@ class Post:
             }
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .post(API_URL + '/offerers', json=body)
+                .post('/offerers', json=body)
 
             # then
             assert response.status_code == 201
-            assert response.json()['siren'] == '418166096'
-            assert response.json()['name'] == 'Test Offerer'
+            assert response.json['siren'] == '418166096'
+            assert response.json['name'] == 'Test Offerer'
             virtual_venues = list(filter(lambda v: v['isVirtual'],
-                                         response.json()['managedVenues']))
+                                         response.json['managedVenues']))
             assert len(virtual_venues) == 1
 
         @clean_database
@@ -44,14 +44,14 @@ class Post:
             }
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .post(API_URL + '/offerers', json=body)
+                .post('/offerers', json=body)
 
             # then
             assert response.status_code == 201
-            assert response.json()['siren'] == '418166096'
-            assert response.json()['name'] == 'Test Offerer'
+            assert response.json['siren'] == '418166096'
+            assert response.json['name'] == 'Test Offerer'
 
         @clean_database
         def when_current_user_is_admin(self, app):
@@ -67,9 +67,9 @@ class Post:
             }
 
             # When
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .post(API_URL + '/offerers', json=body)
+                .post('/offerers', json=body)
 
             # then
             assert response.status_code == 201
@@ -88,9 +88,9 @@ class Post:
             }
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .post(API_URL + '/offerers', json=body)
+                .post('/offerers', json=body)
 
             # then
             assert response.status_code == 201

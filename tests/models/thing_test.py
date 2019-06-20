@@ -45,6 +45,7 @@ def test_thing_type_find_from_sub_labels_returns_several_types_given_several_sub
     assert ThingType.OEUVRE_ART in types
     assert ThingType.INSTRUMENT in types
 
+
 @clean_database
 def test_thing_error_when_thing_type_is_offlineOnly_but_has_url(app):
     # Given

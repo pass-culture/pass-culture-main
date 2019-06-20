@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_offer_with_thing_product, create_user, create_offerer, \
+from tests.test_utils import create_offer_with_thing_product, create_user, create_offerer, \
     create_venue, \
     create_stock_with_thing_offer, create_recommendation, create_deposit, create_booking
 
@@ -16,13 +16,13 @@ class Get:
             PcObject.save(user)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(email='toto@btmx.fr') \
-                .get(API_URL + '/users/current')
+                .get('/users/current')
 
             # then
             assert response.status_code == 200
-            json = response.json()
+            json = response.json
             assert json['email'] == 'toto@btmx.fr'
             assert 'password' not in json
             assert 'clearTextPassword' not in json
@@ -41,10 +41,10 @@ class Get:
             PcObject.save(deposit)
 
             # when
-            response = TestClient().with_auth('wallet_test@email.com').get(API_URL + '/users/current')
+            response = TestClient(app.test_client()).with_auth('wallet_test@email.com').get('/users/current')
 
             # Then
-            assert response.json()['wallet_is_activated'] == True
+            assert response.json['wallet_is_activated'] == True
 
         @clean_database
         def when_user_has_booked_some_offers(self, app):
@@ -64,11 +64,11 @@ class Get:
             PcObject.save(user, venue, deposit_1, deposit_2, booking)
 
             # when
-            response = TestClient().with_auth('wallet_test@email.com').get(API_URL + '/users/current')
+            response = TestClient(app.test_client()).with_auth('wallet_test@email.com').get('/users/current')
 
             # Then
-            assert response.json()['wallet_balance'] == 15
-            assert response.json()['expenses'] == {
+            assert response.json['wallet_balance'] == 15
+            assert response.json['expenses'] == {
                 'all': {'max': 500, 'actual': 5.0},
                 'physical': {'max': 200, 'actual': 5.0},
                 'digital': {'max': 200, 'actual': 0}
@@ -82,19 +82,19 @@ class Get:
             PcObject.save(user)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(email='e@mail.com') \
-                .get(API_URL + '/users/current', headers={'origin': 'random.header.fr'})
+                .get('/users/current', headers={'origin': 'random.header.fr'})
 
             # then
             assert response.status_code == 400
-            assert response.json()['global'] == ['Header non autorisé']
+            assert response.json['global'] == ['Header non autorisé']
 
     class Returns401:
         @clean_database
         def when_user_is_not_logged_in(self, app):
             # when
-            response = TestClient().get(API_URL + '/users/current')
+            response = TestClient(app.test_client()).get('/users/current')
 
             # then
             assert response.status_code == 401

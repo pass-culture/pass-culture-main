@@ -1,7 +1,6 @@
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, \
-    create_user, \
+from tests.test_utils import create_user, \
     create_offer_with_event_product, \
     create_mediation, \
     create_offerer, \
@@ -25,16 +24,16 @@ class Get:
             PcObject.save(offer)
             PcObject.save(user, venue, offerer, user_offerer)
 
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.get(API_URL + '/mediations/%s' % humanize(mediation.id))
+            response = auth_request.get('/mediations/%s' % humanize(mediation.id))
 
             # then
             assert response.status_code == 200
-            assert response.json()['id'] == humanize(mediation.id)
-            assert response.json()['frontText'] == mediation.frontText
-            assert response.json()['backText'] == mediation.backText
+            assert response.json['id'] == humanize(mediation.id)
+            assert response.json['frontText'] == mediation.frontText
+            assert response.json['backText'] == mediation.backText
 
     class Returns404:
         @clean_database
@@ -42,10 +41,10 @@ class Get:
             # given
             user = create_user()
             PcObject.save(user)
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # when
-            response = auth_request.get(API_URL + '/mediations/AE')
+            response = auth_request.get('/mediations/AE')
 
             # then
             assert response.status_code == 404

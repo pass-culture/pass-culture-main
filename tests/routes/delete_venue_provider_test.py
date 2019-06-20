@@ -1,6 +1,6 @@
 from models import PcObject, Provider
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_offerer, create_venue, create_user, create_venue_provider
+from tests.test_utils import create_offerer, create_venue, create_user, create_venue_provider
 from utils.human_ids import humanize
 
 
@@ -17,11 +17,11 @@ class Delete:
 
             user = create_user(is_admin=True, can_book_free_offers=False)
             PcObject.save(user)
-            auth_request = TestClient() \
+            auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
 
             # when
-            response = auth_request.delete(API_URL + '/venueProviders/' + humanize(venue_provider.id))
+            response = auth_request.delete('/venueProviders/' + humanize(venue_provider.id))
 
             # then
             assert response.status_code == 200
@@ -38,11 +38,11 @@ class Delete:
 
             user = create_user(is_admin=True, can_book_free_offers=False)
             PcObject.save(user)
-            auth_request = TestClient() \
+            auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
 
             # when
-            response = auth_request.delete(API_URL + '/venueProviders/ABCDEF')
+            response = auth_request.delete('/venueProviders/ABCDEF')
 
             # then
             assert response.status_code == 404

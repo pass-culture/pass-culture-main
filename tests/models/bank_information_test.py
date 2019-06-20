@@ -42,7 +42,6 @@ def test_validate_bank_information_raises_an_error_if_iban_is_valid_but_bic_is_n
     # when
     errors = bank_information.errors()
 
-
     # then
     assert errors.errors['bic'] == ["Le BIC renseigné (\"random bic\") est invalide"]
     assert 'iban' not in errors.errors

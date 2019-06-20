@@ -4,8 +4,7 @@ from domain.reimbursement import ReimbursementRules
 from models import PcObject, ThingType, EventType
 from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, \
-    create_booking, \
+from tests.test_utils import create_booking, \
     create_deposit, \
     create_offer_with_event_product, \
     create_offerer, \
@@ -46,14 +45,14 @@ class Get:
             PcObject.save(booking1, booking2, booking3)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user_pro.email) \
                 .get(
-                API_URL + '/offerers/%s/bookings?order_by_column=booking_id&order=desc' % humanize(offerer.id))
+                '/offerers/%s/bookings?order_by_column=booking_id&order=desc' % humanize(offerer.id))
 
             # then
             assert response.status_code == 200
-            elements = response.json()
+            elements = response.json
             assert dehumanize(elements[0]['id']) == booking3.id
             assert dehumanize(elements[1]['id']) == booking2.id
             assert dehumanize(elements[2]['id']) == booking1.id
@@ -74,12 +73,12 @@ class Get:
             PcObject.save(deposit, user_offerer, booking)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user_pro.email).get(
-                API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
+                '/offerers/%s/bookings' % humanize(offerer.id))
 
             # then
-            response_first_booking_json = response.json()[0]
+            response_first_booking_json = response.json[0]
             assert response.status_code == 200
             assert response_first_booking_json['token'] == None
             assert response_first_booking_json['user'] == {
@@ -104,12 +103,12 @@ class Get:
             PcObject.save(deposit, user_offerer, booking)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user_pro.email) \
-                .get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
+                .get('/offerers/%s/bookings' % humanize(offerer.id))
 
             # then
-            response_first_booking_json = response.json()[0]
+            response_first_booking_json = response.json[0]
             assert response.status_code == 200
             assert response_first_booking_json['token'] == booking.token
             assert response_first_booking_json['user'] == {
@@ -138,15 +137,15 @@ class Get:
             PcObject.save(booking)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user_pro.email) \
-                .get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
+                .get('/offerers/%s/bookings' % humanize(offerer.id))
 
             # then
             assert response.status_code == 200
-            assert response.json()[0]['id'] == humanize(booking.id)
-            assert response.json()[0]['reimbursement_rule'] == ReimbursementRules.PHYSICAL_OFFERS.value.description
-            assert response.json()[0]['reimbursed_amount'] == booking.value
+            assert response.json[0]['id'] == humanize(booking.id)
+            assert response.json[0]['reimbursement_rule'] == ReimbursementRules.PHYSICAL_OFFERS.value.description
+            assert response.json[0]['reimbursed_amount'] == booking.value
 
         @clean_database
         def when_user_managing_offerer_and_returns_bookings_with_thing_or_event_offer_type(self, app):
@@ -197,12 +196,12 @@ class Get:
             }
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user_pro.email) \
-                .get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
+                .get('/offerers/%s/bookings' % humanize(offerer.id))
 
             # then
-            offer_types = list(map(_get_offer_type, response.json()))
+            offer_types = list(map(_get_offer_type, response.json))
             assert expected_audiovisuel_offer_type in offer_types
             assert expected_musees_patrimoine_offer_type in offer_types
 
@@ -229,15 +228,15 @@ class Get:
             PcObject.save(deposit, user_offerer, booking1, booking2, booking3)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user_pro.email) \
                 .get(
-                API_URL + '/offerers/%s/bookings?order_by_column=venue_name&order=desc' % humanize(offerer.id)
+                '/offerers/%s/bookings?order_by_column=venue_name&order=desc' % humanize(offerer.id)
             )
 
             # then
             assert response.status_code == 200
-            elements = response.json()
+            elements = response.json
             assert elements[0]['stock']['resolvedOffer']['venueId'] == humanize(venue_1.id)
             assert elements[1]['stock']['resolvedOffer']['venueId'] == humanize(venue_2.id)
             assert elements[2]['stock']['resolvedOffer']['venueId'] == humanize(venue_2.id)
@@ -265,14 +264,14 @@ class Get:
             PcObject.save(deposit, user_offerer, booking1, booking2, booking3)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user_pro.email) \
                 .get(
-                API_URL + '/offerers/%s/bookings?order_by_column=venue_name&order=asc' % humanize(offerer.id))
+                '/offerers/%s/bookings?order_by_column=venue_name&order=asc' % humanize(offerer.id))
 
             # then
             assert response.status_code == 200
-            elements = response.json()
+            elements = response.json
             assert elements[0]['stock']['resolvedOffer']['venueId'] == humanize(venue_2.id)
             assert elements[1]['stock']['resolvedOffer']['venueId'] == humanize(venue_2.id)
             assert elements[2]['stock']['resolvedOffer']['venueId'] == humanize(venue_1.id)
@@ -301,14 +300,14 @@ class Get:
             PcObject.save(deposit, user_offerer, booking1, booking2, booking3)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user_pro.email) \
                 .get(
-                API_URL + '/offerers/%s/bookings?order_by_column=date&order=asc' % humanize(offerer.id))
+                '/offerers/%s/bookings?order_by_column=date&order=asc' % humanize(offerer.id))
 
             # then
             assert response.status_code == 200
-            elements = response.json()
+            elements = response.json
             assert elements[0]['dateCreated'].startswith('2018-10-01')
             assert elements[1]['dateCreated'].startswith('2018-10-03')
             assert elements[2]['dateCreated'].startswith('2018-10-05')
@@ -337,14 +336,14 @@ class Get:
             PcObject.save(deposit, user_offerer, booking1, booking2, booking3)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user_pro.email) \
                 .get(
-                API_URL + '/offerers/%s/bookings?order_by_column=date&order=desc' % humanize(offerer.id))
+                '/offerers/%s/bookings?order_by_column=date&order=desc' % humanize(offerer.id))
 
             # then
             assert response.status_code == 200
-            elements = response.json()
+            elements = response.json
             assert elements[0]['dateCreated'].startswith('2018-10-05')
             assert elements[1]['dateCreated'].startswith('2018-10-03')
             assert elements[2]['dateCreated'].startswith('2018-10-01')
@@ -372,14 +371,14 @@ class Get:
             PcObject.save(deposit, user_offerer, booking1, booking2, booking3)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user_pro.email) \
                 .get(
-                API_URL + '/offerers/%s/bookings?order_by_column=category&order=asc' % humanize(offerer.id))
+                '/offerers/%s/bookings?order_by_column=category&order=asc' % humanize(offerer.id))
 
             # then
             assert response.status_code == 200
-            elements = response.json()
+            elements = response.json
             assert elements[0]['stock']['resolvedOffer']['product']['type'] == 'EventType.SPECTACLE_VIVANT'
             assert elements[1]['stock']['resolvedOffer']['product']['type'] == 'EventType.SPECTACLE_VIVANT'
             assert elements[2]['stock']['resolvedOffer']['product']['type'] == 'ThingType.LIVRE_EDITION'
@@ -407,14 +406,14 @@ class Get:
             PcObject.save(deposit, user_offerer, booking1, booking2, booking3)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user_pro.email) \
                 .get(
-                API_URL + '/offerers/%s/bookings?order_by_column=category&order=desc' % humanize(offerer.id))
+                '/offerers/%s/bookings?order_by_column=category&order=desc' % humanize(offerer.id))
 
             # then
             assert response.status_code == 200
-            elements = response.json()
+            elements = response.json
             assert elements[0]['stock']['resolvedOffer']['product']['type'] == 'ThingType.LIVRE_EDITION'
             assert elements[1]['stock']['resolvedOffer']['product']['type'] == 'EventType.SPECTACLE_VIVANT'
             assert elements[2]['stock']['resolvedOffer']['product']['type'] == 'EventType.SPECTACLE_VIVANT'
@@ -431,7 +430,8 @@ class Get:
 
             venue_1 = create_venue(offerer, name='La petite librairie', is_virtual=True, siret=None)
             venue_2 = create_venue(offerer, name='Atelier expérimental')
-            offer_1 = create_offer_with_thing_product(venue_1, thing_type=ThingType.JEUX_VIDEO, url='http://game.fr/jeu')
+            offer_1 = create_offer_with_thing_product(venue_1, thing_type=ThingType.JEUX_VIDEO,
+                                                      url='http://game.fr/jeu')
             offer_2 = create_offer_with_event_product(venue_2, event_type=EventType.SPECTACLE_VIVANT)
             stock1 = create_stock_from_offer(offer_1, price=10)
             stock2 = create_stock_from_offer(offer_2, price=20)
@@ -442,14 +442,14 @@ class Get:
             PcObject.save(deposit, user_offerer, booking1, booking2, booking3)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user_pro.email) \
                 .get(
-                API_URL + '/offerers/%s/bookings?order_by_column=amount&order=desc' % humanize(offerer.id))
+                '/offerers/%s/bookings?order_by_column=amount&order=desc' % humanize(offerer.id))
 
             # then
             assert response.status_code == 200
-            elements = response.json()
+            elements = response.json
             assert elements[0]['amount'] == 20
             assert elements[1]['amount'] == 10
             assert elements[2]['amount'] == 0
@@ -466,7 +466,8 @@ class Get:
 
             venue_1 = create_venue(offerer, name='La petite librairie', is_virtual=True, siret=None)
             venue_2 = create_venue(offerer, name='Atelier expérimental')
-            offer_1 = create_offer_with_thing_product(venue_1, thing_type=ThingType.JEUX_VIDEO, url='http://game.fr/jeu')
+            offer_1 = create_offer_with_thing_product(venue_1, thing_type=ThingType.JEUX_VIDEO,
+                                                      url='http://game.fr/jeu')
             offer_2 = create_offer_with_event_product(venue_2, event_type=EventType.SPECTACLE_VIVANT)
             stock1 = create_stock_from_offer(offer_1, price=10)
             stock2 = create_stock_from_offer(offer_2, price=20)
@@ -477,13 +478,13 @@ class Get:
             PcObject.save(deposit, user_offerer, booking1, booking2, booking3)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user_pro.email).get(
-                API_URL + '/offerers/%s/bookings?order_by_column=amount&order=asc' % humanize(offerer.id))
+                '/offerers/%s/bookings?order_by_column=amount&order=asc' % humanize(offerer.id))
 
             # then
             assert response.status_code == 200
-            elements = response.json()
+            elements = response.json
             assert elements[0]['amount'] == 0
             assert elements[1]['amount'] == 10
             assert elements[2]['amount'] == 20
@@ -510,9 +511,9 @@ class Get:
             PcObject.save(booking1, booking2, booking3)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id))
+                .get('/offerers/%s/bookings' % humanize(offerer.id))
 
             # then
             assert response.status_code == 403
@@ -523,13 +524,13 @@ class Get:
             # when
             offerer = create_offerer()
             PcObject.save(offerer)
-            response = TestClient().get(API_URL + '/offerers/%s/bookings' % humanize(offerer.id),
-                                        headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).get('/offerers/%s/bookings' % humanize(offerer.id),
+                                                         headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 401
 
 
 def _get_offer_type(response_json):
-        print(response_json)
-        return response_json['stock']['resolvedOffer']['product']['offerType']
+    print(response_json)
+    return response_json['stock']['resolvedOffer']['product']['offerType']

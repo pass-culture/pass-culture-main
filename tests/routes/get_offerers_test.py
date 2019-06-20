@@ -2,8 +2,7 @@ import secrets
 
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, \
-    create_offerer, \
+from tests.test_utils import create_offerer, \
     create_user, \
     create_user_offerer, \
     create_bank_information
@@ -14,7 +13,7 @@ class Get:
         @clean_database
         def when_user_is_not_logged_in(self, app):
             # when
-            response = TestClient().get(API_URL + '/offerers', headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).get('/offerers', headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 401
@@ -33,13 +32,13 @@ class Get:
             PcObject.save(user)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .get(API_URL + '/offerers')
+                .get('/offerers')
 
             # then
             assert response.status_code == 200
-            offerers = response.json()
+            offerers = response.json
             assert len(offerers) == 3
             names = [offerer['name'] for offerer in offerers]
             assert names == ['offreur A', 'offreur B', 'offreur C']
@@ -57,13 +56,13 @@ class Get:
             PcObject.save(user)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .get(API_URL + '/offerers')
+                .get('/offerers')
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 2
+            assert len(response.json) == 2
 
         @clean_database
         def when_current_user_is_admin_and_returns_all_offerers(self, app):
@@ -78,13 +77,13 @@ class Get:
             PcObject.save(user)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .get(API_URL + '/offerers')
+                .get('/offerers')
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 3
+            assert len(response.json) == 3
 
         @clean_database
         def when_user_is_admin_and_param_validated_is_false_and_returns_all_info_of_all_offerers(
@@ -102,13 +101,13 @@ class Get:
             PcObject.save(user, bank_information1, bank_information2, bank_information3)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .get(API_URL + '/offerers?validated=false')
+                .get('/offerers?validated=false')
 
             # then
             assert response.status_code == 200
-            assert set(response.json()[0].keys()) == {
+            assert set(response.json[0].keys()) == {
                 'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
                 'firstThumbDominantColor', 'iban', 'id', 'idAtProviders', 'isActive',
                 'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
@@ -128,13 +127,13 @@ class Get:
             PcObject.save(user_offerer1, user_offerer2, user_offerer3)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .get(API_URL + '/offerers?validated=false')
+                .get('/offerers?validated=false')
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 1
+            assert len(response.json) == 1
 
         @clean_database
         def when_param_validated_is_false_and_returns_only_name_and_siren_of_not_validated_offerers(
@@ -150,14 +149,14 @@ class Get:
             PcObject.save(user_offerer1, user_offerer2, user_offerer3)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .get(API_URL + '/offerers?validated=false')
+                .get('/offerers?validated=false')
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 1
-            assert response.json()[0] == {'modelName': 'Offerer', 'name': 'offreur A', 'siren': '123456782'}
+            assert len(response.json) == 1
+            assert response.json[0] == {'modelName': 'Offerer', 'name': 'offreur A', 'siren': '123456782'}
 
         @clean_database
         def when_param_validated_is_true_and_returns_only_validated_offerers_if(self, app):
@@ -172,15 +171,15 @@ class Get:
             PcObject.save(user_offerer1, user_offerer2, user_offerer3)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .get(API_URL + '/offerers?validated=true')
+                .get('/offerers?validated=true')
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 2
-            assert response.json()[0]['name'] == 'offreur B'
-            assert response.json()[1]['name'] == 'offreur C'
+            assert len(response.json) == 2
+            assert response.json[0]['name'] == 'offreur B'
+            assert response.json[1]['name'] == 'offreur C'
 
         @clean_database
         def when_param_validated_is_true_returns_all_info_of_validated_offerers(self, app):
@@ -199,14 +198,14 @@ class Get:
                           user_offerer2, user_offerer3)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .get(API_URL + '/offerers?validated=true')
+                .get('/offerers?validated=true')
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 2
-            assert list(response.json()[0].keys()) == [
+            assert len(response.json) == 2
+            assert list(response.json[0].keys()) == [
                 'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider',
                 'firstThumbDominantColor', 'iban', 'id', 'idAtProviders', 'isActive',
                 'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
@@ -226,15 +225,15 @@ class Get:
             PcObject.save(user_offerer1, user_offerer2, user_offerer3)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .get(API_URL + '/offerers?validated=true')
+                .get('/offerers?validated=true')
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 2
-            assert 'bic' not in response.json()[0]
-            assert 'iban' not in response.json()[0]
+            assert len(response.json) == 2
+            assert 'bic' not in response.json[0]
+            assert 'iban' not in response.json[0]
 
         @clean_database
         def when_user_offerer_is_not_validated_but_returns_no_offerer(self, app):
@@ -243,14 +242,14 @@ class Get:
             user = create_user()
             user_offerer = create_user_offerer(user, offerer, validation_token=secrets.token_urlsafe(20))
             PcObject.save(user_offerer)
-            auth_request = TestClient().with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
             # When
-            response = auth_request.get(API_URL + '/offerers/')
+            response = auth_request.get('/offerers')
 
             # then
             assert response.status_code == 200
-            assert response.json() == []
+            assert response.json == []
 
     class Returns400:
         @clean_database
@@ -266,10 +265,10 @@ class Get:
             PcObject.save(user)
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(user.email) \
-                .get(API_URL + '/offerers?validated=blabla')
+                .get('/offerers?validated=blabla')
 
             # then
             assert response.status_code == 400
-            assert response.json()['validated'] == ["Le paramètre 'validated' doit être 'true' ou 'false'"]
+            assert response.json['validated'] == ["Le paramètre 'validated' doit être 'true' ou 'false'"]

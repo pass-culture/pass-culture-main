@@ -1,9 +1,9 @@
 from datetime import timedelta
 
-from models.db import db
+from models import Stock
 from models.pc_object import PcObject, serialize
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_booking, create_user, create_user_offerer, create_offerer, create_venue, \
+from tests.test_utils import create_booking, create_user, create_user_offerer, create_offerer, create_venue, \
     create_stock_with_event_offer, create_stock_with_thing_offer
 from utils.human_ids import humanize
 
@@ -22,15 +22,15 @@ class Patch:
             humanized_stock_id = humanize(stock.id)
 
             # when
-            request_update = TestClient().with_auth('test@email.com') \
-                .patch(API_URL + '/stocks/' + humanized_stock_id, json={'available': 5, 'price': 20})
+            request_update = TestClient(app.test_client()).with_auth('test@email.com') \
+                .patch('/stocks/' + humanized_stock_id, json={'available': 5, 'price': 20})
 
             # then
             assert request_update.status_code == 200
-            request_after_update = TestClient().with_auth('test@email.com').get(
-                API_URL + '/stocks/' + humanized_stock_id)
-            assert request_after_update.json()['available'] == 5
-            assert request_after_update.json()['price'] == 20
+            request_after_update = TestClient(app.test_client()).with_auth('test@email.com').get(
+                '/stocks/' + humanized_stock_id)
+            assert request_after_update.json['available'] == 5
+            assert request_after_update.json['price'] == 20
 
         @clean_database
         def when_user_is_admin(self, app):
@@ -43,15 +43,15 @@ class Patch:
             humanized_stock_id = humanize(stock.id)
 
             # when
-            request_update = TestClient().with_auth('test@email.com') \
-                .patch(API_URL + '/stocks/' + humanized_stock_id, json={'available': 5, 'price': 20})
+            request_update = TestClient(app.test_client()).with_auth('test@email.com') \
+                .patch('/stocks/' + humanized_stock_id, json={'available': 5, 'price': 20})
 
             # then
             assert request_update.status_code == 200
-            request_after_update = TestClient().with_auth('test@email.com').get(
-                API_URL + '/stocks/' + humanized_stock_id)
-            assert request_after_update.json()['available'] == 5
-            assert request_after_update.json()['price'] == 20
+            request_after_update = TestClient(app.test_client()).with_auth('test@email.com').get(
+                '/stocks/' + humanized_stock_id)
+            assert request_after_update.json['available'] == 5
+            assert request_after_update.json['price'] == 20
 
         @clean_database
         def when_booking_limit_datetime_is_none_for_thing(self, app):
@@ -61,6 +61,7 @@ class Patch:
             venue = create_venue(offerer)
             stock = create_stock_with_thing_offer(offerer, venue)
             PcObject.save(user, stock)
+            stock_id = stock.id
 
             data = {
                 'price': 120,
@@ -69,13 +70,12 @@ class Patch:
             }
 
             # When
-            response = TestClient().with_auth(user.email) \
-                .patch(API_URL + '/stocks/' + humanize(stock.id), json=data)
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .patch('/stocks/' + humanize(stock.id), json=data)
 
             # Then
             assert response.status_code == 200
-            db.session.refresh(stock)
-            assert stock.price == 120
+            assert Stock.query.get(stock_id).price == 120
 
     class Returns400:
         @clean_database
@@ -91,12 +91,12 @@ class Patch:
             PcObject.save(booking, user_admin)
 
             # when
-            response = TestClient().with_auth('email@test.com') \
-                .patch(API_URL + '/stocks/' + humanize(stock.id), json={'available': ' '})
+            response = TestClient(app.test_client()).with_auth('email@test.com') \
+                .patch('/stocks/' + humanize(stock.id), json={'available': ' '})
 
             # then
             assert response.status_code == 400
-            assert response.json()['available'] == ['Saisissez un nombre valide']
+            assert response.json['available'] == ['Saisissez un nombre valide']
 
         @clean_database
         def when_booking_limit_datetime_after_beginning_datetime(self, app):
@@ -110,12 +110,12 @@ class Patch:
             serialized_date = serialize(stock.beginningDatetime + timedelta(days=1))
 
             # when
-            response = TestClient().with_auth('email@test.com') \
-                .patch(API_URL + '/stocks/' + humanize(stockId), json={'bookingLimitDatetime': serialized_date})
+            response = TestClient(app.test_client()).with_auth('email@test.com') \
+                .patch('/stocks/' + humanize(stockId), json={'bookingLimitDatetime': serialized_date})
 
             # then
             assert response.status_code == 400
-            assert response.json()['bookingLimitDatetime'] == [
+            assert response.json['bookingLimitDatetime'] == [
                 'La date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement'
             ]
 
@@ -129,12 +129,12 @@ class Patch:
             PcObject.save(stock, user)
 
             # when
-            response = TestClient().with_auth('email@test.com') \
-                .patch(API_URL + '/stocks/' + humanize(stock.id), json={'endDatetime': None})
+            response = TestClient(app.test_client()).with_auth('email@test.com') \
+                .patch('/stocks/' + humanize(stock.id), json={'endDatetime': None})
 
             # then
             assert response.status_code == 400
-            assert response.json()['endDatetime'] == ['Ce paramètre est obligatoire']
+            assert response.json['endDatetime'] == ['Ce paramètre est obligatoire']
 
         @clean_database
         def when_booking_limit_datetime_is_none_for_event(self, app):
@@ -152,12 +152,12 @@ class Patch:
             }
 
             # When
-            response = TestClient().with_auth(user.email) \
-                .patch(API_URL + '/stocks/' + humanize(stock.id), json=data)
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .patch('/stocks/' + humanize(stock.id), json=data)
 
             # Then
             assert response.status_code == 400
-            assert response.json()["bookingLimitDatetime"] == ['Ce paramètre est obligatoire']
+            assert response.json["bookingLimitDatetime"] == ['Ce paramètre est obligatoire']
 
         @clean_database
         def when_available_below_number_of_already_existing_bookings(self, app):
@@ -172,12 +172,12 @@ class Patch:
             PcObject.save(booking, user_admin)
 
             # when
-            response = TestClient().with_auth('email@test.com') \
-                .patch(API_URL + '/stocks/' + humanize(stock.id), json={'available': 0})
+            response = TestClient(app.test_client()).with_auth('email@test.com') \
+                .patch('/stocks/' + humanize(stock.id), json={'available': 0})
 
             # then
             assert response.status_code == 400
-            assert 'available' in response.json()
+            assert 'available' in response.json
 
     class Returns403:
         @clean_database
@@ -190,9 +190,9 @@ class Patch:
             PcObject.save(user, stock)
 
             # when
-            response = TestClient().with_auth('test@email.com') \
-                .patch(API_URL + '/stocks/' + humanize(stock.id), json={'available': 5})
+            response = TestClient(app.test_client()).with_auth('test@email.com') \
+                .patch('/stocks/' + humanize(stock.id), json={'available': 5})
 
             # then
             assert response.status_code == 403
-            assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in response.json()['global']
+            assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in response.json['global']

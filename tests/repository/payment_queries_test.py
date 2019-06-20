@@ -291,7 +291,8 @@ class FindAllWithStatusNotProcessableForBankInformationTest:
         assert len(payments) == 1
 
     @clean_database
-    def test_does_not_retrive_payments_linked_to_venue_with_bank_information_if_bank_information_linked_to_offerer(self, app):
+    def test_does_not_retrive_payments_linked_to_venue_with_bank_information_if_bank_information_linked_to_offerer(self,
+                                                                                                                   app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)

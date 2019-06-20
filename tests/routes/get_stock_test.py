@@ -1,6 +1,6 @@
 from models.pc_object import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_user, create_offerer, create_venue, \
+from tests.test_utils import create_user, create_offerer, create_venue, \
     create_stock_with_event_offer
 from utils.human_ids import humanize
 
@@ -18,12 +18,12 @@ class Get:
             humanized_stock_id = humanize(stock.id)
 
             # when
-            request = TestClient().with_auth('test@email.com') \
-                .get(API_URL + '/stocks/' + humanized_stock_id)
+            request = TestClient(app.test_client()).with_auth('test@email.com') \
+                .get('/stocks/' + humanized_stock_id)
             # then
             assert request.status_code == 200
-            assert request.json()['available'] == 10
-            assert request.json()['price'] == 10
+            assert request.json['available'] == 10
+            assert request.json['price'] == 10
 
     class Returns404:
         @clean_database
@@ -37,8 +37,8 @@ class Get:
             humanized_stock_id = humanize(stock.id)
 
             # when
-            request = TestClient().with_auth('test@email.com') \
-                .get(API_URL + '/stocks/' + humanized_stock_id)
+            request = TestClient(app.test_client()).with_auth('test@email.com') \
+                .get('/stocks/' + humanized_stock_id)
 
             # then
             assert request.status_code == 404

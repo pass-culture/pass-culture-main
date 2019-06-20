@@ -1,6 +1,6 @@
 from models import PcObject, Provider
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_offerer, create_venue, create_user, create_venue_provider
+from tests.test_utils import create_offerer, create_venue, create_user, create_venue_provider
 from utils.human_ids import humanize
 
 
@@ -17,16 +17,15 @@ class Patch:
 
             user = create_user()
             PcObject.save(user)
-            auth_request = TestClient() \
-                .with_auth(email=user.email)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             humanized_venue_provider_id = humanize(venue_provider.id)
 
             # when
-            response = auth_request.patch(API_URL + '/venueProviders/' + humanized_venue_provider_id,
+            response = auth_request.patch('/venueProviders/' + humanized_venue_provider_id,
                                           json={'venueIdAtOfferProvider': '12345678'})
 
             # then
             assert response.status_code == 200
-            response_check = auth_request.get(API_URL + '/venueProviders/' + humanized_venue_provider_id)
+            response_check = auth_request.get('/venueProviders/' + humanized_venue_provider_id)
             assert response_check.status_code == 200
-            assert response_check.json()['venueIdAtOfferProvider'] == '12345678'
+            assert response_check.json['venueIdAtOfferProvider'] == '12345678'

@@ -4,8 +4,7 @@ from pprint import pprint
 from models import PcObject, \
     EventType
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, \
-    create_event_occurrence, \
+from tests.test_utils import create_event_occurrence, \
     create_stock_from_event_occurrence, \
     create_offer_with_event_product, \
     create_offerer, \
@@ -22,15 +21,15 @@ TWENTY_DAYS_FROM_NOW = datetime.utcnow() + timedelta(days=20)
 
 TEN_DAYS_FROM_NOW = datetime.utcnow() + timedelta(days=10)
 
-RECOMMENDATION_URL = API_URL + '/recommendations'
+RECOMMENDATION_URL = '/recommendations'
 
 
 class Get:
     class Returns401:
-        def when_no_user_is_logged_in(self):
+        def when_no_user_is_logged_in(self, app):
             # when
             url = RECOMMENDATION_URL + '?keywords=Training'
-            response = TestClient().get(url, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).get(url, headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 401
@@ -97,12 +96,12 @@ class Get:
             PcObject.save(stock, recommendation)
 
             # when
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?keywords={}'.format(keywords_string))
 
             # then
             assert response.status_code == 200
-            recommendations = response.json()
+            recommendations = response.json
             assert 'Training' in recommendations[0]['offer']['product']['name']
             assert recommendations[0]['search'] == search
 
@@ -120,12 +119,12 @@ class Get:
             PcObject.save(stock, recommendation)
 
             # when
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?keywords={}'.format(keywords_string))
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 0
+            assert len(response.json) == 0
 
         @clean_database
         def when_keywords_contains_special_char(self, app):
@@ -139,12 +138,12 @@ class Get:
             PcObject.save(stock, recommendation)
 
             # when
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?keywords=https%3A%2F%2Fwww.test.fr%2F')
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 0
+            assert len(response.json) == 0
 
         @clean_database
         def when_searching_by_keywords_on_inactive_offerer(self, app):
@@ -160,12 +159,12 @@ class Get:
             PcObject.save(stock, recommendation)
 
             # when
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?keywords={}'.format(keywords_string))
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 0
+            assert len(response.json) == 0
 
         @clean_database
         def when_searching_by_keywords_containing_an_apostrophe(self, app):
@@ -179,12 +178,12 @@ class Get:
             PcObject.save(stock, user)
 
             # when
-            response = TestClient().with_auth(user.email) \
+            response = TestClient(app.test_client()).with_auth(user.email) \
                 .get(RECOMMENDATION_URL + '?keywords=l%27histoire')
 
             # then
             assert response.status_code == 200
-            recommendations = response.json()
+            recommendations = response.json
             assert recommendations[0]['offer']['product']['name'] == "L'histoire sans fin"
             assert len(recommendations) == 1
 
@@ -200,12 +199,12 @@ class Get:
             PcObject.save(stock, user)
 
             # when
-            response = TestClient().with_auth(user.email) \
+            response = TestClient(app.test_client()).with_auth(user.email) \
                 .get(RECOMMENDATION_URL + '?keywords=vortek%27s')
 
             # then
             assert response.status_code == 200
-            recommendations = response.json()
+            recommendations = response.json
             assert recommendations[0]['offer']['product']['name'] == "Vortek's"
             assert len(recommendations) == 1
 
@@ -225,12 +224,12 @@ class Get:
             PcObject.save(stock, recommendation)
 
             # when
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?keywords={}'.format("rencontres"))
 
             # then
             assert response.status_code == 200
-            recommendations = response.json()
+            recommendations = response.json
             assert 'Rencontres' in recommendations[0]['offer']['product']['name']
             assert recommendations[0]['search'] == search
 
@@ -248,12 +247,12 @@ class Get:
             PcObject.save(stock, recommendation)
 
             # when
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?keywords={}'.format(" rencontres avec auteurs "))
 
             # then
             assert response.status_code == 200
-            recommendations = response.json()
+            recommendations = response.json
             assert 'Rencontres' in recommendations[0]['offer']['product']['name']
 
         @clean_database
@@ -270,12 +269,12 @@ class Get:
             PcObject.save(stock, recommendation)
 
             # when
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?keywords={}'.format("rencon"))
 
             # then
             assert response.status_code == 200
-            recommendations = response.json()
+            recommendations = response.json
             assert 'Rencontres' in recommendations[0]['offer']['product']['name']
             assert recommendations[0]['search'] == search
 
@@ -304,12 +303,12 @@ class Get:
             PcObject.save(stock1, stock2, stock3, recommendation1, recommendation2)
 
             # when
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?keywords={}'.format('rencontres'))
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 1
+            assert len(response.json) == 1
 
         @clean_database
         def when_searching_by_type_with_two_types(self, app):
@@ -318,7 +317,8 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer1 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
-            offer2 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
+            offer2 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz',
+                                                     event_type=EventType.CINEMA)
             recommendation = create_recommendation(offer1, user)
             recommendation2 = create_recommendation(offer2, user)
             stock = create_stock_from_offer(offer1, beginning_datetime=TEN_DAYS_FROM_NOW,
@@ -328,12 +328,12 @@ class Get:
             PcObject.save(stock, recommendation, stock2, recommendation2)
 
             # when
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?categories=Applaudir%2CRegarder')
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 2
+            assert len(response.json) == 2
 
         @clean_database
         def when_searching_by_type_with_all_types(self, app):
@@ -342,7 +342,8 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer1 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
-            offer2 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
+            offer2 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz',
+                                                     event_type=EventType.CINEMA)
             offer3 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz',
                                                      event_type=EventType.SPECTACLE_VIVANT)
             recommendation = create_recommendation(offer1, user)
@@ -357,13 +358,13 @@ class Get:
             PcObject.save(stock, recommendation, stock2, recommendation2, stock3, recommendation3)
 
             # when
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?categories=%25C3%2589couter%2CApplaudir%2CJouer%2CLire%2CPratiquer%2CRegarder%2CRencontrer'
             )
 
             # then
             assert response.status_code == 200
-            assert len(response.json()) == 3
+            assert len(response.json) == 3
 
         @clean_database
         def when_searching_by_date_and_date_range(self, app):
@@ -382,17 +383,17 @@ class Get:
             PcObject.save(stock, recommendation)
 
             # When
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?date=%s&days=1-5' % strftime(self.now))
 
             # Then
-            recommendations = response.json()
+            recommendations = response.json
             assert response.status_code == 200
             pprint(recommendations[0]['offer'])
             assert recommendations[0]['offer']['dateRange'] == [
                 strftime(self.three_days_from_now), strftime(self.three_days_and_one_hour_from_now)
             ]
-            assert len(response.json()) == 1
+            assert len(response.json) == 1
 
         @clean_database
         def when_searching_by_date_and_date_range_and_type(self, app):
@@ -401,7 +402,8 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_name='The new film', event_type=EventType.CINEMA)
-            offer2 = create_offer_with_event_product(venue, event_name='Spectacle', event_type=EventType.SPECTACLE_VIVANT)
+            offer2 = create_offer_with_event_product(venue, event_name='Spectacle',
+                                                     event_type=EventType.SPECTACLE_VIVANT)
             thing_product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
 
             thing_offer = create_offer_with_thing_product(venue, thing_product)
@@ -418,13 +420,13 @@ class Get:
             PcObject.save(stock, recommendation, recommendation2, recommendation3, thing_stock, stock1)
 
             # When
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?categories=Lire%2CRegarder' + '&date=%s&days=1-5' % strftime(self.now)
             )
 
             # Then
             assert response.status_code == 200
-            recommendations = response.json()
+            recommendations = response.json
             assert len(recommendations) == 2
 
             recommendation_names = [recommendation['offer']['product']['name']
@@ -440,7 +442,8 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
+            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz',
+                                                    event_type=EventType.CINEMA)
 
             event_occurrence = create_event_occurrence(offer, beginning_datetime=self.ten_days_from_now,
                                                        end_datetime=self.ten_days_and_three_hours_from_now)
@@ -450,13 +453,13 @@ class Get:
             PcObject.save(stock, recommendation)
 
             # When
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?date=%s&keywords=Jazz' % strftime(self.ten_days_from_now)
             )
 
             # Then
             assert response.status_code == 200
-            assert len(response.json()) == 1
+            assert len(response.json) == 1
 
         @clean_database
         def when_searching_by_keywords_and_distance(self, app):
@@ -467,7 +470,8 @@ class Get:
                                                               event_type=EventType.MUSIQUE)
             concert_offer75 = create_offer_with_event_product(self.venue75, event_name='Funky Concert de Gael Faye',
                                                               event_type=EventType.MUSIQUE)
-            concert_offer973 = create_offer_with_event_product(self.venue973, event_name='Kiwi', event_type=EventType.MUSIQUE)
+            concert_offer973 = create_offer_with_event_product(self.venue973, event_name='Kiwi',
+                                                               event_type=EventType.MUSIQUE)
 
             event_occurrence13 = create_event_occurrence(concert_offer13, beginning_datetime=self.in_one_hour,
                                                          end_datetime=self.ten_days_from_now)
@@ -487,11 +491,11 @@ class Get:
             PcObject.save(stock13, recommendation13, stock75, recommendation75, stock973, recommendation973)
 
             # When
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?distance=1&keywords=funky')
 
             # Then
-            assert len(response.json()) == 2
+            assert len(response.json) == 2
 
         @clean_database
         def when_searching_by_keywords_and_distance_and_latitude_longitude(self, app):
@@ -502,7 +506,8 @@ class Get:
                                                               event_type=EventType.MUSIQUE)
             concert_offer75 = create_offer_with_event_product(self.venue75, event_name='Funky Concert de Gael Faye',
                                                               event_type=EventType.MUSIQUE)
-            concert_offer973 = create_offer_with_event_product(self.venue973, event_name='Kiwi', event_type=EventType.MUSIQUE)
+            concert_offer973 = create_offer_with_event_product(self.venue973, event_name='Kiwi',
+                                                               event_type=EventType.MUSIQUE)
 
             event_occurrence13 = create_event_occurrence(concert_offer13, beginning_datetime=self.in_one_hour,
                                                          end_datetime=self.ten_days_from_now)
@@ -522,12 +527,12 @@ class Get:
             PcObject.save(stock13, recommendation13, stock75, recommendation75, stock973, recommendation973)
 
             # When
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?distance=20000&latitude=48.8363788&longitude=2.4002701&keywords=Macouria')
 
             # Then
             assert response.status_code == 200
-            offers = response.json()
+            offers = response.json
             assert len(offers) == 1
             assert 'Kiwi' in offers[0]['offer']['product']['name']
 
@@ -547,12 +552,12 @@ class Get:
             PcObject.save(stock, recommendation)
 
             # When
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?date=%s&days=1-5' % strftime(self.ten_days_from_now))
 
             # Then
             assert response.status_code == 200
-            assert len(response.json()) == 0
+            assert len(response.json) == 0
 
         @clean_database
         def when_searching_by_type_including_activation_type(self, app):
@@ -574,13 +579,13 @@ class Get:
             PcObject.save(stock, stock1, recommendation, recommendation1)
 
             # When
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?categories=Activation%2CLire%2CRegarder')
 
             # Then
             assert response.status_code == 200
-            assert len(response.json()) == 2
-            recommendations = response.json()
+            assert len(response.json) == 2
+            recommendations = response.json
             assert set([r['offer']['product']['name'] for r in recommendations]) == \
                    {'The new film', 'Activation de votre Pass Culture'}
 
@@ -595,9 +600,11 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
 
-            cinema_event_offer = create_offer_with_event_product(venue, event_name='The new film', event_type=EventType.CINEMA)
+            cinema_event_offer = create_offer_with_event_product(venue, event_name='The new film',
+                                                                 event_type=EventType.CINEMA)
 
-            activation_event_offer = create_offer_with_event_product(venue, event_name='Activation de votre Pass Culture',
+            activation_event_offer = create_offer_with_event_product(venue,
+                                                                     event_name='Activation de votre Pass Culture',
                                                                      event_type=EventType.ACTIVATION)
 
             book_thing = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
@@ -622,13 +629,13 @@ class Get:
 
             # When
 
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?%s' % category_and_date_search)
 
             # Then
             assert response.status_code == 200
-            assert len(response.json()) == 3
-            recommendations = response.json()
+            assert len(response.json) == 3
+            recommendations = response.json
             recommendation_names = [recommendation['offer']['product']['name'] for recommendation in
                                     recommendations]
             assert 'Activation de votre Pass Culture' in recommendation_names
@@ -639,7 +646,8 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz', event_type=EventType.CINEMA)
+            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz',
+                                                    event_type=EventType.CINEMA)
 
             event_occurrence = create_event_occurrence(offer, beginning_datetime=self.in_one_hour,
                                                        end_datetime=self.ten_days_from_now)
@@ -649,13 +657,13 @@ class Get:
             PcObject.save(stock, recommendation)
 
             # When
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?date=%s&keywords=Jazz' % strftime(self.thirty_days_from_now)
             )
 
             # Then
             assert response.status_code == 200
-            assert len(response.json()) == 0
+            assert len(response.json) == 0
 
         @clean_database
         def when_searching_by_date_and_type_and_pagination_not_in_range(self, app):
@@ -678,13 +686,13 @@ class Get:
             PcObject.save(stock, recommendation, recommendation2, thing_stock)
 
             # When
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?categories=Lire%2CRegarder&days=1-5&page=2' + '&date=%s' % strftime(self.now)
             )
 
             # Then
             assert response.status_code == 200
-            assert len(response.json()) == 0
+            assert len(response.json) == 0
 
         @clean_database
         def when_searching_by_not_exact_match_for_keywords_and_distance(self, app):
@@ -695,7 +703,8 @@ class Get:
                                                               event_type=EventType.MUSIQUE)
             concert_offer75 = create_offer_with_event_product(self.venue75, event_name='Soulfull Concert de Gael Faye',
                                                               event_type=EventType.MUSIQUE)
-            concert_offer973 = create_offer_with_event_product(self.venue973, event_name='Kiwi', event_type=EventType.MUSIQUE)
+            concert_offer973 = create_offer_with_event_product(self.venue973, event_name='Kiwi',
+                                                               event_type=EventType.MUSIQUE)
 
             event_occurrence13 = create_event_occurrence(concert_offer13, beginning_datetime=self.in_one_hour,
                                                          end_datetime=self.ten_days_from_now)
@@ -715,13 +724,13 @@ class Get:
             PcObject.save(stock13, recommendation13, stock75, recommendation75, stock973, recommendation973)
 
             # When
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?distance=1&latitude=48.8363788&longitude=2.4002701&keywords=Funky'
             )
 
             # Then
             assert response.status_code == 200
-            assert len(response.json()) == 0
+            assert len(response.json) == 0
 
         @clean_database
         def when_searching_by_matching_date_and_non_matching_keywords(self, app):
@@ -739,10 +748,10 @@ class Get:
             PcObject.save(stock, recommendation)
 
             # When
-            response = TestClient().with_auth(user.email).get(
+            response = TestClient(app.test_client()).with_auth(user.email).get(
                 RECOMMENDATION_URL + '?date=%s&keywords=nekfeu' % strftime(self.ten_days_from_now)
             )
 
             # Then
             assert response.status_code == 200
-            assert len(response.json()) == 0
+            assert len(response.json) == 0

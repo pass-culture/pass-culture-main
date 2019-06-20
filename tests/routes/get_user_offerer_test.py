@@ -2,7 +2,7 @@ from models import PcObject
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, \
     create_user_offerer, \
-    create_offerer, API_URL
+    create_offerer
 from utils.human_ids import humanize
 
 
@@ -22,10 +22,10 @@ class Get:
             assert len(offerer.UserOfferers) == 2
 
             # when
-            response = TestClient() \
+            response = TestClient(app.test_client()) \
                 .with_auth(email=user1.email) \
-                .get(API_URL + '/userOfferers/' + humanize(offerer.id))
+                .get('/userOfferers/' + humanize(offerer.id))
 
             # then
             assert response.status_code == 200
-            assert response.json()[0]['userId'] == humanize(user1.id)
+            assert response.json[0]['userId'] == humanize(user1.id)

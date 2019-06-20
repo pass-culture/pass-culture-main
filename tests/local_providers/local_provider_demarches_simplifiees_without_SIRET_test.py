@@ -79,9 +79,9 @@ class VenueWithoutSIRETBankInformationProviderTest:
     @patch(
         'local_providers.demarches_simplifiees_bank_information_without_siret.find_latest_sync_end_event')
     def test_collect_updated_applications_ids_to_handle_using_environment_vars(self,
-                                                                       find_latest_sync_end_event,
-                                                                       get_all_application_ids_from_demarches_simplifiees_procedure,
-                                                                       app):
+                                                                               find_latest_sync_end_event,
+                                                                               get_all_application_ids_from_demarches_simplifiees_procedure,
+                                                                               app):
         # given
         last_provider_sync = LocalProviderEvent()
         last_provider_sync.date = datetime(2020, 1, 2)
@@ -107,9 +107,9 @@ class VenueWithoutSIRETBankInformationProviderTest:
     @patch(
         'local_providers.demarches_simplifiees_bank_information_without_siret.find_latest_sync_end_event')
     def test_when_applications_never_treated_then_collect_applications_ids_from_1970(self,
-                                            find_latest_sync_end_event,
-                                            get_all_application_ids_from_demarches_simplifiees_procedure,
-                                            app):
+                                                                                     find_latest_sync_end_event,
+                                                                                     get_all_application_ids_from_demarches_simplifiees_procedure,
+                                                                                     app):
         # given
         find_latest_sync_end_event.return_value = None
         get_all_application_ids_from_demarches_simplifiees_procedure.return_value = []
@@ -241,11 +241,11 @@ class VenueWithoutSIRETBankInformationProviderTest:
     @patch('local_providers.demarches_simplifiees_bank_information_without_siret.find_latest_sync_end_event')
     @clean_database
     def test_create_bank_information_when_the_bank_information_does_not_exist(self,
-                                                         find_latest_sync_end_event,
-                                                         get_application_details,
-                                                         get_all_application_ids_from_demarches_simplifiees_procedure,
-                                                         environment,
-                                                         app):
+                                                                              find_latest_sync_end_event,
+                                                                              get_application_details,
+                                                                              get_all_application_ids_from_demarches_simplifiees_procedure,
+                                                                              environment,
+                                                                              app):
         # given
         IBAN = 'FR7630006000011234567890189'
         BIC = 'BDFEFR2LCCB'
@@ -274,7 +274,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
                       erroredThumbs=0,
                       BankInformation=1)
 
-            # then
+        # then
         bank_information = BankInformation.query.first()
         assert bank_information.iban == IBAN
         assert bank_information.bic == BIC
@@ -290,11 +290,11 @@ class VenueWithoutSIRETBankInformationProviderTest:
     @patch('local_providers.demarches_simplifiees_bank_information_without_siret.find_latest_sync_end_event')
     @clean_database
     def test_updates_bank_information_when_existing_bank_information_with_same_id_at_provider(self,
-                                                                                find_latest_sync_end_event,
-                                                                                get_application_details,
-                                                                                get_all_application_ids_from_demarches_simplifiees_procedure,
-                                                                                environment,
-                                                                                app):
+                                                                                              find_latest_sync_end_event,
+                                                                                              get_application_details,
+                                                                                              get_all_application_ids_from_demarches_simplifiees_procedure,
+                                                                                              environment,
+                                                                                              app):
         # given
         offerer = create_offerer(siren='793875030', idx=self.OFFERER_ID)
         venue = create_venue(offerer=offerer, idx=self.VENUE_ID)

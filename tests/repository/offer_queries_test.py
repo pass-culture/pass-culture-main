@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
-import pytest
 
+import pytest
 from freezegun import freeze_time
 
 from models import Offer, PcObject, Stock, Product
@@ -768,9 +768,9 @@ def test_offer_remaining_stock_filter_does_not_filter_offer_with_cancelled_booki
 
     # When
     nb_offers_with_remaining_stock = Offer.query \
-                                          .join(Stock) \
-                                          .filter(_has_remaining_stock_predicate()) \
-                                          .count()
+        .join(Stock) \
+        .filter(_has_remaining_stock_predicate()) \
+        .count()
 
     # Then
     assert nb_offers_with_remaining_stock == 1
@@ -791,9 +791,9 @@ def test_offer_remaining_stock_filter_filters_offer_with_no_remaining_stock(app)
 
     # When
     nb_offers_with_remaining_stock = Offer.query \
-                                          .join(Stock) \
-                                          .filter(_has_remaining_stock_predicate()) \
-                                          .count()
+        .join(Stock) \
+        .filter(_has_remaining_stock_predicate()) \
+        .count()
 
     # Then
     assert nb_offers_with_remaining_stock == 0
@@ -814,9 +814,9 @@ def test_offer_remaining_stock_filter_filters_offer_with_one_full_stock_and_one_
 
     # When
     nb_offers_with_remaining_stock = Offer.query \
-                                          .join(Stock) \
-                                          .filter(_has_remaining_stock_predicate()) \
-                                          .count()
+        .join(Stock) \
+        .filter(_has_remaining_stock_predicate()) \
+        .count()
 
     # Then
     assert nb_offers_with_remaining_stock == 1

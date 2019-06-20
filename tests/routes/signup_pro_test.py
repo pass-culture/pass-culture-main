@@ -3,7 +3,7 @@ from models.offerer import Offerer
 from models.user import User
 from models.user_offerer import UserOfferer, RightsType
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import API_URL, create_user, create_user_offerer
+from tests.test_utils import create_user, create_user_offerer
 
 BASE_DATA_PRO = {
     'email': 'toto_pro@btmx.fr',
@@ -43,15 +43,15 @@ class Post:
             other_expected_keys = {'id', 'dateCreated'}
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 201
             assert 'Set-Cookie' not in response.headers
 
-            json = response.json()
+            json = response.json
             assert 'dateCreated' in json
             for key, value in expected_response_json.items():
                 if key != 'dateCreated':
@@ -78,9 +78,9 @@ class Post:
             }
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=user_json, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=user_json, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 201
@@ -94,9 +94,9 @@ class Post:
             data_pro = BASE_DATA_PRO.copy()
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data_pro, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data_pro, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 201
@@ -140,9 +140,9 @@ class Post:
             data = BASE_DATA_PRO.copy()
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 201
@@ -179,9 +179,9 @@ class Post:
             data = BASE_DATA_PRO.copy()
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 201
@@ -204,7 +204,7 @@ class Post:
 
         @clean_database
         def when_successful_and_mark_pro_user_as_no_cultural_survey_needed(self,
-                                                                                     app):
+                                                                           app):
             # Given
             json_offerer = {
                 "name": "Test Offerer",
@@ -219,9 +219,9 @@ class Post:
             data = BASE_DATA_PRO.copy()
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 201
@@ -238,13 +238,13 @@ class Post:
             del (data['email'])
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
-            error = response.json()
+            error = response.json
             assert 'email' in error
 
         @clean_database
@@ -254,31 +254,31 @@ class Post:
             data['email'] = 'toto'
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
-            error = response.json()
+            error = response.json
             assert 'email' in error
 
         @clean_database
         def when_email_is_already_used(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
-            TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                     json=data, headers={'origin': 'http://localhost:3000'})
+            TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
-            error = response.json()
+            error = response.json
             assert 'email' in error
 
         @clean_database
@@ -288,13 +288,13 @@ class Post:
             del (data['publicName'])
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
-            error = response.json()
+            error = response.json
             assert 'publicName' in error
 
         @clean_database
@@ -304,13 +304,13 @@ class Post:
             data['publicName'] = 't'
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
-            error = response.json()
+            error = response.json
             assert 'publicName' in error
 
         @clean_database
@@ -320,13 +320,13 @@ class Post:
             data['publicName'] = 'x' * 102
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
-            error = response.json()
+            error = response.json
             assert 'publicName' in error
 
         @clean_database
@@ -336,13 +336,13 @@ class Post:
             del (data['password'])
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
-            error = response.json()
+            error = response.json
             assert 'password' in error
 
         @clean_database
@@ -352,13 +352,13 @@ class Post:
             data['password'] = 'weakpassword'
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
-            response = response.json()
+            response = response.json
             assert response['password'] == [
                 'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
                 '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
@@ -371,13 +371,13 @@ class Post:
             del (data['contact_ok'])
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
-            error = response.json()
+            error = response.json
             assert 'contact_ok' in error
 
         @clean_database
@@ -387,13 +387,13 @@ class Post:
             data['contact_ok'] = 't'
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
-            error = response.json()
+            error = response.json
             assert 'contact_ok' in error
 
         @clean_database
@@ -403,13 +403,13 @@ class Post:
             del (data['name'])
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
-            error = response.json()
+            error = response.json
             assert 'name' in error
 
         @clean_database
@@ -419,13 +419,13 @@ class Post:
             del (data['city'])
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
-            error = response.json()
+            error = response.json
             assert 'city' in error
 
         @clean_database
@@ -435,13 +435,13 @@ class Post:
             del (data['postalCode'])
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
-            error = response.json()
+            error = response.json
             assert 'postalCode' in error
 
         @clean_database
@@ -451,11 +451,11 @@ class Post:
             data['postalCode'] = '111'
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/pro',
-                                json=data, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/pro',
+                      json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
             assert response.status_code == 400
-            error = response.json()
+            error = response.json
             assert 'postalCode' in error

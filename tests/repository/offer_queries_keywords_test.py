@@ -64,7 +64,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     # given
     ok_event1 = create_product_with_Event_type(event_name='Rencontre avec Jacques Martin')
     event2 = create_product_with_Event_type(event_name='Concert de contrebasse')
-    ok_thing1 = create_product_with_Thing_type(thing_name='Rencontre avec vous savez qui', description='Il s\'agit de Jacques')
+    ok_thing1 = create_product_with_Thing_type(thing_name='Rencontre avec vous savez qui',
+                                               description='Il s\'agit de Jacques')
     thing2 = create_product_with_Thing_type(thing_name='Rencontre avec Belle du Seigneur')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -92,7 +93,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     # given
     ok_event1 = create_product_with_Event_type(event_name='Rencontre avec Jacques Martin')
     event2 = create_product_with_Event_type(event_name='Concert de contrebasse')
-    ok_thing1 = create_product_with_Thing_type(thing_name='Rencontre avec vous savez qui', description='Il s\'agit de Jacques')
+    ok_thing1 = create_product_with_Thing_type(thing_name='Rencontre avec vous savez qui',
+                                               description='Il s\'agit de Jacques')
     thing2 = create_product_with_Thing_type(thing_name='Rencontre avec Belle du Seigneur')
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -168,7 +170,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_v
     offerer4 = create_offerer(siren='123456786')
     ok_venue1 = create_venue(ok_offerer1, siret=ok_offerer1.siren + '54321', publicName='Un lieu trop chouette de ouf')
     venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
-    ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis', siret=offerer3.siren + '54321', publicName='chouette endroit de ouf')
+    ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis',
+                             siret=offerer3.siren + '54321', publicName='chouette endroit de ouf')
     venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
     ok_offer1 = create_offer_with_event_product(ok_venue1, event)
     ko_offer2 = create_offer_with_event_product(venue2, event)
@@ -210,7 +213,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
     offerer4 = create_offerer(siren='123456786')
     ok_venue1 = create_venue(ok_offerer1, siret=ok_offerer1.siren + '54321', publicName='Un lieu trop chouette de ouf')
     venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
-    ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis', siret=offerer3.siren + '54321', publicName='chouette endroit de ouf')
+    ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis',
+                             siret=offerer3.siren + '54321', publicName='chouette endroit de ouf')
     venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
     ok_offer1 = create_offer_with_event_product(ok_venue1, event)
     ko_offer2 = create_offer_with_event_product(venue2, event)
@@ -252,7 +256,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
     offerer4 = create_offerer(siren='123456786')
     ok_venue1 = create_venue(ok_offerer1, siret=ok_offerer1.siren + '54321', publicName='Un lieu trop chouette de ouf')
     venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
-    ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis', siret=offerer3.siren + '54321', publicName='chouette endroit de ouf')
+    ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis',
+                             siret=offerer3.siren + '54321', publicName='chouette endroit de ouf')
     venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
     ok_offer1 = create_offer_with_event_product(ok_venue1, event)
     ko_offer2 = create_offer_with_event_product(venue2, event)
@@ -284,7 +289,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
 
 
 @clean_database
-def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_keywords_at_venue_public_name_level(app):
+def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_keywords_at_venue_public_name_level(
+        app):
     # given
     event = create_product_with_Event_type()
     thing = create_product_with_Thing_type()
@@ -294,7 +300,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
     offerer4 = create_offerer(siren='123456786')
     ok_venue1 = create_venue(ok_offerer1, siret=ok_offerer1.siren + '54321', publicName='Un lieu trop chouette de ouf')
     venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
-    ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis', siret=offerer3.siren + '54321', publicName='chouette endroit de ouf')
+    ok_venue3 = create_venue(offerer3, name='Librairie la Rencontre', city='Saint Denis',
+                             siret=offerer3.siren + '54321', publicName='chouette endroit de ouf')
     venue4 = create_venue(offerer4, name='Bataclan', city='Paris', siret=offerer4.siren + '12345')
     ok_offer1 = create_offer_with_event_product(ok_venue1, event)
     ko_offer2 = create_offer_with_event_product(venue2, event)
@@ -633,7 +640,8 @@ def test_get_offers_for_recommendations_search_only_return_available_offers(app)
     thing_product = create_product_with_Thing_type(thing_name='Lire un livre de Jazz')
     offer_available = create_offer_with_thing_product(venue, thing_product)
     offer_not_available = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
-    event_occurrence = create_event_occurrence(offer_not_available, beginning_datetime=in_one_hour, end_datetime=in_two_hours)
+    event_occurrence = create_event_occurrence(offer_not_available, beginning_datetime=in_one_hour,
+                                               end_datetime=in_two_hours)
     stock_with_no_available = create_stock_from_event_occurrence(event_occurrence, available=0)
     stock_with_one_available = create_stock_from_event_occurrence(event_occurrence, available=1, price=0)
     user = create_user()

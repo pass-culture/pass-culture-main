@@ -8,10 +8,12 @@ from flask_login import LoginManager
 from mailjet_rest import Client
 from werkzeug.middleware.profiler import ProfilerMiddleware
 from admin.install import install_admin_views
+from models.mediation import upsertTutoMediations
 from repository.features import feature_request_profiling_enabled
 from local_providers.install import install_local_providers
 from models.db import db
 from models.install import install_models
+from routes import install_routes
 from utils.config import IS_DEV
 from utils.json_encoder import EnumJSONEncoder
 from utils.mailing import get_contact, \
@@ -66,9 +68,10 @@ app.url_map.strict_slashes = False
 with app.app_context():
     if IS_DEV:
         install_models()
+        upsertTutoMediations()
         install_local_providers()
     import utils.login_manager
-    import routes
+    install_routes()
     install_admin_views(admin, db.session)
 
     app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
