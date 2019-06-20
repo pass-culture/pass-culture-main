@@ -12,5 +12,5 @@ class FeatureToggle(enum.Enum):
 
 
 class Feature(PcObject, Model, DeactivableMixin):
-    name = Column(Enum(FeatureToggle), nullable=False)
+    name = Column(Enum(FeatureToggle), unique=True, nullable=False)
     description = Column(String(300), nullable=False)

@@ -21,7 +21,7 @@ def upgrade():
     op.create_table(
         'feature',
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column('name', sa.Enum(FeatureToggle), nullable=False),
+        sa.Column('name', sa.Enum(FeatureToggle), unique=True, nullable=False),
         sa.Column('description', sa.String(300), nullable=False),
         sa.Column('isActive', sa.Boolean, nullable=False, default=False)
     )
