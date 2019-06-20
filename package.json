@@ -15,12 +15,12 @@
     "enzyme": "^3.6.0",
     "enzyme-adapter-react-15": "^1.1.0",
     "enzyme-adapter-react-16": "^1.5.0",
-    "fetch-normalize-data": "1.1.1",
+    "fetch-normalize-data": "1.2.0",
     "final-form": "^4.9.1",
     "final-form-calculate": "^1.2.1",
     "history": "^4.7.2",
     "is-absolute-url": "^2.1.0",
-    "la-sass-vy": "^0.0.3",
+    "la-sass-vy": "^1.0.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
     "lodash.find": "^4.6.0",
@@ -77,15 +77,14 @@
     "redux-persist": "^5.10.0",
     "redux-react-modals": "^0.0.11",
     "redux-saga": "^0.15.3",
-    "redux-saga-data": "2.4.0",
+    "redux-saga-data": "2.5.1",
     "reselect": "^3.0.1",
     "testcafe": "^0.20.4",
     "typeface-barlow": "^0.0.54",
     "util.promisify": "^1.0.0",
     "uuid": "^3.3.2",
-    "with-login": "2.4.0",
-    "with-query-router": "3.1.0",
-    "with-react-redux-login": "1.4.4"
+    "with-query-router": "3.2.0",
+    "with-react-redux-login": "1.5.0"
   },
   "devDependencies": {
     "archiver": "^2.1.1",
@@ -168,8 +167,7 @@
     "test:cafe": "testcafe --assertion-timeout 8000 --selector-timeout 20000 -S -s testcafe_screenshots 'chrome:headless' testcafe",
     "test:unit": "jest --env=jsdom",
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
-    "test:visual": "./scripts/tests/visual.sh",
-    "symlink-shared": "if [ -d \"../shared\" ]; then cd node_modules && rm -rf pass-culture-shared && ln -sf ../../shared pass-culture-shared && cd ../../shared && yarn run compile; fi"
+    "test:visual": "./scripts/tests/visual.sh"
   },
   "husky": {
     "hooks": {
