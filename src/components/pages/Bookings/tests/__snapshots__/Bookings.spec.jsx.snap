@@ -35,11 +35,13 @@ ShallowWrapper {
           </p>
         </HeroSection>,
         <hr />,
+        <withRouter(_withQueryRouter) />,
+        <withRouter(_withQueryRouter) />,
         <div
           className="control flex-columns items-center flex-end"
         >
           <Connect(DownloadButton)
-            filename="reservations_pass_culture_pass_culture"
+            filename="reservations_pass_culture"
             href="http://localhost/bookings/csv"
             mimeType="text/csv"
           >
@@ -112,10 +114,28 @@ ShallowWrapper {
       Object {
         "instance": null,
         "key": undefined,
+        "nodeType": "function",
+        "props": Object {},
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {},
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
         "nodeType": "host",
         "props": Object {
           "children": <Connect(DownloadButton)
-            filename="reservations_pass_culture_pass_culture"
+            filename="reservations_pass_culture"
             href="http://localhost/bookings/csv"
             mimeType="text/csv"
           >
@@ -130,7 +150,7 @@ ShallowWrapper {
           "nodeType": "class",
           "props": Object {
             "children": "Télécharger la liste des réservations",
-            "filename": "reservations_pass_culture_pass_culture",
+            "filename": "reservations_pass_culture",
             "href": "http://localhost/bookings/csv",
             "mimeType": "text/csv",
           },
@@ -166,11 +186,13 @@ ShallowWrapper {
             </p>
           </HeroSection>,
           <hr />,
+          <withRouter(_withQueryRouter) />,
+          <withRouter(_withQueryRouter) />,
           <div
             className="control flex-columns items-center flex-end"
           >
             <Connect(DownloadButton)
-              filename="reservations_pass_culture_pass_culture"
+              filename="reservations_pass_culture"
               href="http://localhost/bookings/csv"
               mimeType="text/csv"
             >
@@ -243,10 +265,28 @@ ShallowWrapper {
         Object {
           "instance": null,
           "key": undefined,
+          "nodeType": "function",
+          "props": Object {},
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {},
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
           "nodeType": "host",
           "props": Object {
             "children": <Connect(DownloadButton)
-              filename="reservations_pass_culture_pass_culture"
+              filename="reservations_pass_culture"
               href="http://localhost/bookings/csv"
               mimeType="text/csv"
             >
@@ -261,7 +301,7 @@ ShallowWrapper {
             "nodeType": "class",
             "props": Object {
               "children": "Télécharger la liste des réservations",
-              "filename": "reservations_pass_culture_pass_culture",
+              "filename": "reservations_pass_culture",
               "href": "http://localhost/bookings/csv",
               "mimeType": "text/csv",
             },
@@ -299,5 +339,6 @@ ShallowWrapper {
       },
     },
   },
+  Symbol(enzyme.__childContext__): null,
 }
 `;

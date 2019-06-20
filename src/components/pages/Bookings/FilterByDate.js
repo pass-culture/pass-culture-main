@@ -1,21 +1,19 @@
 import React, { PureComponent } from 'react'
 import classnames from 'classnames'
+import PropTypes from 'prop-types'
 
 import { MONTH_OPTIONS, YEAR_OPTIONS } from './utils'
-
+import {FilterByVenue} from './FilterByVenue'
 
 export class FilterByDate extends PureComponent {
 
-  onChangeMonth = event => {
+  onChangeDate = event => {
     const selectedMonth = document.getElementById("month")
     const month = selectedMonth[selectedMonth.selectedIndex].value
-    console.log("month", month)
-  }
-
-  onChangeYear = event => {
     const selectedYear = document.getElementById("year")
     const year = selectedYear[selectedYear.selectedIndex].value
-    console.log("year", year)
+    const updatedDate = new Date(year, month-1, 1, 12)
+    this.props.selectBookingsForDate(updatedDate)
   }
 
   render() {
@@ -29,9 +27,9 @@ export class FilterByDate extends PureComponent {
             {'Effectuées en :'}
           </h2>
           <select
-            onChange={this.onChangeMonth}
+            onChange={this.onChangeDate}
             className="pc-selectbox pl24 py5 fs19"
-            defaultValue="all"
+            defaultValue="1"
             id="month"
           >
             {MONTH_OPTIONS.map(({ label, value }) => (
@@ -41,9 +39,9 @@ export class FilterByDate extends PureComponent {
             ))}
           </select>
           <select
-            onChange={this.onChangeYear}
+            onChange={this.onChangeDate}
             className="pc-selectbox pl24 py5 fs19"
-            defaultValue="all"
+            defaultValue="2019"
             id="year"
           >
             {YEAR_OPTIONS.map(({ label, value }) => (
@@ -58,3 +56,6 @@ export class FilterByDate extends PureComponent {
   }
 }
 
+FilterByVenue.propTypes = {
+  date: PropTypes.instanceOf(Date).isRequired,
+}

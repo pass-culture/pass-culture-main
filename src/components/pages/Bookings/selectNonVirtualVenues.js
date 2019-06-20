@@ -1,8 +1,8 @@
-import {createSelector} from "reselect";
+import get from 'lodash.get'
 
-export const selectNonVirtualVenues = createSelector(
-  state => state.data.venues,
-  venues => venues.filter(venue => venue.isVirtual === false)
-)
+const selectNonVirtualVenues = (state) => {
+  const venues = get(state, "data.venues", [])
+  return venues.filter(venue => venue.isVirtual === false)
+}
 
 export default selectNonVirtualVenues

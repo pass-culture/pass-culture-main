@@ -1,13 +1,8 @@
-import createCachedSelector from 're-reselect'
+import get from 'lodash.get'
 
-function mapArgsToCacheKey(state, venueId) {
-  return venueId || ''
+const selectOffersByVenueId = (venueId, state) => {
+  const offers = get(state, "data.offers", [])
+  return offers.filter(offer => offer.venueId === venueId)
 }
-
-export const selectOffersByVenueId = createCachedSelector(
-  state => state.data.offers,
-  (state, venueId) => venueId,
-  (offers, venueId) => offers.find(offer => offer.venueId === venueId)
-)(mapArgsToCacheKey)
 
 export default selectOffersByVenueId

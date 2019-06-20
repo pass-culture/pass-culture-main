@@ -1,24 +1,56 @@
 import {compose} from 'redux'
+import {requestData} from 'redux-saga-data'
 import {connect} from 'react-redux'
-import { withFrenchQueryRouter } from 'components/hocs'
+import {withFrenchQueryRouter} from 'components/hocs'
 
-import selectOffersByVenueId from './selectOffersByVenueId'
 import {FilterByVenue} from './FilterByVenue'
+import selectNonVirtualVenues from './selectNonVirtualVenues'
+
+export const mapDispatchToProps = (dispatch) => ({
+  loadVenues: () => {
+    dispatch(requestData({
+      apiPath: `/venues`,
+      stateKey: 'venues',
+      method: 'GET'
+    }))
+  },
+  selectOnlyDigitalVenues: (payload) => {
+    dispatch(
+      {
+        payload,
+        type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE',
+      }
+    )
+  },
+  selectBookingsForVenues: (venueId) => {
+    dispatch(
+      {
+        payload:venueId,
+        type: 'BOOKING_SUMMARY_SELECT_VENUE',
+      }
+    )
+  }
+})
 
 export const mapStateToProps = (state) => {
-  //const { isDigital, venueId } = state.data
-  const isDigital = true
-  const venueId = "A8NA"
-  console.log("isDigital", isDigital)
-  console.log("venueId", venueId)
-  const offers = selectOffersByVenueId(state, venueId)
+  const { venues } = state.data
+
+  const allVenuesOption = {
+    name: "Tous les lieux",
+    id: "all",
+  }
+
+  const nonVirtualVenues = selectNonVirtualVenues(state, venues)
+  const venuesOptions = [allVenuesOption, ...nonVirtualVenues]
+
   return {
-    isDigital,
-    offers,
+    isDigital: state.bookingSummary.isFilterByDigitalVenues,
+    venueId: state.bookingSummary.selectedVenue,
+    venuesOptions,
   }
 }
 
 export default compose(
   withFrenchQueryRouter,
-  connect(mapStateToProps)
+  connect(mapStateToProps, mapDispatchToProps)
 )(FilterByVenue)

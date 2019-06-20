@@ -10,8 +10,10 @@ import {
 import { combineReducers } from 'redux'
 
 import data from './data'
+import bookingSummary from './bookingSummary'
 
 const rootReducer = combineReducers({
+  bookingSummary,
   data,
   errors,
   form,
