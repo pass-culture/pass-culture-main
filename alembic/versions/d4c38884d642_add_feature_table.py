@@ -21,16 +21,17 @@ def upgrade():
     op.create_table(
         'feature',
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column('name', sa.String(50), unique=True, nullable=False),
+        sa.Column('name', sa.Enum(FeatureToggle), nullable=False),
         sa.Column('description', sa.String(300), nullable=False),
         sa.Column('isActive', sa.Boolean, nullable=False, default=False)
     )
 
-    for feature_toggle in FeatureToggle:
-        op.execute(
-            "INSERT INTO feature (name, description, \"isActive\") VALUES ('%s', '%s', false)"
-            % (feature_toggle.value['name'], feature_toggle.value['description'])
-        )
+    op.execute(
+        '''
+        INSERT INTO feature (name, description, "isActive")
+        VALUES 'WEBAPP_SIGNUP', 'webapp_signup', FALSE;
+        '''
+    )
 
 
 def downgrade():

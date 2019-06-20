@@ -5,6 +5,7 @@ from models.deactivable_mixin import DeactivableMixin
 from models.deposit import Deposit
 from models.email import Email
 from models.extra_data_mixin import ExtraDataMixin
+from models.feature import Feature
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
 from models.local_provider import LocalProvider
@@ -46,6 +47,7 @@ __all__ = (
     'Email',
     'EventType',
     'ExtraDataMixin',
+    'Feature',
     'HasAddressMixin',
     'HasThumbMixin',
     'BookFormat',
