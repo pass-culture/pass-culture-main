@@ -24,8 +24,3 @@ def upgrade():
 
 def downgrade():
     op.drop_column('user', 'culturalSurveyId')
-
-
-
-def downgrade():
-    pass
