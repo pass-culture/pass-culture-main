@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { Redirect } from 'react-router-dom'
 import * as typeformEmbed from '@typeform/embed'
 
 class TypeForm extends PureComponent {
@@ -10,8 +9,7 @@ class TypeForm extends PureComponent {
   }
 
   componentDidMount() {
-    const { needsToFillCulturalSurvey, typeformUrl } = this.props
-    if (needsToFillCulturalSurvey) return
+    const { typeformUrl } = this.props
     const container = this.typeformElementContainer
     // NOTE Typeform Documentation
     // https://developer.typeform.com/embed/modes/
@@ -29,8 +27,6 @@ class TypeForm extends PureComponent {
   }
 
   render() {
-    const { needsToFillCulturalSurvey } = this.props
-    if (needsToFillCulturalSurvey) return <Redirect to="/decouverte" />
     return (
       <div
         className="is-overlay react-embed-typeform-container"
@@ -42,13 +38,8 @@ class TypeForm extends PureComponent {
   }
 }
 
-TypeForm.defaultProps = {
-  needsToFillCulturalSurvey: true,
-}
-
 TypeForm.propTypes = {
   flagUserHasFilledTypeform: PropTypes.func.isRequired,
-  needsToFillCulturalSurvey: PropTypes.bool,
   typeformUrl: PropTypes.string.isRequired,
   uniqId: PropTypes.string.isRequired,
 }
