@@ -60,7 +60,9 @@ class User(PcObject,
 
     lastName = Column(String(35), nullable=True)
 
-    needsToFillCulturalSurvey = Column(Boolean, default=True)
+    needsToFillCulturalSurvey = Column(Boolean,
+        server_default=expression.true(),
+        default=True)
 
     offerers = relationship('Offerer',
                             secondary='user_offerer')
