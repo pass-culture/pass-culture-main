@@ -5,9 +5,11 @@ from domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from domain.password import check_password_strength
 from domain.user_emails import send_user_validation_email
 from models import ApiErrors, Deposit, Offerer, PcObject, User
+from models.feature import FeatureToggle
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
 from utils.config import IS_INTEGRATION
+from utils.feature import feature_required
 from utils.includes import USER_INCLUDES
 from utils.logger import logger
 from utils.mailing import \
@@ -19,7 +21,7 @@ from validation.users import check_valid_signup
 def signup_old():
     return redirect("/users/signup/webapp", code=308)
 
-
+@feature_required(FeatureToggle.WEBAPP_SIGNUP)
 @app.route("/users/signup/webapp", methods=["POST"])
 def signup_webapp():
     objects_to_save = []

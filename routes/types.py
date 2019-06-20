@@ -9,7 +9,6 @@ from utils.rest import expect_json_data
 
 
 @app.route('/types', methods=['GET'])
-@feature_required(FeatureToggle.SHOW_BOOKINGS)
 @login_required
 def list_types():
     return jsonify(get_formatted_event_or_thing_types(with_activation_type=current_user.isAdmin)), 200
