@@ -23,9 +23,9 @@ export class FilterByDate extends PureComponent {
       <React.Fragment>
         <div id="filter-by-date"
              className={classnames({'is-invisible': isDigitalChecked,})} >
-          <h2>
+          <div>
             {'Effectuées en :'}
-          </h2>
+          </div>
           <select
             onChange={this.onChangeDate}
             className="pc-selectbox pl24 py5 fs19"

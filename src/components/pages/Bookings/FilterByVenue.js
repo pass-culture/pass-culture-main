@@ -38,12 +38,13 @@ export class FilterByVenue extends PureComponent {
 
           </select>
         </div>
-        <div>
-          {'ou :'}
-        </div>
         <div className="select-digital-offer">
+          <div>
+            {'ou :'}
+          </div>
           <input
             id="isDigital"
+            className="pc-checkbox"
             type="checkbox"
             onChange={() => document.getElementById("venues").value = ''}
             onClick={() => this.props.selectOnlyDigitalVenues(!isDigital)}

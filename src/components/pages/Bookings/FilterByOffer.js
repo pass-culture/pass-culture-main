@@ -52,10 +52,10 @@ export class FilterByOffer extends PureComponent {
                   </option>
                 ))}
               </select>
-              <FilterByDateContainer
-              />
             </div>
           </div>
+          <FilterByDateContainer
+          />
         </React.Fragment>
       )
     }
@@ -83,10 +83,10 @@ export class FilterByOffer extends PureComponent {
                   </option>
                 ))}
               </select>
-              <FilterByDateContainer
-              />
             </div>
           </div>
+          <FilterByDateContainer
+          />
         </React.Fragment>
       )
     }

@@ -1,0 +1,57 @@
+/* ------------------------------------------------
+
+ Selection des offres
+
+------------------------------------------------ */
+
+#filter-by-offer
+div {
+  margin-bottom: rem(12px);
+}
+
+#filter-by-offer .pc-selectbox {
+  @extend .no-outline;
+  //@extend .no-appearance;
+
+  border-radius: 17px;
+  border: 1px solid $primary;
+  width: 450px;
+  height: 35px;
+  min-width: 450px;
+  min-height: 35px;
+  background-repeat: no-repeat;
+  background-position: 212px 12px;
+  //background-image: url(/icons/dropdown-disclosure-down-s-w.svg);
+  background-image: url('/icons/dropdown-disclosure-down.svg');
+  background-color: transparent;
+  //margin-left: 0.7rem;
+}
+
+/* ------------------------------------------------
+
+ Selection des offres numeriques
+
+------------------------------------------------ */
+
+#filter-by-digital-offer
+div {
+  margin-bottom: rem(12px);
+}
+
+#filter-by-digital-offer .pc-selectbox {
+  @extend .no-outline;
+  //@extend .no-appearance;
+
+  border-radius: 17px;
+  border: 1px solid $primary;
+  width: 450px;
+  height: 35px;
+  min-width: 450px;
+  min-height: 35px;
+  background-repeat: no-repeat;
+  background-position: 212px 12px;
+  //background-image: url(/icons/dropdown-disclosure-down-s-w.svg);
+  background-image: url('/icons/dropdown-disclosure-down.svg');
+  background-color: transparent;
+  //margin-left: 0.7rem;
+}

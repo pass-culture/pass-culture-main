@@ -1,0 +1,28 @@
+#filter-by-date
+div {
+  margin-bottom: rem(12px);
+}
+
+/* ------------------------------------------------
+
+ Selection de la date
+
+------------------------------------------------ */
+
+#filter-by-date .pc-selectbox {
+  @extend .no-outline;
+  //@extend .no-appearance;
+
+  border-radius: 17px;
+  border: 1px solid $primary;
+  width: 150px;
+  height: 35px;
+  min-width: 450px;
+  min-height: 35px;
+  background-repeat: no-repeat;
+  background-position: 212px 12px;
+  //background-image: url(/icons/dropdown-disclosure-down-s-w.svg);
+  background-image: url('/icons/dropdown-disclosure-down.svg');
+  background-color: transparent;
+  //margin-left: 0.7rem;
+}
