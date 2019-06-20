@@ -7,13 +7,18 @@ import withFrenchQueryRouter from '../withFrenchQueryRouter'
 const withNotRequiredLogin = compose(
   withFrenchQueryRouter,
   withLogin({
-    handleSuccess: (state, { payload: { datum } }, { history, location }) =>
+    handleSuccess: (state, action, ownProps) => {
+      const {
+        payload: { datum },
+      } = action
+      const { history, location } = ownProps
       history.push(
         getRedirectToCurrentLocationOrDiscovery({
           currentUser: datum,
           ...location,
         })
-      ),
+      )
+    },
     isRequired: false,
   })
 )

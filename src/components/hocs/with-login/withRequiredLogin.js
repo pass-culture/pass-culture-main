@@ -11,15 +11,22 @@ import {
 const withRequiredLogin = compose(
   withFrenchQueryRouter,
   withLogin({
-    handleFail: (state, action, { history, location }) =>
-      history.push(getRedirectToSignin(location)),
-    handleSuccess: (state, { payload: { datum } }, { history, location }) =>
+    handleFail: (state, action, ownProps) => {
+      const { history, location } = ownProps
+      history.push(getRedirectToSignin(location))
+    },
+    handleSuccess: (state, action, ownProps) => {
+      const {
+        payload: { datum },
+      } = action
+      const { history, location } = ownProps
       history.push(
         getRedirectToCurrentLocationOrTypeform({
           currentUser: datum,
           ...location,
         })
-      ),
+      )
+    },
     isRequired: true,
   })
 )
