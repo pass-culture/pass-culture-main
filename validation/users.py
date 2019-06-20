@@ -5,7 +5,7 @@ def check_allowed_changes_for_user(data):
     changes_allowed = {
         'departementCode',
         'email',
-        'hasFilledCulturalSurvey',
+        'needsToFillCulturalSurvey',
         'phoneNumber',
         'postalCode',
         'publicName',

@@ -228,7 +228,7 @@ class Post:
             user = User.query \
                 .filter_by(email='toto_pro@btmx.fr') \
                 .first()
-            assert user.hasFilledCulturalSurvey == True
+            assert user.needsToFillCulturalSurvey == False
 
     class Returns400:
         @clean_database

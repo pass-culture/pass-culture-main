@@ -112,7 +112,7 @@ class Post:
             assert response.status_code == 201
             assert 'validationToken' not in response.json()
             created_user = User.query.filter_by(email='toto@btmx.fr').first()
-            assert created_user.hasFilledCulturalSurvey == False
+            assert created_user.needsToFillCulturalSurvey == True
 
         @clean_database
         def when_calling_old_route(self, app):

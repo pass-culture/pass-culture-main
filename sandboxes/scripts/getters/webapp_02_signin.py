@@ -5,7 +5,7 @@ from sandboxes.scripts.utils.helpers import get_user_helper
 def get_existing_webapp_validated_user_with_has_filled_cultural_survey():
     query = keep_only_webapp_users(User.query)
     query = query.filter_by(
-        hasFilledCulturalSurvey=True,
+        needsToFillCulturalSurvey=False,
         resetPasswordToken=None
     )
     user = query.first()

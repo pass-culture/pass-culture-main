@@ -47,8 +47,6 @@ class User(PcObject,
 
     firstName = Column(String(35), nullable=True)
 
-    hasFilledCulturalSurvey = Column(Boolean, default=False)
-
     isAdmin = Column(Boolean,
                      CheckConstraint('("canBookFreeOffers" IS FALSE AND "isAdmin" IS TRUE)'
                                      + 'OR ("isAdmin" IS FALSE)',
@@ -58,6 +56,8 @@ class User(PcObject,
                      default=False)
 
     lastName = Column(String(35), nullable=True)
+
+    needsToFillCulturalSurvey = Column(Boolean, default=True)
 
     offerers = relationship('Offerer',
                             secondary='user_offerer')
