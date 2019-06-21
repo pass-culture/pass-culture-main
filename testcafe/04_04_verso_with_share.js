@@ -28,7 +28,7 @@ fixture("04_04_01 Verso | partage de l'offre").beforeEach(async t => {
   await dragButton.with({ visibilityCheck: true })()
 })
 
-test('Je peux cliquer sur le bouton de partage', async t => {
+test.skip('Je peux cliquer sur le bouton de partage', async t => {
   await t
     .click(openVersoButton)
     .click(shareButton)
