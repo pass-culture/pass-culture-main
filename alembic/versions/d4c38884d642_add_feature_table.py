@@ -29,10 +29,11 @@ def upgrade():
     op.execute(
         '''
         INSERT INTO feature (name, description, "isActive")
-        VALUES 'WEBAPP_SIGNUP', 'webapp_signup', FALSE;
+        VALUES ('WEBAPP_SIGNUP', 'webapp_signup', FALSE);
         '''
     )
 
 
 def downgrade():
     op.drop_table('feature')
+    op.execute('DROP TYPE FeatureToggle;')
