@@ -51,6 +51,7 @@ export class FilterByDate extends PureComponent {
             ))}
           </select>
         </div>
+        <hr/>
       </React.Fragment>
     )
   }

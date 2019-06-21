@@ -1,6 +1,7 @@
 #filter-by-date
 div {
-  margin-bottom: rem(12px);
+  font-size: 16px;
+  margin-bottom: rem(6px);
 }
 
 /* ------------------------------------------------
@@ -11,18 +12,18 @@ div {
 
 #filter-by-date .pc-selectbox {
   @extend .no-outline;
-  //@extend .no-appearance;
 
-  border-radius: 17px;
-  border: 1px solid $primary;
-  width: 150px;
-  height: 35px;
-  min-width: 450px;
-  min-height: 35px;
+  border-radius: 18px;
+  width: 139px;
+  height: 36px;
   background-repeat: no-repeat;
-  background-position: 212px 12px;
-  //background-image: url(/icons/dropdown-disclosure-down-s-w.svg);
-  background-image: url('/icons/dropdown-disclosure-down.svg');
+  background-position: 110px 14px;
+  background-image: url(/icons/dropdown-disclosure-down-s-w.svg);
   background-color: transparent;
-  //margin-left: 0.7rem;
+  box-shadow: 0 2px 6px 0 rgba(0,0,0,0.25);
+  font-size: 16px;
+  margin-right: rem(12px);
+  margin-bottom: rem(54px);
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }

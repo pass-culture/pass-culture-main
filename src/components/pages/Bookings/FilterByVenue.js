@@ -44,7 +44,7 @@ export class FilterByVenue extends PureComponent {
           </div>
           <input
             id="isDigital"
-            className="pc-checkbox"
+            className="pc-checkbox input"
             type="checkbox"
             onChange={() => document.getElementById("venues").value = ''}
             onClick={() => this.props.selectOnlyDigitalVenues(!isDigital)}

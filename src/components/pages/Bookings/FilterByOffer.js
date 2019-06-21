@@ -20,7 +20,6 @@ export class FilterByOffer extends PureComponent {
   onChangeDigitalOffer = event => {
     const selectedDigitalOffer = document.getElementById("digitalOffers")
     const digitalOfferId = selectedDigitalOffer[selectedDigitalOffer.selectedIndex].value
-    console.log("digitalOfferId", digitalOfferId)
     this.props.selectBookingsForOffers(digitalOfferId)
   }
 
