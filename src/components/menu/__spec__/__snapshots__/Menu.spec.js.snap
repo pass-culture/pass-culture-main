@@ -1,11 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | menu | MenuSignoutButton snapshot should match snapshot 1`] = `
+exports[`src | components | menu | Menu should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <withRouter(Connect(MenuSignoutButton))
-    dispatch={[MockFunction]}
-    history={true}
+  Symbol(enzyme.__unrendered__): <Menu
+    currentUser={Object {}}
+    history={
+      Object {
+        "goBack": [MockFunction],
+      }
+    }
+    readRecommendations={Array []}
+    toggleOverlay={
+      [MockFunction] {
+        "calls": Array [
+          Array [],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -21,7 +39,20 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "class",
     "props": Object {
+      "appear": true,
       "children": [Function],
+      "enter": true,
+      "exit": true,
+      "in": true,
+      "mountOnEnter": false,
+      "onEnter": [Function],
+      "onEntered": [Function],
+      "onEntering": [Function],
+      "onExit": [Function],
+      "onExited": [Function],
+      "onExiting": [Function],
+      "timeout": 250,
+      "unmountOnExit": false,
     },
     "ref": null,
     "rendered": [Function],
@@ -33,7 +64,20 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "class",
       "props": Object {
+        "appear": true,
         "children": [Function],
+        "enter": true,
+        "exit": true,
+        "in": true,
+        "mountOnEnter": false,
+        "onEnter": [Function],
+        "onEntered": [Function],
+        "onEntering": [Function],
+        "onExit": [Function],
+        "onExited": [Function],
+        "onExiting": [Function],
+        "timeout": 250,
+        "unmountOnExit": false,
       },
       "ref": null,
       "rendered": [Function],
@@ -65,6 +109,7 @@ ShallowWrapper {
     },
     Symbol(enzyme.__providerValues__): undefined,
   },
-  Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__providerValues__): Array [],
+  Symbol(enzyme.__childContext__): null,
 }
 `;

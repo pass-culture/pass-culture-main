@@ -24,7 +24,7 @@ fixture('10_01 Menu - Affichage de la modal').beforeEach(async t => {
     .wait(100)
 })
 
-test("Lorsque je clique sur l'icône profil, la modal s'affiche", async t => {
+test("Lorsque je clique sur l'icône compte, la modal s'affiche", async t => {
   await t
     .expect(mainMenu.visible)
     .ok()
@@ -86,7 +86,7 @@ test('Menu | Liens | Recherche', async t => {
 })
 
 test('Menu | Liens | Mes réservations', async t => {
-  const menuReservations = Selector('.navlink').withText('Mes Réservations')
+  const menuReservations = Selector('.navlink').withText('Mes réservations')
   await t
     .expect(menuReservations.exists)
     .ok()
@@ -97,7 +97,7 @@ test('Menu | Liens | Mes réservations', async t => {
 })
 
 test('Menu | Liens | Mes préférés', async t => {
-  const menuFavoris = Selector('.navlink').withText('Mes Préférés')
+  const menuFavoris = Selector('.navlink').withText('Mes préférés')
   await t
     .expect(menuFavoris.exists)
     .ok()
@@ -105,26 +105,26 @@ test('Menu | Liens | Mes préférés', async t => {
     .ok()
 })
 
-test('Menu | Liens | Mon profil', async t => {
-  const menuProfil = Selector('.navlink').withText('Mon Profil')
+test('Menu | Liens | Mon compte', async t => {
+  const menuCompte = Selector('.navlink').withText('Mon compte')
   await t
-    .expect(menuProfil.exists)
+    .expect(menuCompte.exists)
     .ok()
-    .click(menuProfil)
+    .click(menuCompte)
     .wait(100)
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/profil')
 })
 
-test('Menu | Liens | Nous contacter', async t => {
+test('Menu | Liens | Aide', async t => {
   const expected = `https://docs.passculture.app/experimentateurs`
-  const menuContact = Selector('.navlink').withText('Nous contacter')
+  const menuContact = Selector('.navlink').withText('Aide')
   await t.expect(menuContact.exists).ok()
   await t.expect(menuContact.getAttribute('href')).contains(expected)
 })
 
 test('Menu | Liens | Mentions légales', async t => {
-  const menuMentionsLegales = Selector('.navlink').withText('Mentions Légales')
+  const menuMentionsLegales = Selector('.navlink').withText('Mentions légales')
   await t.expect(menuMentionsLegales.exists).ok()
   await t
     .expect(menuMentionsLegales.getAttribute('href'))
@@ -170,11 +170,11 @@ test("Menu | Le menu ne reste pas dans l'historique de navigation", async t => {
   const goBack = ClientFunction(() => window.history.back())
 
   // when
-  const menuProfil = Selector('.navlink').withText('Mon Profil')
+  const menuCompte = Selector('.navlink').withText('Mon compte')
   await t
-    .expect(menuProfil.exists)
+    .expect(menuCompte.exists)
     .ok()
-    .click(menuProfil)
+    .click(menuCompte)
     .wait(500)
 
   // then
@@ -187,5 +187,5 @@ test("Menu | Le menu ne reste pas dans l'historique de navigation", async t => {
 
   // then
   location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/profil')
+  await t.expect(location.pathname).eql('/profil/menu')
 })

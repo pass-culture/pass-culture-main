@@ -1,4 +1,4 @@
-import { filterRoutes, getMainMenuItems } from '../routes-utils'
+import { filterRoutes, getMenuRoutes } from '../routes-utils'
 
 import routes from '../routes'
 
@@ -31,11 +31,10 @@ describe('filterRoutes', () => {
   })
 })
 
-describe('getMainMenuItems', () => {
+describe('getMenuRoutes', () => {
   it('filter routes for react-router', () => {
     const values = [
       { path: '/' },
-      { icon: '/' },
       { path: '/toto' },
       { icon: 'toto', path: '/toto/:vars?' },
       { href: '/toto/:vars?', icon: 'toto' },
@@ -44,16 +43,11 @@ describe('getMainMenuItems', () => {
       { href: 'mailto:mail.cool' },
       { href: 'mailto:mail.cool', icon: 'toto' },
     ]
-    const result = getMainMenuItems(values)
+    const result = getMenuRoutes(values)
     const expected = [
-      null,
-      null,
-      null,
       { icon: 'toto', path: '/toto' },
       { href: '/toto/:vars?', icon: 'toto' },
-      null,
       { icon: 'toto', path: '/toto' },
-      null,
       { href: 'mailto:mail.cool', icon: 'toto' },
     ]
     expect(result).toStrictEqual(expected)
@@ -61,15 +55,8 @@ describe('getMainMenuItems', () => {
 
   it('should filter routes from webapp', () => {
     // when
-    const result = getMainMenuItems(routes)
+    const result = getMenuRoutes(routes)
     const expected = [
-      null, // redirect
-      null, // BetaPage
-      null, // Signin/Connexion
-      null, // Signup/Inscription
-      null, // ForgotPasswordPage
-      null, // Activation
-      null, // Typeform
       {
         component: DiscoveryContainer,
         disabled: false,
@@ -89,27 +76,28 @@ describe('getMainMenuItems', () => {
         disabled: false,
         icon: 'calendar-w',
         path: '/reservations',
-        title: 'Mes Réservations',
+        title: 'Mes réservations',
       },
       {
         component: FavoritesPage,
         disabled: true,
         icon: 'like-w',
         path: '/favoris',
-        title: 'Mes Préférés',
+        title: 'Mes préférés',
       },
       {
         component: ProfilePage,
         disabled: false,
         icon: 'user-w',
         path: '/profil',
-        title: 'Mon Profil',
+        title: 'Mon compte',
       },
       {
         disabled: false,
         href: 'https://docs.passculture.app/experimentateurs',
-        icon: 'mail-w',
-        title: 'Nous contacter',
+        icon: 'help-w',
+        target: '_blank',
+        title: 'Aide',
       },
       {
         disabled: false,
@@ -117,7 +105,7 @@ describe('getMainMenuItems', () => {
           'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture',
         icon: 'txt-w',
         target: '_blank',
-        title: 'Mentions Légales',
+        title: 'Mentions légales',
       },
     ]
 

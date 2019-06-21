@@ -1,0 +1,194 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | menu | Item should match the snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <Item
+    icon="offres-w"
+    title="Fake title"
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "function",
+    "props": Object {
+      "children": Array [
+        <span
+          className="flex-0 text-center menu-icon mr16"
+        >
+          <Icon
+            alt=""
+            className={null}
+            name={null}
+            src={null}
+            svg="ico-offres-w"
+          />
+        </span>,
+        <span
+          className="flex-1 is-medium"
+        >
+          Fake title
+        </span>,
+      ],
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <Icon
+            alt=""
+            className={null}
+            name={null}
+            src={null}
+            svg="ico-offres-w"
+          />,
+          "className": "flex-0 text-center menu-icon mr16",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "alt": "",
+            "className": null,
+            "name": null,
+            "src": null,
+            "svg": "ico-offres-w",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        "type": "span",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Fake title",
+          "className": "flex-1 is-medium",
+        },
+        "ref": null,
+        "rendered": "Fake title",
+        "type": "span",
+      },
+    ],
+    "type": Symbol(react.fragment),
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "function",
+      "props": Object {
+        "children": Array [
+          <span
+            className="flex-0 text-center menu-icon mr16"
+          >
+            <Icon
+              alt=""
+              className={null}
+              name={null}
+              src={null}
+              svg="ico-offres-w"
+            />
+          </span>,
+          <span
+            className="flex-1 is-medium"
+          >
+            Fake title
+          </span>,
+        ],
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <Icon
+              alt=""
+              className={null}
+              name={null}
+              src={null}
+              svg="ico-offres-w"
+            />,
+            "className": "flex-0 text-center menu-icon mr16",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "alt": "",
+              "className": null,
+              "name": null,
+              "src": null,
+              "svg": "ico-offres-w",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          "type": "span",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Fake title",
+            "className": "flex-1 is-medium",
+          },
+          "ref": null,
+          "rendered": "Fake title",
+          "type": "span",
+        },
+      ],
+      "type": Symbol(react.fragment),
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+}
+`;

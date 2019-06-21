@@ -1,15 +1,13 @@
+import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
 
 import { toggleMainMenu } from '../../reducers/menu'
-
-export const mapStateToProps = state => ({
-  readRecommendations: state.data.readRecommendations,
-})
+import SignoutButton from './SignoutButton'
 
 export const mapDispatchToProps = dispatch => ({
   onSignoutClick: ({ history, readRecommendations }) => () => {
-    function handleRequestSignout() {
-      function handleSuccessAfterSignout() {
+    const handleRequestSignout = () => {
+      const handleSuccessAfterSignout = () => {
         history.push('/connexion')
         dispatch(toggleMainMenu())
       }
@@ -23,17 +21,19 @@ export const mapDispatchToProps = dispatch => ({
 
     if (!readRecommendations || readRecommendations.length === 0) {
       handleRequestSignout()
-      return
     }
-
-    dispatch(
-      requestData({
-        apiPath: '/recommendations/read',
-        body: readRecommendations,
-        handleFail: handleRequestSignout,
-        handleSuccess: handleRequestSignout,
-        method: 'PUT',
-      })
-    )
+    else {
+      dispatch(
+        requestData({
+          apiPath: '/recommendations/read',
+          body: readRecommendations,
+          handleFail: handleRequestSignout,
+          handleSuccess: handleRequestSignout,
+          method: 'PUT',
+        })
+      )
+    }
   },
 })
+
+export default connect(null, mapDispatchToProps)(SignoutButton)

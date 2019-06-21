@@ -79,27 +79,28 @@ const routes = [
     disabled: false,
     icon: 'calendar-w',
     path: '/reservations',
-    title: 'Mes Réservations',
+    title: 'Mes réservations',
   },
   {
     component: FavoritesPage,
     disabled: true,
     icon: 'like-w',
     path: '/favoris',
-    title: 'Mes Préférés',
+    title: 'Mes préférés',
   },
   {
     component: ProfilePage,
     disabled: false,
     icon: 'user-w',
     path: '/profil/:view?/:status?',
-    title: 'Mon Profil',
+    title: 'Mon compte',
   },
   {
     disabled: false,
     href: WEBAPP_CONTACT_EXTERNAL_PAGE,
-    icon: 'mail-w',
-    title: 'Nous contacter',
+    icon: 'help-w',
+    target: '_blank',
+    title: 'Aide',
   },
   {
     disabled: false,
@@ -107,7 +108,7 @@ const routes = [
       'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture',
     icon: 'txt-w',
     target: '_blank',
-    title: 'Mentions Légales',
+    title: 'Mentions légales',
   },
 ]
 

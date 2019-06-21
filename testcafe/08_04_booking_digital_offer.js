@@ -29,7 +29,7 @@ const openVerso = Selector('#deck-open-verso-button')
 const timeSelectBox = Selector('#booking-form-time-picker-field')
 const dateSelectBox = Selector('#booking-form-date-picker-field')
 const sendBookingButton = Selector('#booking-validation-button')
-const myBookingsMenuButton = Selector('#main-menu-reservations-button')
+const myBookingsMenuButton = Selector('#main-menu-navigation a').nth(2)
 const profileWalletAllValue = Selector('#profile-wallet-balance-value')
 
 let userRole

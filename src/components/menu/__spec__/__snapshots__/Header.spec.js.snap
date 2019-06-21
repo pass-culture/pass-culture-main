@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | menu | MenuHeader snapshot should match snapshot 1`] = `
+exports[`src | components | menu | Header should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawMenuHeader
+  Symbol(enzyme.__unrendered__): <Header
     currentUser={
       Object {
-        "publicName": "username",
+        "publicName": "Emmanuel Macron",
         "wallet_balance": 500,
       }
     }
@@ -29,37 +29,37 @@ ShallowWrapper {
         <div
           className="column-profile text-center px18"
         >
-          <p
+          <div
             id="main-menu-header-avatar"
           >
             <img
               alt=""
               className="mb3"
-              src="http://localhost/icons/avatar-default-w-XL.svg"
+              src="/icons/avatar-default-w-XL.svg"
             />
-          </p>
-          <p
+          </div>
+          <div
             className="px5 is-hyphens"
             id="main-menu-header-username"
           >
             <span
               className="fs16 is-medium"
             >
-              username
+              Emmanuel Macron
             </span>
-          </p>
+          </div>
         </div>,
         <div
           className="column-account flex-1 flex-rows flex-center px18"
         >
-          <p
+          <div
             className="fs30"
           >
             <span>
-              Mon Pass
+              Mon pass
             </span>
-          </p>
-          <p
+          </div>
+          <div
             id="main-menu-header-wallet-value"
           >
             <span
@@ -72,7 +72,7 @@ ShallowWrapper {
             >
                €
             </span>
-          </p>
+          </div>
         </div>,
       ],
       "className": "flex-columns is-relative py16 fs18",
@@ -86,25 +86,25 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <p
+            <div
               id="main-menu-header-avatar"
             >
               <img
                 alt=""
                 className="mb3"
-                src="http://localhost/icons/avatar-default-w-XL.svg"
+                src="/icons/avatar-default-w-XL.svg"
               />
-            </p>,
-            <p
+            </div>,
+            <div
               className="px5 is-hyphens"
               id="main-menu-header-username"
             >
               <span
                 className="fs16 is-medium"
               >
-                username
+                Emmanuel Macron
               </span>
-            </p>,
+            </div>,
           ],
           "className": "column-profile text-center px18",
         },
@@ -118,7 +118,7 @@ ShallowWrapper {
               "children": <img
                 alt=""
                 className="mb3"
-                src="http://localhost/icons/avatar-default-w-XL.svg"
+                src="/icons/avatar-default-w-XL.svg"
               />,
               "id": "main-menu-header-avatar",
             },
@@ -130,13 +130,13 @@ ShallowWrapper {
               "props": Object {
                 "alt": "",
                 "className": "mb3",
-                "src": "http://localhost/icons/avatar-default-w-XL.svg",
+                "src": "/icons/avatar-default-w-XL.svg",
               },
               "ref": null,
               "rendered": null,
               "type": "img",
             },
-            "type": "p",
+            "type": "div",
           },
           Object {
             "instance": null,
@@ -146,7 +146,7 @@ ShallowWrapper {
               "children": <span
                 className="fs16 is-medium"
               >
-                username
+                Emmanuel Macron
               </span>,
               "className": "px5 is-hyphens",
               "id": "main-menu-header-username",
@@ -157,14 +157,14 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "username",
+                "children": "Emmanuel Macron",
                 "className": "fs16 is-medium",
               },
               "ref": null,
-              "rendered": "username",
+              "rendered": "Emmanuel Macron",
               "type": "span",
             },
-            "type": "p",
+            "type": "div",
           },
         ],
         "type": "div",
@@ -175,14 +175,14 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <p
+            <div
               className="fs30"
             >
               <span>
-                Mon Pass
+                Mon pass
               </span>
-            </p>,
-            <p
+            </div>,
+            <div
               id="main-menu-header-wallet-value"
             >
               <span
@@ -195,7 +195,7 @@ ShallowWrapper {
               >
                  €
               </span>
-            </p>,
+            </div>,
           ],
           "className": "column-account flex-1 flex-rows flex-center px18",
         },
@@ -207,7 +207,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": <span>
-                Mon Pass
+                Mon pass
               </span>,
               "className": "fs30",
             },
@@ -217,13 +217,13 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Mon Pass",
+                "children": "Mon pass",
               },
               "ref": null,
-              "rendered": "Mon Pass",
+              "rendered": "Mon pass",
               "type": "span",
             },
-            "type": "p",
+            "type": "div",
           },
           Object {
             "instance": null,
@@ -271,7 +271,7 @@ ShallowWrapper {
                 "type": "span",
               },
             ],
-            "type": "p",
+            "type": "div",
           },
         ],
         "type": "div",
@@ -289,37 +289,37 @@ ShallowWrapper {
           <div
             className="column-profile text-center px18"
           >
-            <p
+            <div
               id="main-menu-header-avatar"
             >
               <img
                 alt=""
                 className="mb3"
-                src="http://localhost/icons/avatar-default-w-XL.svg"
+                src="/icons/avatar-default-w-XL.svg"
               />
-            </p>
-            <p
+            </div>
+            <div
               className="px5 is-hyphens"
               id="main-menu-header-username"
             >
               <span
                 className="fs16 is-medium"
               >
-                username
+                Emmanuel Macron
               </span>
-            </p>
+            </div>
           </div>,
           <div
             className="column-account flex-1 flex-rows flex-center px18"
           >
-            <p
+            <div
               className="fs30"
             >
               <span>
-                Mon Pass
+                Mon pass
               </span>
-            </p>
-            <p
+            </div>
+            <div
               id="main-menu-header-wallet-value"
             >
               <span
@@ -332,7 +332,7 @@ ShallowWrapper {
               >
                  €
               </span>
-            </p>
+            </div>
           </div>,
         ],
         "className": "flex-columns is-relative py16 fs18",
@@ -346,25 +346,25 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <p
+              <div
                 id="main-menu-header-avatar"
               >
                 <img
                   alt=""
                   className="mb3"
-                  src="http://localhost/icons/avatar-default-w-XL.svg"
+                  src="/icons/avatar-default-w-XL.svg"
                 />
-              </p>,
-              <p
+              </div>,
+              <div
                 className="px5 is-hyphens"
                 id="main-menu-header-username"
               >
                 <span
                   className="fs16 is-medium"
                 >
-                  username
+                  Emmanuel Macron
                 </span>
-              </p>,
+              </div>,
             ],
             "className": "column-profile text-center px18",
           },
@@ -378,7 +378,7 @@ ShallowWrapper {
                 "children": <img
                   alt=""
                   className="mb3"
-                  src="http://localhost/icons/avatar-default-w-XL.svg"
+                  src="/icons/avatar-default-w-XL.svg"
                 />,
                 "id": "main-menu-header-avatar",
               },
@@ -390,13 +390,13 @@ ShallowWrapper {
                 "props": Object {
                   "alt": "",
                   "className": "mb3",
-                  "src": "http://localhost/icons/avatar-default-w-XL.svg",
+                  "src": "/icons/avatar-default-w-XL.svg",
                 },
                 "ref": null,
                 "rendered": null,
                 "type": "img",
               },
-              "type": "p",
+              "type": "div",
             },
             Object {
               "instance": null,
@@ -406,7 +406,7 @@ ShallowWrapper {
                 "children": <span
                   className="fs16 is-medium"
                 >
-                  username
+                  Emmanuel Macron
                 </span>,
                 "className": "px5 is-hyphens",
                 "id": "main-menu-header-username",
@@ -417,14 +417,14 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "username",
+                  "children": "Emmanuel Macron",
                   "className": "fs16 is-medium",
                 },
                 "ref": null,
-                "rendered": "username",
+                "rendered": "Emmanuel Macron",
                 "type": "span",
               },
-              "type": "p",
+              "type": "div",
             },
           ],
           "type": "div",
@@ -435,14 +435,14 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <p
+              <div
                 className="fs30"
               >
                 <span>
-                  Mon Pass
+                  Mon pass
                 </span>
-              </p>,
-              <p
+              </div>,
+              <div
                 id="main-menu-header-wallet-value"
               >
                 <span
@@ -455,7 +455,7 @@ ShallowWrapper {
                 >
                    €
                 </span>
-              </p>,
+              </div>,
             ],
             "className": "column-account flex-1 flex-rows flex-center px18",
           },
@@ -467,7 +467,7 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": <span>
-                  Mon Pass
+                  Mon pass
                 </span>,
                 "className": "fs30",
               },
@@ -477,13 +477,13 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "Mon Pass",
+                  "children": "Mon pass",
                 },
                 "ref": null,
-                "rendered": "Mon Pass",
+                "rendered": "Mon pass",
                 "type": "span",
               },
-              "type": "p",
+              "type": "div",
             },
             Object {
               "instance": null,
@@ -531,7 +531,7 @@ ShallowWrapper {
                   "type": "span",
                 },
               ],
-              "type": "p",
+              "type": "div",
             },
           ],
           "type": "div",

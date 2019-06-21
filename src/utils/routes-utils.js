@@ -24,16 +24,20 @@ export const addMenuViewToRoutesWithPath = routes =>
 export const getReactRoutes = routes =>
   filterRoutes(addMenuViewToRoutesWithPath(routes))
 
-export const getMainMenuItems = items =>
-  items
-    // si un element n'a pas de propriete `icon`
-    // alors il ne sera pas affiche dans le menu principal
-    .map(obj => {
-      if (!obj.icon || (!obj.path && !obj.href)) return null
-      if (!obj.path || obj.href) return obj
-      const path = obj.path
-        .split('/')
-        .slice(0, 2)
-        .join('/')
-      return Object.assign({}, obj, { path })
-    })
+export const getMenuRoutes = routes =>
+  routes.reduce((accumulator, currentRoute) => {
+    if (currentRoute.icon) {
+      if (currentRoute.href) {
+        accumulator.push(currentRoute)
+      } else if (currentRoute.path) {
+        const path = currentRoute.path
+          .split('/')
+          .slice(0, 2)
+          .join('/')
+
+        accumulator.push({ ...currentRoute, ...{ path } })
+      }
+    }
+
+    return accumulator
+  }, [])

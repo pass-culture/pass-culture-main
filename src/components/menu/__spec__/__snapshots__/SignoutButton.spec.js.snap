@@ -1,0 +1,215 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | menu | SignoutButton should match the snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <SignoutButton
+    onSignoutClick={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            Object {},
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <span
+          className="menu-icon mr16 text-center"
+        >
+          <Icon
+            alt=""
+            className={null}
+            name={null}
+            src={null}
+            svg="ico-deconnect-w"
+          />
+        </span>,
+        <span
+          className="pt5"
+        >
+          Déconnexion
+        </span>,
+      ],
+      "className": "pc-text-button flex-columns text-left px16 py8",
+      "id": "main-menu-logout-button",
+      "onClick": undefined,
+      "type": "button",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <Icon
+            alt=""
+            className={null}
+            name={null}
+            src={null}
+            svg="ico-deconnect-w"
+          />,
+          "className": "menu-icon mr16 text-center",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "alt": "",
+            "className": null,
+            "name": null,
+            "src": null,
+            "svg": "ico-deconnect-w",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        "type": "span",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Déconnexion",
+          "className": "pt5",
+        },
+        "ref": null,
+        "rendered": "Déconnexion",
+        "type": "span",
+      },
+    ],
+    "type": "button",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <span
+            className="menu-icon mr16 text-center"
+          >
+            <Icon
+              alt=""
+              className={null}
+              name={null}
+              src={null}
+              svg="ico-deconnect-w"
+            />
+          </span>,
+          <span
+            className="pt5"
+          >
+            Déconnexion
+          </span>,
+        ],
+        "className": "pc-text-button flex-columns text-left px16 py8",
+        "id": "main-menu-logout-button",
+        "onClick": undefined,
+        "type": "button",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <Icon
+              alt=""
+              className={null}
+              name={null}
+              src={null}
+              svg="ico-deconnect-w"
+            />,
+            "className": "menu-icon mr16 text-center",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "alt": "",
+              "className": null,
+              "name": null,
+              "src": null,
+              "svg": "ico-deconnect-w",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          "type": "span",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Déconnexion",
+            "className": "pt5",
+          },
+          "ref": null,
+          "rendered": "Déconnexion",
+          "type": "span",
+        },
+      ],
+      "type": "button",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+}
+`;

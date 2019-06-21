@@ -1,25 +1,30 @@
 $main-menu-height: 592px;
 $main-menu-header-height: 152px;
 $main-menu-around-padding: 12px;
-$main-menu-height-with-padding: (592px + 24px); // 24 === padding (2 * 12)
+$main-menu-height-with-padding: (592px + 24px);
 
 #main-menu {
+  opacity: 0;
+  top: 100%;
+  transition: opacity, top 250ms ease;
   z-index: $zindex-main-menu;
-}
 
-#main-menu .pc-scroll-container {
-  height: auto;
-  min-height: auto;
-  max-height: auto;
-  overflow: hidden;
-  padding: $main-menu-around-padding;
-}
+  &.entered {
+    opacity: 1;
+    top: 0;
+  }
 
-@media (max-height: $main-menu-height-with-padding) {
-  // prevent scrollbar flickering
-  // cas du flickering car la hauteur est exactement egale a 616px
-  #main-menu .pc-scroll-container {
-    overflow: auto;
+  &.entering {
+    opacity: 0;
+    top: 100%;
+  }
+
+  .pc-scroll-container {
+    height: auto;
+    margin: $main-menu-around-padding;
+    min-height: auto;
+    min-width: 95%;
+    width: 95%;
   }
 }
 
@@ -58,15 +63,8 @@ $main-menu-height-with-padding: (592px + 24px); // 24 === padding (2 * 12)
 }
 
 #main-menu-header-avatar img {
-  // avatar de l'user
   width: 88px;
   height: auto;
-}
-
-// la largeur des icones est definie a 44px
-// dans le fichier MenuLink.js
-#main-menu .menu-icon img {
-  vertical-align: middle;
 }
 
 #main-menu-navigation button,
@@ -75,31 +73,17 @@ $main-menu-height-with-padding: (592px + 24px); // 24 === padding (2 * 12)
   @extend .flex-columns;
   @extend .is-white-text;
   @extend .is-medium;
-  cursor: pointer;
 
   .menu-icon {
-    height: 100%;
-    max-width: 44px;
     min-width: 44px;
-    width: 44px;
   }
-}
-#main-menu-navigation [disabled].navlink {
-  cursor: not-allowed;
 }
 
 #main-menu-navigation .navlink {
-  height: 44px;
-  min-height: 44px;
-  max-height: 44px;
   line-height: 44px;
 
   & + .navlink {
     @extend .dotted-top-black;
-  }
-
-  &.active {
-    // disable le click sur les liens actifs dans le menu principal
   }
 }
 

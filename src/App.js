@@ -5,7 +5,7 @@ import { compose } from 'redux'
 import { withRouter, matchPath, Route } from 'react-router-dom'
 
 import routes from './utils/routes'
-import MainMenu from './components/menu'
+import MenuContainer from './components/menu/MenuContainer'
 import DebugContainer from './components/layout/Debug/DebugContainer'
 import Splash from './components/layout/Splash'
 import Overlay from './components/layout/Overlay'
@@ -28,7 +28,7 @@ const getBodyClass = obj => {
   return `page-${path || 'home'}`
 }
 
-const App = ({ location, children }) => {
+const App = ({ location, children, history }) => {
   const currentRouteObj = getCurrentRouteObjectByPath(
     appRoutes,
     location.pathname
@@ -48,7 +48,7 @@ const App = ({ location, children }) => {
           {/* TODO: mettre ici le composant from password */}
           {children}
           <Overlay />
-          <Route path="*/menu" component={MainMenu} />
+          <Route component={MenuContainer} history={history} path="*/menu" />
           <Splash />
           <SharePopin />
           <Notifications />
@@ -66,7 +66,8 @@ const App = ({ location, children }) => {
 
 App.propTypes = {
   children: PropTypes.node.isRequired,
-  location: PropTypes.object.isRequired,
+  history: PropTypes.shape().isRequired,
+  location: PropTypes.shape().isRequired,
 }
 
 export default compose(withRouter)(App)

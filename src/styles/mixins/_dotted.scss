@@ -18,8 +18,8 @@
   @else {
     background-size: if(
       $position == top or $position == bottom,
-      6px 1px,
-      1px 6px
+      8px 1px,
+      1px 8px
     );
   }
 }
