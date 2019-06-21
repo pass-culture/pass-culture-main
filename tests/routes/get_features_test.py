@@ -21,8 +21,7 @@ class Get:
             # then
             assert response.status_code == 200
             assert response.json() == [
-                {'modelName': 'Feature', 'name': 'show_bookings', 'isActive': True},
-                {'modelName': 'Feature', 'name': 'show_venues', 'isActive': True}
+                {'modelName': 'Feature', 'name': 'webapp_signup', 'isActive': True},
             ]
 
     class Returns401:

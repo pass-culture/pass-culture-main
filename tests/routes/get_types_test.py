@@ -1,6 +1,4 @@
 from models import PcObject
-from models.feature import FeatureToggle
-from repository import feature_queries
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user
 
@@ -15,21 +13,6 @@ class Get:
 
             # then
             assert response.status_code == 401
-
-    class Returns404:
-        @clean_database
-        def when_feature_is_not_active(self, app):
-            # given
-            user = create_user(email='test@email.com')
-            PcObject.save(user)
-            feature_queries.deactivate(FeatureToggle.SHOW_BOOKINGS)
-
-            # when
-            response = TestClient().get(
-                API_URL + '/types/')
-
-            # then
-            assert response.status_code == 404
 
     class Returns200:
         @clean_database

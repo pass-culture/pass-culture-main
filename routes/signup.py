@@ -21,8 +21,8 @@ from validation.users import check_valid_signup
 def signup_old():
     return redirect("/users/signup/webapp", code=308)
 
-@feature_required(FeatureToggle.WEBAPP_SIGNUP)
 @app.route("/users/signup/webapp", methods=["POST"])
+@feature_required(FeatureToggle.WEBAPP_SIGNUP)
 def signup_webapp():
     objects_to_save = []
     password = request.json.get('password')

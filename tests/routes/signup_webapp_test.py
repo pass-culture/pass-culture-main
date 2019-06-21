@@ -3,8 +3,10 @@ from unittest.mock import patch
 
 from freezegun import freeze_time
 
+from models.feature import FeatureToggle, Feature
 from models.pc_object import serialize
 from models.user import User
+from repository import feature_queries
 from tests.conftest import clean_database, TestClient
 
 BASE_DATA = {
@@ -303,3 +305,19 @@ class Post:
             assert response.status_code == 400
             error = response.json
             assert 'email' in error
+
+    class Returns404:
+        @clean_database
+        def when_feature_is_not_active(self, app):
+            # Given
+            data = BASE_DATA.copy()
+            feature_queries.deactivate(FeatureToggle.WEBAPP_SIGNUP)
+            print(vars(Feature.query.first()))
+
+            # When
+            response = TestClient() \
+                .post(API_URL + '/users/signup/webapp',
+                      json=data, headers={'origin': 'http://localhost:3000'})
+
+            # Then
+            assert response.status_code == 404
