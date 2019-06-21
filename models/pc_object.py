@@ -62,14 +62,15 @@ class PcObject:
         result = OrderedDict()
         columns = self.__class__.__table__.columns._data
         for key in self.__mapper__.c.keys():
+            value = getattr(self, key)
+
             if options \
                     and 'include' in options \
                     and options.get('include') \
                     and "-" + key in options['include']:
                 continue
             column = columns[key]
-            value = getattr(self, key)
-            is_human_id_column = _is_human_id_column(column, key)
+            is_human_id_column = _is_human_id_column(column)
             if options and options.get('cut'):
                 if isinstance(value, str):
                     if len(value) > options['cut']:
@@ -157,7 +158,7 @@ class PcObject:
 
         for key in keys_to_populate:
             column = columns[key]
-            value = _dehumanize_if_needed(column, key, data.get(key))
+            value = _dehumanize_if_needed(column, data.get(key))
             if isinstance(value, str):
                 if isinstance(column.type, Integer):
                     self._try_to_set_attribute_with_decimal_value(column, key, value, 'integer')
@@ -379,12 +380,13 @@ def serialize(value):
     else:
         return value
 
-def _is_human_id_column(column, key:str):
+def _is_human_id_column(column):
+    key = column.key
     return (key == 'id' or key.endswith('Id')) and \
            (isinstance(column.type, BigInteger) or isinstance(column.type, Integer))
 
-def _dehumanize_if_needed(column, key: str, value: Any) -> Any:
-    if _is_human_id_column(column, key):
+def _dehumanize_if_needed(column, value: Any) -> Any:
+    if _is_human_id_column(column):
         return dehumanize(value)
     return value
 
