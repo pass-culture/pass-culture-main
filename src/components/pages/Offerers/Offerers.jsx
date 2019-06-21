@@ -158,10 +158,10 @@ class Offerers extends Component {
         <HeroSection title={sectionTitle}>
           <span className="page-illustration" />
           <p className="subtitle">
-            Pour présenter vos offres, vous devez d'abord <a href={url} className="has-text-primary has-text-weight-semibold">créer un{' '}
+            Pour présenter vos offres, vous devez d'abord <a href={url}>créer un{' '}
             nouveau lieu </a> lié à une structure.
             <br />
-            Sans lieu, vous pouvez uniquement <a href="/offres/creation" className="has-text-primary">ajouter des offres numériques.</a>
+            Sans lieu, vous pouvez uniquement <a href="/offres/creation">ajouter des offres numériques.</a>
           </p>
           <div className="title-action-links">
           <NavLink

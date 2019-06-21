@@ -44,11 +44,11 @@ class Notification extends Component {
         })}>
           <div className="notification-description">
             <Icon svg={svg} />
-            <span className="ml8">{text}</span>
+            <span className="ml8 mb6">{text}</span>
           </div>
           <div className="notification-action-links">
             {url && (
-              <a className="close" href={url}>{urlLabel}</a>
+              <a className="close pl12" href={url}>{urlLabel}</a>
             )}
             {tooltip ? (
               <span
@@ -62,7 +62,7 @@ class Notification extends Component {
               </span>
             ) : (
               <button
-              className="close pl8"
+              className="close pl12"
               onClick={() => dispatch(closeNotification())}>
               {url ? 'Fermer' : 'OK'}
             </button>
