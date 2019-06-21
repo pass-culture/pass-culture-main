@@ -60,14 +60,16 @@ class PcObject:
 
     def as_dict(self, **options):
         result = OrderedDict()
+        columns = self.__class__.__table__.columns._data
         for key in self.__mapper__.c.keys():
             if options \
                     and 'include' in options \
                     and options.get('include') \
                     and "-" + key in options['include']:
                 continue
+            column = columns[key]
             value = getattr(self, key)
-            value_needs_humanizing = key == 'id' or (key.endswith('Id') and type(value) is not uuid.UUID)
+            value_needs_humanizing = _value_needs_humanizing(column, key)
             if options and options.get('cut'):
                 if isinstance(value, str):
                     if len(value) > options['cut']:
@@ -155,8 +157,7 @@ class PcObject:
 
         for key in keys_to_populate:
             column = columns[key]
-            value = _dehumanize_if_needed(data, key)
-
+            value = _dehumanize_if_needed(column, key, data.get(key))
             if isinstance(value, str):
                 if isinstance(column.type, Integer):
                     self._try_to_set_attribute_with_decimal_value(column, key, value, 'integer')
@@ -378,14 +379,12 @@ def serialize(value):
     else:
         return value
 
-def _dehumanize_if_needed(data: dict, key: str) -> Any:
-    value = data.get(key)
-    if key.endswith('Id'):
-        try:
-            dehumanized_id = dehumanize(value)
-            return dehumanized_id
-        except NonDehumanizableId:
-            return value
+def _value_needs_humanizing(column, key:str):
+    return (key == 'id' or key.endswith('Id')) and isinstance(column.type, BigInteger)
+
+def _dehumanize_if_needed(column, key: str, value: Any) -> Any:
+    if _value_needs_humanizing(column, key):
+        return dehumanize(value)
     return value
 
 
