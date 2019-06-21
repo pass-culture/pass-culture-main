@@ -69,12 +69,12 @@ class PcObject:
                 continue
             column = columns[key]
             value = getattr(self, key)
-            value_needs_humanizing = _value_needs_humanizing(column, key)
+            is_human_id_column = _is_human_id_column(column, key)
             if options and options.get('cut'):
                 if isinstance(value, str):
                     if len(value) > options['cut']:
                         value = value[:options['cut']] + '...'
-            if value_needs_humanizing:
+            if is_human_id_column:
                 result[key] = humanize(value)
                 if options \
                         and 'dehumanize' in options \
@@ -379,11 +379,12 @@ def serialize(value):
     else:
         return value
 
-def _value_needs_humanizing(column, key:str):
-    return (key == 'id' or key.endswith('Id')) and isinstance(column.type, BigInteger)
+def _is_human_id_column(column, key:str):
+    return (key == 'id' or key.endswith('Id')) and \
+           (isinstance(column.type, BigInteger) or isinstance(column.type, Integer))
 
 def _dehumanize_if_needed(column, key: str, value: Any) -> Any:
-    if _value_needs_humanizing(column, key):
+    if _is_human_id_column(column, key):
         return dehumanize(value)
     return value
 
