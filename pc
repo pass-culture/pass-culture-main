@@ -380,13 +380,13 @@ elif [[ "$CMD" == "tag" ]]; then
     TAG_VERSION="v$TAG_NAME"
 
     # TAG API
-    cd "$ROOT_PATH"/api
-    echo "$TAG_VERSION" > version.txt
-    git add version.txt
-    git commit -m "🚀 $TAG_VERSION"
-    git push origin "$current_branch"
-    git tag "$TAG_VERSION"
-    git push origin "$TAG_VERSION"
+#    cd "$ROOT_PATH"/api
+#    echo "$TAG_VERSION" > version.txt
+#    git add version.txt
+#    git commit -m "🚀 $TAG_VERSION"
+#    git push origin "$current_branch"
+#    git tag "$TAG_VERSION"
+#    git push origin "$TAG_VERSION"
 
     # TAG WEBAPP
     tag_frontend_component webapp "$TAG_NAME"
