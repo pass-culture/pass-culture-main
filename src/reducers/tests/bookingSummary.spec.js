@@ -8,8 +8,8 @@ describe('src | reducers | bookingSummary', () => {
     // then
     expect(nextState).toEqual({
       isFilterByDigitalVenues:false,
-      selectedVenue:null,
-      selectedOffer:null,
+      selectedVenue:"",
+      selectedOffer:"",
       selectOffersSince:new Date(2018, 1, 1),
     })
   })
@@ -18,8 +18,8 @@ describe('src | reducers | bookingSummary', () => {
     // given
     const initialState = {
       isFilterByDigitalVenues:false,
-      selectedVenue:null,
-      selectedOffer:null,
+      selectedVenue:"",
+      selectedOffer:"",
       selectOffersSince:new Date(2018, 1, 1),
     }
     const action = {
@@ -33,8 +33,8 @@ describe('src | reducers | bookingSummary', () => {
     // then
     expect(nextState).toEqual({
       isFilterByDigitalVenues:true,
-      selectedVenue:null,
-      selectedOffer:null,
+      selectedVenue:"",
+      selectedOffer:"",
       selectOffersSince:new Date(2018, 1, 1),
     })
   })
@@ -43,8 +43,8 @@ describe('src | reducers | bookingSummary', () => {
     // given
     const initialState = {
       isFilterByDigitalVenues:false,
-      selectedVenue:null,
-      selectedOffer:null,
+      selectedVenue:"",
+      selectedOffer:"",
       selectOffersSince:new Date(2018, 1, 1),
     }
     const action = {
@@ -59,7 +59,7 @@ describe('src | reducers | bookingSummary', () => {
     expect(nextState).toEqual({
       isFilterByDigitalVenues:false,
       selectedVenue:'A8KQ',
-      selectedOffer:null,
+      selectedOffer:"",
       selectOffersSince:new Date(2018, 1, 1),
     })
   })
@@ -84,7 +84,7 @@ describe('src | reducers | bookingSummary', () => {
     expect(nextState).toEqual({
       isFilterByDigitalVenues:false,
       selectedVenue:'A8KQ',
-      selectedOffer:null,
+      selectedOffer:"",
       selectOffersSince:new Date(2018, 1, 1),
     })
   })
@@ -109,8 +109,8 @@ describe('src | reducers | bookingSummary', () => {
     // then
     expect(nextState).toEqual({
       isFilterByDigitalVenues:true,
-      selectedVenue:null,
-      selectedOffer:null,
+      selectedVenue:"",
+      selectedOffer:"",
       selectOffersSince:new Date(2018, 1, 1),
     })
   })
@@ -119,8 +119,8 @@ describe('src | reducers | bookingSummary', () => {
     // given
     const initialState = {
       isFilterByDigitalVenues:true,
-      selectedVenue:null,
-      selectedOffer:null,
+      selectedVenue:"",
+      selectedOffer:"",
       selectOffersSince:new Date(2018, 1, 1),
     }
     const action = {
@@ -134,7 +134,7 @@ describe('src | reducers | bookingSummary', () => {
     // then
     expect(nextState).toEqual({
       isFilterByDigitalVenues:true,
-      selectedVenue:null,
+      selectedVenue:"",
       selectedOffer:'AVJA',
       selectOffersSince:new Date(2018, 1, 1),
     })
@@ -144,8 +144,8 @@ describe('src | reducers | bookingSummary', () => {
     // given
     const initialState = {
       isFilterByDigitalVenues:false,
-      selectedVenue:null,
-      selectedOffer:null,
+      selectedVenue:"",
+      selectedOffer:"",
       selectOffersSince:new Date(2018, 1, 1),
     }
     const date = new Date(2019, 6, 1)
@@ -161,8 +161,8 @@ describe('src | reducers | bookingSummary', () => {
     const expectedDate = new Date(2019, 6, 1)
     expect(nextState).toEqual({
       isFilterByDigitalVenues:false,
-      selectedVenue:null,
-      selectedOffer:null,
+      selectedVenue:"",
+      selectedOffer:"",
       selectOffersSince:expectedDate,
     })
   })

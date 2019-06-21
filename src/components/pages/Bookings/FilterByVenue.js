@@ -29,7 +29,7 @@ export class FilterByVenue extends PureComponent {
             onChange={this.onChangeVenue}
             disabled={isDigital}
           >
-            <option value="" disabled selected>Choisissez un lieu dans la liste.</option>
+            <option value="">Choisissez un lieu dans la liste.</option>
             {venuesOptions.map(({ name, id }) => (
               <option key={id} value={id}>
                 {name}

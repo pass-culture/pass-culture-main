@@ -19,7 +19,7 @@ export class FilterByOffer extends PureComponent {
   render() {
     const { offersOptions, isFilterByDigitalVenues, venueId } = this.props
 
-    if ((venueId !== null && !isFilterByDigitalVenues) || isFilterByDigitalVenues) {
+    if ((venueId !== "" && !isFilterByDigitalVenues) || isFilterByDigitalVenues) {
       return (
         <React.Fragment>
           <div id="filter-by-offer">
@@ -34,8 +34,9 @@ export class FilterByOffer extends PureComponent {
                 id="offers"
                 className="pc-selectbox pl24 py5 fs19"
                 onChange={this.onChangeOffer}
+                defaultValue=""
               >
-                <option value="" disabled selected>Choisissez une offre dans la liste.</option>
+                <option value="">Choisissez une offre dans la liste.</option>
                 <option value="all">Toutes les offres</option>
               }
                 {offersOptions.map(({name, id}) => (

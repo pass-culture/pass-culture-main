@@ -11,10 +11,10 @@ import FilterByOfferContainer from './FilterByOfferContainer'
 class Bookings extends Component {
 
   render () {
-    const { isFilterByDigitalVenues, selectedVenue } = this.props
+    const { isFilterByDigitalVenues, selectedOffer, selectedVenue } = this.props
 
     let showDownloadButtonContainer = true
-    if (!isFilterByDigitalVenues && selectedVenue===null){
+    if ((!isFilterByDigitalVenues && selectedVenue==="") || selectedOffer===""){
       showDownloadButtonContainer = false
     }
 
@@ -53,6 +53,7 @@ class Bookings extends Component {
 
 Bookings.propTypes = {
   isFilterByDigitalVenues: PropTypes.bool,
+  selectedOffer: PropTypes.string,
   selectedVenue: PropTypes.string,
 }
 

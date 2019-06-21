@@ -7,6 +7,7 @@ import { withFrenchQueryRouter, withRedirectToSigninWhenNotAuthenticated } from 
 export const mapStateToProps = state => {
   return {
     isFilterByDigitalVenues: state.bookingSummary.isFilterByDigitalVenues,
+    selectedOffer: state.bookingSummary.selectedOffer,
     selectedVenue: state.bookingSummary.selectedVenue,
   }
 }
