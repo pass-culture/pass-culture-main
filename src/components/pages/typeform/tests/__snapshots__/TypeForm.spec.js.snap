@@ -14,7 +14,6 @@ ShallowWrapper {
     <TypeForm
       flagUserHasFilledTypeform={[MockFunction]}
       needsToFillCulturalSurvey={true}
-      typeformUrl="http://domain.com?any=value"
     />
   </MemoryRouter>,
   Symbol(enzyme.__renderer__): Object {
@@ -34,7 +33,6 @@ ShallowWrapper {
       "children": <TypeForm
         flagUserHasFilledTypeform={[MockFunction]}
         needsToFillCulturalSurvey={true}
-        typeformUrl="http://domain.com?any=value"
       />,
       "history": Object {
         "action": "POP",
@@ -73,7 +71,6 @@ ShallowWrapper {
       "props": Object {
         "flagUserHasFilledTypeform": [MockFunction],
         "needsToFillCulturalSurvey": true,
-        "typeformUrl": "http://domain.com?any=value",
       },
       "ref": null,
       "rendered": null,
@@ -90,7 +87,6 @@ ShallowWrapper {
         "children": <TypeForm
           flagUserHasFilledTypeform={[MockFunction]}
           needsToFillCulturalSurvey={true}
-          typeformUrl="http://domain.com?any=value"
         />,
         "history": Object {
           "action": "POP",
@@ -129,7 +125,6 @@ ShallowWrapper {
         "props": Object {
           "flagUserHasFilledTypeform": [MockFunction],
           "needsToFillCulturalSurvey": true,
-          "typeformUrl": "http://domain.com?any=value",
         },
         "ref": null,
         "rendered": null,
