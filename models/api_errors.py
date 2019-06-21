@@ -83,3 +83,6 @@ class DecimalCastError(ApiErrors):
 
 class DateTimeCastError(ApiErrors):
     pass
+
+class UuidCastError(ApiErrors):
+    pass

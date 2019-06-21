@@ -18,14 +18,18 @@ from sqlalchemy import CHAR, \
     Integer, \
     Numeric, \
     String, DateTime
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import DataError, IntegrityError, InternalError
 from sqlalchemy.orm.collections import InstrumentedList
 
-from models.api_errors import ApiErrors, DecimalCastError, DateTimeCastError
+from models.api_errors import ApiErrors, \
+                              DecimalCastError, \
+                              DateTimeCastError, \
+                              UuidCastError
 from models.db import db, Model
 from models.soft_deletable_mixin import SoftDeletableMixin
 from utils.date import match_format, DateTimes
-from utils.human_ids import dehumanize, humanize
+from utils.human_ids import dehumanize, humanize, NonDehumanizableId
 from utils.logger import logger
 
 DUPLICATE_KEY_ERROR_CODE = '23505'
@@ -162,6 +166,8 @@ class PcObject:
                     setattr(self, key, value.strip() if value else value)
                 elif isinstance(column.type, DateTime):
                     self._try_to_set_attribute_with_deserialized_datetime(column, key, value)
+                elif isinstance(column.type, UUID):
+                    self._try_to_set_attribute_with_uuid(column, key, value)
             elif not isinstance(value, datetime) and isinstance(column.type, DateTime):
                 self._try_to_set_attribute_with_deserialized_datetime(column, key, value)
             else:
@@ -326,6 +332,15 @@ class PcObject:
             error.addError(col.name, "Invalid value for %s (datetime): %r" % (key, value))
             raise error
 
+    def _try_to_set_attribute_with_uuid(self, col, key, value):
+        try:
+            uuid_obj = uuid.UUID(value)
+            setattr(self, key, value)
+        except ValueError:
+            error = UuidCastError()
+            error.addError(col.name, "Invalid value for %s (uuid): %r" % (key, value))
+            raise error
+
     def _try_to_set_attribute_with_decimal_value(self, col, key, value, expected_format):
         try:
             setattr(self, key, Decimal(value))
@@ -363,12 +378,14 @@ def serialize(value):
     else:
         return value
 
-
 def _dehumanize_if_needed(data: dict, key: str) -> Any:
+    value = data.get(key)
     if key.endswith('Id'):
-        value = dehumanize(data.get(key))
-    else:
-        value = data.get(key)
+        try:
+            dehumanized_id = dehumanize(value)
+            return dehumanized_id
+        except NonDehumanizableId:
+            return value
     return value
 
 

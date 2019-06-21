@@ -4,10 +4,11 @@ from decimal import Decimal
 
 import pytest
 from sqlalchemy import Column, DateTime, Integer, Float
+from sqlalchemy.dialects.postgresql import UUID
 
 from models import PcObject, Offer, User
 from models import ThingType
-from models.api_errors import DecimalCastError, DateTimeCastError
+from models.api_errors import DecimalCastError, DateTimeCastError, UuidCastError
 from models.db import Model
 from models.pc_object import serialize
 from tests.test_utils import create_stock, create_user, create_payment, create_booking, create_offerer
@@ -22,6 +23,7 @@ class TestPcObject(PcObject, Model):
     integer_attribute = Column(Integer, nullable=True)
     float_attribute = Column(Float, nullable=True)
     date_attribute = Column(DateTime, nullable=True)
+    uuidId = Column(UUID(as_uuid=True), nullable=True)
 
 
 time_interval = TimeInterval()
@@ -154,6 +156,18 @@ class PopulateFromDictTest:
         # Then
         assert test_pc_object.float_attribute == 12.9
 
+    def test_on_pc_object_for_valid_uuid_with_key_finishing_by_Id(self):
+        # Given
+        test_pc_object = TestPcObject()
+        uuid_id = str(uuid.uuid4())
+        data = {'uuidId': uuid_id}
+
+        # When
+        test_pc_object.populate_from_dict(data)
+
+        # Then
+        assert test_pc_object.uuidId == uuid_id
+
     def test_on_pc_object_for_sql_float_value_with_string_raises_decimal_cast_error(self):
         # Given
         test_pc_object = TestPcObject()
@@ -223,6 +237,18 @@ class PopulateFromDictTest:
         # Then
         assert errors.value.errors['end'] == ["Invalid value for end (datetime): 'abcdef'"]
 
+    def test_raises_type_error_if_not_valid_uuid_with_key_finishing_by_Id(self):
+        # Given
+        test_pc_object = TestPcObject()
+        data = {'uuidId': 'foo'}
+
+        # When
+        with pytest.raises(UuidCastError) as errors:
+            test_pc_object.populate_from_dict(data)
+
+        # Then
+        assert errors.value.errors['uuidId'] == [
+            "Invalid value for uuidId (uuid): 'foo'"]
 
 class AsDictTest:
     def test_on_payment_model_humanize_payment_id(self):
