@@ -178,7 +178,7 @@ jobs:
             export SCALINGO_APP_NAME=$(./scripts/compute_app_name.sh ${CIRCLE_BRANCH})
             cd api
             git remote add scalingo git@scalingo.com:${SCALINGO_APP_NAME}.git
-            git push scalingo master
+            git push -f scalingo master
       - run:
           name: Check deployed version
           command: |
