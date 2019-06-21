@@ -57,7 +57,6 @@ __all__ = (
     'Mediation',
     'Stock',
     'Offerer',
-    'Feature',
     'VenueProvider',
     'LocalProviderEvent',
     'LocalProvider',

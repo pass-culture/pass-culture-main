@@ -21,7 +21,7 @@ from utils.mailing import get_contact, \
     MAILJET_API_KEY, \
     MAILJET_API_SECRET, \
     subscribe_newsletter
-from validation.features import check_feature_enum
+from validation.features import check_feature_consistency
 
 app = Flask(__name__, static_url_path='/static')
 login_manager = LoginManager()
@@ -76,7 +76,7 @@ with app.app_context():
         install_features()
     import utils.login_manager
     install_routes()
-    check_feature_enum()
+    check_feature_consistency()
     install_admin_views(admin, db.session)
 
     app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')

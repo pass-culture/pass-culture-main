@@ -5,7 +5,7 @@ import pytest
 from models.feature import FeatureToggle
 from tests.conftest import clean_database
 from tests.test_utils import create_feature
-from validation.features import InconsistentFeaturesException, check_feature_enum
+from validation.features import InconsistentFeaturesException, check_feature_consistency
 
 
 class CheckFeatureEnumTest:
@@ -17,7 +17,7 @@ class CheckFeatureEnumTest:
 
         # When / Then
         with pytest.raises(InconsistentFeaturesException):
-            check_feature_enum(find_all_features)
+            check_feature_consistency(find_all_features)
 
     @clean_database
     def test_returns_none_if_database_and_enum_are_consistent(self, app):
@@ -27,4 +27,4 @@ class CheckFeatureEnumTest:
         find_all_features.return_value = [feature]
 
         # When / Then
-        assert check_feature_enum(find_all_features) is None
+        assert check_feature_consistency(find_all_features) is None
