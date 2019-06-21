@@ -28,26 +28,18 @@ export const mapDispatchToProps = (dispatch) => ({
 
 export const mapStateToProps = state => {
 
-  const allOffersOption = {
-    name: "Toutes les offres",
-    id: "all",
-  }
-
   const venueId = state.bookingSummary.selectedVenue
   const {isFilterByDigitalVenues}=state.bookingSummary
 
   let offersOptions = []
 
   if (isFilterByDigitalVenues){
-    const digitalOffers = selectOffers(isFilterByDigitalVenues, state)
-    offersOptions = [allOffersOption, ...digitalOffers]
+    offersOptions = selectOffers(isFilterByDigitalVenues, state)
   } else {
     if(venueId==="all"){
-      const nonDigitalOffers = selectOffers(isFilterByDigitalVenues, state)
-      offersOptions = [allOffersOption, ...nonDigitalOffers]
+      offersOptions = selectOffers(isFilterByDigitalVenues, state)
     } else {
-      const offersWithSelectedVenueId = selectOffersByVenueId(venueId, state)
-      offersOptions = [allOffersOption, ...offersWithSelectedVenueId]
+      offersOptions = selectOffersByVenueId(venueId, state)
     }
   }
 

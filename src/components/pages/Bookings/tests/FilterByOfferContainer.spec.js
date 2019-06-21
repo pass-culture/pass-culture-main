@@ -70,35 +70,6 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
       ))
     })
 
-    it("add 'Toutes les offres' option to the offer options", () => {
-      // given
-      const state={
-        bookingSummary:{
-          isFilterByDigitalVenues: true
-        },
-        data:{
-          offers:[{
-            id:"AVJA",
-            product:{
-              offerType:{
-                onlineOnly:true
-              }
-            }
-          }]
-        }
-      }
-      // when
-      const props = mapStateToProps(state)
-
-      // then
-      expect(props.offersOptions).toEqual(expect.arrayContaining(
-        [{
-          id:"all",
-          name: "Toutes les offres"
-        }]
-      ))
-    })
-
     it("return only non digital offers when isFilterByDigitalVenues is false and venueId is 'all'", () => {
       // given
       const state={

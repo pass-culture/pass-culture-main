@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react'
-import classnames from 'classnames'
 import PropTypes from 'prop-types'
 
 import {FilterByVenue} from './FilterByVenue'
@@ -17,66 +16,29 @@ export class FilterByOffer extends PureComponent {
     this.props.selectBookingsForOffers(offerId)
   }
 
-  onChangeDigitalOffer = event => {
-    const selectedDigitalOffer = document.getElementById("digitalOffers")
-    const digitalOfferId = selectedDigitalOffer[selectedDigitalOffer.selectedIndex].value
-    this.props.selectBookingsForOffers(digitalOfferId)
-  }
-
-
   render() {
     const { offersOptions, isFilterByDigitalVenues, venueId } = this.props
 
-    if (isFilterByDigitalVenues){
+    if ((venueId !== null && !isFilterByDigitalVenues) || isFilterByDigitalVenues) {
       return (
         <React.Fragment>
-          <div id="filter-by-digital-offer"
-               className={classnames({'is-invisible': !isFilterByDigitalVenues,})}>
+          <div id="filter-by-offer">
             <div className="section">
               <h2 className="main-list-title">
-                OFFRE NUMERIQUE
+                {isFilterByDigitalVenues ? 'OFFRE NUMERIQUE' : 'OFFRE'}
               </h2>
               <div>
-                {'Télécharger les réservations pour l\'offre numérique :'}
+                Télécharger les réservations pour l'offre {isFilterByDigitalVenues ? 'numérique' : ''} :
               </div>
               <select
-                onChange={this.onChangeDigitalOffer}
-                className="pc-selectbox pl24 py5 fs19"
-                id="digitalOffers"
-              >
-                <option value="" disabled selected>Choisissez une offre dans la liste.</option>
-                {offersOptions.map(({ name, id }) => (
-                  <option key={id} value={id}>
-                    {name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <FilterByDateContainer
-          />
-        </React.Fragment>
-      )
-    }
-    if (venueId !== null && !isFilterByDigitalVenues){
-      return (
-        <React.Fragment>
-          <div id="filter-by-offer"
-               className={classnames({'is-invisible': isFilterByDigitalVenues,})} >
-            <div className="section">
-              <h2 className="main-list-title">
-                OFFRE
-              </h2>
-              <div>
-                {'Télécharger les réservations pour l\'offre :'}
-              </div>
-              <select
-                onChange={this.onChangeOffer}
-                className="pc-selectbox pl24 py5 fs19"
                 id="offers"
+                className="pc-selectbox pl24 py5 fs19"
+                onChange={this.onChangeOffer}
               >
                 <option value="" disabled selected>Choisissez une offre dans la liste.</option>
-                {offersOptions.map(({ name, id }) => (
+                <option value="all">Toutes les offres</option>
+              }
+                {offersOptions.map(({name, id}) => (
                   <option key={id} value={id}>
                     {name}
                   </option>
