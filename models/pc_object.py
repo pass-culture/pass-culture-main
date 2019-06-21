@@ -70,7 +70,7 @@ class PcObject:
                     and "-" + key in options['include']:
                 continue
             column = columns.get(key)
-            is_human_id_column = column and _is_human_id_column(column)
+            is_human_id_column = column is not None and _is_human_id_column(column)
             if options and options.get('cut'):
                 if isinstance(value, str):
                     if len(value) > options['cut']:
@@ -380,7 +380,7 @@ def serialize(value):
     else:
         return value
 
-def _is_human_id_column(column: Column):
+def _is_human_id_column(column: Column) -> bool:
     key = column.key
     return (key == 'id' or key.endswith('Id')) and \
            (isinstance(column.type, BigInteger) or isinstance(column.type, Integer))
