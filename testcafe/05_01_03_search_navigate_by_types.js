@@ -45,7 +45,7 @@ test("Je clique sur la vignette 'Lire' et je suis redirigé vers la page de rés
   await t.expect(offerDetailsTitle).eql(firstResultTitle)
 })
 
-test("Je suis sur la page 'Lire', je clique sur le bouton de retour et j'arrive sur la page des catégories", async t => {
+test.skip("Je suis sur la page 'Lire', je clique sur le bouton de retour et j'arrive sur la page des catégories", async t => {
   const buttonNavByOfferType = Selector('button').withText('Lire')
 
   await t
