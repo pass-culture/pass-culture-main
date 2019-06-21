@@ -1,4 +1,3 @@
-""" pc_object """
 import enum
 import re
 import traceback
@@ -21,6 +20,7 @@ from sqlalchemy import CHAR, \
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import DataError, IntegrityError, InternalError
 from sqlalchemy.orm.collections import InstrumentedList
+from sqlalchemy.sql.schema import Column
 
 from models.api_errors import ApiErrors, \
                               DecimalCastError, \
@@ -380,7 +380,7 @@ def serialize(value):
     else:
         return value
 
-def _is_human_id_column(column):
+def _is_human_id_column(column: Column):
     key = column.key
     return (key == 'id' or key.endswith('Id')) and \
            (isinstance(column.type, BigInteger) or isinstance(column.type, Integer))
