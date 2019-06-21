@@ -2,18 +2,22 @@ from postgresql_audit.flask import versioning_manager
 from sqlalchemy import orm
 from sqlalchemy.exc import ProgrammingError
 
+from models import PcObject
 from models.db import db
-from models.mediation import upsertTutoMediations
+from models.feature import FeatureToggle
+from tests.test_utils import create_feature
 
 
 def create_text_search_configuration_if_not_exists():
     db.engine.execute("CREATE EXTENSION IF NOT EXISTS unaccent;")
 
-    french_unaccent_configuration_query = db.engine.execute("SELECT * FROM pg_ts_config WHERE cfgname='french_unaccent'");
+    french_unaccent_configuration_query = db.engine.execute(
+        "SELECT * FROM pg_ts_config WHERE cfgname='french_unaccent'");
     if french_unaccent_configuration_query.fetchone() is None:
         db.engine.execute("CREATE TEXT SEARCH CONFIGURATION french_unaccent ( COPY = french );")
 
-    db.engine.execute("ALTER TEXT SEARCH CONFIGURATION french_unaccent ALTER MAPPING FOR hword, hword_part, word WITH unaccent, french_stem;")
+    db.engine.execute(
+        "ALTER TEXT SEARCH CONFIGURATION french_unaccent ALTER MAPPING FOR hword, hword_part, word WITH unaccent, french_stem;")
 
 
 def create_versionning_tables():
@@ -38,3 +42,12 @@ def install_models():
     db.create_all()
 
     db.session.commit()
+
+def install_features():
+    features = []
+    for toggle in FeatureToggle:
+        feature = create_feature(
+            name=toggle, description=toggle.value, is_active=True
+        )
+        features.append(feature)
+    PcObject.save(*features)

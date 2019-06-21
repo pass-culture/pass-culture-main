@@ -1,5 +1,3 @@
-from models.activity import load_activity
-from models.db import db
 from models import Booking, \
     Deposit, \
     Mediation, \
@@ -14,10 +12,11 @@ from models import Booking, \
     UserOfferer, \
     UserSession, \
     Venue, \
-    VenueProvider, PaymentMessage, BankInformation, LocalProviderEvent, Feature, PcObject
+    VenueProvider, PaymentMessage, BankInformation, LocalProviderEvent, Feature
+from models.activity import load_activity
+from models.db import db
 from models.email import Email
-from models.feature import FeatureToggle
-from tests.test_utils import create_feature
+from models.install import install_features
 
 
 def clean_all_database(*args, **kwargs):
@@ -47,10 +46,4 @@ def clean_all_database(*args, **kwargs):
     Feature.query.delete()
     db.session.commit()
 
-    features = []
-    for toggle in FeatureToggle:
-        feature = create_feature(
-            name=toggle, description=toggle.value, is_active=True
-        )
-        features.append(feature)
-    PcObject.save(*features)
+    install_features()

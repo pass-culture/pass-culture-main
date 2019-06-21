@@ -8,11 +8,12 @@ from flask_login import LoginManager
 from mailjet_rest import Client
 from werkzeug.middleware.profiler import ProfilerMiddleware
 from admin.install import install_admin_views
+from models import Feature
 from repository.feature_queries import feature_request_profiling_enabled
 from models.mediation import upsertTutoMediations
 from local_providers.install import install_local_providers
 from models.db import db
-from models.install import install_models
+from models.install import install_models, install_features
 from routes import install_routes
 from utils.config import IS_DEV
 from utils.json_encoder import EnumJSONEncoder
@@ -20,6 +21,7 @@ from utils.mailing import get_contact, \
     MAILJET_API_KEY, \
     MAILJET_API_SECRET, \
     subscribe_newsletter
+from validation.features import check_feature_enum
 
 app = Flask(__name__, static_url_path='/static')
 login_manager = LoginManager()
@@ -70,8 +72,11 @@ with app.app_context():
         install_models()
         upsertTutoMediations()
         install_local_providers()
+        Feature.query.delete()
+        install_features()
     import utils.login_manager
     install_routes()
+    check_feature_enum()
     install_admin_views(admin, db.session)
 
     app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
