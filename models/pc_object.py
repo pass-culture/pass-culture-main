@@ -69,8 +69,8 @@ class PcObject:
                     and options.get('include') \
                     and "-" + key in options['include']:
                 continue
-            column = columns[key]
-            is_human_id_column = _is_human_id_column(column)
+            column = columns.get(key)
+            is_human_id_column = column and _is_human_id_column(column)
             if options and options.get('cut'):
                 if isinstance(value, str):
                     if len(value) > options['cut']:
