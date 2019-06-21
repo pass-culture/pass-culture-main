@@ -15,11 +15,11 @@ from requests.auth import _basic_auth_str
 from local_providers.install import install_local_providers
 from models.db import db
 from models.install import install_models
-from models.mediation import upsertTutoMediations
 from repository.clean_database import clean_all_database
 from repository.user_queries import find_user_by_email
 from routes import install_routes
 from tests.test_utils import PLAIN_DEFAULT_TESTING_PASSWORD
+from utils.config import IS_DEV, IS_CI
 from utils.json_encoder import EnumJSONEncoder
 
 
@@ -60,7 +60,9 @@ def setup_test_database():
 @pytest.fixture(scope='session')
 def app():
     app = Flask(__name__, template_folder='../templates')
-    setup_test_database()
+
+    if not IS_CI and IS_DEV:
+        setup_test_database()
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://pytest:pytest@localhost:5432/pass-culture'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
