@@ -160,16 +160,15 @@ class User(PcObject,
 
     @property
     def hasPhysicalVenues(self):
-        all_offerers = self.offerers
-        for offerer in all_offerers:
-            for venue in offerer.managedVenues:
-                if not venue.isVirtual:
-                    return True
+        for offerer in self.offerers:
+            if any([not venue.isVirtual for venue in offerer.managedVenues]):
+                return True
+
         return False
 
     @property
     def hasOffers(self):
-        return sum(map(lambda offerer: offerer.nOffers, self.offerers)) > 0
+        return any([offerer.nOffers > 0 for offerer in self.offerers])
 
 class WalletBalance:
     CSV_HEADER = [
