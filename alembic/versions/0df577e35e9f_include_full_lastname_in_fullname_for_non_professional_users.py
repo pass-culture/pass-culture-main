@@ -31,15 +31,15 @@ def upgrade():
 
 
 def downgrade():
+    op.execute("""
+        UPDATE "user"
+        SET "publicName" = concat("firstName", ' ', upper(substring("lastName" from 1 for 1)), '.')
+        WHERE "dateOfBirth" IS NOT NULL;
+    """)
+
     op.alter_column(
         'user', 'publicName',
         existing_type=sa.VARCHAR(length=100),
         type_=sa.VARCHAR(length=30),
         existing_nullable=False
     )
-
-    op.execute("""
-        UPDATE "user"
-        SET "publicName" = concat("firstName", ' ', upper(substring("lastName" from 1 for 1)), '.')
-        WHERE "dateOfBirth" IS NOT NULL;
-    """)
