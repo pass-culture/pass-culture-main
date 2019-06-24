@@ -62,50 +62,43 @@ def not_activation_offers(query):
     return query.filter(Offer.type != str(ThingType.ACTIVATION))
 
 
-def not_currently_recommended_offers(query, user):
-    valid_recommendation_for_user = (Recommendation.userId == user.id) \
-                                    & (Recommendation.search == None) \
-                                    & (Recommendation.validUntilDate > datetime.utcnow())
-
-    query = query.filter(~(Offer.recommendations.any(valid_recommendation_for_user)))
-
-    logger.debug(lambda: '(reco) not already used offers.count ' + str(query.count()))
-    return query
-
-
 def get_active_offers(user=None, departement_codes=None, offer_id=None, limit=None):
-    query = Offer.query.filter_by(isActive=True)
-    logger.debug(lambda: '(reco) active offers count {}'.format(query.count()))
-    
-    query = query.join(Stock, Offer.id == Stock.offerId)
-    logger.debug(lambda: '(reco) offers with stock count {}'.format(query.count()))
+    active_offers_query = Offer.query.distinct(Offer.id)\
+                             .order_by(Offer.id)
 
-    query = query.join(Venue, Offer.venueId == Venue.id)
-    query = query.filter(Venue.validationToken == None)
-    query = query.join(Offerer)
-    query = query.join(Product, Offer.productId == Product.id)
-    logger.debug(lambda: '(reco) offers with venue offerer {}'.format(query.count()))
+    active_offers_query = active_offers_query.filter_by(isActive=True)
+    logger.debug(lambda: '(reco) active offers count {}'.format(active_offers_query.count()))
+    
+    active_offers_query = active_offers_query.join(Stock, Offer.id == Stock.offerId)
+    logger.debug(lambda: '(reco) offers with stock count {}'.format(active_offers_query.count()))
+
+    active_offers_query = active_offers_query.join(Venue, Offer.venueId == Venue.id)
+    active_offers_query = active_offers_query.filter(Venue.validationToken == None)
+    active_offers_query = active_offers_query.join(Offerer)
+    active_offers_query = active_offers_query.join(Product, Offer.productId == Product.id)
+    logger.debug(lambda: '(reco) offers with venue offerer {}'.format(active_offers_query.count()))
 
     with_active_mediation = (Mediation.query.filter((Mediation.offerId == Offer.id)
                                                     & Mediation.isActive)
                                             .exists())
-    query = query.filter((Product.thumbCount > 0) | with_active_mediation)
+    active_offers_query = active_offers_query.filter((Product.thumbCount > 0) | with_active_mediation)
 
     if offer_id is not None:
-        query = query.filter(Offer.id == offer_id)
-    logger.debug(lambda: '(reco) all {} count '.format(query.count()))
+        active_offers_query = active_offers_query.filter(Offer.id == offer_id)
+    logger.debug(lambda: '(reco) all {} count '.format(active_offers_query.count()))
 
-    query = department_or_national_offers(query, departement_codes)
+    active_offers_query = department_or_national_offers(active_offers_query, departement_codes)
     logger.debug(lambda:
                  '(reco) department or national {} in {}'.format(str(departement_codes),
-                                                                 query.count()))
-    query = bookable_offers(query)
-    logger.debug(lambda: '(reco) bookable_offers {}'.format(query.count()))
-    query = with_active_and_validated_offerer(query)
-    logger.debug(lambda: '(reco) active and validated {}'.format(query.count()))
-    query = not_currently_recommended_offers(query, user)
-    query = not_activation_offers(query)
-    logger.debug(lambda: '(reco) not_currently_recommended and not_activation {}'.format(query.count()))
+                                                                 active_offers_query.count()))
+    active_offers_query = bookable_offers(active_offers_query)
+    logger.debug(lambda: '(reco) bookable_offers {}'.format(active_offers_query.count()))
+    active_offers_query = with_active_and_validated_offerer(active_offers_query)
+    logger.debug(lambda: '(reco) active and validated {}'.format(active_offers_query.count()))
+    active_offers_query = not_activation_offers(active_offers_query)
+    logger.debug(lambda: '(reco) not_currently_recommended and not_activation {}'.format(active_offers_query.count()))
+
+    active_offer_ids = active_offers_query.with_entities(Offer.id).subquery()
 
     Stock2 = aliased(Stock)
     occurs_soon_or_is_thing = (Stock.query.filter((Stock2.offerId == Offer.id)
@@ -113,9 +106,12 @@ def get_active_offers(user=None, departement_codes=None, offer_id=None, limit=No
                                                      | ((Stock2.beginningDatetime > datetime.utcnow())
                                                         & (Stock2.beginningDatetime < (datetime.utcnow() + timedelta(days=10))))))
                                           .exists())
+
     round_robin_by_type_and_onlineness = func.row_number()\
                                              .over(partition_by=[Offer.type, Offer.url == None],
                                                    order_by=[desc(occurs_soon_or_is_thing), func.random()])
+
+    query = Offer.query.filter(Offer.id.in_(active_offer_ids))
     query = query.order_by(desc(with_active_mediation),
                            round_robin_by_type_and_onlineness)
 

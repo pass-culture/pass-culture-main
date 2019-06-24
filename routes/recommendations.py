@@ -1,11 +1,8 @@
-from random import shuffle
-
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
-from domain.build_recommendations import build_mixed_recommendations, \
-    move_requested_recommendation_first, \
-    move_tutorial_recommendations_first
+from domain.build_recommendations import move_requested_recommendation_first, \
+                                         move_tutorial_recommendations_first
 from models.api_errors import ResourceNotFound
 from models import PcObject, Recommendation
 from recommendations_engine import create_recommendations_for_discovery, \
@@ -14,10 +11,7 @@ from recommendations_engine import create_recommendations_for_discovery, \
                                    give_requested_recommendation_to_user, \
                                    OfferNotFoundException
 from repository.booking_queries import find_bookings_from_recommendation
-from repository.recommendation_queries import count_read_recommendations_for_user, \
-                                              find_all_unread_recommendations, \
-                                              find_all_read_recommendations, \
-                                              find_favored_recommendations_for_user, \
+from repository.recommendation_queries import find_favored_recommendations_for_user, \
                                               update_read_recommendations
 from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
 from utils.human_ids import dehumanize
@@ -110,38 +104,26 @@ def put_recommendations():
 
     logger.debug(lambda: '(special) requested_recommendation %s' % requested_recommendation)
 
-    # we get more read+unread recos than needed in case we can't make enough new recos
-    unread_recos = find_all_unread_recommendations(current_user, seen_recommendation_ids)
-    read_recos = find_all_read_recommendations(current_user, seen_recommendation_ids)
-
-    needed_new_recos = BLOB_SIZE \
-                       - min(len(unread_recos), BLOB_UNREAD_NUMBER) \
-                       - min(len(read_recos), BLOB_READ_NUMBER)
-
     created_recommendations = create_recommendations_for_discovery(
-        needed_new_recos,
+        BLOB_SIZE,
         user=current_user
     )
 
-    logger.debug(lambda: '(unread reco) count %i', len(unread_recos))
-    logger.debug(lambda: '(read reco) count %i', len(read_recos))
-    logger.debug(lambda: '(needed new recos) count %i', needed_new_recos)
-    logger.debug(lambda: '(new recos)' + str([(reco, reco.mediation, reco.dateRead) for reco in created_recommendations]))
+    logger.debug(lambda: '(new recos)' + str([(reco, reco.mediation, reco.dateRead)
+                                              for reco in created_recommendations]))
     logger.debug(lambda: '(new reco) count %i', len(created_recommendations))
 
-    recommendations = build_mixed_recommendations(created_recommendations, read_recos, unread_recos)
-    shuffle(recommendations)
-
-    logger.debug(lambda: '(all read recos) count %i', count_read_recommendations_for_user(current_user))
-
+    recommendations = move_tutorial_recommendations_first(created_recommendations,
+                                                          seen_recommendation_ids,
+                                                          current_user)
     if requested_recommendation:
-        recommendations = move_requested_recommendation_first(recommendations, requested_recommendation)
-    else:
-        recommendations = move_tutorial_recommendations_first(recommendations, seen_recommendation_ids, current_user)
+        recommendations = move_requested_recommendation_first(created_recommendations,
+                                                              requested_recommendation)
 
     logger.debug(lambda: '(recap reco) '
-                + str([(reco, reco.mediation, reco.dateRead, reco.offer) for reco in recommendations])
-                + str(len(recommendations)))
+                         + str([(reco, reco.mediation, reco.dateRead, reco.offer)
+                                for reco in recommendations])
+                         + str(len(recommendations)))
 
     return jsonify(_serialize_recommendations(recommendations)), 200
 

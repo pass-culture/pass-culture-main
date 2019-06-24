@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from models import PcObject
 from models.db import db
 from models.mediation import Mediation, upsertTutoMediations
+from models.recommendation import Recommendation
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_event_occurrence, \
     create_offer_with_event_product, \
@@ -215,9 +216,19 @@ class Put:
 
             # then
             assert response.status_code == 200
+<<<<<<< HEAD
             previous_date_reads = set([r['dateRead'] for r in reads])
             next_date_reads = set([r['dateRead'] for r in response.json])
             assert previous_date_reads.issubset(next_date_reads)
+=======
+
+            assert recommendation1.dateRead is None
+            assert recommendation2.dateRead is None
+            assert recommendation3.dateRead is None
+
+            unread_recos = Recommendation.query.filter(Recommendation.dateRead != None).all()
+            assert len(unread_recos) == 3
+>>>>>>> [PC-2060] Get recommendations for route directly from create_recommendations
 
         @clean_database
         def when_user_has_no_offer_in_his_department(self, app):
@@ -270,18 +281,28 @@ class Put:
         @clean_database
         def when_offers_have_soft_deleted_stocks(self, app):
             # Given
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue)
-            user = create_user(email='test@email.com')
-            event_occurrence1 = create_event_occurrence(offer)
-            event_occurrence2 = create_event_occurrence(offer)
-            stock1 = create_stock_from_event_occurrence(event_occurrence1, soft_deleted=True)
-            stock2 = create_stock_from_event_occurrence(event_occurrence2, soft_deleted=False)
+            event_offer = create_offer_with_event_product(venue, thumb_count=1)
+            now = datetime.utcnow()
+            four_days_from_now = now + timedelta(days=4)
+            eight_days_from_now = now + timedelta(days=8)
+            event_occurrence1 = create_event_occurrence(event_offer,
+                                                        beginning_datetime=four_days_from_now,
+                                                        end_datetime=eight_days_from_now)
+            event_occurrence2 = create_event_occurrence(event_offer,
+                                                        beginning_datetime=four_days_from_now,
+                                                        end_datetime=eight_days_from_now)
+            stock1 = create_stock_from_event_occurrence(event_occurrence1,
+                                                        soft_deleted=True)
+            stock2 = create_stock_from_event_occurrence(event_occurrence2,
+                                                        soft_deleted=False)
             thing_offer1 = create_offer_with_thing_product(venue)
             thing_offer2 = create_offer_with_thing_product(venue)
             stock3 = create_stock_from_offer(thing_offer1, soft_deleted=True)
             stock4 = create_stock_from_offer(thing_offer2, soft_deleted=False)
+<<<<<<< HEAD
             recommendation1 = create_recommendation(offer, user)
             recommendation2 = create_recommendation(thing_offer1, user)
             recommendation3 = create_recommendation(thing_offer2, user)
@@ -298,6 +319,26 @@ class Put:
             assert humanize(recommendation1_id) in recommendation_ids
             assert humanize(recommendation2_id) not in recommendation_ids
             assert humanize(recommendation3_id) in recommendation_ids
+=======
+            PcObject.save(user, stock1, stock2, stock3, stock4)
+            from models.stock import Stock
+            print([s.offer.type for s in Stock.query.all()])
+            print([s.bookingLimitDatetime for s in Stock.query.all()])
+            print([s.isSoftDeleted for s in Stock.query.all()])
+            print([s.available for s in Stock.query.all()])
+
+            # When
+            response = TestClient().with_auth(user.email) \
+                                   .put(RECOMMENDATION_URL, json={})
+
+            # Then
+            recommendations = response.json()
+            print(recommendations)
+            assert len(recommendations) == 2
+            offer_ids = [r['offerId'] for r in recommendations]
+            assert humanize(event_offer.id) in offer_ids
+            assert humanize(thing_offer2.id) in offer_ids
+>>>>>>> [PC-2060] Get recommendations for route directly from create_recommendations
 
         @clean_database
         def when_offers_have_no_stocks(self, app):
@@ -532,15 +573,11 @@ class Put:
                                                         booking_limit_date=now + timedelta(days=3))
             stock3 = create_stock_from_offer(offer3, price=0)
             stock4 = create_stock_from_offer(offer4, price=0)
-            recommendation_offer3 = create_recommendation(offer3, user)
-            recommendation_offer4 = create_recommendation(offer4, user, date_read=now - timedelta(days=1))
             PcObject.save(user, stock1, stock2, stock3, stock4, mediation,
                           recommendation_offer3, recommendation_offer4)
             offer1_id = offer1.id
             offer2_id = offer2.id
             offer3_id = offer3.id
-            recommendation_offer4_id = recommendation_offer4.id
-            recommendation_offer3_id = recommendation_offer3.id
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -553,8 +590,8 @@ class Put:
             response_json = response.json
             assert len(response_json) == 4
             offer_ids = set(map(lambda x: x['offer']['id'], response_json))
-            recommendation_ids = set(map(lambda x: x['id'], response_json))
             assert response_json[0]['offer']['id'] == humanize(offer1.id)
+<<<<<<< HEAD
             assert humanize(offer1_id) in offer_ids
             assert humanize(offer2_id) in offer_ids
             assert humanize(offer3_id) in offer_ids
@@ -608,6 +645,12 @@ class Put:
             assert humanize(recommendation_offer2_id) not in recommendation_ids
             assert humanize(recommendation_offer3_id) not in recommendation_ids
             assert humanize(recommendation_offer4_id) not in recommendation_ids
+=======
+            assert humanize(offer1.id) in offer_ids
+            assert humanize(offer2.id) in offer_ids
+            assert humanize(offer3.id) in offer_ids
+            assert humanize(offer4.id) in offer_ids
+>>>>>>> [PC-2060] Get recommendations for route directly from create_recommendations
 
         @clean_database
         def test_returns_two_recommendations_with_one_event_and_one_thing(self, app):
