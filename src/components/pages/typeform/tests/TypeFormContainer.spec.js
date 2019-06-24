@@ -1,3 +1,5 @@
+import { currentUserUUID } from 'with-react-redux-login'
+
 import { mapStateToProps } from '../TypeFormContainer'
 
 describe('src | components |pages | typeform | TypeFormContainer', () => {
@@ -21,6 +23,7 @@ describe('src | components |pages | typeform | TypeFormContainer', () => {
       data: {
         users: [
           {
+            currentUserUUID,
             needsToFillCulturalSurvey: true,
           },
         ],
