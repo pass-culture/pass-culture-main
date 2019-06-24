@@ -214,7 +214,7 @@ class Post:
         def when_public_name_is_too_long(self, app):
             # Given
             data = BASE_DATA.copy()
-            data['publicName'] = 'x' * 32
+            data['publicName'] = 'x' * 102
 
             # When
             response = TestClient() \

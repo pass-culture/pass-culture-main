@@ -73,7 +73,7 @@ class User(PcObject,
 
     postalCode = Column(String(5), nullable=True)
 
-    publicName = Column(String(30), nullable=False)
+    publicName = Column(String(100), nullable=False)
 
     resetPasswordToken = Column(String(10), unique=True)
 
