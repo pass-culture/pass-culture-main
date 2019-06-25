@@ -3,7 +3,7 @@ from sqlalchemy import BigInteger, \
     CheckConstraint, \
     Column, \
     DateTime, \
-    String
+    String, Boolean
 from sqlalchemy.dialects.postgresql import CHAR
 from sqlalchemy.orm import relationship
 
@@ -37,6 +37,10 @@ class Provider(PcObject, Model, DeactivableMixin):
 
     apiKeyGenerationDate = Column(DateTime,
                                   nullable=True)
+
+    enabledForPro = Column(Boolean,
+                           nullable=False,
+                           default=False)
 
     def getByClassName(name):
         return Provider.query\
