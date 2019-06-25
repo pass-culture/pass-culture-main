@@ -322,7 +322,7 @@ def create_offer_with_thing_product(venue, product=None, date_created=datetime.u
                                     thing_type=ThingType.AUDIOVISUEL, thing_name='Test Book', media_urls=['test/urls'],
                                     author_name='Test Author', description=None, thumb_count=1, dominant_color=None,
                                     url=None,
-                                    is_national=False, is_active=True, id_at_providers=None, idx=None) -> Offer:
+                                    is_national=False, is_active=True, id_at_providers=None, idx=None, last_provider_id=None) -> Offer:
     offer = Offer()
     if product:
         offer.product = product
@@ -351,6 +351,7 @@ def create_offer_with_thing_product(venue, product=None, date_created=datetime.u
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
     offer.isActive = is_active
+    offer.lastProviderId = last_provider_id
 
     if id_at_providers:
         offer.idAtProviders = id_at_providers
@@ -365,7 +366,7 @@ def create_offer_with_event_product(venue=None, product=None, event_name='Test e
                                     date_created=datetime.utcnow(),
                                     booking_email='booking.email@test.com', thumb_count=0, dominant_color=None,
                                     event_type=EventType.SPECTACLE_VIVANT, is_national=False, is_active=True,
-                                    idx=None) -> Offer:
+                                    idx=None, last_provider_id=None, id_at_providers=None) -> Offer:
     offer = Offer()
     if product is None:
         product = create_product_with_Event_type(event_name=event_name, event_type=event_type,
@@ -382,6 +383,8 @@ def create_offer_with_event_product(venue=None, product=None, event_name='Test e
     offer.bookingEmail = booking_email
     offer.isActive = is_active
     offer.id = idx
+    offer.lastProviderId = last_provider_id
+    offer.idAtProviders = id_at_providers
     return offer
 
 
@@ -758,12 +761,10 @@ def save_all_activities(*objects):
     db.session.commit()
 
 
-def check_open_agenda_api_is_down():
-    response = requests.get('https://openagenda.com/agendas/86585975/events.json?limit=1')
-    response_json = response.json()
-    unsuccessful_request = ('success' in response_json) and not response_json['success']
+def check_titelive_stocks_api_is_down():
+    response = requests.get('https://stock.epagine.fr/stocks/77567146400110')
     status_code_not_200 = (response.status_code != 200)
-    return unsuccessful_request or status_code_not_200
+    return status_code_not_200
 
 
 def get_occurrence_short_name(concatened_names_with_a_date):
@@ -793,5 +794,6 @@ def create_venue_provider(venue, provider, venue_id_at_offer_provider='775671464
 def activate_provider(provider_classname):
     provider = Provider.getByClassName(provider_classname)
     provider.isActive = True
+    provider.enabledForPro = True
     PcObject.save(provider)
     return provider

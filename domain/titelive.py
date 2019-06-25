@@ -15,7 +15,10 @@ def read_things_date(date):
 
 
 def read_stock_datetime(date):
-    return datetime.strptime(date, TITELIVE_STOCK_DATETIME_FORMAT)
+    if date:
+        return datetime.strptime(date, TITELIVE_STOCK_DATETIME_FORMAT)
+    else:
+        return None
 
 
 def put_today_file_at_end_of_list(ordered_files_list, date_regexp):

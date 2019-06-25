@@ -1,4 +1,4 @@
-"""add_provider_enabled_for_pro
+"""add_provider_enabled_for_pro_and_require_provider_identifier
 
 Revision ID: 035f0ee8ea70
 Revises: e945f921cc69
@@ -20,7 +20,9 @@ depends_on = None
 
 def upgrade():
     op.add_column('provider', sa.Column('enabledForPro', sa.Boolean(), nullable=False, server_default=expression.false()))
+    op.add_column('provider', sa.Column('requireProviderIdentifier', sa.Boolean(), nullable=False, server_default=expression.true()))
 
 
 def downgrade():
     op.drop_column('provider', 'enabledForPro')
+    op.drop_column('provider', 'requireProviderIdentifier')

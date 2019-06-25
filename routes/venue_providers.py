@@ -1,5 +1,6 @@
 """ venue providers """
 import subprocess
+
 from flask import current_app as app, jsonify, request
 
 from models.api_errors import ApiErrors
@@ -64,21 +65,13 @@ def create_venue_provider():
         errors.addError('venueIdAtOfferProvider', "Il y a déjà un fournisseur pour votre identifiant")
         errors.maybeRaise()
 
-    # SAVE
     PcObject.save(new_venue_provider)
 
-    # CALL THE PROVIDER SUB PROCESS
-    p = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
-                         + ' --venue_provider_id %s' % str(new_venue_provider.id),
-                         #stdout=subprocess.PIPE,
-                         #stderr=subprocess.PIPE,
-                         shell=True,
-                         cwd=API_ROOT_PATH)
-    #out, err = p.communicate()
-    #print("STDOUT:", out)
-    #print("STDERR:", err)
+    subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
+                     + ' --venue-provider-id %s' % str(new_venue_provider.id),
+                     shell=True,
+                     cwd=API_ROOT_PATH)
 
-    # RETURN
     return jsonify(new_venue_provider.as_dict(include=VENUE_PROVIDER_INCLUDES)), 201
 
 
@@ -89,7 +82,7 @@ def edit_venue_provider(id):
     vp = load_or_404(VenueProvider, id)
     vp.populate_from_dict(request.json)
     PcObject.save(vp)
-    return jsonify(vp.as_dict()), 200
+    return jsonify(vp.as_dict(include=VENUE_PROVIDER_INCLUDES)), 200
 
 
 @app.route('/venueProviders/<id>', methods=['DELETE'])

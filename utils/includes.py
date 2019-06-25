@@ -228,7 +228,8 @@ VENUE_INCLUDES = [
 ]
 
 VENUE_PROVIDER_INCLUDES = [
-    "provider"
+    "provider",
+    "nOffers"
 ]
 
 OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [

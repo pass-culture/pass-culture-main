@@ -9,6 +9,7 @@ from models.stock import Stock
 from repository import thing_queries, local_provider_event_queries, venue_queries
 from repository.offer_queries import find_offer_by_id_at_providers
 
+PRICE_DIVIDER_TO_EURO = 100
 URL_TITELIVE_WEBSERVICE_STOCKS = "https://stock.epagine.fr/stocks/"
 NB_DATA_LIMIT_PER_REQUEST = 5000
 
@@ -82,7 +83,7 @@ class TiteLiveStocks(LocalProvider):
         self.product = thing_queries.find_thing_product_by_isbn_only_for_type_book(self.titelive_stock['ref'])
 
         if self.product is None:
-            return next(self)
+            return None
 
         # Refresh data before using it
         db.session.add(self.venue)
@@ -120,7 +121,7 @@ class TiteLiveStocks(LocalProvider):
         super().updateObjects(limit)
 
     def update_stock_object(self, obj, stock_information, offer):
-        obj.price = int(stock_information['price'])
+        obj.price = int(stock_information['price']) / PRICE_DIVIDER_TO_EURO
         obj.available = int(stock_information['available'])
         obj.bookingLimitDatetime = read_stock_datetime(stock_information['validUntil'])
         if offer:

@@ -14,7 +14,6 @@ from models.venue_provider import VenueProvider
 
 
 class Provider(PcObject, Model, DeactivableMixin):
-
     id = Column(BigInteger,
                 primary_key=True)
 
@@ -23,10 +22,10 @@ class Provider(PcObject, Model, DeactivableMixin):
 
     localClass = Column(String(60),
                         CheckConstraint('("localClass" IS NOT NULL AND "apiKey" IS NULL)'
-                                              + 'OR ("localClass" IS NULL AND "apiKey" IS NOT NULL)',
-                                              name='check_provider_has_localclass_or_apikey'),
-                           nullable=True,
-                           unique=True)
+                                        + 'OR ("localClass" IS NULL AND "apiKey" IS NOT NULL)',
+                                        name='check_provider_has_localclass_or_apikey'),
+                        nullable=True,
+                        unique=True)
 
     venueProviders = relationship(VenueProvider,
                                   back_populates="provider",
@@ -42,7 +41,11 @@ class Provider(PcObject, Model, DeactivableMixin):
                            nullable=False,
                            default=False)
 
+    requireProviderIdentifier = Column(Boolean,
+                                       nullable=False,
+                                       default=True)
+
     def getByClassName(name):
-        return Provider.query\
-                       .filter_by(localClass=name)\
-                       .first()
+        return Provider.query \
+            .filter_by(localClass=name) \
+            .first()

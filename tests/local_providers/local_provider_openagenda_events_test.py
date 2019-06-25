@@ -11,7 +11,7 @@ from models.pc_object import PcObject
 from models.provider import Provider
 from models.venue_provider import VenueProvider
 from tests.conftest import clean_database
-from tests.test_utils import provider_test, check_open_agenda_api_is_down, create_offerer, create_venue
+from tests.test_utils import provider_test, check_titelive_stocks_api_is_down, create_offerer, create_venue
 
 
 def get_data_from_sandbox_files(page):
@@ -23,7 +23,7 @@ def get_data_from_sandbox_files(page):
 
 class OpenAgendaEventsTest:
 
-    @pytest.mark.skipif(check_open_agenda_api_is_down(), reason="Open Agenda API is down")
+    @pytest.mark.skipif(check_titelive_stocks_api_is_down(), reason="Open Agenda API is down")
     @clean_database
     @patch('local_providers.openagenda_events.get_data')
     def test_open_agenda_events_creaet_data_from_sandboxe_file(self, get_data, app):

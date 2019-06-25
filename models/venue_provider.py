@@ -34,3 +34,11 @@ class VenueProvider(PcObject,
 
     lastSyncDate = Column(DateTime,
                           nullable=True)
+
+    @property
+    def nOffers(self):
+        n_offers = 0
+        for offer in self.venue.offers:
+            if offer.lastProviderId == self.providerId:
+                n_offers += 1
+        return n_offers
