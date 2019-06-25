@@ -43,44 +43,50 @@ class VenueProviderItem extends Component {
     const venueId = get(venue, 'id')
 
     return (
-      <li className={classnames('is-disabled')}>
+      <li className={classnames('is-disabled venue-provider-row')}>
         <div className="picto">
           <Icon svg="picto-db-default"/>
         </div>
-        <div className="has-text-weight-bold is-size-3">
+
+        <div className="has-text-weight-bold fs14 provider-name-container">
           {providerName}
         </div>
-        <div>
+
+        <div className="fs14 venue-id-at-offer-provider-container">
           Compte : {' '}
-          <strong className="has-text-weight-bold">
+          <strong className="has-text-weight-bold fs14">
             {venueIdAtOfferProvider}
           </strong>
         </div>
+
         {lastSyncDate ? (
-          [
-            numberOfOffers ? (
-              <NavLink
-                key={0}
-                to={`/offres?lieu=${venueId}`}
-                className="has-text-primary">
-                <Icon svg="ico-offres-r"/>
-                {pluralize(numberOfOffers, 'offres')}
-              </NavLink>
-            ) : (
-              <div key={0}>0 offre</div>
-            ),
-            <div key={1}>
+          <div>
+            <div className="offers-container">
+              {numberOfOffers ? (
+                <NavLink
+                  className="has-text-primary"
+                  to={`/offres?lieu=${venueId}`}
+                >
+                  <Icon svg="ico-offres-r"/>
+                  {pluralize(numberOfOffers, 'offres')}
+                </NavLink>
+              ) : (
+                <div>0 offre</div>
+              )}
+            </div>
+
+            <div className="button-container">
               <button
-                className="button is-secondary"
+                className="button is-secondary enable-disable-button"
                 onClick={this.onDeactivateClick}>
                 {isActive ? 'Désactiver' : 'Activer'}
               </button>
-            </div>,
-          ]
+            </div>
+          </div>
         ) : (
-          <div className="small">En cours de validation</div>
+          <div className="fs14 validation-label-container">En cours de validation</div>
         )}
-        <div className="is-pulled-right" key={2}>
+        <div>
           <button className="delete is-small" onClick={this.onDeleteClick}/>
         </div>
       </li>

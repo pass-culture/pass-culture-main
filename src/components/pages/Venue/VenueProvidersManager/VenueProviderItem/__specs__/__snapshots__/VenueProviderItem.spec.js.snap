@@ -56,50 +56,56 @@ ShallowWrapper {
           />
         </div>,
         <div
-          className="has-text-weight-bold is-size-3"
+          className="has-text-weight-bold fs14 provider-name-container"
         >
           fake local class
         </div>,
-        <div>
+        <div
+          className="fs14 venue-id-at-offer-provider-container"
+        >
           Compte : 
            
           <strong
-            className="has-text-weight-bold"
+            className="has-text-weight-bold fs14"
           >
             1
           </strong>
         </div>,
-        Array [
-          <NavLink
-            activeClassName="active"
-            aria-current="page"
-            className="has-text-primary"
-            to="/offres?lieu=1"
+        <div>
+          <div
+            className="offers-container"
           >
-            <Icon
-              svg="ico-offres-r"
-            />
-            2 offres
-          </NavLink>,
-          <div>
+            <NavLink
+              activeClassName="active"
+              aria-current="page"
+              className="has-text-primary"
+              to="/offres?lieu=1"
+            >
+              <Icon
+                svg="ico-offres-r"
+              />
+              2 offres
+            </NavLink>
+          </div>
+          <div
+            className="button-container"
+          >
             <button
-              className="button is-secondary"
+              className="button is-secondary enable-disable-button"
               onClick={[Function]}
             >
               Désactiver
             </button>
-          </div>,
-        ],
-        <div
-          className="is-pulled-right"
-        >
+          </div>
+        </div>,
+        <div>
           <button
             className="delete is-small"
             onClick={[Function]}
           />
         </div>,
       ],
-      "className": "is-disabled",
+      "className": "is-disabled venue-provider-row",
     },
     "ref": null,
     "rendered": Array [
@@ -133,7 +139,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "fake local class",
-          "className": "has-text-weight-bold is-size-3",
+          "className": "has-text-weight-bold fs14 provider-name-container",
         },
         "ref": null,
         "rendered": "fake local class",
@@ -148,11 +154,12 @@ ShallowWrapper {
             "Compte : ",
             " ",
             <strong
-              className="has-text-weight-bold"
+              className="has-text-weight-bold fs14"
             >
               1
             </strong>,
           ],
+          "className": "fs14 venue-id-at-offer-provider-container",
         },
         "ref": null,
         "rendered": Array [
@@ -164,7 +171,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": 1,
-              "className": "has-text-weight-bold",
+              "className": "has-text-weight-bold fs14",
             },
             "ref": null,
             "rendered": 1,
@@ -175,75 +182,134 @@ ShallowWrapper {
       },
       Object {
         "instance": null,
-        "key": "0",
-        "nodeType": "function",
+        "key": undefined,
+        "nodeType": "host",
         "props": Object {
-          "activeClassName": "active",
-          "aria-current": "page",
           "children": Array [
-            <Icon
-              svg="ico-offres-r"
-            />,
-            "2 offres",
+            <div
+              className="offers-container"
+            >
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="has-text-primary"
+                to="/offres?lieu=1"
+              >
+                <Icon
+                  svg="ico-offres-r"
+                />
+                2 offres
+              </NavLink>
+            </div>,
+            <div
+              className="button-container"
+            >
+              <button
+                className="button is-secondary enable-disable-button"
+                onClick={[Function]}
+              >
+                Désactiver
+              </button>
+            </div>,
           ],
-          "className": "has-text-primary",
-          "to": "/offres?lieu=1",
         },
         "ref": null,
         "rendered": Array [
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "function",
+            "nodeType": "host",
             "props": Object {
-              "svg": "ico-offres-r",
+              "children": <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="has-text-primary"
+                to="/offres?lieu=1"
+              >
+                <Icon
+                  svg="ico-offres-r"
+                />
+                2 offres
+              </NavLink>,
+              "className": "offers-container",
             },
             "ref": null,
-            "rendered": null,
-            "type": [Function],
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "activeClassName": "active",
+                "aria-current": "page",
+                "children": Array [
+                  <Icon
+                    svg="ico-offres-r"
+                  />,
+                  "2 offres",
+                ],
+                "className": "has-text-primary",
+                "to": "/offres?lieu=1",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "svg": "ico-offres-r",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                "2 offres",
+              ],
+              "type": [Function],
+            },
+            "type": "div",
           },
-          "2 offres",
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <button
+                className="button is-secondary enable-disable-button"
+                onClick={[Function]}
+              >
+                Désactiver
+              </button>,
+              "className": "button-container",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Désactiver",
+                "className": "button is-secondary enable-disable-button",
+                "onClick": [Function],
+              },
+              "ref": null,
+              "rendered": "Désactiver",
+              "type": "button",
+            },
+            "type": "div",
+          },
         ],
-        "type": [Function],
-      },
-      Object {
-        "instance": null,
-        "key": "1",
-        "nodeType": "host",
-        "props": Object {
-          "children": <button
-            className="button is-secondary"
-            onClick={[Function]}
-          >
-            Désactiver
-          </button>,
-        },
-        "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "Désactiver",
-            "className": "button is-secondary",
-            "onClick": [Function],
-          },
-          "ref": null,
-          "rendered": "Désactiver",
-          "type": "button",
-        },
         "type": "div",
       },
       Object {
         "instance": null,
-        "key": "2",
+        "key": undefined,
         "nodeType": "host",
         "props": Object {
           "children": <button
             className="delete is-small"
             onClick={[Function]}
           />,
-          "className": "is-pulled-right",
         },
         "ref": null,
         "rendered": Object {
@@ -278,50 +344,56 @@ ShallowWrapper {
             />
           </div>,
           <div
-            className="has-text-weight-bold is-size-3"
+            className="has-text-weight-bold fs14 provider-name-container"
           >
             fake local class
           </div>,
-          <div>
+          <div
+            className="fs14 venue-id-at-offer-provider-container"
+          >
             Compte : 
              
             <strong
-              className="has-text-weight-bold"
+              className="has-text-weight-bold fs14"
             >
               1
             </strong>
           </div>,
-          Array [
-            <NavLink
-              activeClassName="active"
-              aria-current="page"
-              className="has-text-primary"
-              to="/offres?lieu=1"
+          <div>
+            <div
+              className="offers-container"
             >
-              <Icon
-                svg="ico-offres-r"
-              />
-              2 offres
-            </NavLink>,
-            <div>
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="has-text-primary"
+                to="/offres?lieu=1"
+              >
+                <Icon
+                  svg="ico-offres-r"
+                />
+                2 offres
+              </NavLink>
+            </div>
+            <div
+              className="button-container"
+            >
               <button
-                className="button is-secondary"
+                className="button is-secondary enable-disable-button"
                 onClick={[Function]}
               >
                 Désactiver
               </button>
-            </div>,
-          ],
-          <div
-            className="is-pulled-right"
-          >
+            </div>
+          </div>,
+          <div>
             <button
               className="delete is-small"
               onClick={[Function]}
             />
           </div>,
         ],
-        "className": "is-disabled",
+        "className": "is-disabled venue-provider-row",
       },
       "ref": null,
       "rendered": Array [
@@ -355,7 +427,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "fake local class",
-            "className": "has-text-weight-bold is-size-3",
+            "className": "has-text-weight-bold fs14 provider-name-container",
           },
           "ref": null,
           "rendered": "fake local class",
@@ -370,11 +442,12 @@ ShallowWrapper {
               "Compte : ",
               " ",
               <strong
-                className="has-text-weight-bold"
+                className="has-text-weight-bold fs14"
               >
                 1
               </strong>,
             ],
+            "className": "fs14 venue-id-at-offer-provider-container",
           },
           "ref": null,
           "rendered": Array [
@@ -386,7 +459,7 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": 1,
-                "className": "has-text-weight-bold",
+                "className": "has-text-weight-bold fs14",
               },
               "ref": null,
               "rendered": 1,
@@ -397,75 +470,134 @@ ShallowWrapper {
         },
         Object {
           "instance": null,
-          "key": "0",
-          "nodeType": "function",
+          "key": undefined,
+          "nodeType": "host",
           "props": Object {
-            "activeClassName": "active",
-            "aria-current": "page",
             "children": Array [
-              <Icon
-                svg="ico-offres-r"
-              />,
-              "2 offres",
+              <div
+                className="offers-container"
+              >
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="has-text-primary"
+                  to="/offres?lieu=1"
+                >
+                  <Icon
+                    svg="ico-offres-r"
+                  />
+                  2 offres
+                </NavLink>
+              </div>,
+              <div
+                className="button-container"
+              >
+                <button
+                  className="button is-secondary enable-disable-button"
+                  onClick={[Function]}
+                >
+                  Désactiver
+                </button>
+              </div>,
             ],
-            "className": "has-text-primary",
-            "to": "/offres?lieu=1",
           },
           "ref": null,
           "rendered": Array [
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "function",
+              "nodeType": "host",
               "props": Object {
-                "svg": "ico-offres-r",
+                "children": <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="has-text-primary"
+                  to="/offres?lieu=1"
+                >
+                  <Icon
+                    svg="ico-offres-r"
+                  />
+                  2 offres
+                </NavLink>,
+                "className": "offers-container",
               },
               "ref": null,
-              "rendered": null,
-              "type": [Function],
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "activeClassName": "active",
+                  "aria-current": "page",
+                  "children": Array [
+                    <Icon
+                      svg="ico-offres-r"
+                    />,
+                    "2 offres",
+                  ],
+                  "className": "has-text-primary",
+                  "to": "/offres?lieu=1",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "svg": "ico-offres-r",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  "2 offres",
+                ],
+                "type": [Function],
+              },
+              "type": "div",
             },
-            "2 offres",
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <button
+                  className="button is-secondary enable-disable-button"
+                  onClick={[Function]}
+                >
+                  Désactiver
+                </button>,
+                "className": "button-container",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Désactiver",
+                  "className": "button is-secondary enable-disable-button",
+                  "onClick": [Function],
+                },
+                "ref": null,
+                "rendered": "Désactiver",
+                "type": "button",
+              },
+              "type": "div",
+            },
           ],
-          "type": [Function],
-        },
-        Object {
-          "instance": null,
-          "key": "1",
-          "nodeType": "host",
-          "props": Object {
-            "children": <button
-              className="button is-secondary"
-              onClick={[Function]}
-            >
-              Désactiver
-            </button>,
-          },
-          "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Désactiver",
-              "className": "button is-secondary",
-              "onClick": [Function],
-            },
-            "ref": null,
-            "rendered": "Désactiver",
-            "type": "button",
-          },
           "type": "div",
         },
         Object {
           "instance": null,
-          "key": "2",
+          "key": undefined,
           "nodeType": "host",
           "props": Object {
             "children": <button
               className="delete is-small"
               onClick={[Function]}
             />,
-            "className": "is-pulled-right",
           },
           "ref": null,
           "rendered": Object {

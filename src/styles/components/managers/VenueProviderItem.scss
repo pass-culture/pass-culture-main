@@ -1,0 +1,28 @@
+.venue-provider-row {
+  display: flex;
+  width: 100%;
+
+  .validation-label-container {
+    margin-left: auto;
+  }
+
+  .enable-disable-button {
+    margin-left: auto;
+  }
+
+  .button-container {
+    flex: 1;
+  }
+
+  .provider-name-container {
+    flex: 1;
+  }
+
+  .venue-id-at-offer-provider-container {
+    flex: 1;
+  }
+
+  .offers-container {
+    flex: 1;
+  }
+}

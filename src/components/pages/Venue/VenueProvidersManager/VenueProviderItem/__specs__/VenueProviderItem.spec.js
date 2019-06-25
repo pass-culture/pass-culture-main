@@ -55,7 +55,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       const wrapper = shallow(<VenueProviderItem {...props} />)
 
       // then
-      const providerLocalClass = wrapper.find('.has-text-weight-bold.is-size-3')
+      const providerLocalClass = wrapper.find('.provider-name-container')
       expect(providerLocalClass.text()).toBe('fake local class')
     })
 
@@ -91,7 +91,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
 
       // then
       const button = wrapper.find('button').at(0)
-      expect(button.prop('className')).toBe('button is-secondary')
+      expect(button.prop('className')).toBe('button is-secondary enable-disable-button')
       expect(button.prop('onClick')).toEqual(expect.any(Function))
       expect(button.text()).toBe('Désactiver')
     })
@@ -105,7 +105,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
 
       // then
       const button = wrapper.find('button').at(0)
-      expect(button.prop('className')).toBe('button is-secondary')
+      expect(button.prop('className')).toBe('button is-secondary enable-disable-button')
       expect(button.prop('onClick')).toEqual(expect.any(Function))
       expect(button.text()).toBe('Activer')
     })
@@ -118,7 +118,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       const wrapper = shallow(<VenueProviderItem {...props} />)
 
       // then
-      const div = wrapper.find('.small')
+      const div = wrapper.find('.validation-label-container')
       expect(div.text()).toBe('En cours de validation')
     })
   })
