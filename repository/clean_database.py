@@ -1,3 +1,4 @@
+from local_providers.install import install_local_providers
 from models import Booking, \
     Deposit, \
     Mediation, \
@@ -12,9 +13,8 @@ from models import Booking, \
     UserOfferer, \
     UserSession, \
     Venue, \
+    Provider, \
     VenueProvider, PaymentMessage, BankInformation, LocalProviderEvent, Feature
-from models.activity import load_activity
-from models.db import db
 from models.email import Email
 from models.install import install_features
 
@@ -44,6 +44,10 @@ def clean_all_database(*args, **kwargs):
     Email.query.delete()
     LocalProviderEvent.query.delete()
     Feature.query.delete()
+    Provider.query.delete()
     db.session.commit()
 
-    install_features()
+
+    install_features
+    install_local_providers()
+

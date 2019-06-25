@@ -781,12 +781,12 @@ def get_price_by_short_name(occurrence_short_name=None):
         return sum(map(ord, occurrence_short_name)) % 50
 
 
-def create_venue_provider(venue, provider, siren='77567146400110', is_active=True):
+def create_venue_provider(venue, provider, venue_id_at_offer_provider='77567146400110', is_active=True):
     venue_provider = VenueProvider()
     venue_provider.venue = venue
     venue_provider.isActive = is_active
     venue_provider.provider = provider
-    venue_provider.venueIdAtOfferProvider = siren
+    venue_provider.venueIdAtOfferProvider = venue_id_at_offer_provider
     return venue_provider
 
 

@@ -7,6 +7,7 @@ from models.pc_object import PcObject
 from models.provider import Provider
 from models.user_offerer import RightsType
 from models.venue_provider import VenueProvider
+from repository.venue_provider_queries import find_venue_provider
 from utils.config import API_ROOT_PATH
 from utils.human_ids import dehumanize
 from utils.includes import VENUE_PROVIDER_INCLUDES
@@ -44,36 +45,31 @@ def get_venue_provider(id):
 @login_or_api_key_required
 @expect_json_data
 def create_venue_provider():
-    new_vp = VenueProvider(from_dict=request.json)
+    new_venue_provider = VenueProvider(from_dict=request.json)
 
-    # CHECK THAT THIS PROVIDER IS ACTIVE
     provider = load_or_404(Provider, request.json['providerId'])
-    if not provider.isActive:
+    provider_is_available_for_pro_usage = provider.isActive and provider.enabledForPro
+    if not provider_is_available_for_pro_usage:
         errors = ApiErrors()
         errors.status_code = 401
-        errors.addError('localClass', "Ce fournisseur n' est pas activé")
+        errors.addError('localClass', "Ce fournisseur n'est pas activé")
         errors.maybeRaise()
-        return
 
-    # CHECK THAT THERE IS NOT ALREADY A VENUE PROVIDER
-    # FOR THE SAME VENUE, PROVIDER, IDENTIFIER
-    same_venue_provider = VenueProvider.query.filter_by(
-        providerId=provider.id,
-        venueId=dehumanize(request.json['venueId']),
-        venueIdAtOfferProvider=request.json['venueIdAtOfferProvider']
-    ).first()
-    if same_venue_provider:
+    existing_venue_provider = find_venue_provider(provider.id,
+                                                  dehumanize(request.json['venueId']),
+                                                  request.json['venueIdAtOfferProvider'])
+    if existing_venue_provider:
         errors = ApiErrors()
         errors.status_code = 401
         errors.addError('venueIdAtOfferProvider', "Il y a déjà un fournisseur pour votre identifiant")
         errors.maybeRaise()
 
     # SAVE
-    PcObject.save(new_vp)
+    PcObject.save(new_venue_provider)
 
     # CALL THE PROVIDER SUB PROCESS
     p = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
-                         + ' --venue_provider_id %s' % str(new_vp.id),
+                         + ' --venue_provider_id %s' % str(new_venue_provider.id),
                          #stdout=subprocess.PIPE,
                          #stderr=subprocess.PIPE,
                          shell=True,
@@ -83,7 +79,7 @@ def create_venue_provider():
     #print("STDERR:", err)
 
     # RETURN
-    return jsonify(new_vp.as_dict(include=VENUE_PROVIDER_INCLUDES)), 201
+    return jsonify(new_venue_provider.as_dict(include=VENUE_PROVIDER_INCLUDES)), 201
 
 
 @app.route('/venueProviders/<id>', methods=['PATCH'])
