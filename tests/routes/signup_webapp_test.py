@@ -306,7 +306,7 @@ class Post:
             error = response.json
             assert 'email' in error
 
-    class Returns404:
+    class Returns403:
         @clean_database
         def when_feature_is_not_active(self, app):
             # Given
