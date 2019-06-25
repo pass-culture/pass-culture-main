@@ -1,5 +1,4 @@
-from admin.custom_views import OffererAdminView, UserAdminView, FeatureAdminView
-from admin.custom_views import VenueAdminView
+from admin.custom_views import OffererAdminView, UserAdminView, FeatureAdminView,  VenueAdminView
 from models import Offerer, User, Feature, Venue
 
 

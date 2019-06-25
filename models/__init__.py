@@ -13,8 +13,6 @@ from models.local_provider_event import LocalProviderEvent
 from models.mediation import Mediation
 from models.needs_validation_mixin import NeedsValidationMixin
 from models.offer import Offer
-from models.stock import Stock
-from models.feature import Feature
 from models.offer_type import ThingType, EventType
 from models.offerer import Offerer
 from models.payment import Payment
@@ -26,6 +24,7 @@ from models.product import Product
 from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
 from models.recommendation import Recommendation
+from models.stock import Stock
 from models.stock import Stock
 from models.user import User
 from models.user_offerer import RightsType

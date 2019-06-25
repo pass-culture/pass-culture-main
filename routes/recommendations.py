@@ -49,11 +49,11 @@ def get_recommendation(offer_id):
     return jsonify(_serialize_recommendation(recommendation)), 200
 
 
-@app.route('/recommendations/<recommendationId>', methods=['PATCH'])
+@app.route('/recommendations/<recommendation_id>', methods=['PATCH'])
 @login_required
 @expect_json_data
-def patch_recommendation(recommendationId):
-    query = Recommendation.query.filter_by(id=dehumanize(recommendationId))
+def patch_recommendation(recommendation_id):
+    query = Recommendation.query.filter_by(id=dehumanize(recommendation_id))
     recommendation = query.first_or_404()
     recommendation.populate_from_dict(request.json)
     PcObject.save(recommendation)
