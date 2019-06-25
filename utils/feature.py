@@ -8,6 +8,6 @@ def feature_required(feature_toggle: FeatureToggle):
             if feature_queries.is_active(feature_toggle):
                 return f(*args, **kwargs)
 
-            return '', 404
+            return '', 403
         return wrapper
     return decorator

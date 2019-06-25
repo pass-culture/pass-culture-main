@@ -4,7 +4,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 
 from models.feature import FeatureToggle, Feature
-from models.pc_object import serialize
+from models.pc_object import serialize, PcObject
 from models.user import User
 from repository import feature_queries
 from tests.conftest import clean_database, TestClient
@@ -311,8 +311,9 @@ class Post:
         def when_feature_is_not_active(self, app):
             # Given
             data = BASE_DATA.copy()
-            feature_queries.deactivate(FeatureToggle.WEBAPP_SIGNUP)
-            print(vars(Feature.query.first()))
+            feature = Feature.query.filter_by(name=FeatureToggle.WEBAPP_SIGNUP).first()
+            feature.isActive = False
+            PcObject.save(feature)
 
             # When
             response = TestClient() \
@@ -320,4 +321,4 @@ class Post:
                       json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
-            assert response.status_code == 404
+            assert response.status_code == 403

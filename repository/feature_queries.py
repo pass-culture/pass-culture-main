@@ -1,6 +1,6 @@
 import os
 
-from models import Feature, PcObject
+from models import Feature
 from models.feature import FeatureToggle
 from utils.config import IS_PROD, IS_INTEGRATION
 
@@ -18,18 +18,6 @@ def is_active(feature_toggle: FeatureToggle) -> bool:
         .filter_by(name=feature_toggle) \
         .first() \
         .isActive
-
-
-def deactivate(feature_toggle: FeatureToggle):
-    feature = Feature.query.filter_by(name=feature_toggle).first()
-    feature.isActive = False
-    PcObject.save(feature)
-
-
-def activate(feature_toggle: FeatureToggle):
-    feature = Feature.query.filter_by(name=feature_toggle).first()
-    feature.isActive = True
-    PcObject.save(feature)
 
 
 def feature_send_mail_to_users_enabled() -> bool:

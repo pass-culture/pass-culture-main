@@ -1,7 +1,6 @@
 from admin.custom_views import OffererAdminView, UserAdminView, FeatureAdminView
 from admin.custom_views import VenueAdminView
-from models import Offerer, User, Feature
-from models import Venue
+from models import Offerer, User, Feature, Venue
 
 
 def install_admin_views(admin, session):

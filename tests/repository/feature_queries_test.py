@@ -1,5 +1,6 @@
-from models.feature import FeatureToggle
-from repository.feature_queries import is_active, activate, deactivate
+from models import PcObject
+from models.feature import FeatureToggle, Feature
+from repository.feature_queries import is_active
 from tests.conftest import clean_database
 
 
@@ -7,7 +8,9 @@ class FeatureToggleTest:
     @clean_database
     def test_is_active_returns_true_when_feature_is_active(self, app):
         # Given
-        activate(FeatureToggle.WEBAPP_SIGNUP)
+        feature = Feature.query.filter_by(name=FeatureToggle.WEBAPP_SIGNUP).first()
+        feature.isActive = True
+        PcObject.save(feature)
 
         # When / Then
         assert is_active(FeatureToggle.WEBAPP_SIGNUP)
@@ -15,7 +18,8 @@ class FeatureToggleTest:
     @clean_database
     def test_is_active_returns_false_when_feature_is_inactive(self, app):
         # Given
-        deactivate(FeatureToggle.WEBAPP_SIGNUP)
-
+        feature = Feature.query.filter_by(name=FeatureToggle.WEBAPP_SIGNUP).first()
+        feature.isActive = False
+        PcObject.save(feature)
         # When / Then
         assert not is_active(FeatureToggle.WEBAPP_SIGNUP)
