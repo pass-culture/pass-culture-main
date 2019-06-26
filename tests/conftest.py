@@ -1,11 +1,9 @@
+import os
 from functools import wraps
 from pprint import pprint
-from time import sleep
 from unittest.mock import Mock
 
-import docker
 import pytest
-from docker.errors import NotFound
 from flask import Flask, jsonify
 from flask_login import LoginManager, login_user
 from mailjet_rest import Client
@@ -19,7 +17,6 @@ from repository.clean_database import clean_all_database
 from repository.user_queries import find_user_by_email
 from routes import install_routes
 from tests.test_utils import PLAIN_DEFAULT_TESTING_PASSWORD
-from utils.config import IS_DEV, IS_CI
 from utils.json_encoder import EnumJSONEncoder
 
 
@@ -28,43 +25,11 @@ def pytest_configure(config):
         TestClient.WITH_DOC = True
 
 
-def setup_test_database():
-    client = docker.from_env()
-    print('<<<<<|   STARTING DATABASE   |>>>>>')
-
-    try:
-        database = client.containers.get('pass-culture-pytest')
-    except NotFound as e:
-        client.containers.run(
-            'postgres',
-            name='pass-culture-pytest',
-            ports={
-                '5432/tcp': 5432
-            },
-            environment={
-                'POSTGRES_USER': 'pytest',
-                'POSTGRES_PASSWORD': 'pytest',
-                'POSTGRES_DB': 'pass-culture'
-            },
-            detach=True
-        )
-        sleep(3)
-    else:
-        if database.attrs['State']['Running'] is False:
-            database.start()
-            sleep(3)
-
-    print('<<<<<|   DATABASE STARTED   |>>>>>')
-
-
 @pytest.fixture(scope='session')
 def app():
     app = Flask(__name__, template_folder='../templates')
 
-    if not IS_CI and IS_DEV:
-        setup_test_database()
-
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://pytest:pytest@localhost:5432/pass-culture'
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL_TEST')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = '@##&6cweafhv3426445'
     app.config['REMEMBER_COOKIE_HTTPONLY'] = False
