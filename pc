@@ -311,12 +311,11 @@ elif [[ "$CMD" == "shared" ]]; then
 # Need start-backend to be successful and delete all data
 elif [[ "$CMD" == "test-backend" ]]; then
   if [[ $# == 0 ]]; then
-    confirm "Warning: your database will be wiped. Is this OK ?"
-     "$ROOT_PATH"/pc -e "$ENV" reset-all-db
-     RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest --color=yes -rsx -v tests"'
+    PYTEST_ARGS="tests"
   else
-     RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest --color=yes -rsx -v '"$*"'"'
+    PYTEST_ARGS=$*
   fi
+  RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && rm -rf static/object_store_data/thumbs/* && PYTHONPATH=. pytest --color=yes -rsx -v $PYTEST_ARGS"'
 
 # Run only local providers tests for API
 elif [[ "$CMD" == "test-backend-provider" ]]; then
