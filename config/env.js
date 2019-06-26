@@ -66,7 +66,7 @@ function getClientEnvironment(publicUrl) {
         return env
       },
       {
-        API_URL: process.env.API_URL,
+        API_URL: process.env.API_URL || 'http://localhost',
         // Helpful for quick testing the dexis sync
         // system in a worker or not
         HAS_WORKERS: process.env.HAS_WORKERS || false,

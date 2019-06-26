@@ -29,7 +29,7 @@ export const SUPPORT_EMAIL_SUBJECT = encodeURI(
   "Votre question depuis l'application pass Culture"
 )
 
-export const API_URL = process.env.API_URL || 'http://localhost'
+export const API_URL = process.env.API_URL
 
 let calculatedLocalhost
 if (typeof window !== 'undefined') {
