@@ -21,6 +21,12 @@ Enfin pour tout le monde:
 ```bash
 pc install
 ```
+ou 
+
+```bash
+./pc install
+```
+
 Le script `pc` sera automatiquement lié dans votre dossier `/usr/local/bin`
 
 ### Init
