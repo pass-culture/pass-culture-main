@@ -1,21 +1,19 @@
-import {compose} from 'redux'
-import {connect} from 'react-redux'
-import {withFrenchQueryRouter} from 'components/hocs'
+import { compose } from 'redux'
+import { connect } from 'react-redux'
+import { withFrenchQueryRouter } from 'components/hocs'
 
-import {FilterByDate} from './FilterByDate'
+import { FilterByDate } from './FilterByDate'
 
-export const mapDispatchToProps = (dispatch) => ({
-  selectBookingsForDate: (date) => {
-    dispatch(
-      {
-        payload: date,
-        type: 'BOOKING_SUMMARY_SELECT_DATE',
-      }
-    )
-  }
+export const mapDispatchToProps = dispatch => ({
+  selectBookingsForDate: date => {
+    dispatch({
+      payload: date,
+      type: 'BOOKING_SUMMARY_SELECT_DATE',
+    })
+  },
 })
 
-export const mapStateToProps = (state) => {
+export const mapStateToProps = state => {
   return {
     date: state.bookingSummary.selectOffersSince,
   }
@@ -23,5 +21,8 @@ export const mapStateToProps = (state) => {
 
 export default compose(
   withFrenchQueryRouter,
-  connect(mapStateToProps, mapDispatchToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(FilterByDate)

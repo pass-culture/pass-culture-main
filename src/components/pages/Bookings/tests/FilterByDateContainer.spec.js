@@ -1,4 +1,4 @@
-import {mapDispatchToProps} from '../FilterByDateContainer'
+import { mapDispatchToProps } from '../FilterByDateContainer'
 
 describe('src | components | pages | Bookings | FilterByDateContainer', () => {
   describe('mapDispatchToProps', () => {
@@ -7,9 +7,7 @@ describe('src | components | pages | Bookings | FilterByDateContainer', () => {
       const props = mapDispatchToProps()
 
       // then
-      expect(props).toHaveProperty(
-        'selectBookingsForDate'
-      )
+      expect(props).toHaveProperty('selectBookingsForDate')
     })
 
     it('preserve selected date', () => {
@@ -18,14 +16,13 @@ describe('src | components | pages | Bookings | FilterByDateContainer', () => {
       const props = mapDispatchToProps(dispatch)
 
       //when
-      props.selectBookingsForDate(new Date(2019,6,1))
+      props.selectBookingsForDate(new Date(2019, 6, 1))
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
-        payload: new Date(2019,6,1),
+        payload: new Date(2019, 6, 1),
         type: 'BOOKING_SUMMARY_SELECT_DATE',
       })
     })
-
   })
 })

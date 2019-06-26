@@ -1,4 +1,4 @@
-import {mapStateToProps, mapDispatchToProps} from '../FilterByOfferContainer'
+import { mapStateToProps, mapDispatchToProps } from '../FilterByOfferContainer'
 
 describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
   describe('mapDispatchToProps', () => {
@@ -7,9 +7,7 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
       const props = mapDispatchToProps()
 
       // the
-      expect(props).toHaveProperty(
-        'selectBookingsForOffers'
-      )
+      expect(props).toHaveProperty('selectBookingsForOffers')
     })
 
     it('preserve selected offer', () => {
@@ -31,141 +29,155 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
   describe('mapStateToProps', () => {
     it('return only digital offers when isFilterByDigitalVenues is true', () => {
       // given
-      const state={
-        bookingSummary:{
-          isFilterByDigitalVenues: true
+      const state = {
+        bookingSummary: {
+          isFilterByDigitalVenues: true,
         },
-        data:{
-          offers:[{
-            id:"AVJA",
-            product:{
-              offerType:{
-                onlineOnly:true
-              }
-            }
-          },
+        data: {
+          offers: [
             {
-              id:"AFTA",
-              product:{
-                offerType:{
-                  onlineOnly:false
-                }
-              }
-            }]
-        }
+              id: 'AVJA',
+              product: {
+                offerType: {
+                  onlineOnly: true,
+                },
+              },
+            },
+            {
+              id: 'AFTA',
+              product: {
+                offerType: {
+                  onlineOnly: false,
+                },
+              },
+            },
+          ],
+        },
       }
       // when
       const props = mapStateToProps(state)
 
       // then
-      expect(props.offersOptions).toEqual(expect.arrayContaining(
-        [{
-          id:"AVJA",
-          product:{
-            offerType:{
-              onlineOnly:true
-            }
-          }
-        }]
-      ))
+      expect(props.offersOptions).toEqual(
+        expect.arrayContaining([
+          {
+            id: 'AVJA',
+            product: {
+              offerType: {
+                onlineOnly: true,
+              },
+            },
+          },
+        ])
+      )
     })
 
     it("return only non digital offers when isFilterByDigitalVenues is false and venueId is 'all'", () => {
       // given
-      const state={
-        bookingSummary:{
-          isFilterByDigitalVenues:false,
-          selectedVenue:'all'
+      const state = {
+        bookingSummary: {
+          isFilterByDigitalVenues: false,
+          selectedVenue: 'all',
         },
-        data:{
-          offers:[{
-            id:"AVJA",
-            product:{
-              offerType:{
-                onlineOnly:true
-              }
-            }
-          },
+        data: {
+          offers: [
             {
-              id:"AFTA",
-              product:{
-                offerType:{
-                  onlineOnly:false
-                }
-              }
-            }]
-        }
+              id: 'AVJA',
+              product: {
+                offerType: {
+                  onlineOnly: true,
+                },
+              },
+            },
+            {
+              id: 'AFTA',
+              product: {
+                offerType: {
+                  onlineOnly: false,
+                },
+              },
+            },
+          ],
+        },
       }
       // when
       const props = mapStateToProps(state)
 
       // then
-      expect(props.offersOptions).toEqual(expect.arrayContaining(
-        [{
-          id:"AFTA",
-          product:{
-            offerType:{
-              onlineOnly:false
-            }
-          }
-        }]
-      ))
+      expect(props.offersOptions).toEqual(
+        expect.arrayContaining([
+          {
+            id: 'AFTA',
+            product: {
+              offerType: {
+                onlineOnly: false,
+              },
+            },
+          },
+        ])
+      )
 
-      expect(props.offersOptions).toEqual(expect.not.arrayContaining(
-        [{
-          id:"AVJA",
-          product:{
-            offerType:{
-              onlineOnly:true
-            }
-          }
-        }]
-      ))
+      expect(props.offersOptions).toEqual(
+        expect.not.arrayContaining([
+          {
+            id: 'AVJA',
+            product: {
+              offerType: {
+                onlineOnly: true,
+              },
+            },
+          },
+        ])
+      )
     })
 
-    it("return offers whom venueId os the one given when venueId is defined", () => {
+    it('return offers whom venueId os the one given when venueId is defined', () => {
       // given
-      const state={
-        bookingSummary:{
-          isFilterByDigitalVenues:false,
-          selectedVenue:'A8RQ'
+      const state = {
+        bookingSummary: {
+          isFilterByDigitalVenues: false,
+          selectedVenue: 'A8RQ',
         },
-        data:{
-          offers:[{
-            id:"AVJA",
-            product:{
-              offerType:{
-                onlineOnly:true
-              }
-            },
-            venueId: "AHPA"
-          },
+        data: {
+          offers: [
             {
-              id:"AFTA",
-              product:{
-                offerType:{
-                  onlineOnly:false
-                }
+              id: 'AVJA',
+              product: {
+                offerType: {
+                  onlineOnly: true,
+                },
               },
-              venueId: "A8RQ"
-            }]
-        }
+              venueId: 'AHPA',
+            },
+            {
+              id: 'AFTA',
+              product: {
+                offerType: {
+                  onlineOnly: false,
+                },
+              },
+              venueId: 'A8RQ',
+            },
+          ],
+        },
       }
       // when
       const props = mapStateToProps(state)
 
       // then
-      expect(props.offersOptions).toEqual(expect.arrayContaining(
-        [{
-          id:"AFTA",
-          product:{
-            offerType:{
-              onlineOnly:false
-            }
+      expect(props.offersOptions).toEqual(
+        expect.arrayContaining([
+          {
+            id: 'AFTA',
+            product: {
+              offerType: {
+                onlineOnly: false,
+              },
+            },
+            venueId: 'A8RQ',
           },
-          venueId: "A8RQ"
-        }]
-      ))
+        ])
+      )
     })
   })
 })

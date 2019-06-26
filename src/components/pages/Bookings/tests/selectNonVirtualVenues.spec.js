@@ -4,9 +4,9 @@ describe('src | components | pages | Bookings | selectNonVirtualVenues', () => {
   it('should return an empty list of non virtual venues when state contains no venues', () => {
     // given
     const state = {
-      data:{
-        venues:[]
-      }
+      data: {
+        venues: [],
+      },
     }
 
     // when
@@ -19,37 +19,37 @@ describe('src | components | pages | Bookings | selectNonVirtualVenues', () => {
   it('should return only the non virtual venues', () => {
     // given
     const state = {
-      data:{
+      data: {
         venues: [
           {
-            id:"A8HQ",
-            isVirtual: true
+            id: 'A8HQ',
+            isVirtual: true,
           },
           {
-            id:"A8RQ",
-            isVirtual: false
+            id: 'A8RQ',
+            isVirtual: false,
           },
           {
-            id:"AVGQ",
-            isVirtual: false
-          }
-        ]
-      }
+            id: 'AVGQ',
+            isVirtual: false,
+          },
+        ],
+      },
     }
 
     // when
     const nonVirtualVenuesToDisplay = selectNonVirtualVenues(state)
 
     // then
-    const nonVirtualVenuesListExpected=[
+    const nonVirtualVenuesListExpected = [
       {
-        id:"A8RQ",
-        isVirtual: false
+        id: 'A8RQ',
+        isVirtual: false,
       },
       {
-        id:"AVGQ",
-        isVirtual: false
-      }
+        id: 'AVGQ',
+        isVirtual: false,
+      },
     ]
 
     expect(nonVirtualVenuesToDisplay).toEqual(nonVirtualVenuesListExpected)
@@ -63,9 +63,8 @@ describe('src | components | pages | Bookings | selectNonVirtualVenues', () => {
     const nonVirtualVenuesToDisplay = selectNonVirtualVenues(state)
 
     // then
-    const nonVirtualVenuesListExpected=[]
+    const nonVirtualVenuesListExpected = []
 
     expect(nonVirtualVenuesToDisplay).toEqual(nonVirtualVenuesListExpected)
   })
-
 })

@@ -1,4 +1,4 @@
-import {mapStateToProps, mapDispatchToProps} from '../FilterByVenueContainer'
+import { mapStateToProps, mapDispatchToProps } from '../FilterByVenueContainer'
 
 describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
   describe('mapStateToProps', () => {
@@ -10,8 +10,8 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
         },
         data: {
           offers: [],
-          venues: []
-        }
+          venues: [],
+        },
       }
 
       // when
@@ -29,9 +29,7 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
       const props = mapDispatchToProps()
 
       // then
-      expect(props).toHaveProperty(
-        'selectOnlyDigitalVenues'
-      )
+      expect(props).toHaveProperty('selectOnlyDigitalVenues')
     })
 
     it('preserve venue filter when select only digital venues', () => {
@@ -69,9 +67,7 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
       const props = mapDispatchToProps()
 
       // then
-      expect(props).toHaveProperty(
-        'selectBookingsForVenues'
-      )
+      expect(props).toHaveProperty('selectBookingsForVenues')
     })
 
     it('preserve selected venue', () => {

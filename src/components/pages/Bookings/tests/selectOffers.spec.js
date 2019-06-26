@@ -3,11 +3,11 @@ import selectOffers from '../selectOffers'
 describe('src | components | pages | Bookings | selectOffers', () => {
   it('should return an empty list of offers when state contains no offer', () => {
     // given
-    const  onlineOnly = true
+    const onlineOnly = true
     const state = {
-      data:{
-        offers:[]
-      }
+      data: {
+        offers: [],
+      },
     }
 
     // when
@@ -19,59 +19,59 @@ describe('src | components | pages | Bookings | selectOffers', () => {
 
   it('should return only digital offers when user checks the box to see only digital offer', () => {
     // given
-    const  onlineOnly = true
+    const onlineOnly = true
     const state = {
-      data:{
-        offers:[
+      data: {
+        offers: [
           {
-            id: "AVJA",
+            id: 'AVJA',
             product: {
-              offerType:{
-                onlineOnly:true
-              }
+              offerType: {
+                onlineOnly: true,
+              },
             },
           },
           {
-            id: "AVHA",
+            id: 'AVHA',
             product: {
-              offerType:{
-                onlineOnly:true
-              }
+              offerType: {
+                onlineOnly: true,
+              },
             },
           },
           {
-            id: "AVFA",
+            id: 'AVFA',
             product: {
-              offerType:{
-                onlineOnly:false
-              }
+              offerType: {
+                onlineOnly: false,
+              },
             },
-          }
-        ]
-      }
+          },
+        ],
+      },
     }
 
     // when
     const offersToDisplay = selectOffers(onlineOnly, state)
 
     // then
-    const offerListExpected=[
+    const offerListExpected = [
       {
-        id: "AVJA",
+        id: 'AVJA',
         product: {
-          offerType:{
-            onlineOnly:true
-          }
+          offerType: {
+            onlineOnly: true,
+          },
         },
       },
       {
-        id: "AVHA",
+        id: 'AVHA',
         product: {
-          offerType:{
-            onlineOnly:true
-          }
+          offerType: {
+            onlineOnly: true,
+          },
         },
-      }
+      },
     ]
 
     expect(offersToDisplay).toEqual(offerListExpected)
@@ -79,51 +79,51 @@ describe('src | components | pages | Bookings | selectOffers', () => {
 
   it('should return only non digital offers when user unchecks the box to see only digital offer', () => {
     // given
-    const  onlineOnly = false
+    const onlineOnly = false
     const state = {
-      data:{
-        offers:[
+      data: {
+        offers: [
           {
-            id: "AVJA",
+            id: 'AVJA',
             product: {
-              offerType:{
-                onlineOnly:true
-              }
+              offerType: {
+                onlineOnly: true,
+              },
             },
           },
           {
-            id: "AVHA",
+            id: 'AVHA',
             product: {
-              offerType:{
-                onlineOnly:true
-              }
+              offerType: {
+                onlineOnly: true,
+              },
             },
           },
           {
-            id: "AVFA",
+            id: 'AVFA',
             product: {
-              offerType:{
-                onlineOnly:false
-              }
+              offerType: {
+                onlineOnly: false,
+              },
             },
-          }
-        ]
-      }
+          },
+        ],
+      },
     }
 
     // when
     const offersToDisplay = selectOffers(onlineOnly, state)
 
     // then
-    const offerListExpected=[
+    const offerListExpected = [
       {
-        id: "AVFA",
+        id: 'AVFA',
         product: {
-          offerType:{
-            onlineOnly:false
-          }
+          offerType: {
+            onlineOnly: false,
+          },
         },
-      }
+      },
     ]
 
     expect(offersToDisplay).toEqual(offerListExpected)
@@ -131,14 +131,14 @@ describe('src | components | pages | Bookings | selectOffers', () => {
 
   it('should return an empty list of offer when state is not initialized', () => {
     // given
-    const  onlineOnly = true
+    const onlineOnly = true
     const state = {}
 
     // when
     const offersToDisplay = selectOffers(onlineOnly, state)
 
     // then
-    const offerListExpected=[]
+    const offerListExpected = []
 
     expect(offersToDisplay).toEqual(offerListExpected)
   })

@@ -1,17 +1,16 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 
-import {FilterByVenue} from './FilterByVenue'
+import { FilterByVenue } from './FilterByVenue'
 import FilterByDateContainer from './FilterByDateContainer'
 
 export class FilterByOffer extends PureComponent {
-
   componentDidMount() {
     this.props.loadOffers()
   }
 
   onChangeOffer = event => {
-    const selectedOffer = document.getElementById("offers")
+    const selectedOffer = document.getElementById('offers')
     const offerId = selectedOffer[selectedOffer.selectedIndex].value
     this.props.selectBookingsForOffers(offerId)
   }
@@ -19,7 +18,12 @@ export class FilterByOffer extends PureComponent {
   render() {
     const { offersOptions, isFilterByDigitalVenues, venueId } = this.props
 
-    if ((venueId !== "" && !isFilterByDigitalVenues) || isFilterByDigitalVenues) {
+    const all = isFilterByDigitalVenues ? 'allDigital' : 'allNonDigital'
+
+    if (
+      (venueId !== '' && !isFilterByDigitalVenues) ||
+      isFilterByDigitalVenues
+    ) {
       return (
         <React.Fragment>
           <div id="filter-by-offer">
@@ -28,18 +32,18 @@ export class FilterByOffer extends PureComponent {
                 {isFilterByDigitalVenues ? 'OFFRE NUMERIQUE' : 'OFFRE'}
               </h2>
               <div>
-                Télécharger les réservations pour l'offre {isFilterByDigitalVenues ? 'numérique' : ''} :
+                Télécharger les réservations pour l'offre{' '}
+                {isFilterByDigitalVenues ? 'numérique' : ''} :
               </div>
               <select
                 id="offers"
                 className="pc-selectbox pl24 py5 fs19"
                 onChange={this.onChangeOffer}
-                defaultValue=""
-              >
+                defaultValue="">
                 <option value="">Choisissez une offre dans la liste.</option>
-                <option value="all">Toutes les offres</option>
-              }
-                {offersOptions.map(({name, id}) => (
+                <option value={all}>Toutes les offres</option>
+
+                {offersOptions.map(({ name, id }) => (
                   <option key={id} value={id}>
                     {name}
                   </option>
@@ -47,14 +51,12 @@ export class FilterByOffer extends PureComponent {
               </select>
             </div>
           </div>
-          <FilterByDateContainer
-          />
+          <FilterByDateContainer />
         </React.Fragment>
       )
     }
 
     return null
-
   }
 }
 

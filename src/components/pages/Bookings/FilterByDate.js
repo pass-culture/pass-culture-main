@@ -3,16 +3,15 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 
 import { MONTH_OPTIONS, YEAR_OPTIONS } from './utils'
-import {FilterByVenue} from './FilterByVenue'
+import { FilterByVenue } from './FilterByVenue'
 
 export class FilterByDate extends PureComponent {
-
   onChangeDate = event => {
-    const selectedMonth = document.getElementById("month")
+    const selectedMonth = document.getElementById('month')
     const month = selectedMonth[selectedMonth.selectedIndex].value
-    const selectedYear = document.getElementById("year")
+    const selectedYear = document.getElementById('year')
     const year = selectedYear[selectedYear.selectedIndex].value
-    const updatedDate = new Date(year, month-1, 1, 12)
+    const updatedDate = new Date(year, month - 1, 1, 12)
     this.props.selectBookingsForDate(updatedDate)
   }
 
@@ -21,17 +20,15 @@ export class FilterByDate extends PureComponent {
 
     return (
       <React.Fragment>
-        <div id="filter-by-date"
-             className={classnames({'is-invisible': isDigitalChecked,})} >
-          <div>
-            {'Effectuées en :'}
-          </div>
+        <div
+          id="filter-by-date"
+          className={classnames({ 'is-invisible': isDigitalChecked })}>
+          <div>{'Effectuées en :'}</div>
           <select
             onChange={this.onChangeDate}
             className="pc-selectbox pl24 py5 fs19"
             defaultValue="1"
-            id="month"
-          >
+            id="month">
             {MONTH_OPTIONS.map(({ label, value }) => (
               <option key={value} value={value}>
                 {label}
@@ -42,8 +39,7 @@ export class FilterByDate extends PureComponent {
             onChange={this.onChangeDate}
             className="pc-selectbox pl24 py5 fs19"
             defaultValue="2019"
-            id="year"
-          >
+            id="year">
             {YEAR_OPTIONS.map(({ label, value }) => (
               <option key={value} value={value}>
                 {label}
@@ -51,7 +47,7 @@ export class FilterByDate extends PureComponent {
             ))}
           </select>
         </div>
-        <hr/>
+        <hr />
       </React.Fragment>
     )
   }

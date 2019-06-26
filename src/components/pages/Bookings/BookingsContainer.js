@@ -2,7 +2,10 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import Bookings from './Bookings'
-import { withFrenchQueryRouter, withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
+import {
+  withFrenchQueryRouter,
+  withRedirectToSigninWhenNotAuthenticated,
+} from 'components/hocs'
 
 export const mapStateToProps = state => {
   return {

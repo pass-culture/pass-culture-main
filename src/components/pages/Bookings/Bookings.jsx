@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import DownloadButtonContainer from 'components/layout/DownloadButton/DownloadButtonContainer'
@@ -9,16 +9,18 @@ import FilterByVenueContainer from './FilterByVenueContainer'
 import FilterByOfferContainer from './FilterByOfferContainer'
 
 class Bookings extends Component {
-
-  render () {
+  render() {
     const { isFilterByDigitalVenues, selectedOffer, selectedVenue } = this.props
 
     let showDownloadButtonContainer = true
-    if ((!isFilterByDigitalVenues && selectedVenue==="") || selectedOffer===""){
+    if (
+      (!isFilterByDigitalVenues && selectedVenue === '') ||
+      selectedOffer === ''
+    ) {
       showDownloadButtonContainer = false
     }
 
-    return(
+    return (
       <Main name="bookings">
         <HeroSection title="Suivi des réservations">
           <p className="subtitle">
@@ -30,21 +32,18 @@ class Bookings extends Component {
             éditeurs de texte.
           </p>
         </HeroSection>
-        <hr/>
-        <FilterByVenueContainer
-        />
-        <FilterByOfferContainer
-        />
+        <hr />
+        <FilterByVenueContainer />
+        <FilterByOfferContainer />
         <div className="control flex-columns items-center flex-end">
-          {showDownloadButtonContainer
-            ? <DownloadButtonContainer
-                filename="reservations_pass_culture"
-                href={`${API_URL}/bookings/csv`}
-                mimeType="text/csv">
-                Télécharger la liste des réservations
-              </DownloadButtonContainer>
-            : null
-          }
+          {showDownloadButtonContainer ? (
+            <DownloadButtonContainer
+              filename="reservations_pass_culture"
+              href={`${API_URL}/bookings/csv`}
+              mimeType="text/csv">
+              Télécharger la liste des réservations
+            </DownloadButtonContainer>
+          ) : null}
         </div>
       </Main>
     )

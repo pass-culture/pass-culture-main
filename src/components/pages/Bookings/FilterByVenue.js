@@ -7,7 +7,7 @@ export class FilterByVenue extends PureComponent {
   }
 
   onChangeVenue = event => {
-    const selectedVenue = document.getElementById("venues")
+    const selectedVenue = document.getElementById('venues')
     const venueId = selectedVenue[selectedVenue.selectedIndex].value
 
     this.props.selectBookingsForVenues(venueId)
@@ -15,43 +15,41 @@ export class FilterByVenue extends PureComponent {
 
   render() {
     const { venuesOptions, isDigital } = this.props
-    const labelClassName = this.props.isDigital ?  "has-text-grey" :  "has-text-black"
+    const labelClassName = this.props.isDigital
+      ? 'has-text-grey'
+      : 'has-text-black'
 
     return (
       <Fragment>
         <div id="filter-by-venue">
-          <label htmlFor="venues" className={labelClassName} >
-            {"Choisissez un lieu dans la liste."}
+          <label htmlFor="venues" className={labelClassName}>
+            {'Choisissez un lieu dans la liste.'}
           </label>
           <select
             id="venues"
             className="pc-selectbox pl24 py5 fs19"
             onChange={this.onChangeVenue}
-            disabled={isDigital}
-          >
+            disabled={isDigital}>
             <option value="">Choisissez un lieu dans la liste.</option>
             {venuesOptions.map(({ name, id }) => (
               <option key={id} value={id}>
                 {name}
               </option>
             ))}
-
           </select>
         </div>
         <div className="select-digital-offer">
-          <div>
-            {'ou :'}
-          </div>
+          <div>{'ou :'}</div>
           <input
             id="isDigital"
             className="pc-checkbox input"
             type="checkbox"
-            onChange={() => document.getElementById("venues").value = ''}
+            onChange={() => (document.getElementById('venues').value = '')}
             onClick={() => this.props.selectOnlyDigitalVenues(!isDigital)}
             defaultChecked={isDigital}
           />
           <label htmlFor="isDigital">
-            {"Cocher cette case pour voir les offres numériques."}
+            {'Cocher cette case pour voir les offres numériques.'}
           </label>
         </div>
       </Fragment>
