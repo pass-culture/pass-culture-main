@@ -17,19 +17,21 @@ class Get:
             PcObject.save(user)
 
             # when
-            response = TestClient().with_auth(user.email) \
-                .get(API_URL + '/features')
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .get(API_URL + '/features', headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 200
-            assert response.text.startswith('var features = ')
-            text = response.text.replace('var features = ', '')
-            assert json.loads(text) == {'WEBAPP_SIGNUP': True}
+            response_text = response.data.decode('utf-8')
+            assert response_text.startswith('var features = ')
+            cleaned_text = response_text.replace('var features = ', '')
+            assert json.loads(cleaned_text) == {'WEBAPP_SIGNUP': True}
 
         @clean_database
         def when_user_is_not_logged_in(self, app):
             # when
-            response = TestClient().get(API_URL + '/features')
+            response = TestClient(app.test_client()).get(API_URL + '/features',
+                                                         headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 200

@@ -316,8 +316,8 @@ class Post:
             PcObject.save(feature)
 
             # When
-            response = TestClient() \
-                .post(API_URL + '/users/signup/webapp',
+            response = TestClient(app.test_client()) \
+                .post('/users/signup/webapp',
                       json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
