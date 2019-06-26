@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 from models import PcObject
@@ -20,15 +22,14 @@ class Get:
 
             # then
             assert response.status_code == 200
-            assert response.json() == [
-                {'modelName': 'Feature', 'name': 'webapp_signup', 'isActive': True},
-            ]
+            assert response.text.startswith('var features = ')
+            text = response.text.replace('var features = ', '')
+            assert json.loads(text) == {'WEBAPP_SIGNUP': True}
 
-    class Returns401:
         @clean_database
         def when_user_is_not_logged_in(self, app):
             # when
             response = TestClient().get(API_URL + '/features')
 
             # then
-            assert response.status_code == 401
+            assert response.status_code == 200
