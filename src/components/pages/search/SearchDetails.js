@@ -46,7 +46,7 @@ class SearchDetails extends PureComponent {
         apiPath,
         handleSuccess: this.handleForceDetailsVisible,
         normalizer: recommendationNormalizer,
-        stateKey: 'searchRecommendations',
+        stateKeys: 'searchRecommendations',
       })
     )
   }

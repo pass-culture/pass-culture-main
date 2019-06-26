@@ -1,9 +1,9 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import Discovery from '../Discovery'
+import { RawDiscoveryPage } from '../index'
 
-describe('src | components | pages | discovery | Discovery', () => {
+describe('src | components | pages | discovery | RawDiscoveryPage', () => {
   let props
 
   beforeEach(() => {
@@ -12,38 +12,28 @@ describe('src | components | pages | discovery | Discovery', () => {
       dispatch: jest.fn(),
       fromPassword: true,
       history: {},
-      loadRecommendations: jest.fn(),
       location: {
         search: '',
       },
       match: {
         params: {},
       },
-      onRequestFailRedirectToHome: jest.fn(),
-      recommendations: [],
-      resetReadRecommendations: jest.fn(),
-      resetRecommendations: jest.fn(),
-      saveLoadRecommendationsTimestamp: jest.fn(),
-      shouldReloadRecommendations: false,
-      showFirstRecommendation: jest.fn(),
-      showPasswordChangedPopin: jest.fn(),
-      withBackButton: false,
     }
   })
 
   it('should match the snapshot', () => {
     // given
-    const wrapper = shallow(<Discovery {...props} />)
+    const wrapper = shallow(<RawDiscoveryPage {...props} />)
 
     // then
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 
-  xdescribe('constructor', () => {
+  describe('constructor', () => {
     it('should initialize state correctly', () => {
       // given
-      const wrapper = shallow(<Discovery {...props} />)
+      const wrapper = shallow(<RawDiscoveryPage {...props} />)
 
       // then
       const expected = {
@@ -56,11 +46,11 @@ describe('src | components | pages | discovery | Discovery', () => {
     })
   })
 
-  xdescribe('handleDataRequest', () => {
+  describe('handleDataRequest', () => {
     describe('One case', () => {
       it('should update recommendation infos using API when Main component is rendered', () => {
         // given
-        shallow(<Discovery {...props} />)
+        shallow(<RawDiscoveryPage {...props} />)
 
         // then
         const expectedRequestDataAction = {

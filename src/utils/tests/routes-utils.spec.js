@@ -2,7 +2,7 @@ import { filterRoutes, getMenuRoutes } from '../routes-utils'
 
 import routes from '../routes'
 
-import DiscoveryContainer from '../../components/pages/discovery/DiscoveryContainer'
+import DiscoveryPage from '../../components/pages/discovery'
 import FavoritesPage from '../../components/pages/FavoritesPage'
 import MyBookingsPage from '../../components/pages/my-bookings'
 import ProfilePage from '../../components/pages/profile'
@@ -58,7 +58,7 @@ describe('getMenuRoutes', () => {
     const result = getMenuRoutes(routes)
     const expected = [
       {
-        component: DiscoveryContainer,
+        component: DiscoveryPage,
         disabled: false,
         icon: 'offres-w',
         path: '/decouverte',

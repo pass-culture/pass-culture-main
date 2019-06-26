@@ -1,36 +1,31 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | discovery | Discovery should match the snapshot 1`] = `
+exports[`src | components | pages | discovery | RawDiscoveryPage should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Discovery
+  Symbol(enzyme.__unrendered__): <RawDiscoveryPage
     backButton={true}
-    dispatch={[MockFunction]}
-    fromPassword={true}
-    history={Object {}}
-    loadRecommendations={[MockFunction]}
-    location={
-      Object {
-        "search": "",
-      }
-    }
-    match={
-      Object {
-        "params": Object {},
-      }
-    }
-    onRequestFailRedirectToHome={[MockFunction]}
-    readRecommendations={null}
-    recommendations={Array []}
-    resetReadRecommendations={[MockFunction]}
-    resetRecommendations={[MockFunction]}
-    saveLoadRecommendationsTimestamp={[MockFunction]}
-    shouldReloadRecommendations={false}
-    showFirstRecommendation={
+    currentRecommendation={null}
+    dispatch={
       [MockFunction] {
         "calls": Array [
           Array [
-            Array [],
+            Object {
+              "config": Object {
+                "apiPath": "/recommendations?",
+                "body": Object {
+                  "readRecommendations": null,
+                  "seenRecommendationIds": null,
+                },
+                "handleFail": [Function],
+                "handleSuccess": [Function],
+                "method": "PUT",
+                "normalizer": Object {
+                  "bookings": "bookings",
+                },
+              },
+              "type": "REQUEST_DATA_PUT_/RECOMMENDATIONS?",
+            },
           ],
         ],
         "results": Array [
@@ -41,20 +36,20 @@ ShallowWrapper {
         ],
       }
     }
-    showPasswordChangedPopin={
-      [MockFunction] {
-        "calls": Array [
-          Array [],
-        ],
-        "results": Array [
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
-        ],
+    fromPassword={true}
+    history={Object {}}
+    location={
+      Object {
+        "search": "",
       }
     }
-    withBackButton={false}
+    match={
+      Object {
+        "params": Object {},
+      }
+    }
+    readRecommendations={null}
+    recommendations={null}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -93,7 +88,7 @@ ShallowWrapper {
         <withRouter(Loader)
           hasError={false}
           isEmpty={null}
-          isLoading={false}
+          isLoading={true}
         />,
       ],
     },
@@ -194,7 +189,7 @@ ShallowWrapper {
         "props": Object {
           "hasError": false,
           "isEmpty": null,
-          "isLoading": false,
+          "isLoading": true,
         },
         "ref": null,
         "rendered": null,
@@ -232,7 +227,7 @@ ShallowWrapper {
           <withRouter(Loader)
             hasError={false}
             isEmpty={null}
-            isLoading={false}
+            isLoading={true}
           />,
         ],
       },
@@ -333,7 +328,7 @@ ShallowWrapper {
           "props": Object {
             "hasError": false,
             "isEmpty": null,
-            "isLoading": false,
+            "isLoading": true,
           },
           "ref": null,
           "rendered": null,
