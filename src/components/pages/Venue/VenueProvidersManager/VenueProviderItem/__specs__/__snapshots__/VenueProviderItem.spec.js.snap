@@ -5,30 +5,17 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <VenueProviderItem
     dispatch={[MockFunction]}
-    events={
-      Array [
-        Object {},
-      ]
-    }
-    things={
-      Array [
-        Object {},
-      ]
-    }
-    venue={
-      Object {
-        "id": 1,
-      }
-    }
     venueProvider={
       Object {
         "id": 1,
         "isActive": true,
         "lastSyncDate": "2018-01-01",
+        "nOffers": 1,
         "provider": Object {
           "localClass": "fake local class",
           "name": "fake local class",
         },
+        "venueId": 1,
         "venueIdAtOfferProvider": 1,
       }
     }
@@ -66,43 +53,31 @@ ShallowWrapper {
           Compte : 
            
           <strong
-            className="has-text-weight-bold fs14"
+            className="fs14 has-text-weight-bold"
           >
             1
           </strong>
         </div>,
-        <div>
-          <div
-            className="offers-container"
+        <div
+          className="offers-container"
+        >
+          <NavLink
+            activeClassName="active"
+            aria-current="page"
+            className="has-text-primary"
+            to="/offres?lieu=1"
           >
-            <NavLink
-              activeClassName="active"
-              aria-current="page"
-              className="has-text-primary"
-              to="/offres?lieu=1"
+            <Icon
+              height="20px"
+              svg="ico-offres-r"
+              width="20px"
+            />
+            <div
+              className="number-of-offers-label"
             >
-              <Icon
-                svg="ico-offres-r"
-              />
-              2 offres
-            </NavLink>
-          </div>
-          <div
-            className="button-container"
-          >
-            <button
-              className="button is-secondary enable-disable-button"
-              onClick={[Function]}
-            >
-              Désactiver
-            </button>
-          </div>
-        </div>,
-        <div>
-          <button
-            className="delete is-small"
-            onClick={[Function]}
-          />
+              1 offre
+            </div>
+          </NavLink>
         </div>,
       ],
       "className": "is-disabled venue-provider-row",
@@ -154,7 +129,7 @@ ShallowWrapper {
             "Compte : ",
             " ",
             <strong
-              className="has-text-weight-bold fs14"
+              className="fs14 has-text-weight-bold"
             >
               1
             </strong>,
@@ -171,7 +146,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": 1,
-              "className": "has-text-weight-bold fs14",
+              "className": "fs14 has-text-weight-bold",
             },
             "ref": null,
             "rendered": 1,
@@ -185,144 +160,77 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": Array [
+          "children": <NavLink
+            activeClassName="active"
+            aria-current="page"
+            className="has-text-primary"
+            to="/offres?lieu=1"
+          >
+            <Icon
+              height="20px"
+              svg="ico-offres-r"
+              width="20px"
+            />
             <div
-              className="offers-container"
+              className="number-of-offers-label"
             >
-              <NavLink
-                activeClassName="active"
-                aria-current="page"
-                className="has-text-primary"
-                to="/offres?lieu=1"
-              >
-                <Icon
-                  svg="ico-offres-r"
-                />
-                2 offres
-              </NavLink>
-            </div>,
-            <div
-              className="button-container"
-            >
-              <button
-                className="button is-secondary enable-disable-button"
-                onClick={[Function]}
-              >
-                Désactiver
-              </button>
-            </div>,
-          ],
-        },
-        "ref": null,
-        "rendered": Array [
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": <NavLink
-                activeClassName="active"
-                aria-current="page"
-                className="has-text-primary"
-                to="/offres?lieu=1"
-              >
-                <Icon
-                  svg="ico-offres-r"
-                />
-                2 offres
-              </NavLink>,
-              "className": "offers-container",
-            },
-            "ref": null,
-            "rendered": Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "function",
-              "props": Object {
-                "activeClassName": "active",
-                "aria-current": "page",
-                "children": Array [
-                  <Icon
-                    svg="ico-offres-r"
-                  />,
-                  "2 offres",
-                ],
-                "className": "has-text-primary",
-                "to": "/offres?lieu=1",
-              },
-              "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "function",
-                  "props": Object {
-                    "svg": "ico-offres-r",
-                  },
-                  "ref": null,
-                  "rendered": null,
-                  "type": [Function],
-                },
-                "2 offres",
-              ],
-              "type": [Function],
-            },
-            "type": "div",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": <button
-                className="button is-secondary enable-disable-button"
-                onClick={[Function]}
-              >
-                Désactiver
-              </button>,
-              "className": "button-container",
-            },
-            "ref": null,
-            "rendered": Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Désactiver",
-                "className": "button is-secondary enable-disable-button",
-                "onClick": [Function],
-              },
-              "ref": null,
-              "rendered": "Désactiver",
-              "type": "button",
-            },
-            "type": "div",
-          },
-        ],
-        "type": "div",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": <button
-            className="delete is-small"
-            onClick={[Function]}
-          />,
+              1 offre
+            </div>
+          </NavLink>,
+          "className": "offers-container",
         },
         "ref": null,
         "rendered": Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "host",
+          "nodeType": "function",
           "props": Object {
-            "className": "delete is-small",
-            "onClick": [Function],
+            "activeClassName": "active",
+            "aria-current": "page",
+            "children": Array [
+              <Icon
+                height="20px"
+                svg="ico-offres-r"
+                width="20px"
+              />,
+              <div
+                className="number-of-offers-label"
+              >
+                1 offre
+              </div>,
+            ],
+            "className": "has-text-primary",
+            "to": "/offres?lieu=1",
           },
           "ref": null,
-          "rendered": null,
-          "type": "button",
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "height": "20px",
+                "svg": "ico-offres-r",
+                "width": "20px",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "1 offre",
+                "className": "number-of-offers-label",
+              },
+              "ref": null,
+              "rendered": "1 offre",
+              "type": "div",
+            },
+          ],
+          "type": [Function],
         },
         "type": "div",
       },
@@ -354,43 +262,31 @@ ShallowWrapper {
             Compte : 
              
             <strong
-              className="has-text-weight-bold fs14"
+              className="fs14 has-text-weight-bold"
             >
               1
             </strong>
           </div>,
-          <div>
-            <div
-              className="offers-container"
+          <div
+            className="offers-container"
+          >
+            <NavLink
+              activeClassName="active"
+              aria-current="page"
+              className="has-text-primary"
+              to="/offres?lieu=1"
             >
-              <NavLink
-                activeClassName="active"
-                aria-current="page"
-                className="has-text-primary"
-                to="/offres?lieu=1"
+              <Icon
+                height="20px"
+                svg="ico-offres-r"
+                width="20px"
+              />
+              <div
+                className="number-of-offers-label"
               >
-                <Icon
-                  svg="ico-offres-r"
-                />
-                2 offres
-              </NavLink>
-            </div>
-            <div
-              className="button-container"
-            >
-              <button
-                className="button is-secondary enable-disable-button"
-                onClick={[Function]}
-              >
-                Désactiver
-              </button>
-            </div>
-          </div>,
-          <div>
-            <button
-              className="delete is-small"
-              onClick={[Function]}
-            />
+                1 offre
+              </div>
+            </NavLink>
           </div>,
         ],
         "className": "is-disabled venue-provider-row",
@@ -442,7 +338,7 @@ ShallowWrapper {
               "Compte : ",
               " ",
               <strong
-                className="has-text-weight-bold fs14"
+                className="fs14 has-text-weight-bold"
               >
                 1
               </strong>,
@@ -459,7 +355,7 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": 1,
-                "className": "has-text-weight-bold fs14",
+                "className": "fs14 has-text-weight-bold",
               },
               "ref": null,
               "rendered": 1,
@@ -473,144 +369,77 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": Array [
+            "children": <NavLink
+              activeClassName="active"
+              aria-current="page"
+              className="has-text-primary"
+              to="/offres?lieu=1"
+            >
+              <Icon
+                height="20px"
+                svg="ico-offres-r"
+                width="20px"
+              />
               <div
-                className="offers-container"
+                className="number-of-offers-label"
               >
-                <NavLink
-                  activeClassName="active"
-                  aria-current="page"
-                  className="has-text-primary"
-                  to="/offres?lieu=1"
-                >
-                  <Icon
-                    svg="ico-offres-r"
-                  />
-                  2 offres
-                </NavLink>
-              </div>,
-              <div
-                className="button-container"
-              >
-                <button
-                  className="button is-secondary enable-disable-button"
-                  onClick={[Function]}
-                >
-                  Désactiver
-                </button>
-              </div>,
-            ],
-          },
-          "ref": null,
-          "rendered": Array [
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": <NavLink
-                  activeClassName="active"
-                  aria-current="page"
-                  className="has-text-primary"
-                  to="/offres?lieu=1"
-                >
-                  <Icon
-                    svg="ico-offres-r"
-                  />
-                  2 offres
-                </NavLink>,
-                "className": "offers-container",
-              },
-              "ref": null,
-              "rendered": Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "function",
-                "props": Object {
-                  "activeClassName": "active",
-                  "aria-current": "page",
-                  "children": Array [
-                    <Icon
-                      svg="ico-offres-r"
-                    />,
-                    "2 offres",
-                  ],
-                  "className": "has-text-primary",
-                  "to": "/offres?lieu=1",
-                },
-                "ref": null,
-                "rendered": Array [
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "function",
-                    "props": Object {
-                      "svg": "ico-offres-r",
-                    },
-                    "ref": null,
-                    "rendered": null,
-                    "type": [Function],
-                  },
-                  "2 offres",
-                ],
-                "type": [Function],
-              },
-              "type": "div",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": <button
-                  className="button is-secondary enable-disable-button"
-                  onClick={[Function]}
-                >
-                  Désactiver
-                </button>,
-                "className": "button-container",
-              },
-              "ref": null,
-              "rendered": Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Désactiver",
-                  "className": "button is-secondary enable-disable-button",
-                  "onClick": [Function],
-                },
-                "ref": null,
-                "rendered": "Désactiver",
-                "type": "button",
-              },
-              "type": "div",
-            },
-          ],
-          "type": "div",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": <button
-              className="delete is-small"
-              onClick={[Function]}
-            />,
+                1 offre
+              </div>
+            </NavLink>,
+            "className": "offers-container",
           },
           "ref": null,
           "rendered": Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "host",
+            "nodeType": "function",
             "props": Object {
-              "className": "delete is-small",
-              "onClick": [Function],
+              "activeClassName": "active",
+              "aria-current": "page",
+              "children": Array [
+                <Icon
+                  height="20px"
+                  svg="ico-offres-r"
+                  width="20px"
+                />,
+                <div
+                  className="number-of-offers-label"
+                >
+                  1 offre
+                </div>,
+              ],
+              "className": "has-text-primary",
+              "to": "/offres?lieu=1",
             },
             "ref": null,
-            "rendered": null,
-            "type": "button",
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "height": "20px",
+                  "svg": "ico-offres-r",
+                  "width": "20px",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "1 offre",
+                  "className": "number-of-offers-label",
+                },
+                "ref": null,
+                "rendered": "1 offre",
+                "type": "div",
+              },
+            ],
+            "type": [Function],
           },
           "type": "div",
         },

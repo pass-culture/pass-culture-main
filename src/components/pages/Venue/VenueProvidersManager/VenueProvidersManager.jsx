@@ -5,10 +5,9 @@ import { Field, Form } from 'react-final-form'
 import { showNotification } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import ReactTooltip from 'react-tooltip'
-
-import VenueProviderItemContainer from './VenueProviderItem/VenueProviderItemContainer'
 import Icon from '../../../layout/Icon'
 import { HiddenField, TextField } from '../../../layout/form/fields'
+import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
 
 const DEFAULT_OPTION = {
   id: 'default',
@@ -26,7 +25,7 @@ export const FormRendered = ({
   return ({handleSubmit}) => (
     <form onSubmit={handleSubmit}>
       <div className="provider-table">
-        <HiddenField name="venueId"/>
+        <HiddenField name="id"/>
 
         {providers && providers.length > 1 && (
           <React.Fragment>
@@ -83,11 +82,11 @@ export const FormRendered = ({
         )}
 
         {isProviderSelected && !isLoadingMode && (
-            <span
-              className="tooltip tooltip-info"
-              data-place="bottom"
-              data-tip={`<p>Veuillez saisir un identifiant.</p>`}
-            >
+          <span
+            className="tooltip tooltip-info"
+            data-place="bottom"
+            data-tip={`<p>Veuillez saisir un identifiant.</p>`}
+          >
               <Icon svg="picto-info"/>
             </span>
         )}
@@ -180,13 +179,13 @@ class VenueProvidersManager extends Component {
   handleSubmit = (formValues) => {
     const {dispatch} = this.props
     this.setState({isLoadingMode: true})
-    const {venueId, venueIdAtOfferProvider} = formValues
+    const {id, venueIdAtOfferProvider} = formValues
     const providerId = this.state.selectedValue.id
 
     const payload = {
       providerId: providerId,
       venueIdAtOfferProvider,
-      venueId
+      venueId: id
     }
 
     // TODO
@@ -249,7 +248,6 @@ class VenueProvidersManager extends Component {
     const {
       providers,
       venue,
-      venueProvider,
       venueProviders,
     } = this.props
     const {isCreationMode, isLoadingMode, isProviderSelected, selectedValue} = this.state
@@ -267,9 +265,8 @@ class VenueProvidersManager extends Component {
         <ul
           className="main-list">
           {venueProviders.map((venueProvider) => (
-            <VenueProviderItemContainer
+            <VenueProviderItem
               key={venueProvider.id}
-              venue={venue}
               venueProvider={venueProvider}
             />
           ))}
@@ -278,7 +275,7 @@ class VenueProvidersManager extends Component {
             <li>
               <Form
                 onSubmit={this.handleSubmit}
-                initialValues={venueProvider}
+                initialValues={venue}
                 render={FormRendered({
                   providers,
                   isProviderSelected,
@@ -315,7 +312,6 @@ VenueProvidersManager.propTypes = {
   }),
   providers: PropTypes.array,
   venue: PropTypes.shape(),
-  venueProvider: PropTypes.shape(),
   venueProviders: PropTypes.array
 }
 

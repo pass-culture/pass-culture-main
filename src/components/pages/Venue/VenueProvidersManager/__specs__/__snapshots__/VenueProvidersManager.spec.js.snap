@@ -52,7 +52,6 @@ ShallowWrapper {
         },
       }
     }
-    provider={Object {}}
     providers={
       Array [
         Object {
@@ -66,11 +65,6 @@ ShallowWrapper {
     venue={
       Object {
         "id": "AB",
-      }
-    }
-    venueProvider={
-      Object {
-        "id": "AE",
       }
     }
     venueProviders={
@@ -112,24 +106,14 @@ ShallowWrapper {
         <ul
           className="main-list"
         >
-          <Connect(VenueProviderItem)
-            venue={
-              Object {
-                "id": "AB",
-              }
-            }
+          <VenueProviderItem
             venueProvider={
               Object {
                 "id": "AA",
               }
             }
           />
-          <Connect(VenueProviderItem)
-            venue={
-              Object {
-                "id": "AB",
-              }
-            }
+          <VenueProviderItem
             venueProvider={
               Object {
                 "id": "BB",
@@ -195,24 +179,14 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             Array [
-              <Connect(VenueProviderItem)
-                venue={
-                  Object {
-                    "id": "AB",
-                  }
-                }
+              <VenueProviderItem
                 venueProvider={
                   Object {
                     "id": "AA",
                   }
                 }
               />,
-              <Connect(VenueProviderItem)
-                venue={
-                  Object {
-                    "id": "AB",
-                  }
-                }
+              <VenueProviderItem
                 venueProvider={
                   Object {
                     "id": "BB",
@@ -231,9 +205,6 @@ ShallowWrapper {
             "key": "AA",
             "nodeType": "class",
             "props": Object {
-              "venue": Object {
-                "id": "AB",
-              },
               "venueProvider": Object {
                 "id": "AA",
               },
@@ -247,9 +218,6 @@ ShallowWrapper {
             "key": "BB",
             "nodeType": "class",
             "props": Object {
-              "venue": Object {
-                "id": "AB",
-              },
               "venueProvider": Object {
                 "id": "BB",
               },
@@ -320,24 +288,14 @@ ShallowWrapper {
           <ul
             className="main-list"
           >
-            <Connect(VenueProviderItem)
-              venue={
-                Object {
-                  "id": "AB",
-                }
-              }
+            <VenueProviderItem
               venueProvider={
                 Object {
                   "id": "AA",
                 }
               }
             />
-            <Connect(VenueProviderItem)
-              venue={
-                Object {
-                  "id": "AB",
-                }
-              }
+            <VenueProviderItem
               venueProvider={
                 Object {
                   "id": "BB",
@@ -403,24 +361,14 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               Array [
-                <Connect(VenueProviderItem)
-                  venue={
-                    Object {
-                      "id": "AB",
-                    }
-                  }
+                <VenueProviderItem
                   venueProvider={
                     Object {
                       "id": "AA",
                     }
                   }
                 />,
-                <Connect(VenueProviderItem)
-                  venue={
-                    Object {
-                      "id": "AB",
-                    }
-                  }
+                <VenueProviderItem
                   venueProvider={
                     Object {
                       "id": "BB",
@@ -439,9 +387,6 @@ ShallowWrapper {
               "key": "AA",
               "nodeType": "class",
               "props": Object {
-                "venue": Object {
-                  "id": "AB",
-                },
                 "venueProvider": Object {
                   "id": "AA",
                 },
@@ -455,9 +400,6 @@ ShallowWrapper {
               "key": "BB",
               "nodeType": "class",
               "props": Object {
-                "venue": Object {
-                  "id": "AB",
-                },
                 "venueProvider": Object {
                   "id": "BB",
                 },

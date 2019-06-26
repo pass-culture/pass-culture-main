@@ -12,19 +12,16 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
     dispatch = jest.fn()
     props = {
       dispatch,
-      events: [{}],
-      things: [{}],
-      venue: {
-        id: 1
-      },
       venueProvider: {
         id: 1,
         isActive: true,
         lastSyncDate: '2018-01-01',
+        nOffers: 1,
         provider: {
           name: 'fake local class',
           localClass: 'fake local class'
         },
+        venueId: 1,
         venueIdAtOfferProvider: 1
       }
     }
@@ -82,34 +79,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       expect(icon.prop('svg')).toBe('ico-offres-r')
     })
 
-    it('should render the enable button when data of provider were already synced and offers are provided and is active', () => {
-      // given
-      props.venueProvider.isActive = true
-
-      // when
-      const wrapper = shallow(<VenueProviderItem {...props} />)
-
-      // then
-      const button = wrapper.find('button').at(0)
-      expect(button.prop('className')).toBe('button is-secondary enable-disable-button')
-      expect(button.prop('onClick')).toEqual(expect.any(Function))
-      expect(button.text()).toBe('Désactiver')
-    })
-
-    it('should render the disable button when data of provider were already synced and offers are provided and is not active', () => {
-      // given
-      props.venueProvider.isActive = false
-
-      // when
-      const wrapper = shallow(<VenueProviderItem {...props} />)
-
-      // then
-      const button = wrapper.find('button').at(0)
-      expect(button.prop('className')).toBe('button is-secondary enable-disable-button')
-      expect(button.prop('onClick')).toEqual(expect.any(Function))
-      expect(button.text()).toBe('Activer')
-    })
-
     it('should render the label "en cours de validation" when provider is not synced yet', () => {
       // given
       props.venueProvider.lastSyncDate = null
@@ -120,50 +89,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       // then
       const div = wrapper.find('.validation-label-container')
       expect(div.text()).toBe('En cours de validation')
-    })
-  })
-
-  describe('click on buttons', () => {
-    describe('deactivate', () => {
-      it('should update venue provider active status using API', () => {
-        // given
-        const wrapper = shallow(<VenueProviderItem {...props} />)
-        const deactivateButton = wrapper.find('button').at(0)
-
-        // when
-        deactivateButton.simulate('click')
-
-        // then
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: '/venueProviders/1',
-            body: {isActive: false},
-            method: 'PATCH'
-          },
-          type: 'REQUEST_DATA_PATCH_/VENUEPROVIDERS/1'
-        })
-      })
-    })
-
-    describe('delete', () => {
-      it('should delete venue provider using API', () => {
-        // given
-        const wrapper = shallow(<VenueProviderItem {...props} />)
-        const deleteButton = wrapper.find('button').at(1)
-
-        // when
-        deleteButton.simulate('click')
-
-        // then
-        expect(dispatch).toHaveBeenCalledWith( {
-          config: {
-            apiPath: '/venueProviders/1',
-            method: 'DELETE',
-            stateKey: 'venueProviders'
-          },
-          type: 'REQUEST_DATA_DELETE_VENUEPROVIDERS'
-        })
-      })
     })
   })
 })

@@ -32,9 +32,6 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
             localClass: 'b',
           },
         ],
-        venueProvider: {
-          venueId: 'AE',
-        },
         venueProviders: [],
       })
     })

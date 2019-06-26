@@ -1,10 +1,10 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 import VenueProvidersManager, { FormRendered } from '../VenueProvidersManager'
-import VenueProviderItemContainer from '../VenueProviderItem/VenueProviderItemContainer'
 import { Form } from 'react-final-form'
 import { HiddenField, TextField } from '../../../../layout/form/fields'
 import { Icon } from '../../../../layout/Icon'
+import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 
 describe('src | components | pages | Venue | VenueProvidersManager', () => {
   let props
@@ -26,10 +26,8 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
           venueProviderId: 'AE'
         }
       },
-      provider: {},
       providers: [{id: 'DD'}, {id: 'EE'}],
       venue: {id: 'AB'},
-      venueProvider: {id: 'AE'},
       venueProviders: [{id: 'AA'}, {id: 'BB'}],
     }
   })
@@ -89,11 +87,9 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         const wrapper = shallow(<VenueProvidersManager {...props} />)
 
         // then
-        const venueProviderItemContainers = wrapper.find(VenueProviderItemContainer)
+        const venueProviderItemContainers = wrapper.find(VenueProviderItem)
         expect(venueProviderItemContainers).toHaveLength(2)
-        expect(venueProviderItemContainers.at(0).prop('venue')).toEqual({id: 'AB'})
         expect(venueProviderItemContainers.at(0).prop('venueProvider')).toEqual({id: 'AA'})
-        expect(venueProviderItemContainers.at(1).prop('venue')).toEqual({id: 'AB'})
         expect(venueProviderItemContainers.at(1).prop('venueProvider')).toEqual({id: 'BB'})
       })
 
@@ -136,7 +132,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         it('should update venue provider using API', () => {
           // given
           const formValues = {
-            venueId: 'AA',
+            id: 'AA',
             venueIdAtOfferProvider: 'BB'
           }
           const wrapper = shallow(<VenueProvidersManager {...props} />)
@@ -250,7 +246,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
             isCreationMode: false,
             isLoadingMode: false,
             isProviderSelected: false,
-            selectedValue: {id: 'default', name: "Choix de la source"}
+            selectedValue: {id: 'default', name: 'Choix de la source'}
           })
         })
       })
@@ -262,7 +258,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         props.venueProviders = []
       })
 
-      it('should render form with the proper values from user input', async() => {
+      it('should render form with the proper values from user input', async () => {
         // when
         const wrapper = shallow(<VenueProvidersManager {...props} />)
 
@@ -270,7 +266,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         const form = wrapper.find(Form)
         expect(form).toBeDefined()
         expect(form.prop('onSubmit')).toEqual(expect.any(Function))
-        expect(form.prop('initialValues')).toEqual({id: 'AE'})
+        expect(form.prop('initialValues')).toEqual({id: 'AB'})
         expect(form.prop('render')).toEqual(expect.any(Function))
       })
 
@@ -302,7 +298,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
           // then
           const hiddenField = renderedForm.find(HiddenField)
           expect(hiddenField).toBeDefined()
-          expect(hiddenField.prop('name')).toBe('venueId')
+          expect(hiddenField.prop('name')).toBe('id')
         })
 
         it('should render a TextField component with the right props when provider is selected and not in loading mode', () => {
@@ -369,7 +365,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
           expect(tooltip).toHaveLength(1)
           expect(tooltip.prop('className')).toBe('tooltip tooltip-info')
           expect(tooltip.prop('data-place')).toBe('bottom')
-          expect(tooltip.prop('data-tip')).toBe("<p>Veuillez saisir un identifiant.</p>")
+          expect(tooltip.prop('data-tip')).toBe('<p>Veuillez saisir un identifiant.</p>')
           const icon = tooltip.find(Icon)
           expect(icon).toHaveLength(1)
           expect(icon.prop('svg')).toBe('picto-info')
