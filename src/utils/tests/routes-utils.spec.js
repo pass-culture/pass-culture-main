@@ -9,7 +9,7 @@ import ProfilePage from '../../components/pages/profile'
 import SearchContainer from '../../components/pages/search/SearchContainer'
 
 describe('filterRoutes', () => {
-  it('filter routes pour react-router', () => {
+  it('filters routes for react-router', () => {
     const values = [
       { path: '/' },
       { path: '/toto' },
@@ -28,6 +28,23 @@ describe('filterRoutes', () => {
       null,
     ]
     expect(result).toStrictEqual(expected)
+  })
+  it('filters out routes with disabled true', () => {
+    // Given
+    const allRoutes = [
+      { disabled: false, exact: true, path: '/' },
+      { disabled: true, exact: true, path: '/disabledRoute' },
+      { exact: true, path: '/unknownDisableRoute' },
+    ]
+
+    // When
+    const filteredRoutes = filterRoutes(allRoutes)
+
+    // Then
+    expect(filteredRoutes).toStrictEqual([
+      { disabled: false, exact: true, path: '/' },
+      { exact: true, path: '/unknownDisableRoute' },
+    ])
   })
 })
 

@@ -5,6 +5,7 @@ export const filterRoutes = items =>
   items
     // si un element a une propriete href
     // alors ce n'est pas une route react
+    .filter(routeConfig => !routeConfig.disabled)
     .map(obj => {
       if (!obj || obj.href) return null
       const exact = obj && obj.exact === undefined ? true : obj.exact
