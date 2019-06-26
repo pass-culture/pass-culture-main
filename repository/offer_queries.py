@@ -51,7 +51,8 @@ def bookable_offers(query):
 
 
 def with_active_and_validated_offerer(query):
-    query = query.filter((Offerer.isActive == True)
+    query = query.join(Offerer, Offerer.id == Venue.managingOffererId) \
+                 .filter((Offerer.isActive == True)
                          & (Offerer.validationToken == None))
     logger.debug(lambda: '(reco) from active and validated offerer .count' + str(query.count()))
     return query
@@ -62,30 +63,28 @@ def not_activation_offers(query):
     return query.filter(Offer.type != str(ThingType.ACTIVATION))
 
 
+
 def get_active_offers(user=None, departement_codes=None, offer_id=None, limit=None):
     active_offers_query = Offer.query.distinct(Offer.id)\
-                             .order_by(Offer.id)
+                                     .order_by(Offer.id)
+
+    if offer_id is not None:
+        active_offers_query = active_offers_query.filter(Offer.id == offer_id)
+
+    logger.debug(lambda: '(reco) all offers count {}'.format(active_offers_query.count()))
 
     active_offers_query = active_offers_query.filter_by(isActive=True)
     logger.debug(lambda: '(reco) active offers count {}'.format(active_offers_query.count()))
     
-    active_offers_query = active_offers_query.join(Stock, Offer.id == Stock.offerId)
+    active_offers_query = _with_stock(active_offers_query)
     logger.debug(lambda: '(reco) offers with stock count {}'.format(active_offers_query.count()))
 
-    active_offers_query = active_offers_query.join(Venue, Offer.venueId == Venue.id)
-    active_offers_query = active_offers_query.filter(Venue.validationToken == None)
-    active_offers_query = active_offers_query.join(Offerer)
-    active_offers_query = active_offers_query.join(Product, Offer.productId == Product.id)
-    logger.debug(lambda: '(reco) offers with venue offerer {}'.format(active_offers_query.count()))
+    active_offers_query = _with_validated_venue(active_offers_query)
+    logger.debug(lambda: '(reco) offers with venue count {}'.format(active_offers_query.count()))
 
-    with_active_mediation = (Mediation.query.filter((Mediation.offerId == Offer.id)
-                                                    & Mediation.isActive)
-                                            .exists())
-    active_offers_query = active_offers_query.filter((Product.thumbCount > 0) | with_active_mediation)
+    active_offers_query = _with_image(active_offers_query)
 
-    if offer_id is not None:
-        active_offers_query = active_offers_query.filter(Offer.id == offer_id)
-    logger.debug(lambda: '(reco) all {} count '.format(active_offers_query.count()))
+    logger.debug(lambda: '(reco) offers with image count {} '.format(active_offers_query.count()))
 
     active_offers_query = department_or_national_offers(active_offers_query, departement_codes)
     logger.debug(lambda:
@@ -101,7 +100,7 @@ def get_active_offers(user=None, departement_codes=None, offer_id=None, limit=No
     active_offer_ids = active_offers_query.with_entities(Offer.id).subquery()
 
     query = Offer.query.filter(Offer.id.in_(active_offer_ids))
-    query = query.order_by(desc(with_active_mediation),
+    query = query.order_by(desc(_build_has_active_mediation_predicate()),
                            _round_robin_by_type_and_onlineness())
 
     query = query.options(joinedload('mediations'),
@@ -120,6 +119,19 @@ def _round_robin_by_type_and_onlineness():
                                func.random()])
 
 
+def _with_stock(offer_query):
+    return offer_query.join(Stock, Offer.id == Stock.offerId)
+
+
+def _with_image(offer_query):
+    has_image_predicate = (Product.thumbCount > 0) | _build_has_active_mediation_predicate()
+    return offer_query.join(Product, Offer.productId == Product.id) \
+                      .filter(has_image_predicate)
+
+def _with_validated_venue(offer_query):
+    return offer_query.join(Venue, Offer.venueId == Venue.id) \
+                      .filter(Venue.validationToken == None)
+
 
 def _build_occurs_soon_or_is_thing_predicate():
     Stock2 = aliased(Stock)
@@ -128,6 +140,11 @@ def _build_occurs_soon_or_is_thing_predicate():
                                  | ((Stock2.beginningDatetime > datetime.utcnow())
                               & (Stock2.beginningDatetime < (datetime.utcnow() + timedelta(days=10)))))) \
                       .exists()
+
+def _build_has_active_mediation_predicate():
+    return Mediation.query.filter((Mediation.offerId == Offer.id)
+                                  & Mediation.isActive) \
+                          .exists()
 
 
 def _date_interval_to_filter(date_interval):
