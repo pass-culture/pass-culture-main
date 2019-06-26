@@ -1,5 +1,12 @@
 import get from 'lodash.get'
 
-const isFeatureActive = (featureName) => get(window.features, featureName, false)
+export const isFeatureDisabled = featureName => {
+  const disabledFeatureByDefault = false
+  const isFeatureActive = get(
+    window.features,
+    featureName,
+    disabledFeatureByDefault
+  )
 
-export default isFeatureActive
+  return !isFeatureActive
+}
