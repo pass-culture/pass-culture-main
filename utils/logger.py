@@ -5,7 +5,7 @@ from utils.attr_dict import AttrDict
 from utils.config import LOG_LEVEL
 
 logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
-                    level=10,
+                    level=LOG_LEVEL,
                     datefmt='%Y-%m-%d %H:%M:%S')
 
 

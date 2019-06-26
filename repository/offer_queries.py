@@ -100,20 +100,9 @@ def get_active_offers(user=None, departement_codes=None, offer_id=None, limit=No
 
     active_offer_ids = active_offers_query.with_entities(Offer.id).subquery()
 
-    Stock2 = aliased(Stock)
-    occurs_soon_or_is_thing = (Stock.query.filter((Stock2.offerId == Offer.id)
-                                                  & ((Stock2.beginningDatetime == None)
-                                                     | ((Stock2.beginningDatetime > datetime.utcnow())
-                                                        & (Stock2.beginningDatetime < (datetime.utcnow() + timedelta(days=10))))))
-                                          .exists())
-
-    round_robin_by_type_and_onlineness = func.row_number()\
-                                             .over(partition_by=[Offer.type, Offer.url == None],
-                                                   order_by=[desc(occurs_soon_or_is_thing), func.random()])
-
     query = Offer.query.filter(Offer.id.in_(active_offer_ids))
     query = query.order_by(desc(with_active_mediation),
-                           round_robin_by_type_and_onlineness)
+                           _round_robin_by_type_and_onlineness())
 
     query = query.options(joinedload('mediations'),
                           joinedload('product'))
@@ -122,6 +111,23 @@ def get_active_offers(user=None, departement_codes=None, offer_id=None, limit=No
         query = query.limit(limit)
 
     return query.all()
+
+
+def _round_robin_by_type_and_onlineness():
+    return func.row_number()\
+               .over(partition_by=[Offer.type, Offer.url == None],
+                     order_by=[desc(_build_occurs_soon_or_is_thing_predicate()),
+                               func.random()])
+
+
+
+def _build_occurs_soon_or_is_thing_predicate():
+    Stock2 = aliased(Stock)
+    return Stock.query.filter((Stock2.offerId == Offer.id)
+                              & ((Stock2.beginningDatetime == None)
+                                 | ((Stock2.beginningDatetime > datetime.utcnow())
+                              & (Stock2.beginningDatetime < (datetime.utcnow() + timedelta(days=10)))))) \
+                      .exists()
 
 
 def _date_interval_to_filter(date_interval):
