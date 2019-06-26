@@ -1,29 +1,20 @@
-#filter-by-date
-div {
-  font-size: 16px;
-  margin-bottom: rem(6px);
-}
+#filter-by-date {
+  div {
+    font-size: 16px;
+    margin-bottom: rem(6px);
+  }
 
-/* ------------------------------------------------
+  .pc-selectbox {
 
- Selection de la date
-
------------------------------------------------- */
-
-#filter-by-date .pc-selectbox {
-  @extend .no-outline;
-
-  border-radius: 18px;
-  width: 139px;
-  height: 36px;
-  background-repeat: no-repeat;
-  background-position: 110px 14px;
-  background-image: url(/icons/dropdown-disclosure-down-s-w.svg);
-  background-color: transparent;
-  box-shadow: 0 2px 6px 0 rgba(0,0,0,0.25);
-  font-size: 16px;
-  margin-right: rem(12px);
-  margin-bottom: rem(54px);
-  -webkit-appearance: none;
-  -moz-appearance: none;
+    border-radius: 18px;
+    width: 139px;
+    height: 36px;
+    background: 110px 14px no-repeat transparent url(/icons/dropdown-disclosure-down-s-w.svg);
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.25);
+    font-size: 16px;
+    margin-right: rem(12px);
+    margin-bottom: rem(54px);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
 }

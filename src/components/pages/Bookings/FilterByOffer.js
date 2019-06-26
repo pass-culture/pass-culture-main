@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import PropTypes from 'prop-types'
 
 import { FilterByVenue } from './FilterByVenue'
@@ -10,9 +10,7 @@ export class FilterByOffer extends PureComponent {
   }
 
   onChangeOffer = event => {
-    const selectedOffer = document.getElementById('offers')
-    const offerId = selectedOffer[selectedOffer.selectedIndex].value
-    this.props.selectBookingsForOffers(offerId)
+    this.props.selectBookingsForOffers(event.target.value)
   }
 
   render() {
@@ -25,34 +23,33 @@ export class FilterByOffer extends PureComponent {
       isFilterByDigitalVenues
     ) {
       return (
-        <React.Fragment>
+        <Fragment>
+          <div className="section">
+            <h2 className="main-list-title">
+              {isFilterByDigitalVenues ? 'Offre numérique' : 'Offre'}
+            </h2>
+          </div>
           <div id="filter-by-offer">
-            <div className="section">
-              <h2 className="main-list-title">
-                {isFilterByDigitalVenues ? 'OFFRE NUMERIQUE' : 'OFFRE'}
-              </h2>
-              <div>
-                Télécharger les réservations pour l'offre{' '}
-                {isFilterByDigitalVenues ? 'numérique' : ''} :
-              </div>
-              <select
-                id="offers"
-                className="pc-selectbox pl24 py5 fs19"
-                onChange={this.onChangeOffer}
-                defaultValue="">
-                <option value="">Choisissez une offre dans la liste.</option>
-                <option value={all}>Toutes les offres</option>
-
-                {offersOptions.map(({ name, id }) => (
-                  <option key={id} value={id}>
-                    {name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <label htmlFor="offers">
+              Télécharger les réservations pour l'offre{' '}
+              {isFilterByDigitalVenues ? 'numérique' : ''} :
+            </label>
+            <select
+              id="offers"
+              className="pc-selectbox pl24 py5 fs19"
+              onChange={this.onChangeOffer}
+              defaultValue="">
+              <option value="">Choisissez une offre dans la liste.</option>
+              <option value={all}>Toutes les offres</option>
+              {offersOptions.map(({ name, id }) => (
+                <option key={id} value={id}>
+                  {name}
+                </option>
+              ))}
+            </select>
           </div>
           <FilterByDateContainer />
-        </React.Fragment>
+        </Fragment>
       )
     }
 

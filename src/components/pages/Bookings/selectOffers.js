@@ -1,7 +1,5 @@
-import get from 'lodash.get'
-
 const selectOffers = (onlineOnly, state) => {
-  const offers = get(state, 'data.offers', [])
+  const { offers } = state.data || []
   return offers.filter(
     offer => offer.product.offerType.onlineOnly === onlineOnly
   )

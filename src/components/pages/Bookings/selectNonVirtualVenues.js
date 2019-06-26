@@ -1,7 +1,5 @@
-import get from 'lodash.get'
-
 const selectNonVirtualVenues = state => {
-  const venues = get(state, 'data.venues', [])
+  const { venues } = state.data || []
   return venues.filter(venue => venue.isVirtual === false)
 }
 

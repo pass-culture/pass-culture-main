@@ -7,10 +7,7 @@ export class FilterByVenue extends PureComponent {
   }
 
   onChangeVenue = event => {
-    const selectedVenue = document.getElementById('venues')
-    const venueId = selectedVenue[selectedVenue.selectedIndex].value
-
-    this.props.selectBookingsForVenues(venueId)
+    this.props.selectBookingsForVenues(event.target.value)
   }
 
   render() {
@@ -23,7 +20,7 @@ export class FilterByVenue extends PureComponent {
       <Fragment>
         <div id="filter-by-venue">
           <label htmlFor="venues" className={labelClassName}>
-            {'Choisissez un lieu dans la liste.'}
+            {'Choisissez un lieu dans la liste :'}
           </label>
           <select
             id="venues"
@@ -49,7 +46,7 @@ export class FilterByVenue extends PureComponent {
             defaultChecked={isDigital}
           />
           <label htmlFor="isDigital">
-            {'Cocher cette case pour voir les offres numériques.'}
+            {'Cochez cette case pour voir les offres numériques'}
           </label>
         </div>
       </Fragment>
