@@ -62,7 +62,7 @@ class Get:
 
             # when
             response = TestClient(app.test_client()) \
-                .with_auth(email='user@test.com', password='azerty123') \
+                .with_auth(email='user@test.com') \
                 .get(API_URL + '/offers')
 
             # then

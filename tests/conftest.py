@@ -5,6 +5,7 @@ from unittest.mock import Mock
 
 import pytest
 from flask import Flask, jsonify
+from flask.testing import FlaskClient
 from flask_login import LoginManager, login_user
 from mailjet_rest import Client
 from requests import Response
@@ -84,8 +85,8 @@ class TestClient:
     USER_TEST_ADMIN_EMAIL = "pctest.admin93.0@btmx.fr"
     LOCAL_ORIGIN_HEADER = {'origin': 'http://localhost:3000'}
 
-    def __init__(self, client=None):
-        self.client = client if client else None
+    def __init__(self, client: FlaskClient):
+        self.client = client
         self.auth_header = {}
 
     def with_auth(self, email: str = None):
