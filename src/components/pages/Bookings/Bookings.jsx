@@ -7,6 +7,7 @@ import HeroSection from 'components/layout/HeroSection/HeroSection'
 import { API_URL } from 'utils/config'
 import FilterByVenueContainer from './FilterByVenueContainer'
 import FilterByOfferContainer from './FilterByOfferContainer'
+import {FilterByVenue} from "./FilterByVenue";
 
 class Bookings extends Component {
   render() {
@@ -48,6 +49,12 @@ class Bookings extends Component {
       </Main>
     )
   }
+}
+
+FilterByVenue.defaultProps = {
+  isFilterByDigitalVenues: false,
+  selectedOffer: '',
+  selectedVenue:'',
 }
 
 Bookings.propTypes = {

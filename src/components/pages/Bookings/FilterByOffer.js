@@ -61,7 +61,8 @@ export class FilterByOffer extends PureComponent {
 }
 
 FilterByVenue.defaultProps = {
-  offersOptions: [],
+  offerId: '',
+  venueId: '',
 }
 
 FilterByOffer.propTypes = {
