@@ -4,6 +4,7 @@ import { requestData } from 'redux-saga-data'
 import { Field, Form } from 'react-final-form'
 import { showNotification } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
+import ReactTooltip from 'react-tooltip'
 
 import VenueProviderItemContainer from './VenueProviderItem/VenueProviderItemContainer'
 import Icon from '../../../layout/Icon'
@@ -82,13 +83,13 @@ export const FormRendered = ({
         )}
 
         {isProviderSelected && !isLoadingMode && (
-          <span
-            className="button tooltip tooltip-info"
-            data-place="bottom"
-            data-tip="<p>Veuillez saisir un identifiant.</p>"
-          >
-            <Icon svg="picto-info"/>
-          </span>
+            <span
+              className="tooltip tooltip-info"
+              data-place="bottom"
+              data-tip={`<p>Veuillez saisir un identifiant.</p>`}
+            >
+              <Icon svg="picto-info"/>
+            </span>
         )}
 
         {isProviderSelected && isCreationMode && !isLoadingMode && (
@@ -115,6 +116,10 @@ class VenueProvidersManager extends Component {
       isProviderSelected: false,
       selectedValue: DEFAULT_OPTION.id
     }
+  }
+
+  componentDidUpdate() {
+    ReactTooltip.rebuild()
   }
 
   static getDerivedStateFromProps(nextProps) {

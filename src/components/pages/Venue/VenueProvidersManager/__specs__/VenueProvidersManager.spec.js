@@ -367,7 +367,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
           // then
           const tooltip = renderedForm.find('.tooltip-info')
           expect(tooltip).toHaveLength(1)
-          expect(tooltip.prop('className')).toBe('button tooltip tooltip-info')
+          expect(tooltip.prop('className')).toBe('tooltip tooltip-info')
           expect(tooltip.prop('data-place')).toBe('bottom')
           expect(tooltip.prop('data-tip')).toBe("<p>Veuillez saisir un identifiant.</p>")
           const icon = tooltip.find(Icon)

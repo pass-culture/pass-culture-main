@@ -54,11 +54,6 @@
     width: 30px;
   }
 
-  .tooltip-info {
-    display: initial !important;
-    padding-top: 4px;
-  }
-
   .button-provider-import-container {
     margin-left: auto;
 
@@ -70,5 +65,17 @@
 
   .import-label-container {
     margin-top:0;
+  }
+
+  .tooltip {
+    padding-top: 3px;
+    padding-left: 3px;
+    background-color: transparent;
+    z-index: 10500;
+
+    &.tooltip-info {
+      background-color: transparent;
+      margin-left: 6px !important;
+    }
   }
 }
