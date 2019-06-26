@@ -12,11 +12,6 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
           ],
           venueProviders: [{id: 'EE'}],
         },
-        form: {
-          venueProvider: {
-            providerId: 'AG',
-          },
-        },
       }
       const props = {
         venue: {id: 'AE'},
@@ -27,7 +22,6 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
 
       // then
       expect(result).toEqual({
-        provider: {id: 'AG', localClass: 'b'},
         providers: [
           {
             id: 'AF',
