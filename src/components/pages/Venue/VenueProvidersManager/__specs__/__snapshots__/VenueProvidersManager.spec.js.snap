@@ -56,9 +56,11 @@ ShallowWrapper {
       Array [
         Object {
           "id": "DD",
+          "requireProviderIdentifier": true,
         },
         Object {
           "id": "EE",
+          "requireProviderIdentifier": true,
         },
       ]
     }

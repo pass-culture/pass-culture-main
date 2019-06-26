@@ -1,81 +1,73 @@
 .venue-providers-manager {
-  .main-list {
-    .field {
-      margin-bottom: 0;
-    }
-
-    form {
-      width: 100%;
-    }
-  }
-}
-
-.provider-table {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-
-  .field-select {
-    font-size: small;
-    height: 24px !important;
-    min-height: 24px !important;
-    min-width: 174px !important;
-    width: 174px !important;
+  form {
+    width: 100%;
   }
 
-  .venue-id-at-offer-provider-container {
-    margin-left: 10px;
+  .venue-provider-table {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
 
-    .field-text {
-      height: 24px !important;
-      min-height: 24px !important;
-      min-width: 120px !important;
-      width: 174px !important;
+    .provider-container {
+      display: flex;
 
-      .field-label {
+      .field-select {
+        border-radius: 17px;
+        border: 2px solid $grey-dark;
+        background-image: url('/icons/dropdown-disclosure-down-s-w.svg');
         font-size: small;
-        padding-bottom: 0;
+        height: 24px !important;
+        min-height: 24px !important;
+        min-width: 174px !important;
+        overflow: hidden;
+        padding-left: 5px;
+        width: 174px !important;
+      }
+
+      .provider-picto {
+        width: 30px;
       }
     }
-  }
 
-  .select-provider {
-    border-radius: 17px;
-    border: 2px solid $grey-dark;
-    background-image: url('/icons/dropdown-disclosure-down-s-w.svg');
-  }
+    .venue-id-at-offer-provider-container {
+      margin-left: 10px;
 
-  .field-is-read-only {
-    margin-left: 0;
-    font-size: small;
-  }
+      .field-text {
+        height: 24px !important;
+        min-height: 24px !important;
+        min-width: 120px !important;
+        width: 174px !important;
 
-  .provider-picto {
-    width: 30px;
-  }
+        .field-label {
+          font-size: small;
+          padding-bottom: 0;
+        }
+      }
 
-  .button-provider-import-container {
-    margin-left: auto;
+      .field-is-read-only {
+        margin-left: 0;
+      }
 
-    .button-provider-import {
-      height: 28px;
-      width: 91px;
+      .import-label-container {
+        margin-top: 0;
+      }
     }
-  }
 
-  .import-label-container {
-    margin-top:0;
-  }
+    .provider-import-button-container {
+      margin-left: auto;
 
-  .tooltip {
-    padding-top: 3px;
-    padding-left: 3px;
-    background-color: transparent;
-    z-index: 10500;
+      .provider-import-button {
+        height: 28px;
+        width: 91px;
+      }
+    }
 
-    &.tooltip-info {
-      background-color: transparent;
-      margin-left: 6px !important;
+    .tooltip {
+      padding: 4px;
+
+      &.tooltip-info {
+        margin-left: 6px !important;
+      }
     }
   }
 }

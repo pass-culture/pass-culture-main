@@ -77,6 +77,22 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       const icon = navLink.find(Icon)
       expect(icon).toBeDefined()
       expect(icon.prop('svg')).toBe('ico-offres-r')
+      const numberOfOffersLabel = navLink.find('.number-of-offers-label')
+      expect(numberOfOffersLabel).toHaveLength(1)
+      expect(numberOfOffersLabel.text()).toBe('1 offre')
+    })
+
+    it('should render zero offers label when data of provider were already synced and no offers', () => {
+      // given
+      props.venueProvider.nOffers = 0
+
+      // when
+      const wrapper = shallow(<VenueProviderItem {...props} />)
+
+      // then
+      const numberOfOffersLabel = wrapper.find('.offers-container')
+      expect(numberOfOffersLabel).toHaveLength(1)
+      expect(numberOfOffersLabel.text()).toBe('0 offre')
     })
 
     it('should render the label "en cours de validation" when provider is not synced yet', () => {

@@ -2,108 +2,17 @@ import classnames from 'classnames'
 import React, { Component } from 'react'
 import { requestData } from 'redux-saga-data'
 import { Field, Form } from 'react-final-form'
-import { showNotification } from 'pass-culture-shared'
+import { getRequestErrorStringFromErrors, showNotification } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import ReactTooltip from 'react-tooltip'
 import Icon from '../../../layout/Icon'
 import { HiddenField, TextField } from '../../../layout/form/fields'
 import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
+import updateVenueIdAtOfferProvider from './decorators/updateVenueIdAtOfferProvider'
 
 const DEFAULT_OPTION = {
   id: 'default',
   name: 'Choix de la source'
-}
-
-export const FormRendered = ({
-                               providers,
-                               isProviderSelected,
-                               isLoadingMode,
-                               isCreationMode,
-                               selectedValue,
-                               handleChange
-                             }) => {
-  return ({handleSubmit}) => (
-    <form onSubmit={handleSubmit}>
-      <div className="provider-table">
-        <HiddenField name="id"/>
-
-        {providers && providers.length > 1 && (
-          <React.Fragment>
-            <div className="provider-picto">
-              <span className="field picto">
-                <Icon svg="picto-db-default"/>
-              </span>
-            </div>
-
-            <Field
-              name="providerId"
-              required
-              render={({input}) => {
-                return (
-                  <select
-                    {...input}
-                    className="field-select select-provider"
-                    onChange={handleChange}
-                    value={selectedValue.id}
-                  >
-                    <option value={DEFAULT_OPTION.id} key={DEFAULT_OPTION.id}>{DEFAULT_OPTION.name}</option>
-                    {providers.map((provider) => (
-                      <option value={provider.id} key={provider.id}>{provider.name}</option>
-                    ))}
-                  </select>
-                )
-              }}
-            >
-            </Field>
-
-          </React.Fragment>
-        )}
-
-        {isProviderSelected && (
-          <div className="venue-id-at-offer-provider-container">
-            <TextField
-              className={classnames('field-text fs12', {
-                'field-is-read-only': isLoadingMode,
-              })}
-              label="Compte : "
-              name="venueIdAtOfferProvider"
-              readOnly={isLoadingMode}
-              required
-            />
-
-            {isLoadingMode && (
-              <div className="import-label-container">
-                <span className="fs12 has-text-weight-semibold">
-                    Importation en cours. Cette étape peut durer plusieurs dizaines de minutes.
-                </span>
-              </div>
-            )}
-          </div>
-        )}
-
-        {isProviderSelected && !isLoadingMode && (
-          <span
-            className="tooltip tooltip-info"
-            data-place="bottom"
-            data-tip={`<p>Veuillez saisir un identifiant.</p>`}
-          >
-              <Icon svg="picto-info"/>
-            </span>
-        )}
-
-        {isProviderSelected && isCreationMode && !isLoadingMode && (
-          <div className="button-provider-import-container">
-            <button
-              className="button is-intermediate button-provider-import"
-              type="submit"
-            >
-              Importer
-            </button>
-          </div>
-        )}
-      </div>
-    </form>
-  )
 }
 
 class VenueProvidersManager extends Component {
@@ -113,7 +22,7 @@ class VenueProvidersManager extends Component {
       isCreationMode: false,
       isLoadingMode: false,
       isProviderSelected: false,
-      selectedValue: DEFAULT_OPTION.id
+      venueIdAtOfferProviderIsRequired: true
     }
   }
 
@@ -172,28 +81,27 @@ class VenueProvidersManager extends Component {
       isCreationMode: false,
       isLoadingMode: false,
       isProviderSelected: false,
-      selectedValue: DEFAULT_OPTION
+      venueIdAtOfferProviderIsRequired: true
     })
   }
 
   handleSubmit = (formValues) => {
     const {dispatch} = this.props
-    this.setState({isLoadingMode: true})
-    const {id, venueIdAtOfferProvider} = formValues
-    const providerId = this.state.selectedValue.id
+    this.setState({
+      isLoadingMode: true
+    })
+    const {
+      id,
+      provider,
+      venueIdAtOfferProvider
+    } = formValues
+    const parsedProvider = JSON.parse(provider)
 
     const payload = {
-      providerId: providerId,
+      providerId: parsedProvider.id,
       venueIdAtOfferProvider,
       venueId: id
     }
-
-    // TODO
-    // 1. Afficher la bonne image en fonction du provider
-    // 2. Déclencher le POST sur /venueProviders avec le bon payload
-    // 3. Afficher l'icone de DB
-    // 4. Côté API : déclencher la création des n offres associés aux n stocks
-    // 5. Refaire un appel pour récupérer le nombre d'offres créés (afin de les afficher sur le front) -> this.loadProvidersAndVenueProviders()
 
     dispatch(requestData({
         apiPath: `/venueProviders`,
@@ -215,29 +123,32 @@ class VenueProvidersManager extends Component {
     history.push(`/structures/${offererId}/lieux/${venueId}`)
   }
 
-  handleFail = () => {
+  handleFail = (state, action) => {
     const {dispatch} = this.props
+    const {
+      payload: { errors },
+    } = action
 
     dispatch(showNotification({
-      text: 'Une erreur est survenue lors de l\'import.',
+      text: getRequestErrorStringFromErrors(errors),
       type: 'fail',
     }))
     this.resetFormState()
   }
 
-  handleChange = (event) => {
+  handleChange = (event, input) => {
     const valueFromSelectInput = event.target.value
+    const valueParsed = JSON.parse(valueFromSelectInput)
 
-    if (valueFromSelectInput && valueFromSelectInput !== DEFAULT_OPTION.id) {
+    if (valueParsed && valueParsed.id !== DEFAULT_OPTION.id) {
       this.setState({
         isProviderSelected: true,
-        selectedValue: {
-          id: valueFromSelectInput
-        },
+        venueIdAtOfferProviderIsRequired: valueParsed.requireProviderIdentifier
       })
     } else {
       this.resetFormState()
     }
+    input.onChange(valueFromSelectInput)
   }
 
   componentDidMount() {
@@ -250,7 +161,13 @@ class VenueProvidersManager extends Component {
       venue,
       venueProviders,
     } = this.props
-    const {isCreationMode, isLoadingMode, isProviderSelected, selectedValue} = this.state
+    const {
+      isCreationMode,
+      isLoadingMode,
+      isProviderSelected,
+      venueIdAtOfferProviderIsRequired
+    } = this.state
+    const decorators = [updateVenueIdAtOfferProvider]
 
     return (
       <div className="venue-providers-manager section">
@@ -274,15 +191,16 @@ class VenueProvidersManager extends Component {
           {isCreationMode && (
             <li>
               <Form
-                onSubmit={this.handleSubmit}
+                decorators={decorators}
                 initialValues={venue}
+                onSubmit={this.handleSubmit}
                 render={FormRendered({
-                  providers,
+                  handleChange: this.handleChange,
                   isProviderSelected,
                   isLoadingMode,
                   isCreationMode,
-                  selectedValue,
-                  handleChange: this.handleChange
+                  providers,
+                  venueIdAtOfferProviderIsRequired,
                 })}
               />
             </li>
@@ -300,6 +218,95 @@ class VenueProvidersManager extends Component {
           </button>
         </div>
       </div>
+    )
+  }
+}
+
+export const FormRendered = ({
+                               handleChange,
+                               isProviderSelected,
+                               isLoadingMode,
+                               isCreationMode,
+                               providers,
+                               venueIdAtOfferProviderIsRequired
+                             }) => {
+  return ({handleSubmit}) => {
+    return (
+      <form onSubmit={handleSubmit}>
+        <div className="venue-provider-table">
+          <HiddenField name="id"/>
+          <div className="provider-container">
+            <div className="provider-picto">
+              <span className="field picto">
+                <Icon svg="picto-db-default"/>
+              </span>
+            </div>
+
+            <Field
+              name="provider"
+              required
+              render={({input}) => {
+                return (
+                  <select
+                    {...input}
+                    className="field-select"
+                    onChange={(event) => handleChange(event, input)}
+                  >
+                    <option key={DEFAULT_OPTION.id}
+                            value={JSON.stringify(DEFAULT_OPTION)}>{DEFAULT_OPTION.name}</option>
+                    {providers.map((provider, index) => (
+                      <option key={index} value={JSON.stringify(provider)}>{provider.name}</option>
+                    ))}
+                  </select>
+                )
+              }}>
+            </Field>
+          </div>
+
+          {isProviderSelected && (
+            <div className="venue-id-at-offer-provider-container">
+              <TextField
+                className={classnames('field-text fs12', {
+                  'field-is-read-only': !venueIdAtOfferProviderIsRequired || isLoadingMode,
+                })}
+                label="Compte : "
+                name="venueIdAtOfferProvider"
+                readOnly={!venueIdAtOfferProviderIsRequired || isLoadingMode}
+                required
+              />
+
+              {isLoadingMode && (
+                <div className="import-label-container">
+                  <span className="fs12 has-text-weight-semibold">
+                      Importation en cours. Cette étape peut durer plusieurs dizaines de minutes.
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {isProviderSelected && !isLoadingMode && venueIdAtOfferProviderIsRequired && (
+            <span
+              className="tooltip tooltip-info"
+              data-place="bottom"
+              data-tip={`<p>Veuillez saisir un identifiant.</p>`}
+            >
+              <Icon svg="picto-info"/>
+            </span>
+          )}
+
+          {isProviderSelected && isCreationMode && !isLoadingMode && (
+            <div className="provider-import-button-container">
+              <button
+                className="button is-intermediate provider-import-button"
+                type="submit"
+              >
+                Importer
+              </button>
+            </div>
+          )}
+        </div>
+      </form>
     )
   }
 }

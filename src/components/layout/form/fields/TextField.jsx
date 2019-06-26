@@ -66,6 +66,7 @@ export class TextField extends Component {
       required,
       type,
       validate,
+      value,
       ...inputProps
     } = this.props
     return (
