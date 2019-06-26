@@ -75,6 +75,7 @@ services:
       - web_nw
     depends_on:
       - postgres
+      - postgres-test
 
   nginx:
     build: dockerfiles/nginx
