@@ -3,9 +3,7 @@ from datetime import datetime, timedelta
 from models import PcObject, ThingType
 from tests.conftest import clean_database, TestClient
 
-from tests.test_utils import create_offer_with_thing_product, create_user, create_offerer, \
-    create_venue, \
-    create_stock_with_thing_offer, create_recommendation, create_deposit, create_booking
+from tests.test_utils import create_offer_with_thing_product, create_user, create_offerer, create_user_offerer, create_venue, create_stock_with_thing_offer, create_recommendation, create_deposit, create_booking
 
 class Get:
     class Returns200:
@@ -91,11 +89,11 @@ class Get:
             PcObject.save(offer, offer2, offerer2_virtual_venue, user_offerer, user_offerer2)
 
             # when
-            response = TestClient().with_auth('test@email.com').get(API_URL + '/users/current')
+            response = TestClient(app.test_client()).with_auth('test@email.com').get('/users/current')
 
             # Then
-            assert response.json()['hasPhysicalVenues'] is True
-            assert response.json()['hasOffers'] is True
+            assert response.json['hasPhysicalVenues'] is True
+            assert response.json['hasOffers'] is True
 
     class Returns400:
         @clean_database

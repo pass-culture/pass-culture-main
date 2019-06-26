@@ -227,12 +227,13 @@ class RealWalletBalanceTest:
         assert balance == Decimal(50)
 
 
-class hasPhysicalVenuesTest:
+class HasPhysicalVenuesTest:
     @clean_database
     def test_webapp_user_has_no_venue(self, app):
         # given
         user = create_user()
 
+        # when
         PcObject.save(user)
 
         # then
@@ -245,6 +246,8 @@ class hasPhysicalVenuesTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         offerer_venue = create_venue(offerer, is_virtual=True, siret=None)
+
+        # when
         PcObject.save(offerer_venue, user_offerer)
 
         # then
