@@ -132,15 +132,11 @@ ShallowWrapper {
         <HeroSection
           title="Votre structure juridique"
         >
-          <span
-            className="page-illustration"
-          />
           <p
             className="subtitle"
           >
             Pour présenter vos offres, vous devez d'abord 
             <a
-              className="has-text-primary has-text-weight-semibold"
               href="/structures/AE/lieux/creation"
             >
               créer un
@@ -151,7 +147,6 @@ ShallowWrapper {
             <br />
             Sans lieu, vous pouvez uniquement 
             <a
-              className="has-text-primary"
               href="/offres/creation"
             >
               ajouter des offres numériques.
@@ -226,15 +221,11 @@ ShallowWrapper {
         "nodeType": "function",
         "props": Object {
           "children": Array [
-            <span
-              className="page-illustration"
-            />,
             <p
               className="subtitle"
             >
               Pour présenter vos offres, vous devez d'abord 
               <a
-                className="has-text-primary has-text-weight-semibold"
                 href="/structures/AE/lieux/creation"
               >
                 créer un
@@ -245,7 +236,6 @@ ShallowWrapper {
               <br />
               Sans lieu, vous pouvez uniquement 
               <a
-                className="has-text-primary"
                 href="/offres/creation"
               >
                 ajouter des offres numériques.
@@ -283,21 +273,9 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "className": "page-illustration",
-            },
-            "ref": null,
-            "rendered": null,
-            "type": "span",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
               "children": Array [
                 "Pour présenter vos offres, vous devez d'abord ",
                 <a
-                  className="has-text-primary has-text-weight-semibold"
                   href="/structures/AE/lieux/creation"
                 >
                   créer un
@@ -308,7 +286,6 @@ ShallowWrapper {
                 <br />,
                 "Sans lieu, vous pouvez uniquement ",
                 <a
-                  className="has-text-primary"
                   href="/offres/creation"
                 >
                   ajouter des offres numériques.
@@ -329,7 +306,6 @@ ShallowWrapper {
                     " ",
                     "nouveau lieu ",
                   ],
-                  "className": "has-text-primary has-text-weight-semibold",
                   "href": "/structures/AE/lieux/creation",
                 },
                 "ref": null,
@@ -357,7 +333,6 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": "ajouter des offres numériques.",
-                  "className": "has-text-primary",
                   "href": "/offres/creation",
                 },
                 "ref": null,
@@ -537,15 +512,11 @@ ShallowWrapper {
           <HeroSection
             title="Votre structure juridique"
           >
-            <span
-              className="page-illustration"
-            />
             <p
               className="subtitle"
             >
               Pour présenter vos offres, vous devez d'abord 
               <a
-                className="has-text-primary has-text-weight-semibold"
                 href="/structures/AE/lieux/creation"
               >
                 créer un
@@ -556,7 +527,6 @@ ShallowWrapper {
               <br />
               Sans lieu, vous pouvez uniquement 
               <a
-                className="has-text-primary"
                 href="/offres/creation"
               >
                 ajouter des offres numériques.
@@ -631,15 +601,11 @@ ShallowWrapper {
           "nodeType": "function",
           "props": Object {
             "children": Array [
-              <span
-                className="page-illustration"
-              />,
               <p
                 className="subtitle"
               >
                 Pour présenter vos offres, vous devez d'abord 
                 <a
-                  className="has-text-primary has-text-weight-semibold"
                   href="/structures/AE/lieux/creation"
                 >
                   créer un
@@ -650,7 +616,6 @@ ShallowWrapper {
                 <br />
                 Sans lieu, vous pouvez uniquement 
                 <a
-                  className="has-text-primary"
                   href="/offres/creation"
                 >
                   ajouter des offres numériques.
@@ -688,21 +653,9 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "className": "page-illustration",
-              },
-              "ref": null,
-              "rendered": null,
-              "type": "span",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
                 "children": Array [
                   "Pour présenter vos offres, vous devez d'abord ",
                   <a
-                    className="has-text-primary has-text-weight-semibold"
                     href="/structures/AE/lieux/creation"
                   >
                     créer un
@@ -713,7 +666,6 @@ ShallowWrapper {
                   <br />,
                   "Sans lieu, vous pouvez uniquement ",
                   <a
-                    className="has-text-primary"
                     href="/offres/creation"
                   >
                     ajouter des offres numériques.
@@ -734,7 +686,6 @@ ShallowWrapper {
                       " ",
                       "nouveau lieu ",
                     ],
-                    "className": "has-text-primary has-text-weight-semibold",
                     "href": "/structures/AE/lieux/creation",
                   },
                   "ref": null,
@@ -762,7 +713,6 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": "ajouter des offres numériques.",
-                    "className": "has-text-primary",
                     "href": "/offres/creation",
                   },
                   "ref": null,

@@ -4,17 +4,24 @@
   padding-top: 0;
   position: relative;
 
-  .page-illustration {
-    background-image: url(/icons/ico-structure-r.svg);
-    background-size: cover;
-    background-position: right;
-    position: relative;
-    left: -64px;
-    top: -96px;
-    width: 60px;
-    height: 80px;
-    display: block;
+  .section-icon {
+    background-image: url(/icons/ico-structure.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 80%;
+    height: 120px;
+    margin-left: -2.5rem;
     opacity: 0.25;
+    width: 120px;
+  }
+
+  .section-icon-mask {
+    width: 80px;
+    height: 120px;
+    position: absolute;
+    top: -2.75rem;
+    left: -5.3rem;
+    overflow: hidden;
   }
 
   h1 {

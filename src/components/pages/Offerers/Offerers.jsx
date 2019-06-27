@@ -152,11 +152,10 @@ class Offerers extends Component {
     }
 
     const url = createVenueForOffererUrl(offerers)
-
+    
     return (
       <Main name="offerers">
         <HeroSection title={sectionTitle}>
-          <span className="page-illustration" />
           <p className="subtitle">
             Pour présenter vos offres, vous devez d'abord <a href={url}>créer un{' '}
             nouveau lieu </a> lié à une structure.
