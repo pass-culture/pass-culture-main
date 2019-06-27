@@ -1,21 +1,11 @@
 .venue-provider-row {
   display: flex;
+  flex-direction: row;
   width: 100%;
 
-  .validation-label-container {
-    margin-left: auto;
-  }
-
-  .enable-disable-button {
-    margin-left: auto;
-  }
-
-  .button-container {
-    flex: 1;
-  }
-
   .provider-name-container {
-    flex: 2;
+    flex: 1.5;
+    font-size: medium;
   }
 
   .venue-id-at-offer-provider-container {
@@ -25,7 +15,7 @@
   .offers-container {
     padding-top: 8px;
     display: inline-block;
-    flex: 1;
+    flex: 0.5;
 
     .number-of-offers-label {
       display: inline-block;

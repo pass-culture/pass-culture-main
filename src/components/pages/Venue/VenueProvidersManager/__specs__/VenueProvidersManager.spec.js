@@ -392,22 +392,6 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         expect(textField.prop('required')).toBe(true)
       })
 
-      it('should display a message information regarding data import when in loading mode', () => {
-        // given
-        props.isProviderSelected = true
-        props.isLoadingMode = true
-
-        // when
-        const renderedForm = shallow(FormRendered({...props})(handleSubmit))
-
-        // then
-        const importLabelContainer = renderedForm.find('.import-label-container')
-        const importLabelSpan = importLabelContainer.find('span')
-        expect(importLabelContainer).toHaveLength(1)
-        expect(importLabelSpan).toHaveLength(1)
-        expect(importLabelSpan.text()).toBe('Importation en cours. Cette étape peut durer plusieurs dizaines de minutes.')
-      })
-
       it('should display a tooltip and an Icon component when provider is selected, not in loading mode and provider identifier is required', () => {
         // given
         props.isProviderSelected = true

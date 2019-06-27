@@ -275,24 +275,16 @@ export const FormRendered = ({
                 required
               />
 
-              {isLoadingMode && (
-                <div className="import-label-container">
-                  <span className="fs12 has-text-weight-semibold">
-                      Importation en cours. Cette étape peut durer plusieurs dizaines de minutes.
-                  </span>
-                </div>
+              {!isLoadingMode && venueIdAtOfferProviderIsRequired && (
+                <span
+                  className="tooltip tooltip-info"
+                  data-place="bottom"
+                  data-tip={`<p>Veuillez saisir un identifiant.</p>`}
+                >
+                  <Icon svg="picto-info"/>
+                </span>
               )}
             </div>
-          )}
-
-          {isProviderSelected && !isLoadingMode && venueIdAtOfferProviderIsRequired && (
-            <span
-              className="tooltip tooltip-info"
-              data-place="bottom"
-              data-tip={`<p>Veuillez saisir un identifiant.</p>`}
-            >
-              <Icon svg="picto-info"/>
-            </span>
           )}
 
           {isProviderSelected && isCreationMode && !isLoadingMode && (

@@ -6,11 +6,11 @@ export const handleUpdateOnProviderField = () => {
 
     if (!parsedValue.requireProviderIdentifier) {
       return {
-        ['venueIdAtOfferProvider']: formValues.siret
+        'venueIdAtOfferProvider': formValues.siret
       }
     }
     return {
-      ['venueIdAtOfferProvider']: ''
+      'venueIdAtOfferProvider': ''
     }
   }
 }

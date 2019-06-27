@@ -12,7 +12,7 @@ ShallowWrapper {
         "lastSyncDate": "2018-01-01",
         "nOffers": 1,
         "provider": Object {
-          "localClass": "fake local class",
+          "localClass": "OpenAgendaEvents",
           "name": "fake local class",
         },
         "venueId": 1,
@@ -39,7 +39,9 @@ ShallowWrapper {
           className="picto"
         >
           <Icon
-            svg="picto-db-default"
+            height="44px"
+            svg="logo-openAgenda"
+            width="44px"
           />
         </div>,
         <div
@@ -50,13 +52,15 @@ ShallowWrapper {
         <div
           className="fs14 venue-id-at-offer-provider-container"
         >
-          Compte : 
-           
-          <strong
-            className="fs14 has-text-weight-bold"
-          >
-            1
-          </strong>
+          <div>
+            Compte : 
+             
+            <strong
+              className="fs14 has-text-weight-bold"
+            >
+              1
+            </strong>
+          </div>
         </div>,
         <div
           className="offers-container"
@@ -90,7 +94,9 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": <Icon
-            svg="picto-db-default"
+            height="44px"
+            svg="logo-openAgenda"
+            width="44px"
           />,
           "className": "picto",
         },
@@ -100,7 +106,9 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "svg": "picto-db-default",
+            "height": "44px",
+            "svg": "logo-openAgenda",
+            "width": "44px",
           },
           "ref": null,
           "rendered": null,
@@ -125,34 +133,54 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": Array [
-            "Compte : ",
-            " ",
+          "children": <div>
+            Compte : 
+             
             <strong
               className="fs14 has-text-weight-bold"
             >
               1
-            </strong>,
-          ],
+            </strong>
+          </div>,
           "className": "fs14 venue-id-at-offer-provider-container",
         },
         "ref": null,
-        "rendered": Array [
-          "Compte : ",
-          " ",
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": 1,
-              "className": "fs14 has-text-weight-bold",
-            },
-            "ref": null,
-            "rendered": 1,
-            "type": "strong",
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              "Compte : ",
+              " ",
+              <strong
+                className="fs14 has-text-weight-bold"
+              >
+                1
+              </strong>,
+              false,
+            ],
           },
-        ],
+          "ref": null,
+          "rendered": Array [
+            "Compte : ",
+            " ",
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": 1,
+                "className": "fs14 has-text-weight-bold",
+              },
+              "ref": null,
+              "rendered": 1,
+              "type": "strong",
+            },
+            false,
+          ],
+          "type": "div",
+        },
         "type": "div",
       },
       Object {
@@ -248,7 +276,9 @@ ShallowWrapper {
             className="picto"
           >
             <Icon
-              svg="picto-db-default"
+              height="44px"
+              svg="logo-openAgenda"
+              width="44px"
             />
           </div>,
           <div
@@ -259,13 +289,15 @@ ShallowWrapper {
           <div
             className="fs14 venue-id-at-offer-provider-container"
           >
-            Compte : 
-             
-            <strong
-              className="fs14 has-text-weight-bold"
-            >
-              1
-            </strong>
+            <div>
+              Compte : 
+               
+              <strong
+                className="fs14 has-text-weight-bold"
+              >
+                1
+              </strong>
+            </div>
           </div>,
           <div
             className="offers-container"
@@ -299,7 +331,9 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": <Icon
-              svg="picto-db-default"
+              height="44px"
+              svg="logo-openAgenda"
+              width="44px"
             />,
             "className": "picto",
           },
@@ -309,7 +343,9 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "function",
             "props": Object {
-              "svg": "picto-db-default",
+              "height": "44px",
+              "svg": "logo-openAgenda",
+              "width": "44px",
             },
             "ref": null,
             "rendered": null,
@@ -334,34 +370,54 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": Array [
-              "Compte : ",
-              " ",
+            "children": <div>
+              Compte : 
+               
               <strong
                 className="fs14 has-text-weight-bold"
               >
                 1
-              </strong>,
-            ],
+              </strong>
+            </div>,
             "className": "fs14 venue-id-at-offer-provider-container",
           },
           "ref": null,
-          "rendered": Array [
-            "Compte : ",
-            " ",
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": 1,
-                "className": "fs14 has-text-weight-bold",
-              },
-              "ref": null,
-              "rendered": 1,
-              "type": "strong",
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                "Compte : ",
+                " ",
+                <strong
+                  className="fs14 has-text-weight-bold"
+                >
+                  1
+                </strong>,
+                false,
+              ],
             },
-          ],
+            "ref": null,
+            "rendered": Array [
+              "Compte : ",
+              " ",
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": 1,
+                  "className": "fs14 has-text-weight-bold",
+                },
+                "ref": null,
+                "rendered": 1,
+                "type": "strong",
+              },
+              false,
+            ],
+            "type": "div",
+          },
           "type": "div",
         },
         Object {

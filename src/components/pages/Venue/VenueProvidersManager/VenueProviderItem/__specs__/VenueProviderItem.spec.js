@@ -19,7 +19,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
         nOffers: 1,
         provider: {
           name: 'fake local class',
-          localClass: 'fake local class'
+          localClass: 'OpenAgendaEvents'
         },
         venueId: 1,
         venueIdAtOfferProvider: 1
@@ -44,7 +44,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       // then
       const icon = wrapper.find('.picto').find(Icon)
       expect(icon).toHaveLength(1)
-      expect(icon.prop('svg')).toBe('picto-db-default')
+      expect(icon.prop('svg')).toBe('logo-openAgenda')
     })
 
     it('should render provider local class when provided', () => {
@@ -93,18 +93,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       const numberOfOffersLabel = wrapper.find('.offers-container')
       expect(numberOfOffersLabel).toHaveLength(1)
       expect(numberOfOffersLabel.text()).toBe('0 offre')
-    })
-
-    it('should render the label "en cours de validation" when provider is not synced yet', () => {
-      // given
-      props.venueProvider.lastSyncDate = null
-
-      // when
-      const wrapper = shallow(<VenueProviderItem {...props} />)
-
-      // then
-      const div = wrapper.find('.validation-label-container')
-      expect(div.text()).toBe('En cours de validation')
     })
   })
 })

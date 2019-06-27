@@ -3,17 +3,19 @@ import { Icon, pluralize } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
+import { providerIcons } from './utils/providerIcons'
 
 class VenueProviderItem extends Component {
   render() {
     const {venueProvider} = this.props
     const {lastSyncDate, nOffers, provider, venueIdAtOfferProvider, venueId} = venueProvider
-    const {name: providerName} = provider
+    const {name: providerName, localClass} = provider
+    const providerIcon = providerIcons[localClass]
 
     return (
       <li className={classnames('is-disabled venue-provider-row')}>
         <div className="picto">
-          <Icon svg="picto-db-default"/>
+          <Icon svg={providerIcon} width="44px" height="44px"/>
         </div>
 
         <div className="has-text-weight-bold fs14 provider-name-container">
@@ -21,29 +23,35 @@ class VenueProviderItem extends Component {
         </div>
 
         <div className="fs14 venue-id-at-offer-provider-container">
-          Compte : {' '}
-          <strong className="fs14 has-text-weight-bold">
-            {venueIdAtOfferProvider}
-          </strong>
+          <div>
+            Compte : {' '}
+            <strong className="fs14 has-text-weight-bold">
+              {venueIdAtOfferProvider}
+            </strong>
+
+            {!lastSyncDate && (
+              <div className="fs14 import-label-container">
+                Importation en cours. Cette étape peut durer plusieurs dizaines de minutes.
+              </div>
+            )}
+          </div>
         </div>
 
-        {lastSyncDate ? (
-          <div className="offers-container">
-            {nOffers ? (
+        <div className="offers-container">
+          {lastSyncDate && (
+            nOffers ? (
               <NavLink
                 className="has-text-primary"
                 to={`/offres?lieu=${venueId}`}
               >
                 <Icon svg="ico-offres-r" width="20px" height="20px"/>
-                <div className="number-of-offers-label">{pluralize(nOffers, 'offres')}</div>
+                <div className="number-of-offers-label">
+                  {pluralize(nOffers, 'offres')}
+                </div>
               </NavLink>
-            ) : (
-              <div>0 offre</div>
-            )}
-          </div>
-        ) : (
-          <div className="fs14 validation-label-container">En cours de validation</div>
-        )}
+            ) : (<div>0 offre</div>)
+          )}
+        </div>
       </li>
     )
   }

@@ -5,11 +5,12 @@
 
   .venue-provider-table {
     display: flex;
-    flex-direction: row;
     width: 100%;
 
     .provider-container {
+      margin-left: 10px;
       display: flex;
+      flex: 5;
 
       .field-select {
         border-radius: 17px;
@@ -30,17 +31,23 @@
     }
 
     .venue-id-at-offer-provider-container {
-      margin-left: 10px;
+      display: flex;
+      flex: 5;
 
       .field-text {
         height: 24px !important;
+        margin-bottom: 0;
         min-height: 24px !important;
         min-width: 120px !important;
         width: 174px !important;
 
         .field-label {
           font-size: small;
-          padding-bottom: 0;
+          padding: 0;
+        }
+
+        .field-input {
+          padding: 0;
         }
       }
 
@@ -51,22 +58,19 @@
       .import-label-container {
         margin-top: 0;
       }
-    }
 
-    .provider-import-button-container {
-      margin-left: auto;
-
-      .provider-import-button {
-        height: 28px;
-        width: 91px;
+      .tooltip {
+        &.tooltip-info {
+          margin-left: 65px;
+          padding: 4px;
+        }
       }
     }
 
-    .tooltip {
-      padding: 4px;
-
-      &.tooltip-info {
-        margin-left: 6px !important;
+    .provider-import-button-container {
+      .provider-import-button {
+        height: 28px;
+        width: 91px;
       }
     }
   }
