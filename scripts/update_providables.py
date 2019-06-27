@@ -21,7 +21,7 @@ from models import VenueProvider
 def update_providables(provider_name: str, venue_provider_id: str, limit: int):
     if (provider_name and venue_provider_id) or not (provider_name or venue_provider_id):
         raise ValueError('Call either with provider-name or venue-provider-id')
-    
+
     if provider_name:
         ProviderClass = get_class_by_name(provider_name)
         provider = ProviderClass()
@@ -32,7 +32,7 @@ def update_providables(provider_name: str, venue_provider_id: str, limit: int):
         ProviderClass = get_class_by_name(venue_provider.provider.localClass)
         provider = ProviderClass(venue_provider)
         return do_update(provider, limit)
-    
+
 
 def do_update(provider, limit):
     try:

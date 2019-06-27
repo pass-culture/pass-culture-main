@@ -27,7 +27,7 @@ class Post:
                                    'venueIdAtOfferProvider': '77567146400110'}
             user = create_user(is_admin=True, can_book_free_offers=False)
             PcObject.save(product, user)
-            auth_request = TestClient() \
+            auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
 
             # when
@@ -63,7 +63,7 @@ class Post:
             venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
             PcObject.save(user_offerer, venue)
 
-            auth_request = TestClient() \
+            auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
             venue_provider_data = {'providerId': "AZEFGRZ5",
                                    'venueId': humanize(venue.id),
@@ -91,7 +91,7 @@ class Post:
             venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
             PcObject.save(provider, user_offerer, venue)
 
-            auth_request = TestClient() \
+            auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
             venue_provider_data = {'providerId': humanize(provider.id),
                                    'venueId': humanize(venue.id),
@@ -103,7 +103,7 @@ class Post:
 
             # then
             assert response.status_code == 401
-            assert response.json()['localClass'] == ["Ce fournisseur n'est pas activé"]
+            assert response.json['localClass'] == ["Ce fournisseur n'est pas activé"]
 
         @clean_database
         def when_provider_is_not_active_and_enabled_for_pro_property_is_not_active(self, app):
@@ -119,7 +119,7 @@ class Post:
             venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
             PcObject.save(provider, user_offerer, venue)
 
-            auth_request = TestClient() \
+            auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
             venue_provider_data = {'providerId': humanize(provider.id),
                                    'venueId': humanize(venue.id),
@@ -131,7 +131,7 @@ class Post:
 
             # then
             assert response.status_code == 401
-            assert response.json()['localClass'] == ["Ce fournisseur n'est pas activé"]
+            assert response.json['localClass'] == ["Ce fournisseur n'est pas activé"]
 
         @clean_database
         def when_venue_provider_with_same_identifier_already_exists(self, app):
@@ -148,7 +148,7 @@ class Post:
             venue_provider = create_venue_provider(venue, provider, venue_id_at_offer_provider="775671464")
             PcObject.save(provider, user_offerer, venue, venue_provider)
 
-            auth_request = TestClient() \
+            auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
             venue_provider_data = {'providerId': humanize(provider.id),
                                    'venueId': humanize(venue.id),
@@ -160,4 +160,4 @@ class Post:
 
             # then
             assert response.status_code == 401
-            assert response.json()['venueIdAtOfferProvider'] == ["Il y a déjà un fournisseur pour votre identifiant"]
+            assert response.json['venueIdAtOfferProvider'] == ["Il y a déjà un fournisseur pour votre identifiant"]
