@@ -9,7 +9,7 @@ from local_providers.demarches_simplifiees_bank_information_without_siret import
     VenueWithoutSIRETBankInformationProvider, DemarchesSimplifieesMapper, NoOffererFoundException, NoVenueFoundException
 from models import BankInformation, PcObject, LocalProviderEvent
 from tests.conftest import clean_database
-from tests.test_utils import create_offerer, create_venue, provider_test, create_bank_information
+from tests.test_utils import create_offerer, create_venue, provider_test, create_bank_information, activate_provider
 from utils.human_ids import dehumanize, humanize
 
 
@@ -159,9 +159,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
             'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
             'DEMARCHES_SIMPLIFIEES_TOKEN': TOKEN
         }, clear=True):
-            provider = VenueWithoutSIRETBankInformationProvider()
-            provider.dbObject.isActive = True
-            provider.updateObjects()
+            provider_object = VenueWithoutSIRETBankInformationProvider()            
 
         # then
         assert get_application_details.call_count == APPLICATION_ID_2
@@ -194,10 +192,11 @@ class VenueWithoutSIRETBankInformationProviderTest:
                                                                        self.VENUE_ID)
 
         # when
-        provider = VenueWithoutSIRETBankInformationProvider()
+        activate_provider('VenueWithoutSIRETBankInformationProvider')
+        bank_information_provider = VenueWithoutSIRETBankInformationProvider()
 
         with pytest.raises(NoOffererFoundException):
-            provider.updateObjects()
+            bank_information_provider.updateObjects()
 
     @patch('os.environ', return_value={
         'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': '5636727',
@@ -226,10 +225,11 @@ class VenueWithoutSIRETBankInformationProviderTest:
                                                                        self.VENUE_ID)
 
         # when
-        provider = VenueWithoutSIRETBankInformationProvider()
+        activate_provider('VenueWithoutSIRETBankInformationProvider')
+        bank_information_provider = VenueWithoutSIRETBankInformationProvider()
 
         with pytest.raises(NoVenueFoundException):
-            provider.updateObjects()
+            bank_information_provider.updateObjects()
 
     @patch('os.environ', return_value={
         'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': '5636727',

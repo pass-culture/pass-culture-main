@@ -42,16 +42,6 @@ class Post:
             venue_provider_id = json_response['id']
             assert json_response['lastSyncDate'] is None
 
-            # Test for subprocess result
-            read_json = json_response
-            tries = 0
-            while read_json['lastSyncDate'] is None:
-                assert tries < 30
-                response_check = auth_request.get('/venueProviders/' + venue_provider_id)
-                assert response_check.status_code == 200
-                read_json = response_check.json
-                tries += 1
-                sleep(2)
 
     class Returns404:
         @clean_database
