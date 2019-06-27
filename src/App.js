@@ -1,10 +1,8 @@
-import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
+import React, { Fragment } from 'react'
 import Helmet from 'react-helmet'
-import { matchPath, Route } from 'react-router-dom'
+import { matchPath, Route, withRouter } from 'react-router-dom'
 
-import routes from './utils/routes'
-import withFeaturedRouter from './components/hocs/withFeaturedRouter/withFeaturedRouter'
 import MenuContainer from './components/menu/MenuContainer'
 import DebugContainer from './components/layout/Debug/DebugContainer'
 import Splash from './components/layout/Splash'
@@ -12,8 +10,9 @@ import Overlay from './components/layout/Overlay'
 import Notifications from './components/layout/notifications'
 import ErrorCatcherContainer from './components/layout/ErrorCatcher/ErrorCatcherContainer'
 import { SharePopin } from './components/share/SharePopin'
-import { getReactRoutes } from './utils/routes-utils'
 import { ROOT_PATH, IS_DEV, PROJECT_NAME } from './utils/config'
+import routes from './utils/routes'
+import { getReactRoutes } from './utils/routes-utils'
 
 const appRoutes = getReactRoutes(routes)
 
@@ -68,4 +67,4 @@ App.propTypes = {
   location: PropTypes.shape().isRequired,
 }
 
-export default withFeaturedRouter(App)
+export default withRouter(App)
