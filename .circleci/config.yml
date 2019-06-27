@@ -104,6 +104,7 @@ jobs:
             export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
             curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
 
+
   tests-pro:
     machine:
       image: circleci/classic:latest
