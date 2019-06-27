@@ -1,15 +1,5 @@
 import copy
-from typing import List, Tuple
 
-LIST_APPLICATIONS_STANDARD_RESPONSE = {
-    "dossiers": [],
-    "pagination":
-        {
-            "page": 1,
-            "resultats_par_page": 100,
-            "nombre_de_page": 3
-        }
-}
 APPLICATION_DETAIL_STANDARD_RESPONSE = {
     "dossier": {
         "id": 123,
@@ -259,21 +249,6 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
         ]
     }
 }
-
-
-def make_applications_list(applications_params: List[Tuple[int, str, str]], page, number_of_pages) -> dict:
-    applications = copy.deepcopy(LIST_APPLICATIONS_STANDARD_RESPONSE)
-    for params in applications_params:
-        applications['dossiers'].append(
-            {
-                "id": params[0],
-                "state": params[1],
-                "updated_at": params[2]
-            }
-        )
-    applications['pagination']['nombre_de_page'] = number_of_pages
-    applications['pagination']['page'] = page
-    return applications
 
 
 def make_application_detail(id: int, state: str, department_code='67 - Bas-Rhin') -> dict:

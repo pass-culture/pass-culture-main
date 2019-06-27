@@ -3,8 +3,9 @@ import re
 from datetime import datetime
 from typing import Callable, List
 
-from connectors.api_demarches_simplifiees import get_all_applications_for_procedure, get_application_details
+from connectors.api_demarches_simplifiees import get_application_details
 from domain.admin_emails import send_remote_beneficiaries_import_report_email
+from domain.demarches_simplifiees import get_all_application_ids_for_procedure
 from domain.password import generate_reset_token, random_password
 from domain.user_emails import send_activation_notification_email
 from models import User, PcObject, Deposit
@@ -21,35 +22,26 @@ VALIDATED_APPLICATION = 'closed'
 
 def run(
         process_applications_updated_after: datetime,
-        get_all_applications: Callable[..., dict] = get_all_applications_for_procedure,
+        get_all_applications_ids: Callable[..., dict] = get_all_application_ids_for_procedure,
         get_details: Callable[..., dict] = get_application_details,
         existing_user: Callable[[str], User] = find_user_by_demarche_simplifiee_application_id
 ):
-    current_page = 1
-    number_of_pages = 1
     error_messages = []
     new_beneficiaries = []
 
     logger.info('[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées')
-    while current_page <= number_of_pages:
-        applications = get_all_applications(PROCEDURE_ID, TOKEN, page=current_page)
-        number_of_pages = applications['pagination']['nombre_de_page']
+    applications_ids = get_all_applications_ids(PROCEDURE_ID, TOKEN, process_applications_updated_after)
+    logger.info(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {len(applications_ids)} applications to process')
 
-        logger.info(f'[BATCH][REMOTE IMPORT BENEFICIARIES] Page {current_page} of {number_of_pages}, '
-                    f'{len(applications)} applications received')
-        ids_to_process = _find_application_ids_to_process(applications, process_applications_updated_after)
-        logger.info(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {len(ids_to_process)} applications to process')
+    for id in applications_ids:
+        details = get_details(id, PROCEDURE_ID, TOKEN)
+        information = parse_beneficiary_information(details)
 
-        for id in ids_to_process:
-            details = get_details(id, PROCEDURE_ID, TOKEN)
-            information = parse_beneficiary_information(details)
-
-            if not existing_user(information['application_id']):
-                process_beneficiary_application(information, error_messages, new_beneficiaries)
-
-        current_page = current_page + 1
+        if not existing_user(information['application_id']):
+            process_beneficiary_application(information, error_messages, new_beneficiaries)
 
     send_remote_beneficiaries_import_report_email(new_beneficiaries, error_messages, send_raw_email)
+    logger.info('[BATCH][REMOTE IMPORT BENEFICIARIES] End import from Démarches Simplifiées')
 
 
 class DuplicateBeneficiaryError(Exception):
@@ -104,7 +96,8 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
 
 def create_beneficiary_from_application(
         application_detail: dict,
-        find_duplicate_users: Callable[[str, str, str, str], User] = find_by_first_and_last_names_and_birth_date_or_email
+        find_duplicate_users: Callable[
+            [str, str, str, str], User] = find_by_first_and_last_names_and_birth_date_or_email
 ) -> User:
     duplicate_users = find_duplicate_users(
         application_detail['first_name'],

@@ -11,7 +11,7 @@ from scripts.beneficiary.remote_import import parse_beneficiary_information, cre
     DuplicateBeneficiaryError
 from tests.conftest import clean_database
 from tests.scripts.beneficiary.fixture import make_application_detail, \
-    make_applications_list, APPLICATION_DETAIL_STANDARD_RESPONSE
+    APPLICATION_DETAIL_STANDARD_RESPONSE
 
 NOW = datetime.utcnow()
 datetime_pattern = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -26,18 +26,11 @@ class RunTest:
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
     def test_only_closed_applications_are_processed(self, process_beneficiary_application, send_report_email):
         # given
-        get_all_applications = Mock()
-        get_all_applications.return_value = make_applications_list(
-            [
-                (123, 'closed', FOUR_HOURS_AGO),
-                (456, 'initiated', EIGHT_HOURS_AGO),
-                (789, 'closed', TWO_DAYS_AGO)
-            ], 1, 1
-        )
+        get_all_application_ids = Mock(return_value=[123, 456, 789])
         get_details = Mock()
         get_details.side_effect = [
             make_application_detail(123, 'closed'),
-            make_application_detail(456, 'initiated'),
+            make_application_detail(456, 'closed'),
             make_application_detail(789, 'closed')
         ]
 
@@ -46,68 +39,7 @@ class RunTest:
         # when
         remote_import.run(
             ONE_WEEK_AGO,
-            get_all_applications=get_all_applications,
-            get_details=get_details,
-            existing_user=find_user_by_email
-        )
-
-        # then
-        assert process_beneficiary_application.call_count == 2
-
-    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
-    @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
-    def test_only_applications_updated_after_given_date_are_processed(self, process_beneficiary_application,
-                                                                      send_report_email):
-        # given
-        six_hours_ago = NOW - timedelta(hours=6)
-
-        get_all_applications = Mock()
-        get_all_applications.return_value = make_applications_list(
-            [
-                (123, 'closed', FOUR_HOURS_AGO),
-                (456, 'closed', EIGHT_HOURS_AGO),
-            ], 1, 1
-        )
-        get_details = Mock()
-        get_details.side_effect = [
-            make_application_detail(123, 'closed'),
-            make_application_detail(456, 'closed'),
-        ]
-
-        find_user_by_email = Mock(return_value=None)
-
-        # when
-        remote_import.run(
-            six_hours_ago,
-            get_all_applications=get_all_applications,
-            get_details=get_details,
-            existing_user=find_user_by_email
-        )
-
-        # then
-        assert process_beneficiary_application.call_count == 1
-        assert process_beneficiary_application.call_args[0][0]['application_id'] == 123
-
-    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
-    @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
-    def test_pagination_is_handled_properly(self, process_beneficiary_application, send_report_email):
-        # given
-        get_all_applications = Mock()
-        number_of_pages = 3
-        current_page = 1
-        get_all_applications.return_value = make_applications_list(
-            [
-                (123, 'closed', FOUR_HOURS_AGO),
-                (456, 'initiated', EIGHT_HOURS_AGO)
-            ], current_page, number_of_pages
-        )
-        get_details = Mock(return_value=make_application_detail(123, 'closed'))
-        find_user_by_email = Mock(return_value=None)
-
-        # when
-        remote_import.run(
-            ONE_WEEK_AGO,
-            get_all_applications=get_all_applications,
+            get_all_applications_ids=get_all_application_ids,
             get_details=get_details,
             existing_user=find_user_by_email
         )
@@ -119,22 +51,14 @@ class RunTest:
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
     def test_a_report_email_is_sent(self, process_beneficiary_application, send_report_email):
         # given
-        get_all_applications = Mock()
-        number_of_pages = 1
-        current_page = 1
-        get_all_applications.return_value = make_applications_list(
-            [
-                (123, 'closed', FOUR_HOURS_AGO),
-                (456, 'initiated', EIGHT_HOURS_AGO)
-            ], current_page, number_of_pages
-        )
-        get_details = Mock(return_value=make_application_detail(123, 'closed'))
+        get_all_application_ids = Mock(return_value=[123])
+        get_details = Mock(side_effect=[make_application_detail(123, 'closed')])
         find_user_by_email = Mock(return_value=None)
 
         # when
         remote_import.run(
             ONE_WEEK_AGO,
-            get_all_applications=get_all_applications,
+            get_all_applications_ids=get_all_application_ids,
             get_details=get_details,
             existing_user=find_user_by_email
         )
@@ -148,15 +72,7 @@ class RunTest:
                                                                                          process_beneficiary_application,
                                                                                          send_report_email):
         # given
-        get_all_applications = Mock()
-        number_of_pages = 3
-        current_page = 1
-        get_all_applications.return_value = make_applications_list(
-            [
-                (123, 'closed', FOUR_HOURS_AGO),
-                (456, 'initiated', EIGHT_HOURS_AGO)
-            ], current_page, number_of_pages
-        )
+        get_all_application_ids = Mock(return_value=[123, 456])
         get_details = Mock(return_value=make_application_detail(123, 'closed'))
         user = User()
         user.email = 'john.doe@test.com'
@@ -166,36 +82,7 @@ class RunTest:
         # when
         remote_import.run(
             ONE_WEEK_AGO,
-            get_all_applications=get_all_applications,
-            get_details=get_details,
-            existing_user=find_user_by_demarche_simplifiee_application_id
-        )
-
-        # then
-        process_beneficiary_application.assert_not_called()
-
-    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
-    @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
-    def test_application_with_known_demarche_simplifiee_application_id_are_not_processed(self,
-                                                                                         process_beneficiary_application,
-                                                                                         send_report_email):
-        # given
-        get_all_applications = Mock()
-        number_of_pages = 3
-        current_page = 1
-        get_all_applications.return_value = make_applications_list(
-            [
-                (123, 'closed', FOUR_HOURS_AGO),
-                (456, 'initiated', EIGHT_HOURS_AGO)
-            ], current_page, number_of_pages
-        )
-        get_details = Mock(return_value=make_application_detail(123, 'closed'))
-        find_user_by_demarche_simplifiee_application_id = Mock(return_value=User())
-
-        # when
-        remote_import.run(
-            ONE_WEEK_AGO,
-            get_all_applications=get_all_applications,
+            get_all_applications_ids=get_all_application_ids,
             get_details=get_details,
             existing_user=find_user_by_demarche_simplifiee_application_id
         )
