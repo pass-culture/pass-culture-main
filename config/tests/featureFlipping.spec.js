@@ -1,4 +1,4 @@
-import { isFeatureDisabled } from '../featureFlipping'
+import { isFeatureDisabled } from '../../src/utils/featureFlipping'
 
 describe('Config | Feature Flipping', () => {
   describe('isFeatureDisabled', () => {

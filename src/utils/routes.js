@@ -13,7 +13,7 @@ import TypeFormPage from '../components/pages/typeform/TypeFormContainer'
 import SearchContainer from '../components/pages/search/SearchContainer'
 import SigninContainer from '../components/pages/signin/SigninContainer'
 import SignupContainer from '../components/pages/signup/SignupContainer'
-import { isFeatureDisabled } from '../../config/featureFlipping'
+import { isFeatureDisabled } from './featureFlipping'
 
 const routes = [
   {
