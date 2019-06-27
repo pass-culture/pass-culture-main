@@ -46,6 +46,13 @@ def install_models():
 def install_features():
     features = []
     for toggle in FeatureToggle:
-        feature = Feature(name=toggle, description=toggle.value, is_active=True)
+        feature = Feature()
+        feature.populate_from_dict(
+            {
+                'name': toggle,
+                'description': toggle.value,
+                'is_active': True
+            }
+        )
         features.append(feature)
     PcObject.save(*features)
