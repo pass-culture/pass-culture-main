@@ -1,11 +1,10 @@
 from datetime import datetime
 from unittest.mock import Mock
 
-from domain.bank_account import \
-    get_all_application_ids_from_demarches_simplifiees_procedure
+from domain.demarches_simplifiees import get_all_application_ids_for_procedure
 
 
-class GetAllFileIdsFromDemarchesSimplifieesProcedureTest:
+class GetAllApplicationIdsForProcedureTest:
     def setup_class(self):
         self.PROCEDURE_ID = '123456789'
         self.TOKEN = 'AZERTY123/@.,!é'
@@ -28,7 +27,7 @@ class GetAllFileIdsFromDemarchesSimplifieesProcedureTest:
         }
 
         # When
-        application_ids = get_all_application_ids_from_demarches_simplifiees_procedure(
+        application_ids = get_all_application_ids_for_procedure(
             self.PROCEDURE_ID, self.TOKEN, datetime(2019, 1, 1),
             get_all_applications=self.mock_get_all_applications_for_procedure
         )
@@ -53,7 +52,7 @@ class GetAllFileIdsFromDemarchesSimplifieesProcedureTest:
         }
 
         # When
-        application_ids = get_all_application_ids_from_demarches_simplifiees_procedure(
+        application_ids = get_all_application_ids_for_procedure(
             self.PROCEDURE_ID, self.TOKEN, datetime(2019, 1, 1),
             get_all_applications=self.mock_get_all_applications_for_procedure
         )
@@ -86,7 +85,7 @@ class GetAllFileIdsFromDemarchesSimplifieesProcedureTest:
         }
 
         # When
-        application_ids = get_all_application_ids_from_demarches_simplifiees_procedure(
+        application_ids = get_all_application_ids_for_procedure(
             self.PROCEDURE_ID, self.TOKEN, datetime(2018, 1, 1),
             get_all_applications=self.mock_get_all_applications_for_procedure
         )

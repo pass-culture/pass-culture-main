@@ -3,7 +3,8 @@ from datetime import datetime
 from typing import Dict
 
 from connectors.api_demarches_simplifiees import get_application_details
-from domain.bank_account import get_all_application_ids_from_demarches_simplifiees_procedure, format_raw_iban_or_bic
+from domain.bank_account import format_raw_iban_or_bic
+from domain.demarches_simplifiees import get_all_application_ids_for_procedure
 from models import BankInformation
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
@@ -33,8 +34,8 @@ class BankInformationProvider(LocalProvider):
         most_recent_known_application_date = get_last_update_from_bank_information()
 
         self.application_ids = iter(
-            get_all_application_ids_from_demarches_simplifiees_procedure(self.PROCEDURE_ID, self.TOKEN,
-                                                                         most_recent_known_application_date))
+            get_all_application_ids_for_procedure(self.PROCEDURE_ID, self.TOKEN,
+                                                  most_recent_known_application_date))
 
     def __next__(self):
         self.application_id = next(self.application_ids)

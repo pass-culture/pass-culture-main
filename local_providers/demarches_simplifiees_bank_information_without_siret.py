@@ -2,7 +2,8 @@ import os
 from datetime import datetime
 
 from connectors.api_demarches_simplifiees import get_application_details
-from domain.bank_account import get_all_application_ids_from_demarches_simplifiees_procedure, format_raw_iban_or_bic
+from domain.bank_account import format_raw_iban_or_bic
+from domain.demarches_simplifiees import get_all_application_ids_for_procedure
 from models import LocalProvider, BankInformation
 from models.local_provider import ProvidableInfo
 from repository import offerer_queries
@@ -41,7 +42,7 @@ class VenueWithoutSIRETBankInformationProvider(LocalProvider):
             last_sync_date = datetime(1970, 1, 1)
 
         self.application_ids = iter(
-            get_all_application_ids_from_demarches_simplifiees_procedure(self.PROCEDURE_ID, self.TOKEN, last_sync_date)
+            get_all_application_ids_for_procedure(self.PROCEDURE_ID, self.TOKEN, last_sync_date)
         )
 
     def __next__(self) -> ProvidableInfo:
