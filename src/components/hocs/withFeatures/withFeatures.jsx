@@ -12,7 +12,10 @@ const withFeatures = config => WrappedComponent => {
 
   class _withFeatures extends Component {
     componentDidMount () {
-      const { requestGetFeatures } = this.props
+      const { hasReceivedFeatures, requestGetFeatures } = this.props
+      if (hasReceivedFeatures) {
+        return
+      }
       requestGetFeatures()
     }
 
@@ -43,7 +46,8 @@ const withFeatures = config => WrappedComponent => {
 
   _withFeatures.propTypes = {
     areFeaturesActive: PropTypes.bool.isRequired,
-    hasReceivedFeatures: PropTypes.bool.isRequired
+    hasReceivedFeatures: PropTypes.bool.isRequired,
+    requestGetFeatures: PropTypes.func.isRequired
   }
 
   return connect(mapStateToProps, mapDispatchToProps)(_withFeatures)
