@@ -8,7 +8,7 @@ from models.db import Model
 
 
 class FeatureToggle(enum.Enum):
-    WEBAPP_SIGNUP = 'webapp_signup'
+    WEBAPP_SIGNUP = 'Permettre aux bénéficiaires de créer un compte'
 
 
 class Feature(PcObject, Model, DeactivableMixin):

@@ -6,7 +6,7 @@ from tests.conftest import clean_database
 
 class InstallFeaturesTest:
     @clean_database
-    def test_creates_entries_in_feature_table_with_is_active_true(self, app):
+    def test_creates_active_features_in_database(self, app):
         # Given
         Feature.query.delete()
 

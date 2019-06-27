@@ -72,7 +72,6 @@ with app.app_context():
         install_models()
         upsertTutoMediations()
         install_local_providers()
-        Feature.query.delete()
         install_features()
     import utils.login_manager
     install_routes()

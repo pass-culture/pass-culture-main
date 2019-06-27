@@ -2,13 +2,12 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from models.feature import FeatureToggle
+from models.feature import FeatureToggle, Feature
 from tests.conftest import clean_database
-from tests.test_utils import create_feature
 from validation.features import InconsistentFeaturesException, check_feature_consistency
 
 
-class CheckFeatureEnumTest:
+class CheckFeatureConsistencyTest:
     @clean_database
     def test_raises_inconsistent_feature_exception_if_database_and_enum_are_inconsistent(self, app):
         # Given
@@ -23,7 +22,7 @@ class CheckFeatureEnumTest:
     def test_returns_none_if_database_and_enum_are_consistent(self, app):
         # Given
         find_all_features = MagicMock()
-        feature = create_feature(FeatureToggle.WEBAPP_SIGNUP, FeatureToggle.WEBAPP_SIGNUP.value, is_active=True)
+        feature = Feature(name=FeatureToggle.WEBAPP_SIGNUP)
         find_all_features.return_value = [feature]
 
         # When / Then

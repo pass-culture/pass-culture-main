@@ -1,4 +1,7 @@
+import pytest
+
 from models import PcObject
+from models.api_errors import ResourceNotFound
 from models.feature import FeatureToggle, Feature
 from repository.feature_queries import is_active
 from tests.conftest import clean_database
@@ -23,3 +26,9 @@ class FeatureToggleTest:
         PcObject.save(feature)
         # When / Then
         assert not is_active(FeatureToggle.WEBAPP_SIGNUP)
+
+    @clean_database
+    def test_is_active_returns_false_when_feature_unknown(self, app):
+        # When / Then
+        with pytest.raises(ResourceNotFound):
+            is_active('some_random_value')

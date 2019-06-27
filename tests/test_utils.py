@@ -696,14 +696,6 @@ def create_email(content, status=EmailStatus.ERROR, time=datetime.utcnow()):
     return email_failed
 
 
-def create_feature(name: FeatureToggle=FeatureToggle.WEBAPP_SIGNUP, description: str='This is a nice feature', is_active: bool=True) -> Feature:
-    feature = Feature()
-    feature.name = name
-    feature.description = description
-    feature.isActive = is_active
-    return feature
-
-
 def saveCounts():
     for modelName in models.__all__:
         model = getattr(models, modelName)

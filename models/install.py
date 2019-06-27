@@ -4,8 +4,7 @@ from sqlalchemy.exc import ProgrammingError
 
 from models import PcObject
 from models.db import db
-from models.feature import FeatureToggle
-from tests.test_utils import create_feature
+from models.feature import FeatureToggle, Feature
 
 
 def create_text_search_configuration_if_not_exists():
@@ -43,11 +42,10 @@ def install_models():
 
     db.session.commit()
 
+
 def install_features():
     features = []
     for toggle in FeatureToggle:
-        feature = create_feature(
-            name=toggle, description=toggle.value, is_active=True
-        )
+        feature = Feature(name=toggle, description=toggle.value, is_active=True)
         features.append(feature)
     PcObject.save(*features)

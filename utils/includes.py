@@ -274,5 +274,3 @@ OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
 MEDIATION_INCLUDES = [
     "thumbUrl"
 ]
-
-FEATURE_INCLUDES = ['-id', '-description']
