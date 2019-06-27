@@ -3,6 +3,7 @@ from typing import Callable
 
 from connectors.api_demarches_simplifiees import get_all_applications_for_procedure
 from utils.date import DATE_ISO_FORMAT
+from utils.logger import logger
 
 
 def get_all_application_ids_for_procedure(
@@ -15,12 +16,18 @@ def get_all_application_ids_for_procedure(
     while current_page <= number_of_pages:
         api_response = get_all_applications(procedure_id, token, page=current_page, results_per_page=100)
         number_of_pages = api_response['pagination']['nombre_de_page']
+        logger.info('[IMPORT DEMARCHES SIMPLIFIEES] page %s of %s' % (current_page, number_of_pages))
 
-        applications = sorted(api_response['dossiers'], key=lambda k: datetime.strptime(k['updated_at'], DATE_ISO_FORMAT))
-        application_ids_to_process += [application['id'] for application in applications if
-                                  _needs_processing(application, last_update)]
+        applications = sorted(api_response['dossiers'],
+                              key=lambda k: datetime.strptime(k['updated_at'], DATE_ISO_FORMAT))
+        needs_processing = [application['id'] for application in applications if
+                            _needs_processing(application, last_update)]
+        logger.info('[IMPORT DEMARCHES SIMPLIFIEES] %s applications to process' % len(needs_processing))
+        application_ids_to_process += needs_processing
+
         current_page += 1
 
+    logger.info('[IMPORT DEMARCHES SIMPLIFIEES] Total : %s applications' % len(application_ids_to_process))
     return application_ids_to_process
 
 
