@@ -185,6 +185,20 @@ class ExpensesTest:
                 assert expenses['digital']['actual'] == 0
                 assert expenses['physical']['actual'] == 0
 
+        class InstrumentTest:
+            def test_offline_offer_is_capped(self):
+                # Given
+                bookings = [
+                    create_booking_for_thing(amount=50, url=None, type=ThingType.INSTRUMENT)
+                ]
+
+                # When
+                expenses = get_expenses(bookings)
+
+                # Then
+                assert expenses['digital']['actual'] == 0
+                assert expenses['physical']['actual'] == 50
+
         class JeuxAboTest:
             def test_offline_offer_is_not_capped(self):
                 # Given

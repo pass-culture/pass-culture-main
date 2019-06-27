@@ -3,7 +3,7 @@ from typing import List, Union
 
 from models import ThingType, Booking, Product
 
-PHYSICAL_EXPENSES_CAPPED_TYPES = [ThingType.LIVRE_EDITION, ThingType.AUDIOVISUEL, ThingType.MUSIQUE, ThingType.JEUX]
+PHYSICAL_EXPENSES_CAPPED_TYPES = [ThingType.AUDIOVISUEL, ThingType.INSTRUMENT, ThingType.JEUX, ThingType.LIVRE_EDITION, ThingType.MUSIQUE]
 DIGITAL_EXPENSES_CAPPED_TYPES = [ThingType.AUDIOVISUEL, ThingType.JEUX_VIDEO, ThingType.MUSIQUE, ThingType.PRESSE_ABO]
 
 SUBVENTION_TOTAL = Decimal(500)
