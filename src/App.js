@@ -1,10 +1,10 @@
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import Helmet from 'react-helmet'
-import { compose } from 'redux'
-import { withRouter, matchPath, Route } from 'react-router-dom'
+import { matchPath, Route } from 'react-router-dom'
 
 import routes from './utils/routes'
+import withFeaturedRouter from './components/hocs/withFeaturedRouter/withFeaturedRouter'
 import MenuContainer from './components/menu/MenuContainer'
 import DebugContainer from './components/layout/Debug/DebugContainer'
 import Splash from './components/layout/Splash'
@@ -68,4 +68,4 @@ App.propTypes = {
   location: PropTypes.shape().isRequired,
 }
 
-export default compose(withRouter)(App)
+export default withFeaturedRouter(App)
