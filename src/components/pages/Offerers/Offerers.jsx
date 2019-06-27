@@ -95,6 +95,10 @@ class Offerers extends Component {
     const url = createVenueForOffererUrl(offerers)
     const currentUserHasOffersOrOffersWithoutPhysicalVenues = !currentUser.hasOffers || !currentUser.hasPhysicalVenues
 
+    console.log('CURRET USER', currentUser.hasOffers);
+    console.log('CURRET USER', currentUser.hasPhysicalVenues);
+    console.log('currentUserHasOffersOrOffersWithoutPhysicalVenues', currentUserHasOffersOrOffersWithoutPhysicalVenues);
+
     if (currentUserHasOffersOrOffersWithoutPhysicalVenues) {
        this.dispatchNotification(url)
     }
@@ -152,7 +156,7 @@ class Offerers extends Component {
     }
 
     const url = createVenueForOffererUrl(offerers)
-    
+
     return (
       <Main name="offerers">
         <HeroSection title={sectionTitle}>
@@ -163,18 +167,18 @@ class Offerers extends Component {
             Sans lieu, vous pouvez uniquement <a href="/offres/creation">ajouter des offres numériques.</a>
           </p>
           <div className="title-action-links">
-          <NavLink
-            to="/structures/creation"
-            className="cta button is-primary is-outlined">
-            + Ajouter une structure
-            <span
-              className="tip-icon"
-              data-place="bottom"
-              data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exmple, un réseau de grande distribution ou de franchisés).</p>"
-              data-type="info">
-              <Icon svg="picto-tip" />
-            </span>
-          </NavLink>
+            <NavLink
+              to="/structures/creation"
+              className="cta button is-primary is-outlined">
+              + Ajouter une structure
+              <span
+                className="tip-icon"
+                data-place="bottom"
+                data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exmple, un réseau de grande distribution ou de franchisés).</p>"
+                data-type="info">
+                <Icon svg="picto-tip" />
+              </span>
+            </NavLink>
           </div>
         </HeroSection>
 
