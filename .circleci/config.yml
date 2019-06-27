@@ -261,7 +261,6 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - staging
                 - integration
                 - demo
@@ -270,7 +269,6 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - staging
                 - integration
                 - demo
@@ -279,7 +277,6 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - staging
                 - integration
                 - demo
