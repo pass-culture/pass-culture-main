@@ -8,7 +8,8 @@ from models import Offerer, PcObject, RightsType, Venue
 from models.venue import create_digital_venue
 from repository.booking_queries import find_offerer_bookings_paginated
 from repository.offerer_queries import find_all_recommendations_for_offerer,\
-                                       filter_offerers_with_keywords_string
+                                       filter_offerers_with_keywords_string,\
+                                       find_by_siren
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_not_validated, \
                                             filter_query_where_user_is_user_offerer_and_is_validated
 from utils.human_ids import dehumanize
@@ -88,22 +89,29 @@ def get_offerer_bookings(id):
 @login_or_api_key_required
 @expect_json_data
 def create_offerer():
-    offerer = Offerer()
-    offerer.populate_from_dict(request.json)
+    siren = request.json['siren']
+    offerer = find_by_siren(siren)
 
-    digital_venue = create_digital_venue(offerer)
+    if offerer is None:
+        offerer = Offerer()
+        offerer.populate_from_dict(request.json)
 
-    PcObject.save(offerer, digital_venue)
+        digital_venue = create_digital_venue(offerer)
 
-    if not current_user.isAdmin:
-        offerer.generate_validation_token()
-        user_offerer = offerer.give_rights(current_user,
-                                           RightsType.editor)
-        PcObject.save(offerer, user_offerer)
-        try:
-            maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
-        except MailServiceException as e:
-            app.logger.error('Mail service failure', e)
+        PcObject.save(offerer, digital_venue)
+
+        if not current_user.isAdmin:
+            offerer.generate_validation_token()
+            PcObject.save(offerer)
+
+    user_offerer = offerer.give_rights(current_user, RightsType.editor)
+    user_offerer.generate_validation_token()
+    PcObject.save(user_offerer)
+
+    try:
+        maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
+    except MailServiceException as e:
+        app.logger.error('Mail service failure', e)
     return jsonify(get_dict_offerer(offerer)), 201
 
 
