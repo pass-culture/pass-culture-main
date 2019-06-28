@@ -35,7 +35,6 @@ def install_scripts():
     import scripts.update_providables
     import scripts.storage
     import scripts.init_titelive.clean_images_in_object_storage
-    import scripts.init_titelive.import_thumbs
     import scripts.init_titelive.init_titelive
     import scripts.install_data
     import scripts.migrate_images_for_event_and_thing_merge
