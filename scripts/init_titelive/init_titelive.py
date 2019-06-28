@@ -7,7 +7,6 @@ from flask import current_app as app
 from local_providers.init_titelive_thing_descriptions import InitTiteLiveThingDescriptions
 from local_providers.init_titelive_things import InitTiteLiveThings
 from scripts.init_titelive.clean_images_in_object_storage import clean_remaining_titelive_images_in_object_storage
-from scripts.init_titelive.import_thumbs import import_init_titelive_thumbs
 from scripts.init_titelive.local_format_thumbs import format_all_thumbs
 from scripts.update_providables import do_update
 from utils.storage_utils import swift_con
@@ -38,22 +37,6 @@ def import_titelive_full_table(limit: int, file: str):
 def format_local_thumbs(source_directory, destination_directory, start_index):
     try:
         format_all_thumbs(source_directory, destination_directory, start_index)
-    except Exception as e:
-        print('ERROR: ' + str(e))
-        traceback.print_tb(e.__traceback__)
-        pprint(vars(e))
-
-
-@app.manager.option('-c',
-                    '--container',
-                    help='Object storage container name')
-@app.manager.option('-p',
-                    '--pattern',
-                    help='Titelive thumbs pattern for imported images')
-def import_titelive_full_thumbs(container, pattern):
-    try:
-        connexion = swift_con(container)
-        import_init_titelive_thumbs(connexion, container, pattern)
     except Exception as e:
         print('ERROR: ' + str(e))
         traceback.print_tb(e.__traceback__)
