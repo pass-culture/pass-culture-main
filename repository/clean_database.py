@@ -1,4 +1,6 @@
 from local_providers.install import install_local_providers
+from models.activity import load_activity
+from models.db import db
 from models import Booking, \
     Deposit, \
     Mediation, \
@@ -47,7 +49,6 @@ def clean_all_database(*args, **kwargs):
     Provider.query.delete()
     db.session.commit()
 
-
-    install_features
+    install_features()
     install_local_providers()
 
