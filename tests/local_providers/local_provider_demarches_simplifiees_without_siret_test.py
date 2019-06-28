@@ -159,10 +159,21 @@ class VenueWithoutSIRETBankInformationProviderTest:
             'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
             'DEMARCHES_SIMPLIFIEES_TOKEN': TOKEN
         }, clear=True):
-            provider_object = VenueWithoutSIRETBankInformationProvider()            
+            provider_test(app,
+                          VenueWithoutSIRETBankInformationProvider,
+                          None,
+                          checkedObjects=0,
+                          createdObjects=2,
+                          updatedObjects=0,
+                          erroredObjects=0,
+                          checkedThumbs=0,
+                          createdThumbs=0,
+                          updatedThumbs=0,
+                          erroredThumbs=0,
+                          BankInformation=0)
 
         # then
-        assert get_application_details.call_count == APPLICATION_ID_2
+        assert get_application_details.call_count == 2
         assert get_application_details.call_args_list == [
             call(self.APPLICATION_ID, PROCEDURE_ID_VENUE_WITHOUT_SIRET, TOKEN),
             call(APPLICATION_ID_2, PROCEDURE_ID_VENUE_WITHOUT_SIRET, TOKEN)
