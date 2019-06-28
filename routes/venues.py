@@ -1,11 +1,11 @@
 """ venues """
 from flask import current_app as app, jsonify, request
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 from domain.admin_emails import send_venue_validation_email
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository.venue_queries import save_venue
+from repository.venue_queries import save_venue, find_venues_by_managing_user
 from utils.includes import VENUE_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
@@ -19,13 +19,14 @@ from validation.venues import validate_coordinates, check_valid_edition
 def get_venue(venueId):
     venue = load_or_404(Venue, venueId)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
-    return jsonify(venue.as_dict(include=VENUE_INCLUDES))
+    return jsonify(venue.as_dict(include=VENUE_INCLUDES)), 200
 
 
 @app.route('/venues', methods=['GET'])
 @login_required
 def get_venues():
-    return handle_rest_get_list(Venue)
+    venues = find_venues_by_managing_user(current_user)
+    return jsonify([venue.as_dict() for venue in venues]), 200
 
 
 @app.route('/venues', methods=['POST'])
