@@ -39,12 +39,12 @@ def extract_book_ean13(filename):
     return filename.split('/')[-1].split('_')[0]
 
 
-def get_all_sub_directories(main_directory):
-    return sorted(glob.glob("%s/%s" % (main_directory, '*/')))
+def get_all_sub_directories(main_directory: str) -> str:
+    return sorted(glob.glob("%s/*/" % (main_directory)))
 
 
 def get_files_from_folder(directory_identifier: str) -> List[str]:
-    return glob.glob("%s/%s" % (directory_identifier, '*_75.jpg'))
+    return glob.glob("%s/*_75.jpg" % (directory_identifier))
 
 
 def write_file_to_directory(directory_identifier: str, filename: str, file_content: BufferedReader):
