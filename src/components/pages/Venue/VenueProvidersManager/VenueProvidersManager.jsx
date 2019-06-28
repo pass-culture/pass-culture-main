@@ -228,7 +228,11 @@ class VenueProvidersManager extends Component {
   }
 }
 
-export const SelectRendered = ({handleChange, providers, venueProviders}) => {
+export const SelectRendered = ({
+                                 handleChange,
+                                 providers,
+                                 venueProviders
+                               }) => {
   return ({input}) => {
     return (
       <select

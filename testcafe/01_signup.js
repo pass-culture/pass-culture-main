@@ -165,7 +165,7 @@ fixture(
   'Signup D | Clic sur le lien de validation de compte reçu par email'
 ).page(`${ROOT_PATH + 'inscription'}`)
 
-test('Je suis redirigé·e vers la page de connexion avec un message de confirmation', async t => {
+test.skip('Je suis redirigé·e vers la page de connexion avec un message de confirmation', async t => {
   // given
   const { user } = await fetchSandbox(
     'pro_01_signup',
