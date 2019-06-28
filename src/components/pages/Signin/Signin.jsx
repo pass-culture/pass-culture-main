@@ -13,12 +13,16 @@ import Main from '../../layout/Main'
 import { mapApiToBrowser } from '../../../utils/translate'
 
 class Signin extends Component {
-  handleSuccessRedirect = () => {
+  handleSuccessRedirect = (state, action) => {
     const { query } = this.props
+    const currentUser = action.datum
+    const { hasOffers, hasPhysicalVenues } = currentUser
     const queryParams = query.parse()
     const fromUrl = queryParams[mapApiToBrowser.from]
-    const nextUrl = fromUrl ? decodeURIComponent(fromUrl) : '/offres'
-    return nextUrl
+    if (fromUrl) {
+      return decodeURIComponent(fromUrl)
+    }
+    return hasOffers || hasPhysicalVenues ? '/offres' : '/structures'
   }
 
   render() {

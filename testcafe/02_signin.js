@@ -78,7 +78,7 @@ test("J'ai un compte valide, en appuyant sur la touche 'Entrée' je suis redirig
   await t.expect(pageTitle.innerText).eql('Votre structure juridique')
 })
 
-test.only("J'ai un compte valide, j'ai déjà des offres, en cliquant sur 'se connecter' je suis redirigé·e vers la page /offres sans erreurs", async t => {
+test("J'ai un compte valide, j'ai déjà des offres, en cliquant sur 'se connecter' je suis redirigé·e vers la page /offres sans erreurs", async t => {
   debugger
   // given
   const { user } = await fetchSandbox(
@@ -87,7 +87,6 @@ test.only("J'ai un compte valide, j'ai déjà des offres, en cliquant sur 'se co
   )
   const { email, password } = user
 
-  console.log('USER', user);
   // when
   await t
     .typeText(inputUsersIdentifier, email)

@@ -95,10 +95,6 @@ class Offerers extends Component {
     const url = createVenueForOffererUrl(offerers)
     const currentUserHasOffersOrOffersWithoutPhysicalVenues = !currentUser.hasOffers || !currentUser.hasPhysicalVenues
 
-    console.log('CURRET USER', currentUser.hasOffers);
-    console.log('CURRET USER', currentUser.hasPhysicalVenues);
-    console.log('currentUserHasOffersOrOffersWithoutPhysicalVenues', currentUserHasOffersOrOffersWithoutPhysicalVenues);
-
     if (currentUserHasOffersOrOffersWithoutPhysicalVenues) {
        this.dispatchNotification(url)
     }

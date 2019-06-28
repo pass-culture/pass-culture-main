@@ -25,8 +25,8 @@ describe('src | components | pages | Signin | Signin ', () => {
   })
 
   describe('handleSuccessRedirect', () => {
-    describe('when the user is signin for the first time and has no offer and only a virtual venue', () => {
-      it('should redirect to offerer page', () => {
+    describe('when the user is signin for the first time and has no offer and only a virtual venue created by default', () => {
+      it('should redirect to offerers page', () => {
         // given
         const initialProps = {
           query: {
@@ -35,10 +35,6 @@ describe('src | components | pages | Signin | Signin ', () => {
           dispatch: dispatch,
           history: {},
         }
-
-        const wrapper = shallow(<Signin {...initialProps} />)
-
-        // when
         const action = {
           config: { method: 'POST' },
           payload: { datum: {
@@ -49,14 +45,16 @@ describe('src | components | pages | Signin | Signin ', () => {
           } },
         }
         const state = {}
+
+        // when
+        const wrapper = shallow(<Signin {...initialProps} />)
         const result = wrapper.instance().handleSuccessRedirect(state, action)
 
         // then
         expect(result).toEqual("/structures")
       })
     })
-
-    describe('when the user is signin and has a digital offer and only a virtual venue', () => {
+    describe('when the user has a digital offer and only a virtual venue', () => {
       it('should redirect to offers page', () => {
         // given
         const initialProps = {
@@ -66,10 +64,6 @@ describe('src | components | pages | Signin | Signin ', () => {
           dispatch: dispatch,
           history: {},
         }
-
-        const wrapper = shallow(<Signin {...initialProps} />)
-
-        // when
         const action = {
           config: { method: 'POST' },
           payload: { datum: {
@@ -81,14 +75,15 @@ describe('src | components | pages | Signin | Signin ', () => {
         },
       }
       const state = {}
+
+      // when
+      const wrapper = shallow(<Signin {...initialProps} />)
       const result = wrapper.instance().handleSuccessRedirect(state, action)
 
       // then
       expect(result).toEqual("/offres")
     })
-  })
-
-    describe('when the user is signin and has a digital offer and a physical venue', () => {
+    describe('when the user has no offer but a physical venue', () => {
       it('should redirect to offers page', () => {
         // given
         const initialProps = {
@@ -99,9 +94,7 @@ describe('src | components | pages | Signin | Signin ', () => {
           history: {},
         }
 
-        const wrapper = shallow(<Signin {...initialProps} />)
 
-        // when
         const action = {
           config: { method: 'POST' },
           payload: { datum: {
@@ -113,10 +106,14 @@ describe('src | components | pages | Signin | Signin ', () => {
         },
       }
       const state = {}
+      // when
+
+      const wrapper = shallow(<Signin {...initialProps} />)
       const result = wrapper.instance().handleSuccessRedirect(state, action)
 
       // then
       expect(result).toEqual("/offres")
+      })
       })
     })
   })

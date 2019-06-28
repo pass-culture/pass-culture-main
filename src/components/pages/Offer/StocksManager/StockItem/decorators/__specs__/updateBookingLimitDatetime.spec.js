@@ -40,7 +40,7 @@ describe('src | components | pages | Offer | StockManager | StockItem | decorato
     })
 
     describe('When booking limit date is changed to be on the same day as beginning date then booking limit time is equal to beginning time', () => {
-      it.only('should make bookingLimitDatetime equal to beginningDatetime (whatever the timezone)', () => {
+      it('should make bookingLimitDatetime equal to beginningDatetime (whatever the timezone)', () => {
         // given
         const isEvent = true
         const beginningDatetime = '2019-04-20T19:00:00.000Z'
