@@ -22,7 +22,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
           localClass: 'OpenAgendaEvents'
         },
         venueId: 1,
-        venueIdAtOfferProvider: 1
+        venueIdAtOfferProvider: 'fake name'
       }
     }
   })
@@ -42,7 +42,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       const wrapper = shallow(<VenueProviderItem {...props}/>)
 
       // then
-      const icon = wrapper.find('.picto').find(Icon)
+      const icon = wrapper.find(Icon).first()
       expect(icon).toHaveLength(1)
       expect(icon.prop('svg')).toBe('logo-openAgenda')
     })
@@ -56,13 +56,26 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       expect(providerLocalClass.text()).toBe('fake local class')
     })
 
+    it('should display import message when venue provider is not synced yet', () => {
+      // given
+      props.venueProvider.lastSyncDate = null
+
+      // when
+      const wrapper = shallow(<VenueProviderItem {...props} />)
+
+      // then
+      const importMessageContainer = wrapper.find('.import-label-container')
+      expect(importMessageContainer).toHaveLength(1)
+      expect(importMessageContainer.text()).toBe('Importation en cours. Cette étape peut durer plusieurs dizaines de minutes.')
+    })
+
     it('should render venue id at offer provider when provided', () => {
       // when
       const wrapper = shallow(<VenueProviderItem {...props} />)
 
       // then
       const venueIdAtOfferProvider = wrapper.find('strong.has-text-weight-bold')
-      expect(venueIdAtOfferProvider.text()).toBe('1')
+      expect(venueIdAtOfferProvider.text()).toBe('fake name')
     })
 
     it('should render the number of offers when data of provider were already synced and offers are provided', () => {

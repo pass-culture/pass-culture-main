@@ -14,10 +14,7 @@ class VenueProviderItem extends Component {
 
     return (
       <li className={classnames('is-disabled venue-provider-row')}>
-        <div className="picto">
-          <Icon svg={providerIcon} width="44px" height="44px"/>
-        </div>
-
+        <Icon svg={providerIcon}/>
         <div className="has-text-weight-bold fs14 provider-name-container">
           {providerName}
         </div>
@@ -44,7 +41,7 @@ class VenueProviderItem extends Component {
                 className="has-text-primary"
                 to={`/offres?lieu=${venueId}`}
               >
-                <Icon svg="ico-offres-r" width="20px" height="20px"/>
+                <Icon svg="ico-offres-r" width="22px" height="22px"/>
                 <div className="number-of-offers-label">
                   {pluralize(nOffers, 'offres')}
                 </div>

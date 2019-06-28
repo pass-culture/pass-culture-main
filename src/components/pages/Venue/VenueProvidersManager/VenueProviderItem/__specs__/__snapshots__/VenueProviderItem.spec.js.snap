@@ -16,7 +16,7 @@ ShallowWrapper {
           "name": "fake local class",
         },
         "venueId": 1,
-        "venueIdAtOfferProvider": 1,
+        "venueIdAtOfferProvider": "fake name",
       }
     }
   />,
@@ -35,15 +35,9 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
-        <div
-          className="picto"
-        >
-          <Icon
-            height="44px"
-            svg="logo-openAgenda"
-            width="44px"
-          />
-        </div>,
+        <Icon
+          svg="logo-openAgenda"
+        />,
         <div
           className="has-text-weight-bold fs14 provider-name-container"
         >
@@ -58,7 +52,7 @@ ShallowWrapper {
             <strong
               className="fs14 has-text-weight-bold"
             >
-              1
+              fake name
             </strong>
           </div>
         </div>,
@@ -72,9 +66,9 @@ ShallowWrapper {
             to="/offres?lieu=1"
           >
             <Icon
-              height="20px"
+              height="22px"
               svg="ico-offres-r"
-              width="20px"
+              width="22px"
             />
             <div
               className="number-of-offers-label"
@@ -91,30 +85,13 @@ ShallowWrapper {
       Object {
         "instance": null,
         "key": undefined,
-        "nodeType": "host",
+        "nodeType": "function",
         "props": Object {
-          "children": <Icon
-            height="44px"
-            svg="logo-openAgenda"
-            width="44px"
-          />,
-          "className": "picto",
+          "svg": "logo-openAgenda",
         },
         "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "function",
-          "props": Object {
-            "height": "44px",
-            "svg": "logo-openAgenda",
-            "width": "44px",
-          },
-          "ref": null,
-          "rendered": null,
-          "type": [Function],
-        },
-        "type": "div",
+        "rendered": null,
+        "type": [Function],
       },
       Object {
         "instance": null,
@@ -139,7 +116,7 @@ ShallowWrapper {
             <strong
               className="fs14 has-text-weight-bold"
             >
-              1
+              fake name
             </strong>
           </div>,
           "className": "fs14 venue-id-at-offer-provider-container",
@@ -156,7 +133,7 @@ ShallowWrapper {
               <strong
                 className="fs14 has-text-weight-bold"
               >
-                1
+                fake name
               </strong>,
               false,
             ],
@@ -170,11 +147,11 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": 1,
+                "children": "fake name",
                 "className": "fs14 has-text-weight-bold",
               },
               "ref": null,
-              "rendered": 1,
+              "rendered": "fake name",
               "type": "strong",
             },
             false,
@@ -195,9 +172,9 @@ ShallowWrapper {
             to="/offres?lieu=1"
           >
             <Icon
-              height="20px"
+              height="22px"
               svg="ico-offres-r"
-              width="20px"
+              width="22px"
             />
             <div
               className="number-of-offers-label"
@@ -217,9 +194,9 @@ ShallowWrapper {
             "aria-current": "page",
             "children": Array [
               <Icon
-                height="20px"
+                height="22px"
                 svg="ico-offres-r"
-                width="20px"
+                width="22px"
               />,
               <div
                 className="number-of-offers-label"
@@ -237,9 +214,9 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "function",
               "props": Object {
-                "height": "20px",
+                "height": "22px",
                 "svg": "ico-offres-r",
-                "width": "20px",
+                "width": "22px",
               },
               "ref": null,
               "rendered": null,
@@ -272,15 +249,9 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
-          <div
-            className="picto"
-          >
-            <Icon
-              height="44px"
-              svg="logo-openAgenda"
-              width="44px"
-            />
-          </div>,
+          <Icon
+            svg="logo-openAgenda"
+          />,
           <div
             className="has-text-weight-bold fs14 provider-name-container"
           >
@@ -295,7 +266,7 @@ ShallowWrapper {
               <strong
                 className="fs14 has-text-weight-bold"
               >
-                1
+                fake name
               </strong>
             </div>
           </div>,
@@ -309,9 +280,9 @@ ShallowWrapper {
               to="/offres?lieu=1"
             >
               <Icon
-                height="20px"
+                height="22px"
                 svg="ico-offres-r"
-                width="20px"
+                width="22px"
               />
               <div
                 className="number-of-offers-label"
@@ -328,30 +299,13 @@ ShallowWrapper {
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "host",
+          "nodeType": "function",
           "props": Object {
-            "children": <Icon
-              height="44px"
-              svg="logo-openAgenda"
-              width="44px"
-            />,
-            "className": "picto",
+            "svg": "logo-openAgenda",
           },
           "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "function",
-            "props": Object {
-              "height": "44px",
-              "svg": "logo-openAgenda",
-              "width": "44px",
-            },
-            "ref": null,
-            "rendered": null,
-            "type": [Function],
-          },
-          "type": "div",
+          "rendered": null,
+          "type": [Function],
         },
         Object {
           "instance": null,
@@ -376,7 +330,7 @@ ShallowWrapper {
               <strong
                 className="fs14 has-text-weight-bold"
               >
-                1
+                fake name
               </strong>
             </div>,
             "className": "fs14 venue-id-at-offer-provider-container",
@@ -393,7 +347,7 @@ ShallowWrapper {
                 <strong
                   className="fs14 has-text-weight-bold"
                 >
-                  1
+                  fake name
                 </strong>,
                 false,
               ],
@@ -407,11 +361,11 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": 1,
+                  "children": "fake name",
                   "className": "fs14 has-text-weight-bold",
                 },
                 "ref": null,
-                "rendered": 1,
+                "rendered": "fake name",
                 "type": "strong",
               },
               false,
@@ -432,9 +386,9 @@ ShallowWrapper {
               to="/offres?lieu=1"
             >
               <Icon
-                height="20px"
+                height="22px"
                 svg="ico-offres-r"
-                width="20px"
+                width="22px"
               />
               <div
                 className="number-of-offers-label"
@@ -454,9 +408,9 @@ ShallowWrapper {
               "aria-current": "page",
               "children": Array [
                 <Icon
-                  height="20px"
+                  height="22px"
                   svg="ico-offres-r"
-                  width="20px"
+                  width="22px"
                 />,
                 <div
                   className="number-of-offers-label"
@@ -474,9 +428,9 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "function",
                 "props": Object {
-                  "height": "20px",
+                  "height": "22px",
                   "svg": "ico-offres-r",
-                  "width": "20px",
+                  "width": "22px",
                 },
                 "ref": null,
                 "rendered": null,
