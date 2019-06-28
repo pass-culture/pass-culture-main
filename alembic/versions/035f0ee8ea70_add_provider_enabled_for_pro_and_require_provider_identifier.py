@@ -1,7 +1,7 @@
 """add_provider_enabled_for_pro_and_require_provider_identifier
 
 Revision ID: 035f0ee8ea70
-Revises: e945f921cc69
+Revises: d4c38884d642
 Create Date: 2019-06-25 12:12:52.207776
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 from sqlalchemy.sql import expression
 
 revision = '035f0ee8ea70'
-down_revision = 'e945f921cc69'
+down_revision = 'd4c38884d642'
 branch_labels = None
 depends_on = None
 
