@@ -89,6 +89,13 @@ def find_filtered_venues(sirens=None,
     return result
 
 
+def find_venues_by_managing_user(user: User) -> [Venue]:
+    return Venue.query\
+        .join(Offerer)\
+        .join(UserOfferer)\
+        .join(User)\
+        .filter(User.id == user.id).all()
+
 def _filter_by_is_virtual(query, is_virtual):
     if is_virtual:
         query = query.filter(Venue.isVirtual == True)

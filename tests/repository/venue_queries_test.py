@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 
 from models import PcObject
-from repository.venue_queries import find_filtered_venues
+from repository.venue_queries import find_filtered_venues, find_venues_by_managing_user
 from tests.conftest import clean_database
 from tests.test_utils import create_venue, create_offer_with_event_product, create_venue_activity, \
     create_event_occurrence, create_offerer, create_offer_with_thing_product, create_stock_with_thing_offer, \
@@ -646,3 +646,27 @@ def test_find_filtered_venues_with_default_param_return_all_venues(app):
     assert venue_93000 in default_query
     assert venue_67000 in default_query
     assert venue_34000 in default_query
+
+class FindVenuesByManagingUserTest:
+    @clean_database
+    def test_returns_venues_that_a_user_manage(self):
+        # given
+        user = create_user(email='user@example.net')
+
+        managed_offerer = create_offerer(name='Shakespear company', siren='987654321')
+        managed_user_offerer = create_user_offerer(user, managed_offerer)
+        managed_venue = create_venue(managed_offerer, name='National Shakespear Theater', siret='98765432112345')
+
+        non_managed_offerer = create_offerer(name='Bookshop', siren='123456789')
+        other_user = create_user(email='bookshop.pro@example.net')
+        non_managed_user_offerer = create_user_offerer(other_user, non_managed_offerer)
+        non_managed_venue = create_venue(non_managed_offerer, name='Contes et légendes', siret='12345678912345')
+
+        PcObject.save(managed_user_offerer, managed_venue, non_managed_user_offerer, non_managed_venue)
+
+        # when
+        venues = find_venues_by_managing_user(user)
+
+        # then
+        assert len(venues) == 1
+        assert venues[0] == managed_venue
