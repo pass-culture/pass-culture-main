@@ -38,11 +38,10 @@ describe('src | components | pages | Signin | Signin ', () => {
         const action = {
           config: { method: 'POST' },
           payload: { datum: {
-            currentUser: {
-              hasOffers: false,
-              hasPhysicalVenues: false
+            hasOffers: false,
+            hasPhysicalVenues: false
             }
-          } },
+          },
         }
         const state = {}
 
@@ -55,7 +54,7 @@ describe('src | components | pages | Signin | Signin ', () => {
       })
     })
     describe('when the user has a digital offer and only a virtual venue', () => {
-      it('should redirect to offers page', () => {
+      it('should redirect to offerers page', () => {
         // given
         const initialProps = {
           query: {
@@ -67,23 +66,23 @@ describe('src | components | pages | Signin | Signin ', () => {
         const action = {
           config: { method: 'POST' },
           payload: { datum: {
-            currentUser: {
-              hasOffers: true,
-              hasPhysicalVenues: false
+            hasOffers: true,
+            hasPhysicalVenues: false
             }
-          }
-        },
-      }
-      const state = {}
+          },
+        }
+        const state = {}
 
-      // when
-      const wrapper = shallow(<Signin {...initialProps} />)
-      const result = wrapper.instance().handleSuccessRedirect(state, action)
 
-      // then
-      expect(result).toEqual("/offres")
+        // when
+        const wrapper = shallow(<Signin {...initialProps} />)
+        const result = wrapper.instance().handleSuccessRedirect(state, action)
+
+        // then
+        expect(result).toEqual("/structures")
+      })
     })
-    describe('when the user has no offer but a physical venue', () => {
+    describe('when the user has no offers but a physical venue', () => {
       it('should redirect to offers page', () => {
         // given
         const initialProps = {
@@ -93,27 +92,52 @@ describe('src | components | pages | Signin | Signin ', () => {
           dispatch: dispatch,
           history: {},
         }
-
-
         const action = {
           config: { method: 'POST' },
-          payload: { datum: {
-            currentUser: {
-              hasOffers: true,
+          payload: {
+            datum: {
+              hasOffers: false,
               hasPhysicalVenues: true
             }
           }
-        },
-      }
-      const state = {}
-      // when
+        }
+        const state = {}
 
-      const wrapper = shallow(<Signin {...initialProps} />)
-      const result = wrapper.instance().handleSuccessRedirect(state, action)
+        // when
+        const wrapper = shallow(<Signin {...initialProps} />)
+        const result = wrapper.instance().handleSuccessRedirect(state, action)
 
-      // then
-      expect(result).toEqual("/offres")
+        // then
+        expect(result).toEqual("/offres")
       })
+    })
+    describe('when the user has offers in  physical venues', () => {
+      it('should redirect to offers page', () => {
+        // given
+        const initialProps = {
+          query: {
+            parse: () => ({}),
+          },
+          dispatch: dispatch,
+          history: {},
+        }
+        const action = {
+          config: { method: 'POST' },
+          payload: {
+            datum: {
+              hasOffers: true,
+              hasPhysicalVenues: true
+            }
+          },
+        }
+        const state = {}
+
+        // when
+        const wrapper = shallow(<Signin {...initialProps} />)
+        const result = wrapper.instance().handleSuccessRedirect(state, action)
+
+        // then
+        expect(result).toEqual("/offres")
       })
     })
   })

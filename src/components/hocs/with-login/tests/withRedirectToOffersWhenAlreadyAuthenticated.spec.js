@@ -58,7 +58,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToOffersWhe
       )
     })
 
-    it('should redirect to offers when pro already authenticated with offers', done => {
+    it('should redirect to offers when pro already authenticated with offers and venue', done => {
       // given
       const history = createBrowserHistory()
       history.push('/test')

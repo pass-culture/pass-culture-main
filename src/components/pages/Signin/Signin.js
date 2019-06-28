@@ -1,5 +1,4 @@
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
-import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { NavLink, Link } from 'react-router-dom'
@@ -10,7 +9,9 @@ import { mapApiToBrowser } from '../../../utils/translate'
 
 class Signin extends Component {
   handleSuccessRedirect = (state, action) => {
-    const hasOffers = get(action, 'payload.datum.currentUser.hasOffers') || false
+    const { hasOffers } = action.payload.datum || false
+    const { hasPhysicalVenues } = action.payload.datum || false
+    const hasOffersWithPhysicalVenues = hasOffers && hasPhysicalVenues
     const { query } = this.props
     const queryParams = query.parse()
     const fromUrl = queryParams[mapApiToBrowser.from]
@@ -18,9 +19,8 @@ class Signin extends Component {
     if (fromUrl) {
       return decodeURIComponent(fromUrl)
     }
-
-    const url = hasOffers ? '/offres' : '/structures'
-    return url
+    
+    return hasOffersWithPhysicalVenues || hasPhysicalVenues ? '/offres' : '/structures'
   }
 
   render() {

@@ -3697,9 +3697,10 @@ eslint@^5.8.0:
     table "^5.2.3"
     text-table "^0.2.0"
 
-esotope-hammerhead@^0.2.0:
+esotope-hammerhead@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/esotope-hammerhead/-/esotope-hammerhead-0.2.1.tgz#c7afdb624d9125b07f0555dd88ae2dcffc70def6"
+  integrity sha512-IicdvCt1BIFTIM4nbjxGp98whIakOYZ4lA0UaDXnXpJpB11jYBX11Uv3x2f5ncSlFmxyZRdrN5skH5wK4TCWFQ==
   dependencies:
     "@types/estree" "^0.0.39"
 
@@ -7721,6 +7722,10 @@ parse-passwd@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/parse-passwd/-/parse-passwd-1.0.0.tgz#6d5b934a456993b23d37f40a382d6f1666a8e5c6"
 
+parse5@2.2.3, parse5@^2.1.5:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/parse5/-/parse5-2.2.3.tgz#0c4fc41c1000c5e6b93d48b03f8083837834e9f6"
+
 parse5@4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/parse5/-/parse5-4.0.0.tgz#6d78656e3da8d78b4ec0b906f7c08ef1dfe3f608"
@@ -7728,10 +7733,6 @@ parse5@4.0.0:
 parse5@^1.5.0:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/parse5/-/parse5-1.5.1.tgz#9b7f3b0de32be78dc2401b17573ccaf0f6f59d94"
-
-parse5@^2.1.5:
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/parse5/-/parse5-2.2.3.tgz#0c4fc41c1000c5e6b93d48b03f8083837834e9f6"
 
 parse5@^3.0.1:
   version "3.0.3"
@@ -10698,16 +10699,17 @@ testcafe-browser-tools@1.6.8:
     read-file-relative "^1.2.0"
     which-promise "^1.0.0"
 
-testcafe-hammerhead@14.6.2:
-  version "14.6.2"
-  resolved "https://registry.yarnpkg.com/testcafe-hammerhead/-/testcafe-hammerhead-14.6.2.tgz#ef88fcbd8b541a2391fe247c31f0e9c22ae8e363"
+testcafe-hammerhead@14.6.8:
+  version "14.6.8"
+  resolved "https://registry.yarnpkg.com/testcafe-hammerhead/-/testcafe-hammerhead-14.6.8.tgz#bfde517afbc68041a609de90c8fbab4ed45d2e0c"
+  integrity sha512-Ep/eBmIBli/utdtzczl1NFRO9Gl/WHzyLTh0kifkbV/xm5EM8FBnSEb72kNrTlPLngvFXAqJccAUaU4DALA+Jg==
   dependencies:
     acorn-hammerhead "^0.2.0"
     bowser "1.6.0"
     brotli "^1.3.1"
     crypto-md5 "^1.0.0"
     css "2.2.3"
-    esotope-hammerhead "^0.2.0"
+    esotope-hammerhead "^0.2.1"
     iconv-lite "0.4.11"
     lodash "4.17.11"
     lru-cache "2.6.3"
@@ -10717,7 +10719,7 @@ testcafe-hammerhead@14.6.2:
     mustache "^2.1.1"
     nanoid "^0.2.2"
     os-family "^1.0.0"
-    parse5 "^1.5.0"
+    parse5 "2.2.3"
     pify "^2.3.0"
     pinkie "1.0.0"
     read-file-relative "^1.2.0"
@@ -10765,8 +10767,9 @@ testcafe-reporter-xunit@^2.1.0:
   resolved "https://registry.yarnpkg.com/testcafe-reporter-xunit/-/testcafe-reporter-xunit-2.1.0.tgz#e6d66c572ce15af266706af0fd610b2a841dd443"
 
 testcafe@^1.1.3:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/testcafe/-/testcafe-1.1.3.tgz#5440cac32ec571760d7fa43482d058beb946cac2"
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/testcafe/-/testcafe-1.2.1.tgz#e4e3f9459cf35d8aa4484ec60edc1597d5a11893"
+  integrity sha512-kLlrtujAPabG8mh2JNLFIUmhZSHgfeQlT1TO9PikkjBhduirK2OCL6ye8pvyw9rOQVqwIl214wCv5DgAJcaC0w==
   dependencies:
     "@types/node" "^10.12.19"
     async-exit-hook "^1.1.2"
@@ -10828,7 +10831,7 @@ testcafe@^1.1.3:
     source-map-support "^0.5.5"
     strip-bom "^2.0.0"
     testcafe-browser-tools "1.6.8"
-    testcafe-hammerhead "14.6.2"
+    testcafe-hammerhead "14.6.8"
     testcafe-legacy-api "3.1.11"
     testcafe-reporter-json "^2.1.0"
     testcafe-reporter-list "^2.1.0"

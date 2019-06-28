@@ -34,13 +34,13 @@ export function configureFetchCurrentUserWithLoginFail() {
 }
 
 export function configureFetchCurrentUserWithLoginSuccess() {
-  fetch.mockResponse(JSON.stringify({ email: 'michel.marx@youpi.fr', hasOffers: false }), {
+  fetch.mockResponse(JSON.stringify({ email: 'michel.marx@youpi.fr', hasOffers: false, hasPhysicalVenues: false }), {
     status: 200,
   })
 }
 
 export function configureFetchCurrentUserWithLoginSuccessAndOffers() {
-  fetch.mockResponse(JSON.stringify({ email: 'michel.marx@youpi.fr', hasOffers: true }), {
+  fetch.mockResponse(JSON.stringify({ email: 'michel.marx@youpi.fr', hasOffers: true, hasPhysicalVenues: true  }), {
     status: 200,
   })
 }
