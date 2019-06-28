@@ -126,7 +126,7 @@ class VenueProvidersManager extends Component {
   handleFail = (state, action) => {
     const {dispatch} = this.props
     const {
-      payload: { errors },
+      payload: {errors},
     } = action
 
     dispatch(showNotification({
@@ -168,6 +168,7 @@ class VenueProvidersManager extends Component {
       venueIdAtOfferProviderIsRequired
     } = this.state
     const decorators = [updateVenueIdAtOfferProvider]
+    const hasAtLeastOneProvider = providers.length > 0
 
     return (
       <div className="venue-providers-manager section">
@@ -206,17 +207,20 @@ class VenueProvidersManager extends Component {
             </li>
           )}
         </ul>
-        <div className="has-text-centered">
-          <button
-            className="button is-secondary"
-            disabled={isCreationMode}
-            id="add-offer-btn"
-            onClick={this.addVenueProvider}
-            type="button"
-          >
-            + Importer des offres
-          </button>
-        </div>
+
+        {hasAtLeastOneProvider && (
+          <div className="has-text-centered">
+            <button
+              className="button is-secondary"
+              disabled={isCreationMode}
+              id="add-venue-provider-btn"
+              onClick={this.addVenueProvider}
+              type="button"
+            >
+              + Importer des offres
+            </button>
+          </div>
+        )}
       </div>
     )
   }

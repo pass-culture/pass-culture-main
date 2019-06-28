@@ -129,7 +129,7 @@ ShallowWrapper {
           <button
             className="button is-secondary"
             disabled={false}
-            id="add-offer-btn"
+            id="add-venue-provider-btn"
             onClick={[Function]}
             type="button"
           >
@@ -240,7 +240,7 @@ ShallowWrapper {
           "children": <button
             className="button is-secondary"
             disabled={false}
-            id="add-offer-btn"
+            id="add-venue-provider-btn"
             onClick={[Function]}
             type="button"
           >
@@ -257,7 +257,7 @@ ShallowWrapper {
             "children": "+ Importer des offres",
             "className": "button is-secondary",
             "disabled": false,
-            "id": "add-offer-btn",
+            "id": "add-venue-provider-btn",
             "onClick": [Function],
             "type": "button",
           },
@@ -311,7 +311,7 @@ ShallowWrapper {
             <button
               className="button is-secondary"
               disabled={false}
-              id="add-offer-btn"
+              id="add-venue-provider-btn"
               onClick={[Function]}
               type="button"
             >
@@ -422,7 +422,7 @@ ShallowWrapper {
             "children": <button
               className="button is-secondary"
               disabled={false}
-              id="add-offer-btn"
+              id="add-venue-provider-btn"
               onClick={[Function]}
               type="button"
             >
@@ -439,7 +439,7 @@ ShallowWrapper {
               "children": "+ Importer des offres",
               "className": "button is-secondary",
               "disabled": false,
-              "id": "add-offer-btn",
+              "id": "add-venue-provider-btn",
               "onClick": [Function],
               "type": "button",
             },

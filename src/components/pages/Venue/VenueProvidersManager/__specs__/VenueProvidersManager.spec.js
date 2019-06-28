@@ -118,16 +118,42 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       })
     })
 
-    it('should update current URL when clicking on add offer button', async () => {
+    it('should update current URL when clicking on add venue provider button',() => {
       // given
       const wrapper = shallow(<VenueProvidersManager {...props} />)
-      const addOfferBtn = wrapper.find('#add-offer-btn')
+      const addOfferBtn = wrapper.find('#add-venue-provider-btn')
 
       // when
       addOfferBtn.simulate('click')
 
       // then
       expect(history.push).toHaveBeenCalledWith('/structures/CC/lieux/AB/fournisseurs/nouveau')
+    })
+
+    it('should display an import button when at least one provider is given', () => {
+      // when
+      const wrapper = shallow(<VenueProvidersManager {...props} />)
+
+      // then
+      const importButton = wrapper.find('#add-venue-provider-btn')
+      expect(importButton).toHaveLength(1)
+      expect(importButton.prop('className')).toBe('button is-secondary')
+      expect(importButton.prop('disabled')).toBe(false)
+      expect(importButton.prop('id')).toBe('add-venue-provider-btn')
+      expect(importButton.prop('onClick')).toEqual(expect.any(Function))
+      expect(importButton.prop('type')).toBe('button')
+    })
+
+    it('should not display an import button when no providers are given', () => {
+      // given
+      props.providers = []
+
+      // when
+      const wrapper = shallow(<VenueProvidersManager {...props} />)
+
+      // then
+      const importButton = wrapper.find('#add-venue-provider-btn')
+      expect(importButton).toHaveLength(0)
     })
   })
 
@@ -283,7 +309,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       props.venueProviders = []
     })
 
-    it('should render form with the proper values using user input', async () => {
+    it('should render form with the proper values using user input',() => {
       // when
       const wrapper = shallow(<VenueProvidersManager {...props} />)
 
