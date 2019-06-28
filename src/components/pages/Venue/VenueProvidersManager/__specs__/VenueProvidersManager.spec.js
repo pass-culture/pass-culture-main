@@ -214,9 +214,12 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
             }]
           }
         }
+        const form = {
+          batch: jest.fn()
+        }
 
         // when
-        wrapper.instance().handleFail({}, action)
+        wrapper.instance().handleFail(form)({}, action)
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
@@ -238,9 +241,12 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
             }]
           }
         }
+        const form = {
+          batch: jest.fn()
+        }
 
         // when
-        wrapper.instance().handleFail({}, action)
+        wrapper.instance().handleFail(form)({}, action)
 
         // then
         expect(wrapper.state()).toEqual({

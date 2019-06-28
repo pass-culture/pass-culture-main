@@ -86,7 +86,7 @@ class VenueProvidersManager extends Component {
     })
   }
 
-  handleSubmit = (formValues) => {
+  handleSubmit = (formValues, form) => {
     const {dispatch} = this.props
     this.setState({
       isLoadingMode: true
@@ -107,7 +107,7 @@ class VenueProvidersManager extends Component {
     dispatch(requestData({
         apiPath: `/venueProviders`,
         body: payload,
-        handleFail: this.handleFail,
+        handleFail: this.handleFail(form),
         handleSuccess: this.handleSuccess,
         method: 'POST',
       })
@@ -124,7 +124,7 @@ class VenueProvidersManager extends Component {
     history.push(`/structures/${offererId}/lieux/${venueId}`)
   }
 
-  handleFail = (state, action) => {
+  handleFail = (form) => (state, action) => {
     const {dispatch} = this.props
     const {
       payload: {errors},
@@ -134,7 +134,14 @@ class VenueProvidersManager extends Component {
       text: getRequestErrorStringFromErrors(errors),
       type: 'fail',
     }))
+    this.resetFormInput(form)
     this.resetFormState()
+  }
+
+  resetFormInput = (form) => {
+    form.batch(() => {
+      form.change('provider', JSON.stringify(DEFAULT_OPTION))
+    })
   }
 
   handleChange = (event, input) => {
