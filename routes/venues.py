@@ -9,8 +9,8 @@ from repository.venue_queries import save_venue
 from utils.includes import VENUE_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
-                       expect_json_data, \
-                       load_or_404
+    expect_json_data, \
+    load_or_404, handle_rest_get_list
 from validation.venues import validate_coordinates, check_valid_edition
 
 
@@ -25,9 +25,7 @@ def get_venue(venueId):
 @app.route('/venues', methods=['GET'])
 @login_required
 def get_venues():
-    venues = Venue.query.all()
-    return jsonify([venue.as_dict(include=VENUE_INCLUDES)
-                    for venue in venues]), 200
+    return handle_rest_get_list(Venue)
 
 
 @app.route('/venues', methods=['POST'])
