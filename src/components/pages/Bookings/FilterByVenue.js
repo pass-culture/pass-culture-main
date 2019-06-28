@@ -27,7 +27,7 @@ export class FilterByVenue extends PureComponent {
             className="pc-selectbox pl24 py5 fs19"
             onChange={this.onChangeVenue}
             disabled={isDigital}>
-            <option value="">Choisissez un lieu dans la liste.</option>
+            <option value="" disabled selected={true}>Choisissez un lieu dans la liste.</option>
             {venuesOptions.map(({ name, id }) => (
               <option key={id} value={id}>
                 {name}
