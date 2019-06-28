@@ -2,7 +2,7 @@
 
 ## Bank Information
 
-Une `bank information` un composé d'un IBAN et d'un RIB. Il est lié à une `venue` ou un `offerer`.
+Une `bank information` est composée d'un IBAN et d'un RIB. Il est lié à une `venue` ou un `offerer`.
 Il permet de rembourser l'`offerer` par virement SEPA.
 
 ## Booking
@@ -12,7 +12,7 @@ Il permet d'accéder à l'`offer` grâce à un `token` qui sera saisi par un `us
 
 ## Deposit
 
-Un `deposit` est crée par les administrateurs du pass Culture afin de créditer le compte 
+Un `deposit` est créé par les administrateurs du pass Culture afin de créditer le compte 
 d'un `user` `bénéficiaire` d'une somme en euros. Cette somme lui permettra ensuite de 
 créer des `bookings` sur des `offers` payants.
 
@@ -28,7 +28,7 @@ est créée par un `user` pro.
 
 ## Offerer
 
-Un `offerer` est une personne morale disponsant d'un `siren` et qui a été autorisée par 
+Un `offerer` est une personne morale ou "acteur culturel" disposant d'un `siren` et qui a été autorisé par 
 les administrateurs du pass Culture à utiliser le portail pro.
 
 ## Recommendation
@@ -39,7 +39,7 @@ Elle a pour but d'inciter un `user` à découvrir une `offer` et lui permettre d
 ## Stock
 
 Un `stock` représente un nombre de `booking` potentiels sur une `offer` donnée, à un prix donné 
-(et des dates s'il l'`offer` porte sur un `product` de type évènement). Lorsqu'un `user` crée 
+(et des dates si l'`offer` porte sur un `product` de type évènement). Lorsqu'un `user` crée 
 un `booking`, il le fait sur un `stock`.
 
 ## Product
@@ -51,6 +51,7 @@ Un `product` représente un objet culturel d'un certain type : un évènement, u
 Un `user` peut être de différent type. On parlera de `bénéficiaire` s'il s'agit d'un utilisateur 
 de la webapp, d'`acteur culturel` pour un utilisateur du portail pro et enfin d'`admin` 
 pour un membre de l'équipe du pass Culture.
+Un `user` de type `acteur culturel` peut être rattaché à plusieurs `offerers`.
 
 ## Venue
 
