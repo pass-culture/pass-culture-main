@@ -17,9 +17,9 @@ from models.pc_object import serialize
 from repository import booking_queries
 from repository.booking_queries import find_active_bookings_by_user_id, \
     find_all_bookings_for_stock_and_user, \
-    find_all_offerer_bookings
+    find_all_offerer_bookings_for_offer_and_venue
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
-from utils.human_ids import dehumanize, humanize
+from utils.human_ids import dehumanize, humanize, NonDehumanizableId
 from utils.includes import BOOKING_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
@@ -38,16 +38,31 @@ from validation.bookings import check_booking_is_usable, \
     check_offer_is_active, \
     check_stock_booking_limit_date, \
     check_user_is_logged_in_or_email_is_provided, check_email_and_offer_id_for_anonymous_user, \
-    check_booking_is_cancellable, check_stock_venue_is_validated, check_rights_for_activation_offer
+    check_booking_is_cancellable, check_stock_venue_is_validated, check_rights_for_activation_offer, \
+    check_rights_to_get_bookings_csv
 from validation.users import check_user_can_validate_bookings
 
 
 @app.route('/bookings/csv', methods=['GET'])
 @login_required
 def get_bookings_csv():
+    try:
+        offer_id = dehumanize(request.args.get('offerId', None))
+        venue_id = dehumanize(request.args.get('venueId', None))
+    except ValueError:
+        errors = ApiErrors()
+        errors.addError(
+            'global',
+            'Les identifiants sont incorrects'
+        )
+        errors.status_code = 400
+        raise errors
+
+    check_rights_to_get_bookings_csv(current_user, offer_id, venue_id)
+
     query = filter_query_where_user_is_user_offerer_and_is_validated(Offerer.query,
                                                                      current_user)
-    bookings = chain(*list(map(lambda o: find_all_offerer_bookings(o.id),
+    bookings = chain(*list(map(lambda offerer: find_all_offerer_bookings_for_offer_and_venue(offerer.id, offer_id, venue_id),
                                query)))
 
     bookings_csv = generate_bookings_details_csv(bookings)

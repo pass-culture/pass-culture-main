@@ -2,9 +2,12 @@ from datetime import datetime
 
 from domain.expenses import is_eligible_to_physical_products_capping, is_eligible_to_digital_products_capping
 from domain.bookings import BOOKING_CANCELLATION_DELAY
-from models import ApiErrors, Booking
+from models import ApiErrors, Booking, RightsType
 from models.api_errors import ResourceGoneError, ForbiddenError
 from repository.stock_queries import find_stock_by_id
+from utils.rest import ensure_current_user_has_rights
+from repository.venue_queries import find_by_id
+from repository.offerer_queries import get_by_offer_id, get_by_venue_id_and_offer_id
 
 
 def check_has_stock_id(stock_id):
@@ -166,3 +169,24 @@ def check_email_and_offer_id_for_anonymous_user(email, offer_id):
 def check_rights_for_activation_offer(user):
     if not user.isAdmin:
         raise ForbiddenError
+
+
+def check_rights_to_get_bookings_csv(user, offer_id, venue_id):
+    if offer_id:
+        offerer = get_by_offer_id(offer_id)
+        ensure_current_user_has_rights(user=user, rights=RightsType.editor, offerer_id=offerer.id)
+
+    if venue_id:
+        venue = find_by_id(venue_id)
+        ensure_current_user_has_rights(user=user, rights=RightsType.editor, offerer_id=venue.managingOffererId)
+
+    if venue_id and offer_id:
+        data = get_by_venue_id_and_offer_id(offer_id, venue_id)
+        if data is None:
+            errors = ApiErrors()
+            errors.addError(
+                'global',
+                'Aucun objet ne correspond à ces identifiants dans notre base de données'
+            )
+            errors.status_code = 400
+            raise errors

@@ -15,12 +15,22 @@ get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_i
 def find_by_id(id):
     return Offerer.query.filter_by(id=id).first()
 
+
 def find_by_siren(siren):
     return Offerer.query.filter_by(siren=siren).first()
 
 
 def get_by_offer_id(offer_id):
     return Offerer.query.join(Venue).join(Offer).filter_by(id=offer_id).first()
+
+
+def get_by_venue_id_and_offer_id(offer_id, venue_id):
+    return Offerer.query \
+        .join(Venue) \
+        .filter_by(id=venue_id) \
+        .join(Offer) \
+        .filter_by(id=offer_id) \
+        .first()
 
 
 def find_all_admin_offerer_emails(offerer_id):

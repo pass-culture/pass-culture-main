@@ -1,14 +1,17 @@
 from datetime import datetime, timedelta
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS
-from models import ApiErrors, Booking, Stock, Offer, ThingType
+from models import ApiErrors, Booking, Stock, Offer, ThingType, PcObject
 from models.api_errors import ResourceGoneError, ForbiddenError
-from tests.test_utils import create_booking_for_thing, create_product_with_Thing_type
+from tests.conftest import clean_database
+from tests.test_utils import create_booking_for_thing, create_product_with_Thing_type, create_user, create_deposit, \
+    create_venue, create_offerer, create_offer_with_event_product, create_user_offerer
 from utils.human_ids import humanize
-from validation.bookings import check_expenses_limits, check_booking_is_cancellable, check_booking_is_usable
+from validation.bookings import check_expenses_limits, check_booking_is_cancellable, check_booking_is_usable, \
+    check_rights_to_get_bookings_csv
 
 
 class CheckExpenseLimitsTest:
@@ -205,3 +208,61 @@ class CheckBookingIsUsableTest:
         except ApiErrors:
             pytest.fail(
                 'Bookings which are not used nor cancelled and do not have a beginning datetime should be usable')
+
+
+class CheckRightsToGetBookingsCsvTest:
+    @clean_database
+    def test_raises_an_error_when_venue_id_and_offer_id_does_not_match(self, app):
+        # given
+        offerer = create_offerer(siren='123456789')
+        user = create_user(is_admin=False)
+        user_offerer = create_user_offerer(user, offerer)
+        venue1 = create_venue(offerer, siret=offerer.siren + '12345')
+        venue2 = create_venue(offerer, siret=offerer.siren + '12348')
+        offer1 = create_offer_with_event_product(venue1)
+        PcObject.save(user_offerer, venue2, offer1)
+
+        # when
+        with pytest.raises(ApiErrors) as e:
+            check_rights_to_get_bookings_csv(user, offer1.id, venue2.id)
+        assert e.value.errors['global'] == [
+            'Aucun objet ne correspond à ces identifiants dans notre base de données']
+
+    @clean_database
+    def test_raises_an_error_when_user_has_no_right_on_venue_id(self, app):
+        # given
+        offerer1 = create_offerer(siren='123456789')
+        user_with_rights_on_venue = create_user(is_admin=False, email='test@example.net')
+        user_offerer1 = create_user_offerer(user_with_rights_on_venue, offerer1)
+
+        user_with_no_rights_on_venue = create_user(is_admin=False)
+
+        venue = create_venue(offerer1, siret=offerer1.siren + '12345')
+
+        PcObject.save(user_offerer1, user_with_no_rights_on_venue, venue)
+
+        # when
+        with pytest.raises(ApiErrors) as e:
+            check_rights_to_get_bookings_csv(user_with_no_rights_on_venue, offer_id=None, venue_id=venue.id)
+        assert e.value.errors['global'] == [
+            'Cette structure n\'est pas enregistrée chez cet utilisateur.']
+
+    @clean_database
+    def test_raises_an_error_when_user_has_no_right_on_offer_id(self, app):
+        # given
+        offerer1 = create_offerer(siren='123456789')
+        user_with_rights_on_object = create_user(is_admin=False, email='test@example.net')
+        user_offerer1 = create_user_offerer(user_with_rights_on_object, offerer1)
+
+        user_with_no_rights_on_object = create_user(is_admin=False)
+
+        venue = create_venue(offerer1, siret=offerer1.siren + '12345')
+        offer = create_offer_with_event_product(venue)
+
+        PcObject.save(user_offerer1, user_with_no_rights_on_object, offer)
+
+        # when
+        with pytest.raises(ApiErrors) as e:
+            check_rights_to_get_bookings_csv(user_with_no_rights_on_object, offer_id=offer.id, venue_id=None)
+        assert e.value.errors['global'] == [
+            'Cette structure n\'est pas enregistrée chez cet utilisateur.']

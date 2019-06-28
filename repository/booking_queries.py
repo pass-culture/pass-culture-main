@@ -73,8 +73,14 @@ def find_offerer_bookings_paginated(offerer_id, search=None, order_by=None, page
     return bookings
 
 
-def find_all_offerer_bookings(offerer_id):
+def find_all_offerer_bookings_for_offer_and_venue(offerer_id, offer_id=None, venue_id=None):
     query = filter_bookings_by_offerer_id(offerer_id)
+
+    if offer_id:
+        query = query.filter(Offer.id == offer_id)
+
+    if venue_id:
+        query = query.filter(Venue.id == venue_id)
 
     bookings = query.all()
 
