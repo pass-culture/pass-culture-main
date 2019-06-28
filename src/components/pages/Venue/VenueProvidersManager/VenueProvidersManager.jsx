@@ -9,6 +9,7 @@ import Icon from '../../../layout/Icon'
 import { HiddenField, TextField } from '../../../layout/form/fields'
 import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
 import updateVenueIdAtOfferProvider from './decorators/updateVenueIdAtOfferProvider'
+import checkIfProviderShouldBeDisabled from './utils/checkIfProviderShouldBeDisabled'
 
 const DEFAULT_OPTION = {
   id: 'default',
@@ -201,6 +202,7 @@ class VenueProvidersManager extends Component {
                   isLoadingMode,
                   isCreationMode,
                   providers,
+                  venueProviders,
                   venueIdAtOfferProviderIsRequired,
                 })}
               />
@@ -226,12 +228,39 @@ class VenueProvidersManager extends Component {
   }
 }
 
+export const SelectRendered = ({handleChange, providers, venueProviders}) => {
+  return ({input}) => {
+    return (
+      <select
+        {...input}
+        className="field-select"
+        onChange={(event) => handleChange(event, input)}
+      >
+        <option key={DEFAULT_OPTION.id}
+                value={JSON.stringify(DEFAULT_OPTION)}>{DEFAULT_OPTION.name}
+        </option>
+        {providers.map((provider, index) => {
+          const isProviderDisabled = checkIfProviderShouldBeDisabled(venueProviders, provider)
+
+          return (
+            <option disabled={isProviderDisabled}
+                    key={index}
+                    value={JSON.stringify(provider)}>{provider.name}
+            </option>
+          )
+        })}
+      </select>
+    )
+  }
+}
+
 export const FormRendered = ({
                                handleChange,
                                isProviderSelected,
                                isLoadingMode,
                                isCreationMode,
                                providers,
+                               venueProviders,
                                venueIdAtOfferProviderIsRequired
                              }) => {
   return ({handleSubmit}) => {
@@ -249,21 +278,7 @@ export const FormRendered = ({
             <Field
               name="provider"
               required
-              render={({input}) => {
-                return (
-                  <select
-                    {...input}
-                    className="field-select"
-                    onChange={(event) => handleChange(event, input)}
-                  >
-                    <option key={DEFAULT_OPTION.id}
-                            value={JSON.stringify(DEFAULT_OPTION)}>{DEFAULT_OPTION.name}</option>
-                    {providers.map((provider, index) => (
-                      <option key={index} value={JSON.stringify(provider)}>{provider.name}</option>
-                    ))}
-                  </select>
-                )
-              }}>
+              render={SelectRendered({handleChange, providers, venueProviders})}>
             </Field>
           </div>
 

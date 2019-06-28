@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import VenueProvidersManager, { FormRendered } from '../VenueProvidersManager'
+import VenueProvidersManager, { FormRendered, SelectRendered } from '../VenueProvidersManager'
 import { Field, Form } from 'react-final-form'
 import { HiddenField, TextField } from '../../../../layout/form/fields'
 import { Icon } from '../../../../layout/Icon'
@@ -469,6 +469,48 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         expect(importButton.prop('className')).toBe('button is-intermediate provider-import-button')
         expect(importButton.prop('type')).toBe('submit')
         expect(importButton.text()).toBe('Importer')
+      })
+
+      it('should not display an import button when provider is not selected, not in creation mode and in loading mode', () => {
+        // given
+        props.isProviderSelected = false
+        props.isCreationMode = false
+        props.isLoadingMode = true
+
+        // when
+        const renderedForm = shallow(FormRendered({...props})(handleSubmit))
+
+        // then
+        const importButtonContainer = renderedForm.find('.provider-import-button-container')
+        expect(importButtonContainer).toHaveLength(0)
+      })
+    })
+
+    describe('SelectRendered component', () => {
+      let handleChange
+      let props
+
+      beforeEach(() => {
+        handleChange = jest.fn()
+        props = {
+          handleChange,
+          providers: [{id: 'A', name: 'A', requireProviderIdentifier: false}, {id: 'B', name: 'B', requireProviderIdentifier: true}],
+          venueProviders: [{id: 'C', providerId: 'A'}, {id: 'B', providerId: 'B'}],
+        }
+      })
+
+      it('should render a select component with three options with right props, including a disabled option', () => {
+        // when
+        const selectRendered = shallow(SelectRendered({...props})({}))
+
+        // then
+        const options = selectRendered.find('option')
+        expect(options).toHaveLength(3)
+        expect(options.at(0).prop('value')).toEqual("{\"id\":\"default\",\"name\":\"Choix de la source\"}")
+        expect(options.at(1).prop('value')).toEqual("{\"id\":\"A\",\"name\":\"A\",\"requireProviderIdentifier\":false}")
+        expect(options.at(1).prop('disabled')).toBe(true)
+        expect(options.at(2).prop('value')).toEqual("{\"id\":\"B\",\"name\":\"B\",\"requireProviderIdentifier\":true}")
+        expect(options.at(2).prop('disabled')).toEqual(false)
       })
     })
   })
