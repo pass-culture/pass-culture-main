@@ -8,7 +8,7 @@ from domain.admin_emails import send_remote_beneficiaries_import_report_email
 from domain.demarches_simplifiees import get_all_application_ids_for_procedure
 from domain.password import generate_reset_token, random_password
 from domain.user_emails import send_activation_notification_email
-from models import User, PcObject, Deposit
+from models import User, PcObject, Deposit, ApiErrors
 from repository.user_queries import find_by_first_and_last_names_and_birth_date_or_email, \
     find_user_by_demarche_simplifiee_application_id
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
@@ -63,9 +63,15 @@ def process_beneficiary_application(
         logger.warning(f'[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : {e.message}')
         error_messages.append(e.message)
     else:
-        new_beneficiaries.append(new_beneficiary)
-        PcObject.save(new_beneficiary)
-        send_activation_notification_email(new_beneficiary, send_raw_email)
+        try:
+            PcObject.save(new_beneficiary)
+        except ApiErrors as e:
+            logger.warning(f"[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application "
+                           f"{information['application_id']}, because of error : {str(e)}")
+            error_messages.append(str(e))
+        else:
+            new_beneficiaries.append(new_beneficiary)
+            send_activation_notification_email(new_beneficiary, send_raw_email)
 
 
 def parse_beneficiary_information(application_detail: dict) -> dict:
@@ -89,7 +95,7 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
         if label == 'Numéro de téléphone':
             information['phone'] = value
         if label == 'Code postal de votre adresse de résidence':
-            information['postal_code'] = value
+            information['postal_code'] = value.strip().replace(' ', '')
 
     return information
 

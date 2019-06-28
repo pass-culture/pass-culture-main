@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch, ANY
 import pytest
 from mailjet_rest import Client
 
-from models import User
+from models import User, ApiErrors
 from scripts.beneficiary import remote_import
 from scripts.beneficiary.remote_import import parse_beneficiary_information, create_beneficiary_from_application, \
     DuplicateBeneficiaryError
@@ -144,6 +144,36 @@ class ProcessBeneficiaryApplicationTest:
     @patch('scripts.beneficiary.remote_import.create_beneficiary_from_application')
     @patch('scripts.beneficiary.remote_import.PcObject')
     @patch('scripts.beneficiary.remote_import.send_activation_notification_email')
+    def test_error_is_collected_if_beneficiary_could_not_be_saved(self,
+                                                                  send_activation_notification_email, PcObject,
+                                                                  create_beneficiary_from_application):
+        # given
+        information = {
+            'department': '67',
+            'last_name': 'Doe',
+            'first_name': 'Jane',
+            'birth_date': datetime(2000, 5, 1),
+            'email': 'jane.doe@test.com',
+            'phone': '0612345678',
+            'postal_code': '67200',
+            'application_id': 123
+        }
+        create_beneficiary_from_application.side_effect = [User()]
+        PcObject.save.side_effect = [ApiErrors({'postalCode': ['baaaaad value']})]
+        new_beneficiaries = []
+        error_messages = []
+
+        # when
+        remote_import.process_beneficiary_application(information, error_messages, new_beneficiaries)
+
+        # then
+        send_activation_notification_email.assert_not_called()
+        assert error_messages == ['{\n  "postalCode": [\n    "baaaaad value"\n  ]\n}']
+        assert not new_beneficiaries
+
+    @patch('scripts.beneficiary.remote_import.create_beneficiary_from_application')
+    @patch('scripts.beneficiary.remote_import.PcObject')
+    @patch('scripts.beneficiary.remote_import.send_activation_notification_email')
     def test_beneficiary_is_not_created_if_duplicates_are_found(self,
                                                                 send_activation_notification_email, PcObject,
                                                                 create_beneficiary_from_application):
@@ -191,6 +221,26 @@ class ParseBeneficiaryInformationTest:
 
         # then
         assert information['department'] == '67'
+
+    def test_handles_postal_codes_wrapped_with_spaces(self):
+        # given
+        application_detail = make_application_detail(1, 'closed', postal_code='  67200  ')
+
+        # when
+        information = parse_beneficiary_information(application_detail)
+
+        # then
+        assert information['postal_code'] == '67200'
+
+    def test_handles_postal_codes_containing_spaces(self):
+        # given
+        application_detail = make_application_detail(1, 'closed', postal_code='67 200')
+
+        # when
+        information = parse_beneficiary_information(application_detail)
+
+        # then
+        assert information['postal_code'] == '67200'
 
     def test_handles_three_digits_department_code(self):
         # given
