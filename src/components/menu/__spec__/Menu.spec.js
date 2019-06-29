@@ -6,6 +6,7 @@ import { Router } from 'react-router-dom'
 import { Transition } from 'react-transition-group'
 import configureStore from 'redux-mock-store'
 
+import CloseLink from '../../layout/Header/CloseLink'
 import Header from '../Header'
 import Menu from '../Menu'
 import NavLink from '../NavLink'
@@ -24,6 +25,9 @@ describe('src | components | menu | Menu', () => {
       currentUser: {},
       history: {
         goBack: jest.fn(),
+        location: {
+          pathname: 'fake-url/menu',
+        },
       },
       readRecommendations: [],
       toggleOverlay: jest.fn(),
@@ -48,12 +52,12 @@ describe('src | components | menu | Menu', () => {
       wrapper.unmount()
 
       // then
-      expect(props.toggleOverlay).toHaveBeenCalled()
+      expect(props.toggleOverlay).toHaveBeenCalledWith()
     })
   })
 
   describe('render()', () => {
-    it('should open the menu with one Header, two SimpleLink, five NavLink and one SignoutButton', () => {
+    it('should open the menu with one CloseLink, one Header, two SimpleLink, five NavLink and one SignoutButton', () => {
       // given
       const history = createBrowserHistory()
       const store = configureStore([])({})
@@ -67,6 +71,7 @@ describe('src | components | menu | Menu', () => {
 
       // when
       const transition = wrapper.find(Transition)
+      const closeLink = wrapper.find(CloseLink)
       const header = wrapper.find(Header)
       const simpleLink = wrapper.find(SimpleLink)
       const navLink = wrapper.find(NavLink)
@@ -74,11 +79,12 @@ describe('src | components | menu | Menu', () => {
 
       // then
       expect(transition).toHaveLength(1)
+      expect(closeLink).toHaveLength(1)
       expect(header).toHaveLength(1)
       expect(simpleLink).toHaveLength(2)
       expect(navLink).toHaveLength(5)
       expect(signoutButtonContainer).toHaveLength(1)
-      expect(props.toggleOverlay).toHaveBeenCalled()
+      expect(props.toggleOverlay).toHaveBeenCalledWith()
     })
   })
 })

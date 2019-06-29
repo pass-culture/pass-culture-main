@@ -4,57 +4,15 @@
   max-height: 100%;
   position: relative;
 
-  &.red-bg {
-    background-color: $primary;
-    color: $white;
-
-    label {
-      color: $white;
-    }
-
-    header {
-      @include dotted($white, bottom);
-    }
-
-    footer {
-      @include dotted($white);
-    }
-
-    .is-danger {
-      color: $white;
-    }
-  }
-
   .page-content {
-    position: absolute;
-    padding: $page-padding;
     bottom: 0;
     left: 0;
+    overflow-y: auto;
+    padding: $page-padding;
+    padding-bottom: 30px;
+    position: absolute;
     right: 0;
     top: 0;
-    overflow-y: auto;
-    padding-bottom: 30px;
-  }
-
-  &.with-header {
-    header {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: $header-height;
-      text-align: center;
-      font-weight: 500;
-      background-color: $primary;
-      color: $white;
-      line-height: $header-height;
-
-      @include dotted($white, bottom);
-    }
-
-    .page-content {
-      top: $header-height;
-    }
   }
 
   &.with-footer {
@@ -84,5 +42,11 @@
   &.no-padding .page-content {
     padding: 0;
     bottom: 0;
+  }
+}
+
+.with-header {
+  .page-content {
+    top: $header-height;
   }
 }

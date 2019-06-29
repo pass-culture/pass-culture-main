@@ -4,8 +4,8 @@ import React, { Component } from 'react'
 import Draggable from 'react-draggable'
 
 import Card from '../card'
+import CloseLink from '../../../layout/Header/CloseLink'
 import DeckNavigation from '../DeckNavigation'
-import Icon from '../../../layout/Icon'
 import { shouldShowVerso } from '../../../../helpers'
 import {
   closeCardDetails,
@@ -47,7 +47,7 @@ class Deck extends Component {
     if (noDataTimeout) clearTimeout(noDataTimeout)
   }
 
-  onStop = (e, data) => {
+  onStop = (event, data) => {
     const {
       width,
       height,
@@ -60,7 +60,7 @@ class Deck extends Component {
     const index = get(currentRecommendation, 'index', 0)
     const offset = (data.x + width * index) / width
     if (draggable && data.y > height * verticalSlideRatio) {
-      this.handleCloseCardDetails()
+      this.handleCloseCardDetails(event)
     } else if (data.y < -height * verticalSlideRatio) {
       this.handleShowCardDetails()
     } else if (offset > horizontalSlideRatio) {
@@ -110,7 +110,8 @@ class Deck extends Component {
     dispatch(showCardDetails())
   }
 
-  handleCloseCardDetails = () => {
+  handleCloseCardDetails = event => {
+    event.preventDefault()
     const { dispatch, unFlippable } = this.props
     if (unFlippable) return
     dispatch(closeCardDetails())
@@ -188,15 +189,10 @@ class Deck extends Component {
         data-nb-recos={recommendations.length}
       >
         {showCloseButton && (
-          <button
-            type="button"
-            className="close-button"
-            id="deck-close-verso-button"
-            onClick={this.handleCloseCardDetails}
-            style={{ zIndex: 300 }}
-          >
-            <Icon svg="ico-close" alt="Fermer" />
-          </button>
+          <CloseLink
+            actionOnClick={this.handleCloseCardDetails}
+            closeTitle="Fermer"
+          />
         )}
         {this.renderDraggableCards()}
         {showNavigation && currentRecommendation && (

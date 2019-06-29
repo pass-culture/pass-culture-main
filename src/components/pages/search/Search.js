@@ -6,7 +6,7 @@ import { Route, Switch } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
 import Footer from './Footer'
-import Header from './Header'
+import PageHeader from '../../layout/Header/PageHeader'
 import NavByOfferTypeContainer from './searchByType/NavByOfferTypeContainer'
 import NavResultsHeader from './NavResultsHeader'
 import SearchFilterContainer from './searchFilters/SearchFilterContainer'
@@ -18,7 +18,6 @@ import {
   isInitialQueryWithoutFilters,
   translateBrowserUrlToApiUrl,
 } from './utils'
-import BackButton from '../../layout/BackButton'
 import Icon from '../../layout/Icon'
 
 class Search extends PureComponent {
@@ -111,45 +110,38 @@ class Search extends PureComponent {
     )
   }
 
-  onBackToSearchHome = () => {
-    const { keywordsKey } = this.state
-    const { history, location, match, query } = this.props
+  goBack = () => {
+    const { location, match } = this.props
     const {
       params: { option, subOption },
     } = match
-    const isItemPage = option === 'item' || subOption === 'item'
+    const isOfferVersoPage = option === 'item' || subOption === 'item'
+    let url = '/recherche'
 
-    if (isItemPage) {
-      const nextUrl = `${location.pathname.split('/item')[0]}${location.search}`
-      history.push(nextUrl)
-      return
+    if (isOfferVersoPage) {
+      url = `${location.pathname.split('/item')[0]}${location.search}`
     }
 
+    return url
+  }
+
+  reinitializeStates = () => {
+    const { keywordsKey } = this.state
+
     this.setState({
+      hasMore: false,
+      isFilterVisible: false,
       // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
       // WE NEED TO MAKE THE PARENT OF THE KEYWORD INPUT
       // DEPENDING ON THE KEYWORDS VALUE IN ORDER TO RERENDER
       // THE INPUT WITH A SYNCED DEFAULT VALUE
-      isFilterVisible: false,
       keywordsKey: keywordsKey + 1,
       keywordsValue: '',
     })
-    query.change(
-      {
-        categories: null,
-        date: null,
-        distance: null,
-        jours: null,
-        latitude: null,
-        longitude: null,
-        'mots-cles': null,
-        page: null,
-      },
-      {
-        pathname: '/recherche',
-      }
-    )
   }
+
+  hasBackLink = location =>
+    location.pathname.includes('/resultats') ? true : null
 
   onSubmit = event => {
     const { query } = this.props
@@ -198,7 +190,6 @@ class Search extends PureComponent {
 
   render() {
     const {
-      history,
       location,
       query,
       recommendations,
@@ -237,23 +228,12 @@ class Search extends PureComponent {
     }
 
     return (
-      <main role="main" className="search-page page with-footer with-header">
-        <Header title={headerTitle} />
-        {location.pathname.includes('/resultats') && (
-          <BackButton onClick={this.onBackToSearchHome} />
-        )}
-        <button
-          type="button"
-          id="search-close-button"
-          className="pc-text-button is-absolute fs16"
-          onClick={() => history.push('/decouverte')}
-        >
-          <span
-            aria-hidden
-            className="icon-legacy-close is-white-text"
-            title="Retourner à la page découverte"
-          />
-        </button>
+      <main className="search-page page with-footer with-header" role="main">
+        <PageHeader
+          backActionOnClick={this.reinitializeStates}
+          backTo={this.hasBackLink(location) && this.goBack()}
+          title={headerTitle}
+        />
         <Switch location={location}>
           <Route
             path="/recherche/resultats/:option?/item/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?"
@@ -306,24 +286,24 @@ class Search extends PureComponent {
                         <div className="control flex-0">
                           <button
                             className="button is-rounded is-medium"
+                            disabled={!isOneCharInKeywords}
                             id="keywords-search-button"
                             type="submit"
-                            disabled={!isOneCharInKeywords}
                           >
                             {'Chercher'}
                           </button>
                         </div>
                       </div>
                       <div
-                        id="search-filter-menu-toggle-button"
                         className={`flex-0 text-center flex-rows flex-center pb12 ${filtersToggleButtonClass}`}
+                        id="search-filter-menu-toggle-button"
                       >
                         <button
-                          type="button"
                           className="no-border no-background no-outline"
                           onClick={() =>
                             this.onClickToggleFilterButton(isFilterVisible)
                           }
+                          type="button"
                         >
                           <Icon
                             svg={`ico-${
@@ -334,8 +314,8 @@ class Search extends PureComponent {
                       </div>
                     </div>
                     <SearchFilterContainer
-                      key="SearchFilterContainer"
                       isVisible={isFilterVisible}
+                      key="SearchFilterContainer"
                       onClickFilterButton={this.onClickToggleFilterButton}
                     />
                   </form>
@@ -345,14 +325,13 @@ class Search extends PureComponent {
                       path="/recherche/:menu(menu)?"
                       render={() => (
                         <NavByOfferTypeContainer
-                          title="EXPLORER LES CATÉGORIES"
                           categories={typeSublabels}
+                          title="EXPLORER LES CATÉGORIES"
                         />
                       )}
                     />
                     <Route
                       path="/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?"
-                      sensitive
                       render={() => (
                         <Fragment>
                           <NavResultsHeader
@@ -369,6 +348,7 @@ class Search extends PureComponent {
                           />
                         </Fragment>
                       )}
+                      sensitive
                     />
                     <Route
                       path="/recherche/resultats/:menu(menu)?"
@@ -400,9 +380,14 @@ Search.propTypes = {
   location: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
-  recommendations: PropTypes.array.isRequired,
-  typeSublabels: PropTypes.array.isRequired,
-  typeSublabelsAndDescription: PropTypes.array.isRequired,
+  recommendations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  typeSublabels: PropTypes.arrayOf(PropTypes.string).isRequired,
+  typeSublabelsAndDescription: PropTypes.arrayOf(
+    PropTypes.shape({
+      description: PropTypes.string,
+      sublabel: PropTypes.string,
+    })
+  ).isRequired,
 }
 
 export default Search

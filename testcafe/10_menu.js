@@ -33,10 +33,10 @@ test("Lorsque je clique sur l'icône compte, la modal s'affiche", async t => {
 })
 
 test('Lorsque je clique sur la croix, la modal se referme', async t => {
-  const closeButton = Selector('#main-menu-close-button')
+  const closeMenu = Selector('#main-menu-fixed-container .close-link')
   await t
     .wait(500)
-    .click(closeButton)
+    .click(closeMenu)
     .wait(100)
   await t.expect(mainMenu.exists).notOk()
 })

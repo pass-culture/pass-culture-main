@@ -10,7 +10,7 @@ const nextButton = Selector('button.button.after')
 const previousButton = Selector('button.button.before')
 const showVerso = Selector('button.button.to-recto')
 const versoDiv = Selector('div.verso')
-const closeButton = Selector('button.close-button')
+const closeVersoLink = Selector('#deck .close-link')
 const menuButton = Selector('#open-menu-button')
 const menuLogoutButton = Selector('#main-menu-logout-button')
 
@@ -95,7 +95,7 @@ test('Je peux passer de carte en carte en glissant les cartes vers les cotés', 
 test('Je peux afficher le verso des cartes en cliquant sur le bouton "haut"', async t => {
   await t.click(showVerso)
   await t.expect(versoDiv.hasClass('flipped')).ok()
-  await t.click(closeButton)
+  await t.click(closeVersoLink)
   await t.expect(versoDiv.hasClass('flipped')).notOk()
 })
 

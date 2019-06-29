@@ -1,12 +1,10 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import PropTypes from 'prop-types'
 
 import { ROOT_PATH } from '../../../utils/config'
 
 import NavigationFooter from '../../layout/NavigationFooter'
-import PageHeader from '../../layout/PageHeader'
+import PageHeader from '../../layout/Header/PageHeader'
 import MesInformations from './MesInformations'
 import MonAvatar from './MonAvatar'
 import MonPassCulture from './MonPassCulture'
@@ -16,9 +14,9 @@ const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k.png')`
 const ProfileMainView = ({ config, currentUser }) => (
   <div
     id="profile-page-main-view"
-    className="pc-page-view pc-theme-default flex-rows"
+    className="pc-page-view pc-theme-default flex-rows with-header"
   >
-    <PageHeader useClose theme="red" title="Mon profil" />
+    <PageHeader title="Mon compte" />
     <main
       role="main"
       className="pc-main is-clipped is-relative"

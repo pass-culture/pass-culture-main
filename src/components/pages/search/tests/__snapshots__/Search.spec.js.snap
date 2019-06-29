@@ -378,22 +378,17 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
-        <Header
+        <PageHeader
+          backActionOnClick={[Function]}
+          backTitle="Retour"
+          backTo={null}
+          closeActionOnClick={null}
+          closeTitle="Retourner à la page découverte"
+          closeTo="/decouverte"
+          submitDisabled={true}
           title="Recherche"
+          useSubmit={false}
         />,
-        false,
-        <button
-          className="pc-text-button is-absolute fs16"
-          id="search-close-button"
-          onClick={[Function]}
-          type="button"
-        >
-          <span
-            aria-hidden={true}
-            className="icon-legacy-close is-white-text"
-            title="Retourner à la page découverte"
-          />
-        </button>,
         <Switch
           location={
             Object {
@@ -425,43 +420,19 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
+          "backActionOnClick": [Function],
+          "backTitle": "Retour",
+          "backTo": null,
+          "closeActionOnClick": null,
+          "closeTitle": "Retourner à la page découverte",
+          "closeTo": "/decouverte",
+          "submitDisabled": true,
           "title": "Recherche",
+          "useSubmit": false,
         },
         "ref": null,
         "rendered": null,
         "type": [Function],
-      },
-      false,
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": <span
-            aria-hidden={true}
-            className="icon-legacy-close is-white-text"
-            title="Retourner à la page découverte"
-          />,
-          "className": "pc-text-button is-absolute fs16",
-          "id": "search-close-button",
-          "onClick": [Function],
-          "type": "button",
-        },
-        "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "aria-hidden": true,
-            "className": "icon-legacy-close is-white-text",
-            "title": "Retourner à la page découverte",
-          },
-          "ref": null,
-          "rendered": null,
-          "type": "span",
-        },
-        "type": "button",
       },
       Object {
         "instance": null,
@@ -525,22 +496,17 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
-          <Header
+          <PageHeader
+            backActionOnClick={[Function]}
+            backTitle="Retour"
+            backTo={null}
+            closeActionOnClick={null}
+            closeTitle="Retourner à la page découverte"
+            closeTo="/decouverte"
+            submitDisabled={true}
             title="Recherche"
+            useSubmit={false}
           />,
-          false,
-          <button
-            className="pc-text-button is-absolute fs16"
-            id="search-close-button"
-            onClick={[Function]}
-            type="button"
-          >
-            <span
-              aria-hidden={true}
-              className="icon-legacy-close is-white-text"
-              title="Retourner à la page découverte"
-            />
-          </button>,
           <Switch
             location={
               Object {
@@ -572,43 +538,19 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
+            "backActionOnClick": [Function],
+            "backTitle": "Retour",
+            "backTo": null,
+            "closeActionOnClick": null,
+            "closeTitle": "Retourner à la page découverte",
+            "closeTo": "/decouverte",
+            "submitDisabled": true,
             "title": "Recherche",
+            "useSubmit": false,
           },
           "ref": null,
           "rendered": null,
           "type": [Function],
-        },
-        false,
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": <span
-              aria-hidden={true}
-              className="icon-legacy-close is-white-text"
-              title="Retourner à la page découverte"
-            />,
-            "className": "pc-text-button is-absolute fs16",
-            "id": "search-close-button",
-            "onClick": [Function],
-            "type": "button",
-          },
-          "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "aria-hidden": true,
-              "className": "icon-legacy-close is-white-text",
-              "title": "Retourner à la page découverte",
-            },
-            "ref": null,
-            "rendered": null,
-            "type": "span",
-          },
-          "type": "button",
         },
         Object {
           "instance": null,

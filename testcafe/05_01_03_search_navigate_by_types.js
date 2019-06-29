@@ -53,7 +53,7 @@ test.skip("Je suis sur la page 'Lire', je clique sur le bouton de retour et j'ar
     .expect(getPageUrl())
     .contains('/recherche/resultats/Lire')
 
-  const backButton = Selector('.back-button')
+  const backButton = Selector('.back-link')
 
   await t
     .expect(backButton.exists)

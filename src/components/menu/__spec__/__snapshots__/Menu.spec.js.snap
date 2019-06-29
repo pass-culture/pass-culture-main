@@ -8,6 +8,9 @@ ShallowWrapper {
     history={
       Object {
         "goBack": [MockFunction],
+        "location": Object {
+          "pathname": "fake-url/menu",
+        },
       }
     }
     readRecommendations={Array []}

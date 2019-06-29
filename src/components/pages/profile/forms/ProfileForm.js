@@ -6,7 +6,7 @@ import { resolveCurrentUser } from 'with-react-redux-login'
 
 import { ROOT_PATH } from '../../../../utils/config'
 import { parseSubmitErrors } from '../../../forms/utils'
-import PageHeader from '../../../layout/PageHeader'
+import PageHeader from '../../../layout/Header/PageHeader'
 import NavigationFooter from '../../../layout/NavigationFooter'
 
 const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k.png')`
@@ -75,7 +75,7 @@ class ProfileForm extends React.PureComponent {
     return (
       <div
         id="profile-page-form-view"
-        className="pc-page-view pc-theme-default flex-rows"
+        className="pc-page-view pc-theme-default flex-rows with-header"
       >
         <FinalForm
           validate={validator}
@@ -104,12 +104,12 @@ class ProfileForm extends React.PureComponent {
                 className="pc-final-form flex-rows"
               >
                 <PageHeader
-                  useBack
-                  useSubmit
-                  theme="red"
-                  canSubmit={canSubmit}
+                  backTo="/profil"
+                  closeTo={null}
                   isLoading={isLoading}
+                  submitDisabled={canSubmit}
                   title={title}
+                  useSubmit
                 />
                 <main
                   role="main"

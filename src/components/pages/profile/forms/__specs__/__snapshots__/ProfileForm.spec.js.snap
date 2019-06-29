@@ -55,7 +55,7 @@ ShallowWrapper {
           theme="white"
         />,
       ],
-      "className": "pc-page-view pc-theme-default flex-rows",
+      "className": "pc-page-view pc-theme-default flex-rows with-header",
       "id": "profile-page-form-view",
     },
     "ref": null,
@@ -109,7 +109,7 @@ ShallowWrapper {
             theme="white"
           />,
         ],
-        "className": "pc-page-view pc-theme-default flex-rows",
+        "className": "pc-page-view pc-theme-default flex-rows with-header",
         "id": "profile-page-form-view",
       },
       "ref": null,

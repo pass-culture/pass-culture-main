@@ -108,7 +108,7 @@ test('Je fais une recherche, je retourne sur la home, je réouvre la fenêtre de
     .click(filterButton)
     .expect(getPageUrl())
     .contains(`${ROOT_PATH}recherche/resultats?distance=10`)
-    .click(Selector('button.back-button'))
+    .click(Selector('.back-link'))
     .expect(getPageUrl())
     .contains(`${ROOT_PATH}recherche`)
     .click(toogleFilterButton)

@@ -3,10 +3,6 @@
 @import 'NavByOfferType.scss';
 
 .search-page {
-  button.back-button {
-    top: 0;
-  }
-
   form {
     margin-bottom: 40px;
   }
@@ -49,17 +45,6 @@
   margin-left: -12px;
   margin-right: -12px;
   height: rem(250px);
-}
-
-#search-close-button {
-  height: 2rem;
-  margin-top: 0.75rem;
-  padding-right: 0.75rem;
-  position: absolute;
-  right: 8px;
-  text-align: right;
-  top: 0;
-  z-index: 300;
 }
 
 #category-description {

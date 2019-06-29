@@ -1,11 +1,9 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
 import { ROOT_PATH } from '../../../utils/config'
-import PageHeader from '../../layout/PageHeader'
+import PageHeader from '../../layout/Header/PageHeader'
 import NavigationFooter from '../../layout/NavigationFooter'
 
 const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k.png')`
@@ -15,9 +13,9 @@ const ProfileUpdateSuccess = ({ config, match }) => {
   return (
     <div
       id="profile-page-main-view"
-      className="pc-page-view pc-theme-default flex-rows"
+      className="pc-page-view pc-theme-default flex-rows with-header"
     >
-      <PageHeader theme="red" title={item.title} />
+      <PageHeader backTo="/profil" closeTo={null} title={item.title} />
       <main
         role="main"
         style={{ backgroundImage: BACKGROUND_IMAGE }}
@@ -29,7 +27,9 @@ const ProfileUpdateSuccess = ({ config, match }) => {
             className="icon-legacy-check-circled big-success-icon"
             title=""
           />
-          <span className="is-block mt24">{item.title} a bien été modifié</span>
+          <span className="is-block mt24">
+            {`${item.title} a bien été modifié`}
+          </span>
         </h2>
         <div className="mt12">
           Pensez à l&apos;utiliser lors de votre prochaine connexion

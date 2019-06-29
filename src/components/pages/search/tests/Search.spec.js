@@ -2,8 +2,8 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import { Switch } from 'react-router-dom'
 
-import BackButton from '../../../layout/BackButton'
 import Search from '../Search'
+import PageHeader from '../../../layout/Header/PageHeader'
 
 const getPageContentRoute = wrapper =>
   wrapper
@@ -103,13 +103,13 @@ describe('src | components | pages | Search', () => {
     })
   })
 
-  describe('Switch Route', () => {
+  describe('switch Route', () => {
     describe('on the /recherche page', () => {
       // given
       const wrapper = shallow(<Search {...baseInitialProps} />)
 
       it('should render the page title', () => {
-        expect(wrapper.find('Header').props().title).toBe('Recherche')
+        expect(wrapper.find(PageHeader).props().title).toBe('Recherche')
       })
 
       it('submitButton form is disabled', () => {
@@ -140,7 +140,7 @@ describe('src | components | pages | Search', () => {
         expect(searchFilterComponent.props.isVisible).toBe(true)
       })
 
-      it('NavByOfferType with path="/recherche"', () => {
+      it('navByOfferType with path="/recherche"', () => {
         // when
         const NavByOfferTypeComponent = getSwitchedPageContent(
           '/recherche/:menu(menu)?'
@@ -153,8 +153,8 @@ describe('src | components | pages | Search', () => {
       })
     })
 
-    describe('On /recherche/resultats page', () => {
-      describe('On /recherche/resultats precisely', () => {
+    describe('on /recherche/resultats page', () => {
+      describe('on /recherche/resultats precisely', () => {
         // given
         const initialProps = Object.assign({}, baseInitialProps)
         initialProps.location = Object.assign({}, baseInitialProps.location, {
@@ -163,12 +163,12 @@ describe('src | components | pages | Search', () => {
         const wrapper = shallow(<Search {...initialProps} />)
 
         it('should render the page title', () => {
-          expect(wrapper.find('Header').props().title).toBe(
+          expect(wrapper.find(PageHeader).props().title).toBe(
             'Recherche : résultats'
           )
         })
 
-        it('SearchResults with path="/recherche/resultats"', () => {
+        it('searchResults with path="/recherche/resultats"', () => {
           // when
           const SearchResults = getSearchResults(wrapper)
 
@@ -177,7 +177,7 @@ describe('src | components | pages | Search', () => {
         })
       })
 
-      describe('On /recherche/resultats/:categorie page', () => {
+      describe('on /recherche/resultats/:categorie page', () => {
         // given
         const initialProps = Object.assign({}, baseInitialProps)
         initialProps.location = Object.assign({}, baseInitialProps.location, {
@@ -203,7 +203,7 @@ describe('src | components | pages | Search', () => {
         ]
         const wrapper = shallow(<Search {...initialProps} />)
 
-        it('NavResultsHeader & SearchResults with path="/recherche/resultats/:categorie"', () => {
+        it('navResultsHeader & SearchResults with path="/recherche/resultats/:categorie"', () => {
           // when
           const ResultsRoute = getSwitchedPageContent(
             '/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?'
@@ -247,7 +247,7 @@ describe('src | components | pages | Search', () => {
     })
 
     describe('handleDataRequest', () => {
-      describe('On resultats page', () => {
+      describe('on resultats page', () => {
         it('should dispatch requestDataTypes when component is rendered', () => {
           // when
           const wrapper = shallow(<Search {...baseInitialProps} />)
@@ -269,7 +269,7 @@ describe('src | components | pages | Search', () => {
     })
 
     describe('loadMoreHandler', () => {
-      xit('should change history location', () => {
+      it.skip('should change history location', () => {
         // given
         const initialProps = Object.assign({}, baseInitialProps)
         initialProps.query = Object.assign(baseInitialProps.query, {
@@ -291,66 +291,63 @@ describe('src | components | pages | Search', () => {
       })
     })
 
-    describe('onBackToSearchHome', () => {
-      describe('On results page', () => {
-        // given
-        const initialProps = Object.assign({}, baseInitialProps)
-        initialProps.location = Object.assign({}, baseInitialProps.location, {
-          pathname: '/recherche/resultats',
+    describe('back link', () => {
+      describe('on results page', () => {
+        describe('goBack()', () => {
+          it('should back to /recherche', () => {
+            // given
+            const wrapper = shallow(<Search {...baseInitialProps} />)
+
+            // when
+            const url = wrapper.instance().goBack()
+
+            // then
+            expect(url).toBe('/recherche')
+          })
+
+          it('should back to /recherche/resultats/Applaudir', () => {
+            // given
+            baseInitialProps.match.params.subOption = 'item'
+            baseInitialProps.location.pathname =
+              '/recherche/resultats/Applaudir'
+            const wrapper = shallow(<Search {...baseInitialProps} />)
+
+            // when
+            const url = wrapper.instance().goBack()
+
+            // then
+            expect(url).toBe(
+              '/recherche/resultats/Applaudir?orderBy=offer.id+desc'
+            )
+          })
         })
 
-        it('should update state', () => {
-          // when
-          const wrapper = shallow(<Search {...initialProps} />)
-          wrapper
-            .find(BackButton)
-            .props()
-            .onClick()
+        describe('reinitializeStates()', () => {
+          it('should reinitialize states when click the back link', () => {
+            // given
+            const wrapper = shallow(<Search {...baseInitialProps} />)
 
-          const expected = {
-            hasMore: false,
-            isFilterVisible: false,
-            keywordsKey: 1,
-            keywordsValue: '',
-          }
+            // when
+            wrapper.instance().reinitializeStates()
 
-          // then
-          expect(wrapper.state()).toStrictEqual(expected)
-        })
-
-        it('should change query', () => {
-          // when
-          const wrapper = shallow(<Search {...initialProps} />)
-          wrapper
-            .find(BackButton)
-            .props()
-            .onClick()
-
-          const argument1 = {
-            categories: null,
-            date: null,
-            distance: null,
-            jours: null,
-            latitude: null,
-            longitude: null,
-            'mots-cles': null,
-            page: null,
-          }
-          const argument2 = { pathname: '/recherche' }
-
-          // then
-          expect(queryChangeMock).toHaveBeenCalledWith(argument1, argument2)
-          queryChangeMock.mockClear()
+            // then
+            expect(wrapper.state()).toStrictEqual({
+              hasMore: false,
+              isFilterVisible: false,
+              keywordsKey: 1,
+              keywordsValue: '',
+            })
+          })
         })
       })
 
-      describe('Not on results page', () => {
+      describe('not on results page', () => {
         it('should not display back button', () => {
           // when
           const wrapper = shallow(<Search {...baseInitialProps} />)
 
           // then
-          expect(wrapper.contains('.back-button')).toBe(false)
+          expect(wrapper.contains('.back-link')).toBe(false)
         })
       })
     })
@@ -512,7 +509,7 @@ describe('src | components | pages | Search', () => {
     })
 
     describe('onClickOpenCloseFilterDiv', () => {
-      describe('When user does not click on the icon button', () => {
+      describe('when user does not click on the icon button', () => {
         // when
         const wrapper = shallow(<Search {...baseInitialProps} />)
 
@@ -536,7 +533,7 @@ describe('src | components | pages | Search', () => {
         })
       })
 
-      describe('When user click on the icon button', () => {
+      describe('when user click on the icon button', () => {
         // when
         const wrapper = shallow(<Search {...baseInitialProps} />)
         const filterToggle = getFilterToggle(wrapper)
@@ -560,7 +557,7 @@ describe('src | components | pages | Search', () => {
         })
       })
 
-      describe('When there is some filters in search', () => {
+      describe('when there is some filters in search', () => {
         it('should show ico-filter-active icon', () => {
           // given
           const initialProps = Object.assign({}, baseInitialProps)

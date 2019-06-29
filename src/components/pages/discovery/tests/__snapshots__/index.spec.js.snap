@@ -4,7 +4,7 @@ exports[`src | components | pages | discovery | RawDiscoveryPage should match th
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <RawDiscoveryPage
-    backButton={true}
+    backLink={true}
     currentRecommendation={null}
     dispatch={
       [MockFunction] {

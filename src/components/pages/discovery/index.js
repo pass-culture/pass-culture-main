@@ -10,15 +10,11 @@ import { requestData } from 'redux-saga-data'
 import DeckContainer from './deck/DeckContainer'
 import BookingContainer from '../../booking/BookingContainer'
 import { withRequiredLogin } from '../../hocs'
-import BackButton from '../../layout/BackButton'
+import BackLink from '../../layout/Header/BackLink'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import Footer from '../../layout/Footer'
 import selectCurrentRecommendation from '../../../selectors/currentRecommendation'
-import {
-  getQueryParams,
-  getRouterQueryByKey,
-  shouldShowVerso,
-} from '../../../helpers'
+import { getQueryParams, getRouterQueryByKey } from '../../../helpers'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 
 export class RawDiscoveryPage extends React.PureComponent {
@@ -131,15 +127,16 @@ export class RawDiscoveryPage extends React.PureComponent {
     const { match } = this.props
     const { hasError, isEmpty, isLoading } = this.state
 
-    const withBackButton = shouldShowVerso(match)
-
     return (
       <Fragment>
         <main
           role="main"
           className="discovery-page no-padding page with-footer"
         >
-          {withBackButton && <BackButton />}
+          {(match.params.view === 'verso' ||
+            match.params.mediationId === 'verso') && (
+            <BackLink backTo="/reservations" />
+          )}
           {!isEmpty && (
             <Fragment>
               <Route

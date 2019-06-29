@@ -1,10 +1,9 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import React from 'react'
 import { connect } from 'react-redux'
 import { Route, Switch } from 'react-router-dom'
 import { compose } from 'redux'
+import { selectCurrentUser } from 'with-react-redux-login'
 
 import { config } from './config'
 import ProfileMainView from './ProfileMainView'
@@ -22,12 +21,13 @@ const parseRoutesWithComponent = () => {
   return routes
 }
 
-const ProfilePage = ({ currentUser, isCurrentUserLoaded, location }) => {
+const ProfilePage = ({ currentUser, location }) => {
   const routes = parseRoutesWithComponent()
   const possibleRoutes = Object.keys(routes).join('|')
+
   return (
     <div id="profile-page" className="page is-relative">
-      {isCurrentUserLoaded && (
+      {currentUser && (
         <Switch location={location}>
           <Route
             exact
@@ -64,25 +64,19 @@ const ProfilePage = ({ currentUser, isCurrentUserLoaded, location }) => {
           />
         </Switch>
       )}
-      {!isCurrentUserLoaded && <LoaderContainer isLoading />}
+      {!currentUser && <LoaderContainer isLoading />}
     </div>
   )
 }
 
 ProfilePage.propTypes = {
-  currentUser: PropTypes.object.isRequired,
-  isCurrentUserLoaded: PropTypes.bool.isRequired,
-  location: PropTypes.object.isRequired,
+  currentUser: PropTypes.shape().isRequired,
+  location: PropTypes.shape().isRequired,
 }
 
-const mapStateToProps = (state, ownProps) => {
-  const currentUser = ownProps.currentUser || false
-  const isCurrentUserLoaded =
-    (currentUser && currentUser !== null) || typeof currentUser === 'object'
-  return {
-    isCurrentUserLoaded,
-  }
-}
+const mapStateToProps = state => ({
+  currentUser: selectCurrentUser(state),
+})
 
 export default compose(
   withRequiredLogin,

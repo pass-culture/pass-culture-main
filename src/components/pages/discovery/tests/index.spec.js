@@ -2,13 +2,14 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import { RawDiscoveryPage } from '../index'
+import BackLink from '../../../layout/Header/BackLink'
 
 describe('src | components | pages | discovery | RawDiscoveryPage', () => {
   let props
 
   beforeEach(() => {
     props = {
-      backButton: true,
+      backLink: true,
       dispatch: jest.fn(),
       fromPassword: true,
       history: {},
@@ -74,6 +75,20 @@ describe('src | components | pages | discovery | RawDiscoveryPage', () => {
           expectedRequestDataAction
         )
       })
+    })
+  })
+
+  describe('render()', () => {
+    it('should display the back button when I am on the back of an offer', () => {
+      // given
+      props.match.params.view = 'verso'
+      const wrapper = shallow(<RawDiscoveryPage {...props} />)
+
+      // when
+      const backLink = wrapper.find(BackLink)
+
+      // then
+      expect(backLink).toHaveLength(1)
     })
   })
 })

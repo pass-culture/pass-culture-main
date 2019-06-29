@@ -55,7 +55,7 @@ test('Je vois le titre de la page', async t => {
 })
 
 test('Je ne vois pas le bouton retour', async t => {
-  await t.expect(Selector('button.back-button').exists).notOk()
+  await t.expect(Selector('.back-link').exists).notOk()
 })
 
 test('Je vois le champ de recherche par mot-clé', async t => {
@@ -90,10 +90,10 @@ test('Je vois 1 vignette  ', async t => {
 
 test('Lorsque je clique sur la croix, je reviens à la page des offres', async t => {
   // given
-  const closeButton = Selector('#search-close-button')
+  const closeLink = Selector('header .close-link')
 
   // when
-  await t.click(closeButton).wait(500)
+  await t.click(closeLink).wait(500)
 
   // then
   await t.expect(getPageUrl()).contains('/decouverte')

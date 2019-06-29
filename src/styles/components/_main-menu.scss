@@ -19,6 +19,13 @@ $main-menu-height-with-padding: (592px + 24px);
     top: 100%;
   }
 
+  .close-link {
+    position: absolute;
+    right: rem(22px);
+    top: rem(22px);
+    z-index: 1;
+  }
+
   .pc-scroll-container {
     height: auto;
     margin: $main-menu-around-padding;
@@ -30,12 +37,6 @@ $main-menu-height-with-padding: (592px + 24px);
 
 #main-menu-fixed-container {
   border-radius: rem(16px);
-}
-
-#main-menu-close-button {
-  z-index: 1;
-  top: rem(22px);
-  right: rem(22px);
 }
 
 #main-menu-header {
@@ -67,7 +68,6 @@ $main-menu-height-with-padding: (592px + 24px);
   height: auto;
 }
 
-#main-menu-navigation button,
 #main-menu-navigation .navlink {
   @extend .fs16;
   @extend .flex-columns;

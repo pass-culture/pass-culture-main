@@ -11,7 +11,7 @@ const dragButton = Selector('#dragButton')
 const versoOfferName = Selector('#verso-offer-name')
 const versoOfferVenue = Selector('#verso-offer-venue')
 const bookOfferButton = Selector('#verso-booking-button')
-const closeVersoButton = Selector('#deck-close-verso-button')
+const closeVersoLink = Selector('#deck .close-link')
 const openVersoButton = Selector('#deck-open-verso-button')
 const alreadyBookedOfferButton = Selector('#verso-already-booked-button')
 
@@ -44,7 +44,7 @@ test("L'utilisateur doit pouvoir cliquer sur les chevrons pour ouvrir le verso",
     .expect(openVersoButton.exists)
     .ok()
     .click(openVersoButton)
-    .expect(closeVersoButton.exists)
+    .expect(closeVersoLink.exists)
     .ok()
 })
 

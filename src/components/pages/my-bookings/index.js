@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -12,7 +10,7 @@ import NoBookingView from './NoBookingView'
 import { mapStateToProps } from './connect'
 import { withRequiredLogin } from '../../hocs'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
-import PageHeader from '../../layout/PageHeader'
+import PageHeader from '../../layout/Header/PageHeader'
 import { toggleMainMenu } from '../../../reducers/menu'
 import NavigationFooter from '../../layout/NavigationFooter'
 import { ROOT_PATH } from '../../../utils/config'
@@ -64,14 +62,13 @@ export class RawMyBookingsPage extends Component {
     const hasNoBooking = soonBookingsLength === 0 && otherBookingsLength === 0
     const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
     return (
-      <div id="bookings-page" className="page is-relative flex-rows">
+      <div
+        id="bookings-page"
+        className="page is-relative flex-rows with-header"
+      >
         {!isLoading && (
           <React.Fragment>
-            <PageHeader
-              useClose
-              title="Mes réservations"
-              className="dotted-bottom-white"
-            />
+            <PageHeader title="Mes réservations" />
             <main
               role="main"
               className="pc-main pc-gradient flex-rows flex-start is-clipped"
