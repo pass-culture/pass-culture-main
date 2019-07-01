@@ -1,7 +1,7 @@
 """ user offerer """
 import enum
 
-from sqlalchemy import BigInteger, Column, Enum, ForeignKey
+from sqlalchemy import BigInteger, Column, Enum, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
 
 from models.db import Model
@@ -34,3 +34,11 @@ class UserOfferer(PcObject, Model, NeedsValidationMixin):
                            backref=backref("UserOfferers"))
 
     rights = Column(Enum(RightsType))
+
+    __table_args__ = (
+        UniqueConstraint(
+            'userId',
+            'offererId',
+            name='unique_user_offerer',
+            ),
+        )
