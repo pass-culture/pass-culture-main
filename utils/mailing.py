@@ -542,7 +542,10 @@ def make_venue_validation_confirmation_email(venue):
 
 
 def compute_email_html_part_and_recipients(email_html_part, recipients):
-    recipients_string = ", ".join(recipients)
+    if isinstance(recipients, list):
+        recipients_string = ", ".join(recipients)
+    else:
+        recipients_string = recipients
     if feature_send_mail_to_users_enabled():
         email_to = recipients_string
     else:

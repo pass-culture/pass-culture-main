@@ -1620,6 +1620,26 @@ def test_send_content_and_update_does_not_update_email_when_send_mail_unsuccessf
     app.mailjet_client.send.create.assert_called_once_with(data=email_content)
 
 
+class ComputeEmailHtmlPartAndRecipientsTest:
+    def accepts_string_as_to(self, app):
+        # when
+        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+            html, to = compute_email_html_part_and_recipients("my_html", "plop@plop.com")
+
+        # then
+        assert html == "my_html"
+        assert to == "plop@plop.com"
+
+    def accepts_list_of_strings_as_to(self, app):
+        # when
+        with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
+            html, to = compute_email_html_part_and_recipients("my_html", ["plop@plop.com", "plip@plip.com"])
+
+        # then
+        assert html == "my_html"
+        assert to == "plop@plop.com, plip@plip.com"
+
+
 @freeze_time('2019-05-20 12:00:00')
 class MakeBeneficiariesImportEmailTest:
     def test_sends_date_in_subject(self, app):
