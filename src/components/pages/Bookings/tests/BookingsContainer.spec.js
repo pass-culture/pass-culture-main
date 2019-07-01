@@ -12,7 +12,7 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
           const props = mapStateToProps(state)
 
           // then
-          expect(props).toHaveProperty('pathToCsvFile', 'http://localhost/booking/csv')
+          expect(props).toHaveProperty('pathToCsvFile', 'http://localhost/bookings/csv')
         })
       });
 
@@ -29,7 +29,7 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
           const props = mapStateToProps(state)
 
           // then
-          expect(props).toHaveProperty('pathToCsvFile', 'http://localhost/booking/csv?venueId=F51')
+          expect(props).toHaveProperty('pathToCsvFile', 'http://localhost/bookings/csv?venueId=F51')
         })
 
         it('should venueId should be empty when the \'all\' option selected', () => {
@@ -44,7 +44,7 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
           const props = mapStateToProps(state)
 
           // then
-          expect(props).toHaveProperty('pathToCsvFile', 'http://localhost/booking/csv')
+          expect(props).toHaveProperty('pathToCsvFile', 'http://localhost/bookings/csv')
         })
       });
 
@@ -62,7 +62,7 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
           const props = mapStateToProps(state)
 
           // then
-          expect(props).toHaveProperty('pathToCsvFile', 'http://localhost/booking/csv?onlyDigitalVenues=true')
+          expect(props).toHaveProperty('pathToCsvFile', 'http://localhost/bookings/csv?onlyDigitalVenues=true')
         })
       });
     })

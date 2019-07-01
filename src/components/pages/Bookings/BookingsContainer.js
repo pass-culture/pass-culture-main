@@ -13,7 +13,7 @@ function buildPathToReservationFile({
   selectedVenue,
 }) {
 
-  let pathToFile = `${API_URL}/booking/csv`;
+  let pathToFile = `${API_URL}/bookings/csv`;
   let filtersToApply = [];
 
   if(isFilterByDigitalVenues)
