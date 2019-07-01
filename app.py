@@ -76,7 +76,6 @@ with app.app_context():
         install_features()
     import utils.login_manager
     install_routes()
-    check_feature_consistency()
     install_admin_views(admin, db.session)
 
     app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
