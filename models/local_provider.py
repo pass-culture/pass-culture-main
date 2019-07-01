@@ -10,6 +10,7 @@ from postgresql_audit.flask import versioning_manager
 from sqlalchemy import text
 from sqlalchemy.sql import select
 
+import models
 from models.db import db
 from models.has_thumb_mixin import HasThumbMixin
 from models.local_provider_event import LocalProviderEvent, LocalProviderEventType
@@ -175,17 +176,8 @@ class LocalProvider(Iterator):
             self.updatedObjects += 1
         try:
             self.updateObject(obj)
-            # FIXME: keep this until we make type an ENUM again
-            if isinstance(obj, Product):
-                type_elems = str(obj.type).split('.')
-                if len(type_elems) == 2:
-                    obj.type = type_elems[1]
-                else:
-                    obj.type = type_elems[0]
             obj.lastProviderId = self.dbObject.id
             obj.dateModifiedAtLastProvider = providable_info.dateModifiedAtProvider
-            if self.venueProvider is not None:
-                obj.venue = self.venueProvider.venue
         except Exception as e:
             logger.info('ERROR during updateObject: '
                   + e.__class__.__name__ + ' ' + str(e))
@@ -241,7 +233,6 @@ class LocalProvider(Iterator):
                     providable_infos = [providable_infos]
 
                 for providable_info in providable_infos:
-
                     if providable_info is not None:
                         chunk_key = providable_info.idAtProviders + '|' + str(providable_info.type.__name__)
 
@@ -354,16 +345,27 @@ class LocalProvider(Iterator):
 
     def save_chunk_to_update(self, chunk_to_update, providable_info):
         conn = db.engine.connect()
-        for value in chunk_to_update.values():
+
+        for key, value in chunk_to_update.items():
+            try:
+                object_type = getattr(models, key.split('|')[1])
+            except AttributeError:
+                object_type = providable_info.type
+
             tmp_dict = value.__dict__
+
             if '_sa_instance_state' in tmp_dict:
                 del tmp_dict['_sa_instance_state']
             if 'datePublished' in tmp_dict:
                 del tmp_dict['datePublished']
             if 'venue' in tmp_dict:
                 del tmp_dict['venue']
-            statement = providable_info.type.__table__.update(). \
-                where(providable_info.type.id == tmp_dict['id']). \
+            if 'offer' in tmp_dict:
+                del tmp_dict['offer']
+            if 'stocks' in tmp_dict:
+                del tmp_dict['stocks']
+            statement = object_type.__table__.update(). \
+                where(object_type.id == tmp_dict['id']). \
                 values(tmp_dict)
             try:
                 conn.execute(statement)

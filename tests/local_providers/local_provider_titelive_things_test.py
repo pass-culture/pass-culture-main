@@ -3,7 +3,7 @@ from datetime import datetime
 from unittest.mock import patch
 
 from local_providers import TiteLiveThings
-from models import Product, BookFormat
+from models import Product, BookFormat, ThingType
 from models.pc_object import PcObject
 from models.provider import Provider
 from repository.provider_queries import get_provider_by_local_class
@@ -97,6 +97,7 @@ class TiteliveThingsTest:
 
         product = Product.query.one()
         assert product.extraData.get('bookFormat') == BookFormat.BEAUX_LIVRES.value
+        assert product.type == 'ThingType.LIVRE_EDITION'
 
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')

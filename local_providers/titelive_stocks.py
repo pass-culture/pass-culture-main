@@ -2,12 +2,11 @@ import requests
 from datetime import datetime
 
 from domain.titelive import read_stock_datetime
-from models import Offer, VenueProvider, PcObject
+from models import Offer, VenueProvider
 from models.db import db
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.stock import Stock
 from repository import thing_queries, local_provider_event_queries, venue_queries
-from repository.offer_queries import find_offer_by_id_at_providers
 
 PRICE_DIVIDER_TO_EURO = 100
 URL_TITELIVE_WEBSERVICE_STOCKS = "https://stock.epagine.fr/stocks/"
@@ -40,8 +39,9 @@ class TiteLiveStocks(LocalProvider):
     def __init__(self, venue_provider: VenueProvider, **options):
         super().__init__(venue_provider, **options)
         self.venueId = self.venueProvider.venueId
-        self.venue = venue_queries.find_by_id(self.venueId)
-        assert self.venue is not None
+        existing_venue = venue_queries.find_by_id(self.venueId)
+        assert existing_venue is not None
+        self.venue_siret = existing_venue.siret
 
         latest_local_provider_event = local_provider_event_queries.find_latest_sync_start_event(self.dbObject)
         if latest_local_provider_event is None:
@@ -53,7 +53,6 @@ class TiteLiveStocks(LocalProvider):
         self.more_pages = True
         self.data = None
         self.product = None
-        self.existing_offer = None
 
     def __next__(self):
         self.index = self.index + 1
@@ -80,41 +79,29 @@ class TiteLiveStocks(LocalProvider):
         self.titelive_stock = self.data['stocks'][self.index]
         self.last_seen_isbn = str(self.titelive_stock['ref'])
 
-        self.product = thing_queries.find_thing_product_by_isbn_only_for_type_book(self.titelive_stock['ref'])
+        with db.session.no_autoflush:
+            self.product = thing_queries.find_thing_product_by_isbn_only_for_type_book(self.titelive_stock['ref'])
 
         if self.product is None:
-            return None
-
-        # Refresh data before using it
-        db.session.add(self.venue)
+            return None, None
 
         providable_info_stock = ProvidableInfo()
         providable_info_stock.type = Stock
-        providable_info_stock.idAtProviders = "%s@%s" % (self.titelive_stock['ref'], self.venue.siret)
+        providable_info_stock.idAtProviders = "%s@%s" % (self.titelive_stock['ref'], self.venue_siret)
         providable_info_stock.dateModifiedAtProvider = datetime.utcnow()
 
-        self.existing_offer = find_offer_by_id_at_providers("%s@%s" % (self.titelive_stock['ref'], self.venue.siret))
-
-        self.existing_offer = Offer.query \
-            .filter_by(idAtProviders="%s@%s" % (self.titelive_stock['ref'], self.venue.siret)) \
-            .one_or_none()
-
-        if self.existing_offer is None:
-            providable_info_offer = ProvidableInfo()
-            providable_info_offer.type = Offer
-            providable_info_offer.idAtProviders = "%s@%s" % (self.titelive_stock['ref'], self.venue.siret)
-            providable_info_offer.dateModifiedAtProvider = datetime.utcnow()
-        else:
-            providable_info_offer = None
+        providable_info_offer = ProvidableInfo()
+        providable_info_offer.type = Offer
+        providable_info_offer.idAtProviders = "%s@%s" % (self.titelive_stock['ref'], self.venue_siret)
+        providable_info_offer.dateModifiedAtProvider = datetime.utcnow()
 
         return providable_info_offer, providable_info_stock
 
     def updateObject(self, obj):
-        assert obj.idAtProviders == "%s@%s" % (self.titelive_stock['ref'], self.venue.siret)
+        assert obj.idAtProviders == "%s@%s" % (self.titelive_stock['ref'], self.venue_siret)
         if isinstance(obj, Stock):
-            self.update_stock_object(obj, self.titelive_stock, self.existing_offer)
-        elif isinstance(obj, Offer) \
-                and self.existing_offer is None:
+            self.update_stock_object(obj, self.titelive_stock)
+        elif isinstance(obj, Offer):
             self.update_offer_object(obj)
 
     def updateObjects(self, limit=None):
@@ -124,14 +111,11 @@ class TiteLiveStocks(LocalProvider):
         obj.price = int(stock_information['price']) / PRICE_DIVIDER_TO_EURO
         obj.available = int(stock_information['available'])
         obj.bookingLimitDatetime = read_stock_datetime(stock_information['validUntil'])
-        if offer:
-            obj.offerId = offer.id
-        else:
-            providable_offer = self.providables[0]
-            obj.offerId = providable_offer.id
+        obj.offer = self.providables[0]
 
     def update_offer_object(self, obj):
         obj.name = self.product.name
+        obj.description = self.product.description
+        obj.type = self.product.type
         obj.venueId = self.venueId
         obj.productId = self.product.id
-        PcObject.save(obj)
