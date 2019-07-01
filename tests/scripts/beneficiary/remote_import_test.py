@@ -242,6 +242,16 @@ class ParseBeneficiaryInformationTest:
         # then
         assert information['postal_code'] == '67200'
 
+    def test_handles_postal_codes_containing_city_name(self):
+        # given
+        application_detail = make_application_detail(1, 'closed', postal_code='67 200 Strasbourg ')
+
+        # when
+        information = parse_beneficiary_information(application_detail)
+
+        # then
+        assert information['postal_code'] == '67200'
+
     def test_handles_three_digits_department_code(self):
         # given
         application_detail = make_application_detail(1, 'closed', department_code='973 - Guyane')

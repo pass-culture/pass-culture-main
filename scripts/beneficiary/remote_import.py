@@ -95,7 +95,8 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
         if label == 'Numéro de téléphone':
             information['phone'] = value
         if label == 'Code postal de votre adresse de résidence':
-            information['postal_code'] = value.strip().replace(' ', '')
+            space_free = value.strip().replace(' ', '')
+            information['postal_code'] = re.search('^[0-9]{5}', space_free).group(0)
 
     return information
 
