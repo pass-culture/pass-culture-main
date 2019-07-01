@@ -19,12 +19,13 @@ Mais spécialement, en plus pour macosx:
 
 Enfin pour tout le monde:
 ```bash
+./pc symlink
 pc install
 ```
 Le script `pc` sera automatiquement lié dans votre dossier `/usr/local/bin`
 
 ### Init
-Pour verifier les tests:
+Pour vérifier les tests:
 ```bash
 pc test-backend
 ```
@@ -50,7 +51,6 @@ Pour lancer le portail pro:
 ```bash
 pc start-pro
 ```
-
 
 ## Développeurs.ses
 
@@ -128,7 +128,7 @@ Pour anonymiser les données après restauration, et changer le mot de passe pou
 
 Afin de naviguer/tester différentes situations de données, il existe dans api des scripts permettant d'engendrer des bases de données "sandbox".
 
-La plus conséquente est l'industrial, elle se crée via la commande:
+La plus conséquente est l'industrial, elle se créée via la commande:
 
 ```bash
 pc sandbox -n industrial
@@ -147,14 +147,11 @@ Cette commande faite, il y a alors deux moyens pour avoir les email/mots de pass
        GET http://localhost:80/sandboxes/pro_07_offer/get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue
   ```
 
-Il est important que votre server api local tourne.
+Il est important que votre serveur API local tourne.
 
-Pour les développeur.ses, quand vous écrivez un testcafé,
-il faut donc la plupart du temps écrire aussi un getter côté api dans
-sandboxes/scripts/getters/<moduleNameAvecleMêmeNomQueLeFichierTestcafe>, afin
-de récupérer les objets souhaités dans la sandbox.
+Pour les développeur.ses, quand vous écrivez un testcafé, il faut donc la plupart du temps écrire aussi un getter côté api dans sandboxes/scripts/getters/<moduleNameAvecleMêmeNomQueLeFichierTestcafe>, afin de récupérer les objets souhaités dans la sandbox.
 
-Si vous voulez avoir un aperçu global de l'application webapp, vous pouvez tout de même vous connecter avec cet user toujours présent:
+Pour l'application WEBAPP, vous pouvez naviguer avec ce user toujours présent:
 
 ```
 email: pctest.jeune93.has-booked-some@btmx.fr
@@ -179,7 +176,7 @@ password: pctest0.pro93.0
 
 ## Tagging des versions
 
-La politique de tagging de versions est la suivante :
+La politique de tagging de version est la suivante :
 * on n'utilise pas de _semantic versioning_
 * on utilise le format `I.P.S`
   * I => incrément d'__Itération__
@@ -199,7 +196,7 @@ La politique de tagging de versions est la suivante :
 
 ## Deploy
 
-### FRONTEND WEB
+### FRONTEND
 
 Pour déployer une nouvelle version web, par exemple en staging:
 **(Attention de ne pas déployer sur la production sans concertation !)**
@@ -220,7 +217,24 @@ Pour déployer en production ensuite :
 pc -e production -t I.P.S deploy-frontend-webapp
 ```
 
-#### Publier shared sur npm
+### BACKEND
+
+Pour déployer une nouvelle version de l'API, par exemple en staging:
+**(Attention de ne pas déployer sur la prod sans autorisation !)**
+
+```bash
+pc -t I.P.S tag-version-backend
+pc -e staging -t I.P.S deploy-backend
+```
+
+Avec vI.P.S, le tag de la version à déployer.
+Ensuite pour mettre en production le tag qui a été déployé sur l'environnement staging :
+
+```bash
+pc -e production -t I.P.S deploy-backend
+```
+
+#### Publier pass-culture-shared sur npm
 
 Pour publier une version de pass-culture-shared sur npm
 
@@ -239,56 +253,50 @@ yarn add pass-culture-shared@x.x.x
 git add package.json yarn.lock
 ```
 
-avec `x.x.x` nouvelle version déployée sur shared.
-
-
-### BACKEND
-
-Pour déployer une nouvelle version de l'API, par exemple en staging:
-**(Attention de ne pas déployer sur la prod sans autorisation !)**
-
-```bash
-pc -t I.P.S tag-version-backend
-pc -e staging -t I.P.S deploy-backend
-```
-
-Avec vI.P.S, le tag de la version à déployer.
-Ensuite pour mettre en production le tag qui a été déployé sur l'environnement staging :
-
-```bash
-pc -e production -t I.P.S deploy-backend
-```
-
-
+avec `x.x.x`, étant la nouvelle version déployée sur pass-culture-shared.
 
 ## Administration
 
-### Connexion à la base postgreSQL d'un environnement
-
-Par exemple, pour l'environnement staging :
+### Connexion à la base postgreSQL d'un environnement (testing | staging | production)
 
 ```bash
-pc -e staging psql
+pc -e <testing|staging|production> psql
 ```
 
-### Connexion à en ligne de commande python à un environnement
-
-Par exemple, pour l'environnement staging :
+ou 
 
 ```bash
-pc -e staging python
+pc -e <testing|staging|production> pgcli
+```
+
+### Connexion à la base postgreSQL en local
+
+```bash
+pc psql
+```
+
+ou
+
+```bash
+pc pgcli
+```
+
+### Connexion en ligne de commande python à un environnement (testing | staging | production)
+
+```bash
+pc -e <testing|staging|production> python
 ```
 
 Il est également possible d'uploader un fichier dans l'environnement temporaire grâce à la commande suivante :
 
 ```bash
-pc -e staging -f myfile.extension python
+pc -e <testing|staging|production> -f myfile.extension python
 ```
 
 L'option -f est également disponible pour la commande bash :
 
 ```bash
-pc -e staging -f myfile.extension bash
+pc -e <testing|staging|production> -f myfile.extension bash
 ```
 
 
@@ -297,7 +305,7 @@ pc -e staging -f myfile.extension bash
 Pour toutes les commandes suivantes, vous devez disposer des secrets de connexion.
 
 
-Pour lister le contenu d'un conteneur sépcific :
+Pour lister le contenu d'un conteneur spécifique :
 
 ```bash
 pc list_content --container=storage-pc-staging
@@ -332,12 +340,12 @@ pc copy_prod_container_content_to_dest_container --container=storage-pc-staging
 
 #### CREDENTIALS
 
-Vérifier déjà que l'un des admins (comme @arnoo) a enregistré votre adresse ip FIXE (comment savoir son adress ip? http://www.whatsmyip.org/)
+Vérifier déjà que l'un des admins (comme @arnoo) a enregistré votre adresse ip FIXE (comment connaitre son adresse ip? http://www.whatsmyip.org/)
 
-#### Se connecter à la machine OVH
+#### Se connecter à la machine OVH d'un environnement
 
 ```bash
-pc -e production ssh
+pc -e <testing|staging|production> ssh
 ```
 
 ### Dump Prod To Staging
@@ -382,10 +390,6 @@ Puis mettre dans le crontab pour le renouvellement :
 ```bash
 docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt -v ~/pass-culture-main/certs-data:/data/letsencrypt deliverous/certbot renew --verbose --webroot --webroot-path=/data/letsencrypt
 ```
-
-
-
-
 
 ## Version mobile (outdated, but can be useful someday)
 
