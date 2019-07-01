@@ -64,7 +64,6 @@ describe('src | components | pages | Bookings | selectNonVirtualVenues', () => {
 
     // then
     const nonVirtualVenuesListExpected = []
-
     expect(nonVirtualVenuesToDisplay).toEqual(nonVirtualVenuesListExpected)
   })
 })

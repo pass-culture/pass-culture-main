@@ -1,5 +1,7 @@
+import get from "lodash.get";
+
 const selectOffersByVenueId = (venueId, state) => {
-  const { offers } = state.data || []
+  const offers = get(state, 'data.offers', [])
   return offers.filter(offer => offer.venueId === venueId)
 }
 

@@ -6,20 +6,11 @@ import Main from 'components/layout/Main'
 import HeroSection from 'components/layout/HeroSection/HeroSection'
 import { API_URL } from 'utils/config'
 import FilterByVenueContainer from './FilterByVenueContainer'
-import FilterByOfferContainer from './FilterByOfferContainer'
 import {FilterByVenue} from "./FilterByVenue";
 
 class Bookings extends Component {
   render() {
-    const { isFilterByDigitalVenues, selectedOffer, selectedVenue } = this.props
-
-    let showDownloadButtonContainer = true
-    if (
-      (!isFilterByDigitalVenues && selectedVenue === '') ||
-      selectedOffer === ''
-    ) {
-      showDownloadButtonContainer = false
-    }
+    const { pathToCsvFile, showDownloadButton } = this.props
 
     return (
       <Main name="bookings">
@@ -35,12 +26,11 @@ class Bookings extends Component {
         </HeroSection>
         <hr />
         <FilterByVenueContainer />
-        <FilterByOfferContainer />
         <div className="control flex-columns items-center flex-end">
-          {showDownloadButtonContainer ? (
+          {showDownloadButton ? (
             <DownloadButtonContainer
               filename="reservations_pass_culture"
-              href={`${API_URL}/bookings/csv`}
+              href={pathToCsvFile}
               mimeType="text/csv">
               Télécharger la liste des réservations
             </DownloadButtonContainer>
@@ -52,15 +42,13 @@ class Bookings extends Component {
 }
 
 FilterByVenue.defaultProps = {
-  isFilterByDigitalVenues: false,
-  selectedOffer: '',
-  selectedVenue:'',
+  pathToCsvFile: '',
+  showDownloadButton: false,
 }
 
 Bookings.propTypes = {
-  isFilterByDigitalVenues: PropTypes.bool,
-  selectedOffer: PropTypes.string,
-  selectedVenue: PropTypes.string,
+  pathToCsvFile: PropTypes.string,
+  showDownloadButton: PropTypes.bool,
 }
 
 export default Bookings

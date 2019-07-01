@@ -9,8 +9,6 @@ describe('src | reducers | bookingSummary', () => {
     expect(nextState).toEqual({
       isFilterByDigitalVenues: false,
       selectedVenue: '',
-      selectedOffer: '',
-      selectOffersSince: new Date(2018, 1, 1),
     })
   })
 
@@ -19,8 +17,6 @@ describe('src | reducers | bookingSummary', () => {
     const initialState = {
       isFilterByDigitalVenues: false,
       selectedVenue: '',
-      selectedOffer: '',
-      selectOffersSince: new Date(2018, 1, 1),
     }
     const action = {
       payload: true,
@@ -34,8 +30,6 @@ describe('src | reducers | bookingSummary', () => {
     expect(nextState).toEqual({
       isFilterByDigitalVenues: true,
       selectedVenue: '',
-      selectedOffer: '',
-      selectOffersSince: new Date(2018, 1, 1),
     })
   })
 
@@ -44,8 +38,6 @@ describe('src | reducers | bookingSummary', () => {
     const initialState = {
       isFilterByDigitalVenues: false,
       selectedVenue: '',
-      selectedOffer: '',
-      selectOffersSince: new Date(2018, 1, 1),
     }
     const action = {
       payload: 'A8KQ',
@@ -59,8 +51,6 @@ describe('src | reducers | bookingSummary', () => {
     expect(nextState).toEqual({
       isFilterByDigitalVenues: false,
       selectedVenue: 'A8KQ',
-      selectedOffer: '',
-      selectOffersSince: new Date(2018, 1, 1),
     })
   })
 
@@ -69,8 +59,6 @@ describe('src | reducers | bookingSummary', () => {
     const initialState = {
       isFilterByDigitalVenues: false,
       selectedVenue: 'AGAQ',
-      selectedOffer: 'AFAQ',
-      selectOffersSince: new Date(2018, 1, 1),
     }
     const action = {
       payload: 'A8KQ',
@@ -84,8 +72,6 @@ describe('src | reducers | bookingSummary', () => {
     expect(nextState).toEqual({
       isFilterByDigitalVenues: false,
       selectedVenue: 'A8KQ',
-      selectedOffer: '',
-      selectOffersSince: new Date(2018, 1, 1),
     })
   })
 
@@ -94,8 +80,6 @@ describe('src | reducers | bookingSummary', () => {
     const initialState = {
       isFilterByDigitalVenues: false,
       selectedVenue: 'A8KQ',
-      selectedOffer: 'AFAQ',
-      selectOffersSince: new Date(2018, 1, 1),
     }
     const action = {
       payload: true,
@@ -109,60 +93,6 @@ describe('src | reducers | bookingSummary', () => {
     expect(nextState).toEqual({
       isFilterByDigitalVenues: true,
       selectedVenue: '',
-      selectedOffer: '',
-      selectOffersSince: new Date(2018, 1, 1),
-    })
-  })
-
-  it('should update selectedOffer when action BOOKING_SUMMARY_SELECT_OFFER occured', () => {
-    // given
-    const initialState = {
-      isFilterByDigitalVenues: true,
-      selectedVenue: '',
-      selectedOffer: '',
-      selectOffersSince: new Date(2018, 1, 1),
-    }
-    const action = {
-      payload: 'AVJA',
-      type: 'BOOKING_SUMMARY_SELECT_OFFER',
-    }
-
-    // when
-    const nextState = bookingSummary(initialState, action)
-
-    // then
-    expect(nextState).toEqual({
-      isFilterByDigitalVenues: true,
-      selectedVenue: '',
-      selectedOffer: 'AVJA',
-      selectOffersSince: new Date(2018, 1, 1),
-    })
-  })
-
-  it('should update selectOffersSince when action BOOKING_SUMMARY_SELECT_DATE occured', () => {
-    // given
-    const initialState = {
-      isFilterByDigitalVenues: false,
-      selectedVenue: '',
-      selectedOffer: '',
-      selectOffersSince: new Date(2018, 1, 1),
-    }
-    const date = new Date(2019, 6, 1)
-    const action = {
-      payload: date,
-      type: 'BOOKING_SUMMARY_SELECT_DATE',
-    }
-
-    // when
-    const nextState = bookingSummary(initialState, action)
-
-    // then
-    const expectedDate = new Date(2019, 6, 1)
-    expect(nextState).toEqual({
-      isFilterByDigitalVenues: false,
-      selectedVenue: '',
-      selectedOffer: '',
-      selectOffersSince: expectedDate,
     })
   })
 })
