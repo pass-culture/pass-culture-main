@@ -172,6 +172,7 @@ jobs:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init
+      - run: ./check_build_status.py
       - run:
           name: Deploy API
           command: |
@@ -258,37 +259,21 @@ workflows:
       - tests-script-pc
       - tests-api:
           filters:
-            branches:
-              only:
-                - staging
-                - integration
-                - demo
-                - production
+            tags:
+              only: /^v.*/
       - tests-webapp:
           filters:
-            branches:
-              only:
-                - staging
-                - integration
-                - demo
-                - production
+            tags:
+              only: /^v.*/
       - tests-pro:
           filters:
-            branches:
-              only:
-                - staging
-                - integration
-                - demo
-                - production
+            tags:
+              only: /^v.*/
       - deploy-api:
           filters:
             branches:
               ignore:
                 - master
-          requires:
-            - tests-api
-            - tests-webapp
-            - tests-pro
       - deploy-pro:
           requires:
             - deploy-api

@@ -121,7 +121,7 @@ pc restore-db file.pgdump
 Pour anonymiser les données après restauration, et changer le mot de passe pour tout les users :
 
 ```bash
-./anonymize_database.sh -p PASSWORD
+./api/scalingo/anonymize_database.sh -p PASSWORD
 ```
 
 ### Database de jeu
@@ -176,8 +176,8 @@ Le mot de passe est toujours : `user@AZERTY123`
 ## Tagging des versions
 
 La politique de tagging de version est la suivante :
-* on n'utilise pas de _semantic versioning_
-* on utilise le format `I.P.S`
+* On n'utilise pas de _semantic versioning_
+* On utilise le format `I.P.S`
   * I => incrément d'__Itération__
   * P => incrément de _fix_ en __Production__
   * S => incrément de _fix_ en __Staging__
@@ -193,45 +193,39 @@ La politique de tagging de version est la suivante :
 * Je m'aperçois que mon fix est lui-même buggé, je relivre un fix en staging => `20.2.1`
 * Mes deux fix sont cette fois OK, je livre en production => `20.2.1`
 
+
+Pour poser un tag sur une version :
+
+S'assurer d'avoir bien commité ses fichiers.
+Checkout de master sur pass-culture-main, pass-culture-api, pass-culture-webapp et pass-culture-pro. 
+
+```bash
+pc -t I.P.S tag
+```
+
+Le fichier version.txt de l'API est mis-à-jours ainsi que le package.json de Webapp et Pro. 
+Le tag est posé sur toutes les branches à la fois et elles sont poussées sur le repository distant. Les tests sont joués
+et on déploie sur Testing.
+
 ## Deploy
 
-### FRONTEND
+install jq
 
-Pour déployer une nouvelle version web, par exemple en staging:
+Pour déployer une nouvelle version, par exemple en staging:
 **(Attention de ne pas déployer sur la production sans concertation !)**
 
 ```bash
-pc -t I.P.S tag-version-webapp
-pc -e staging -t I.P.S deploy-frontend-webapp
+pc -e staging -t I.P.S 
 ```
 
-Et pour pro sur staging, il suffit de remplacer la dernière commande par celle-ci :
-```bash
-pc -t I.P.S tag-version-pro
-pc -e staging -t I.P.S deploy-frontend-pro
-```
 
 Pour déployer en production ensuite :
 ```bash
-pc -e production -t I.P.S deploy-frontend-webapp
+pc -e production -t I.P.S
+
 ```
 
-### BACKEND
-
-Pour déployer une nouvelle version de l'API, par exemple en staging:
-**(Attention de ne pas déployer sur la prod sans autorisation !)**
-
-```bash
-pc -t I.P.S tag-version-backend
-pc -e staging -t I.P.S deploy-backend
-```
-
-Avec vI.P.S, le tag de la version à déployer.
-Ensuite pour mettre en production le tag qui a été déployé sur l'environnement staging :
-
-```bash
-pc -e production -t I.P.S deploy-backend
-```
+A la fin de l'opération, une fenêtre de votre navigateur s'ouvrira sur le workflow en cours.
 
 #### Publier pass-culture-shared sur npm
 
@@ -256,7 +250,7 @@ avec `x.x.x`, étant la nouvelle version déployée sur pass-culture-shared.
 
 ## Administration
 
-### Connexion à la base postgreSQL d'un environnement (testing | staging | production)
+### Connexion à la base postgreSQL d'un environnement
 
 ```bash
 pc -e <testing|staging|production> psql
@@ -278,7 +272,6 @@ ou
 
 ```bash
 pc pgcli
-```
 
 ### Connexion en ligne de commande python à un environnement (testing | staging | production)
 

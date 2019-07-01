@@ -257,7 +257,7 @@ elif [[ "$CMD" == "restore-db" ]]; then
   fi
   backup_file="$1"
   RUN='cat "'$backup_file'" | docker exec -i pc-postgres pg_restore -d pass_culture -U pass_culture -c;
-              ./anonymize_database.sh -p Password_ ;
+              ./api/scalingo/anonymize_database.sh -p Password_ ;
               rm $backup_file'
 
 # Restore a postgresql database from file (non anonymized)
