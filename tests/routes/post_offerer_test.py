@@ -100,8 +100,35 @@ class Post:
             offerer = Offerer.query.first()
             assert offerer.UserOfferers[0].rights == RightsType.editor
 
+
         @clean_database
-        def when_offerer_already_in_base_just_create_user_offerer(self, app):
+        def when_offerer_is_new_he_has_validation_token_and_user_offerer_dont(self, app):
+            # Given
+            user = create_user(can_book_free_offers=False, is_admin=False)
+            PcObject.save(user)
+            body = {
+                'name': 'Test Offerer',
+                'siren': '418166096',
+                'address': '123 rue de Paris',
+                'postalCode': '93100',
+                'city': 'Montreuil'
+            }
+
+            # when
+            with patch("domain.admin_emails.write_object_validation_email", return_value={ 'Html-part': None }):
+                response = TestClient(app.test_client()) \
+                    .with_auth(user.email) \
+                    .post('/offerers', json=body)
+
+            # then
+            assert response.status_code == 201
+            offerer = Offerer.query.first()
+            assert offerer.validationToken is not None
+            assert offerer.UserOfferers[0].validationToken is None
+
+
+        @clean_database
+        def when_offerer_already_in_base_just_create_user_offerer_with_validation_token(self, app):
             # Given
             user = create_user(can_book_free_offers=False, is_admin=False)
             offerer = create_offerer(siren='123456789')
@@ -122,8 +149,32 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            user_offerer = UserOfferer.query.first()
             offerer = Offerer.query.first()
-            assert user_offerer is not None
             assert offerer.UserOfferers[0].rights == RightsType.editor
+            assert offerer.UserOfferers[0].validationToken is not None
+
+
+        @clean_database
+        def when_offerer_was_not_validated_he_keeps_validation_token_and_user_offerer_get_one(self, app):
+            # Given
+            user = create_user(can_book_free_offers=False, is_admin=False)
+            offerer = create_offerer(siren='123456789', validation_token='not_validated')
+            PcObject.save(user, offerer)
+            body = {
+                'name': 'Test Offerer',
+                'siren': '123456789',
+                'address': '123 rue de Paris',
+                'postalCode': '93100',
+                'city': 'Montreuil'
+            }
+
+            with patch("domain.admin_emails.write_object_validation_email", return_value={ 'Html-part': None }):
+                response = TestClient(app.test_client()) \
+                    .with_auth(user.email) \
+                    .post('/offerers', json=body)
+
+            # then
+            assert response.status_code == 201
+            offerer = Offerer.query.first()
+            assert offerer.validationToken == 'not_validated'
             assert offerer.UserOfferers[0].validationToken is not None

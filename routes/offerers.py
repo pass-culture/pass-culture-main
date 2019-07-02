@@ -92,21 +92,18 @@ def create_offerer():
     siren = request.json['siren']
     offerer = find_by_siren(siren)
 
-    if offerer is None:
+    if offerer is not None:
+        user_offerer = offerer.give_rights(current_user, RightsType.editor)
+        user_offerer.generate_validation_token()
+        PcObject.save(user_offerer)
+
+    else:
         offerer = Offerer()
         offerer.populate_from_dict(request.json)
-
         digital_venue = create_digital_venue(offerer)
-
-        PcObject.save(offerer, digital_venue)
-
-        if not current_user.isAdmin:
-            offerer.generate_validation_token()
-            PcObject.save(offerer)
-
-    user_offerer = offerer.give_rights(current_user, RightsType.editor)
-    user_offerer.generate_validation_token()
-    PcObject.save(user_offerer)
+        offerer.generate_validation_token()
+        user_offerer = offerer.give_rights(current_user, RightsType.editor)
+        PcObject.save(offerer, digital_venue, user_offerer)
 
     try:
         maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
