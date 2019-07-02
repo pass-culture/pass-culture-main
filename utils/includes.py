@@ -74,6 +74,10 @@ OFFER_INCLUDES = [
     'isFinished',
     'isFullyBooked',
     {
+        "key": "activeMediation",
+        "sub_joins": ["thumbUrl"]
+    },
+    {
         "key": "mediations",
         "sub_joins": ["thumbUrl"]
     },

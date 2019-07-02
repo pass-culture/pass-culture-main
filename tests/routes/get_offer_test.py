@@ -2,7 +2,7 @@ from models import PcObject
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_offerer, \
     create_user, \
-    create_venue, create_offer_with_thing_product, create_bank_information, create_stock
+    create_venue, create_offer_with_thing_product, create_bank_information, create_stock, create_mediation
 from utils.human_ids import humanize
 
 
@@ -32,3 +32,21 @@ class Get:
             assert 'bic' in response_json['venue']
             assert 'iban' in response_json['venue']['managingOfferer']
             assert 'bic' in response_json['venue']['managingOfferer']
+
+        @clean_database
+        def when_returns_an_active_mediation(self, app):
+            # Given
+            user = create_user(email='user@test.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue)
+            mediation = create_mediation(offer, is_active=True)
+            PcObject.save(user, mediation)
+
+            # when
+            response = TestClient(app.test_client()).with_auth(email='user@test.com') \
+                .get(f'/offers/{humanize(offer.id)}')
+
+            # then
+            assert response.status_code == 200
+            assert response.json['activeMediation'] is not None

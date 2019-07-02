@@ -4,7 +4,7 @@ import pytest
 
 from models import Offer, PcObject, ApiErrors, ThingType, EventType, Product
 from tests.conftest import clean_database
-from tests.test_utils import create_booking, create_user
+from tests.test_utils import create_booking, create_user, create_mediation
 from tests.test_utils import create_offer_with_event_product, create_product_with_Event_type
 from tests.test_utils import create_product_with_Thing_type, create_offer_with_thing_product, create_offerer, \
     create_stock, create_venue
@@ -420,6 +420,39 @@ class IsFinishedTest:
 
         # then
         assert offer.isFinished is False
+
+
+class ActiveMediationTest:
+    def test_returns_none_if_no_mediations_exist_on_offer(self):
+        # given
+        offer = Offer()
+        offer.mediations = []
+
+        # then
+        assert offer.activeMediation is None
+
+    def test_returns_none_if_all_mediations_are_deactivated(self):
+        # given
+        offer = Offer()
+        offer.mediations = [
+            create_mediation(offer, is_active=False),
+            create_mediation(offer, is_active=False)
+        ]
+
+        # then
+        assert offer.activeMediation is None
+
+    def test_returns_the_most_recent_active_mediation(self):
+        # given
+        offer = Offer()
+        offer.mediations = [
+            create_mediation(offer, front_text='1st', date_created=four_days_ago, is_active=True),
+            create_mediation(offer, front_text='2nd', date_created=now, is_active=False),
+            create_mediation(offer, front_text='3rd', date_created=two_days_ago, is_active=True)
+        ]
+
+        # then
+        assert offer.activeMediation.frontText == '3rd'
 
 
 def test_date_range_is_empty_if_offer_is_on_a_thing():

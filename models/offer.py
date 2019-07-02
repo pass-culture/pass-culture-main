@@ -22,15 +22,14 @@ class Offer(PcObject,
             ExtraDataMixin,
             DeactivableMixin,
             ProvidableMixin):
-
     productId = Column(BigInteger,
-                     ForeignKey("product.id"),
-                     index=True,
-                     nullable=False)
+                       ForeignKey("product.id"),
+                       index=True,
+                       nullable=False)
 
     product = relationship('Product',
-                         foreign_keys=[productId],
-                         backref='offers')
+                           foreign_keys=[productId],
+                           backref='offers')
 
     venueId = Column(BigInteger,
                      ForeignKey("venue.id"),
@@ -155,6 +154,13 @@ class Offer(PcObject,
 
         available_stocks = sum(map(lambda s: s.available if s.isBookable else 0, self.stocks))
         return total_quantity >= available_stocks
+
+    @property
+    def activeMediation(self):
+        sorted_by_date_asc = sorted(self.mediations, key=lambda m: m.dateCreated)
+        sorted_by_date_desc = reversed(sorted_by_date_asc)
+        only_active = list(filter(lambda m: m.isActive, sorted_by_date_desc))
+        return only_active[0] if only_active else None
 
     def _has_unlimited_stock(self):
         return any(map(lambda s: s.available is None, self.stocks))
