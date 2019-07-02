@@ -21,7 +21,7 @@ ShallowWrapper {
             Object {
               "config": Object {
                 "apiPath": "/offerers?keywords",
-                "handleFail": [Function],
+                "handleFail": undefined,
                 "handleSuccess": [Function],
                 "method": "GET",
                 "normalizer": Object {
@@ -191,7 +191,7 @@ ShallowWrapper {
           className="main-list offerers-list"
           element="ul"
           hasMore={false}
-          isLoading={true}
+          isLoading={false}
           loader={
             <Spinner
               Tag="div"
@@ -473,7 +473,7 @@ ShallowWrapper {
           "className": "main-list offerers-list",
           "element": "ul",
           "hasMore": false,
-          "isLoading": true,
+          "isLoading": false,
           "loader": <Spinner
             Tag="div"
             className={null}
@@ -573,7 +573,7 @@ ShallowWrapper {
             className="main-list offerers-list"
             element="ul"
             hasMore={false}
-            isLoading={true}
+            isLoading={false}
             loader={
               <Spinner
                 Tag="div"
@@ -855,7 +855,7 @@ ShallowWrapper {
             "className": "main-list offerers-list",
             "element": "ul",
             "hasMore": false,
-            "isLoading": true,
+            "isLoading": false,
             "loader": <Spinner
               Tag="div"
               className={null}

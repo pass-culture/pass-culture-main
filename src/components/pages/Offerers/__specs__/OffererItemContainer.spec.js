@@ -1,5 +1,5 @@
 import state from '../../../utils/mocks/state'
-import { mapStateToProps } from '../OffererItemContainer'
+import { mapStateToProps } from '../OffererItem/OffererItemContainer'
 
 describe('src | components | pages | Offerers | OffererItemContainer', () => {
   describe('mapStateToProps', () => {

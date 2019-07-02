@@ -105,12 +105,12 @@ class Offerers extends Component {
     })
 
     const url = createVenueForOffererUrl(offerers)
-    const offerersWithoutOffers = !currentUser.hasOffers
-    const offersWithOnlyDigitalOffers = currentUser.hasOffers && !currentUser.hasPhysicalVenues
+    const offerersHaveNotOffers = !currentUser.hasOffers
+    const offerersHaveOnlyDigitalOffers = currentUser.hasOffers && !currentUser.hasPhysicalVenues
 
-    const isNotificationToAddAVenueShown = offerersWithoutOffers || offersWithOnlyDigitalOffers
+    const userHasNoOffersInAPhysicalVenueYet = offerersHaveNotOffers || offerersHaveOnlyDigitalOffers
 
-    if (isNotificationToAddAVenueShown) {
+    if (userHasNoOffersInAPhysicalVenueYet) {
        this.showNotification(url)
     }
 
