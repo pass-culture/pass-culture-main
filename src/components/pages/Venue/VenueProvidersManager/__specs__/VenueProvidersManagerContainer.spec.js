@@ -1,4 +1,7 @@
-import { mapDispatchToProps, mapStateToProps } from '../VenueProvidersManagerContainer'
+import {
+  mapDispatchToProps,
+  mapStateToProps,
+} from '../VenueProvidersManagerContainer'
 
 describe('src | components | pages | Venue | VenueProvidersManager', () => {
   describe('mapStateToProps', () => {
@@ -7,14 +10,14 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       const state = {
         data: {
           providers: [
-            {id: 'AF', localClass: 'a'},
-            {id: 'AG', localClass: 'b'},
+            { id: 'AF', localClass: 'a' },
+            { id: 'AG', localClass: 'b' },
           ],
-          venueProviders: [{id: 'AE', venueId: 'EE'}],
+          venueProviders: [{ id: 'AE', venueId: 'EE' }],
         },
       }
       const props = {
-        venue: {id: 'EE'},
+        venue: { id: 'EE' },
       }
 
       // when
@@ -23,9 +26,10 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       // then
       expect(result).toEqual({
         providers: [
-          {id: 'AF', localClass: 'a'}, {id: 'AG', localClass: 'b'},
+          { id: 'AF', localClass: 'a' },
+          { id: 'AG', localClass: 'b' },
         ],
-        venueProviders: [{id: 'AE', venueId: 'EE'}],
+        venueProviders: [{ id: 'AE', venueId: 'EE' }],
       })
     })
   })
@@ -39,9 +43,9 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       props = {
         match: {
           params: {
-            venueId: 'AE'
+            venueId: 'AE',
           },
-        }
+        },
       }
     })
 
@@ -53,7 +57,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       expect(result).toStrictEqual({
         createVenueProvider: expect.any(Function),
         loadProvidersAndVenueProviders: expect.any(Function),
-        notify: expect.any(Function)
+        notify: expect.any(Function),
       })
     })
 
@@ -63,7 +67,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         const payload = {
           providerId: 'AA',
           venueIdAtOfferProvider: 'AB',
-          venueId: 'AC'
+          venueId: 'AC',
         }
         const functions = mapDispatchToProps(dispatch, props)
 
@@ -77,13 +81,13 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
             body: {
               providerId: 'AA',
               venueId: 'AC',
-              venueIdAtOfferProvider: 'AB'
+              venueIdAtOfferProvider: 'AB',
             },
             handleFail: expect.any(Function),
             handleSuccess: expect.any(Function),
-            method: 'POST'
+            method: 'POST',
           },
-          type: 'REQUEST_DATA_POST_/VENUEPROVIDERS'
+          type: 'REQUEST_DATA_POST_/VENUEPROVIDERS',
         })
       })
     })
@@ -100,16 +104,16 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         expect(dispatch.mock.calls[0][0]).toEqual({
           config: {
             apiPath: '/providers',
-            method: 'GET'
+            method: 'GET',
           },
-          type: 'REQUEST_DATA_GET_/PROVIDERS'
+          type: 'REQUEST_DATA_GET_/PROVIDERS',
         })
         expect(dispatch.mock.calls[1][0]).toEqual({
           config: {
             apiPath: '/venueProviders?venueId=AE',
-            method: 'GET'
+            method: 'GET',
           },
-          type: 'REQUEST_DATA_GET_/VENUEPROVIDERS?VENUEID=AE'
+          type: 'REQUEST_DATA_GET_/VENUEPROVIDERS?VENUEID=AE',
         })
       })
     })
@@ -118,7 +122,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       it('should display a notification', () => {
         // given
         const functions = mapDispatchToProps(dispatch, props)
-        const errors = [{error: 'error'}]
+        const errors = [{ error: 'error' }]
 
         // when
         functions.notify(errors)
@@ -127,9 +131,9 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         expect(dispatch).toHaveBeenCalledWith({
           patch: {
             text: 'error',
-            type: 'fail'
+            type: 'fail',
           },
-          type: 'SHOW_NOTIFICATION'
+          type: 'SHOW_NOTIFICATION',
         })
       })
     })

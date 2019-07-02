@@ -14,7 +14,7 @@ class VenueProvidersManager extends Component {
       isCreationMode: false,
       isLoadingMode: false,
       isProviderSelected: false,
-      venueIdAtOfferProviderIsRequired: true
+      venueIdAtOfferProviderIsRequired: true,
     }
   }
 
@@ -25,7 +25,7 @@ class VenueProvidersManager extends Component {
   static getDerivedStateFromProps(nextProps) {
     const {
       match: {
-        params: {venueProviderId},
+        params: { venueProviderId },
       },
     } = nextProps
     const isCreationMode = venueProviderId === 'nouveau'
@@ -39,13 +39,15 @@ class VenueProvidersManager extends Component {
     const {
       history,
       match: {
-        params: {offererId, venueId},
+        params: { offererId, venueId },
       },
     } = this.props
     this.setState({
-      isCreationMode: true
+      isCreationMode: true,
     })
-    history.push(`/structures/${offererId}/lieux/${venueId}/fournisseurs/nouveau`)
+    history.push(
+      `/structures/${offererId}/lieux/${venueId}/fournisseurs/nouveau`
+    )
   }
 
   resetFormState = () => {
@@ -53,49 +55,41 @@ class VenueProvidersManager extends Component {
       isCreationMode: false,
       isLoadingMode: false,
       isProviderSelected: false,
-      venueIdAtOfferProviderIsRequired: true
+      venueIdAtOfferProviderIsRequired: true,
     })
   }
 
   handleSubmit = (formValues, form) => {
-    const {createVenueProvider} = this.props
+    const { createVenueProvider } = this.props
     this.setState({
-      isLoadingMode: true
+      isLoadingMode: true,
     })
-    const {
-      id,
-      provider,
-      venueIdAtOfferProvider
-    } = formValues
+    const { id, provider, venueIdAtOfferProvider } = formValues
     const parsedProvider = JSON.parse(provider)
 
     const payload = {
       providerId: parsedProvider.id,
       venueIdAtOfferProvider,
-      venueId: id
+      venueId: id,
     }
 
-    createVenueProvider(
-      this.handleFail(form),
-      this.handleSuccess,
-      payload
-    )
+    createVenueProvider(this.handleFail(form), this.handleSuccess, payload)
   }
 
   handleSuccess = () => {
     const {
       history,
       match: {
-        params: {offererId, venueId},
+        params: { offererId, venueId },
       },
     } = this.props
     history.push(`/structures/${offererId}/lieux/${venueId}`)
   }
 
-  handleFail = (form) => (state, action) => {
-    const {notify} = this.props
+  handleFail = form => (state, action) => {
+    const { notify } = this.props
     const {
-      payload: {errors},
+      payload: { errors },
     } = action
 
     notify(errors)
@@ -103,7 +97,7 @@ class VenueProvidersManager extends Component {
     this.resetFormState()
   }
 
-  resetFormInput = (form) => {
+  resetFormInput = form => {
     form.batch(() => {
       form.change('provider', JSON.stringify(DEFAULT_PROVIDER_OPTION))
     })
@@ -116,7 +110,7 @@ class VenueProvidersManager extends Component {
     if (valueParsed && valueParsed.id !== DEFAULT_PROVIDER_OPTION.id) {
       this.setState({
         isProviderSelected: true,
-        venueIdAtOfferProviderIsRequired: valueParsed.requireProviderIdentifier
+        venueIdAtOfferProviderIsRequired: valueParsed.requireProviderIdentifier,
       })
     } else {
       this.resetFormState()
@@ -125,21 +119,17 @@ class VenueProvidersManager extends Component {
   }
 
   componentDidMount() {
-    const {loadProvidersAndVenueProviders} = this.props
+    const { loadProvidersAndVenueProviders } = this.props
     loadProvidersAndVenueProviders()
   }
 
   render() {
-    const {
-      providers,
-      venue,
-      venueProviders,
-    } = this.props
+    const { providers, venue, venueProviders } = this.props
     const {
       isCreationMode,
       isLoadingMode,
       isProviderSelected,
-      venueIdAtOfferProviderIsRequired
+      venueIdAtOfferProviderIsRequired,
     } = this.state
     const decorators = [updateVenueIdAtOfferProvider]
     const hasAtLeastOneProvider = providers.length > 0
@@ -154,9 +144,8 @@ class VenueProvidersManager extends Component {
           </span>
         </h2>
 
-        <ul
-          className="main-list">
-          {venueProviders.map((venueProvider) => (
+        <ul className="main-list">
+          {venueProviders.map(venueProvider => (
             <VenueProviderItem
               key={venueProvider.id}
               venueProvider={venueProvider}
@@ -190,8 +179,7 @@ class VenueProvidersManager extends Component {
               disabled={isCreationMode}
               id="add-venue-provider-btn"
               onClick={this.addVenueProvider}
-              type="button"
-            >
+              type="button">
               + Importer des offres
             </button>
           </div>
@@ -206,12 +194,12 @@ VenueProvidersManager.propTypes = {
   history: PropTypes.shape().isRequired,
   loadProvidersAndVenueProviders: PropTypes.func.isRequired,
   match: PropTypes.shape({
-    params: PropTypes.shape()
+    params: PropTypes.shape(),
   }).isRequired,
   notify: PropTypes.func.isRequired,
   providers: PropTypes.array.isRequired,
   venue: PropTypes.shape().isRequired,
-  venueProviders: PropTypes.array.isRequired
+  venueProviders: PropTypes.array.isRequired,
 }
 
 export default VenueProvidersManager

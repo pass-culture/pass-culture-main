@@ -1,6 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Venue | VenueProvidersManager | VenueProviderItem should match snapshot 1`] = `
+exports[
+  `src | components | pages | Venue | VenueProvidersManager | VenueProviderItem should match snapshot 1`
+] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <VenueProviderItem
@@ -47,7 +49,6 @@ ShallowWrapper {
         >
           <div>
             Compte : 
-             
             <strong
               className="fs14 has-text-weight-bold"
             >
@@ -111,7 +112,6 @@ ShallowWrapper {
         "props": Object {
           "children": <div>
             Compte : 
-             
             <strong
               className="fs14 has-text-weight-bold"
             >
@@ -128,7 +128,6 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               "Compte : ",
-              " ",
               <strong
                 className="fs14 has-text-weight-bold"
               >
@@ -140,7 +139,6 @@ ShallowWrapper {
           "ref": null,
           "rendered": Array [
             "Compte : ",
-            " ",
             Object {
               "instance": null,
               "key": undefined,
@@ -261,7 +259,6 @@ ShallowWrapper {
           >
             <div>
               Compte : 
-               
               <strong
                 className="fs14 has-text-weight-bold"
               >
@@ -325,7 +322,6 @@ ShallowWrapper {
           "props": Object {
             "children": <div>
               Compte : 
-               
               <strong
                 className="fs14 has-text-weight-bold"
               >
@@ -342,7 +338,6 @@ ShallowWrapper {
             "props": Object {
               "children": Array [
                 "Compte : ",
-                " ",
                 <strong
                   className="fs14 has-text-weight-bold"
                 >
@@ -354,7 +349,6 @@ ShallowWrapper {
             "ref": null,
             "rendered": Array [
               "Compte : ",
-              " ",
               Object {
                 "instance": null,
                 "key": undefined,
@@ -481,4 +475,4 @@ ShallowWrapper {
     },
   },
 }
-`;
+`

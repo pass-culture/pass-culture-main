@@ -1,24 +1,21 @@
 import createDecorator from 'final-form-calculate'
 
-export const handleUpdateOnProviderField = () => {
-  return (inputValue, inputName, formValues) => {
-    const parsedValue = JSON.parse(inputValue)
+export const handleUpdateOnProviderField = (
+  inputValue,
+  inputName,
+  formValues
+) => {
+  const parsedValue = JSON.parse(inputValue)
+  const siret = !parsedValue.requireProviderIdentifier ? formValues.siret : ''
 
-    if (!parsedValue.requireProviderIdentifier) {
-      return {
-        'venueIdAtOfferProvider': formValues.siret
-      }
-    }
-    return {
-      'venueIdAtOfferProvider': ''
-    }
+  return {
+    venueIdAtOfferProvider: siret,
   }
 }
 
-const updateVenueIdAtOfferProvider = createDecorator(
-  {
-    field: 'provider',
-    updates: handleUpdateOnProviderField()
-  })
+const updateVenueIdAtOfferProvider = createDecorator({
+  field: 'provider',
+  updates: handleUpdateOnProviderField,
+})
 
 export default updateVenueIdAtOfferProvider

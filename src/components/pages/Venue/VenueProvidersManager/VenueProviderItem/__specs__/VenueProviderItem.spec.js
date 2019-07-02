@@ -16,17 +16,17 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
         nOffers: 1,
         provider: {
           name: 'fake local class',
-          localClass: 'OpenAgendaEvents'
+          localClass: 'OpenAgendaEvents',
         },
         venueId: 1,
-        venueIdAtOfferProvider: 'fake id'
-      }
+        venueIdAtOfferProvider: 'fake id',
+      },
     }
   })
 
   it('should match snapshot', () => {
     // when
-    const wrapper = shallow(<VenueProviderItem {...props}/>)
+    const wrapper = shallow(<VenueProviderItem {...props} />)
 
     // then
     expect(wrapper).toBeDefined()
@@ -36,7 +36,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
   describe('render', () => {
     it('should contain an Icon component with the right props', () => {
       // when
-      const wrapper = shallow(<VenueProviderItem {...props}/>)
+      const wrapper = shallow(<VenueProviderItem {...props} />)
 
       // then
       const icon = wrapper.find(Icon).first()
@@ -63,7 +63,9 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       // then
       const importMessageContainer = wrapper.find('.import-label-container')
       expect(importMessageContainer).toHaveLength(1)
-      expect(importMessageContainer.text()).toBe('Importation en cours. Cette étape peut durer plusieurs dizaines de minutes.')
+      expect(importMessageContainer.text()).toBe(
+        'Importation en cours. Cette étape peut durer plusieurs dizaines de minutes.'
+      )
     })
 
     it('should render venue id at offer provider when provided', () => {
@@ -100,7 +102,9 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       const wrapper = shallow(<VenueProviderItem {...props} />)
 
       // then
-      const numberOfOffersLabel = wrapper.find('.offers-container .number-of-offers-label')
+      const numberOfOffersLabel = wrapper.find(
+        '.offers-container .number-of-offers-label'
+      )
       expect(numberOfOffersLabel).toHaveLength(1)
       expect(numberOfOffersLabel.text()).toBe('0 offre')
     })

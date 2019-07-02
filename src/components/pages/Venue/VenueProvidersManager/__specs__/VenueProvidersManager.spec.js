@@ -1,6 +1,7 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 import { Form } from 'react-final-form'
+
 import VenueProvidersManager from '../VenueProvidersManager'
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 
@@ -16,7 +17,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
     loadProvidersAndVenueProviders = jest.fn()
     notify = jest.fn()
     history = {
-      push: jest.fn()
+      push: jest.fn(),
     }
     props = {
       createVenueProvider,
@@ -27,15 +28,15 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         params: {
           offererId: 'CC',
           venueId: 'AB',
-          venueProviderId: 'AE'
-        }
+          venueProviderId: 'AE',
+        },
       },
       providers: [
-        {id: 'DD', requireProviderIdentifier: true},
-        {id: 'EE', requireProviderIdentifier: true}
+        { id: 'DD', requireProviderIdentifier: true },
+        { id: 'EE', requireProviderIdentifier: true },
       ],
-      venue: {id: 'AB'},
-      venueProviders: [{id: 'AA'}, {id: 'BB'}],
+      venue: { id: 'AB' },
+      venueProviders: [{ id: 'AA' }, { id: 'BB' }],
     }
   })
 
@@ -57,7 +58,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         isCreationMode: false,
         isLoadingMode: false,
         isProviderSelected: false,
-        venueIdAtOfferProviderIsRequired: true
+        venueIdAtOfferProviderIsRequired: true,
       })
     })
 
@@ -73,7 +74,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         isCreationMode: true,
         isLoadingMode: false,
         isProviderSelected: false,
-        venueIdAtOfferProviderIsRequired: true
+        venueIdAtOfferProviderIsRequired: true,
       })
     })
 
@@ -85,7 +86,9 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       const title = wrapper.find('h2')
       expect(title).toBeDefined()
       const span = title.find('span')
-      expect(span.text()).toBe('Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.')
+      expect(span.text()).toBe(
+        'Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.'
+      )
     })
 
     it('should display 2 VenueProviderItemContainer when there are 2 venue providers', () => {
@@ -95,8 +98,12 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       // then
       const venueProviderItemContainers = wrapper.find(VenueProviderItem)
       expect(venueProviderItemContainers).toHaveLength(2)
-      expect(venueProviderItemContainers.at(0).prop('venueProvider')).toEqual({id: 'AA'})
-      expect(venueProviderItemContainers.at(1).prop('venueProvider')).toEqual({id: 'BB'})
+      expect(venueProviderItemContainers.at(0).prop('venueProvider')).toEqual({
+        id: 'AA',
+      })
+      expect(venueProviderItemContainers.at(1).prop('venueProvider')).toEqual({
+        id: 'BB',
+      })
     })
 
     it('should retrieve providers and venue providers when component is mounted', () => {
@@ -116,7 +123,9 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       addOfferBtn.simulate('click')
 
       // then
-      expect(history.push).toHaveBeenCalledWith('/structures/CC/lieux/AB/fournisseurs/nouveau')
+      expect(history.push).toHaveBeenCalledWith(
+        '/structures/CC/lieux/AB/fournisseurs/nouveau'
+      )
     })
 
     it('should display an import button when at least one provider is given', () => {
@@ -152,7 +161,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       const formValues = {
         id: 'AA',
         provider: '{"id": "CC"}',
-        venueIdAtOfferProvider: 'BB'
+        venueIdAtOfferProvider: 'BB',
       }
       const wrapper = shallow(<VenueProvidersManager {...props} />)
 
@@ -164,7 +173,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       expect(createVenueProvider).toHaveBeenCalledWith(
         expect.any(Function),
         expect.any(Function),
-        {providerId: 'CC', venueId: 'AA', venueIdAtOfferProvider: 'BB'}
+        { providerId: 'CC', venueId: 'AA', venueIdAtOfferProvider: 'BB' }
       )
     })
   })
@@ -188,20 +197,22 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       const wrapper = shallow(<VenueProvidersManager {...props} />)
       const action = {
         payload: {
-          errors: [{
-            error: 'fake error'
-          }]
-        }
+          errors: [
+            {
+              error: 'fake error',
+            },
+          ],
+        },
       }
       const form = {
-        batch: jest.fn()
+        batch: jest.fn(),
       }
 
       // when
       wrapper.instance().handleFail(form)({}, action)
 
       // then
-      expect(notify).toHaveBeenCalledWith([{error: 'fake error'}])
+      expect(notify).toHaveBeenCalledWith([{ error: 'fake error' }])
     })
 
     it('should reset component state with the default values', () => {
@@ -209,13 +220,15 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       const wrapper = shallow(<VenueProvidersManager {...props} />)
       const action = {
         payload: {
-          errors: [{
-            error: 'fake error'
-          }]
-        }
+          errors: [
+            {
+              error: 'fake error',
+            },
+          ],
+        },
       }
       const form = {
-        batch: jest.fn()
+        batch: jest.fn(),
       }
 
       // when
@@ -226,7 +239,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         isCreationMode: false,
         isLoadingMode: false,
         isProviderSelected: false,
-        venueIdAtOfferProviderIsRequired: true
+        venueIdAtOfferProviderIsRequired: true,
       })
     })
   })
@@ -238,7 +251,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
     beforeEach(() => {
       onChange = jest.fn()
       input = {
-        onChange
+        onChange,
       }
     })
 
@@ -246,8 +259,8 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       // given
       const event = {
         target: {
-          value: '{"id":"AE", "requireProviderIdentifier": true}'
-        }
+          value: '{"id":"AE", "requireProviderIdentifier": true}',
+        },
       }
       const wrapper = shallow(<VenueProvidersManager {...props} />)
 
@@ -263,8 +276,8 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       // given
       const event = {
         target: {
-          value: '{"id":"default", "name": "Choix de la source"}'
-        }
+          value: '{"id":"default", "name": "Choix de la source"}',
+        },
       }
       const wrapper = shallow(<VenueProvidersManager {...props} />)
 
@@ -276,7 +289,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         isCreationMode: false,
         isLoadingMode: false,
         isProviderSelected: false,
-        venueIdAtOfferProviderIsRequired: true
+        venueIdAtOfferProviderIsRequired: true,
       })
     })
   })
@@ -295,7 +308,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       const form = wrapper.find(Form)
       expect(form).toBeDefined()
       expect(form.prop('decorators')).toEqual(expect.anything())
-      expect(form.prop('initialValues')).toEqual({id: 'AB'})
+      expect(form.prop('initialValues')).toEqual({ id: 'AB' })
       expect(form.prop('onSubmit')).toEqual(expect.any(Function))
       expect(form.prop('render')).toEqual(expect.any(Function))
     })

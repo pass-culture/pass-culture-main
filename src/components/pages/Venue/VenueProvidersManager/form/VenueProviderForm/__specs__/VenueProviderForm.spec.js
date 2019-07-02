@@ -1,11 +1,11 @@
-import { shallow } from 'enzyme'
 import React from 'react'
-import VenueProviderForm from '../VenueProviderForm'
+import { shallow } from 'enzyme'
 import { Field } from 'react-final-form'
+import VenueProviderForm from '../VenueProviderForm'
 import { HiddenField, TextField } from '../../../../../../layout/form/fields'
 import { Icon } from '../../../../../../layout/Icon'
 
-describe('src | components | pages | Venue | VenueProvidersManager', () => {
+describe('src | components | pages | Venue | VenueProvidersManager | form | VenueProviderForm', () => {
   let props
   let handleChange
   let handleSubmit
@@ -18,26 +18,26 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       isCreationMode: false,
       isLoadingMode: false,
       isProviderSelected: false,
-      providers: [{id: 'AA'}, {id: 'BB'}],
-      venueProviders: [{id: 'AA'}, {id: 'BB'}],
+      providers: [{ id: 'AA' }, { id: 'BB' }],
+      venueProviders: [{ id: 'AA' }, { id: 'BB' }],
       venueIdAtOfferProviderIsRequired: false,
     }
   })
 
   it('should render an Icon component with a database picto', () => {
     // when
-    const wrapper = shallow(VenueProviderForm({...props})(handleSubmit))
+    const wrapper = shallow(VenueProviderForm({ ...props })(handleSubmit))
 
     // then
     const icon = wrapper.find(Icon).first()
     expect(icon).toBeDefined()
     expect(icon.prop('svg')).toBe('picto-db-default')
-    expect(icon.prop('alt')).toBe('image d\'une base de données')
+    expect(icon.prop('alt')).toBe('Choix de la source')
   })
 
   it('should render a HiddenField component with the right props', () => {
     // when
-    const wrapper = shallow(VenueProviderForm({...props})(handleSubmit))
+    const wrapper = shallow(VenueProviderForm({ ...props })(handleSubmit))
 
     // then
     const hiddenField = wrapper.find(HiddenField)
@@ -47,7 +47,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
 
   it('should render a Field component as select input with providers as options when provided', () => {
     // when
-    const wrapper = shallow(VenueProviderForm({...props})(handleSubmit))
+    const wrapper = shallow(VenueProviderForm({ ...props })(handleSubmit))
 
     // then
     const selectField = wrapper.find(Field)
@@ -63,7 +63,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
     props.venueIdAtOfferProviderIsRequired = true
 
     // when
-    const wrapper = shallow(VenueProviderForm({...props})(handleSubmit))
+    const wrapper = shallow(VenueProviderForm({ ...props })(handleSubmit))
 
     // then
     const textField = wrapper.find(TextField)
@@ -82,12 +82,14 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
     props.venueIdAtOfferProviderIsRequired = true
 
     // when
-    const wrapper = shallow(VenueProviderForm({...props})(handleSubmit))
+    const wrapper = shallow(VenueProviderForm({ ...props })(handleSubmit))
 
     // then
     const textField = wrapper.find(TextField)
     expect(textField).toHaveLength(1)
-    expect(textField.prop('className')).toBe('field-text fs12 field-is-read-only')
+    expect(textField.prop('className')).toBe(
+      'field-text fs12 field-is-read-only'
+    )
     expect(textField.prop('label')).toBe('Compte : ')
     expect(textField.prop('name')).toBe('venueIdAtOfferProvider')
     expect(textField.prop('readOnly')).toBe(true)
@@ -101,12 +103,14 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
     props.venueIdAtOfferProviderIsRequired = false
 
     // when
-    const wrapper = shallow(VenueProviderForm({...props})(handleSubmit))
+    const wrapper = shallow(VenueProviderForm({ ...props })(handleSubmit))
 
     // then
     const textField = wrapper.find(TextField)
     expect(textField).toHaveLength(1)
-    expect(textField.prop('className')).toBe('field-text fs12 field-is-read-only')
+    expect(textField.prop('className')).toBe(
+      'field-text fs12 field-is-read-only'
+    )
     expect(textField.prop('label')).toBe('Compte : ')
     expect(textField.prop('name')).toBe('venueIdAtOfferProvider')
     expect(textField.prop('readOnly')).toBe(true)
@@ -120,7 +124,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
     props.venueIdAtOfferProviderIsRequired = true
 
     // when
-    const wrapper = shallow(VenueProviderForm({...props})(handleSubmit))
+    const wrapper = shallow(VenueProviderForm({ ...props })(handleSubmit))
 
     // then
     const tooltip = wrapper.find('.tooltip-info')
@@ -131,7 +135,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
     const icon = tooltip.find(Icon)
     expect(icon).toHaveLength(1)
     expect(icon.prop('svg')).toBe('picto-info')
-    expect(icon.prop('alt')).toBe('image d\'aide à l\'information')
+    expect(icon.prop('alt')).toBe("image d'aide à l'information")
   })
 
   it('should not display a tooltip and an Icon component when provider is selected, not in loading mode and provider identifier is not required', () => {
@@ -141,7 +145,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
     props.venueIdAtOfferProviderIsRequired = false
 
     // when
-    const wrapper = shallow(VenueProviderForm({...props})(handleSubmit))
+    const wrapper = shallow(VenueProviderForm({ ...props })(handleSubmit))
 
     // then
     const tooltip = wrapper.find('.tooltip-info')
@@ -155,14 +159,18 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
     props.isLoadingMode = false
 
     // when
-    const wrapper = shallow(VenueProviderForm({...props})(handleSubmit))
+    const wrapper = shallow(VenueProviderForm({ ...props })(handleSubmit))
 
     // then
-    const importButtonContainer = wrapper.find('.provider-import-button-container')
+    const importButtonContainer = wrapper.find(
+      '.provider-import-button-container'
+    )
     expect(importButtonContainer).toHaveLength(1)
     const importButton = importButtonContainer.find('button')
     expect(importButton).toHaveLength(1)
-    expect(importButton.prop('className')).toBe('button is-intermediate provider-import-button')
+    expect(importButton.prop('className')).toBe(
+      'button is-intermediate provider-import-button'
+    )
     expect(importButton.prop('type')).toBe('submit')
     expect(importButton.text()).toBe('Importer')
   })
@@ -174,10 +182,12 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
     props.isLoadingMode = true
 
     // when
-    const wrapper = shallow(VenueProviderForm({...props})(handleSubmit))
+    const wrapper = shallow(VenueProviderForm({ ...props })(handleSubmit))
 
     // then
-    const importButtonContainer = wrapper.find('.provider-import-button-container')
+    const importButtonContainer = wrapper.find(
+      '.provider-import-button-container'
+    )
     expect(importButtonContainer).toHaveLength(0)
   })
 })

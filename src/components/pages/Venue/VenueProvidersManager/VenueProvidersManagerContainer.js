@@ -6,11 +6,14 @@ import VenueProvidersManager from './VenueProvidersManager'
 import selectVenueProvidersByVenueId from './selectors/selectVenueProvidersByVenueId'
 import { selectProviders } from '../../../../selectors/selectProviders'
 import { requestData } from 'redux-saga-data'
-import { getRequestErrorStringFromErrors, showNotification } from 'pass-culture-shared'
+import {
+  getRequestErrorStringFromErrors,
+  showNotification,
+} from 'pass-culture-shared'
 
 export const mapStateToProps = (state, ownProps) => {
-  const {venue} = ownProps
-  const {id: venueId} = venue
+  const { venue } = ownProps
+  const { id: venueId } = venue
   const providers = selectProviders(state)
   const venueProviders = selectVenueProvidersByVenueId(state, venueId)
 
@@ -36,13 +39,13 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     loadProvidersAndVenueProviders: () => {
       const {
         match: {
-          params: {venueId},
-        }
+          params: { venueId },
+        },
       } = ownProps
 
       dispatch(
         requestData({
-          apiPath: '/providers'
+          apiPath: '/providers',
         })
       )
       dispatch(
@@ -51,12 +54,14 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         })
       )
     },
-    notify: (errors) => {
-      dispatch(showNotification({
-        text: getRequestErrorStringFromErrors(errors),
-        type: 'fail',
-      }))
-    }
+    notify: errors => {
+      dispatch(
+        showNotification({
+          text: getRequestErrorStringFromErrors(errors),
+          type: 'fail',
+        })
+      )
+    },
   }
 }
 
