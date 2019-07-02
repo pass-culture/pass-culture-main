@@ -44,6 +44,16 @@ class Offerer extends Component {
     handleSuccess()
   }
 
+   handleFail = () => {
+     const { dispatch } = this.props
+     dispatch(
+       showNotification({
+         text: "Vous étes déjà rattaché à cette struture.",
+         type: 'danger',
+       })
+     )
+   }
+
   handleSuccess = () => {
     const { dispatch, history } = this.props
     const { isCreatedEntity } = this.props
@@ -99,6 +109,7 @@ class Offerer extends Component {
             )
           }
           handleSuccess={this.handleSuccess}
+          handleFail={this.handleFail}
           patch={offerer}
           readOnly={readOnly}>
           <div className="section">

@@ -9,7 +9,7 @@ const PendingOffererItem = ({ offerer }) => (
         {formatSirenOrSiret(offerer.siren)})
       </p>
       <p className="is-italic mb12" id="offerer-item-validation">
-        Rattachement en cours de validation par la structure
+        Rattachement en cours de validation
       </p>
     </div>
   </li>
