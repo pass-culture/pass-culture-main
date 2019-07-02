@@ -11,9 +11,21 @@ ShallowWrapper {
       }
     }
     maxDescriptionLength={300}
-    mediations={Array []}
+    mediations={
+      Array [
+        Object {
+          "id": "HA",
+          "isActive": true,
+          "thumbUrl": "https://url.to/thumb",
+        },
+      ]
+    }
     offer={
       Object {
+        "activeMediation": Object {
+          "isActive": true,
+          "thumbUrl": "https://url.to/thumb",
+        },
         "bookingEmail": "booking.email@test.com",
         "dateCreated": "2019-02-25T09:50:10.735519Z",
         "dateModifiedAtLastProvider": "2019-02-25T09:50:31.881297Z",
@@ -58,7 +70,7 @@ ShallowWrapper {
       "children": Array [
         <Thumb
           alt="offre"
-          src=""
+          src="https://url.to/thumb"
         />,
         <div
           className="list-content"
@@ -130,8 +142,8 @@ ShallowWrapper {
               <NavLink
                 activeClassName="active"
                 aria-current="page"
-                className="button addMediations is-small is-primary is-outlined"
-                to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                className="button addMediations is-small is-secondary"
+                to="/offres/M4"
               >
                 <span
                   className="icon"
@@ -141,7 +153,7 @@ ShallowWrapper {
                   />
                 </span>
                 <span>
-                  Ajouter une Accroche
+                  Accroches
                 </span>
               </NavLink>
             </li>
@@ -182,7 +194,7 @@ ShallowWrapper {
         "nodeType": "function",
         "props": Object {
           "alt": "offre",
-          "src": "",
+          "src": "https://url.to/thumb",
         },
         "ref": null,
         "rendered": null,
@@ -261,8 +273,8 @@ ShallowWrapper {
                 <NavLink
                   activeClassName="active"
                   aria-current="page"
-                  className="button addMediations is-small is-primary is-outlined"
-                  to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                  className="button addMediations is-small is-secondary"
+                  to="/offres/M4"
                 >
                   <span
                     className="icon"
@@ -272,7 +284,7 @@ ShallowWrapper {
                     />
                   </span>
                   <span>
-                    Ajouter une Accroche
+                    Accroches
                   </span>
                 </NavLink>
               </li>
@@ -586,8 +598,8 @@ ShallowWrapper {
                   <NavLink
                     activeClassName="active"
                     aria-current="page"
-                    className="button addMediations is-small is-primary is-outlined"
-                    to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                    className="button addMediations is-small is-secondary"
+                    to="/offres/M4"
                   >
                     <span
                       className="icon"
@@ -597,7 +609,7 @@ ShallowWrapper {
                       />
                     </span>
                     <span>
-                      Ajouter une Accroche
+                      Accroches
                     </span>
                   </NavLink>
                 </li>,
@@ -638,8 +650,8 @@ ShallowWrapper {
                   "children": <NavLink
                     activeClassName="active"
                     aria-current="page"
-                    className="button addMediations is-small is-primary is-outlined"
-                    to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                    className="button addMediations is-small is-secondary"
+                    to="/offres/M4"
                   >
                     <span
                       className="icon"
@@ -649,7 +661,7 @@ ShallowWrapper {
                       />
                     </span>
                     <span>
-                      Ajouter une Accroche
+                      Accroches
                     </span>
                   </NavLink>,
                 },
@@ -670,11 +682,11 @@ ShallowWrapper {
                         />
                       </span>,
                       <span>
-                        Ajouter une Accroche
+                        Accroches
                       </span>,
                     ],
-                    "className": "button addMediations is-small is-primary is-outlined",
-                    "to": "/offres/M4/accroches/nouveau?orderBy=offer.id+desc",
+                    "className": "button addMediations is-small is-secondary",
+                    "to": "/offres/M4",
                   },
                   "ref": null,
                   "rendered": Array [
@@ -707,10 +719,10 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": "Ajouter une Accroche",
+                        "children": "Accroches",
                       },
                       "ref": null,
-                      "rendered": "Ajouter une Accroche",
+                      "rendered": "Accroches",
                       "type": "span",
                     },
                   ],
@@ -850,7 +862,7 @@ ShallowWrapper {
         "children": Array [
           <Thumb
             alt="offre"
-            src=""
+            src="https://url.to/thumb"
           />,
           <div
             className="list-content"
@@ -922,8 +934,8 @@ ShallowWrapper {
                 <NavLink
                   activeClassName="active"
                   aria-current="page"
-                  className="button addMediations is-small is-primary is-outlined"
-                  to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                  className="button addMediations is-small is-secondary"
+                  to="/offres/M4"
                 >
                   <span
                     className="icon"
@@ -933,7 +945,7 @@ ShallowWrapper {
                     />
                   </span>
                   <span>
-                    Ajouter une Accroche
+                    Accroches
                   </span>
                 </NavLink>
               </li>
@@ -974,7 +986,7 @@ ShallowWrapper {
           "nodeType": "function",
           "props": Object {
             "alt": "offre",
-            "src": "",
+            "src": "https://url.to/thumb",
           },
           "ref": null,
           "rendered": null,
@@ -1053,8 +1065,8 @@ ShallowWrapper {
                   <NavLink
                     activeClassName="active"
                     aria-current="page"
-                    className="button addMediations is-small is-primary is-outlined"
-                    to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                    className="button addMediations is-small is-secondary"
+                    to="/offres/M4"
                   >
                     <span
                       className="icon"
@@ -1064,7 +1076,7 @@ ShallowWrapper {
                       />
                     </span>
                     <span>
-                      Ajouter une Accroche
+                      Accroches
                     </span>
                   </NavLink>
                 </li>
@@ -1378,8 +1390,8 @@ ShallowWrapper {
                     <NavLink
                       activeClassName="active"
                       aria-current="page"
-                      className="button addMediations is-small is-primary is-outlined"
-                      to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                      className="button addMediations is-small is-secondary"
+                      to="/offres/M4"
                     >
                       <span
                         className="icon"
@@ -1389,7 +1401,7 @@ ShallowWrapper {
                         />
                       </span>
                       <span>
-                        Ajouter une Accroche
+                        Accroches
                       </span>
                     </NavLink>
                   </li>,
@@ -1430,8 +1442,8 @@ ShallowWrapper {
                     "children": <NavLink
                       activeClassName="active"
                       aria-current="page"
-                      className="button addMediations is-small is-primary is-outlined"
-                      to="/offres/M4/accroches/nouveau?orderBy=offer.id+desc"
+                      className="button addMediations is-small is-secondary"
+                      to="/offres/M4"
                     >
                       <span
                         className="icon"
@@ -1441,7 +1453,7 @@ ShallowWrapper {
                         />
                       </span>
                       <span>
-                        Ajouter une Accroche
+                        Accroches
                       </span>
                     </NavLink>,
                   },
@@ -1462,11 +1474,11 @@ ShallowWrapper {
                           />
                         </span>,
                         <span>
-                          Ajouter une Accroche
+                          Accroches
                         </span>,
                       ],
-                      "className": "button addMediations is-small is-primary is-outlined",
-                      "to": "/offres/M4/accroches/nouveau?orderBy=offer.id+desc",
+                      "className": "button addMediations is-small is-secondary",
+                      "to": "/offres/M4",
                     },
                     "ref": null,
                     "rendered": Array [
@@ -1499,10 +1511,10 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": "Ajouter une Accroche",
+                          "children": "Accroches",
                         },
                         "ref": null,
-                        "rendered": "Ajouter une Accroche",
+                        "rendered": "Accroches",
                         "type": "span",
                       },
                     ],

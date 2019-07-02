@@ -17,7 +17,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
     props = {
       dispatch: dispatch,
       offer: offersMock[0],
-      mediations: [],
+      mediations: [{id: 'HA', isActive: true, thumbUrl: 'https://url.to/thumb'}],
       location: {
         search: '?orderBy=offer.id+desc',
       },
@@ -34,7 +34,6 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       const wrapper = shallow(<RawOfferItem {...props} />)
 
       // then
-      expect(wrapper).toBeDefined()
       expect(wrapper).toMatchSnapshot()
     })
   })
@@ -75,12 +74,9 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
 
   describe('render offer item', () => {
     describe('Thumb Component', () => {
-      it('should render a Thumb Component with the given url when mediations are given and contains at least one mediation', () => {
+      it('should render a Thumb Component with the given url when offer has an active mediation', () => {
         // given
-        const mediation = {
-          thumbUrl: 'fake url',
-        }
-        props.mediations.push(mediation)
+        props.offer.activeMediation = {'thumbUrl': 'https://url.to/thumb'}
 
         // when
         const wrapper = shallow(<RawOfferItem {...props} />)
@@ -89,26 +85,13 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
         const thumbComponent = wrapper.find(Thumb)
         expect(thumbComponent).toBeDefined()
         expect(thumbComponent.prop('alt')).toBe('offre')
-        expect(thumbComponent.prop('src')).toBe('fake url')
+        expect(thumbComponent.prop('src')).toBe('https://url.to/thumb')
       })
 
-      it('should render a Thumb Component with an empty url when mediations are empty', () => {
+      it('should render a Thumb Component with an empty url when offer does not have an active mediation', () => {
         // given
+        props.offer = offersMock[1]
         props.mediations = []
-
-        // when
-        const wrapper = shallow(<RawOfferItem {...props} />)
-
-        // then
-        const thumbComponent = wrapper.find(Thumb)
-        expect(thumbComponent).toBeDefined()
-        expect(thumbComponent.prop('alt')).toBe('offre')
-        expect(thumbComponent.prop('src')).toBe('')
-      })
-
-      it('should render a Thumb Component with an empty url when no mediations are given', () => {
-        // given
-        props.mediations = null
 
         // when
         const wrapper = shallow(<RawOfferItem {...props} />)
@@ -257,6 +240,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
         props.stockAlertMessage = 'plus de places'
         props.offer = {
           id: '1M',
+          activeMediation: {isActive: true, thumbUrl: 'https://url.to/thumb'},
           bookingEmail: 'booking.email@test.com',
           dateCreated: '2019-02-25T09:50:10.735519Z',
           dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
@@ -293,6 +277,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
         props.stockAlertMessage = 'encore 1 place'
         props.offer = {
           id: '1M',
+          activeMediation: {isActive: true, thumbUrl: 'https://url.to/thumb'},
           bookingEmail: 'booking.email@test.com',
           dateCreated: '2019-02-25T09:50:10.735519Z',
           dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
@@ -329,6 +314,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
         props.stockAlertMessage = 'encore 2 places'
         props.offer = {
           id: '1M',
+          activeMediation: {isActive: true, thumbUrl: 'https://url.to/thumb'},
           bookingEmail: 'booking.email@test.com',
           dateCreated: '2019-02-25T09:50:10.735519Z',
           dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
@@ -382,6 +368,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
         props.stocks = [{}, {}]
         props.offer = {
           id: '1M',
+          activeMediation: {isActive: true, thumbUrl: 'https://url.to/thumb'},
           bookingEmail: 'booking.email@test.com',
           dateCreated: '2019-02-25T09:50:10.735519Z',
           dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
@@ -422,6 +409,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
         props.stocks = []
         props.stockAlertMessage = 'plus de stock'
         props.offer = {
+          activeMediation: {isActive: true, thumbUrl: 'https://url.to/thumb'},
           bookingEmail: 'booking.email@test.com',
           dateCreated: '2019-02-25T09:50:10.735519Z',
           dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
@@ -476,6 +464,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
         props.stocks = [{}]
         props.offer = {
           id: '1M',
+          activeMediation: {isActive: true, thumbUrl: 'https://url.to/thumb'},
           bookingEmail: 'booking.email@test.com',
           dateCreated: '2019-02-25T09:50:10.735519Z',
           dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',

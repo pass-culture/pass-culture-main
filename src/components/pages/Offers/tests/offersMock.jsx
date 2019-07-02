@@ -1,6 +1,7 @@
 const mockedOffers = [
   {
     id: 'M4',
+    activeMediation: {isActive: true, thumbUrl: 'https://url.to/thumb'},
     bookingEmail: 'booking.email@test.com',
     dateCreated: '2019-02-25T09:50:10.735519Z',
     dateModifiedAtLastProvider: '2019-02-25T09:50:31.881297Z',
@@ -33,6 +34,7 @@ const mockedOffers = [
   },
   {
     id: 'KA',
+    activeMediation: {},
     bookingEmail: 'booking.email@test.com',
     dateCreated: '2019-02-25T09:50:10.735519Z',
     dateModifiedAtLastProvider: '2019-02-25T09:50:31.712048Z',
@@ -49,6 +51,7 @@ const mockedOffers = [
   },
   {
     id: 'JM',
+    activeMediation: {},
     bookingEmail: 'booking.email@test.com',
     dateCreated: '2019-02-25T09:50:10.735519Z',
     dateModifiedAtLastProvider: '2019-02-25T09:50:31.657469Z',
@@ -65,6 +68,7 @@ const mockedOffers = [
   },
   {
     id: '9M',
+    activeMediation: {},
     bookingEmail: 'booking.email@test.com',
     dateCreated: '2019-02-25T09:50:10.735519Z',
     dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
@@ -81,6 +85,7 @@ const mockedOffers = [
   },
   {
     id: '1M',
+    activeMediation: {},
     bookingEmail: 'booking.email@test.com',
     dateCreated: '2019-02-25T09:50:10.735519Z',
     dateModifiedAtLastProvider: '2019-02-25T09:50:31.598542Z',
