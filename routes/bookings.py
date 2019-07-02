@@ -17,7 +17,7 @@ from models.pc_object import serialize
 from repository import booking_queries
 from repository.booking_queries import find_active_bookings_by_user_id, \
     find_all_bookings_for_stock_and_user, \
-    find_all_offerer_bookings_for_offer_and_venue
+    find_all_offerer_bookings_by_venueId, find_all_bookings_by_offerer_for_digital_venues
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.human_ids import dehumanize, humanize, NonDehumanizableId
 from utils.includes import BOOKING_INCLUDES
@@ -47,8 +47,8 @@ from validation.users import check_user_can_validate_bookings
 @login_required
 def get_bookings_csv():
     try:
-        offer_id = dehumanize(request.args.get('offerId', None))
         venue_id = dehumanize(request.args.get('venueId', None))
+        onlyDigitalVenues = request.args.get('onlyDigitalVenues', False)
     except ValueError:
         errors = ApiErrors()
         errors.addError(
@@ -58,12 +58,16 @@ def get_bookings_csv():
         errors.status_code = 400
         raise errors
 
-    check_rights_to_get_bookings_csv(current_user, offer_id, venue_id)
+    check_rights_to_get_bookings_csv(current_user, venue_id)
 
     query = filter_query_where_user_is_user_offerer_and_is_validated(Offerer.query,
                                                                      current_user)
-    bookings = chain(*list(map(lambda offerer: find_all_offerer_bookings_for_offer_and_venue(offerer.id, offer_id, venue_id),
-                               query)))
+    if onlyDigitalVenues:
+        bookings = chain(*list(map(lambda offerer: find_all_bookings_by_offerer_for_digital_venues(offerer.id),
+                                   query)))
+    else:
+        bookings = chain(*list(map(lambda offerer: find_all_offerer_bookings_by_venueId(offerer.id, venue_id),
+                                   query)))
 
     bookings_csv = generate_bookings_details_csv(bookings)
 

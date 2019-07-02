@@ -8,7 +8,8 @@ from models.api_errors import ResourceNotFound, ApiErrors
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_offerer_bookings_paginated, \
     find_final_offerer_bookings, find_date_used, find_user_activation_booking, get_existing_tokens, \
-    find_active_bookings_by_user_id, find_by, find_all_offerer_bookings_for_offer_and_venue
+    find_active_bookings_by_user_id, find_by, find_all_offerer_bookings_by_venueId, \
+    find_all_bookings_by_offerer_for_digital_venues
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -53,93 +54,118 @@ def test_find_all_by_offerer_with_event_and_things(app):
     assert booking2 in bookings
     assert booking3 not in bookings
 
+class FindAllOffererBookingsByVenueIdTest:
+    @clean_database
+    def test_find_all_bookings_by_offerer_in_a_not_search_context_returns_all_results(self, app):
+        # given
+        user = create_user()
+        now = datetime.utcnow()
+        create_deposit(user, now, amount=1600)
+        offerer1 = create_offerer(siren='123456789')
+        offerer2 = create_offerer(siren='987654321')
+        venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
+        venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
+        stock1 = create_stock_with_event_offer(offerer1, venue1, price=2, available=100)
+        stock2 = create_stock_with_thing_offer(offerer1, venue1, price=3, available=100)
+        booking1 = create_booking(user, stock1, venue1, recommendation=None, quantity=2)
+        booking2 = create_booking(user, stock2, venue1, recommendation=None, quantity=1)
+        booking3 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
+        booking4 = create_booking(user, stock1, venue1, recommendation=None, quantity=2)
+        booking5 = create_booking(user, stock2, venue1, recommendation=None, quantity=1)
+        booking6 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
+        booking7 = create_booking(user, stock1, venue1, recommendation=None, quantity=2)
+        booking8 = create_booking(user, stock2, venue1, recommendation=None, quantity=1)
+        booking9 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
+        booking10 = create_booking(user, stock1, venue2, recommendation=None, quantity=2)
+        booking11 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
+        booking12 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
+        PcObject.save(booking1, booking2, booking3, booking4, booking5, booking6,
+                      booking6, booking7, booking8, booking9, booking10, booking11, booking12)
 
-@clean_database
-def test_find_all_bookings_by_offerer_in_a_not_search_context_returns_all_results(app):
-    # given
-    user = create_user()
-    now = datetime.utcnow()
-    create_deposit(user, now, amount=1600)
-    offerer1 = create_offerer(siren='123456789')
-    offerer2 = create_offerer(siren='987654321')
-    venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
-    venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
-    stock1 = create_stock_with_event_offer(offerer1, venue1, price=2, available=100)
-    stock2 = create_stock_with_thing_offer(offerer1, venue1, price=3, available=100)
-    booking1 = create_booking(user, stock1, venue1, recommendation=None, quantity=2)
-    booking2 = create_booking(user, stock2, venue1, recommendation=None, quantity=1)
-    booking3 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
-    booking4 = create_booking(user, stock1, venue1, recommendation=None, quantity=2)
-    booking5 = create_booking(user, stock2, venue1, recommendation=None, quantity=1)
-    booking6 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
-    booking7 = create_booking(user, stock1, venue1, recommendation=None, quantity=2)
-    booking8 = create_booking(user, stock2, venue1, recommendation=None, quantity=1)
-    booking9 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
-    booking10 = create_booking(user, stock1, venue2, recommendation=None, quantity=2)
-    booking11 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
-    booking12 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
-    PcObject.save(booking1, booking2, booking3, booking4, booking5, booking6,
-                  booking6, booking7, booking8, booking9, booking10, booking11, booking12)
+        # when
+        bookings = find_all_offerer_bookings_by_venueId(offerer1.id)
 
-    # when
-    bookings = find_all_offerer_bookings_for_offer_and_venue(offerer1.id)
-
-    # then
-    assert len(bookings) == 12
-
-
-@clean_database
-def test_find_all_bookings_by_offerer_filtered_by_venueId_returns_proper_bookings(app):
-    # given
-    user = create_user()
-    now = datetime.utcnow()
-    create_deposit(user, now, amount=1600)
-    offerer1 = create_offerer(siren='123456789')
-    offerer2 = create_offerer(siren='987654321')
-    venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
-    venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
-    offer1 = create_offer_with_event_product(venue1)
-    offer2 = create_offer_with_thing_product(venue1)
-    offer3 = create_offer_with_thing_product(venue2)
-    stock1 = create_stock_from_offer(offer1, available=100, price=20)
-    stock2 = create_stock_from_offer(offer2, available=150, price=16)
-    stock3 = create_stock_from_offer(offer3, available=150, price=16)
-    booking1 = create_booking(user, stock1, venue1, recommendation=None, quantity=2)
-    booking2 = create_booking(user, stock2, venue1, recommendation=None, quantity=2)
-    booking3 = create_booking(user, stock3, venue2, recommendation=None, quantity=2)
-    PcObject.save(booking1, booking2, booking3)
-
-    # when
-    bookings = find_all_offerer_bookings_for_offer_and_venue(offerer1.id, venue_id=venue1.id)
-
-    # then
-    assert len(bookings) == 2
-    assert booking1 in bookings
-    assert booking2 in bookings
+        # then
+        assert len(bookings) == 12
 
 
-@clean_database
-def test_find_all_bookings_by_offerer_filtered_by_offerId_and_venue_id_returns_proper_bookings(app):
-    # given
-    user = create_user()
-    now = datetime.utcnow()
-    create_deposit(user, now, amount=1600)
-    offerer1 = create_offerer(siren='123456789')
-    venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
-    offer1 = create_offer_with_event_product(venue1)
-    offer2 = create_offer_with_thing_product(venue1)
-    stock1 = create_stock_from_offer(offer1, available=100, price=20)
-    stock2 = create_stock_from_offer(offer2, available=150, price=16)
-    booking1 = create_booking(user, stock1, venue1, recommendation=None, quantity=2)
-    booking2 = create_booking(user, stock2, venue1, recommendation=None, quantity=2)
-    PcObject.save(booking1, booking2)
+    @clean_database
+    def test_find_all_bookings_by_offerer_filtered_by_venueId_returns_proper_bookings(self, app):
+        # given
+        user = create_user()
+        now = datetime.utcnow()
+        create_deposit(user, now, amount=1600)
+        offerer1 = create_offerer(siren='123456789')
+        offerer2 = create_offerer(siren='987654321')
+        venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
+        venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
+        offer1 = create_offer_with_event_product(venue1)
+        offer2 = create_offer_with_thing_product(venue1)
+        offer3 = create_offer_with_thing_product(venue2)
+        stock1 = create_stock_from_offer(offer1, available=100, price=20)
+        stock2 = create_stock_from_offer(offer2, available=150, price=16)
+        stock3 = create_stock_from_offer(offer3, available=150, price=16)
+        booking1 = create_booking(user, stock1, venue1, recommendation=None, quantity=2)
+        booking2 = create_booking(user, stock2, venue1, recommendation=None, quantity=2)
+        booking3 = create_booking(user, stock3, venue2, recommendation=None, quantity=2)
+        PcObject.save(booking1, booking2, booking3)
 
-    # when
-    bookings = find_all_offerer_bookings_for_offer_and_venue(offerer1.id, venue_id=venue1.id, offer_id=offer1.id)
+        # when
+        bookings = find_all_offerer_bookings_by_venueId(offerer1.id, venue_id=venue1.id)
 
-    # then
-    assert len(bookings) == 1
-    assert bookings[0] == booking1
+        # then
+        assert len(bookings) == 2
+        assert booking1 in bookings
+        assert booking2 in bookings\
+
+
+class FindAllOffererBookingsByVenueIdTest:
+    @clean_database
+    def test_find_all_bookings_for_digital_venues(self, app):
+        # given
+        user = create_user()
+        now = datetime.utcnow()
+        create_deposit(user, now, amount=1600)
+        offerer1 = create_offerer(siren='123456789')
+        digital_venue = create_venue(offerer1, siret=None, is_virtual=True)
+        physical_venue = create_venue(offerer1, siret=offerer1.siren + '12345')
+        stock1 = create_stock_with_event_offer(offerer1, digital_venue, price=2, available=100)
+        stock2 = create_stock_with_thing_offer(offerer1, physical_venue, price=3, available=100)
+        booking_for_digital = create_booking(user, stock1, digital_venue, recommendation=None, quantity=2)
+        booking_for_physical = create_booking(user, stock2, physical_venue, recommendation=None, quantity=2)
+
+        PcObject.save(booking_for_digital, booking_for_physical)
+
+        # when
+        bookings = find_all_bookings_by_offerer_for_digital_venues(offerer1.id)
+
+        # then
+        assert len(bookings) == 1
+        assert bookings[0] == booking_for_digital
+
+    @clean_database
+    def test_find_only_bookings_for_specified_offerer(self, app):
+        # given
+        user = create_user()
+        now = datetime.utcnow()
+        create_deposit(user, now, amount=1600)
+        offerer1 = create_offerer(siren='123456789')
+        offerer2 = create_offerer(siren='567891234')
+        digital_venue_for_offerer1 = create_venue(offerer1, siret=None, is_virtual=True)
+        digital_venue_for_offerer2 = create_venue(offerer2, siret=None, is_virtual=True)
+        stock1 = create_stock_with_event_offer(offerer1, digital_venue_for_offerer1, price=2, available=100)
+        stock2 = create_stock_with_thing_offer(offerer1, digital_venue_for_offerer2, price=3, available=100)
+        booking_for_offerer1 = create_booking(user, stock1, digital_venue_for_offerer1, recommendation=None, quantity=2)
+        booking_for_offerer2 = create_booking(user, stock2, digital_venue_for_offerer2, recommendation=None, quantity=2)
+
+        PcObject.save(booking_for_offerer1, booking_for_offerer2)
+
+        # when
+        bookings = find_all_bookings_by_offerer_for_digital_venues(offerer1.id)
+
+        # then
+        assert len(bookings) == 1
+        assert bookings[0] == booking_for_offerer1
 
 @clean_database
 def test_find_all_ongoing_bookings(app):

@@ -171,22 +171,7 @@ def check_rights_for_activation_offer(user):
         raise ForbiddenError
 
 
-def check_rights_to_get_bookings_csv(user, offer_id, venue_id):
-    if offer_id:
-        offerer = get_by_offer_id(offer_id)
-        ensure_current_user_has_rights(user=user, rights=RightsType.editor, offerer_id=offerer.id)
-
+def check_rights_to_get_bookings_csv(user, venue_id):
     if venue_id:
         venue = find_by_id(venue_id)
         ensure_current_user_has_rights(user=user, rights=RightsType.editor, offerer_id=venue.managingOffererId)
-
-    if venue_id and offer_id:
-        data = get_by_venue_id_and_offer_id(offer_id, venue_id)
-        if data is None:
-            errors = ApiErrors()
-            errors.addError(
-                'global',
-                'Aucun objet ne correspond à ces identifiants dans notre base de données'
-            )
-            errors.status_code = 400
-            raise errors

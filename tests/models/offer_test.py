@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from pprint import pprint
 
 import pytest
 
@@ -169,7 +168,6 @@ class CreateOfferTest:
 
         # When
         offer = create_offer_with_thing_product(digital_venue, physical_thing)
-        pprint(Offer.type)
 
         # Then
         assert offer.isEvent == False
@@ -183,7 +181,6 @@ class CreateOfferTest:
 
         # When
         offer = create_offer_with_thing_product(digital_venue, event_product)
-        pprint(Offer.type)
 
         # Then
         assert offer.isEvent == True
@@ -197,7 +194,6 @@ class CreateOfferTest:
 
         # When
         offer = create_offer_with_thing_product(digital_venue, event_product)
-        pprint(Offer.type)
 
         # Then
         assert offer.isEvent == False
