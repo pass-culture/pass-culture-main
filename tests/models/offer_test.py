@@ -4,7 +4,7 @@ import pytest
 
 from models import Offer, PcObject, ApiErrors, ThingType, EventType, Product
 from tests.conftest import clean_database
-from tests.test_utils import create_booking, create_user
+from tests.test_utils import create_booking, create_user, create_mediation
 from tests.test_utils import create_offer_with_event_product, create_product_with_Event_type
 from tests.test_utils import create_product_with_Thing_type, create_offer_with_thing_product, create_offerer, \
     create_stock, create_venue
@@ -232,6 +232,27 @@ class CreateOfferTest:
         # Then
         assert errors.value.errors['venue'] == [
             'Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"']
+
+
+class OfferMediationsTest:
+    @clean_database
+    def test_mediations_are_sorted_from_oldest_to_newest(self):
+        # given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        mediation1 = create_mediation(offer, date_created=two_days_ago)
+        mediation2 = create_mediation(offer, date_created=now)
+        mediation3 = create_mediation(offer, date_created=four_days_ago)
+        PcObject.save(mediation1, mediation2, mediation3)
+
+        # when
+        mediations = Offer.query.get(offer.id).mediations
+
+        # then
+        assert mediations[0].dateCreated == four_days_ago
+        assert mediations[1].dateCreated == two_days_ago
+        assert mediations[2].dateCreated == now
 
 
 def test_offer_is_digital_if_it_has_an_url():
