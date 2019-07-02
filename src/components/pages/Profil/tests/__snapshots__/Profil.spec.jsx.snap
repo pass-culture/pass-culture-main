@@ -32,6 +32,7 @@ ShallowWrapper {
       },
       "children": Array [
         <HeroSection
+          subtitle={null}
           title="Profil"
         />,
         <ReactFinalForm
@@ -55,6 +56,8 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
+          "children": null,
+          "subtitle": null,
           "title": "Profil",
         },
         "ref": null,
@@ -101,6 +104,7 @@ ShallowWrapper {
         },
         "children": Array [
           <HeroSection
+            subtitle={null}
             title="Profil"
           />,
           <ReactFinalForm
@@ -124,6 +128,8 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
+            "children": null,
+            "subtitle": null,
             "title": "Profil",
           },
           "ref": null,

@@ -69,7 +69,9 @@ ShallowWrapper {
         <div
           className="stocks-table-wrapper"
         >
-          <HeroSection />
+          <HeroSection
+            subtitle={null}
+          />
           <table
             className="table is-hoverable stocks-table small"
           >
@@ -216,7 +218,9 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <HeroSection />,
+            <HeroSection
+              subtitle={null}
+            />,
             <table
               className="table is-hoverable stocks-table small"
             >
@@ -316,7 +320,8 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "function",
             "props": Object {
-              "subtitle": undefined,
+              "children": null,
+              "subtitle": null,
               "title": undefined,
             },
             "ref": null,
@@ -729,7 +734,9 @@ ShallowWrapper {
           <div
             className="stocks-table-wrapper"
           >
-            <HeroSection />
+            <HeroSection
+              subtitle={null}
+            />
             <table
               className="table is-hoverable stocks-table small"
             >
@@ -876,7 +883,9 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <HeroSection />,
+              <HeroSection
+                subtitle={null}
+              />,
               <table
                 className="table is-hoverable stocks-table small"
               >
@@ -976,7 +985,8 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "function",
               "props": Object {
-                "subtitle": undefined,
+                "children": null,
+                "subtitle": null,
                 "title": undefined,
               },
               "ref": null,

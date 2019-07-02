@@ -130,6 +130,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <HeroSection
+          subtitle={null}
           title="Votre structure juridique"
         >
           <p
@@ -264,6 +265,7 @@ ShallowWrapper {
               </NavLink>
             </div>,
           ],
+          "subtitle": null,
           "title": "Votre structure juridique",
         },
         "ref": null,
@@ -510,6 +512,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <HeroSection
+            subtitle={null}
             title="Votre structure juridique"
           >
             <p
@@ -644,6 +647,7 @@ ShallowWrapper {
                 </NavLink>
               </div>,
             ],
+            "subtitle": null,
             "title": "Votre structure juridique",
           },
           "ref": null,

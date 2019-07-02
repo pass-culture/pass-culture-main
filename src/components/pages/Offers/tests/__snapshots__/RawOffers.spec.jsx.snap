@@ -168,6 +168,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <HeroSection
+          subtitle={null}
           title="Vos offres"
         >
           <NavLink
@@ -285,6 +286,7 @@ ShallowWrapper {
               Créer une offre
             </span>
           </NavLink>,
+          "subtitle": null,
           "title": "Vos offres",
         },
         "ref": null,
@@ -655,6 +657,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <HeroSection
+            subtitle={null}
             title="Vos offres"
           >
             <NavLink
@@ -772,6 +775,7 @@ ShallowWrapper {
                 Créer une offre
               </span>
             </NavLink>,
+            "subtitle": null,
             "title": "Vos offres",
           },
           "ref": null,

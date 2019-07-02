@@ -66,6 +66,7 @@ ShallowWrapper {
         "path": "/offres",
       },
       "children": <HeroSection
+        subtitle={null}
         title="Détails de l'offre"
       >
         <p
@@ -422,7 +423,7 @@ ShallowWrapper {
             </div>
           </withRouter(Connect(_Form))>,
         ],
-        "subtitle": undefined,
+        "subtitle": null,
         "title": "Détails de l'offre",
       },
       "ref": null,
@@ -1154,6 +1155,7 @@ ShallowWrapper {
           "path": "/offres",
         },
         "children": <HeroSection
+          subtitle={null}
           title="Détails de l'offre"
         >
           <p
@@ -1510,7 +1512,7 @@ ShallowWrapper {
               </div>
             </withRouter(Connect(_Form))>,
           ],
-          "subtitle": undefined,
+          "subtitle": null,
           "title": "Détails de l'offre",
         },
         "ref": null,

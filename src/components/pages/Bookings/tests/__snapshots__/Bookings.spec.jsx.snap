@@ -20,6 +20,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <HeroSection
+          subtitle={null}
           title="Suivi des réservations"
         >
           <p
@@ -67,6 +68,7 @@ ShallowWrapper {
               Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
             </p>,
           ],
+          "subtitle": null,
           "title": "Suivi des réservations",
         },
         "ref": null,
@@ -149,6 +151,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <HeroSection
+            subtitle={null}
             title="Suivi des réservations"
           >
             <p
@@ -196,6 +199,7 @@ ShallowWrapper {
                 Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
               </p>,
             ],
+            "subtitle": null,
             "title": "Suivi des réservations",
           },
           "ref": null,

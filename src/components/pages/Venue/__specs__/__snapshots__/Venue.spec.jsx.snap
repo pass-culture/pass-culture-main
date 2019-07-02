@@ -111,6 +111,7 @@ ShallowWrapper {
       },
       "children": Array [
         <HeroSection
+          subtitle={null}
           title="Lieu"
         >
           <NavLink
@@ -186,7 +187,7 @@ ShallowWrapper {
               </span>
             </NavLink>,
           ],
-          "subtitle": undefined,
+          "subtitle": null,
           "title": "Lieu",
         },
         "ref": null,
@@ -306,6 +307,7 @@ ShallowWrapper {
         },
         "children": Array [
           <HeroSection
+            subtitle={null}
             title="Lieu"
           >
             <NavLink
@@ -381,7 +383,7 @@ ShallowWrapper {
                 </span>
               </NavLink>,
             ],
-            "subtitle": undefined,
+            "subtitle": null,
             "title": "Lieu",
           },
           "ref": null,
