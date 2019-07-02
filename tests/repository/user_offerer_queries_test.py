@@ -37,7 +37,8 @@ def test_find_first_by_user_id_should_return_one_user_offerers_with_user_id(app)
     offerer3 = create_offerer(siren='123456780')
     user_offerer1 = create_user_offerer(user, offerer1)
     user_offerer2 = create_user_offerer(user, offerer2)
-    PcObject.save(user_offerer1, user_offerer2, offerer3)
+    PcObject.save(user_offerer1)
+    PcObject.save(user_offerer2, offerer3)
 
     # When
     first_user_offerer = find_first_by_user_id(user.id)

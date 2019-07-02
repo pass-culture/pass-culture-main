@@ -195,6 +195,7 @@ def test_find_filtered_venues_with_has_offerer_with_siren_param_return_filtered_
 def test_find_filtered_venues_with_True_has_validated_user_offerer_param_return_filtered_venues(app):
     # Given
     user = create_user()
+    user2 = create_user(email="another@mail.com")
     offerer1 = create_offerer()
     offerer2 = create_offerer(siren="123456781")
     offerer3 = create_offerer(siren="123456782")
@@ -202,7 +203,7 @@ def test_find_filtered_venues_with_True_has_validated_user_offerer_param_return_
     validated_user_offerer = create_user_offerer(user, offerer1)
     not_validated_user_offerer = create_user_offerer(user, offerer2, validation_token="a_token")
     user_offerer_for_both1 = create_user_offerer(user, offerer3)
-    user_offerer_for_both2 = create_user_offerer(user, offerer3, validation_token="other_token")
+    user_offerer_for_both2 = create_user_offerer(user2, offerer3, validation_token="other_token")
 
     venue_with_validated_user_offerer = create_venue(offerer1, siret='12345678912346')
     venue_with_not_validated_user_offerer = create_venue(offerer2, siret='12345678912347')
@@ -225,6 +226,7 @@ def test_find_filtered_venues_with_True_has_validated_user_offerer_param_return_
 def test_find_filtered_venues_with_False_has_validated_user_offerer_param_return_filtered_venues(app):
     # Given
     user = create_user()
+    user2 = create_user(email="another@mail.com")
     offerer1 = create_offerer()
     offerer2 = create_offerer(siren="123456781")
     offerer3 = create_offerer(siren="123456782")
@@ -232,7 +234,7 @@ def test_find_filtered_venues_with_False_has_validated_user_offerer_param_return
     validated_user_offerer = create_user_offerer(user, offerer1)
     not_validated_user_offerer = create_user_offerer(user, offerer2, validation_token="a_token")
     user_offerer_for_both1 = create_user_offerer(user, offerer3)
-    user_offerer_for_both2 = create_user_offerer(user, offerer3, validation_token="other_token")
+    user_offerer_for_both2 = create_user_offerer(user2, offerer3, validation_token="other_token")
 
     venue_with_validated_user_offerer = create_venue(offerer1, siret='12345678912346')
     venue_with_not_validated_user_offerer = create_venue(offerer2, siret='12345678912347')

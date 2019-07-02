@@ -212,11 +212,12 @@ def test_pending_validation_returns_offerers_venues_user_and_user_offerer_with_r
     user2 = create_user(email='2@offerer.com')
     user3 = create_user(email='3@offerer.com')
     user4 = create_user(email='4@offerer.com')
+    user5 = create_user(email='5@offerer.com')
     user_offerer1 = create_user_offerer(user1, offerer1, validation_token="nice_token")
     user_offerer2 = create_user_offerer(user2, offerer2)
     user_offerer3 = create_user_offerer(user3, offerer3, validation_token="another_token")
     user_offerer4 = create_user_offerer(user4, offerer4)
-    user_offerer5 = create_user_offerer(user3, offerer3, validation_token="what_a_token")
+    user_offerer5 = create_user_offerer(user5, offerer3, validation_token="what_a_token")
     venue1 = create_venue(offerer1, siret=None, comment="nice_comment", validation_token="venue_token")
     venue2 = create_venue(offerer2, siret="12345678212345")
     venue3 = create_venue(offerer3, siret="12345678312345")
@@ -411,6 +412,7 @@ def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(
     query_user = create_user(can_book_free_offers=False, is_admin=True)
 
     validated_user = create_user(email="another@mail.com", can_book_free_offers=False)
+    validated_user_2 = create_user(email="another2@mail.com", can_book_free_offers=False)
     not_validated_user = create_user(email="a@mail.com", can_book_free_offers=False, validation_token="a_token")
 
     validated_offerer_with_siren1 = create_offerer()
@@ -428,7 +430,7 @@ def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(
         validated_user,
         not_validated_offerer_with_siren)
     validated_user_offerer_with_validated_user_with_validated_offerer_without_siren = create_user_offerer(
-        validated_user,
+        validated_user_2,
         validated_offerer_without_siren)
     not_validated_user_offerer_with_validated_user_with_validated_offerer_with_siren = create_user_offerer(
         validated_user,
@@ -724,10 +726,11 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
     offerer_ok = create_offerer(siren='123456784', is_active=True, validation_token=None)
 
     user_validated = create_user(email='email1@test.com', validation_token=None)
+    user_validated_2 = create_user(email='email3@test.com', validation_token=None)
     user_not_validated = create_user(email='email2@test.com', validation_token='blabla')
 
     user_offerer_no_siren = create_user_offerer(user_validated, offerer_no_siren, validation_token=None)
-    user_offerer_not_validated_offerer = create_user_offerer(user_validated, offerer_not_validated,
+    user_offerer_not_validated_offerer = create_user_offerer(user_validated_2, offerer_not_validated,
                                                              validation_token=None)
     user_offerer_not_validated = create_user_offerer(user_validated, offerer_not_validated_user_offerer,
                                                      validation_token='blabla')

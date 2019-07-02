@@ -684,12 +684,13 @@ def test_find_filtered_offerers_with_True_has_validated_user_offerer_param_retur
     offerer_with_both = create_offerer(siren="123456783")
 
     user = create_user()
+    user_2 = create_user(email='monmail@mail.com')
 
     user_offerer_validated_1 = create_user_offerer(user, offerer_with_validated_user_offerer)
     user_offerer_validated_2 = create_user_offerer(user, offerer_with_both)
     user_offerer_not_validated_1 = create_user_offerer(user, offerer_with_not_validated_user_offerer,
                                                        validation_token="a_token")
-    user_offerer_not_validated_2 = create_user_offerer(user, offerer_with_both, validation_token="another_token")
+    user_offerer_not_validated_2 = create_user_offerer(user_2, offerer_with_both, validation_token="another_token")
 
     PcObject.save(user_offerer_validated_1, user_offerer_validated_2,
                   user_offerer_not_validated_1, user_offerer_not_validated_2)
@@ -711,12 +712,13 @@ def test_find_filtered_offerers_with_False_has_validated_user_offerer_param_retu
     offerer_with_both = create_offerer(siren="123456783")
 
     user = create_user()
+    user_2 = create_user(email='monmail@mail.com')
 
     user_offerer_validated_1 = create_user_offerer(user, offerer_with_validated_user_offerer)
     user_offerer_validated_2 = create_user_offerer(user, offerer_with_both)
     user_offerer_not_validated_1 = create_user_offerer(user, offerer_with_not_validated_user_offerer,
                                                        validation_token="a_token")
-    user_offerer_not_validated_2 = create_user_offerer(user, offerer_with_both, validation_token="another_token")
+    user_offerer_not_validated_2 = create_user_offerer(user_2, offerer_with_both, validation_token="another_token")
 
     PcObject.save(user_offerer_validated_1, user_offerer_validated_2, user_offerer_not_validated_1,
                   user_offerer_not_validated_2)
