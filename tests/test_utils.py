@@ -33,6 +33,7 @@ from models.feature import FeatureToggle
 from models.payment import PaymentDetails
 from models.payment_status import PaymentStatus, TransactionStatus
 from models.pc_object import PcObject
+from repository.provider_queries import get_provider_by_local_class
 from utils.object_storage import STORAGE_DIR
 from utils.token import random_token
 
@@ -687,7 +688,7 @@ def create_bank_information(application_id=1, bic='QSDFGH8Z555', iban='FR7630006
     bank_information.iban = iban
     bank_information.idAtProviders = id_at_providers
     bank_information.dateModifiedAtLastProvider = date_modified_at_last_provider
-    bank_information.lastProviderId = Provider.getByClassName('BankInformationProvider').id
+    bank_information.lastProviderId = get_provider_by_local_class('BankInformationProvider').id
     return bank_information
 
 
@@ -800,7 +801,7 @@ def create_venue_provider(venue, provider, venue_id_at_offer_provider='775671464
 
 
 def activate_provider(provider_classname):
-    provider = Provider.getByClassName(provider_classname)
+    provider = get_provider_by_local_class(provider_classname)
     provider.isActive = True
     provider.enabledForPro = True
     PcObject.save(provider)

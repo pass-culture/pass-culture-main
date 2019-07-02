@@ -44,8 +44,3 @@ class Provider(PcObject, Model, DeactivableMixin):
     requireProviderIdentifier = Column(Boolean,
                                        nullable=False,
                                        default=True)
-
-    def getByClassName(name):
-        return Provider.query \
-            .filter_by(localClass=name) \
-            .first()

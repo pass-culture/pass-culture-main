@@ -16,7 +16,7 @@ from models.local_provider_event import LocalProviderEvent, LocalProviderEventTy
 from models.pc_object import PcObject
 from models.product import Product
 from models.providable_mixin import ProvidableMixin
-from models.provider import Provider
+from repository.provider_queries import get_provider_by_local_class
 from utils.date import read_json_date
 from utils.human_ids import humanize
 from utils.inflect_engine import inflect_engine
@@ -47,7 +47,7 @@ class LocalProvider(Iterator):
         self.updatedThumbs = 0
         self.checkedThumbs = 0
         self.erroredThumbs = 0
-        self.dbObject = Provider.getByClassName(self.__class__.__name__)
+        self.dbObject = get_provider_by_local_class(self.__class__.__name__)
         self.providables = []
 
     @property

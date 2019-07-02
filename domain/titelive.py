@@ -7,18 +7,15 @@ TITELIVE_STOCK_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def read_description_date(date):
-    return datetime.strptime(date, TITELIVE_DESCRIPTION_DATE_FORMAT)
+    return datetime.strptime(date, TITELIVE_DESCRIPTION_DATE_FORMAT) if date else None
 
 
 def read_things_date(date):
-    return datetime.strptime(date, TITELIVE_THINGS_DATE_FORMAT)
+    return datetime.strptime(date, TITELIVE_THINGS_DATE_FORMAT) if date else None
 
 
 def read_stock_datetime(date):
-    if date:
-        return datetime.strptime(date, TITELIVE_STOCK_DATETIME_FORMAT)
-    else:
-        return None
+    return datetime.strptime(date, TITELIVE_STOCK_DATETIME_FORMAT) if date else None
 
 
 def put_today_file_at_end_of_list(ordered_files_list, date_regexp):

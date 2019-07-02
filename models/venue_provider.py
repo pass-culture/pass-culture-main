@@ -37,8 +37,8 @@ class VenueProvider(PcObject,
 
     @property
     def nOffers(self):
-        n_offers = 0
+        number_of_offers_created_or_updated_by_this_provider = 0
         for offer in self.venue.offers:
             if offer.lastProviderId == self.providerId:
-                n_offers += 1
-        return n_offers
+                number_of_offers_created_or_updated_by_this_provider += 1
+        return number_of_offers_created_or_updated_by_this_provider

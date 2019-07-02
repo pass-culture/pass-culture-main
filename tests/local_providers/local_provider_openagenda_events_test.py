@@ -10,6 +10,7 @@ from local_providers import OpenAgendaEvents
 from models.pc_object import PcObject
 from models.provider import Provider
 from models.venue_provider import VenueProvider
+from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
 from tests.test_utils import provider_test, check_open_agenda_api_is_down, check_titelive_stocks_api_is_down, create_offerer, create_venue
 
@@ -42,7 +43,7 @@ class OpenAgendaEventsTest:
         PcObject.save(venue)
         venue_id = venue.id
 
-        open_agenda_provider = Provider.getByClassName('OpenAgendaEvents')
+        open_agenda_provider = get_provider_by_local_class('OpenAgendaEvents')
         venue_provider = VenueProvider()
         venue_provider.venueId = venue_id
         venue_provider.provider = open_agenda_provider

@@ -8,6 +8,7 @@ from local_providers import TiteLiveStocks
 from models.pc_object import PcObject
 from models.provider import Provider
 from models.venue_provider import VenueProvider
+from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
 from tests.test_utils import create_offerer, create_venue, create_product_with_Thing_type, \
     create_offer_with_thing_product, provider_test
@@ -45,7 +46,7 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
     PcObject.save(venue)
 
-    oa_provider = Provider.getByClassName('TiteLiveThings')
+    oa_provider = get_provider_by_local_class('TiteLiveThings')
     venueProvider = VenueProvider()
     venueProvider.venue = venue
     venueProvider.provider = oa_provider
@@ -98,7 +99,7 @@ def test_titelive_stock_provider_create_1_stock_and_do_not_create_existing_offer
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
     PcObject.save(venue)
 
-    oa_provider = Provider.getByClassName('TiteLiveThings')
+    oa_provider = get_provider_by_local_class('TiteLiveThings')
     venueProvider = VenueProvider()
     venueProvider.venue = venue
     venueProvider.provider = oa_provider
@@ -157,7 +158,7 @@ def test_titelive_stock_provider_create_2_stock_and_1_offer(get_data, app):
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
     PcObject.save(venue)
 
-    oa_provider = Provider.getByClassName('TiteLiveThings')
+    oa_provider = get_provider_by_local_class('TiteLiveThings')
     venueProvider = VenueProvider()
     venueProvider.venue = venue
     venueProvider.provider = oa_provider
@@ -198,7 +199,7 @@ def test_titelive_stock_provider_create_nothing_if_siret_is_not_in_titelive_data
     venue = create_venue(offerer, name='Librairie Titelive', siret='12345678912345')
     PcObject.save(venue)
 
-    oa_provider = Provider.getByClassName('TiteLiveThings')
+    oa_provider = get_provider_by_local_class('TiteLiveThings')
     venueProvider = VenueProvider()
     venueProvider.venue = venue
     venueProvider.provider = oa_provider

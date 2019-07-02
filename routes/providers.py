@@ -9,12 +9,12 @@ from repository.provider_queries import get_enabled_providers_for_pro
 def list_providers():
     providers = get_enabled_providers_for_pro()
     result = []
-    for p in providers:
-        p_dict = p.as_dict()
-        if p.localClass is not None and hasattr(local_providers, p.localClass):
-            providerClass = getattr(local_providers, p.localClass)
-            p_dict['identifierRegexp'] = providerClass.identifierRegexp
-            p_dict['identifierDescription'] = providerClass.identifierDescription
+    for provider in providers:
+        p_dict = provider.as_dict()
+        if provider.localClass is not None and hasattr(local_providers, provider.localClass):
+            provider_class = getattr(local_providers, provider.localClass)
+            p_dict['identifierRegexp'] = provider_class.identifierRegexp
+            p_dict['identifierDescription'] = provider_class.identifierDescription
         del p_dict['apiKey']
         del p_dict['apiKeyGenerationDate']
         result.append(p_dict)

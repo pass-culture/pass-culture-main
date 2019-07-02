@@ -49,17 +49,17 @@ def create_venue_provider():
     new_venue_provider = VenueProvider(from_dict=request.json)
 
     provider = load_or_404(Provider, request.json['providerId'])
-    provider_is_available_for_pro_usage = provider.isActive and provider.enabledForPro
-    if not provider_is_available_for_pro_usage:
+    is_provider_available_for_pro_usage = provider.isActive and provider.enabledForPro
+    if not is_provider_available_for_pro_usage:
         errors = ApiErrors()
         errors.status_code = 401
         errors.addError('localClass', "Ce fournisseur n'est pas activé")
         errors.maybeRaise()
 
-    existing_venue_provider = find_venue_provider(provider.id,
+    is_existing_venue_provider = find_venue_provider(provider.id,
                                                   dehumanize(request.json['venueId']),
                                                   request.json['venueIdAtOfferProvider'])
-    if existing_venue_provider:
+    if is_existing_venue_provider:
         errors = ApiErrors()
         errors.status_code = 401
         errors.addError('venueIdAtOfferProvider', "Il y a déjà un fournisseur pour votre identifiant")

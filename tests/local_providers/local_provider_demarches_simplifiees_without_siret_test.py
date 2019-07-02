@@ -95,7 +95,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
             'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
             'DEMARCHES_SIMPLIFIEES_TOKEN': TOKEN
         }, clear=True):
-            bank_information_provider = VenueWithoutSIRETBankInformationProvider()
+            VenueWithoutSIRETBankInformationProvider()
 
         # then
         get_all_application_ids_for_procedure.assert_called_with(
@@ -121,7 +121,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
             'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': PROCEDURE_ID_VENUE_WITHOUT_SIRET,
             'DEMARCHES_SIMPLIFIEES_TOKEN': TOKEN
         }, clear=True):
-            bank_information_provider = VenueWithoutSIRETBankInformationProvider()
+            VenueWithoutSIRETBankInformationProvider()
 
         # then
         get_all_application_ids_for_procedure.assert_called_with(
@@ -204,10 +204,10 @@ class VenueWithoutSIRETBankInformationProviderTest:
 
         # when
         activate_provider('VenueWithoutSIRETBankInformationProvider')
-        bank_information_provider = VenueWithoutSIRETBankInformationProvider()
+        venue_without_siret_bank_information_provider = VenueWithoutSIRETBankInformationProvider()
 
         with pytest.raises(NoOffererFoundException):
-            bank_information_provider.updateObjects()
+            venue_without_siret_bank_information_provider.updateObjects()
 
     @patch('os.environ', return_value={
         'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': '5636727',
@@ -237,10 +237,10 @@ class VenueWithoutSIRETBankInformationProviderTest:
 
         # when
         activate_provider('VenueWithoutSIRETBankInformationProvider')
-        bank_information_provider = VenueWithoutSIRETBankInformationProvider()
+        venue_without_siret_bank_information_provider = VenueWithoutSIRETBankInformationProvider()
 
         with pytest.raises(NoVenueFoundException):
-            bank_information_provider.updateObjects()
+            venue_without_siret_bank_information_provider.updateObjects()
 
     @patch('os.environ', return_value={
         'DEMARCHES_SIMPLIFIEES_VENUE_WITHOUT_SIRET_PROCEDURE_ID': '5636727',
