@@ -7,8 +7,13 @@ from models import PcObject, ThingType, Booking
 from models.api_errors import ResourceNotFound, ApiErrors
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_offerer_bookings_paginated, \
-    find_final_offerer_bookings, find_date_used, find_user_activation_booking, get_existing_tokens, \
-    find_active_bookings_by_user_id, find_by, find_all_offerer_bookings_by_venueId, \
+    find_final_offerer_bookings,\
+    find_date_used,\
+    find_user_activation_booking, \
+    get_existing_tokens, \
+    find_active_bookings_by_user_id, \
+    find_by,\
+    find_all_offerer_bookings_by_venueId, \
     find_all_bookings_by_offerer_for_digital_venues
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \

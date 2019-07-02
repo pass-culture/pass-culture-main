@@ -83,7 +83,7 @@ def find_all_offerer_bookings_by_venueId(offerer_id, venue_id=None) -> List[Book
 
     return bookings
 
-def find_all_bookings_by_offerer_for_digital_venues(offerer_id):
+def find_all_bookings_by_offerer_for_digital_venues(offerer_id) -> List[Booking]:
     query = filter_bookings_by_offerer_id(offerer_id)
 
     return query.filter(Venue.isVirtual == True).all()

@@ -1,12 +1,12 @@
-from pprint import pprint
 
 import pytest
-from pytest import skip
 
 from models import PcObject
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_venue, create_offerer, create_user, create_user_offerer, \
-    create_bank_information
+from tests.test_utils import create_venue,\
+    create_offerer,\
+    create_user,\
+    create_user_offerer
 from utils.human_ids import humanize
 
 
