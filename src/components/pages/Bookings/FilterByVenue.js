@@ -11,7 +11,8 @@ export class FilterByVenue extends PureComponent {
   }
 
   render() {
-    const { venuesOptions, isDigital } = this.props
+    const { venuesOptions, isDigital, venueId } = this.props
+    console.log(venueId)
     const labelClassName = this.props.isDigital
       ? 'has-text-grey'
       : 'has-text-black'
@@ -26,6 +27,7 @@ export class FilterByVenue extends PureComponent {
             id="venues"
             className="pc-selectbox pl24 py5 fs19"
             onChange={this.onChangeVenue}
+            value={venueId}
             disabled={isDigital}>
 
             <option disabled selected={true} label=" "></option>
@@ -43,7 +45,6 @@ export class FilterByVenue extends PureComponent {
             id="isDigital"
             className="pc-checkbox input"
             type="checkbox"
-            onChange={() => (document.getElementById('venues').value = '')}
             onClick={() => this.props.selectOnlyDigitalVenues(!isDigital)}
             defaultChecked={isDigital}
           />
