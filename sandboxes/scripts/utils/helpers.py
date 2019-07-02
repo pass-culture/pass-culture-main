@@ -64,10 +64,8 @@ def get_password_from_email(email):
     return minimal_password
 
 def get_user_helper(user):
-    return dict(user.as_dict(), **{
-        "hasOffers": user.hasOffers,
+    return dict(user.as_dict(include=USER_INCLUDES), **{
         "password": get_password_from_email(user.email),
-        "hasPhysicalVenues": user.hasPhysicalVenues,
         "validationToken": user.validationToken
     })
 
