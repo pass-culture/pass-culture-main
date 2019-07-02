@@ -1,77 +1,54 @@
-li.booking-item {
+.booking-item {
   background-color: $white;
   border-radius: $radius-small;
-  height: 150px;
-  width: 100%;
-  overflow: hidden;
-  font-size: 1.2rem;
-  position: relative;
 
   a {
-    color: $black;
-    width: 100%;
-    height: 100%;
-    display: block;
-    padding: 0;
+    display: flex;
+    height: 150px;
   }
 
   .thumb {
-    height: 100%;
-    width: 27%;
-    float: left;
-    text-align: center;
+    width: 30%;
   }
 
   .infos {
     @include dotted($primary, left);
 
-    width: 58%;
-    float: left;
-    height: 100%;
-    position: relative;
+    width: 55%;
 
     .top {
-      position: absolute;
-      top: 0;
-      bottom: 50%;
-      left: 0;
-      right: 0;
-      padding: 0.5rem;
       display: flex;
       flex-direction: column;
+      height: 50%;
       justify-content: space-around;
+      padding: 0.5rem 1rem;
 
       h5 {
-        font-size: 1.1em;
-        line-height: 1.1em;
+        color: $black;
+        line-height: 1.5rem;
+      }
+
+      div {
+        color: $grey-dark;
       }
     }
 
     .token {
       @include dotted($primary, top);
 
-      padding: 0.5rem;
-      font-size: 2.3em;
       color: $primary;
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
+      font-size: 2.9rem;
+      padding: 0.5rem 0 0 1rem;
     }
   }
 
   .arrow {
-    width: 15%;
-    height: 100%;
+    align-items: center;
+    display: flex;
     position: relative;
-    float: left;
+    width: 15%;
 
     img {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
       margin: auto;
     }
   }

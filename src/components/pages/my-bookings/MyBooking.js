@@ -1,17 +1,12 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
 
 import Icon from '../../layout/Icon'
-import Thumb from '../../layout/Thumb'
 import Ribbon from '../../layout/Ribbon'
 
-const MyBookingItem = ({
-  completedUrl,
-  cssClass,
+const MyBooking = ({
   date,
   dateString,
   isCancelled,
@@ -20,53 +15,51 @@ const MyBookingItem = ({
   thumbUrl,
   timezone,
   token,
+  type,
 }) => (
   <li
     data-token={token}
     data-booked-date={date}
     data-booked-timezone={timezone}
-    className={`booking-item mb16 ${cssClass}`}
+    data-booked-type={type}
+    className="booking-item mb12"
   >
-    {isCancelled && <Ribbon />}
     <Link to={linkURL}>
-      {thumbUrl && <Thumb src={thumbUrl} />}
+      <div className="thumb">{thumbUrl && <img alt="" src={thumbUrl} />}</div>
       <div className="infos">
         <div className="top">
-          <h5 title={name} className="fs18 is-semi-bold">
+          <div className="fs18 is-semi-bold">
             <Dotdotdot clamp={date ? 2 : 3}>{name}</Dotdotdot>
-          </h5>
-          <span className="fs13">{dateString || 'permanent'}</span>
+          </div>
+          <div className="fs13">{dateString}</div>
         </div>
-        {!completedUrl && <div className="token">{token}</div>}
+        {<div className="token">{token.toLowerCase()}</div>}
       </div>
       <div className="arrow">
-        <Icon svg="ico-next-S" className="Suivant" />
+        {isCancelled && <Ribbon />}
+        <Icon svg="ico-next-S" />
       </div>
     </Link>
   </li>
 )
 
-MyBookingItem.defaultProps = {
-  completedUrl: null,
+MyBooking.defaultProps = {
   date: null,
-  dateString: null,
+  dateString: 'Permanent',
   isCancelled: false,
-  name: null,
   thumbUrl: null,
-  token: null,
 }
 
-MyBookingItem.propTypes = {
-  completedUrl: PropTypes.string,
-  cssClass: PropTypes.string.isRequired,
+MyBooking.propTypes = {
   date: PropTypes.string,
   dateString: PropTypes.string,
   isCancelled: PropTypes.bool,
   linkURL: PropTypes.string.isRequired,
-  name: PropTypes.string,
+  name: PropTypes.string.isRequired,
   thumbUrl: PropTypes.string,
   timezone: PropTypes.string.isRequired,
-  token: PropTypes.string,
+  token: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
 }
 
-export default MyBookingItem
+export default MyBooking

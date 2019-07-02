@@ -1,15 +1,12 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import moment from 'moment'
 import get from 'lodash.get'
 import { capitalize } from 'react-final-form-utils'
 import { connect } from 'react-redux'
 
 import { getTimezone } from '../../../utils/timezone'
-import MyBookingItem from './MyBookingItem'
+import MyBooking from './MyBooking'
 import { getQueryURL } from '../../../helpers'
 
-// TODO A tester
 const getDateString = (date, tz) =>
   date &&
   capitalize(
@@ -25,7 +22,7 @@ const getLinkUrl = booking => {
   return `/decouverte/${queryURL}/verso`
 }
 
-const getCSSClass = booking => {
+const getType = booking => {
   const isEvent = Boolean(get(booking, 'stock.resolvedOffer.isEvent'))
   return (isEvent && 'event') || 'thing'
 }
@@ -43,7 +40,7 @@ export const mapStateToProps = (state, ownProps) => {
   const completedUrl = get(booking, 'completedUrl')
   const date = get(booking, 'stock.beginningDatetime')
   const timezone = getBookingTimezone(booking)
-  const cssClass = getCSSClass(booking)
+  const type = getType(booking)
   const dateString = getDateString(date, timezone)
   const isCancelled = get(booking, 'isCancelled')
   const linkURL = getLinkUrl(booking)
@@ -51,19 +48,22 @@ export const mapStateToProps = (state, ownProps) => {
   const thumbUrl = get(booking, 'recommendation.thumbUrl')
   const token = get(booking, 'token')
 
-  const props = {
+  let props = {
     completedUrl,
-    cssClass,
     date,
-    dateString,
     isCancelled,
     linkURL,
     name,
     thumbUrl,
     timezone,
     token,
+    type,
+  }
+
+  if (dateString) {
+    props = {...props, dateString}
   }
 
   return props
 }
-export default connect(mapStateToProps)(MyBookingItem)
+export default connect(mapStateToProps)(MyBooking)

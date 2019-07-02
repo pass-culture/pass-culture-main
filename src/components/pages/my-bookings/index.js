@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators, compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import MyBookingItemContainer from './MyBookingItemContainer'
+import MyBookingContainer from './MyBookingContainer'
 import NoBookingView from './NoBookingView'
 import { mapStateToProps } from './connect'
 import { withRequiredLogin } from '../../hocs'
@@ -19,7 +19,7 @@ const renderBookingList = items => (
   <ul className="bookings">
     {items.map(booking => {
       const key = booking.id
-      return <MyBookingItemContainer key={key} booking={booking} />
+      return <MyBookingContainer key={key} booking={booking} />
     })}
   </ul>
 )
