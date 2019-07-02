@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
-import { requestData } from 'redux-saga-data'
 import { Form } from 'react-final-form'
-import { getRequestErrorStringFromErrors, showNotification } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import ReactTooltip from 'react-tooltip'
 import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
@@ -50,26 +48,6 @@ class VenueProvidersManager extends Component {
     history.push(`/structures/${offererId}/lieux/${venueId}/fournisseurs/nouveau`)
   }
 
-  loadProvidersAndVenueProviders = () => {
-    const {
-      dispatch,
-      match: {
-        params: {venueId},
-      },
-    } = this.props
-
-    dispatch(
-      requestData({
-        apiPath: '/providers'
-      })
-    )
-    dispatch(
-      requestData({
-        apiPath: `/venueProviders?venueId=${venueId}`,
-      })
-    )
-  }
-
   resetFormState = () => {
     this.setState({
       isCreationMode: false,
@@ -80,7 +58,7 @@ class VenueProvidersManager extends Component {
   }
 
   handleSubmit = (formValues, form) => {
-    const {dispatch} = this.props
+    const {createVenueProvider} = this.props
     this.setState({
       isLoadingMode: true
     })
@@ -97,13 +75,10 @@ class VenueProvidersManager extends Component {
       venueId: id
     }
 
-    dispatch(requestData({
-        apiPath: `/venueProviders`,
-        body: payload,
-        handleFail: this.handleFail(form),
-        handleSuccess: this.handleSuccess,
-        method: 'POST',
-      })
+    createVenueProvider(
+      this.handleFail(form),
+      this.handleSuccess,
+      payload
     )
   }
 
@@ -118,15 +93,12 @@ class VenueProvidersManager extends Component {
   }
 
   handleFail = (form) => (state, action) => {
-    const {dispatch} = this.props
+    const {notify} = this.props
     const {
       payload: {errors},
     } = action
 
-    dispatch(showNotification({
-      text: getRequestErrorStringFromErrors(errors),
-      type: 'fail',
-    }))
+    notify(errors)
     this.resetFormInput(form)
     this.resetFormState()
   }
@@ -153,7 +125,8 @@ class VenueProvidersManager extends Component {
   }
 
   componentDidMount() {
-    this.loadProvidersAndVenueProviders()
+    const {loadProvidersAndVenueProviders} = this.props
+    loadProvidersAndVenueProviders()
   }
 
   render() {
@@ -229,11 +202,13 @@ class VenueProvidersManager extends Component {
 }
 
 VenueProvidersManager.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  createVenueProvider: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
+  loadProvidersAndVenueProviders: PropTypes.func.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape()
   }).isRequired,
+  notify: PropTypes.func.isRequired,
   providers: PropTypes.array.isRequired,
   venue: PropTypes.shape().isRequired,
   venueProviders: PropTypes.array.isRequired

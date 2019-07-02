@@ -6,16 +6,22 @@ import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 
 describe('src | components | pages | Venue | VenueProvidersManager', () => {
   let props
-  let dispatch
+  let createVenueProvider
+  let loadProvidersAndVenueProviders
+  let notify
   let history
 
   beforeEach(() => {
-    dispatch = jest.fn()
+    createVenueProvider = jest.fn()
+    loadProvidersAndVenueProviders = jest.fn()
+    notify = jest.fn()
     history = {
       push: jest.fn()
     }
     props = {
-      dispatch,
+      createVenueProvider,
+      loadProvidersAndVenueProviders,
+      notify,
       history,
       match: {
         params: {
@@ -98,20 +104,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       shallow(<VenueProvidersManager {...props} />)
 
       // then
-      expect(dispatch.mock.calls[0][0]).toEqual({
-        config: {
-          apiPath: '/providers',
-          method: 'GET'
-        },
-        type: 'REQUEST_DATA_GET_/PROVIDERS'
-      })
-      expect(dispatch.mock.calls[1][0]).toEqual({
-        config: {
-          apiPath: '/venueProviders?venueId=AB',
-          method: 'GET'
-        },
-        type: 'REQUEST_DATA_GET_/VENUEPROVIDERS?VENUEID=AB'
-      })
+      expect(loadProvidersAndVenueProviders).toHaveBeenCalled()
     })
 
     it('should update current URL when clicking on add venue provider button', () => {
@@ -164,24 +157,15 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       const wrapper = shallow(<VenueProvidersManager {...props} />)
 
       // when
-      wrapper.instance().handleSubmit(formValues)
+      wrapper.instance().handleSubmit(formValues, {})
 
       // then
       expect(wrapper.state('isLoadingMode')).toBe(true)
-      expect(dispatch).toHaveBeenCalledWith({
-        config: {
-          apiPath: '/venueProviders',
-          body: {
-            providerId: 'CC',
-            venueId: 'AA',
-            venueIdAtOfferProvider: 'BB'
-          },
-          handleFail: expect.any(Function),
-          handleSuccess: expect.any(Function),
-          method: 'POST'
-        },
-        type: 'REQUEST_DATA_POST_/VENUEPROVIDERS'
-      })
+      expect(createVenueProvider).toHaveBeenCalledWith(
+        expect.any(Function),
+        expect.any(Function),
+        {providerId: 'CC', venueId: 'AA', venueIdAtOfferProvider: 'BB'}
+      )
     })
   })
 
@@ -217,13 +201,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       wrapper.instance().handleFail(form)({}, action)
 
       // then
-      expect(dispatch).toHaveBeenCalledWith({
-        patch: {
-          text: 'fake error',
-          type: 'fail'
-        },
-        type: 'SHOW_NOTIFICATION'
-      })
+      expect(notify).toHaveBeenCalledWith([{error: 'fake error'}])
     })
 
     it('should reset component state with the default values', () => {

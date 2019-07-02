@@ -4,43 +4,23 @@ exports[`src | components | pages | Venue | VenueProvidersManager should match s
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <VenueProvidersManager
-    dispatch={
+    createVenueProvider={[MockFunction]}
+    history={
+      Object {
+        "push": [MockFunction],
+      }
+    }
+    loadProvidersAndVenueProviders={
       [MockFunction] {
         "calls": Array [
-          Array [
-            Object {
-              "config": Object {
-                "apiPath": "/providers",
-                "method": "GET",
-              },
-              "type": "REQUEST_DATA_GET_/PROVIDERS",
-            },
-          ],
-          Array [
-            Object {
-              "config": Object {
-                "apiPath": "/venueProviders?venueId=AB",
-                "method": "GET",
-              },
-              "type": "REQUEST_DATA_GET_/VENUEPROVIDERS?VENUEID=AB",
-            },
-          ],
+          Array [],
         ],
         "results": Array [
           Object {
             "type": "return",
             "value": undefined,
           },
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
         ],
-      }
-    }
-    history={
-      Object {
-        "push": [MockFunction],
       }
     }
     match={
@@ -52,6 +32,7 @@ ShallowWrapper {
         },
       }
     }
+    notify={[MockFunction]}
     providers={
       Array [
         Object {
