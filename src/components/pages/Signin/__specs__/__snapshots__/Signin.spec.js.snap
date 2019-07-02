@@ -4,9 +4,11 @@ exports[`src | components | pages | Signin | Signin  snapshot should match snaps
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Signin
+    dispatch={[MockFunction]}
+    history={Object {}}
     query={
       Object {
-        "parse": [MockFunction],
+        "parse": [Function],
       }
     }
   />,

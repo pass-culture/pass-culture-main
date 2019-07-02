@@ -47,13 +47,6 @@ export const navigateToOffersAs = user => async t => {
   await t.useRole(createUserRole(user))
   await t.click(navbarAnchor).click(offersNavbarAnchor)
 
-
-  // await t.useRole(createUserRole(user))
-  // await t.navigateTo('/offres')
-}
-
-
-
 export const navigateToNewOffererAs = (user, userRole) => async t => {
   const newOffererAnchor = Selector(
     "a.button.is-primary[href='/structures/creation']"

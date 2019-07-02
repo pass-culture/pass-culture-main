@@ -79,7 +79,6 @@ test("J'ai un compte valide, en appuyant sur la touche 'Entrée' je suis redirig
 })
 
 test("J'ai un compte valide, j'ai déjà des offres, en cliquant sur 'se connecter' je suis redirigé·e vers la page /offres sans erreurs", async t => {
-  debugger
   // given
   const { user } = await fetchSandbox(
     'pro_07_offer',
