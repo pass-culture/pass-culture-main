@@ -3,15 +3,20 @@ import { shallow } from 'enzyme'
 
 import OffererItem from '../OffererItem'
 
-const dispatchMock = jest.fn()
-const parseMock = () => ({ 'mots-cles': null })
-const queryChangeMock = jest.fn()
 
 describe('src | components | pages | Offerers | OffererItem', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const props = {
+  let props
+  let dispatch
+  let query
+  let parse
+
+
+  const dispatchMock = jest.fn()
+  const parseMock = () => ({ 'mots-cles': null })
+  const queryChangeMock = jest.fn()
+
+  beforeEach(() => {
+      props = {
         currentUser: {},
         dispatch: dispatchMock,
         offerers: [{
@@ -19,7 +24,7 @@ describe('src | components | pages | Offerers | OffererItem', () => {
           name: 'Fake Name',
           nOffers: 56,
           isValidated: true
-       }],
+        }],
         pagination: {
           apiQuery: {
             keywords: null,
@@ -37,7 +42,10 @@ describe('src | components | pages | Offerers | OffererItem', () => {
         ],
         physicalVenues: [{}]
       }
+    })
 
+  describe('snapshot', () => {
+    it('should match snapshot', () => {  
       // when
       const wrapper = shallow(<OffererItem {...props} />)
 

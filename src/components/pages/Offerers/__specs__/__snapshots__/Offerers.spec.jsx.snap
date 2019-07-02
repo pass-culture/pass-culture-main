@@ -21,7 +21,7 @@ ShallowWrapper {
             Object {
               "config": Object {
                 "apiPath": "/offerers?keywords",
-                "handleFail": undefined,
+                "handleFail": [Function],
                 "handleSuccess": [Function],
                 "method": "GET",
                 "normalizer": Object {
@@ -166,7 +166,7 @@ ShallowWrapper {
               <span
                 className="tip-icon"
                 data-place="bottom"
-                data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exmple, un réseau de grande distribution ou de franchisés).</p>"
+                data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par example, un réseau de grande distribution ou de franchisés).</p>"
                 data-type="info"
               >
                 <Icon
@@ -191,7 +191,7 @@ ShallowWrapper {
           className="main-list offerers-list"
           element="ul"
           hasMore={false}
-          isLoading={false}
+          isLoading={true}
           loader={
             <Spinner
               Tag="div"
@@ -255,7 +255,7 @@ ShallowWrapper {
                 <span
                   className="tip-icon"
                   data-place="bottom"
-                  data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exmple, un réseau de grande distribution ou de franchisés).</p>"
+                  data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par example, un réseau de grande distribution ou de franchisés).</p>"
                   data-type="info"
                 >
                   <Icon
@@ -359,7 +359,7 @@ ShallowWrapper {
                 <span
                   className="tip-icon"
                   data-place="bottom"
-                  data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exmple, un réseau de grande distribution ou de franchisés).</p>"
+                  data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par example, un réseau de grande distribution ou de franchisés).</p>"
                   data-type="info"
                 >
                   <Icon
@@ -382,7 +382,7 @@ ShallowWrapper {
                   <span
                     className="tip-icon"
                     data-place="bottom"
-                    data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exmple, un réseau de grande distribution ou de franchisés).</p>"
+                    data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par example, un réseau de grande distribution ou de franchisés).</p>"
                     data-type="info"
                   >
                     <Icon
@@ -406,7 +406,7 @@ ShallowWrapper {
                     />,
                     "className": "tip-icon",
                     "data-place": "bottom",
-                    "data-tip": "<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exmple, un réseau de grande distribution ou de franchisés).</p>",
+                    "data-tip": "<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par example, un réseau de grande distribution ou de franchisés).</p>",
                     "data-type": "info",
                   },
                   "ref": null,
@@ -473,7 +473,7 @@ ShallowWrapper {
           "className": "main-list offerers-list",
           "element": "ul",
           "hasMore": false,
-          "isLoading": false,
+          "isLoading": true,
           "loader": <Spinner
             Tag="div"
             className={null}
@@ -548,7 +548,7 @@ ShallowWrapper {
                 <span
                   className="tip-icon"
                   data-place="bottom"
-                  data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exmple, un réseau de grande distribution ou de franchisés).</p>"
+                  data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par example, un réseau de grande distribution ou de franchisés).</p>"
                   data-type="info"
                 >
                   <Icon
@@ -573,7 +573,7 @@ ShallowWrapper {
             className="main-list offerers-list"
             element="ul"
             hasMore={false}
-            isLoading={false}
+            isLoading={true}
             loader={
               <Spinner
                 Tag="div"
@@ -637,7 +637,7 @@ ShallowWrapper {
                   <span
                     className="tip-icon"
                     data-place="bottom"
-                    data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exmple, un réseau de grande distribution ou de franchisés).</p>"
+                    data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par example, un réseau de grande distribution ou de franchisés).</p>"
                     data-type="info"
                   >
                     <Icon
@@ -741,7 +741,7 @@ ShallowWrapper {
                   <span
                     className="tip-icon"
                     data-place="bottom"
-                    data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exmple, un réseau de grande distribution ou de franchisés).</p>"
+                    data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par example, un réseau de grande distribution ou de franchisés).</p>"
                     data-type="info"
                   >
                     <Icon
@@ -764,7 +764,7 @@ ShallowWrapper {
                     <span
                       className="tip-icon"
                       data-place="bottom"
-                      data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exmple, un réseau de grande distribution ou de franchisés).</p>"
+                      data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par example, un réseau de grande distribution ou de franchisés).</p>"
                       data-type="info"
                     >
                       <Icon
@@ -788,7 +788,7 @@ ShallowWrapper {
                       />,
                       "className": "tip-icon",
                       "data-place": "bottom",
-                      "data-tip": "<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exmple, un réseau de grande distribution ou de franchisés).</p>",
+                      "data-tip": "<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par example, un réseau de grande distribution ou de franchisés).</p>",
                       "data-type": "info",
                     },
                     "ref": null,
@@ -855,7 +855,7 @@ ShallowWrapper {
             "className": "main-list offerers-list",
             "element": "ul",
             "hasMore": false,
-            "isLoading": false,
+            "isLoading": true,
             "loader": <Spinner
               Tag="div"
               className={null}

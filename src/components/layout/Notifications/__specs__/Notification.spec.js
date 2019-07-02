@@ -9,7 +9,7 @@ describe('src | components | layout | Notification', () => {
   let dispatch
 
   beforeEach(() => {
-      const dispatch = jest.fn()
+      dispatch = jest.fn()
       props = {
         dispatch,
         notification: {}
@@ -113,7 +113,6 @@ describe('src | components | layout | Notification', () => {
             type: 'info'
             }
           }
-
 
         // when
         const wrapper = shallow(<Notification {...props}/>)

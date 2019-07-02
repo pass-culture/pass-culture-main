@@ -3,36 +3,43 @@ import { shallow } from 'enzyme'
 
 import Offerers from '../Offerers'
 
-const dispatchMock = jest.fn()
-const parseMock = () => ({ 'mots-cles': null })
-const queryChangeMock = jest.fn()
-
 describe('src | components | pages | Offerers | Offerers', () => {
-  afterEach(
-    dispatchMock.mockClear()
-  )
+  let change
+  let dispatch
+  let parse
+  let props
+
+  beforeEach(() => {
+    dispatch = jest.fn()
+    change = jest.fn()
+    parse = () => ({ 'mots-cles': null })
+
+    props = {
+      currentUser: {},
+      dispatch,
+      offerers: [{ id: 'AE' }],
+      pendingOfferers: [],
+      pagination: {
+        apiQuery: {
+          keywords: null,
+        },
+      },
+      query: {
+        change,
+        parse,
+      },
+      location: {
+        search: '',
+      },
+    }
+  })
+
+  afterEach(() => {
+    dispatch.mockClear()
+  })
+
   describe('snapshot', () => {
     it('should match snapshot', () => {
-      // given
-      const props = {
-        currentUser: {},
-        dispatch: dispatchMock,
-        offerers: [{ id: 'AE' }],
-        pendingOfferers: [],
-        pagination: {
-          apiQuery: {
-            keywords: null,
-          },
-        },
-        query: {
-          change: queryChangeMock,
-          parse: parseMock,
-        },
-        location: {
-          search: '',
-        },
-      }
-
       // when
       const wrapper = shallow(<Offerers {...props} />)
 
@@ -43,27 +50,13 @@ describe('src | components | pages | Offerers | Offerers', () => {
   })
 
   describe('render', () => {
-    describe('pluralize offerers menu link', () => {
+
+    describe('should pluralize offerers menu link', () => {
       it('should display Votre structure when one offerer', () => {
         // given
-        const props = {
-          currentUser: {},
-          dispatch: dispatchMock,
-          offerers: [{ id: 'AE' }],
-          pendingOfferers: [],
-          pagination: {
-            apiQuery: {
-              keywords: null,
-            },
-          },
-          query: {
-            change: queryChangeMock,
-            parse: parseMock,
-          },
-          location: {
-            search: '',
-          },
-        }
+        props.currentUser = {}
+        props.offerers = [{ id: 'AE' }]
+        props.pendingOfferers = []
 
         // when
         const wrapper = shallow(<Offerers {...props} />)
@@ -73,26 +66,12 @@ describe('src | components | pages | Offerers | Offerers', () => {
 
         expect(heroSection.title).toEqual('Votre structure juridique')
       })
+
       it('should display Vos structures when many offerers', () => {
         // given
-        const props = {
-          currentUser: {},
-          dispatch: dispatchMock,
-          offerers: [{ id: 'AE' }, { id: 'AF' }],
-          pendingOfferers: [],
-          pagination: {
-            apiQuery: {
-              keywords: null,
-            },
-          },
-          query: {
-            change: queryChangeMock,
-            parse: parseMock,
-          },
-          location: {
-            search: '',
-          },
-        }
+          props.currentUser = {}
+          props.offerers = [{ id: 'AE' }, { id: 'AF' }]
+          props.pendingOfferers = []
 
         // when
         const wrapper = shallow(<Offerers {...props} />)
@@ -102,24 +81,13 @@ describe('src | components | pages | Offerers | Offerers', () => {
         expect(heroSection.title).toEqual('Vos structures juridiques')
       })
     })
-    describe('display a notification', () => {
-      it("should display a notification when current user's has one virtual offer so no physical venues yet", () => {
+
+    describe('should display a notification', () => {
+      it("should display a notification when current user has no offers and has digital venues", () => {
         // given
-        const props = {
-          currentUser: {
-            hasOffers: true,
-            hasPhysicalVenues: true,
-            isAdmin: true,
-          },
-          dispatch: dispatchMock,
-          location: {
-            search: '',
-          },
-          offerers : [],
-          pendingOfferers: [],
-          query: {
-            parse: parseMock,
-          },
+        props.currentUser = {
+          hasOffers: false,
+          hasPhysicalVenues: false,
         }
 
         // when
@@ -138,8 +106,93 @@ describe('src | components | pages | Offerers | Offerers', () => {
           	"type": "SHOW_NOTIFICATION"
           }
         ]
-        expect(dispatchMock.mock.calls[2]).toEqual(expected)
+        expect(dispatch.mock.calls[2]).toEqual(expected)
+      })
+
+      it("should display a notification when current user has only digital offers", () => {
+        // given
+        props.currentUser = {
+          hasOffers: true,
+          hasPhysicalVenues: false,
+        }
+
+        // when
+        shallow(<Offerers {...props} />)
+
+        // then
+        const expected = [
+          {
+          	"patch": {
+          		"tag": "offerers",
+          		"text": "Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)",
+          		"type": "info",
+          		"url": "/structures/AE/lieux/creation",
+          		"urlLabel": "Nouveau lieu"
+          	},
+          	"type": "SHOW_NOTIFICATION"
+          }
+        ]
+        expect(dispatch.mock.calls[2]).toEqual(expected)
       })
     })
+
+    describe('should not display a notification', () => {
+      it("should not display a notification when current user has offers and physical venues", () => {
+        // given
+        props.currentUser = {
+          hasOffers: true,
+          hasPhysicalVenues: true,
+        }
+
+        // when
+        shallow(<Offerers {...props} />)
+
+        // then
+        const expected = [
+          {
+            "config": {
+              "apiPath": "/offerers?keywords&validated=false",
+              "method": "GET",
+              "normalizer": {
+                "managedVenues": {
+                  "normalizer": {"offers": "offers"},
+                  "stateKey": "venues"}
+                },
+                "stateKey": "pendingOfferers"},
+                "type": "REQUEST_DATA_GET_PENDINGOFFERERS"
+          }
+        ]
+        expect(dispatch.mock.calls[2]).toEqual(expected)
+      })
+
+      it("should not display a notification when current user has no offers but physical venues", () => {
+        // given
+        props.currentUser = {
+          hasOffers: false,
+          hasPhysicalVenues: true,
+        }
+
+        // when
+        shallow(<Offerers {...props} />)
+
+        // then
+        const expected = [
+          {
+            "config": {
+              "apiPath": "/offerers?keywords&validated=false",
+              "method": "GET",
+              "normalizer": {
+                "managedVenues": {
+                  "normalizer": {"offers": "offers"},
+                  "stateKey": "venues"}
+                },
+                "stateKey": "pendingOfferers"},
+                "type": "REQUEST_DATA_GET_PENDINGOFFERERS"
+          }
+        ]
+        expect(dispatch.mock.calls[2]).toEqual(expected)
+      })
+    })
+
   })
 })

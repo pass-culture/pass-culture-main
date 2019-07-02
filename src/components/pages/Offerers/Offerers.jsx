@@ -20,7 +20,7 @@ import {
   translateQueryParamsToApiParams,
 } from '../../../utils/translate'
 
-import createVenueForOffererUrl from './utils'
+import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 
 class Offerers extends Component {
   constructor(props) {
@@ -69,6 +69,22 @@ class Offerers extends Component {
     })
   }
 
+  handleFail = () => {
+    this.setState({
+      hasMore: false,
+      isLoading: false,
+    })
+  }
+
+  handleSuccess = (state, action) => {
+    const {
+      payload: { data },
+    } = action
+    this.setState({
+      hasMore: data.length > 0,
+      isLoading: false,
+    })
+  }
 
   handleRequestData = (handleSuccess, handleFail) => {
     const { currentUser, dispatch, offerers, query } = this.props
@@ -78,34 +94,19 @@ class Offerers extends Component {
     const apiParamsString = stringify(apiParams)
     const apiPath = `/offerers?${apiParamsString}`
 
-    handleFail = () => {
-      this.setState({
-        hasMore: false,
-        isLoading: false,
-      })
-    }
-
     this.setState({ isLoading: true }, () => {
       dispatch(
         requestData({
           apiPath,
-          handleFail: handleFail(),
-          handleSuccess: (state, action) => {
-            const {
-              payload: { data },
-            } = action
-            this.setState({
-              hasMore: data.length > 0,
-              isLoading: false,
-            })
-          },
+          handleFail: this.handleFail,
+          handleSuccess: this.handleSuccess,
           normalizer: offererNormalizer,
         })
       )
     })
 
     const url = createVenueForOffererUrl(offerers)
-    const offerersHaveNotOffers = !currentUser.hasOffers
+    const offerersHaveNotOffers = !currentUser.hasOffers && !currentUser.hasPhysicalVenues
     const offerersHaveOnlyDigitalOffers = currentUser.hasOffers && !currentUser.hasPhysicalVenues
 
     const userHasNoOffersInAPhysicalVenueYet = offerersHaveNotOffers || offerersHaveOnlyDigitalOffers
@@ -156,7 +157,6 @@ class Offerers extends Component {
     const queryParams = query.parse()
     const { hasMore, isLoading } = this.state
 
-
     const sectionTitle =
       offerers.length > 1
         ? 'Vos structures juridiques'
@@ -185,7 +185,7 @@ class Offerers extends Component {
               <span
                 className="tip-icon"
                 data-place="bottom"
-                data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exmple, un réseau de grande distribution ou de franchisés).</p>"
+                data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par example, un réseau de grande distribution ou de franchisés).</p>"
                 data-type="info">
                 <Icon svg="picto-tip" />
               </span>
@@ -251,6 +251,8 @@ class Offerers extends Component {
 PropTypes.propTypes = {
   currentUser: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
+  offerers: PropTypes.array.isRequired,
+  pendingOfferers: PropTypes.array.isRequired,
   query: PropTypes.object.isRequired,
 }
 
