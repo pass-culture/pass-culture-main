@@ -1,20 +1,13 @@
-import classnames from 'classnames'
 import React, { Component } from 'react'
 import { requestData } from 'redux-saga-data'
-import { Field, Form } from 'react-final-form'
+import { Form } from 'react-final-form'
 import { getRequestErrorStringFromErrors, showNotification } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import ReactTooltip from 'react-tooltip'
-import Icon from '../../../layout/Icon'
-import { HiddenField, TextField } from '../../../layout/form/fields'
 import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
 import updateVenueIdAtOfferProvider from './decorators/updateVenueIdAtOfferProvider'
-import checkIfProviderShouldBeDisabled from './utils/checkIfProviderShouldBeDisabled'
-
-const DEFAULT_OPTION = {
-  id: 'default',
-  name: 'Choix de la source'
-}
+import { DEFAULT_PROVIDER_OPTION } from './utils/utils'
+import VenueProviderForm from './form/VenueProviderForm/VenueProviderForm'
 
 class VenueProvidersManager extends Component {
   constructor(props) {
@@ -140,7 +133,7 @@ class VenueProvidersManager extends Component {
 
   resetFormInput = (form) => {
     form.batch(() => {
-      form.change('provider', JSON.stringify(DEFAULT_OPTION))
+      form.change('provider', JSON.stringify(DEFAULT_PROVIDER_OPTION))
     })
   }
 
@@ -148,7 +141,7 @@ class VenueProvidersManager extends Component {
     const valueFromSelectInput = event.target.value
     const valueParsed = JSON.parse(valueFromSelectInput)
 
-    if (valueParsed && valueParsed.id !== DEFAULT_OPTION.id) {
+    if (valueParsed && valueParsed.id !== DEFAULT_PROVIDER_OPTION.id) {
       this.setState({
         isProviderSelected: true,
         venueIdAtOfferProviderIsRequired: valueParsed.requireProviderIdentifier
@@ -203,7 +196,7 @@ class VenueProvidersManager extends Component {
                 decorators={decorators}
                 initialValues={venue}
                 onSubmit={this.handleSubmit}
-                render={FormRendered({
+                render={VenueProviderForm({
                   handleChange: this.handleChange,
                   isProviderSelected,
                   isLoadingMode,
@@ -235,113 +228,15 @@ class VenueProvidersManager extends Component {
   }
 }
 
-export const SelectRendered = ({
-                                 handleChange,
-                                 providers,
-                                 venueProviders
-                               }) => {
-  return ({input}) => {
-    return (
-      <select
-        {...input}
-        className="field-select"
-        onChange={(event) => handleChange(event, input)}
-      >
-        <option key={DEFAULT_OPTION.id}
-                value={JSON.stringify(DEFAULT_OPTION)}>{DEFAULT_OPTION.name}
-        </option>
-        {providers.map((provider, index) => {
-          const isProviderDisabled = checkIfProviderShouldBeDisabled(venueProviders, provider)
-
-          return (
-            <option disabled={isProviderDisabled}
-                    key={index}
-                    value={JSON.stringify(provider)}>{provider.name}
-            </option>
-          )
-        })}
-      </select>
-    )
-  }
-}
-
-export const FormRendered = ({
-                               handleChange,
-                               isProviderSelected,
-                               isLoadingMode,
-                               isCreationMode,
-                               providers,
-                               venueProviders,
-                               venueIdAtOfferProviderIsRequired
-                             }) => {
-  return ({handleSubmit}) => {
-    return (
-      <form onSubmit={handleSubmit}>
-        <div className="venue-provider-table">
-          <HiddenField name="id"/>
-          <div className="provider-container">
-            <div className="provider-picto">
-              <span className="field picto">
-                <Icon svg="picto-db-default"/>
-              </span>
-            </div>
-
-            <Field
-              name="provider"
-              required
-              render={SelectRendered({handleChange, providers, venueProviders})}>
-            </Field>
-          </div>
-
-          {isProviderSelected && (
-            <div className="venue-id-at-offer-provider-container">
-              <TextField
-                className={classnames('field-text fs12', {
-                  'field-is-read-only': !venueIdAtOfferProviderIsRequired || isLoadingMode,
-                })}
-                label="Compte : "
-                name="venueIdAtOfferProvider"
-                readOnly={!venueIdAtOfferProviderIsRequired || isLoadingMode}
-                required
-              />
-
-              {!isLoadingMode && venueIdAtOfferProviderIsRequired && (
-                <span
-                  className="tooltip tooltip-info"
-                  data-place="bottom"
-                  data-tip={`<p>Veuillez saisir un identifiant.</p>`}
-                >
-                  <Icon svg="picto-info"/>
-                </span>
-              )}
-            </div>
-          )}
-
-          {isProviderSelected && isCreationMode && !isLoadingMode && (
-            <div className="provider-import-button-container">
-              <button
-                className="button is-intermediate provider-import-button"
-                type="submit"
-              >
-                Importer
-              </button>
-            </div>
-          )}
-        </div>
-      </form>
-    )
-  }
-}
-
 VenueProvidersManager.propTypes = {
-  dispatch: PropTypes.func,
-  history: PropTypes.shape(),
+  dispatch: PropTypes.func.isRequired,
+  history: PropTypes.shape().isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape()
-  }),
-  providers: PropTypes.array,
-  venue: PropTypes.shape(),
-  venueProviders: PropTypes.array
+  }).isRequired,
+  providers: PropTypes.array.isRequired,
+  venue: PropTypes.shape().isRequired,
+  venueProviders: PropTypes.array.isRequired
 }
 
 export default VenueProvidersManager

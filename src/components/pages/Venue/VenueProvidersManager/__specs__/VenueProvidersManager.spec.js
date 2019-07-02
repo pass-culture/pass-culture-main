@@ -1,9 +1,7 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import VenueProvidersManager, { FormRendered, SelectRendered } from '../VenueProvidersManager'
-import { Field, Form } from 'react-final-form'
-import { HiddenField, TextField } from '../../../../layout/form/fields'
-import { Icon } from '../../../../layout/Icon'
+import { Form } from 'react-final-form'
+import VenueProvidersManager from '../VenueProvidersManager'
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 
 describe('src | components | pages | Venue | VenueProvidersManager', () => {
@@ -35,13 +33,26 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
     }
   })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
+  it('should match snapshot', () => {
+    // when
+    const wrapper = shallow(<VenueProvidersManager {...props} />)
+
+    // then
+    expect(wrapper).toMatchSnapshot()
+  })
+
+  describe('render', () => {
+    it('should initialize VenueProvidersManager component with default state', () => {
       // when
       const wrapper = shallow(<VenueProvidersManager {...props} />)
 
       // then
-      expect(wrapper).toMatchSnapshot()
+      expect(wrapper.state()).toEqual({
+        isCreationMode: false,
+        isLoadingMode: false,
+        isProviderSelected: false,
+        venueIdAtOfferProviderIsRequired: true
+      })
     })
 
     it('should return is creation mode to true when query param "venueProviderId" is "nouveau"', () => {
@@ -54,21 +65,6 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       // then
       expect(wrapper.state()).toEqual({
         isCreationMode: true,
-        isLoadingMode: false,
-        isProviderSelected: false,
-        venueIdAtOfferProviderIsRequired: true
-      })
-    })
-  })
-
-  describe('render', () => {
-    it('should initialize VenueProvidersManager component with default state', () => {
-      // when
-      const wrapper = shallow(<VenueProvidersManager {...props} />)
-
-      // then
-      expect(wrapper.state()).toEqual({
-        isCreationMode: false,
         isLoadingMode: false,
         isProviderSelected: false,
         venueIdAtOfferProviderIsRequired: true
@@ -118,7 +114,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       })
     })
 
-    it('should update current URL when clicking on add venue provider button',() => {
+    it('should update current URL when clicking on add venue provider button', () => {
       // given
       const wrapper = shallow(<VenueProvidersManager {...props} />)
       const addOfferBtn = wrapper.find('#add-venue-provider-btn')
@@ -157,154 +153,152 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
     })
   })
 
-  describe('functions', () => {
-    describe('handleSubmit', () => {
-      it('should update venue provider using API', () => {
-        // given
-        const formValues = {
-          id: 'AA',
-          provider: "{\"id\": \"CC\"}",
-          venueIdAtOfferProvider: 'BB'
-        }
-        const wrapper = shallow(<VenueProvidersManager {...props} />)
+  describe('handleSubmit', () => {
+    it('should update venue provider using API', () => {
+      // given
+      const formValues = {
+        id: 'AA',
+        provider: '{"id": "CC"}',
+        venueIdAtOfferProvider: 'BB'
+      }
+      const wrapper = shallow(<VenueProvidersManager {...props} />)
 
-        // when
-        wrapper.instance().handleSubmit(formValues)
+      // when
+      wrapper.instance().handleSubmit(formValues)
 
-        // then
-        expect(wrapper.state('isLoadingMode')).toBe(true)
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: '/venueProviders',
-            body: {
-              providerId: 'CC',
-              venueId: 'AA',
-              venueIdAtOfferProvider: 'BB'
-            },
-            handleFail: expect.any(Function),
-            handleSuccess: expect.any(Function),
-            method: 'POST'
+      // then
+      expect(wrapper.state('isLoadingMode')).toBe(true)
+      expect(dispatch).toHaveBeenCalledWith({
+        config: {
+          apiPath: '/venueProviders',
+          body: {
+            providerId: 'CC',
+            venueId: 'AA',
+            venueIdAtOfferProvider: 'BB'
           },
-          type: 'REQUEST_DATA_POST_/VENUEPROVIDERS'
-        })
+          handleFail: expect.any(Function),
+          handleSuccess: expect.any(Function),
+          method: 'POST'
+        },
+        type: 'REQUEST_DATA_POST_/VENUEPROVIDERS'
+      })
+    })
+  })
+
+  describe('handleSuccess', () => {
+    it('should update current url when action was handled successfully', () => {
+      // given
+      const wrapper = shallow(<VenueProvidersManager {...props} />)
+
+      // when
+      wrapper.instance().handleSuccess()
+
+      // then
+      expect(history.push).toHaveBeenCalledWith('/structures/CC/lieux/AB')
+    })
+  })
+
+  describe('handleFail', () => {
+    it('should display a notification with the proper informations', () => {
+      // given
+      const wrapper = shallow(<VenueProvidersManager {...props} />)
+      const action = {
+        payload: {
+          errors: [{
+            error: 'fake error'
+          }]
+        }
+      }
+      const form = {
+        batch: jest.fn()
+      }
+
+      // when
+      wrapper.instance().handleFail(form)({}, action)
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith({
+        patch: {
+          text: 'fake error',
+          type: 'fail'
+        },
+        type: 'SHOW_NOTIFICATION'
       })
     })
 
-    describe('handleSuccess', () => {
-      it('should update current url when action was handled successfully', () => {
-        // given
-        const wrapper = shallow(<VenueProvidersManager {...props} />)
+    it('should reset component state with the default values', () => {
+      // given
+      const wrapper = shallow(<VenueProvidersManager {...props} />)
+      const action = {
+        payload: {
+          errors: [{
+            error: 'fake error'
+          }]
+        }
+      }
+      const form = {
+        batch: jest.fn()
+      }
 
-        // when
-        wrapper.instance().handleSuccess()
+      // when
+      wrapper.instance().handleFail(form)({}, action)
 
-        // then
-        expect(history.push).toHaveBeenCalledWith('/structures/CC/lieux/AB')
+      // then
+      expect(wrapper.state()).toEqual({
+        isCreationMode: false,
+        isLoadingMode: false,
+        isProviderSelected: false,
+        venueIdAtOfferProviderIsRequired: true
       })
     })
+  })
 
-    describe('handleFail', () => {
-      it('should display a notification with the proper informations', () => {
-        // given
-        const wrapper = shallow(<VenueProvidersManager {...props} />)
-        const action = {
-          payload: {
-            errors: [{
-              error: 'fake error'
-            }]
-          }
-        }
-        const form = {
-          batch: jest.fn()
-        }
+  describe('handleChange', () => {
+    let input
+    let onChange
 
-        // when
-        wrapper.instance().handleFail(form)({}, action)
-
-        // then
-        expect(dispatch).toHaveBeenCalledWith({
-          patch: {
-            text: 'fake error',
-            type: 'fail'
-          },
-          type: 'SHOW_NOTIFICATION'
-        })
-      })
-
-      it('should reset component state with the default values', () => {
-        // given
-        const wrapper = shallow(<VenueProvidersManager {...props} />)
-        const action = {
-          payload: {
-            errors: [{
-              error: 'fake error'
-            }]
-          }
-        }
-        const form = {
-          batch: jest.fn()
-        }
-
-        // when
-        wrapper.instance().handleFail(form)({}, action)
-
-        // then
-        expect(wrapper.state()).toEqual({
-          isCreationMode: false,
-          isLoadingMode: false,
-          isProviderSelected: false,
-          venueIdAtOfferProviderIsRequired: true
-        })
-      })
+    beforeEach(() => {
+      onChange = jest.fn()
+      input = {
+        onChange
+      }
     })
 
-    describe('handleChange', () => {
-      let input
-      let onChange
-
-      beforeEach(() => {
-        onChange = jest.fn()
-        input = {
-          onChange
+    it('should update state values when selected option is valid and different from default value', () => {
+      // given
+      const event = {
+        target: {
+          value: '{"id":"AE", "requireProviderIdentifier": true}'
         }
-      })
+      }
+      const wrapper = shallow(<VenueProvidersManager {...props} />)
 
-      it('should update state values when selected option is valid and different from default value', () => {
-        // given
-        const event = {
-          target: {
-            value: "{\"id\":\"AE\", \"requireProviderIdentifier\": true}"
-          }
+      // when
+      wrapper.instance().handleChange(event, input)
+
+      // then
+      expect(wrapper.state('isProviderSelected')).toBe(true)
+      expect(wrapper.state('venueIdAtOfferProviderIsRequired')).toBe(true)
+    })
+
+    it('should reset form state when selected option is equal to default value', () => {
+      // given
+      const event = {
+        target: {
+          value: '{"id":"default", "name": "Choix de la source"}'
         }
-        const wrapper = shallow(<VenueProvidersManager {...props} />)
+      }
+      const wrapper = shallow(<VenueProvidersManager {...props} />)
 
-        // when
-        wrapper.instance().handleChange(event, input)
+      // when
+      wrapper.instance().handleChange(event, input)
 
-        // then
-        expect(wrapper.state('isProviderSelected')).toBe(true)
-        expect(wrapper.state('venueIdAtOfferProviderIsRequired')).toBe(true)
-      })
-
-      it('should reset form state when selected option is equal to default value', () => {
-        // given
-        const event = {
-          target: {
-            value: "{\"id\":\"default\", \"name\": \"Choix de la source\"}"
-          }
-        }
-        const wrapper = shallow(<VenueProvidersManager {...props} />)
-
-        // when
-        wrapper.instance().handleChange(event, input)
-
-        // then
-        expect(wrapper.state()).toEqual({
-          isCreationMode: false,
-          isLoadingMode: false,
-          isProviderSelected: false,
-          venueIdAtOfferProviderIsRequired: true
-        })
+      // then
+      expect(wrapper.state()).toEqual({
+        isCreationMode: false,
+        isLoadingMode: false,
+        isProviderSelected: false,
+        venueIdAtOfferProviderIsRequired: true
       })
     })
   })
@@ -315,7 +309,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       props.venueProviders = []
     })
 
-    it('should render form with the proper values using user input',() => {
+    it('should render form with the proper values using user input', () => {
       // when
       const wrapper = shallow(<VenueProvidersManager {...props} />)
 
@@ -326,198 +320,6 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       expect(form.prop('initialValues')).toEqual({id: 'AB'})
       expect(form.prop('onSubmit')).toEqual(expect.any(Function))
       expect(form.prop('render')).toEqual(expect.any(Function))
-    })
-
-    describe('FormRendered component', () => {
-      let props
-      let handleSubmit
-      let handleChange
-
-      beforeEach(() => {
-        handleSubmit = jest.fn()
-        handleChange = jest.fn()
-        props = {
-          handleChange,
-          providers: [{id: 'AA'}, {id: 'BB'}],
-          isProviderSelected: false,
-          isLoadingMode: false,
-          isCreationMode: false,
-          venueIdAtOfferProviderIsRequired: false,
-        }
-      })
-
-      it('should render a HiddenField component with the right props', () => {
-        // when
-        const renderedForm = shallow(FormRendered({...props})(handleSubmit))
-
-        // then
-        const hiddenField = renderedForm.find(HiddenField)
-        expect(hiddenField).toBeDefined()
-        expect(hiddenField.prop('name')).toBe('id')
-      })
-
-      it('should render a Field component as select input with providers as options when provided', () => {
-        // when
-        const renderedForm = shallow(FormRendered({...props})(handleSubmit))
-
-        // then
-        const selectField = renderedForm.find(Field)
-        expect(selectField).toHaveLength(1)
-        expect(selectField.prop('name')).toBe('provider')
-        expect(selectField.prop('required')).toBe(true)
-      })
-
-      it('should render a TextField component not in read only mode when provider is selected, not in loading mode and provider identifier is required', () => {
-        // given
-        props.isProviderSelected = true
-        props.isLoadingMode = false
-        props.venueIdAtOfferProviderIsRequired = true
-
-        // when
-        const renderedForm = shallow(FormRendered({...props})(handleSubmit))
-
-        // then
-        const textField = renderedForm.find(TextField)
-        expect(textField).toHaveLength(1)
-        expect(textField.prop('className')).toBe('field-text fs12')
-        expect(textField.prop('label')).toBe('Compte : ')
-        expect(textField.prop('name')).toBe('venueIdAtOfferProvider')
-        expect(textField.prop('readOnly')).toBe(false)
-        expect(textField.prop('required')).toBe(true)
-      })
-
-      it('should render a TextField component in read only mode when provider is selected, in loading mode and provider identifier is required', () => {
-        // given
-        props.isProviderSelected = true
-        props.isLoadingMode = true
-        props.venueIdAtOfferProviderIsRequired = true
-
-        // when
-        const renderedForm = shallow(FormRendered({...props})(handleSubmit))
-
-        // then
-        const textField = renderedForm.find(TextField)
-        expect(textField).toHaveLength(1)
-        expect(textField.prop('className')).toBe('field-text fs12 field-is-read-only')
-        expect(textField.prop('label')).toBe('Compte : ')
-        expect(textField.prop('name')).toBe('venueIdAtOfferProvider')
-        expect(textField.prop('readOnly')).toBe(true)
-        expect(textField.prop('required')).toBe(true)
-      })
-
-      it('should render a TextField component in read only mode when provider is selected, not loading mode and provider identifier is not required', () => {
-        // given
-        props.isProviderSelected = true
-        props.isLoadingMode = true
-        props.venueIdAtOfferProviderIsRequired = false
-
-        // when
-        const renderedForm = shallow(FormRendered({...props})(handleSubmit))
-
-        // then
-        const textField = renderedForm.find(TextField)
-        expect(textField).toHaveLength(1)
-        expect(textField.prop('className')).toBe('field-text fs12 field-is-read-only')
-        expect(textField.prop('label')).toBe('Compte : ')
-        expect(textField.prop('name')).toBe('venueIdAtOfferProvider')
-        expect(textField.prop('readOnly')).toBe(true)
-        expect(textField.prop('required')).toBe(true)
-      })
-
-      it('should display a tooltip and an Icon component when provider is selected, not in loading mode and provider identifier is required', () => {
-        // given
-        props.isProviderSelected = true
-        props.isLoadingMode = false
-        props.venueIdAtOfferProviderIsRequired = true
-
-        // when
-        const renderedForm = shallow(FormRendered({...props})(handleSubmit))
-
-        // then
-        const tooltip = renderedForm.find('.tooltip-info')
-        expect(tooltip).toHaveLength(1)
-        expect(tooltip.prop('className')).toBe('tooltip tooltip-info')
-        expect(tooltip.prop('data-place')).toBe('bottom')
-        expect(tooltip.prop('data-tip')).toBe('<p>Veuillez saisir un identifiant.</p>')
-        const icon = tooltip.find(Icon)
-        expect(icon).toHaveLength(1)
-        expect(icon.prop('svg')).toBe('picto-info')
-      })
-
-      it('should not display a tooltip and an Icon component when provider is selected, not in loading mode and provider identifier is not required', () => {
-        // given
-        props.isProviderSelected = true
-        props.isLoadingMode = false
-        props.venueIdAtOfferProviderIsRequired = false
-
-        // when
-        const renderedForm = shallow(FormRendered({...props})(handleSubmit))
-
-        // then
-        const tooltip = renderedForm.find('.tooltip-info')
-        expect(tooltip).toHaveLength(0)
-      })
-
-      it('should display an import button when provider is selected, in creation mode and not in loading mode', () => {
-        // given
-        props.isProviderSelected = true
-        props.isCreationMode = true
-        props.isLoadingMode = false
-
-        // when
-        const renderedForm = shallow(FormRendered({...props})(handleSubmit))
-
-        // then
-        const importButtonContainer = renderedForm.find('.provider-import-button-container')
-        expect(importButtonContainer).toHaveLength(1)
-        const importButton = importButtonContainer.find('button')
-        expect(importButton).toHaveLength(1)
-        expect(importButton.prop('className')).toBe('button is-intermediate provider-import-button')
-        expect(importButton.prop('type')).toBe('submit')
-        expect(importButton.text()).toBe('Importer')
-      })
-
-      it('should not display an import button when provider is not selected, not in creation mode and in loading mode', () => {
-        // given
-        props.isProviderSelected = false
-        props.isCreationMode = false
-        props.isLoadingMode = true
-
-        // when
-        const renderedForm = shallow(FormRendered({...props})(handleSubmit))
-
-        // then
-        const importButtonContainer = renderedForm.find('.provider-import-button-container')
-        expect(importButtonContainer).toHaveLength(0)
-      })
-    })
-
-    describe('SelectRendered component', () => {
-      let handleChange
-      let props
-
-      beforeEach(() => {
-        handleChange = jest.fn()
-        props = {
-          handleChange,
-          providers: [{id: 'A', name: 'A', requireProviderIdentifier: false}, {id: 'B', name: 'B', requireProviderIdentifier: true}],
-          venueProviders: [{id: 'C', providerId: 'A'}, {id: 'B', providerId: 'B'}],
-        }
-      })
-
-      it('should render a select component with three options with right props, including a disabled option', () => {
-        // when
-        const selectRendered = shallow(SelectRendered({...props})({}))
-
-        // then
-        const options = selectRendered.find('option')
-        expect(options).toHaveLength(3)
-        expect(options.at(0).prop('value')).toEqual("{\"id\":\"default\",\"name\":\"Choix de la source\"}")
-        expect(options.at(1).prop('value')).toEqual("{\"id\":\"A\",\"name\":\"A\",\"requireProviderIdentifier\":false}")
-        expect(options.at(1).prop('disabled')).toBe(true)
-        expect(options.at(2).prop('value')).toEqual("{\"id\":\"B\",\"name\":\"B\",\"requireProviderIdentifier\":true}")
-        expect(options.at(2).prop('disabled')).toEqual(false)
-      })
     })
   })
 })

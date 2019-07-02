@@ -1,17 +1,14 @@
 import React from 'react'
-import VenueProviderItem from '../VenueProviderItem'
 import { shallow } from 'enzyme'
 import { Icon } from 'pass-culture-shared'
 import { NavLink } from 'react-router-dom'
+import VenueProviderItem from '../VenueProviderItem'
 
 describe('src | components | pages | Venue | VenueProvidersManager | VenueProviderItem', () => {
   let props
-  let dispatch
 
   beforeEach(() => {
-    dispatch = jest.fn()
     props = {
-      dispatch,
       venueProvider: {
         id: 1,
         isActive: true,
@@ -22,7 +19,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
           localClass: 'OpenAgendaEvents'
         },
         venueId: 1,
-        venueIdAtOfferProvider: 'fake name'
+        venueIdAtOfferProvider: 'fake id'
       }
     }
   })
@@ -75,7 +72,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
 
       // then
       const venueIdAtOfferProvider = wrapper.find('strong.has-text-weight-bold')
-      expect(venueIdAtOfferProvider.text()).toBe('fake name')
+      expect(venueIdAtOfferProvider.text()).toBe('fake id')
     })
 
     it('should render the number of offers when data of provider were already synced and offers are provided', () => {
@@ -103,7 +100,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       const wrapper = shallow(<VenueProviderItem {...props} />)
 
       // then
-      const numberOfOffersLabel = wrapper.find('.offers-container')
+      const numberOfOffersLabel = wrapper.find('.offers-container .number-of-offers-label')
       expect(numberOfOffersLabel).toHaveLength(1)
       expect(numberOfOffersLabel.text()).toBe('0 offre')
     })

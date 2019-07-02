@@ -4,18 +4,18 @@
   width: 100%;
 
   .provider-name-container {
-    flex: 1.5;
+    flex: 2;
     font-size: medium;
   }
 
   .venue-id-at-offer-provider-container {
-    flex: 2;
+    flex: 3;
   }
 
   .offers-container {
     padding-top: 8px;
-    display: inline-block;
-    flex: 0.5;
+    flex: 1.5;
+    justify-content: flex-end;
 
     .number-of-offers-label {
       display: inline-block;

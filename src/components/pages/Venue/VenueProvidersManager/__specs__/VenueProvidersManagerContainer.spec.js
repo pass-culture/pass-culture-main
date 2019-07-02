@@ -10,11 +10,11 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
             {id: 'AF', localClass: 'a'},
             {id: 'AG', localClass: 'b'},
           ],
-          venueProviders: [{id: 'EE'}],
+          venueProviders: [{id: 'AE', venueId: 'EE'}],
         },
       }
       const props = {
-        venue: {id: 'AE'},
+        venue: {id: 'EE'},
       }
 
       // when
@@ -23,16 +23,9 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       // then
       expect(result).toEqual({
         providers: [
-          {
-            id: 'AF',
-            localClass: 'a',
-          },
-          {
-            id: 'AG',
-            localClass: 'b',
-          },
+          {id: 'AF', localClass: 'a'}, {id: 'AG', localClass: 'b'},
         ],
-        venueProviders: [],
+        venueProviders: [{id: 'AE', venueId: 'EE'}],
       })
     })
   })

@@ -13,7 +13,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | decorators'
     const result = handleUpdateOnProviderField()(inputValue, inputName, formValues)
 
     // then
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       venueIdAtOfferProvider: ''
     })
   })
@@ -30,7 +30,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | decorators'
     const result = handleUpdateOnProviderField()(inputValue, inputName, formValues)
 
     // then
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       venueIdAtOfferProvider: '12345'
     })
   })

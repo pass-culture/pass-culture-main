@@ -10,7 +10,7 @@
     .provider-container {
       margin-left: 10px;
       display: flex;
-      flex: 5;
+      flex: 4;
 
       .field-select {
         border-radius: 17px;
@@ -20,8 +20,8 @@
         height: 24px !important;
         min-height: 24px !important;
         min-width: 174px !important;
-        overflow: hidden;
         padding-left: 10px;
+        padding-right: 20px;
         width: 174px !important;
       }
 
@@ -33,7 +33,7 @@
 
     .venue-id-at-offer-provider-container {
       display: flex;
-      flex: 5;
+      flex: 6;
 
       .field-text {
         height: 24px !important;
@@ -58,7 +58,7 @@
 
       .tooltip {
         &.tooltip-info {
-          margin-left: 65px;
+          margin-left: 70px;
           padding: 4px;
         }
       }
