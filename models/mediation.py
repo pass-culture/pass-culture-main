@@ -11,7 +11,7 @@ from sqlalchemy import Column, \
     Integer, \
     Text, \
     String
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 
 from models import DeactivableMixin
 from models.db import Model
@@ -25,6 +25,7 @@ class Mediation(PcObject,
                 HasThumbMixin,
                 ProvidableMixin,
                 DeactivableMixin):
+
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
@@ -52,11 +53,9 @@ class Mediation(PcObject,
                      index=True,
                      nullable=True)
 
-    offer = relationship(
-        'Offer',
-        foreign_keys=[offerId],
-        backref=backref('mediations', order_by='Mediation.dateCreated.asc()')
-    )
+    offer = relationship('Offer',
+                         foreign_keys=[offerId],
+                         backref='mediations')
 
     tutoIndex = Column(Integer,
                        nullable=True,
@@ -73,13 +72,14 @@ Mediation.__table_args__ = (
                     name='check_mediation_has_offer_xor_tutoIndex'),
 )
 
-TUTOS_PATH = Path(os.path.dirname(os.path.realpath(__file__))) / '..' \
-             / 'static' / 'tuto_mediations'
+
+TUTOS_PATH = Path(os.path.dirname(os.path.realpath(__file__))) / '..'\
+                 / 'static' / 'tuto_mediations'
 
 
 def upsertTutoMediation(index, has_back=False):
-    existing_mediation = Mediation.query.filter_by(tutoIndex=index) \
-        .first()
+    existing_mediation = Mediation.query.filter_by(tutoIndex=index)\
+                                        .first()
     mediation = existing_mediation or Mediation()
     mediation.tutoIndex = index
     PcObject.save(mediation)
