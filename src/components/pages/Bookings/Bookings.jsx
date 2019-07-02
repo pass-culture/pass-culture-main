@@ -4,9 +4,7 @@ import PropTypes from 'prop-types'
 import DownloadButtonContainer from 'components/layout/DownloadButton/DownloadButtonContainer'
 import Main from 'components/layout/Main'
 import HeroSection from 'components/layout/HeroSection/HeroSection'
-import { API_URL } from 'utils/config'
 import FilterByVenueContainer from './FilterByVenueContainer'
-import {FilterByVenue} from "./FilterByVenue";
 
 class Bookings extends Component {
   render() {
@@ -41,7 +39,7 @@ class Bookings extends Component {
   }
 }
 
-FilterByVenue.defaultProps = {
+Bookings.defaultProps = {
   pathToCsvFile: '',
   showDownloadButton: false,
 }

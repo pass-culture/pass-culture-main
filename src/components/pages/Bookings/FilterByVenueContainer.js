@@ -31,7 +31,10 @@ export const mapDispatchToProps = dispatch => ({
 })
 
 export const mapStateToProps = state => {
-  const { venues } = state.data
+
+  const { data = {} } = state;
+  const { venues } = data
+  const { bookingSummary = {} } = state;
 
   const allVenuesOption = {
     name: 'Tous les lieux',
@@ -43,7 +46,7 @@ export const mapStateToProps = state => {
 
   return {
     isDigital: state.bookingSummary.isFilterByDigitalVenues,
-    venueId: state.bookingSummary.selectedVenue,
+    venueId: bookingSummary.selectedVenue,
     venuesOptions,
   }
 }

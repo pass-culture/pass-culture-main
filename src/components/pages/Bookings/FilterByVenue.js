@@ -20,7 +20,7 @@ export class FilterByVenue extends PureComponent {
       <Fragment>
         <div id="filter-by-venue">
           <label htmlFor="venues" className={labelClassName}>
-            {'Choisissez un lieu dans la liste :'}
+            {'Sélectionner un lieu :'}
           </label>
           <select
             id="venues"
@@ -28,7 +28,7 @@ export class FilterByVenue extends PureComponent {
             onChange={this.onChangeVenue}
             disabled={isDigital}>
 
-            <option disabled selected={true}>Choisissez un lieu dans la liste.</option>
+            <option disabled selected={true} label=" "></option>
 
             {venuesOptions.map(({ name, id }) => (
               <option key={id} value={id}>

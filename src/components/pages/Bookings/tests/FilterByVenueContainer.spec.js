@@ -23,6 +23,7 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
       })
     })
   })
+
   describe('mapDispatchToProps', () => {
     it('enable to select only digital venues', () => {
       // when
