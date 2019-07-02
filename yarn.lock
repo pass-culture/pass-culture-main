@@ -4605,10 +4605,10 @@ fbjs@^0.8.0:
     setimmediate "^1.0.5"
     ua-parser-js "^0.7.18"
 
-fetch-normalize-data@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.2.0.tgz#dea9eed7857927dbdf2e392231629f5d4245b159"
-  integrity sha512-Ja7DoPoN0WoMFXslP7dfHyOnnkU8r9rZjDz6j6lpWJ+pUmurrO+B9ptTy04QuUjV3iUQt0Ca54SXjE+d4d8WIw==
+fetch-normalize-data@1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.2.2.tgz#f339573cebb4117728c8636b6808a82d030008ed"
+  integrity sha512-liEweNbgnqP9zqiljgyvdgJcTZSw/I2IAe99ctcXWIkk/iYtjCnFOW+Ua5plHuoHJ/LXd5yiq61KU48Bzx22xQ==
   dependencies:
     eslint "^5.8.0"
     lodash.uniqby "^4.7.0"
@@ -7118,10 +7118,10 @@ known-css-properties@^0.5.0:
   resolved "https://registry.yarnpkg.com/known-css-properties/-/known-css-properties-0.5.0.tgz#6ff66943ed4a5b55657ee095779a91f4536f8084"
   integrity sha512-LOS0CoS8zcZnB1EjLw4LLqDXw8nvt3AGH5dXLQP3D9O1nLLA+9GC5GnPl5mmF+JiQAtSX4VyZC7KvEtcA4kUtA==
 
-la-sass-vy@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/la-sass-vy/-/la-sass-vy-1.0.0.tgz#e9dc2def770eed46832e856b33a0ea598412d340"
-  integrity sha512-FmNqxQHoyxw1eNFho9ModhEzq8Wazm2nc9sEwmU/GQP3cE2HbalmLdwglCgHe9BtEdQ2+vYs8pzlsEaHK5UWmg==
+la-sass-vy@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/la-sass-vy/-/la-sass-vy-1.0.1.tgz#121771a6752518335e6ef6000fb1dcaa10b502e1"
+  integrity sha512-Oz2i6ZDfFFCg+LWHm47wkMm7dhwh5Uk7krHcDCL6tYDr7ZAConSXit4/B5R3zOZCXlDFQaxk9Xfg1qKnBSpOUQ==
 
 latest-version@^3.0.0:
   version "3.1.0"
@@ -10238,10 +10238,10 @@ react-lifecycles-compat@^3.0.0:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
-react-loading-infinite-scroller@1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/react-loading-infinite-scroller/-/react-loading-infinite-scroller-1.3.0.tgz#3fd39615defff1ffefe10f038459d6280b6d43f2"
-  integrity sha512-HN96G/cfb6XWBd7xn+UUX/8USGXOrnYSXVuE2DCqFqIquBF0ucgW9HQxT7mluIPKno6fUF/JzXgzT2Q+iPhE3A==
+react-loading-infinite-scroller@1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/react-loading-infinite-scroller/-/react-loading-infinite-scroller-1.3.1.tgz#3e7e70939eb88d07991aaba5e2ad2c223c6c993d"
+  integrity sha512-ulsXPFaUzaNoja/MQcSHDPJRtEjCC5RSeDPN1qc+gIegkoIs9kXCYR+kQFpJAPJvE364P5O94UMtW7iuL9IhtA==
   dependencies:
     classnames "2.2.5"
     eslint "^5.8.0"
@@ -10296,6 +10296,11 @@ react-proxy@^3.0.0-alpha.0:
   integrity sha1-RABCa8+oDKpnJMd1VpUxUgn6Swc=
   dependencies:
     lodash "^4.6.1"
+
+react-redux-modals@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-redux-modals/-/react-redux-modals-1.0.1.tgz#442a0ac38d69ff6f7dc9ec1a6c68313b49161ce3"
+  integrity sha512-H9397UEimtxBnR296bpxLswjQNO93fluBT+zA2bkCl7/blGsZnrgBCGuf3MlDoQEy6FmEQCP6wDLtolUFoGLhg==
 
 react-redux@^5.0.3, react-redux@^5.0.7:
   version "5.1.1"
@@ -10585,14 +10590,13 @@ redux-persist@^5.10.0:
   resolved "https://registry.yarnpkg.com/redux-persist/-/redux-persist-5.10.0.tgz#5d8d802c5571e55924efc1c3a9b23575283be62b"
   integrity sha512-sSJAzNq7zka3qVHKce1hbvqf0Vf5DuTVm7dr4GtsqQVOexnrvbV47RWFiPxQ8fscnyiuWyD2O92DOxPl0tGCRg==
 
-redux-saga-data@^1.8.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/redux-saga-data/-/redux-saga-data-1.8.0.tgz#282fb029cf2cb811124e11a4426a0016f597694d"
-  integrity sha512-wpRvdyJc8JHAD66DIXPrfbinva0geCyPn2WgIZTqcaQdE+RR4el4XHQt/jmuCCvGRKW4DTXXfNovXzTIX8iOAw==
+redux-saga-data@2.5.2:
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/redux-saga-data/-/redux-saga-data-2.5.2.tgz#209dcfb4e99a0e50ce7f7c942e45e58cdbbd01e1"
+  integrity sha512-CDRcV0tI8EiC/YqL2THOhULwwHv00zb5CE5snXsIrzPmw0fbnsYyURNrg0PKrJnPGyx/yEVXlQfFmsQ6qSWNPw==
   dependencies:
     eslint "^5.8.0"
-    lodash.uniqby "^4.7.0"
-    normalized-data-state "0.2.0"
+    fetch-normalize-data "1.2.2"
     prop-types "^15.6.2"
     redux "^4.0.0"
     redux-saga "^0.15.3"
@@ -13449,24 +13453,6 @@ window-size@0.1.0:
   resolved "https://registry.yarnpkg.com/window-size/-/window-size-0.1.0.tgz#5438cd2ea93b202efa3a19fe8887aee7c94f9c9d"
   integrity sha1-VDjNLqk7IC76Ohn+iIeu58lPnJ0=
 
-with-query-router@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/with-query-router/-/with-query-router-3.0.0.tgz#57f98fb04036c7727f3e05cb90a398478fb50272"
-  integrity sha512-Jzh+KZWTqtxgoYxgt34DziM7IA3mzYbphjPSzZyTeBw1HMKznoJJ1k8uiByRUfB8/fcw2oEO9hYLFU/VER3J9A==
-  dependencies:
-    classnames "2.2.5"
-    eslint "^5.8.0"
-    lodash.invert "^4.3.0"
-    lodash.uniq "^4.5.0"
-    prop-types "^15.6.2"
-    query-string "^5.1.1"
-    re-reselect "^2.1.0"
-    react "^16.5.2"
-    react-dom "^16.5.2"
-    react-router-dom "^4.3.1"
-    redux "^4.0.0"
-    reselect "^3.0.1"
-
 with-query-router@3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/with-query-router/-/with-query-router-3.2.0.tgz#a05c8d786a4dc1e56e793e056f897f3790fa4309"
@@ -13485,28 +13471,46 @@ with-query-router@3.2.0:
     redux "^4.0.0"
     reselect "^3.0.1"
 
-with-react-login@1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/with-react-login/-/with-react-login-1.6.0.tgz#f5b83448e0c46539467f6600b83b3607038eaf3a"
-  integrity sha512-cSMI7y06y4MmS08rz2A2gRawl+lOAWVXcBOoGRQmAWTeLx0NyfUfRMkQZ3vq7XRSzEigDieXs/cv63DRbCdwVA==
+with-query-router@3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/with-query-router/-/with-query-router-3.2.1.tgz#ca397ffff539840ab3c3b5c88c431a7a099ef966"
+  integrity sha512-zhEG0BHc3s6Zj2qUju9dy8dQ1V+GYhn9PgbX51vFvq5G9jnA4WPZrzPHItPus3tfyWJ3gMoshPwUhCJ+Wctpjg==
   dependencies:
     classnames "2.2.5"
     eslint "^5.8.0"
-    fetch-normalize-data "1.2.0"
+    lodash.invert "^4.3.0"
+    lodash.uniq "^4.5.0"
+    prop-types "^15.6.2"
+    query-string "^5.1.1"
+    re-reselect "^2.1.0"
+    react "^16.5.2"
+    react-dom "^16.5.2"
+    react-router-dom "^4.3.1"
+    redux "^4.0.0"
+    reselect "^3.0.1"
+
+with-react-login@1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/with-react-login/-/with-react-login-1.6.1.tgz#45b0a2d36736495d5f670cda96aba122b5456cda"
+  integrity sha512-vOUBaO3283VJ26l7ekElxzyik0KgVEx/fXLbgclejBVFnZQFYsUxJCmxje1OwXinUPFxWeiUC47wIiLAUC/bag==
+  dependencies:
+    classnames "2.2.5"
+    eslint "^5.8.0"
+    fetch-normalize-data "1.2.2"
     lodash.uniq "^4.5.0"
     prop-types "^15.6.2"
     react "^16.5.2"
     reselect "^3.0.1"
     uuid "^3.3.2"
 
-with-react-redux-login@1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/with-react-redux-login/-/with-react-redux-login-1.5.0.tgz#1d81842a9feccbfe269cb1f95255d95604e07a8d"
-  integrity sha512-Mi+xUpuLTCnmPm3x184J24mcqX1som9Yl67UzXozPwI6vJDmDi2DhORaaiuoB452AMd41SCtCFNIexzvPtRWsw==
+with-react-redux-login@1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/with-react-redux-login/-/with-react-redux-login-1.6.1.tgz#4af1667c77e8e8d7f279e7f890f614ba01e799ff"
+  integrity sha512-auQvyEpWPDlB1ZUlq5NH/5prX1JKLavUXIrPsw/UHhYFsJA70Yda7QCzg3Pn7hM3loiYL4be2CWFCSrUH3C90A==
   dependencies:
     eslint "^5.8.0"
     react-redux "^5.0.3"
-    with-react-login "1.6.0"
+    with-react-login "1.6.1"
 
 wordwrap@0.0.2:
   version "0.0.2"

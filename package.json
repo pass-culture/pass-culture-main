@@ -33,7 +33,7 @@
     "html-webpack-plugin": "2.29.0",
     "ibantools": "^2.0.0",
     "input-range-scss": "^1.5.1",
-    "la-sass-vy": "1.0.0",
+    "la-sass-vy": "1.0.1",
     "leaflet": "^1.3.1",
     "lodash.debounce": "^4.0.8",
     "lodash.flatten": "^4.4.0",
@@ -71,10 +71,11 @@
     "react-hot-loader": "^3.1.3",
     "react-icons": "^2.2.7",
     "react-leaflet": "^1.9.1",
-    "react-loading-infinite-scroller": "1.3.0",
+    "react-loading-infinite-scroller": "1.3.1",
     "react-markdown": "^4.0.2",
     "react-portal": "^4.1.5",
     "react-redux": "^5.0.3",
+    "react-redux-modals": "1.0.1",
     "react-router-dom": "^4.0.0",
     "react-timeago": "^3.4.3",
     "react-tooltip": "^3.8.4",
@@ -95,8 +96,8 @@
     "webpack-dev-server": "2.9.4",
     "webpack-manifest-plugin": "1.3.2",
     "whatwg-fetch": "2.0.3",
-    "with-query-router": "3.0.0",
-    "with-react-redux-login": "1.5.0"
+    "with-query-router": "3.2.1",
+    "with-react-redux-login": "1.6.1"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.2",
