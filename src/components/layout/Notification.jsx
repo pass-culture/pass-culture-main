@@ -1,10 +1,16 @@
 import classnames from 'classnames'
+import PropTypes from 'prop-types'
 import get from 'lodash.get'
 import { closeNotification, Icon } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
 
 class Notification extends Component {
+  dispatchCloseNotification = () => {
+    const { dispatch } = this.props
+    dispatch(closeNotification())
+  }
+
   componentDidUpdate() {
     const { notification } = this.props
     if (get(notification, 'tooltip')) {
@@ -13,7 +19,7 @@ class Notification extends Component {
   }
 
   render() {
-    const { dispatch, isFullscreen, notification } = this.props
+    const { isFullscreen, notification } = this.props
     const { text, tooltip, type, url, urlLabel } = notification || {}
 
     let svg
@@ -63,7 +69,7 @@ class Notification extends Component {
             ) : (
               <button
               className="close pl12"
-              onClick={() => dispatch(closeNotification())}>
+              onClick={this.dispatchCloseNotification}>
               {url ? 'Fermer' : 'OK'}
             </button>
             )}
@@ -72,6 +78,26 @@ class Notification extends Component {
       </div>
     )
   }
+}
+
+Notification.defaultProps = {
+  isFullscreen: false,
+  notification: null,
+  tooltip: null,
+  type: null,
+  url: null,
+  urlLabel: null
+}
+
+Notification.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  isFullscreen: PropTypes.bool,
+  notification: PropTypes.object,
+  text: PropTypes.string,
+  tooltip: PropTypes.object,
+  type: PropTypes.string,
+  url: PropTypes.string,
+  urlLabel: PropTypes.string,
 }
 
 export default Notification

@@ -7,7 +7,7 @@ import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { NavLink } from 'react-router-dom'
 import { assignData, requestData } from 'redux-saga-data'
 
-import OffererItemContainer from './OffererItemContainer'
+import OffererItemContainer from './OffererItem/OffererItemContainer'
 import PendingOffererItem from './PendingOffererItem'
 import HeroSection from '../../layout/HeroSection'
 import Icon from '../../layout/Icon'
@@ -46,7 +46,7 @@ class Offerers extends Component {
     }
   }
 
-  dispatchNotification = (url) => {
+  showNotification = (url) => {
     const { dispatch } = this.props
     dispatch(
       showNotification({
@@ -59,6 +59,17 @@ class Offerers extends Component {
     )
   }
 
+  handleSuccess = (state, action) => {
+    const {
+      payload: { data },
+    } = action
+    this.setState({
+      hasMore: data.length > 0,
+      isLoading: false,
+    })
+  }
+
+
   handleRequestData = (handleSuccess, handleFail) => {
     const { currentUser, dispatch, offerers, query } = this.props
     const { isAdmin } = currentUser || {}
@@ -67,16 +78,18 @@ class Offerers extends Component {
     const apiParamsString = stringify(apiParams)
     const apiPath = `/offerers?${apiParamsString}`
 
+    handleFail = () => {
+      this.setState({
+        hasMore: false,
+        isLoading: false,
+      })
+    }
+
     this.setState({ isLoading: true }, () => {
       dispatch(
         requestData({
           apiPath,
-          handleFail: () => {
-            this.setState({
-              hasMore: false,
-              isLoading: false,
-            })
-          },
+          handleFail: handleFail(),
           handleSuccess: (state, action) => {
             const {
               payload: { data },
@@ -85,7 +98,6 @@ class Offerers extends Component {
               hasMore: data.length > 0,
               isLoading: false,
             })
-
           },
           normalizer: offererNormalizer,
         })
@@ -99,7 +111,7 @@ class Offerers extends Component {
     const isNotificationToAddAVenueShown = offerersWithoutOffers || offersWithOnlyDigitalOffers
 
     if (isNotificationToAddAVenueShown) {
-       this.dispatchNotification(url)
+       this.showNotification(url)
     }
 
     if (!isAdmin) {
