@@ -238,6 +238,8 @@ class PcObject:
     def restize_integrity_error(e):
         if hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == DUPLICATE_KEY_ERROR_CODE:
             field = re.search('Key \((.*?)\)=', str(e._message), re.IGNORECASE).group(1)
+            if "," in field:
+                field = "global" 
             return [field, 'Une entrée avec cet identifiant existe déjà dans notre base de données']
         elif hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == NOT_FOUND_KEY_ERROR_CODE:
             field = re.search('Key \((.*?)\)=', str(e._message), re.IGNORECASE).group(1)

@@ -15,5 +15,7 @@ def test_save_user_offerer_raise_api_error_when_not_unique(app):
     uo2 = create_user_offerer(user, offerer)
 
     # When
-    with pytest.raises(ApiErrors):
+    with pytest.raises(ApiErrors) as error:
         PcObject.save(uo2)
+
+    assert error.value.errors["global"] == ['Une entrée avec cet identifiant existe déjà dans notre base de données']
