@@ -5,9 +5,8 @@ const createVenueForOffererUrl = (offerers) =>  {
     const firstOffererIdOnList = offerers[0].id
     url = `/structures/${firstOffererIdOnList}/lieux/creation`
   }
-
+  
   return url
-
 }
 
 export default createVenueForOffererUrl

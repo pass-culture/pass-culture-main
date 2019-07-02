@@ -1,33 +1,27 @@
-import createVenueForOffererUrl from '../utils'
+import createVenueForOffererUrl from '../createVenueForOffererUrl'
 
 describe('src | components | pages | Offerers | decorators | createVenueForOffererUrl', () => {
-  it("should return an empty string", () => {
+  it('should return an empty string when no offerers', () => {
     // given
     const offerers = []
 
     // when
-    const expected = ""
     const result = createVenueForOffererUrl(offerers)
 
     // then
+    const expected = ""
     expect(result).toEqual(expected)
   })
-  it("should return url with first offerer's id", () => {
+
+  it("should return an url with first offerer's id when two offerers are given", () => {
     // given
-    const offerers = [
-      {
-      id: "CQ"
-    },
-    {
-      id: "FT"
-    }
-  ]
+    const offerers = [{id: "CQ"}, {id: "FT"}]
 
     // when
-    const expected = "/structures/CQ/lieux/creation"
     const result = createVenueForOffererUrl(offerers)
 
     // then
+    const expected = "/structures/CQ/lieux/creation"
     expect(result).toEqual(expected)
   })
 })
