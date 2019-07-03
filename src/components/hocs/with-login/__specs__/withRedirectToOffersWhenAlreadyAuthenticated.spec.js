@@ -1,16 +1,6 @@
-import { mount, shallow } from 'enzyme'
-import { createBrowserHistory } from 'history'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { Route, Router, Switch } from 'react-router-dom'
-
-import {
-  configureFetchCurrentUserWithLoginSuccess,
-  configureFetchCurrentUserWithLoginSuccessAndOffers,
-  configureTestStore,
-} from './configure'
-import { OnMountCaller } from './OnMountCaller'
-import { withRedirectToOffersWhenAlreadyAuthenticated } from '../withRedirectToOffersWhenAlreadyAuthenticated'
+import { shallow } from 'enzyme'
+import { withRedirectToOffersWhenAlreadyAuthenticated, redirectToUrl} from '../withRedirectToOffersWhenAlreadyAuthenticated'
 
 const Test = () => null
 const RedirectToOffersWhenAlreadyAuthenticatedTest = withRedirectToOffersWhenAlreadyAuthenticated(
@@ -29,57 +19,73 @@ describe('src | components | pages | hocs | with-login | withRedirectToOffersWhe
     })
   })
 
-  beforeEach(() => {
-    fetch.resetMocks()
-  })
+  describe('redirectToUrl', () => {
+    describe('when the user is signin for the first time and has no offer and only a virtual venue created by default', () => {
+      it('should redirect to offerers page', () => {
+        // given
+        const data = {currentUser: {
+          hasOffers: false,
+          hasPhysicalVenues: false
+        }
+      }
 
-  describe('functions', () => {
-    it('should redirect to structures when when pro already authenticated but without offers', done => {
-      // given
-      const history = createBrowserHistory()
-      history.push('/test')
-      const store = configureTestStore()
-      configureFetchCurrentUserWithLoginSuccess()
+        // when
+        const result = redirectToUrl(data)
 
-      // when
-      mount(
-        <Provider store={store}>
-          <Router history={history}>
-            <Switch>
-              <Route path="/test">
-                <RedirectToOffersWhenAlreadyAuthenticatedTest />
-              </Route>
-              <Route path="/structures">
-                <OnMountCaller onMountCallback={done} />
-              </Route>
-            </Switch>
-          </Router>
-        </Provider>
-      )
+        // then
+        expect(result).toEqual("/structures")
+      })
     })
 
-    it('should redirect to offers when pro already authenticated with offers and venue', done => {
-      // given
-      const history = createBrowserHistory()
-      history.push('/test')
-      const store = configureTestStore()
-      configureFetchCurrentUserWithLoginSuccessAndOffers()
+    describe('when the user has a digital offer and only a virtual venue', () => {
+      it('should redirect to offerers page', () => {
+        // given
+        const data =  { currentUser: {
+          hasOffers: true,
+          hasPhysicalVenues: false
+          }
+        }
 
-      // when
-      mount(
-        <Provider store={store}>
-          <Router history={history}>
-            <Switch>
-              <Route path="/test">
-                <RedirectToOffersWhenAlreadyAuthenticatedTest />
-              </Route>
-              <Route path="/offres">
-                <OnMountCaller onMountCallback={done} />
-              </Route>
-            </Switch>
-          </Router>
-        </Provider>
-      )
+        // when
+        const result = redirectToUrl(data)
+
+        // then
+        expect(result).toEqual("/structures")
+      })
+    })
+
+    describe('when the user has no offers but a physical venue', () => {
+      it('should redirect to offers page', () => {
+        // given
+        const data = { currentUser: {
+            hasOffers: false,
+              hasPhysicalVenues: true
+          }
+        }
+
+        // when
+        const result = redirectToUrl(data)
+
+        // then
+        expect(result).toEqual("/offres")
+      })
+    })
+
+    describe('when the user has offers in physical venues', () => {
+      it('should redirect to offers page', () => {
+        // given
+        const data = { currentUser: {
+          hasOffers: true,
+          hasPhysicalVenues: true
+          }
+        }
+
+        // when
+        const result = redirectToUrl(data)
+
+        // then
+        expect(result).toEqual("/offres")
+      })
     })
   })
 })

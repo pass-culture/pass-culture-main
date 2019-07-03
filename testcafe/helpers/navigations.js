@@ -46,6 +46,7 @@ export const navigateToOffersAs = user => async t => {
 
   await t.useRole(createUserRole(user))
   await t.click(navbarAnchor).click(offersNavbarAnchor)
+}
 
 export const navigateToNewOffererAs = (user, userRole) => async t => {
   const newOffererAnchor = Selector(
