@@ -31,7 +31,7 @@ def test_find_user_offerer_email(app):
 
 
 @clean_database
-def test_find_one_or_none_by_user_id_should_return_one_user_offerers_with_user_id(app):
+def test_find_one_or_none_by_user_id_should_return_one_user_offerer_with_same_user_id(app):
     # Given
     user = create_user(email='offerer@email.com')
     offerer = create_offerer(siren='123456789')

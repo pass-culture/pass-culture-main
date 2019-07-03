@@ -104,9 +104,9 @@ class Post:
                     'Html-part': None,
                     })
         @clean_database
-        def when_offerer_already_have_user_offerer(self,
-                                                   write_object_validation_email,
-                                                   app):
+        def when_offerer_already_have_user_offerer_new_user_offerer_has_validation_token(self,
+                                                                                         write_object_validation_email,
+                                                                                         app):
             # Given
             user = create_user(can_book_free_offers=False, is_admin=False)
             user_2 = create_user(email="other_offerer@mail.com", is_admin=False)
@@ -193,7 +193,7 @@ class Post:
         @clean_database
         @patch('domain.admin_emails.write_object_validation_email',
                return_value={'Html-part': None})
-        def when_offerer_was_not_validated_he_keeps_validation_token_and_user_offerer_get_one(self,
+        def expect_not_validated_offerer_to_keeps_validation_token_and_user_offerer_get_one(self,
                                                                                               write_object_validation_email,
                                                                                               app):
             # Given
