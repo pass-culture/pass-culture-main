@@ -3,14 +3,11 @@ import React, { PureComponent } from 'react'
 import { Transition } from 'react-transition-group'
 
 import CloseLink from '../layout/Header/CloseLink'
+import getMenuRoutes from './getMenuRoutes'
 import Header from './Header'
 import NavLink from './NavLink'
-import routes from '../../utils/routes'
-import { getMenuRoutes } from '../../utils/routes-utils'
 import SignoutButtonContainer from './SignoutButtonContainer'
 import SimpleLink from './SimpleLink'
-
-const menuRoutes = getMenuRoutes(routes)
 
 class Menu extends PureComponent {
   componentDidMount() {
@@ -26,7 +23,8 @@ class Menu extends PureComponent {
   urlWithoutMenuElement = history => () => history.location.pathname.replace('/menu', '')
 
   render() {
-    const { currentUser, history, readRecommendations } = this.props
+    const { currentUser, history, readRecommendations, routes } = this.props
+    const menuRoutes = getMenuRoutes(routes)
 
     return (
       <Transition
@@ -48,11 +46,8 @@ class Menu extends PureComponent {
                   closeTitle="Fermer la navigation"
                   closeTo={this.urlWithoutMenuElement(history)()}
                 />
-                <Header currentUser={currentUser} />
-                <nav
-                  className="flex-rows pb0"
-                  id="main-menu-navigation"
-                >
+                {currentUser && <Header currentUser={currentUser} />}
+                <nav className="flex-rows pb0" id="main-menu-navigation">
                   {menuRoutes.map(route =>
                     route.href ? (
                       <SimpleLink
@@ -80,10 +75,15 @@ class Menu extends PureComponent {
   }
 }
 
+Menu.defaultProps = {
+  currentUser: null,
+}
+
 Menu.propTypes = {
-  currentUser: PropTypes.shape().isRequired,
+  currentUser: PropTypes.shape(),
   history: PropTypes.shape().isRequired,
   readRecommendations: PropTypes.arrayOf(PropTypes.shape().isRequired).isRequired,
+  routes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   toggleOverlay: PropTypes.func.isRequired,
 }
 

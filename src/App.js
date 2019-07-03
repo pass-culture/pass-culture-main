@@ -11,10 +11,6 @@ import Notifications from './components/layout/notifications'
 import ErrorCatcherContainer from './components/layout/ErrorCatcher/ErrorCatcherContainer'
 import { SharePopin } from './components/share/SharePopin'
 import { ROOT_PATH, IS_DEV, PROJECT_NAME } from './utils/config'
-import routes from './utils/routes'
-import { getReactRoutes } from './utils/routes-utils'
-
-const appRoutes = getReactRoutes(routes)
 
 const getPageTitle = obj => `${obj && obj.title ? `${obj.title} - ` : ''}`
 
@@ -26,8 +22,8 @@ const getBodyClass = obj => {
   return `page-${path || 'home'}`
 }
 
-const App = ({ location, children, history }) => {
-  const currentRouteObj = getCurrentRouteObjectByPath(appRoutes, location.pathname)
+const App = ({ history, location, children, routes }) => {
+  const currentRouteObj = getCurrentRouteObjectByPath(routes, location.pathname)
   const bodyClass = getBodyClass(currentRouteObj)
   const pageTitle = getPageTitle(currentRouteObj)
   return (
@@ -42,8 +38,7 @@ const App = ({ location, children, history }) => {
           {children}
           <Overlay />
           <Route
-            component={MenuContainer}
-            history={history}
+            render={() => <MenuContainer history={history} routes={routes} />}
             path="*/menu"
           />
           <Splash />
@@ -65,6 +60,7 @@ App.propTypes = {
   children: PropTypes.node.isRequired,
   history: PropTypes.shape().isRequired,
   location: PropTypes.shape().isRequired,
+  routes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default withRouter(App)

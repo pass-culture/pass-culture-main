@@ -12,6 +12,7 @@ import Menu from '../Menu'
 import NavLink from '../NavLink'
 import SignoutButtonContainer from '../SignoutButtonContainer'
 import SimpleLink from '../SimpleLink'
+import { getFeaturedRoutes } from '../../router/utils'
 
 jest.mock('../../../reducers/overlay', () => ({
   toggleOverlay: jest.fn(),
@@ -30,6 +31,7 @@ describe('src | components | menu | Menu', () => {
         },
       },
       readRecommendations: [],
+      routes: getFeaturedRoutes(['WEBAPP_SIGNUP']),
       toggleOverlay: jest.fn(),
     }
   })
@@ -82,7 +84,7 @@ describe('src | components | menu | Menu', () => {
       expect(closeLink).toHaveLength(1)
       expect(header).toHaveLength(1)
       expect(simpleLink).toHaveLength(2)
-      expect(navLink).toHaveLength(5)
+      expect(navLink).toHaveLength(4)
       expect(signoutButtonContainer).toHaveLength(1)
       expect(props.toggleOverlay).toHaveBeenCalledWith()
     })
