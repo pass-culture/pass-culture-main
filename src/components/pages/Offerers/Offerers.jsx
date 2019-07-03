@@ -8,7 +8,7 @@ import { NavLink } from 'react-router-dom'
 import { assignData, requestData } from 'redux-saga-data'
 
 import OffererItemContainer from './OffererItem/OffererItemContainer'
-import PendingOffererItem from './PendingOffererItem'
+import PendingOffererItem from './OffererItem/PendingOffererItem'
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import Icon from '../../layout/Icon'
 import Main from '../../layout/Main'

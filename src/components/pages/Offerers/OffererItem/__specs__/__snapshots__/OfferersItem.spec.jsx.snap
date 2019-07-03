@@ -1,0 +1,822 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | Offerers | OffererItem snapshot should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <OffererItem
+    physicalVenues={Array []}
+    venues={Array []}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <div
+          className="list-content"
+        >
+          <p
+            className="name"
+          >
+            <NavLink
+              activeClassName="active"
+              aria-current="page"
+              to="/structures/undefined"
+            />
+          </p>
+          <p
+            className="is-italic mb12"
+            id="offerer-item-validation"
+          >
+            Structure en cours de validation par l'équipe Pass Culture.
+          </p>
+          <ul
+            className="actions"
+          >
+            <li
+              className="is-italic"
+            >
+              Créez un lieu pour pouvoir y associer des offres.
+            </li>
+            <React.Fragment>
+              <li>
+                <Icon
+                  svg="ico-venue"
+                />
+                0 lieu
+              </li>
+              <li>
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="has-text-primary"
+                  to="/structures/undefined/lieux/creation"
+                >
+                  <Icon
+                    svg="ico-venue-r"
+                  />
+                   Nouveau lieu
+                </NavLink>
+              </li>
+            </React.Fragment>
+          </ul>
+        </div>,
+        <div
+          className="caret"
+        >
+          <NavLink
+            activeClassName="active"
+            aria-current="page"
+            to="/structures/undefined"
+          >
+            <Icon
+              svg="ico-next-S"
+            />
+          </NavLink>
+        </div>,
+      ],
+      "className": "offerer-item",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <p
+              className="name"
+            >
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                to="/structures/undefined"
+              />
+            </p>,
+            <p
+              className="is-italic mb12"
+              id="offerer-item-validation"
+            >
+              Structure en cours de validation par l'équipe Pass Culture.
+            </p>,
+            <ul
+              className="actions"
+            >
+              <li
+                className="is-italic"
+              >
+                Créez un lieu pour pouvoir y associer des offres.
+              </li>
+              <React.Fragment>
+                <li>
+                  <Icon
+                    svg="ico-venue"
+                  />
+                  0 lieu
+                </li>
+                <li>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/structures/undefined/lieux/creation"
+                  >
+                    <Icon
+                      svg="ico-venue-r"
+                    />
+                     Nouveau lieu
+                  </NavLink>
+                </li>
+              </React.Fragment>
+            </ul>,
+          ],
+          "className": "list-content",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <NavLink
+                activeClassName="active"
+                aria-current="page"
+                to="/structures/undefined"
+              />,
+              "className": "name",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "activeClassName": "active",
+                "aria-current": "page",
+                "children": undefined,
+                "to": "/structures/undefined",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "type": "p",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Structure en cours de validation par l'équipe Pass Culture.",
+              "className": "is-italic mb12",
+              "id": "offerer-item-validation",
+            },
+            "ref": null,
+            "rendered": "Structure en cours de validation par l'équipe Pass Culture.",
+            "type": "p",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <li
+                  className="is-italic"
+                >
+                  Créez un lieu pour pouvoir y associer des offres.
+                </li>,
+                <React.Fragment>
+                  <li>
+                    <Icon
+                      svg="ico-venue"
+                    />
+                    0 lieu
+                  </li>
+                  <li>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="has-text-primary"
+                      to="/structures/undefined/lieux/creation"
+                    >
+                      <Icon
+                        svg="ico-venue-r"
+                      />
+                       Nouveau lieu
+                    </NavLink>
+                  </li>
+                </React.Fragment>,
+              ],
+              "className": "actions",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": "0",
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Créez un lieu pour pouvoir y associer des offres.",
+                  "className": "is-italic",
+                },
+                "ref": null,
+                "rendered": "Créez un lieu pour pouvoir y associer des offres.",
+                "type": "li",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "children": Array [
+                    <li>
+                      <Icon
+                        svg="ico-venue"
+                      />
+                      0 lieu
+                    </li>,
+                    <li>
+                      <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="has-text-primary"
+                        to="/structures/undefined/lieux/creation"
+                      >
+                        <Icon
+                          svg="ico-venue-r"
+                        />
+                         Nouveau lieu
+                      </NavLink>
+                    </li>,
+                  ],
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": Array [
+                        <Icon
+                          svg="ico-venue"
+                        />,
+                        "0 lieu",
+                      ],
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "svg": "ico-venue",
+                        },
+                        "ref": null,
+                        "rendered": null,
+                        "type": [Function],
+                      },
+                      "0 lieu",
+                    ],
+                    "type": "li",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="has-text-primary"
+                        to="/structures/undefined/lieux/creation"
+                      >
+                        <Icon
+                          svg="ico-venue-r"
+                        />
+                         Nouveau lieu
+                      </NavLink>,
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "activeClassName": "active",
+                        "aria-current": "page",
+                        "children": Array [
+                          <Icon
+                            svg="ico-venue-r"
+                          />,
+                          " Nouveau lieu",
+                        ],
+                        "className": "has-text-primary",
+                        "to": "/structures/undefined/lieux/creation",
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "svg": "ico-venue-r",
+                          },
+                          "ref": null,
+                          "rendered": null,
+                          "type": [Function],
+                        },
+                        " Nouveau lieu",
+                      ],
+                      "type": [Function],
+                    },
+                    "type": "li",
+                  },
+                ],
+                "type": Symbol(react.fragment),
+              },
+            ],
+            "type": "ul",
+          },
+        ],
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <NavLink
+            activeClassName="active"
+            aria-current="page"
+            to="/structures/undefined"
+          >
+            <Icon
+              svg="ico-next-S"
+            />
+          </NavLink>,
+          "className": "caret",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "activeClassName": "active",
+            "aria-current": "page",
+            "children": <Icon
+              svg="ico-next-S"
+            />,
+            "to": "/structures/undefined",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "svg": "ico-next-S",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          "type": [Function],
+        },
+        "type": "div",
+      },
+    ],
+    "type": "li",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <div
+            className="list-content"
+          >
+            <p
+              className="name"
+            >
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                to="/structures/undefined"
+              />
+            </p>
+            <p
+              className="is-italic mb12"
+              id="offerer-item-validation"
+            >
+              Structure en cours de validation par l'équipe Pass Culture.
+            </p>
+            <ul
+              className="actions"
+            >
+              <li
+                className="is-italic"
+              >
+                Créez un lieu pour pouvoir y associer des offres.
+              </li>
+              <React.Fragment>
+                <li>
+                  <Icon
+                    svg="ico-venue"
+                  />
+                  0 lieu
+                </li>
+                <li>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/structures/undefined/lieux/creation"
+                  >
+                    <Icon
+                      svg="ico-venue-r"
+                    />
+                     Nouveau lieu
+                  </NavLink>
+                </li>
+              </React.Fragment>
+            </ul>
+          </div>,
+          <div
+            className="caret"
+          >
+            <NavLink
+              activeClassName="active"
+              aria-current="page"
+              to="/structures/undefined"
+            >
+              <Icon
+                svg="ico-next-S"
+              />
+            </NavLink>
+          </div>,
+        ],
+        "className": "offerer-item",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <p
+                className="name"
+              >
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  to="/structures/undefined"
+                />
+              </p>,
+              <p
+                className="is-italic mb12"
+                id="offerer-item-validation"
+              >
+                Structure en cours de validation par l'équipe Pass Culture.
+              </p>,
+              <ul
+                className="actions"
+              >
+                <li
+                  className="is-italic"
+                >
+                  Créez un lieu pour pouvoir y associer des offres.
+                </li>
+                <React.Fragment>
+                  <li>
+                    <Icon
+                      svg="ico-venue"
+                    />
+                    0 lieu
+                  </li>
+                  <li>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="has-text-primary"
+                      to="/structures/undefined/lieux/creation"
+                    >
+                      <Icon
+                        svg="ico-venue-r"
+                      />
+                       Nouveau lieu
+                    </NavLink>
+                  </li>
+                </React.Fragment>
+              </ul>,
+            ],
+            "className": "list-content",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  to="/structures/undefined"
+                />,
+                "className": "name",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "activeClassName": "active",
+                  "aria-current": "page",
+                  "children": undefined,
+                  "to": "/structures/undefined",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              "type": "p",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Structure en cours de validation par l'équipe Pass Culture.",
+                "className": "is-italic mb12",
+                "id": "offerer-item-validation",
+              },
+              "ref": null,
+              "rendered": "Structure en cours de validation par l'équipe Pass Culture.",
+              "type": "p",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <li
+                    className="is-italic"
+                  >
+                    Créez un lieu pour pouvoir y associer des offres.
+                  </li>,
+                  <React.Fragment>
+                    <li>
+                      <Icon
+                        svg="ico-venue"
+                      />
+                      0 lieu
+                    </li>
+                    <li>
+                      <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="has-text-primary"
+                        to="/structures/undefined/lieux/creation"
+                      >
+                        <Icon
+                          svg="ico-venue-r"
+                        />
+                         Nouveau lieu
+                      </NavLink>
+                    </li>
+                  </React.Fragment>,
+                ],
+                "className": "actions",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": "0",
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Créez un lieu pour pouvoir y associer des offres.",
+                    "className": "is-italic",
+                  },
+                  "ref": null,
+                  "rendered": "Créez un lieu pour pouvoir y associer des offres.",
+                  "type": "li",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "children": Array [
+                      <li>
+                        <Icon
+                          svg="ico-venue"
+                        />
+                        0 lieu
+                      </li>,
+                      <li>
+                        <NavLink
+                          activeClassName="active"
+                          aria-current="page"
+                          className="has-text-primary"
+                          to="/structures/undefined/lieux/creation"
+                        >
+                          <Icon
+                            svg="ico-venue-r"
+                          />
+                           Nouveau lieu
+                        </NavLink>
+                      </li>,
+                    ],
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": Array [
+                          <Icon
+                            svg="ico-venue"
+                          />,
+                          "0 lieu",
+                        ],
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "svg": "ico-venue",
+                          },
+                          "ref": null,
+                          "rendered": null,
+                          "type": [Function],
+                        },
+                        "0 lieu",
+                      ],
+                      "type": "li",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": <NavLink
+                          activeClassName="active"
+                          aria-current="page"
+                          className="has-text-primary"
+                          to="/structures/undefined/lieux/creation"
+                        >
+                          <Icon
+                            svg="ico-venue-r"
+                          />
+                           Nouveau lieu
+                        </NavLink>,
+                      },
+                      "ref": null,
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "activeClassName": "active",
+                          "aria-current": "page",
+                          "children": Array [
+                            <Icon
+                              svg="ico-venue-r"
+                            />,
+                            " Nouveau lieu",
+                          ],
+                          "className": "has-text-primary",
+                          "to": "/structures/undefined/lieux/creation",
+                        },
+                        "ref": null,
+                        "rendered": Array [
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "function",
+                            "props": Object {
+                              "svg": "ico-venue-r",
+                            },
+                            "ref": null,
+                            "rendered": null,
+                            "type": [Function],
+                          },
+                          " Nouveau lieu",
+                        ],
+                        "type": [Function],
+                      },
+                      "type": "li",
+                    },
+                  ],
+                  "type": Symbol(react.fragment),
+                },
+              ],
+              "type": "ul",
+            },
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <NavLink
+              activeClassName="active"
+              aria-current="page"
+              to="/structures/undefined"
+            >
+              <Icon
+                svg="ico-next-S"
+              />
+            </NavLink>,
+            "className": "caret",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "activeClassName": "active",
+              "aria-current": "page",
+              "children": <Icon
+                svg="ico-next-S"
+              />,
+              "to": "/structures/undefined",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "svg": "ico-next-S",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "type": [Function],
+          },
+          "type": "div",
+        },
+      ],
+      "type": "li",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+  },
+}
+`;

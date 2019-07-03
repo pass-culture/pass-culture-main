@@ -1,36 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offerers | PendingOffererItem snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Offerers | OffererItem | PendingOffererItem snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <PendingOffererItem
-    currentUser={Object {}}
-    dispatch={[MockFunction]}
-    location={
-      Object {
-        "search": "",
-      }
-    }
-    offerer={
-      Object {
-        "name": "Fake Name",
-        "siren": "123456789",
-      }
-    }
-    pagination={
-      Object {
-        "apiQuery": Object {
-          "keywords": null,
-        },
-      }
-    }
-    pendingPendingOffererItem={Array []}
-    query={
-      Object {
-        "change": [MockFunction],
-        "parse": [Function],
-      }
-    }
+    offerer={Object {}}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -52,19 +26,17 @@ ShallowWrapper {
         <p>
           <span
             className="name"
-          >
-            Fake Name
-          </span>
+          />
            (SIREN:
            
-          123 456 789
+          
           )
         </p>
         <p
           className="is-italic mb12"
           id="offerer-item-validation"
         >
-          Rattachement en cours de validation par la structure
+          Rattachement en cours de validation
         </p>
       </div>,
       "className": "offerer-item pending",
@@ -79,19 +51,17 @@ ShallowWrapper {
           <p>
             <span
               className="name"
-            >
-              Fake Name
-            </span>
+            />
              (SIREN:
              
-            123 456 789
+            
             )
           </p>,
           <p
             className="is-italic mb12"
             id="offerer-item-validation"
           >
-            Rattachement en cours de validation par la structure
+            Rattachement en cours de validation
           </p>,
         ],
         "className": "list-content",
@@ -106,12 +76,10 @@ ShallowWrapper {
             "children": Array [
               <span
                 className="name"
-              >
-                Fake Name
-              </span>,
+              />,
               " (SIREN:",
               " ",
-              "123 456 789",
+              "",
               ")",
             ],
           },
@@ -122,16 +90,16 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Fake Name",
+                "children": undefined,
                 "className": "name",
               },
               "ref": null,
-              "rendered": "Fake Name",
+              "rendered": null,
               "type": "span",
             },
             " (SIREN:",
             " ",
-            "123 456 789",
+            "",
             ")",
           ],
           "type": "p",
@@ -141,12 +109,12 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Rattachement en cours de validation par la structure",
+            "children": "Rattachement en cours de validation",
             "className": "is-italic mb12",
             "id": "offerer-item-validation",
           },
           "ref": null,
-          "rendered": "Rattachement en cours de validation par la structure",
+          "rendered": "Rattachement en cours de validation",
           "type": "p",
         },
       ],
@@ -166,19 +134,17 @@ ShallowWrapper {
           <p>
             <span
               className="name"
-            >
-              Fake Name
-            </span>
+            />
              (SIREN:
              
-            123 456 789
+            
             )
           </p>
           <p
             className="is-italic mb12"
             id="offerer-item-validation"
           >
-            Rattachement en cours de validation par la structure
+            Rattachement en cours de validation
           </p>
         </div>,
         "className": "offerer-item pending",
@@ -193,19 +159,17 @@ ShallowWrapper {
             <p>
               <span
                 className="name"
-              >
-                Fake Name
-              </span>
+              />
                (SIREN:
                
-              123 456 789
+              
               )
             </p>,
             <p
               className="is-italic mb12"
               id="offerer-item-validation"
             >
-              Rattachement en cours de validation par la structure
+              Rattachement en cours de validation
             </p>,
           ],
           "className": "list-content",
@@ -220,12 +184,10 @@ ShallowWrapper {
               "children": Array [
                 <span
                   className="name"
-                >
-                  Fake Name
-                </span>,
+                />,
                 " (SIREN:",
                 " ",
-                "123 456 789",
+                "",
                 ")",
               ],
             },
@@ -236,16 +198,16 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "Fake Name",
+                  "children": undefined,
                   "className": "name",
                 },
                 "ref": null,
-                "rendered": "Fake Name",
+                "rendered": null,
                 "type": "span",
               },
               " (SIREN:",
               " ",
-              "123 456 789",
+              "",
               ")",
             ],
             "type": "p",
@@ -255,12 +217,12 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Rattachement en cours de validation par la structure",
+              "children": "Rattachement en cours de validation",
               "className": "is-italic mb12",
               "id": "offerer-item-validation",
             },
             "ref": null,
-            "rendered": "Rattachement en cours de validation par la structure",
+            "rendered": "Rattachement en cours de validation",
             "type": "p",
           },
         ],
