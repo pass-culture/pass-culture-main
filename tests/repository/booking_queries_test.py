@@ -61,27 +61,28 @@ def test_find_all_by_offerer_with_event_and_things(app):
 
 class FindAllOffererBookingsByVenueIdTest:
     @clean_database
-    def test_find_all_bookings_by_offerer_in_a_not_search_context_returns_all_results(self, app):
+    def test_in_a_not_search_context_returns_all_results(self, app):
         # given
         user = create_user()
         offerer1 = create_offerer(siren='123456789')
         offerer2 = create_offerer(siren='987654321')
         venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
-        venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
+        venue2 = create_venue(offerer1, siret=offerer1.siren + '54321')
+        venue3 = create_venue(offerer2, siret=offerer2.siren + '12345')
         stock1 = create_stock_with_event_offer(offerer1, venue1, price=0, available=100)
-        stock2 = create_stock_with_thing_offer(offerer1, venue1, price=0, available=100)
+        stock2 = create_stock_with_thing_offer(offerer1, venue2, price=0, available=100)
+        stock3 = create_stock_with_thing_offer(offerer2, venue3, price=0, available=100)
         booking1 = create_booking(user, stock1, venue1, recommendation=None, quantity=2)
-        booking2 = create_booking(user, stock1, venue2, recommendation=None, quantity=2)
-        booking3 = create_booking(user, stock2, venue1, recommendation=None, quantity=1)
-        booking4 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
+        booking2 = create_booking(user, stock2, venue2, recommendation=None, quantity=2)
+        booking3 = create_booking(user, stock3, venue3, recommendation=None, quantity=2)
 
-        PcObject.save(booking1, booking2, booking3, booking4)
+        PcObject.save(booking1, booking2, booking3)
 
         # when
         bookings = find_all_offerer_bookings_by_venue_id(offerer1.id)
 
         # then
-        assert len(bookings) == 4
+        assert len(bookings) == 2
 
 
     @clean_database

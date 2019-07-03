@@ -24,7 +24,7 @@ def get_by_offer_id(offer_id):
     return Offerer.query.join(Venue).join(Offer).filter_by(id=offer_id).first()
 
 
-def get_by_venue_id_and_offer_id(offer_id, venue_id):
+def get_by_venue_id_and_offer_id(offer_id: str, venue_id: str) -> Offerer:
     return Offerer.query \
         .join(Venue) \
         .filter_by(id=venue_id) \
