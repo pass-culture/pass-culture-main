@@ -2,7 +2,7 @@ import requests
 from datetime import datetime
 
 from domain.titelive import read_stock_datetime
-from models import Offer, VenueProvider
+from models import Offer, VenueProvider, PcObject
 from models.db import db
 from models.local_provider import LocalProvider, ProvidableInfo
 from models.stock import Stock
@@ -85,15 +85,8 @@ class TiteLiveStocks(LocalProvider):
         if self.product is None:
             return None, None
 
-        providable_info_stock = ProvidableInfo()
-        providable_info_stock.type = Stock
-        providable_info_stock.idAtProviders = "%s@%s" % (self.titelive_stock['ref'], self.venue_siret)
-        providable_info_stock.dateModifiedAtProvider = datetime.utcnow()
-
-        providable_info_offer = ProvidableInfo()
-        providable_info_offer.type = Offer
-        providable_info_offer.idAtProviders = "%s@%s" % (self.titelive_stock['ref'], self.venue_siret)
-        providable_info_offer.dateModifiedAtProvider = datetime.utcnow()
+        providable_info_stock = self.create_providable_info(Stock)
+        providable_info_offer = self.create_providable_info(Offer)
 
         return providable_info_offer, providable_info_stock
 
@@ -120,3 +113,10 @@ class TiteLiveStocks(LocalProvider):
         obj.extraData = self.product.extraData
         obj.venueId = self.venueId
         obj.productId = self.product.id
+
+    def create_providable_info(self, model_object: PcObject) -> ProvidableInfo:
+        providable_info = ProvidableInfo()
+        providable_info.type = model_object
+        providable_info.idAtProviders = "%s@%s" % (self.titelive_stock['ref'], self.venue_siret)
+        providable_info.dateModifiedAtProvider = datetime.utcnow()
+        return providable_info

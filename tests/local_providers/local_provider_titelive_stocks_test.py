@@ -46,10 +46,10 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
     PcObject.save(venue)
 
-    titeLive_things_provider = get_provider_by_local_class('TiteLiveThings')
+    tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
     venue_provider = VenueProvider()
     venue_provider.venue = venue
-    venue_provider.provider = titeLive_things_provider
+    venue_provider.provider = tite_live_things_provider
     venue_provider.isActive = True
     venue_provider.venueIdAtOfferProvider = '77567146400110'
     PcObject.save(venue_provider)

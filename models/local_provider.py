@@ -4,7 +4,7 @@ from abc import abstractmethod
 from collections import Iterator
 from datetime import datetime
 from pprint import pprint
-from typing import Dict
+from typing import Dict, Optional
 
 from postgresql_audit.flask import versioning_manager
 from sqlalchemy import text
@@ -139,7 +139,7 @@ class LocalProvider(Iterator):
             self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
             self.erroredThumbs += 1
             logger.info('ERROR during handleThumb: '
-                  + e.__class__.__name__ + ' ' + str(e))
+                        + e.__class__.__name__ + ' ' + str(e))
             traceback.print_tb(e.__traceback__)
             pprint(vars(e))
 
@@ -156,7 +156,7 @@ class LocalProvider(Iterator):
 
     def createObject(self, providable_info):
         logger.debug('  Creating ' + providable_info.type.__name__
-              + '# ' + providable_info.idAtProviders)
+                     + '# ' + providable_info.idAtProviders)
         obj = providable_info.type()
         obj.idAtProviders = providable_info.idAtProviders
         self.createdObjects += 1
@@ -172,7 +172,7 @@ class LocalProvider(Iterator):
     def handleUpdate(self, obj, providable_info, is_new_obj):
         if not is_new_obj:
             logger.debug('  Updating ' + providable_info.type.__name__
-                  + '# ' + providable_info.idAtProviders)
+                         + '# ' + providable_info.idAtProviders)
             self.updatedObjects += 1
         try:
             self.updateObject(obj)
@@ -180,7 +180,7 @@ class LocalProvider(Iterator):
             obj.dateModifiedAtLastProvider = providable_info.dateModifiedAtProvider
         except Exception as e:
             logger.info('ERROR during updateObject: '
-                  + e.__class__.__name__ + ' ' + str(e))
+                        + e.__class__.__name__ + ' ' + str(e))
             self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
             self.erroredObjects += 1
             traceback.print_tb(e.__traceback__)
@@ -208,16 +208,16 @@ class LocalProvider(Iterator):
             return
 
         logger.debug("Updating "
-              + inflect_engine.plural(self.objectType.__name__)
-              + " from provider " + self.name)
+                     + inflect_engine.plural(self.objectType.__name__)
+                     + " from provider " + self.name)
         self.logEvent(LocalProviderEventType.SyncStart)
 
         if self.venueProvider is not None:
             logger.debug(" for venue " + self.venueProvider.venue.name
-                  + " (#" + str(self.venueProvider.venueId) + " / "
-                  + humanize(self.venueProvider.venueId) + ") "
-                  + " venueIdAtOfferProvider="
-                  + self.venueProvider.venueIdAtOfferProvider)
+                         + " (#" + str(self.venueProvider.venueId) + " / "
+                         + humanize(self.venueProvider.venueId) + ") "
+                         + " venueIdAtOfferProvider="
+                         + self.venueProvider.venueIdAtOfferProvider)
         else:
             logger.info("venueProvider not found")
 
@@ -246,7 +246,7 @@ class LocalProvider(Iterator):
                             if providable_info.dateModifiedAtProvider is None \
                                     or not self.canCreate:
                                 logger.debug('  Not creating or updating ' + providable_info.type.__name__ +
-                                      '# ' + providable_info.idAtProviders)
+                                             '# ' + providable_info.idAtProviders)
                                 continue
                             pc_obj = self.createObject(providable_info)
                         else:
@@ -276,8 +276,8 @@ class LocalProvider(Iterator):
 
                         else:
                             logger.debug('  Not creating or updating '
-                                  + providable_info.type.__name__
-                                  + '# ' + providable_info.idAtProviders)
+                                         + providable_info.type.__name__
+                                         + '# ' + providable_info.idAtProviders)
 
                         if pc_obj is not None:
                             if isinstance(pc_obj, HasThumbMixin):
@@ -343,37 +343,30 @@ class LocalProvider(Iterator):
         if len(chunk_to_update) > 0:
             self.save_chunk_to_update(chunk_to_update, providable_info)
 
-    def save_chunk_to_update(self, chunk_to_update, providable_info):
+    def save_chunk_to_update(self, chunk_to_update: dict, providable_info: ProvidableInfo):
         conn = db.engine.connect()
 
-        for key, value in chunk_to_update.items():
+        for chunk_key, chunk_object in chunk_to_update.items():
             try:
-                object_type = getattr(models, key.split('|')[1])
+                model_name = chunk_key.split('|')[1]
+                model_object = getattr(models, model_name)
             except AttributeError:
-                object_type = providable_info.type
+                model_object = providable_info.type
 
-            tmp_dict = value.__dict__
+            dict_to_update = build_dict_to_update(chunk_object)
 
-            if '_sa_instance_state' in tmp_dict:
-                del tmp_dict['_sa_instance_state']
-            if 'datePublished' in tmp_dict:
-                del tmp_dict['datePublished']
-            if 'venue' in tmp_dict:
-                del tmp_dict['venue']
-            if 'offer' in tmp_dict:
-                del tmp_dict['offer']
-            if 'stocks' in tmp_dict:
-                del tmp_dict['stocks']
-            statement = object_type.__table__.update(). \
-                where(object_type.id == tmp_dict['id']). \
-                values(tmp_dict)
+            statement = model_object.__table__.update(). \
+                where(model_object.id == dict_to_update['id']). \
+                values(dict_to_update)
             try:
                 conn.execute(statement)
             except ValueError as e:
                 logger.error('ERROR during object update: '
                              + e.__class__.__name__ + ' ' + str(e))
 
-    def get_object_from_current_chunks(self, providable_info, chunk_to_insert, chunk_to_update):
+    def get_object_from_current_chunks(self, providable_info: ProvidableInfo,
+                                       chunk_to_insert: dict,
+                                       chunk_to_update: dict) -> Optional[PcObject]:
         chunk_key = providable_info.idAtProviders + '|' + str(providable_info.type.__name__)
         if chunk_key in chunk_to_insert:
             pc_object = chunk_to_insert[chunk_key]
@@ -386,13 +379,28 @@ class LocalProvider(Iterator):
         return None
 
 
-def dict_to_object(object_dict, model):
+def dict_to_object(object_dict: dict, model_object: PcObject) -> PcObject:
     pc_object = {}
     for key, value in object_dict.items():
         if key.endswith('Id'):
             pc_object[key] = humanize(value)
         else:
             pc_object[key] = value
-    pc_obj = model(from_dict=pc_object)
+    pc_obj = model_object(from_dict=pc_object)
     pc_obj.id = pc_object['id']
     return pc_obj
+
+
+def build_dict_to_update(object_to_update: PcObject) -> dict:
+    dict_to_update = object_to_update.__dict__
+    if '_sa_instance_state' in dict_to_update:
+        del dict_to_update['_sa_instance_state']
+    if 'datePublished' in dict_to_update:
+        del dict_to_update['datePublished']
+    if 'venue' in dict_to_update:
+        del dict_to_update['venue']
+    if 'offer' in dict_to_update:
+        del dict_to_update['offer']
+    if 'stocks' in dict_to_update:
+        del dict_to_update['stocks']
+    return dict_to_update
