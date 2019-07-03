@@ -1,5 +1,7 @@
+import pytest
+from sqlalchemy.orm.exc import MultipleResultsFound
 from models import Offer, Offerer, PcObject, UserOfferer, Venue
-from repository.user_offerer_queries import find_first_by_user_id, \
+from repository.user_offerer_queries import find_one_or_none_by_user_id, \
     find_user_offerer_email, \
     filter_query_where_user_is_user_offerer_and_is_validated
 from tests.conftest import clean_database
@@ -29,23 +31,50 @@ def test_find_user_offerer_email(app):
 
 
 @clean_database
-def test_find_first_by_user_id_should_return_one_user_offerers_with_user_id(app):
+def test_find_one_or_none_by_user_id_should_return_one_user_offerers_with_user_id(app):
+    # Given
+    user = create_user(email='offerer@email.com')
+    offerer = create_offerer(siren='123456789')
+    user_offerer = create_user_offerer(user, offerer)
+    PcObject.save(user_offerer)
+
+    # When
+    first_user_offerer = find_one_or_none_by_user_id(user.id)
+
+    # Then
+    assert type(first_user_offerer) == UserOfferer
+    assert first_user_offerer.id == user_offerer.id
+
+
+@clean_database
+def test_find_one_or_none_by_user_id_raises_exception_when_several_are_found(app):
     # Given
     user = create_user(email='offerer@email.com')
     offerer1 = create_offerer(siren='123456789')
     offerer2 = create_offerer(siren='987654321')
-    offerer3 = create_offerer(siren='123456780')
     user_offerer1 = create_user_offerer(user, offerer1)
     user_offerer2 = create_user_offerer(user, offerer2)
-    PcObject.save(user_offerer1)
-    PcObject.save(user_offerer2, offerer3)
+    PcObject.save(user_offerer1, user_offerer2)
 
     # When
-    first_user_offerer = find_first_by_user_id(user.id)
+    with pytest.raises(MultipleResultsFound) as error:
+        first_user_offerer = find_one_or_none_by_user_id(user.id)
+
+
+
+@clean_database
+def test_find_one_or_none_by_user_id_should_return_none_user_offerer_when_none_are_found(app):
+    # Given
+    user = create_user(email='offerer@email.com')
+    offerer = create_offerer(siren='123456789')
+    PcObject.save(user, offerer)
+
+    # When
+    first_user_offerer = find_one_or_none_by_user_id(user.id)
 
     # Then
-    assert type(first_user_offerer) == UserOfferer
-    assert first_user_offerer.id == user_offerer1.id
+    assert first_user_offerer is None
+
 
 
 @clean_database

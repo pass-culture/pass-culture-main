@@ -87,7 +87,7 @@ def validate_user(token):
     check_valid_token_for_user_validation(user_to_validate)
     user_to_validate.validationToken = None
     PcObject.save(user_to_validate)
-    user_offerer = user_offerer_queries.find_first_by_user_id(user_to_validate.id)
+    user_offerer = user_offerer_queries.find_one_or_none_by_user_id(user_to_validate.id)
     if user_offerer:
         offerer = offerer_queries.find_first_by_user_offerer_id(user_offerer.id)
         if IS_INTEGRATION:
