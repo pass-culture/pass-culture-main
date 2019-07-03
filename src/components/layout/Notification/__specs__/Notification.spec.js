@@ -2,7 +2,7 @@ import { Icon } from 'pass-culture-shared'
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import Notification from '../../Notification'
+import Notification from '../Notification'
 
 describe('src | components | layout | Notification', () => {
   let props

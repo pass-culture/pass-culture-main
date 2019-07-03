@@ -9,7 +9,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import BookingItem from './BookingItem'
-import HeroSection from 'components/layout/HeroSection'
+import HeroSection from 'components/layout/HeroSection/HeroSection'
 import Main from 'components/layout/Main'
 import { bookingNormalizer, offererNormalizer } from 'utils/normalizers'
 import { mapApiToWindow } from 'utils/pagination'

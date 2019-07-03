@@ -1,5 +1,5 @@
 import React from 'react'
-import HeroSection from '../../layout/HeroSection'
+import HeroSection from '../../layout/HeroSection/HeroSection'
 import Main from '../../layout/Main'
 import { Form } from 'react-final-form'
 import PropTypes from 'prop-types'

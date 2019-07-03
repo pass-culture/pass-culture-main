@@ -2,7 +2,7 @@ import React from 'react'
 
 import DownloadButtonContainer from 'components/layout/DownloadButton/DownloadButtonContainer'
 import Main from 'components/layout/Main'
-import HeroSection from 'components/layout/HeroSection'
+import HeroSection from 'components/layout/HeroSection/HeroSection'
 import { API_URL } from 'utils/config'
 
 const Bookings = () => (

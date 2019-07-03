@@ -12,7 +12,7 @@ import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
 import HeaderContainer from 'components/layout/Header/HeaderContainer'
-import NotificationContainer from 'components/layout/NotificationContainer'
+import NotificationContainer from "../Notification/NotificationContainer";
 
 class Main extends Component {
   constructor() {

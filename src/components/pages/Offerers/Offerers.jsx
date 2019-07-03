@@ -9,7 +9,7 @@ import { assignData, requestData } from 'redux-saga-data'
 
 import OffererItemContainer from './OffererItem/OffererItemContainer'
 import PendingOffererItem from './PendingOffererItem'
-import HeroSection from '../../layout/HeroSection'
+import HeroSection from '../../layout/HeroSection/HeroSection'
 import Icon from '../../layout/Icon'
 import Main from '../../layout/Main'
 import Spinner from '../../layout/Spinner'

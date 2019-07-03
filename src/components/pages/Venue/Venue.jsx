@@ -14,7 +14,7 @@ import { bindGetSiretInfoToSiret } from './fields/IdentifierFields/decorators'
 import ModifyOrCancelControl from './controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from './controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
 import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
-import HeroSection from 'components/layout/HeroSection'
+import HeroSection from 'components/layout/HeroSection/HeroSection'
 import Icon from 'components/layout/Icon'
 import Main from 'components/layout/Main'
 

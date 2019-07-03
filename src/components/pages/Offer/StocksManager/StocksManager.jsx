@@ -5,7 +5,7 @@ import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 
 import StockItemContainer from './StockItem/StockItemContainer'
-import HeroSection from 'components/layout/HeroSection'
+import HeroSection from 'components/layout/HeroSection/HeroSection'
 
 class StocksManager extends Component {
   constructor() {

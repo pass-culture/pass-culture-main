@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom'
 import { assignData, requestData } from 'redux-saga-data'
 
 import OfferItem from './OfferItem'
-import HeroSection from 'components/layout/HeroSection'
+import HeroSection from 'components/layout/HeroSection/HeroSection'
 import Spinner from 'components/layout/Spinner'
 import Main from 'components/layout/Main'
 import { offerNormalizer } from 'utils/normalizers'

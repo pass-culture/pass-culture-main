@@ -8,7 +8,7 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import { withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
-import HeroSection from 'components/layout/HeroSection'
+import HeroSection from 'components/layout/HeroSection/HeroSection'
 import Main from 'components/layout/Main'
 import UploadThumb from 'components/layout/UploadThumb'
 import selectMediationById from 'selectors/selectMediationById'

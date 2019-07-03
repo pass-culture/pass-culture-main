@@ -5,7 +5,7 @@ import { Form } from 'react-final-form'
 import Venue from '../Venue'
 import { mapDispatchToProps } from '../VenueContainer'
 import VenueProvidersManagerContainer from '../VenueProvidersManager/VenueProvidersManagerContainer'
-import HeroSection from 'components/layout/HeroSection'
+import HeroSection from 'components/layout/HeroSection/HeroSection'
 
 describe('src | components | pages | Venue', () => {
   let dispatch

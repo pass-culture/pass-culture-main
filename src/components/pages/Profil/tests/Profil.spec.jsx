@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 import Profil from '../Profil'
 import { Form } from 'react-final-form'
 import { TextField } from '../../../layout/form/fields'
-import HeroSection from '../../../layout/HeroSection'
+import HeroSection from '../../../layout/HeroSection/HeroSection'
 
 describe('src | components | pages | Profil', () => {
   let dispatch

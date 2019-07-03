@@ -18,7 +18,7 @@ import { requestData } from 'redux-saga-data'
 
 import MediationsManager from './MediationsManager/MediationsManagerContainer'
 import StocksManagerContainer from './StocksManager/StocksManagerContainer'
-import HeroSection from 'components/layout/HeroSection'
+import HeroSection from 'components/layout/HeroSection/HeroSection'
 import Main from 'components/layout/Main'
 import { musicOptions, showOptions } from 'utils/edd'
 import { offerNormalizer } from 'utils/normalizers'

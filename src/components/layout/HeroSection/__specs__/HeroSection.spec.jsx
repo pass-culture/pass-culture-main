@@ -1,7 +1,7 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import HeroSection from '../../HeroSection'
+import HeroSection from '../HeroSection'
 
 describe('src | components | layout | HeroSection', () => {
   describe('snapshot', () => {
