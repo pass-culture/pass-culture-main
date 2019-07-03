@@ -107,7 +107,7 @@ class TiteLiveStocks(LocalProvider):
     def updateObjects(self, limit=None):
         super().updateObjects(limit)
 
-    def update_stock_object(self, obj, stock_information, offer):
+    def update_stock_object(self, obj, stock_information):
         obj.price = int(stock_information['price']) / PRICE_DIVIDER_TO_EURO
         obj.available = int(stock_information['available'])
         obj.bookingLimitDatetime = read_stock_datetime(stock_information['validUntil'])
@@ -117,5 +117,6 @@ class TiteLiveStocks(LocalProvider):
         obj.name = self.product.name
         obj.description = self.product.description
         obj.type = self.product.type
+        obj.extraData = self.product.extraData
         obj.venueId = self.venueId
         obj.productId = self.product.id

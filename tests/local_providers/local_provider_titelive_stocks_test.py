@@ -82,6 +82,7 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
     assert offer.description == product.description
     assert offer.venue is not None
     assert offer.bookingEmail is None
+    assert offer.extraData == product.extraData
 
 
 @clean_database
