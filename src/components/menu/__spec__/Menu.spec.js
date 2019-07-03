@@ -31,7 +31,7 @@ describe('src | components | menu | Menu', () => {
         },
       },
       readRecommendations: [],
-      routes: getFeaturedRoutes(['WEBAPP_SIGNUP']),
+      routes: getFeaturedRoutes([{ name: 'WEBAPP_SIGNUP' }]),
       toggleOverlay: jest.fn(),
     }
   })

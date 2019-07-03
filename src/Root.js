@@ -7,6 +7,7 @@ import App from './App'
 import FeaturedBrowserRouterContainer from './components/router/FeaturedBrowserRouterContainer'
 import MatomoPageTracker from './components/matomo/MatomoPageTracker'
 import NotMatch from './components/pages/NotMatch'
+import { removeHrefRoutes } from './components/router/utils'
 import { configureStore } from './utils/store'
 
 const { store, persistor } = configureStore()
@@ -19,17 +20,15 @@ const Root = () => (
           render={routes => (
             <App routes={routes}>
               <Switch>
-                {routes
-                  .filter(route => !route.href)
-                  .map(route => (
-                    <Route {...route} key={route.path} />
-                  ))}
+                {removeHrefRoutes(routes).map(route => (
+                  <Route {...route} key={route.path} />
+                ))}
                 <Route component={NotMatch} />
               </Switch>
               <MatomoPageTracker />
             </App>
-          />
-        </BrowserRouter>
+          )}
+        />
       </PersistGate>
     </Provider>
   </StrictMode>
