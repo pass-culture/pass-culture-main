@@ -164,10 +164,6 @@ jobs:
             export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
             curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
 
-  ready-for-deploy:
-    steps:
-      - run: return 0
-
   deploy-api:
     machine:
       image: circleci/classic:latest
@@ -283,18 +279,6 @@ workflows:
                 - master
           tags:
             only: /^v.*/
-      - ready-for-deploy:
-          filters:
-            branches:
-              only:
-                - master
-          tags:
-            only: /^v.*/
-          requires:
-            - tests-script-pc
-            - tests-webapp
-            - tests-pro
-            - tests-api
       - deploy-api:
           filters:
             branches:
