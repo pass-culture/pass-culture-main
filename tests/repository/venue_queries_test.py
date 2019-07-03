@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 
 from models import PcObject
-from repository.venue_queries import find_filtered_venues, find_venues_by_managing_user
+from repository.venue_queries import find_filtered_venues, find_by_managing_user
 from tests.conftest import clean_database
 from tests.test_utils import create_venue, create_offer_with_event_product, create_venue_activity, \
     create_event_occurrence, create_offerer, create_offer_with_thing_product, create_stock_with_thing_offer, \
@@ -649,7 +649,7 @@ def test_find_filtered_venues_with_default_param_return_all_venues(app):
 
 class FindVenuesByManagingUserTest:
     @clean_database
-    def test_returns_venues_that_a_user_manage(self):
+    def test_returns_venues_that_a_user_manages(self):
         # given
         user = create_user(email='user@example.net')
 
@@ -665,7 +665,7 @@ class FindVenuesByManagingUserTest:
         PcObject.save(managed_user_offerer, managed_venue, non_managed_user_offerer, non_managed_venue)
 
         # when
-        venues = find_venues_by_managing_user(user)
+        venues = find_by_managing_user(user)
 
         # then
         assert len(venues) == 1

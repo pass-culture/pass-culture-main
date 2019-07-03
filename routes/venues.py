@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 from domain.admin_emails import send_venue_validation_email
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository.venue_queries import save_venue, find_venues_by_managing_user
+from repository.venue_queries import save_venue, find_by_managing_user
 from utils.includes import VENUE_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
@@ -25,7 +25,7 @@ def get_venue(venueId):
 @app.route('/venues', methods=['GET'])
 @login_required
 def get_venues():
-    venues = find_venues_by_managing_user(current_user)
+    venues = find_by_managing_user(current_user)
     return jsonify([venue.as_dict() for venue in venues]), 200
 
 

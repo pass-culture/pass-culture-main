@@ -73,7 +73,7 @@ def find_offerer_bookings_paginated(offerer_id, search=None, order_by=None, page
     return bookings
 
 
-def find_all_offerer_bookings_by_venueId(offerer_id, venue_id=None) -> List[Booking]:
+def find_all_offerer_bookings_by_venue_id(offerer_id, venue_id=None) -> List[Booking]:
     query = filter_bookings_by_offerer_id(offerer_id)
 
     if venue_id:
@@ -83,7 +83,7 @@ def find_all_offerer_bookings_by_venueId(offerer_id, venue_id=None) -> List[Book
 
     return bookings
 
-def find_all_bookings_by_offerer_for_digital_venues(offerer_id) -> List[Booking]:
+def find_all_digital_bookings_for_offerer(offerer_id) -> List[Booking]:
     query = filter_bookings_by_offerer_id(offerer_id)
 
     return query.filter(Venue.isVirtual == True).all()

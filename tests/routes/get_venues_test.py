@@ -34,7 +34,7 @@ class Get:
             assert first_returned_venue['name'] == venue_name
 
         @clean_database
-        def when_connected_with_bookshop_admin_does_not_return_unrelated_venues(self, app):
+        def when_connected_does_not_return_unrelated_venues(self, app):
             # given
             theater_company = create_offerer(name='Shakespear company', siren='987654321')
             theater_administrator = create_user(email='user.pro@example.net')

@@ -90,7 +90,7 @@ def find_filtered_venues(sirens=None,
     return result
 
 
-def find_venues_by_managing_user(user: User) -> List[Venue]:
+def find_by_managing_user(user: User) -> List[Venue]:
     return Venue.query\
         .join(Offerer)\
         .join(UserOfferer)\

@@ -17,9 +17,9 @@ from models.pc_object import serialize
 from repository import booking_queries
 from repository.booking_queries import find_active_bookings_by_user_id, \
     find_all_bookings_for_stock_and_user, \
-    find_all_offerer_bookings_by_venueId, find_all_bookings_by_offerer_for_digital_venues
+    find_all_offerer_bookings_by_venue_id, find_all_digital_bookings_for_offerer
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
-from utils.human_ids import dehumanize, humanize, NonDehumanizableId
+from utils.human_ids import dehumanize, humanize
 from utils.includes import BOOKING_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
@@ -46,9 +46,10 @@ from validation.users import check_user_can_validate_bookings
 @app.route('/bookings/csv', methods=['GET'])
 @login_required
 def get_bookings_csv():
+    only_digital_venues = request.args.get('onlyDigitalVenues', False)
+
     try:
         venue_id = dehumanize(request.args.get('venueId', None))
-        onlyDigitalVenues = request.args.get('onlyDigitalVenues', False)
     except ValueError:
         errors = ApiErrors()
         errors.addError(
@@ -62,11 +63,11 @@ def get_bookings_csv():
 
     query = filter_query_where_user_is_user_offerer_and_is_validated(Offerer.query,
                                                                      current_user)
-    if onlyDigitalVenues:
-        bookings = chain(*list(map(lambda offerer: find_all_bookings_by_offerer_for_digital_venues(offerer.id),
+    if only_digital_venues:
+        bookings = chain(*list(map(lambda offerer: find_all_digital_bookings_for_offerer(offerer.id),
                                    query)))
     else:
-        bookings = chain(*list(map(lambda offerer: find_all_offerer_bookings_by_venueId(offerer.id, venue_id),
+        bookings = chain(*list(map(lambda offerer: find_all_offerer_bookings_by_venue_id(offerer.id, venue_id),
                                    query)))
 
     bookings_csv = generate_bookings_details_csv(bookings)

@@ -41,13 +41,13 @@ class Get:
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get(
                 '/bookings/csv')
-            content_lignes = response.data.decode('utf-8').split('\n')[1:-1]
+            content_lines = response.data.decode('utf-8').split('\n')[1:-1]
 
             # Then
             assert response.status_code == 200
             assert response.headers['Content-type'] == 'text/csv; charset=utf-8;'
             assert response.headers['Content-Disposition'] == 'attachment; filename=reservations_pass_culture.csv'
-            assert len(content_lignes) == 6
+            assert len(content_lines) == 6
 
         @clean_database
         def when_user_has_no_offerer_attached(self, app):
