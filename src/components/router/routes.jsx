@@ -2,18 +2,17 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 
 import { WEBAPP_CONTACT_EXTERNAL_PAGE } from './config'
-import ActivationRoutesContainer from '../components/pages/activation/ActivationRoutesContainer'
-import BetaPage from '../components/pages/BetaPage'
-import MyBookingsContainer from '../components/pages/my-bookings/MyBookingsContainer'
-import DiscoveryContainer from '../components/pages/discovery/DiscoveryContainer'
-import FavoritesPage from '../components/pages/FavoritesPage'
-import ForgotPasswordPage from '../components/pages/ForgotPasswordPage'
-import ProfilePage from '../components/pages/profile'
-import TypeFormPage from '../components/pages/typeform/TypeFormContainer'
-import SearchContainer from '../components/pages/search/SearchContainer'
-import SigninContainer from '../components/pages/signin/SigninContainer'
-import SignupContainer from '../components/pages/signup/SignupContainer'
-import { isFeatureDisabled } from './featureFlipping'
+import ActivationRoutesContainer from '../pages/activation/ActivationRoutesContainer'
+import BetaPage from '../pages/BetaPage'
+import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
+import DiscoveryContainer from '../pages/discovery/DiscoveryContainer'
+import FavoritesPage from '../pages/FavoritesPage'
+import ForgotPasswordPage from '../pages/ForgotPasswordPage'
+import ProfilePage from '../pages/profile'
+import TypeFormPage from '../pages/typeform/TypeFormContainer'
+import SearchContainer from '../pages/search/SearchContainer'
+import SigninContainer from '../pages/signin/SigninContainer'
+import SignupContainer from '../pages/signup/SignupContainer'
 
 const routes = [
   {
@@ -37,7 +36,7 @@ const routes = [
   },
   {
     component: SignupContainer,
-    disabled: isFeatureDisabled('WEBAPP_SIGNUP'),
+    featureName: 'WEBAPP_SIGNUP',
     path: '/inscription',
     title: 'Inscription',
   },
@@ -65,7 +64,7 @@ const routes = [
     // exemple d'URL optimale qui peut être partagée
     // par les sous composants
     path:
-      '/decouverte/:offerId?/:mediationId?/:view(booking|verso)?/:bookingId?/:action(cancelled)?',
+      '/decouverte/:offerId?/:mediationId?/:view(booking|verso)?/:bookingId?/:view(cancelled)?',
     title: 'Les offres',
   },
   {

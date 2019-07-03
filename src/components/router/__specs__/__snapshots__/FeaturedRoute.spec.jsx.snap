@@ -1,24 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | App snapshot should match snapshot 1`] = `
+exports[`src | components | router | FeaturedRoute should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Provider
-    store={
-      Object {
-        "clearActions": [Function],
-        "dispatch": [Function],
-        "getActions": [Function],
-        "getState": [Function],
-        "replaceReducer": [Function],
-        "subscribe": [Function],
-      }
+  Symbol(enzyme.__unrendered__): <FeaturedRoute
+    component={[Function]}
+    isFeatureDisabled={true}
+    features={
+      Array [
+        Object {
+          "name": "FOO",
+        },
+      ]
     }
-  >
-    <withRouter(App)
-      location={Object {}}
-    />
-  </Provider>,
+    requestGetFeatures={[MockFunction]}
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -31,9 +27,9 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "function",
+    "nodeType": "class",
     "props": Object {
-      "location": Object {},
+      "component": [Function],
     },
     "ref": null,
     "rendered": null,
@@ -43,9 +39,9 @@ ShallowWrapper {
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "function",
+      "nodeType": "class",
       "props": Object {
-        "location": Object {},
+        "component": [Function],
       },
       "ref": null,
       "rendered": null,
@@ -77,17 +73,7 @@ ShallowWrapper {
     },
     Symbol(enzyme.__providerValues__): undefined,
   },
-  Symbol(enzyme.__providerValues__): Array [],
-  Symbol(enzyme.__childContext__): Object {
-    "store": Object {
-      "clearActions": [Function],
-      "dispatch": [Function],
-      "getActions": [Function],
-      "getState": [Function],
-      "replaceReducer": [Function],
-      "subscribe": [Function],
-    },
-    "storeSubscription": null,
-  },
+  Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
 }
 `;

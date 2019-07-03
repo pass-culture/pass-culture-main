@@ -1,11 +1,16 @@
 import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
 
-import FeaturedBrowserRouter from './FeaturedBrowserRouter'
+import FeaturedRoute from './FeaturedRoute'
+import selectIsFeatureDisabled from './selectIsFeatureDisabled'
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, ownProps) => {
   const { features } = state.data
-  return { features }
+  const { featureName } = ownProps
+  return {
+    features,
+    isFeatureDisabled: selectIsFeatureDisabled(state, featureName),
+  }
 }
 
 const mapDispatchToProps = dispatch => ({
@@ -15,4 +20,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(FeaturedBrowserRouter)
+)(FeaturedRoute)

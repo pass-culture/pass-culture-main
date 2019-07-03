@@ -2,12 +2,12 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Transition } from 'react-transition-group'
 
-import CloseLink from '../layout/Header/CloseLink'
-import getMenuRoutes from './getMenuRoutes'
 import Header from './Header'
+import menuRoutes from './menuRoutes'
 import NavLink from './NavLink'
 import SignoutButtonContainer from './SignoutButtonContainer'
 import SimpleLink from './SimpleLink'
+import CloseLink from '../layout/Header/CloseLink'
 
 class Menu extends PureComponent {
   componentDidMount() {
@@ -23,8 +23,7 @@ class Menu extends PureComponent {
   urlWithoutMenuElement = history => () => history.location.pathname.replace('/menu', '')
 
   render() {
-    const { currentUser, history, readRecommendations, routes } = this.props
-    const menuRoutes = getMenuRoutes(routes)
+    const { currentUser, history, readRecommendations } = this.props
 
     return (
       <Transition
@@ -82,7 +81,8 @@ Menu.defaultProps = {
 Menu.propTypes = {
   currentUser: PropTypes.shape(),
   history: PropTypes.shape().isRequired,
-  readRecommendations: PropTypes.arrayOf(PropTypes.shape().isRequired).isRequired,
+  readRecommendations: PropTypes.arrayOf(PropTypes.shape().isRequired)
+    .isRequired,
   routes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   toggleOverlay: PropTypes.func.isRequired,
 }

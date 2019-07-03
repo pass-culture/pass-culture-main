@@ -9,6 +9,7 @@ import Splash from './components/layout/Splash'
 import Overlay from './components/layout/Overlay'
 import Notifications from './components/layout/notifications'
 import ErrorCatcherContainer from './components/layout/ErrorCatcher/ErrorCatcherContainer'
+import browserRoutes from './components/router/browserRoutes'
 import { SharePopin } from './components/share/SharePopin'
 import { ROOT_PATH, IS_DEV, PROJECT_NAME } from './utils/config'
 
@@ -22,8 +23,11 @@ const getBodyClass = obj => {
   return `page-${path || 'home'}`
 }
 
-const App = ({ history, location, children, routes }) => {
-  const currentRouteObj = getCurrentRouteObjectByPath(routes, location.pathname)
+const App = ({ children, history, location }) => {
+  const currentRouteObj = getCurrentRouteObjectByPath(
+    browserRoutes,
+    location.pathname
+  )
   const bodyClass = getBodyClass(currentRouteObj)
   const pageTitle = getPageTitle(currentRouteObj)
   return (
@@ -37,10 +41,7 @@ const App = ({ history, location, children, routes }) => {
           {/* TODO: mettre ici le composant from password */}
           {children}
           <Overlay />
-          <Route
-            render={() => <MenuContainer history={history} routes={routes} />}
-            path="*/menu"
-          />
+          <Route component={MenuContainer} history={history} path="*/menu" />
           <Splash />
           <SharePopin />
           <Notifications />
@@ -60,7 +61,6 @@ App.propTypes = {
   children: PropTypes.node.isRequired,
   history: PropTypes.shape().isRequired,
   location: PropTypes.shape().isRequired,
-  routes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default withRouter(App)
