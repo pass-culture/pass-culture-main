@@ -163,10 +163,10 @@ jobs:
           command: |
             export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
             curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
+  ready-for-deploy:
+    steps:
+      - run: return 0
 
   deploy-api:
     machine:
@@ -264,36 +264,37 @@ workflows:
       - tests-script-pc
       - tests-api:
           filters:
-<<<<<<< Updated upstream
-=======
             branches:
               only:
                 - master
->>>>>>> Stashed changes
             tags:
               only: /^v.*/
       - tests-webapp:
           filters:
-<<<<<<< Updated upstream
-=======
             branches:
               only:
                 - master
->>>>>>> Stashed changes
             tags:
               only: /^v.*/
       - tests-pro:
           filters:
-<<<<<<< Updated upstream
-            tags:
-              only: /^v.*/
-=======
             branches:
               only:
                 - master
           tags:
             only: /^v.*/
->>>>>>> Stashed changes
+      - ready-for-deploy:
+          filters:
+            branches:
+              only:
+                - master
+          tags:
+            only: /^v.*/
+          requires:
+            - tests-script-pc
+            - tests-webapp
+            - tests-pro
+            - tests-api
       - deploy-api:
           filters:
             branches:
