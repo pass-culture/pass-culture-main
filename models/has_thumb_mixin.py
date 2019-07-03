@@ -70,7 +70,7 @@ class HasThumbMixin(object):
             symlink_path=symlink_path
         )
 
-        self.thumbCount = max(image_index + 1, self.thumbCount or 0)
+        self.thumbCount = self.thumbCount + 1
 
         if need_save:
             PcObject.save(self)

@@ -114,9 +114,9 @@ class LocalProvider(Iterator):
         if not hasattr(obj, 'thumbCount'):
             return
         try:
+            self.checkedThumbs += 1
             thumb_dates = self.getObjectThumbDates(obj)
             for index, thumb_date in enumerate(thumb_dates):
-                self.checkedThumbs += 1
                 if thumb_date is None:
                     continue
                 existing_date = obj.thumb_date(index)
@@ -130,7 +130,7 @@ class LocalProvider(Iterator):
                         logger.info("    Updating thumb #" + str(index) + " for " + str(obj))
                     else:
                         logger.info("    Creating thumb #" + str(index) + " for " + str(obj))
-                    obj.save_thumb(thumb, index, need_save=False)
+                    self.save_thumb_from_thumb_count_to_index(index, obj, thumb)
                     if existing_date is not None:
                         self.updatedThumbs += 1
                     else:
@@ -142,6 +142,12 @@ class LocalProvider(Iterator):
                         + e.__class__.__name__ + ' ' + str(e))
             traceback.print_tb(e.__traceback__)
             pprint(vars(e))
+
+    def save_thumb_from_thumb_count_to_index(self, index, obj, thumb):
+        counter = 0
+        while obj.thumbCount <= index:
+            obj.save_thumb(thumb, counter, need_save=False)
+            counter += 1
 
     def existingObjectOrNone(self, providable_info):
         conn = db.engine.connect()

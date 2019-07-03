@@ -44,7 +44,7 @@ class TiteLiveThingThumbs(LocalProvider):
         self.logEvent(LocalProviderEventType.SyncPartStart,
                       get_date_from_filename(self.zip, DATE_REGEXP))
 
-        self.thumb_zipinfos = iter(filter(lambda f: f.filename.lower().endswith('.jpg'),
+        self.thumb_zipinfos = iter(filter(lambda f: f.filename.lower().endswith('_75.jpg'),
                                           sorted(self.zip.infolist(),
                                                  key=lambda f: f.filename)))
 
@@ -69,17 +69,14 @@ class TiteLiveThingThumbs(LocalProvider):
 
     def getObjectThumbDates(self, thing):
         assert thing.idAtProviders == self.thingId
-        zdtime = self.thumb_zipinfo.date_time
-        if self.thumb_zipinfo.filename.endswith('_1_75.jpg'):
-            return [datetime(*zdtime)]
-        else:
-            return [None, datetime(*zdtime)]
+        zip_datetime = self.thumb_zipinfo.date_time
+        thumb_index = extract_thumb_index(self.thumb_zipinfo.filename)
+        return get_thumb_date_at_thumb_index(thumb_index, datetime(*zip_datetime))
 
     def getObjectThumb(self, thing, index):
         assert thing.idAtProviders == self.thingId
-        expectedIndex = 0 if self.thumb_zipinfo.filename.endswith('_1_75.jpg') \
-            else 1
-        assert index == expectedIndex
+        expected_index = extract_thumb_index(self.thumb_zipinfo.filename)
+        assert index == expected_index
         with self.zip.open(self.thumb_zipinfo) as f:
             return f.read()
 
@@ -92,3 +89,11 @@ class TiteLiveThingThumbs(LocalProvider):
             payload = int(latest_sync_part_end_event.payload)
             return iter(filter(lambda z: get_date_from_filename(z, DATE_REGEXP) > payload,
                                all_zips))
+
+
+def extract_thumb_index(filename: str) -> int:
+    return int(filename.split('_')[-2]) - 1
+
+
+def get_thumb_date_at_thumb_index(thumb_index: int, thumb_date: datetime) -> list:
+    return [None] * thumb_index + [thumb_date]
