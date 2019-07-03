@@ -1,11 +1,12 @@
-from scripts.check_ci_status import extract_commit_status
-from scripts.check_ci_status import get_project_jobs_infos, main
+from scripts.check_ci_status import extract_commit_status, get_project_jobs_infos, main
 import pytest
-import requests
-import requests_mock
 import sys
+import copy
 
 project_jobs_infos =[{
+    "build_parameters": {
+        "CIRCLE_JOB": "tests-api"
+    },
     'failed': False,
     'status': 'success',
     'committer_name': 'bobby',
@@ -21,45 +22,50 @@ project_jobs_infos =[{
     'vcs_url': 'https://github.com/betagouv/pass-culture-api'
 }]
 
-project_jobs_infos_whitout_hash =[{
-    'failed': False,
-    'status': 'success',
-    'committer_name': 'bobby',
-    'all_commit_details': [
-        {
-            'branch': 'master',
-            'commit': 'fake000ed4bd4e9c52bce2342a0e28aa30035009S',
-            'committer_name': 'bobby',
-            'subject': 'fix linter',
-        }
-    ],
-    'outcome': 'success',
-    'vcs_url': 'https://github.com/betagouv/pass-culture-api'
-}]
-
 class CheckCIStatusTest:
 
 
-    def when_extract_commit_status_is_called_with_non_existing_sha1(self):
+    def when_extract_commit_status_does_not_find_commit_in_jobs(self):
 
         # Given
-        commit_sha1 = "fake_sha1"
+        job_name = "tests-api"
+        target_commit_sha1 = "56ePe4eVerbd4e9c52bce2342a0e28aa3003500f7b"
+        actual_commit_sha1 = "fake_sha1"
+        incorrect_commit_project_jobs_infos = copy.deepcopy(project_jobs_infos)
+        incorrect_commit_project_jobs_infos[0]['all_commit_details'][0]['commit'] = actual_commit_sha1
+
+        print(project_jobs_infos)
 
         # When
-        with pytest.raises(SystemExit) as pytest_wrapped_e:
-            extract_commit_status(commit_sha1, project_jobs_infos_whitout_hash)
+        commit_status = extract_commit_status(target_commit_sha1, incorrect_commit_project_jobs_infos, job_name)
 
         # Then
-        assert pytest_wrapped_e.type == SystemExit
-        assert pytest_wrapped_e.value.code == 1
+        assert commit_status == False
 
-    def when_extract_commit_status_is_called_with_existing_sha1(self):
+    def when_extract_commit_status_does_not_find_correct_circle_job(self):
 
         # Given
+        job_name = "deploy_api"
+        target_commit_sha1 = "56ePe4eVerbd4e9c52bce2342a0e28aa3003500f7b"
+        actual_circle_job = "tests-api"
+        incorrect_job_project_jobs_infos = copy.deepcopy(project_jobs_infos)
+        incorrect_job_project_jobs_infos[0]['build_parameters']['CIRCLE_JOB'] = actual_circle_job
+
+
+        # When
+        commit_status = extract_commit_status(target_commit_sha1, incorrect_job_project_jobs_infos, job_name)
+
+        # Then
+        assert commit_status == False
+
+    def when_extract_commit_status_finds_correct_circle_job(self):
+
+        # Given
+        job_name = "tests-api"
         commit_sha1 = "56ePe4eVerbd4e9c52bce2342a0e28aa3003500f7b"
 
         # When
-        commit_status = extract_commit_status(commit_sha1, project_jobs_infos)
+        commit_status = extract_commit_status(commit_sha1, project_jobs_infos, job_name)
 
         # Then
         assert commit_status == "success"
@@ -90,7 +96,7 @@ class CheckCIStatusTest:
         # Then
         assert job_statuses == [{'job_id': '12'}]
 
-    def when_check_ci_is_called_whitout_an_argument(self, capsys ):
+    def when_check_ci_is_called_without_an_argument(self, capsys ):
 
         # Given
         sys.argv = ["scripts/check_ci_status.py"]
@@ -105,10 +111,42 @@ class CheckCIStatusTest:
         assert pytest_wrapped_e.type == SystemExit
         assert pytest_wrapped_e.value.code == 1
 
-    def when_check_ci_is_called_whith_argument_(self, capsys ):
+    def when_check_ci_is_called_but_finds_no_job(self, mocker, capsys ):
 
         # Given
         commit_sha1 = 'commit_sha_12345'
+        mocker.patch('scripts.check_ci_status.get_project_jobs_infos', return_value = False)
+
+        # When
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            sys.argv = ["scripts/check_ci_status.py", commit_sha1]
+            main()
+
+        # Then
+        assert pytest_wrapped_e.value.code == 1
+
+
+    def when_check_ci_is_called_but_commit_has_failed(self, mocker, capsys ):
+
+        # Given
+        commit_sha1 = 'commit_sha_12345'
+        mocker.patch('scripts.check_ci_status.get_project_jobs_infos', return_value = project_jobs_infos)
+        mocker.patch('scripts.check_ci_status.extract_commit_status', return_value = False)
+
+        # When
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            sys.argv = ["scripts/check_ci_status.py", commit_sha1]
+            main()
+
+        # Then
+        assert pytest_wrapped_e.value.code == 1
+
+    def when_check_ci_is_called_and_commit_is_successful(self, mocker, capsys ):
+
+        # Given
+        commit_sha1 = 'commit_sha_12345'
+        mocker.patch('scripts.check_ci_status.get_project_jobs_infos', return_value = project_jobs_infos)
+        mocker.patch('scripts.check_ci_status.extract_commit_status', return_value = "success")
 
         # When
         with pytest.raises(SystemExit) as pytest_wrapped_e:
