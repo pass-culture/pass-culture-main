@@ -15,7 +15,7 @@ const baseURL = `${ROOT_PATH}activation`
 
 fixture(`01_01 Activation | succès de l'activation`)
 
-test('Je suis redirigé·e vers le typeform', async t => {
+test.skip('Je suis redirigé·e vers le typeform', async t => {
   // given
   const { user } = await fetchSandbox(
     'webapp_01_activation',
