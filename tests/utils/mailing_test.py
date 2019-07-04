@@ -37,7 +37,7 @@ from utils.mailing import make_activation_notification_email, make_batch_cancell
     make_wallet_balances_email, \
     parse_email_addresses, \
     send_raw_email, resend_email, \
-    write_object_validation_email
+    write_object_validation_email, compute_email_html_part_and_recipients
 
 SUBJECT_USER_EVENT_BOOKING_CONFIRMATION_EMAIL = \
     'Confirmation de votre réservation pour Mains, sorts et papiers le 20 juillet 2019 à 14:00'
@@ -1621,7 +1621,7 @@ def test_send_content_and_update_does_not_update_email_when_send_mail_unsuccessf
 
 
 class ComputeEmailHtmlPartAndRecipientsTest:
-    def accepts_string_as_to(self, app):
+    def test_accepts_string_as_to(self, app):
         # when
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
             html, to = compute_email_html_part_and_recipients("my_html", "plop@plop.com")
@@ -1630,7 +1630,7 @@ class ComputeEmailHtmlPartAndRecipientsTest:
         assert html == "my_html"
         assert to == "plop@plop.com"
 
-    def accepts_list_of_strings_as_to(self, app):
+    def test_accepts_list_of_strings_as_to(self, app):
         # when
         with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
             html, to = compute_email_html_part_and_recipients("my_html", ["plop@plop.com", "plip@plip.com"])
@@ -1652,7 +1652,6 @@ class MakeBeneficiariesImportEmailTest:
 
         # then
         assert email["FromEmail"] == 'dev@passculture.app'
-        assert email["To"] == 'dev@passculture.app'
         assert email["FromName"] == 'pass Culture'
         assert email["Subject"] == 'Import des utilisateurs depuis Démarches Simplifiées 2019-05-20'
 
