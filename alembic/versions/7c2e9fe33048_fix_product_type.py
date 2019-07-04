@@ -15,11 +15,12 @@ depends_on = None
 
 
 def upgrade():
-    op.execute("""UPDATE product SET type = 'ThingType.' || product.type WHERE "lastProviderId" in (
-        SELECT id FROM provider WHERE "localClass" = 'InitTiteLiveThings'
-         OR "localClass" = 'TiteLiveThings'
-         AND product.type NOT ILIKE 'ThingType.%'
-    )""")
+    op.execute("""
+          UPDATE product
+          SET type = 'ThingType.' || product.type
+          WHERE product.type NOT ILIKE 'ThingType.%'
+          AND product."lastProviderId" is not null
+    """)
 
 
 def downgrade():
