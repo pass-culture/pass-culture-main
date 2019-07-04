@@ -1,6 +1,7 @@
 import { Icon, pluralize } from 'pass-culture-shared'
 import React, { Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
+import PropTypes from 'prop-types'
 
 const OffererItem = ({ offerer, physicalVenues, venues }) => {
   const { id, name, nOffers, isValidated } = offerer || {}
@@ -80,6 +81,16 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
       </div>
     </li>
   )
+}
+
+OffererItem.defaultProps = {
+  venues: [],
+  physicalVenues: [],
+}
+
+OffererItem.propTypes = {
+  venues: PropTypes.array,
+  physicalVenues: PropTypes.array,
 }
 
 export default OffererItem

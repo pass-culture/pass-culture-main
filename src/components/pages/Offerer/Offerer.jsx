@@ -48,7 +48,7 @@ class Offerer extends Component {
      const { dispatch } = this.props
      dispatch(
        showNotification({
-         text: "Vous étes déjà rattaché à cette struture.",
+         text: "Vous étes déjà rattaché à cette structure.",
          type: 'danger',
        })
      )

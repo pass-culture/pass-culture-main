@@ -1,4 +1,4 @@
-import { connect } from 'react-redux'
+import { connect } from "react-redux"
 
 import OffererItem from './OffererItem'
 import selectPhysicalVenuesByOffererId from '../../../../selectors/selectPhysicalVenuesByOffererId'
