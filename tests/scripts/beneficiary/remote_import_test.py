@@ -71,6 +71,35 @@ class RunTest:
 
     @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
+    @patch('scripts.beneficiary.remote_import.parse_beneficiary_information')
+    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_REPORT_RECIPIENTS': 'send@report.to'})
+    def test_a_report_email_is_sent8even_if_an_application_is_not_parsable(
+            self,
+            parse_beneficiary_information,
+            process_beneficiary_application,
+            send_report_email
+    ):
+        # given
+        get_all_application_ids = Mock(return_value=[123])
+        get_details = Mock(side_effect=[make_application_detail(123, 'closed')])
+        find_user_by_email = Mock(return_value=None)
+        print(os.environ)
+        parse_beneficiary_information.side_effect = [Exception()]
+
+        # when
+        remote_import.run(
+            ONE_WEEK_AGO,
+            get_all_applications_ids=get_all_application_ids,
+            get_details=get_details,
+            existing_user=find_user_by_email
+        )
+
+        # then
+        error = 'Le dossier 123 contient des erreurs et a été ignoré'
+        send_report_email.assert_called_with([], [error], 'send@report.to', ANY)
+
+    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
+    @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
     def test_application_with_known_demarche_simplifiee_application_id_are_not_processed(self,
                                                                                          process_beneficiary_application,
                                                                                          send_report_email):

@@ -36,7 +36,13 @@ def run(
 
     for id in applications_ids:
         details = get_details(id, PROCEDURE_ID, TOKEN)
-        information = parse_beneficiary_information(details)
+        try:
+            information = parse_beneficiary_information(details)
+        except Exception:
+            error = f"Le dossier {id} contient des erreurs et a été ignoré"
+            logger.error(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {error}')
+            error_messages.append(error)
+            continue
 
         if not existing_user(information['application_id']):
             process_beneficiary_application(information, error_messages, new_beneficiaries)
