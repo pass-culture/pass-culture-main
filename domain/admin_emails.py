@@ -1,4 +1,4 @@
-from typing import Dict, List, Callable
+from typing import Dict, List, Callable, Union
 
 from models import Offer, User, Offerer, UserOfferer, Venue
 from utils.mailing import write_object_validation_email, make_payment_message_email, \
@@ -76,7 +76,7 @@ def send_offer_creation_notification_to_administration(offer: Offer, author: Use
 
 
 def send_remote_beneficiaries_import_report_email(new_beneficiaries: List[User], error_messages: List[str],
-                                                  send_email: Callable[[dict], bool]) -> bool:
+                                                  recipients: Union[List, str], send_email: Callable[[dict], bool]) -> bool:
     email = make_beneficiaries_import_email(new_beneficiaries, error_messages)
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], email['To'])
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)

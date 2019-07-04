@@ -346,43 +346,46 @@ class SendPaymentMessageEmailTest:
         assert not successfully_sent
 
 
+@patch('utils.mailing.feature_send_mail_to_users_enabled')
 class SendRemoteBeneficiariesImportReportEmailTest:
-    @patch('domain.admin_emails.make_beneficiaries_import_email')
-    def test_returns_true_if_email_was_sent(self, make_beneficiaries_import_email):
+    def test_returns_true_if_email_was_sent(self, send_is_enabled):
         # given
         mocked_send_email = Mock()
         mocked_send_email.return_value = True
         new_beneficiaries = [User(), User()]
         error_messages = ['erreur import 1', 'erreur import 2']
-        make_beneficiaries_import_email.return_value = {'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'}
+        recipient = 'send@report.to'
+        send_is_enabled.return_value = True
 
         # when
-        successfully_sent = send_remote_beneficiaries_import_report_email(new_beneficiaries, error_messages,
-                                                                          mocked_send_email)
+        successfully_sent = send_remote_beneficiaries_import_report_email(
+            new_beneficiaries, error_messages, recipient, mocked_send_email
+        )
 
         # then
         assert successfully_sent
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         email = args[1]['data']
-        assert email['To'] == 'dev@passculture.app'
+        assert email['To'] == recipient
 
-    @patch('domain.admin_emails.make_beneficiaries_import_email')
-    def test_returns_false_if_email_was_not_sent(self, make_beneficiaries_import_email):
+    def test_returns_false_if_email_was_not_sent(self, send_is_enabled):
         # given
         mocked_send_email = Mock()
         mocked_send_email.return_value = False
         new_beneficiaries = [User(), User()]
         error_messages = ['erreur import 1', 'erreur import 2']
-        make_beneficiaries_import_email.return_value = {'Html-part': '<html><body></body></html>', 'To': 'em@ail.com'}
+        recipient = 'send@report.to'
+        send_is_enabled.return_value = True
 
         # when
-        successfully_sent = send_remote_beneficiaries_import_report_email(new_beneficiaries, error_messages,
-                                                                          mocked_send_email)
+        successfully_sent = send_remote_beneficiaries_import_report_email(
+            new_beneficiaries, error_messages, recipient, mocked_send_email
+        )
 
         # then
         assert not successfully_sent
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         email = args[1]['data']
-        assert email['To'] == 'dev@passculture.app'
+        assert email['To'] == recipient

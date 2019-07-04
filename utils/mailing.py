@@ -3,7 +3,7 @@ import base64
 import os
 from datetime import datetime
 from pprint import pformat
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from flask import current_app as app, render_template
 
@@ -594,7 +594,6 @@ def make_beneficiaries_import_email(new_beneficiaries: List[User], error_message
     return {
         'Subject': 'Import des utilisateurs depuis Démarches Simplifiées %s' % date_import,
         'FromEmail': DEV_EMAIL_ADDRESS,
-        'To': DEV_EMAIL_ADDRESS,
         'FromName': "pass Culture",
         'Html-part': html
     }
