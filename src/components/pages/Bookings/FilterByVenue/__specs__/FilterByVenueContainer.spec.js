@@ -2,7 +2,7 @@ import { mapStateToProps, mapDispatchToProps } from '../FilterByVenueContainer'
 
 describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
   describe('mapStateToProps', () => {
-    it('should keep filter value on digital venues', () => {
+    it('should return an object of props that keep the state information : filter on digital venues', () => {
       // given
       const state = {
         bookingSummary: {

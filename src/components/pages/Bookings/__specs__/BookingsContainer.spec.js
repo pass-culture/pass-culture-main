@@ -32,7 +32,8 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
           expect(props).toHaveProperty('pathToCsvFile', 'http://localhost/bookings/csv?venueId=F51')
         })
 
-        it('should venueId should be empty when the \'all\' option selected', () => {
+
+        it('should target the API without filter on venueId when the \'all\' option selected', () => {
           // given
           const state = {
             bookingSummary: {
@@ -68,7 +69,7 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
     })
 
     describe('showDownloadButton', () => {
-      it('should hide the download button by default', () => {
+      it('should be hidden by default', () => {
         // when
         const props = mapStateToProps({})
 

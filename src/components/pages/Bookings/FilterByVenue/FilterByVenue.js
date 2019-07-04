@@ -12,7 +12,6 @@ export class FilterByVenue extends PureComponent {
 
   render() {
     const { venuesOptions, isDigital, venueId } = this.props
-    console.log(venueId)
     const labelClassName = this.props.isDigital
       ? 'has-text-grey'
       : 'has-text-black'
@@ -29,9 +28,7 @@ export class FilterByVenue extends PureComponent {
             onChange={this.onChangeVenue}
             value={venueId}
             disabled={isDigital}>
-
             <option disabled selected={true} label=" "></option>
-
             {venuesOptions.map(({ name, id }) => (
               <option key={id} value={id}>
                 {name}

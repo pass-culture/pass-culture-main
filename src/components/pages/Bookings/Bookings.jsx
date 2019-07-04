@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 
 import DownloadButtonContainer from 'components/layout/DownloadButton/DownloadButtonContainer'
 import Main from 'components/layout/Main'
-import HeroSection from 'components/layout/HeroSection/HeroSection'
-import FilterByVenueContainer from './FilterByVenueContainer'
+import HeroSection from 'components/layout/HeroSection'
+import FilterByVenueContainer from './FilterByVenue/FilterByVenueContainer'
 
 class Bookings extends Component {
   render() {
@@ -16,7 +16,6 @@ class Bookings extends Component {
           <p className="subtitle">
             Téléchargez le récapitulatif des réservations de vos offres.
           </p>
-
           <p className="subtitle">
             Le fichier est au format CSV, compatible avec tous les tableurs et
             éditeurs de texte.

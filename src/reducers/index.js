@@ -10,7 +10,7 @@ import {
 import { combineReducers } from 'redux'
 
 import data from './data'
-import bookingSummary from './bookingSummary'
+import bookingSummary from './bookingSummary/bookingSummary'
 
 const rootReducer = combineReducers({
   bookingSummary,

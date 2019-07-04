@@ -8,10 +8,7 @@ import {
 } from 'components/hocs'
 import { API_URL } from "../../../utils/config";
 
-function buildPathToReservationFile({
-  isFilterByDigitalVenues,
-  selectedVenue,
-}) {
+const  buildPathToReservationFile = ({ isFilterByDigitalVenues, selectedVenue}) => {
 
   let pathToFile = `${API_URL}/bookings/csv`;
   let filtersToApply = [];

@@ -1,4 +1,4 @@
-import get from "lodash.get";
+import get from 'lodash.get'
 
 const selectNonVirtualVenues = state => {
   const venues = get(state, 'data.venues', [])
