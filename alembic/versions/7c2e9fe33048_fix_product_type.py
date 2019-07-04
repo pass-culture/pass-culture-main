@@ -1,7 +1,7 @@
 """fix_product_type
 
 Revision ID: 7c2e9fe33048
-Revises: d4c38884d642
+Revises: 035f0ee8ea70
 Create Date: 2019-07-01 08:10:14.195374
 
 """
@@ -9,7 +9,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '7c2e9fe33048'
-down_revision = 'd4c38884d642'
+down_revision = '035f0ee8ea70'
 branch_labels = None
 depends_on = None
 
