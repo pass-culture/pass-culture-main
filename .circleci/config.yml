@@ -205,7 +205,7 @@ jobs:
             nvm use "$NODE_VERSION"
             cd pro
             yarn install
-            set -a; source "$CIRCLE_WORKING_DIRECTORY"/config/run_envs/"${CIRCLE_BRANCH}" && yarn build
+            set -a; source ~/pass-culture/config/run_envs/"${CIRCLE_BRANCH}" && yarn build
       - run:
           name: Deploy Pro
           command: |
