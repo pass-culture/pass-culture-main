@@ -30,6 +30,10 @@
     }
   }
 
+  h5 {
+    @include multiLineEllipsis();
+  }
+
   .fs13 {
     color: $grey;
   }

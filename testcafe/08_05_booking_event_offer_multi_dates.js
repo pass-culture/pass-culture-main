@@ -1,4 +1,3 @@
-import moment from 'moment-timezone'
 import { Selector } from 'testcafe'
 
 import { fetchSandbox } from './helpers/sandboxes'
@@ -138,7 +137,7 @@ test("Parcours complet de réservation d'une offre event à date unique", async 
   previousWalletValue = await getMenuWalletValue()
 
   const bookedOffer = Selector(
-    `.booking-item[data-token="${currentBookedToken}"]`
+    `.mb-my-booking[data-token="${currentBookedToken}"]`
   )
   await t
     .click(myBookingsMenuButton)
@@ -157,26 +156,13 @@ test('Je vérifie mes réservations, après reconnexion', async t => {
   // objet booking) car sinon on ne peut pas
   // runner ce test de maniere standalone
   const bookedOffer = Selector(
-    `.booking-item[data-token="${currentBookedToken}"]`
+    `.mb-my-booking[data-token="${currentBookedToken}"]`
   )
 
   await t
     .navigateTo(myBookingsURL)
     .expect(bookedOffer.exists)
     .ok()
-
-  const bookedTimezone = await bookedOffer.getAttribute('data-booked-timezone')
-
-  let bookedDate = await bookedOffer.getAttribute('data-booked-date')
-  bookedDate = moment(bookedDate).toISOString()
-
-  const format = 'DD MMMM YYYY h:m'
-  let date = `${currentSelectedDay} ${currentSelectedTime}`
-  date = moment.tz(date, format, bookedTimezone).toISOString()
-
-  await t
-    .expect(bookedDate)
-    .eql(date)
     .click(bookedOffer)
     .expect(checkReversedIcon.exists)
     .ok()

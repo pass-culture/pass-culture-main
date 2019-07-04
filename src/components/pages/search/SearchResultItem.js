@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
-import Dotdotdot from 'react-dotdotdot'
 import { requestData } from 'redux-saga-data'
 
 import { getQueryURL } from '../../../helpers'
@@ -55,7 +54,7 @@ class SearchResultItem extends Component {
                     className="fs18 is-bold"
                     title={recommendation.offer.name}
                   >
-                    <Dotdotdot clamp="2">{recommendation.offer.name}</Dotdotdot>
+                    {recommendation.offer.name}
                   </h5>
                   <div className="fs13">
                     {recommendation.offer.product.offerType.appLabel}

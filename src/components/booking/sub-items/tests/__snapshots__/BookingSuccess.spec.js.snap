@@ -4,7 +4,11 @@ exports[`src | components | pages | search | BookingSuccess snapshot should matc
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingSuccess
-    data={Object {}}
+    data={
+      Object {
+        "token": "G8G8G8",
+      }
+    }
     isEvent={true}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -62,8 +66,11 @@ ShallowWrapper {
         >
           <b
             className="is-block is-size-1"
+            data-token="g8g8g8"
             id="booking-booked-token"
-          />
+          >
+            g8g8g8
+          </b>
         </p>,
         <p>
           <React.Fragment>
@@ -235,8 +242,11 @@ ShallowWrapper {
           "children": Array [
             <b
               className="is-block is-size-1"
+              data-token="g8g8g8"
               id="booking-booked-token"
-            />,
+            >
+              g8g8g8
+            </b>,
             undefined,
           ],
           "className": "my28",
@@ -248,13 +258,13 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": undefined,
+              "children": "g8g8g8",
               "className": "is-block is-size-1",
-              "data-token": undefined,
+              "data-token": "g8g8g8",
               "id": "booking-booked-token",
             },
             "ref": null,
-            "rendered": null,
+            "rendered": "g8g8g8",
             "type": "b",
           },
           undefined,
@@ -451,8 +461,11 @@ ShallowWrapper {
           >
             <b
               className="is-block is-size-1"
+              data-token="g8g8g8"
               id="booking-booked-token"
-            />
+            >
+              g8g8g8
+            </b>
           </p>,
           <p>
             <React.Fragment>
@@ -624,8 +637,11 @@ ShallowWrapper {
             "children": Array [
               <b
                 className="is-block is-size-1"
+                data-token="g8g8g8"
                 id="booking-booked-token"
-              />,
+              >
+                g8g8g8
+              </b>,
               undefined,
             ],
             "className": "my28",
@@ -637,13 +653,13 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": undefined,
+                "children": "g8g8g8",
                 "className": "is-block is-size-1",
-                "data-token": undefined,
+                "data-token": "g8g8g8",
                 "id": "booking-booked-token",
               },
               "ref": null,
-              "rendered": null,
+              "rendered": "g8g8g8",
               "type": "b",
             },
             undefined,

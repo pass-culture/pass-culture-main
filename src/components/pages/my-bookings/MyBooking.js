@@ -1,65 +1,51 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
 
 import Icon from '../../layout/Icon'
 import Ribbon from '../../layout/Ribbon'
 
 const MyBooking = ({
-  date,
-  dateString,
   isCancelled,
-  linkURL,
   name,
+  offerVersoUrl,
+  stringifyDate,
   thumbUrl,
-  timezone,
   token,
-  type,
 }) => (
-  <li
-    data-token={token}
-    data-booked-date={date}
-    data-booked-timezone={timezone}
-    data-booked-type={type}
-    className="booking-item mb12"
-  >
-    <Link to={linkURL}>
-      <div className="thumb">{thumbUrl && <img alt="" src={thumbUrl} />}</div>
-      <div className="infos">
-        <div className="top">
-          <div className="fs18 is-semi-bold">
-            <Dotdotdot clamp={date ? 2 : 3}>{name}</Dotdotdot>
-          </div>
-          <div className="fs13">{dateString}</div>
-        </div>
-        {<div className="token">{token.toLowerCase()}</div>}
+  <li className="mb-my-booking" data-token={token}>
+    <Link className="mb-link" to={offerVersoUrl}>
+      <div className="mb-thumb">
+        {thumbUrl && <img alt="" src={thumbUrl} />}
       </div>
-      <div className="arrow">
+      <div className="mb-infos">
+        <div className="mb-heading">
+          <div className="mb-title">{name}</div>
+          <div className="mb-date">{stringifyDate}</div>
+        </div>
+        <div className="mb-token">{token}</div>
+      </div>
+      <div className="mb-arrow">
         {isCancelled && <Ribbon />}
-        <Icon svg="ico-next-S" />
+        <Icon className="mb-arrow-img" svg="ico-next-S" />
       </div>
     </Link>
   </li>
 )
 
 MyBooking.defaultProps = {
-  date: null,
-  dateString: 'Permanent',
   isCancelled: false,
+  stringifyDate: 'Permanent',
   thumbUrl: null,
 }
 
 MyBooking.propTypes = {
-  date: PropTypes.string,
-  dateString: PropTypes.string,
   isCancelled: PropTypes.bool,
-  linkURL: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
+  offerVersoUrl: PropTypes.string.isRequired,
+  stringifyDate: PropTypes.string,
   thumbUrl: PropTypes.string,
-  timezone: PropTypes.string.isRequired,
   token: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
 }
 
 export default MyBooking

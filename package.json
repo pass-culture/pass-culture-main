@@ -55,7 +55,6 @@
     "react-datepicker": "1.8.0",
     "react-dev-utils": "^4.2.1",
     "react-dom": "^0.14||^15.5.4||^16.1.1",
-    "react-dotdotdot": "^1.2.3",
     "react-draggable": "augnustin/react-draggable#pass-culture",
     "react-final-form": "^3.6.5",
     "react-final-form-utils": "1.3.5",

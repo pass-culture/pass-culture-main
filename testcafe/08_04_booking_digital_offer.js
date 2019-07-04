@@ -118,7 +118,7 @@ test("Parcours complet de réservation d'une offre digitale", async t => {
   previousWalletValue = await getMenuWalletValue()
 
   const bookedOffer = Selector(
-    `.booking-item[data-token="${currentBookedToken}"]`
+    `.mb-my-booking[data-token="${currentBookedToken}"]`
   )
   await t
     .click(myBookingsMenuButton)
@@ -131,7 +131,7 @@ test("Parcours complet de réservation d'une offre digitale", async t => {
 
 test('Je vérifie mes réservations après reconnexion', async t => {
   const bookedOffer = Selector(
-    `.booking-item[data-token="${currentBookedToken}"]`
+    `.mb-my-booking[data-token="${currentBookedToken}"]`
   )
   await t
     .navigateTo(myBookingsURL)

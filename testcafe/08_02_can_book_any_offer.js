@@ -13,7 +13,7 @@ const discoverURL = `${ROOT_PATH}decouverte`
 
 const alreadyBookedOfferButton = Selector('#verso-already-booked-button')
 const bookOfferButton = Selector('#verso-booking-button')
-const bookingItem = Selector('.booking-item')
+const myBooking = Selector('.mb-my-booking')
 const closeMenu = Selector('#main-menu-fixed-container .close-link')
 const menuReservations = Selector('.navlink').withText('Mes réservations')
 const openMenu = Selector('#deck-footer .profile-button')
@@ -71,7 +71,7 @@ test("Je vois l'offre dans 'mes réservations' et je peux cliquer dessus pour re
     .click(menuReservations)
     .expect(getPageUrl())
     .eql(`${ROOT_PATH}reservations`)
-    .click(bookingItem)
+    .click(myBooking)
     .expect(getPageUrl())
     .match(/\/decouverte\/.*\/verso$/)
 })

@@ -1,0 +1,109 @@
+.my-bookings {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.mb-main {
+  background-image: linear-gradient(to bottom right, $red, $purple-blue);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: auto;
+}
+
+.mb-no-bookings {
+  align-items: center;
+  justify-content: center;
+}
+
+.mb-section {
+  margin-top: 2.25rem;
+  padding: 0 0.75rem;
+}
+
+.mb-header {
+  color: $white;
+  font-size: 1.2rem;
+  font-style: italic;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.mb-my-booking {
+  background-color: $white;
+  border-radius: $radius-small;
+  margin-bottom: 0.75rem;
+}
+
+.mb-link {
+  display: flex;
+  height: 150px;
+}
+
+.mb-thumb {
+  display: flex;
+  width: 30%;
+}
+
+.mb-infos {
+  @include dotted($primary, left);
+
+  width: 55%;
+}
+
+.mb-heading {
+  display: flex;
+  flex-direction: column;
+  height: 50%;
+  justify-content: space-around;
+  padding: 0.5rem 1rem;
+}
+
+.mb-title {
+  @include multiLineEllipsis();
+
+  color: $black;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.mb-date {
+  color: $grey-dark;
+  font-size: 0.8rem;
+}
+
+.mb-token {
+  @include dotted($primary, top);
+
+  color: $primary;
+  font-size: 2.9rem;
+  padding: 0.5rem 0 0 1rem;
+}
+
+.mb-arrow {
+  align-items: center;
+  display: flex;
+  position: relative;
+  width: 15%;
+}
+
+.mb-arrow-img {
+  margin: auto;
+}
+
+.mb-link-offers {
+  border: 2px solid $white;
+  border-radius: 2px;
+  color: $white;
+  display: block;
+  font-weight: 500;
+  font-size: 1.4rem;
+  margin-bottom: 0.75rem;
+  padding: 0.4rem 1.5rem;
+}
+
+.mb-text {
+  color: $white;
+  text-align: center;
+}

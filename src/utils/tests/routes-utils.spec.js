@@ -4,7 +4,7 @@ import routes from '../routes'
 
 import DiscoveryPage from '../../components/pages/discovery'
 import FavoritesPage from '../../components/pages/FavoritesPage'
-import MyBookingsPage from '../../components/pages/my-bookings'
+import MyBookingsContainer from '../../components/pages/my-bookings/MyBookingsContainer'
 import ProfilePage from '../../components/pages/profile'
 import SearchContainer from '../../components/pages/search/SearchContainer'
 
@@ -89,7 +89,7 @@ describe('getMenuRoutes', () => {
         title: 'Recherche',
       },
       {
-        component: MyBookingsPage,
+        component: MyBookingsContainer,
         disabled: false,
         icon: 'calendar-w',
         path: '/reservations',

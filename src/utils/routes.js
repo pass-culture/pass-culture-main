@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom'
 import { WEBAPP_CONTACT_EXTERNAL_PAGE } from './config'
 import ActivationRoutesContainer from '../components/pages/activation/ActivationRoutesContainer'
 import BetaPage from '../components/pages/BetaPage'
-import MyBookingsPage from '../components/pages/my-bookings'
+import MyBookingsContainer from '../components/pages/my-bookings/MyBookingsContainer'
 import DiscoveryPage from '../components/pages/discovery'
 import FavoritesPage from '../components/pages/FavoritesPage'
 import ForgotPasswordPage from '../components/pages/ForgotPasswordPage'
@@ -77,7 +77,7 @@ const routes = [
     title: 'Recherche',
   },
   {
-    component: MyBookingsPage,
+    component: MyBookingsContainer,
     disabled: false,
     icon: 'calendar-w',
     path: '/reservations',

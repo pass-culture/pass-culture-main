@@ -8,7 +8,9 @@ describe('src | components | pages | search | BookingSuccess', () => {
     it('should match snapshot', () => {
       // given
       const props = {
-        data: {},
+        data: {
+          token: 'G8G8G8',
+        },
         isEvent: true,
       }
 

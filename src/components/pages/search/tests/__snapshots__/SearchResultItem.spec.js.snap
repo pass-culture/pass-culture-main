@@ -76,14 +76,7 @@ ShallowWrapper {
                 className="fs18 is-bold"
                 title="sur la route des migrants ; rencontres à Calais"
               >
-                <Dotdotdot
-                  clamp="2"
-                  tagName="div"
-                  truncationChar="…"
-                  useNativeClamp={false}
-                >
-                  sur la route des migrants ; rencontres à Calais
-                </Dotdotdot>
+                sur la route des migrants ; rencontres à Calais
               </h5>
               <div
                 className="fs13"
@@ -140,14 +133,7 @@ ShallowWrapper {
                   className="fs18 is-bold"
                   title="sur la route des migrants ; rencontres à Calais"
                 >
-                  <Dotdotdot
-                    clamp="2"
-                    tagName="div"
-                    truncationChar="…"
-                    useNativeClamp={false}
-                  >
-                    sur la route des migrants ; rencontres à Calais
-                  </Dotdotdot>
+                  sur la route des migrants ; rencontres à Calais
                 </h5>
                 <div
                   className="fs13"
@@ -214,14 +200,7 @@ ShallowWrapper {
                     className="fs18 is-bold"
                     title="sur la route des migrants ; rencontres à Calais"
                   >
-                    <Dotdotdot
-                      clamp="2"
-                      tagName="div"
-                      truncationChar="…"
-                      useNativeClamp={false}
-                    >
-                      sur la route des migrants ; rencontres à Calais
-                    </Dotdotdot>
+                    sur la route des migrants ; rencontres à Calais
                   </h5>
                   <div
                     className="fs13"
@@ -286,14 +265,7 @@ ShallowWrapper {
                     className="fs18 is-bold"
                     title="sur la route des migrants ; rencontres à Calais"
                   >
-                    <Dotdotdot
-                      clamp="2"
-                      tagName="div"
-                      truncationChar="…"
-                      useNativeClamp={false}
-                    >
-                      sur la route des migrants ; rencontres à Calais
-                    </Dotdotdot>
+                    sur la route des migrants ; rencontres à Calais
                   </h5>
                   <div
                     className="fs13"
@@ -320,14 +292,7 @@ ShallowWrapper {
                       className="fs18 is-bold"
                       title="sur la route des migrants ; rencontres à Calais"
                     >
-                      <Dotdotdot
-                        clamp="2"
-                        tagName="div"
-                        truncationChar="…"
-                        useNativeClamp={false}
-                      >
-                        sur la route des migrants ; rencontres à Calais
-                      </Dotdotdot>
+                      sur la route des migrants ; rencontres à Calais
                     </h5>,
                     <div
                       className="fs13"
@@ -349,33 +314,12 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": <Dotdotdot
-                        clamp="2"
-                        tagName="div"
-                        truncationChar="…"
-                        useNativeClamp={false}
-                      >
-                        sur la route des migrants ; rencontres à Calais
-                      </Dotdotdot>,
+                      "children": "sur la route des migrants ; rencontres à Calais",
                       "className": "fs18 is-bold",
                       "title": "sur la route des migrants ; rencontres à Calais",
                     },
                     "ref": null,
-                    "rendered": Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "class",
-                      "props": Object {
-                        "children": "sur la route des migrants ; rencontres à Calais",
-                        "clamp": "2",
-                        "tagName": "div",
-                        "truncationChar": "…",
-                        "useNativeClamp": false,
-                      },
-                      "ref": null,
-                      "rendered": "sur la route des migrants ; rencontres à Calais",
-                      "type": [Function],
-                    },
+                    "rendered": "sur la route des migrants ; rencontres à Calais",
                     "type": "h5",
                   },
                   Object {
@@ -479,14 +423,7 @@ ShallowWrapper {
                   className="fs18 is-bold"
                   title="sur la route des migrants ; rencontres à Calais"
                 >
-                  <Dotdotdot
-                    clamp="2"
-                    tagName="div"
-                    truncationChar="…"
-                    useNativeClamp={false}
-                  >
-                    sur la route des migrants ; rencontres à Calais
-                  </Dotdotdot>
+                  sur la route des migrants ; rencontres à Calais
                 </h5>
                 <div
                   className="fs13"
@@ -543,14 +480,7 @@ ShallowWrapper {
                     className="fs18 is-bold"
                     title="sur la route des migrants ; rencontres à Calais"
                   >
-                    <Dotdotdot
-                      clamp="2"
-                      tagName="div"
-                      truncationChar="…"
-                      useNativeClamp={false}
-                    >
-                      sur la route des migrants ; rencontres à Calais
-                    </Dotdotdot>
+                    sur la route des migrants ; rencontres à Calais
                   </h5>
                   <div
                     className="fs13"
@@ -617,14 +547,7 @@ ShallowWrapper {
                       className="fs18 is-bold"
                       title="sur la route des migrants ; rencontres à Calais"
                     >
-                      <Dotdotdot
-                        clamp="2"
-                        tagName="div"
-                        truncationChar="…"
-                        useNativeClamp={false}
-                      >
-                        sur la route des migrants ; rencontres à Calais
-                      </Dotdotdot>
+                      sur la route des migrants ; rencontres à Calais
                     </h5>
                     <div
                       className="fs13"
@@ -689,14 +612,7 @@ ShallowWrapper {
                       className="fs18 is-bold"
                       title="sur la route des migrants ; rencontres à Calais"
                     >
-                      <Dotdotdot
-                        clamp="2"
-                        tagName="div"
-                        truncationChar="…"
-                        useNativeClamp={false}
-                      >
-                        sur la route des migrants ; rencontres à Calais
-                      </Dotdotdot>
+                      sur la route des migrants ; rencontres à Calais
                     </h5>
                     <div
                       className="fs13"
@@ -723,14 +639,7 @@ ShallowWrapper {
                         className="fs18 is-bold"
                         title="sur la route des migrants ; rencontres à Calais"
                       >
-                        <Dotdotdot
-                          clamp="2"
-                          tagName="div"
-                          truncationChar="…"
-                          useNativeClamp={false}
-                        >
-                          sur la route des migrants ; rencontres à Calais
-                        </Dotdotdot>
+                        sur la route des migrants ; rencontres à Calais
                       </h5>,
                       <div
                         className="fs13"
@@ -752,33 +661,12 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": <Dotdotdot
-                          clamp="2"
-                          tagName="div"
-                          truncationChar="…"
-                          useNativeClamp={false}
-                        >
-                          sur la route des migrants ; rencontres à Calais
-                        </Dotdotdot>,
+                        "children": "sur la route des migrants ; rencontres à Calais",
                         "className": "fs18 is-bold",
                         "title": "sur la route des migrants ; rencontres à Calais",
                       },
                       "ref": null,
-                      "rendered": Object {
-                        "instance": null,
-                        "key": undefined,
-                        "nodeType": "class",
-                        "props": Object {
-                          "children": "sur la route des migrants ; rencontres à Calais",
-                          "clamp": "2",
-                          "tagName": "div",
-                          "truncationChar": "…",
-                          "useNativeClamp": false,
-                        },
-                        "ref": null,
-                        "rendered": "sur la route des migrants ; rencontres à Calais",
-                        "type": [Function],
-                      },
+                      "rendered": "sur la route des migrants ; rencontres à Calais",
                       "type": "h5",
                     },
                     Object {

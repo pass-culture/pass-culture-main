@@ -51,7 +51,7 @@ export const selectSoonBookings = createSelector(
   }
 )
 
-export const selectOtherBookings = createSelector(
+export const selectMyBookings = createSelector(
   state => state.data.bookings,
   allBookings => {
     const filtered = allBookings.filter(filterValidBookings)

@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom'
 import { getDisplayPrice } from '../../../helpers'
 
 const BookingSuccess = ({ isEvent, data }) => {
-  const token = get(data, 'token')
+  const token = get(data, 'token').toLowerCase()
   let price = get(data, 'stock.price')
   price = getDisplayPrice(price)
   const onlineOfferUrl = get(data, 'completedUrl')
