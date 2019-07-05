@@ -57,7 +57,7 @@ test('Je ne peux pas ajouter de nouvelle structure avec un siren faux', async t 
   await t.expect(sirenErrorInput.innerText).contains('Siren invalide')
 })
 
-test('Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existant dans la base', async t => {
+test('Je peux créer un rattachement à une structure dont le siren existe déjà dans en base de données', async t => {
   // given
   const { offerer } = dataFromSandbox
   await t.addRequestHooks(getSirenRequestMockAs(offerer))
@@ -74,9 +74,7 @@ test('Je ne peux pas ajouter de nouvelle structure ayant un siren déjà existan
   // when
   await t
     .expect(sirenErrorInput.innerText)
-    .contains(
-      'Une entrée avec cet identifiant existe déjà dans notre base de données'
-    )
+    .contains('')
 })
 
 test('Je renseigne une nouvelle structure via son siren', async t => {
