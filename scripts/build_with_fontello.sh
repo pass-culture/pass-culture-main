@@ -19,7 +19,7 @@ while [ "$counter" -lt 30 ]; do
   sleep 2
 done
 
-if [ counter -le 30 ];then
+if [ $counter -le 30 ];then
   echo "Fontello working !"
 else
   echo "Too many error with Fontello download."
