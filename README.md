@@ -169,7 +169,7 @@ Ou en tant qu'user avec :
 
 ```
 email: pctest.pro93.0@btmx.fr
-password: pctest0.pro93.0
+password: pctest0.Pro93.0
 ```
 
 (Ces deux utilisateurs existent également pour le 97, pour les utiliser, il suffit de remplacer 93 par 97)
