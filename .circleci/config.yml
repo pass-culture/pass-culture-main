@@ -112,7 +112,7 @@ jobs:
       image: circleci/classic:latest
     working_directory: ~/pass-culture
     steps:
-      - run: echo toto
+      - run: exit 1
 #      - checkout
 #      - run: git submodule sync
 #      - run: git submodule update --init
@@ -172,6 +172,8 @@ jobs:
       image: circleci/classic:latest
     steps:
       - checkout
+      - run: sleep 60
+      - run: pip install requests
       - run: python scripts/check_ci_status.py $CIRCLE_SHA1
 
 
@@ -181,6 +183,7 @@ jobs:
     working_directory: ~/pass-culture
     steps:
       - checkout
+      - run: pip install requests
       - run: python scripts/check_ci_status.py $CIRCLE_SHA1
 #      - run: git submodule sync
 #      - run: git submodule update --init
