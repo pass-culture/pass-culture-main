@@ -3,6 +3,7 @@ NOT_FORGET.md
 *.secret
 development_env_file
 .idea/
+*.pgsql
 *.pgdump
 *.iml
 artillery/reports/*
