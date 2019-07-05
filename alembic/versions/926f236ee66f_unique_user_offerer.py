@@ -1,7 +1,7 @@
 """unique_user_offerer
 
 Revision ID: 926f236ee66f
-Revises: 7c2e9fe33048
+Revises: 035f0ee8ea70
 Create Date: 2019-07-01 11:07:35.973292
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '926f236ee66f'
-down_revision = '7c2e9fe33048'
+down_revision = '035f0ee8ea70'
 branch_labels = None
 depends_on = None
 
