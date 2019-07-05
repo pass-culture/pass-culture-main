@@ -4,7 +4,7 @@ import React, { Component, Fragment } from 'react'
 import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { NavLink } from 'react-router-dom'
-import { assignData } from 'redux-saga-data'
+import { assignData } from 'fetch-normalize-data'
 
 import OffererItemContainer from './OffererItem/OffererItemContainer'
 import PendingOffererItem from './OffererItem/PendingOffererItem'
