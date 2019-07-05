@@ -44,7 +44,7 @@ ShallowWrapper {
             format={[Function]}
             id={null}
             innerClassName="col-50"
-            label="SIRET (si applicable) : "
+            label="SIRET du lieu qui accueille vos offres (si applicable) : "
             name="siret"
             parse={null}
             placeholder=""
@@ -160,7 +160,7 @@ ShallowWrapper {
               format={[Function]}
               id={null}
               innerClassName="col-50"
-              label="SIRET (si applicable) : "
+              label="SIRET du lieu qui accueille vos offres (si applicable) : "
               name="siret"
               parse={null}
               placeholder=""
@@ -263,7 +263,7 @@ ShallowWrapper {
               "format": [Function],
               "id": null,
               "innerClassName": "col-50",
-              "label": "SIRET (si applicable) : ",
+              "label": "SIRET du lieu qui accueille vos offres (si applicable) : ",
               "name": "siret",
               "parse": null,
               "placeholder": "",
@@ -406,7 +406,7 @@ ShallowWrapper {
               format={[Function]}
               id={null}
               innerClassName="col-50"
-              label="SIRET (si applicable) : "
+              label="SIRET du lieu qui accueille vos offres (si applicable) : "
               name="siret"
               parse={null}
               placeholder=""
@@ -522,7 +522,7 @@ ShallowWrapper {
                 format={[Function]}
                 id={null}
                 innerClassName="col-50"
-                label="SIRET (si applicable) : "
+                label="SIRET du lieu qui accueille vos offres (si applicable) : "
                 name="siret"
                 parse={null}
                 placeholder=""
@@ -625,7 +625,7 @@ ShallowWrapper {
                 "format": [Function],
                 "id": null,
                 "innerClassName": "col-50",
-                "label": "SIRET (si applicable) : ",
+                "label": "SIRET du lieu qui accueille vos offres (si applicable) : ",
                 "name": "siret",
                 "parse": null,
                 "placeholder": "",

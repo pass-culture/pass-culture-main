@@ -13,7 +13,7 @@ import { formatSirenOrSiret } from 'utils/siren'
 const getIsCommentRequired = formSiret => !formSiret || formSiret.length !== 14
 
 const buildSiretLabel = isCreatedEntity =>
-  `SIRET${isCreatedEntity ? ' (si applicable)' : ''} : `
+  `SIRET${isCreatedEntity ? ' du lieu qui accueille vos offres (si applicable)' : ''} : `
 
 const IdentifierFields = ({
   fieldReadOnlyBecauseFrozenFormSiret,
