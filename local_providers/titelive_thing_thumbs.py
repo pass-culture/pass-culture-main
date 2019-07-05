@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from io import BytesIO
 from pathlib import PurePath
 
 from connectors.ftp_titelive import get_files_to_process_from_titelive_ftp, get_zip_file_from_ftp
@@ -67,13 +68,13 @@ class TiteLiveThingThumbs(LocalProvider):
 
         return providable_info
 
-    def getObjectThumbDates(self, thing):
+    def getObjectThumbDates(self, thing: Product) -> list:
         assert thing.idAtProviders == self.thingId
         zip_datetime = self.thumb_zipinfo.date_time
         thumb_index = extract_thumb_index(self.thumb_zipinfo.filename)
         return get_thumb_date_at_thumb_index(thumb_index, datetime(*zip_datetime))
 
-    def getObjectThumb(self, thing, index):
+    def getObjectThumb(self, thing: Product, index: int) -> BytesIO:
         assert thing.idAtProviders == self.thingId
         expected_index = extract_thumb_index(self.thumb_zipinfo.filename)
         assert index == expected_index

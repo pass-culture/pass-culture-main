@@ -3,6 +3,7 @@ import traceback
 from abc import abstractmethod
 from collections import Iterator
 from datetime import datetime
+from io import BytesIO
 from pprint import pprint
 from typing import Dict, Optional
 
@@ -114,11 +115,11 @@ class LocalProvider(Iterator):
         if not hasattr(obj, 'thumbCount'):
             return
         try:
-            self.checkedThumbs += 1
             thumb_dates = self.getObjectThumbDates(obj)
             for index, thumb_date in enumerate(thumb_dates):
                 if thumb_date is None:
                     continue
+                self.checkedThumbs += 1
                 existing_date = obj.thumb_date(index)
                 if existing_date is None \
                         or existing_date < thumb_date:
@@ -127,14 +128,13 @@ class LocalProvider(Iterator):
                         continue
                     if existing_date is not None:
                         obj.delete_thumb(index)
-                        logger.info("    Updating thumb #" + str(index) + " for " + str(obj))
-                    else:
-                        logger.info("    Creating thumb #" + str(index) + " for " + str(obj))
                     self.save_thumb_from_thumb_count_to_index(index, obj, thumb)
                     if existing_date is not None:
-                        self.updatedThumbs += 1
+                        logger.info("    Updating thumb #" + str(index) + " for " + str(obj))
+                        self.updatedThumbs += max(index, 1)
                     else:
-                        self.createdThumbs += 1
+                        logger.info("    Creating thumb #" + str(index) + " for " + str(obj))
+                        self.createdThumbs += index + 1
         except Exception as e:
             self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
             self.erroredThumbs += 1
@@ -143,8 +143,8 @@ class LocalProvider(Iterator):
             traceback.print_tb(e.__traceback__)
             pprint(vars(e))
 
-    def save_thumb_from_thumb_count_to_index(self, index, obj, thumb):
-        counter = 0
+    def save_thumb_from_thumb_count_to_index(self, index: int, obj: PcObject, thumb: BytesIO):
+        counter = obj.thumbCount
         while obj.thumbCount <= index:
             obj.save_thumb(thumb, counter, need_save=False)
             counter += 1

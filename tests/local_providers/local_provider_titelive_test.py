@@ -81,18 +81,18 @@ class TiteliveTest:
         provider_test(app,
                       TiteLiveThingThumbs,
                       None,
-                      checkedObjects=109,
+                      checkedObjects=19,
                       createdObjects=0,
                       updatedObjects=0,
                       erroredObjects=0,
-                      checkedThumbs=171,
-                      createdThumbs=94,
+                      checkedThumbs=19,
+                      createdThumbs=40,
                       updatedThumbs=0,
                       erroredThumbs=0,
                       Product=0
                       )
 
-        assert db.session.query(func.sum(Product.thumbCount)).scalar() == 94
+        assert db.session.query(func.sum(Product.thumbCount)).scalar() == 34
 
         # mock TiteliveThingDescription
         files = get_ordered_zip_description_files_from_sandbox_files()

@@ -90,7 +90,7 @@ class TiteliveThingThumbsTest:
                       updatedObjects=0,
                       erroredObjects=0,
                       checkedThumbs=2,
-                      createdThumbs=2,
+                      createdThumbs=5,
                       updatedThumbs=0,
                       erroredThumbs=0,
                       Product=0
