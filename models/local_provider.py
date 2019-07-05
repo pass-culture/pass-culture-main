@@ -131,7 +131,7 @@ class LocalProvider(Iterator):
                     self.save_thumb_from_thumb_count_to_index(index, obj, thumb)
                     if existing_date is not None:
                         logger.info("    Updating thumb #" + str(index) + " for " + str(obj))
-                        self.updatedThumbs += max(index, 1)
+                        self.updatedThumbs += index + 1
                     else:
                         logger.info("    Creating thumb #" + str(index) + " for " + str(obj))
                         self.createdThumbs += index + 1
