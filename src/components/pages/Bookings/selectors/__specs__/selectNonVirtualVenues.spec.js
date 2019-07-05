@@ -57,7 +57,9 @@ describe('src | components | pages | Bookings | selectNonVirtualVenues', () => {
 
   it('should return an empty list of offer when state is not initialized', () => {
     // given
-    const state = {}
+    const state = {
+      data: {},
+    }
 
     // when
     const nonVirtualVenuesToDisplay = selectNonVirtualVenues(state)

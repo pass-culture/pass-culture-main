@@ -1,17 +1,14 @@
 import React, { PureComponent, Fragment } from 'react'
 import PropTypes from 'prop-types'
 
-export class FilterByVenue extends PureComponent {
+class FilterByVenue extends PureComponent {
   componentDidMount() {
-    this.props.loadVenues()
-  }
-
-  onChangeVenue = event => {
-    this.props.selectBookingsForVenues(event.target.value)
+    const { loadVenues } = this.props
+    loadVenues()
   }
 
   render() {
-    const { venuesOptions, isDigital, venueId } = this.props
+    const { venuesOptions, isDigital, selectBookingsForVenues, venueId } = this.props
     const labelClassName = this.props.isDigital
       ? 'has-text-grey'
       : 'has-text-black'
@@ -20,15 +17,15 @@ export class FilterByVenue extends PureComponent {
       <Fragment>
         <div id="filter-by-venue">
           <label htmlFor="venues" className={labelClassName}>
-            {'Sélectionner un lieu :'}
+            {'Sélectionnez un lieu :'}
           </label>
           <select
             id="venues"
             className="pc-selectbox pl24 py5 fs19"
-            onChange={this.onChangeVenue}
+            onChange={selectBookingsForVenues}
             value={venueId}
             disabled={isDigital}>
-            <option disabled selected={true} label=" "></option>
+            <option disabled label=" "></option>
             {venuesOptions.map(({ name, id }) => (
               <option key={id} value={id}>
                 {name}
@@ -36,7 +33,7 @@ export class FilterByVenue extends PureComponent {
             ))}
           </select>
         </div>
-        <div className="select-digital-offer">
+        <div className="select-digital-offer mt16 mb12">
           <div>{'ou :'}</div>
           <input
             id="isDigital"
@@ -64,3 +61,5 @@ FilterByVenue.propTypes = {
   venueId: PropTypes.string,
   venuesOptions: PropTypes.array.isRequired,
 }
+
+export default FilterByVenue

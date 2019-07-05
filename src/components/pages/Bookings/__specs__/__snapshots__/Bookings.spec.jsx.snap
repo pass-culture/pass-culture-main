@@ -3,7 +3,10 @@
 exports[`src | components | pages | Bookings snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Bookings />,
+  Symbol(enzyme.__unrendered__): <Bookings
+    pathToCsvFile=""
+    showDownloadButton={false}
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -116,11 +119,11 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": null,
+          "children": false,
           "className": "control flex-columns items-center flex-end",
         },
         "ref": null,
-        "rendered": null,
+        "rendered": false,
         "type": "div",
       },
     ],
@@ -230,11 +233,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": null,
+            "children": false,
             "className": "control flex-columns items-center flex-end",
           },
           "ref": null,
-          "rendered": null,
+          "rendered": false,
           "type": "div",
         },
       ],
@@ -265,6 +268,5 @@ ShallowWrapper {
       },
     },
   },
-  Symbol(enzyme.__childContext__): null,
 }
 `;

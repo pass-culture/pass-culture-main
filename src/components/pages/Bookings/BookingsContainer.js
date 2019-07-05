@@ -6,37 +6,37 @@ import {
   withFrenchQueryRouter,
   withRedirectToSigninWhenNotAuthenticated,
 } from 'components/hocs'
-import { API_URL } from "../../../utils/config";
+import { API_URL } from '../../../utils/config'
 
-const  buildPathToReservationFile = ({ isFilterByDigitalVenues, selectedVenue}) => {
+const buildPathToReservationFile = (isFilterByDigitalVenues, selectedVenue) => {
+  let pathToFile = `${API_URL}/bookings/csv`
+  let filtersToApply = []
 
-  let pathToFile = `${API_URL}/bookings/csv`;
-  let filtersToApply = [];
-
-  if(isFilterByDigitalVenues)
+  if (isFilterByDigitalVenues) {
     filtersToApply.push('onlyDigitalVenues=true')
+  }
 
-  if(selectedVenue && selectedVenue !== 'all') {
+  if (selectedVenue && selectedVenue !== 'all') {
     filtersToApply.push(`venueId=${selectedVenue}`)
   }
 
-  if(filtersToApply.length > 0)
-    pathToFile += '?' + filtersToApply.join('&')
+  if (filtersToApply.length > 0) {
+    pathToFile += `?${filtersToApply.join('&')}`
+  }
 
-  return pathToFile;
+  return pathToFile
 }
 
 export const mapStateToProps = state => {
+  const { bookingSummary = {} } = state
+  const { selectedVenue, isFilterByDigitalVenues } = bookingSummary
 
-  const { bookingSummary = {} } = state;
-  const { selectedVenue, isFilterByDigitalVenues } = bookingSummary;
-
-  const pathToCsvFile = buildPathToReservationFile({
+  const pathToCsvFile = buildPathToReservationFile(
     isFilterByDigitalVenues,
     selectedVenue,
-  });
+  )
 
-  const showDownloadButton = !!(isFilterByDigitalVenues || selectedVenue);
+  const showDownloadButton = !!(isFilterByDigitalVenues || selectedVenue)
 
   return {
     pathToCsvFile,

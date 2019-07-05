@@ -3,51 +3,45 @@ import { mapStateToProps } from '../BookingsContainer'
 describe('src | components | pages | Bookings | BookingsContainer', () => {
   describe('mapStateToProps', () => {
     describe('pathToCsvFile', () => {
-      describe('when no filters', () => {
-        it('should target the API without filter', () => {
-          // given
-          const state = {}
-
-          // when
-          const props = mapStateToProps(state)
-
-          // then
-          expect(props).toHaveProperty('pathToCsvFile', 'http://localhost/bookings/csv')
-        })
-      });
-
       describe('when a venue is selected', () => {
         it('should limit csv to this venue', () => {
           // given
           const state = {
             bookingSummary: {
-              selectedVenue: 'F51'
-            }
+              isFilterByDigitalVenues: false,
+              selectedVenue: 'F51',
+            },
           }
 
           // when
           const props = mapStateToProps(state)
 
           // then
-          expect(props).toHaveProperty('pathToCsvFile', 'http://localhost/bookings/csv?venueId=F51')
+          expect(props).toStrictEqual({
+            'pathToCsvFile':'http://localhost/bookings/csv?venueId=F51',
+            'showDownloadButton': true
+          })
         })
 
-
-        it('should target the API without filter on venueId when the \'all\' option selected', () => {
+        it("should target the API without filter on venueId when the 'all' option selected", () => {
           // given
           const state = {
             bookingSummary: {
-              selectedVenue: 'all'
-            }
+              selectedVenue: 'all',
+              isFilterByDigitalVenues: false
+            },
           }
 
           // when
           const props = mapStateToProps(state)
 
           // then
-          expect(props).toHaveProperty('pathToCsvFile', 'http://localhost/bookings/csv')
+          expect(props).toStrictEqual({
+            'pathToCsvFile': 'http://localhost/bookings/csv',
+            'showDownloadButton': true
+          })
         })
-      });
+      })
 
       describe('when filtering on digital venue', () => {
         it('should limit csv to these digital venues', () => {
@@ -55,35 +49,31 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
           const state = {
             bookingSummary: {
               isFilterByDigitalVenues: true,
-              selectedVenue: ""
-            }
+              selectedVenue: '',
+            },
           }
 
           // when
           const props = mapStateToProps(state)
 
           // then
-          expect(props).toHaveProperty('pathToCsvFile', 'http://localhost/bookings/csv?onlyDigitalVenues=true')
+          expect(props).toHaveProperty(
+            'pathToCsvFile',
+            'http://localhost/bookings/csv?onlyDigitalVenues=true'
+          )
         })
-      });
+      })
     })
 
     describe('showDownloadButton', () => {
-      it('should be hidden by default', () => {
-        // when
-        const props = mapStateToProps({})
-
-        // then
-        expect(props).toHaveProperty('showDownloadButton', false)
-      })
-
       it('should be displayed when downloading digital venues', () => {
         // given
         const state = {
           bookingSummary: {
-            isFilterByDigitalVenues: true
-          }
-        };
+            isFilterByDigitalVenues: true,
+            selectedVenue: '',
+          },
+        }
 
         // when
         const props = mapStateToProps(state)
@@ -98,8 +88,8 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
           bookingSummary: {
             isFilterByDigitalVenues: false,
             selectedVenue: 'G2YU',
-          }
-        };
+          },
+        }
 
         // when
         const props = mapStateToProps(state)
@@ -114,8 +104,8 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
           bookingSummary: {
             isFilterByDigitalVenues: false,
             selectedVenue: 'all',
-          }
-        };
+          },
+        }
 
         // when
         const props = mapStateToProps(state)

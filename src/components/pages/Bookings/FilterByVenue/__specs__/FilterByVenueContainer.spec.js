@@ -77,7 +77,7 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
       const props = mapDispatchToProps(dispatch)
 
       //when
-      props.selectBookingsForVenues('AVJA')
+      props.selectBookingsForVenues({target:{value:'AVJA'}})
 
       // then
       expect(dispatch).toHaveBeenCalledWith({

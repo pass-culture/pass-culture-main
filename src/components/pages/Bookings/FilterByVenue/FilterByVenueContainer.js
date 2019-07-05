@@ -3,14 +3,14 @@ import { requestData } from 'redux-saga-data'
 import { connect } from 'react-redux'
 import { withFrenchQueryRouter } from 'components/hocs'
 
-import { FilterByVenue } from './FilterByVenue'
+import FilterByVenue from './FilterByVenue'
 import selectNonVirtualVenues from '../selectors/selectNonVirtualVenues'
 
 export const mapDispatchToProps = dispatch => ({
   loadVenues: () => {
     dispatch(
       requestData({
-        apiPath: `/venues`,
+        apiPath: '/venues',
         stateKey: 'venues',
         method: 'GET',
       })
@@ -22,19 +22,18 @@ export const mapDispatchToProps = dispatch => ({
       type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE',
     })
   },
-  selectBookingsForVenues: venueId => {
+  selectBookingsForVenues: event => {
     dispatch({
-      payload: venueId,
+      payload: event.target.value,
       type: 'BOOKING_SUMMARY_SELECT_VENUE',
     })
   },
 })
 
 export const mapStateToProps = state => {
-
-  const { data = {} } = state;
+  const { data = {} } = state
   const { venues } = data
-  const { bookingSummary = {} } = state;
+  const { bookingSummary = {} } = state
 
   const allVenuesOption = {
     name: 'Tous les lieux',
