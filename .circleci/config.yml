@@ -25,84 +25,86 @@ jobs:
       image: circleci/classic:latest
     working_directory: ~/pass-culture
     steps:
-      - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
-      - run: ./install_lib_ci.sh
-      - run: sudo ./pc symlink
-      - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
-      - run:
-          name: Running API server
-          command: |
-            cd api
-            gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
-            tar xf private.tar.gz
-            pc start-backend
-          background: true
-      - run:
-          name: Running API tests
-          command: |
-            dockerize -wait http://localhost/health -timeout 4m -wait-retry-interval 2s
-            echo 'y' | pc test-backend
+      - run: echo toto
+#      - checkout
+#      - run: git submodule sync
+#      - run: git submodule update --init
+#      - run: ./install_lib_ci.sh
+#      - run: sudo ./pc symlink
+#      - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
+#      - run:
+#          name: Running API server
+#          command: |
+#            cd api
+#            gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
+#            tar xf private.tar.gz
+#            pc start-backend
+#          background: true
+#      - run:
+#          name: Running API tests
+#          command: |
+#            dockerize -wait http://localhost/health -timeout 4m -wait-retry-interval 2s
+#            echo 'y' | pc test-backend
 
   tests-webapp:
     machine:
       image: circleci/classic:latest
     working_directory: ~/pass-culture
     steps:
-      - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
-      - run: ./install_lib_ci.sh
-      - run: sudo ./pc symlink
-      - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
-      - run:
-          name: Run Unit Test WEBAPP
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use "$NODE_VERSION"
-            cd webapp
-            yarn install
-            yarn test:unit
-      - run:
-          name: Running API server
-          command: |
-            cd api
-            gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
-            tar xf private.tar.gz
-            pc start-backend
-          background: true
-      - run:
-          name: Run Frontend WEBAPP
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use "$NODE_VERSION"
-            cd webapp
-            yarn start
-          background: true
-      - run:
-          name: Running Sandbox
-          command: |
-            dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
-            pc sandbox --name=industrial
-      - run:
-          name: Running functional tests WEBAPP
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use "$NODE_VERSION"
-            cd webapp
-            yarn test:cafe
-      - store_artifacts:
-          path: ~/pass-culture/webapp/testcafe_screenshots
-      - run:
-          name: Notify PC Ops Bot
-          when: on_fail
-          command: |
-            export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
-            curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
+      - run: echo toto
+#      - checkout
+#      - run: git submodule sync
+#      - run: git submodule update --init
+#      - run: ./install_lib_ci.sh
+#      - run: sudo ./pc symlink
+#      - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
+#      - run:
+#          name: Run Unit Test WEBAPP
+#          command: |
+#            export NVM_DIR="/opt/circleci/.nvm"
+#            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+#            nvm use "$NODE_VERSION"
+#            cd webapp
+#            yarn install
+#            yarn test:unit
+#      - run:
+#          name: Running API server
+#          command: |
+#            cd api
+#            gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
+#            tar xf private.tar.gz
+#            pc start-backend
+#          background: true
+#      - run:
+#          name: Run Frontend WEBAPP
+#          command: |
+#            export NVM_DIR="/opt/circleci/.nvm"
+#            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+#            nvm use "$NODE_VERSION"
+#            cd webapp
+#            yarn start
+#          background: true
+#      - run:
+#          name: Running Sandbox
+#          command: |
+#            dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
+#            pc sandbox --name=industrial
+#      - run:
+#          name: Running functional tests WEBAPP
+#          command: |
+#            export NVM_DIR="/opt/circleci/.nvm"
+#            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+#            nvm use "$NODE_VERSION"
+#            cd webapp
+#            yarn test:cafe
+#      - store_artifacts:
+#          path: ~/pass-culture/webapp/testcafe_screenshots
+#      - run:
+#          name: Notify PC Ops Bot
+#          when: on_fail
+#          command: |
+#            export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
+#            curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
 
 
   tests-pro:
@@ -110,59 +112,68 @@ jobs:
       image: circleci/classic:latest
     working_directory: ~/pass-culture
     steps:
+      - run: echo toto
+#      - checkout
+#      - run: git submodule sync
+#      - run: git submodule update --init
+#      - run: ./install_lib_ci.sh
+#      - run: sudo ./pc symlink
+#      - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
+#      - run:
+#          name: Run Unit Test PRO
+#          command: |
+#            export NVM_DIR="/opt/circleci/.nvm"
+#            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+#            nvm use "$NODE_VERSION"
+#            cd pro
+#            yarn install
+#            yarn test:unit
+#      - run:
+#          name: Running API server
+#          command: |
+#            cd api
+#            gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
+#            tar xf private.tar.gz
+#            pc start-backend
+#          background: true
+#      - run:
+#          name: Run Frontend PRO
+#          command: |
+#            export NVM_DIR="/opt/circleci/.nvm"
+#            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+#            nvm use "$NODE_VERSION"
+#            cd pro
+#            yarn start
+#          background: true
+#      - store_artifacts:
+#          path: ~/pass-culture/pro/testcafe_screenshots
+#      - run:
+#          name: Running Sandbox
+#          command: |
+#            dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
+#            pc sandbox --name=industrial
+#      - run:
+#          name: Running functional tests PRO
+#          command: |
+#            export NVM_DIR="/opt/circleci/.nvm"
+#            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+#            nvm use "$NODE_VERSION"
+#            cd pro
+#            yarn test:cafe
+#      - run:
+#          name: Notify PC Ops Bot
+#          when: on_fail
+#          command: |
+#            export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
+#            curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
+
+  test-deploy-api:
+    machine:
+      image: circleci/classic:latest
+    steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
-      - run: ./install_lib_ci.sh
-      - run: sudo ./pc symlink
-      - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
-      - run:
-          name: Run Unit Test PRO
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use "$NODE_VERSION"
-            cd pro
-            yarn install
-            yarn test:unit
-      - run:
-          name: Running API server
-          command: |
-            cd api
-            gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
-            tar xf private.tar.gz
-            pc start-backend
-          background: true
-      - run:
-          name: Run Frontend PRO
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use "$NODE_VERSION"
-            cd pro
-            yarn start
-          background: true
-      - store_artifacts:
-          path: ~/pass-culture/pro/testcafe_screenshots
-      - run:
-          name: Running Sandbox
-          command: |
-            dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
-            pc sandbox --name=industrial
-      - run:
-          name: Running functional tests PRO
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use "$NODE_VERSION"
-            cd pro
-            yarn test:cafe
-      - run:
-          name: Notify PC Ops Bot
-          when: on_fail
-          command: |
-            export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
-            curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
+      - run: python scripts/check_ci_status.py $CIRCLE_SHA1
+
 
   deploy-api:
     machine:
@@ -170,22 +181,22 @@ jobs:
     working_directory: ~/pass-culture
     steps:
       - checkout
-      - python scripts/check_ci_status.py $CIRCLE_SHA1
-      - run: git submodule sync
-      - run: git submodule update --init
-      - run: ./check_build_status.py
-      - run:
-          name: Deploy API
-          command: |
-            export SCALINGO_APP_NAME=$(./scripts/compute_app_name.sh ${CIRCLE_BRANCH})
-            cd api
-            git remote add scalingo git@scalingo.com:${SCALINGO_APP_NAME}.git
-            git push -f scalingo master
-      - run:
-          name: Check deployed version
-          command: |
-            export COMPONENT_URL="https://backend.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
-            ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
+      - run: python scripts/check_ci_status.py $CIRCLE_SHA1
+#      - run: git submodule sync
+#      - run: git submodule update --init
+#      - run: ./check_build_status.py
+#      - run:
+#          name: Deploy API
+#          command: |
+#            export SCALINGO_APP_NAME=$(./scripts/compute_app_name.sh ${CIRCLE_BRANCH})
+#            cd api
+#            git remote add scalingo git@scalingo.com:${SCALINGO_APP_NAME}.git
+#            git push -f scalingo master
+#      - run:
+#          name: Check deployed version
+#          command: |
+#            export COMPONENT_URL="https://backend.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
+#            ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
 
 
   deploy-pro:
@@ -263,27 +274,39 @@ workflows:
             branches:
               only:
                 - master
-            tags:
-              only: /^v.*/
+                - pc-2083-refacto-circleci-workflow
+#            tags:
+#              only: /^v.*/
       - tests-webapp:
           filters:
             branches:
               only:
                 - master
-            tags:
-              only: /^v.*/
+                - pc-2083-refacto-circleci-workflow
+#            tags:
+#              only: /^v.*/
       - tests-pro:
           filters:
             branches:
               only:
                 - master
-          tags:
-            only: /^v.*/
+                - pc-2083-refacto-circleci-workflow
+#          tags:
+#            only: /^v.*/
+      - test-deploy-api:
+          filters:
+            branches:
+              only:
+              - pc-2083-refacto-circleci-workflow
       - deploy-api:
           filters:
             branches:
-              ignore:
-                - master
+              only:
+              - master
+              - production
+              - staging
+              - integration
+              - demo
       - deploy-pro:
           requires:
             - deploy-api

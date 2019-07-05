@@ -10,7 +10,7 @@ def extract_commit_status(commit_sha1, project_jobs_infos, test_name):
     return False
 
 def get_project_jobs_infos(project_name):
-    project_url = 'https://circleci.com/api/v1.1/project/github/betagouv/' + project_name + '/tree/master'
+    project_url = 'https://circleci.com/api/v1.1/project/github/betagouv/' + project_name + '/tree/pc-2083-refacto-circleci-workflow'
     response = requests.get(project_url)
     if response.status_code != 200 :
         print('Error while requesting CircleCi. Return Code :', response.status_code)
