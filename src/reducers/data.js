@@ -1,6 +1,6 @@
-import { createData } from 'redux-saga-data'
+import { createDataReducer } from 'redux-saga-data'
 
-const data = createData({
+const data = createDataReducer({
   bookings: [],
   events: [],
   mediations: [],
