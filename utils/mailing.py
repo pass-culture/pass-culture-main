@@ -3,7 +3,7 @@ import base64
 import os
 from datetime import datetime
 from pprint import pformat
-from typing import Dict, List, Union
+from typing import Dict, List
 
 from flask import current_app as app, render_template
 
