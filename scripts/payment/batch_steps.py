@@ -11,7 +11,7 @@ from domain.payments import filter_out_already_paid_for_bookings, create_payment
     generate_payment_message, generate_file_checksum, group_payments_by_status, filter_out_bookings_without_cost, \
     keep_only_pending_payments, keep_only_not_processable_payments
 from domain.reimbursement import find_all_booking_reimbursements
-from models import Offerer, PcObject
+from models import Offerer, PaymentMessage, PcObject
 from models.db import db
 from models.payment import Payment
 from models.payment_status import TransactionStatus
@@ -59,6 +59,9 @@ def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
     logger.info('[BATCH][PAYMENTS] %s Payments in status PENDING to send' % len(pending_payments))
     return pending_payments, not_processable_payments
 
+def get_payments_by_message_id(payment_message_id: str) -> [List[Payment]]:
+    payment_query = Payment.query.join(PaymentMessage).filter(PaymentMessage.name == payment_message_id)
+    return payment_query.all()
 
 def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str,
                       pass_culture_remittance_code: str, recipients: List[str]) -> None:
@@ -70,6 +73,8 @@ def send_transactions(payments: List[Payment], pass_culture_iban: str, pass_cult
     message_name = 'passCulture-SCT-%s' % datetime.strftime(datetime.utcnow(), "%Y%m%d-%H%M%S")
     xml_file = generate_message_file(payments, pass_culture_iban, pass_culture_bic, message_name,
                                      pass_culture_remittance_code)
+
+    logger.info('[BATCH][PAYMENTS] Payment message name : %s' % message_name)
 
     try:
         validate_message_file_structure(xml_file)
