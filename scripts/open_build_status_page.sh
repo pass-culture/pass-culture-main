@@ -15,7 +15,6 @@ counter=0
 while [ "$counter" -le 10 ]
 do
     last_build=$(curl -s "$build_url" | jq -r '.[0]')
-    echo $last_build
     if [ "$last_build" = "null" ];
     then
         echo "Unknown problem querying last build."
