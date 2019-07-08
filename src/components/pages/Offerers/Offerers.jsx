@@ -74,16 +74,6 @@ class Offerers extends Component {
     })
   }
 
-  handleSuccess = (state, action) => {
-    const {
-      payload: { data },
-    } = action
-    this.setState({
-      hasMore: data.length > 0,
-      isLoading: false,
-    })
-  }
-
   handleRequestData = () => {
     const { currentUser, dispatch, offerers, query } = this.props
     const { isAdmin } = currentUser || {}
@@ -214,7 +204,7 @@ class Offerers extends Component {
               <span
                 className="tip-icon"
                 data-place="bottom"
-                data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par example, un réseau de grande distribution ou de franchisés).</p>"
+                data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
                 data-type="info"
               >
                 <Icon svg="picto-tip" />
