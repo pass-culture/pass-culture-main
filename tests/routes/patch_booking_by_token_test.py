@@ -56,6 +56,28 @@ class Patch:
                 assert Booking.query.get(booking_id).isUsed is True
 
             @clean_database
+            def expect_booking_with_token_in_lower_case_to_be_used(self, app):
+                # Given
+                user = create_user()
+                admin_user = create_user(email='admin@email.fr')
+                offerer = create_offerer()
+                user_offerer = create_user_offerer(admin_user, offerer)
+                venue = create_venue(offerer)
+                stock = create_stock_with_event_offer(offerer, venue, price=0)
+                booking = create_booking(user, stock, venue=venue)
+                PcObject.save(booking, user_offerer)
+                booking_id = booking.id
+                booking_token = booking.token.lower()
+                url = '/bookings/token/{}'.format(booking_token)
+
+                # When
+                response = TestClient(app.test_client()).with_auth('admin@email.fr').patch(url)
+
+                # Then
+                assert response.status_code == 204
+                assert Booking.query.get(booking_id).isUsed is True
+
+            @clean_database
             def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
                 # Given
                 user = create_user()

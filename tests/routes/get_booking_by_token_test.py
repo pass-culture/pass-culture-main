@@ -45,6 +45,39 @@ class Get:
             assert response_json == expected_json
 
         @clean_database
+        def when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, app):
+            # Given
+            user = create_user(public_name='John Doe', email='user@email.fr')
+            admin_user = create_user(email='admin@email.fr')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(admin_user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue, event_name='Event Name', event_type=EventType.CINEMA)
+            event_occurrence = create_event_occurrence(offer)
+            stock = create_stock_from_event_occurrence(event_occurrence, price=0)
+            booking = create_booking(user, stock, venue=venue)
+
+            PcObject.save(user_offerer, booking)
+
+            expected_json = {'bookingId': humanize(booking.id),
+                             'date': serialize(booking.stock.beginningDatetime),
+                             'email': 'user@email.fr',
+                             'isUsed': False,
+                             'offerName': 'Event Name',
+                             'userName': 'John Doe',
+                             'venueDepartementCode': '93'}
+
+            # When
+            booking_token = booking.token.lower()
+            response = TestClient(app.test_client()).with_auth('admin@email.fr').get(
+                '/bookings/token/{}'.format(booking_token))
+
+            # Then
+            assert response.status_code == 200
+            response_json = response.json
+            assert response_json == expected_json
+
+        @clean_database
         def when_activation_event_and_user_has_rights(self, app):
             # Given
             user = create_user(email='user@email.fr', phone_number='0698765432', date_of_birth=datetime(2001, 2, 1))

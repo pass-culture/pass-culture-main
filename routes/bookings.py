@@ -188,7 +188,8 @@ def get_booking_by_token(token):
 
     check_user_is_logged_in_or_email_is_provided(current_user, email)
 
-    booking = booking_queries.find_by(token, email, offer_id)
+    booking_token_upper_case = token.upper()
+    booking = booking_queries.find_by(booking_token_upper_case, email, offer_id)
     check_booking_is_usable(booking)
 
     offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
@@ -204,7 +205,8 @@ def get_booking_by_token(token):
 def patch_booking_by_token(token):
     email = request.args.get('email', None)
     offer_id = dehumanize(request.args.get('offer_id', None))
-    booking = booking_queries.find_by(token, email, offer_id)
+    booking_token_upper_case = token.upper()
+    booking = booking_queries.find_by(booking_token_upper_case, email, offer_id)
 
     if current_user.is_authenticated:
         ensure_current_user_has_rights(RightsType.editor, booking.stock.resolvedOffer.venue.managingOffererId)
