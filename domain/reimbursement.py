@@ -102,6 +102,7 @@ class BookingReimbursement:
         dict_booking['reimbursement_rule'] = self.reimbursement.value.description
         return dict_booking
 
+
 class ReimbursementDetails:
     CSV_HEADER = [
         "Année",
@@ -116,10 +117,32 @@ class ReimbursementDetails:
         "Prénom utilisateur",
         "Contremarque",
         "Date de validation de la réservation",
-        "Montant remboursé"
+        "Montant remboursé",
+        "Statut du remboursement"
     ]
 
+    def _get_current_status(self, current_status, current_status_details):
+        statuses = {
+        'TransactionStatus.PENDING': 'Remboursement en cours',
+        'TransactionStatus.NOT_PROCESSABLE': 'Remboursement impossible',
+        'TransactionStatus.SENT': 'Remboursé',
+        'TransactionStatus.ERROR': 'Erreur',
+        'TransactionStatus.RETRY': 'Remboursement retenté',
+        'TransactionStatus.BANNED': 'Banni'
+        }
+
+        human_friendly_status = statuses.get(current_status)
+
+        if current_status_details is None:
+            current_status_details = ""
+        else:
+            current_status_details = f": {current_status_details}"
+
+        return human_friendly_status + current_status_details
+
+
     def __init__(self, payment: Payment = None, booking_used_date: datetime = None):
+
         if payment is not None:
             booking = payment.booking
             user = booking.user
@@ -135,6 +158,11 @@ class ReimbursementDetails:
             date = transfer_infos[-1]
             [month_number, year] = date.split('-')
             french_month = english_to_french_month(int(year), int(month_number))
+
+            current_status = str(payment.currentStatus.status)
+            current_status_details = payment.currentStatus.detail
+
+            human_friendly_status = self._get_current_status(current_status, current_status_details)
 
             self.year = year
             self.transfer_name = "{} : {}".format(
@@ -152,6 +180,7 @@ class ReimbursementDetails:
             self.booking_token = booking.token
             self.booking_used_date = booking_used_date
             self.reimbursed_amount = payment.amount
+            self.status = human_friendly_status
 
     def as_csv_row(self):
         return [
@@ -167,7 +196,8 @@ class ReimbursementDetails:
             self.user_first_name,
             self.booking_token,
             self.booking_used_date,
-            str(self.reimbursed_amount)
+            str(self.reimbursed_amount),
+            self.status
         ]
 
 def find_all_booking_reimbursements(bookings):
@@ -183,7 +213,6 @@ def find_all_booking_reimbursements(bookings):
         reimbursements.append(BookingReimbursement(booking, elected_rule['rule'], elected_rule['amount']))
 
     return reimbursements
-
 
 def _find_potential_rules(booking, cumulative_bookings_value):
     relevant_rules = []
