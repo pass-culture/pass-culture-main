@@ -155,22 +155,21 @@ Pour l'application WEBAPP, vous pouvez naviguer avec ce user toujours présent:
 
 ```
 email: pctest.jeune93.has-booked-some@btmx.fr
-password: pctest0.Jeune93.has-booked-some
 ```
 
 Pour l'application PRO, vous pouvez naviguer en tant qu'admin avec:
 
 ```
 email: pctest.admin93.0@btmx.fr
-password: pctest0.Admin93.0
 ```
 
 Ou en tant qu'user avec :
 
 ```
 email: pctest.pro93.0@btmx.fr
-password: pctest0.Pro93.0
 ```
+
+Le mot de passe est toujours : `AZERTY123`
 
 (Ces deux utilisateurs existent également pour le 97, pour les utiliser, il suffit de remplacer 93 par 97)
 
