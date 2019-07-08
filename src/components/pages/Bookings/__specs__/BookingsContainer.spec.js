@@ -57,13 +57,12 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
           const props = mapStateToProps(state)
 
           // then
-          expect(props).toHaveProperty(
-            'pathToCsvFile',
-            'http://localhost/bookings/csv?onlyDigitalVenues=true'
-          )
+          expect(props).toStrictEqual({
+            'pathToCsvFile': 'http://localhost/bookings/csv?onlyDigitalVenues=true',
+            'showDownloadButton': true
+          })
         })
       })
-    })
 
     describe('showDownloadButton', () => {
       it('should be displayed when downloading digital venues', () => {
@@ -79,7 +78,10 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
         const props = mapStateToProps(state)
 
         // then
-        expect(props).toHaveProperty('showDownloadButton', true)
+        expect(props).toStrictEqual({
+          'pathToCsvFile': 'http://localhost/bookings/csv?onlyDigitalVenues=true',
+          'showDownloadButton': true
+        })
       })
 
       it('should be displayed when a venue is selected', () => {
@@ -95,7 +97,10 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
         const props = mapStateToProps(state)
 
         // then
-        expect(props).toHaveProperty('showDownloadButton', true)
+        expect(props).toStrictEqual({
+          'pathToCsvFile': 'http://localhost/bookings/csv?venueId=G2YU',
+          'showDownloadButton': true
+        })
       })
 
       it('should be displayed when the `all venues` option is selected', () => {
@@ -111,8 +116,13 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
         const props = mapStateToProps(state)
 
         // then
-        expect(props).toHaveProperty('showDownloadButton', true)
+        expect(props).toStrictEqual({
+            'pathToCsvFile': 'http://localhost/bookings/csv',
+            'showDownloadButton': true
+        })
       })
+    })
+
     })
   })
 })

@@ -25,19 +25,32 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
   })
 
   describe('mapDispatchToProps', () => {
-    it('enable to select only digital venues', () => {
-      // when
-      const props = mapDispatchToProps()
+    let dispatch
+    let props
+
+    beforeEach(() => {
+      dispatch = jest.fn()
+      props = mapDispatchToProps(dispatch)
+    })
+
+    it('ebnable to load venues', () => {
+      //when
+      props.loadVenues()
 
       // then
-      expect(props).toHaveProperty('selectOnlyDigitalVenues')
+      expect(dispatch).toHaveBeenCalledWith(
+        {
+          "config":
+            {"apiPath": "/venues",
+              "method": "GET",
+              "stateKey": "venues",
+            },
+          "type": "REQUEST_DATA_GET_VENUES",
+        }
+    )
     })
 
     it('preserve venue filter when select only digital venues', () => {
-      // given
-      const dispatch = jest.fn()
-      const props = mapDispatchToProps(dispatch)
-
       //when
       props.selectOnlyDigitalVenues(true)
 
@@ -49,10 +62,6 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
     })
 
     it('preserve venue filter when select only digital venues', () => {
-      // given
-      const dispatch = jest.fn()
-      const props = mapDispatchToProps(dispatch)
-
       //when
       props.selectOnlyDigitalVenues(false)
 
@@ -63,27 +72,15 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
       })
     })
 
-    it('enable to filter on a specific venue', () => {
-      // when
-      const props = mapDispatchToProps()
-
-      // then
-      expect(props).toHaveProperty('selectBookingsForVenues')
-    })
-
     it('preserve selected venue', () => {
-      // given
-      const dispatch = jest.fn()
-      const props = mapDispatchToProps(dispatch)
+        //when
+        props.selectBookingsForVenues({target:{value:'AVJA'}})
 
-      //when
-      props.selectBookingsForVenues({target:{value:'AVJA'}})
-
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        payload: 'AVJA',
-        type: 'BOOKING_SUMMARY_SELECT_VENUE',
-      })
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          payload: 'AVJA',
+          type: 'BOOKING_SUMMARY_SELECT_VENUE',
+        })
     })
   })
 })

@@ -11,8 +11,8 @@ const Bookings = ({pathToCsvFile, showDownloadButton}) => (
     <HeroSection title="Suivi des réservations">
       <p className="subtitle">
         Téléchargez le récapitulatif des réservations de vos offres.
-      </p>
-      <p className="subtitle">
+        <br />
+        <br />
         Le fichier est au format CSV, compatible avec tous les tableurs et
         éditeurs de texte.
       </p>

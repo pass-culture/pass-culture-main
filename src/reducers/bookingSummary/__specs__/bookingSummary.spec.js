@@ -6,7 +6,7 @@ describe('src | reducers | bookingSummary', () => {
     const nextState = bookingSummary()
 
     // then
-    expect(nextState).toEqual({
+    expect(nextState).toStrictEqual({
       isFilterByDigitalVenues: false,
       selectedVenue: '',
     })
@@ -27,7 +27,7 @@ describe('src | reducers | bookingSummary', () => {
     const nextState = bookingSummary(initialState, action)
 
     // then
-    expect(nextState).toEqual({
+    expect(nextState).toStrictEqual({
       isFilterByDigitalVenues: false,
       selectedVenue: 'A8KQ',
     })
@@ -48,7 +48,7 @@ describe('src | reducers | bookingSummary', () => {
     const nextState = bookingSummary(initialState, action)
 
     // then
-    expect(nextState).toEqual({
+    expect(nextState).toStrictEqual({
       isFilterByDigitalVenues: false,
       selectedVenue: 'A8KQ',
     })
@@ -61,15 +61,16 @@ describe('src | reducers | bookingSummary', () => {
         isFilterByDigitalVenues: false,
         selectedVenue: 'A8KQ',
       }
+      const action = {
+        payload: true,
+          type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE',
+      }
 
       // when
-      const nextState = bookingSummary(initialState, {
-        payload: true,
-        type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE',
-      })
+      const nextState = bookingSummary(initialState, action)
 
       // then
-      expect(nextState).toEqual({
+      expect(nextState).toStrictEqual({
         isFilterByDigitalVenues: true,
         selectedVenue: '',
       })
@@ -81,15 +82,16 @@ describe('src | reducers | bookingSummary', () => {
         isFilterByDigitalVenues: true,
         selectedVenue: '',
       }
-
-      // when
-      const nextState = bookingSummary(initialState, {
+      const action = {
         payload: false,
         type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE',
-      })
+      }
+
+      // when
+      const nextState = bookingSummary(initialState, action)
 
       // then
-      expect(nextState).toEqual({
+      expect(nextState).toStrictEqual({
         isFilterByDigitalVenues: false,
         selectedVenue: '',
       })
@@ -110,7 +112,7 @@ describe('src | reducers | bookingSummary', () => {
       const nextState = bookingSummary(initialState, action)
 
       // then
-      expect(nextState).toEqual({
+      expect(nextState).toStrictEqual({
         isFilterByDigitalVenues: true,
         selectedVenue: '',
       })

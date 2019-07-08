@@ -30,10 +30,8 @@ ShallowWrapper {
             className="subtitle"
           >
             Téléchargez le récapitulatif des réservations de vos offres.
-          </p>
-          <p
-            className="subtitle"
-          >
+            <br />
+            <br />
             Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
           </p>
         </HeroSection>,
@@ -52,48 +50,56 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "children": Array [
-            <p
-              className="subtitle"
-            >
-              Téléchargez le récapitulatif des réservations de vos offres.
-            </p>,
-            <p
-              className="subtitle"
-            >
-              Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
-            </p>,
-          ],
+          "children": <p
+            className="subtitle"
+          >
+            Téléchargez le récapitulatif des réservations de vos offres.
+            <br />
+            <br />
+            Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
+          </p>,
           "subtitle": null,
           "title": "Suivi des réservations",
         },
         "ref": null,
-        "rendered": Array [
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Téléchargez le récapitulatif des réservations de vos offres.",
-              "className": "subtitle",
-            },
-            "ref": null,
-            "rendered": "Téléchargez le récapitulatif des réservations de vos offres.",
-            "type": "p",
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              "Téléchargez le récapitulatif des réservations de vos offres.",
+              <br />,
+              <br />,
+              "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
+            ],
+            "className": "subtitle",
           },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
-              "className": "subtitle",
+          "ref": null,
+          "rendered": Array [
+            "Téléchargez le récapitulatif des réservations de vos offres.",
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {},
+              "ref": null,
+              "rendered": null,
+              "type": "br",
             },
-            "ref": null,
-            "rendered": "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
-            "type": "p",
-          },
-        ],
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {},
+              "ref": null,
+              "rendered": null,
+              "type": "br",
+            },
+            "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
+          ],
+          "type": "p",
+        },
         "type": [Function],
       },
       Object {
@@ -144,10 +150,8 @@ ShallowWrapper {
               className="subtitle"
             >
               Téléchargez le récapitulatif des réservations de vos offres.
-            </p>
-            <p
-              className="subtitle"
-            >
+              <br />
+              <br />
               Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
             </p>
           </HeroSection>,
@@ -166,48 +170,56 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "children": Array [
-              <p
-                className="subtitle"
-              >
-                Téléchargez le récapitulatif des réservations de vos offres.
-              </p>,
-              <p
-                className="subtitle"
-              >
-                Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
-              </p>,
-            ],
+            "children": <p
+              className="subtitle"
+            >
+              Téléchargez le récapitulatif des réservations de vos offres.
+              <br />
+              <br />
+              Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
+            </p>,
             "subtitle": null,
             "title": "Suivi des réservations",
           },
           "ref": null,
-          "rendered": Array [
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Téléchargez le récapitulatif des réservations de vos offres.",
-                "className": "subtitle",
-              },
-              "ref": null,
-              "rendered": "Téléchargez le récapitulatif des réservations de vos offres.",
-              "type": "p",
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                "Téléchargez le récapitulatif des réservations de vos offres.",
+                <br />,
+                <br />,
+                "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
+              ],
+              "className": "subtitle",
             },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
-                "className": "subtitle",
+            "ref": null,
+            "rendered": Array [
+              "Téléchargez le récapitulatif des réservations de vos offres.",
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {},
+                "ref": null,
+                "rendered": null,
+                "type": "br",
               },
-              "ref": null,
-              "rendered": "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
-              "type": "p",
-            },
-          ],
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {},
+                "ref": null,
+                "rendered": null,
+                "type": "br",
+              },
+              "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
+            ],
+            "type": "p",
+          },
           "type": [Function],
         },
         Object {

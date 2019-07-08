@@ -1,6 +1,6 @@
 import selectNonVirtualVenues from '../selectNonVirtualVenues'
 
-describe('src | components | pages | Bookings | selectNonVirtualVenues', () => {
+describe('src | components | pages | Bookings | selectors | selectNonVirtualVenues', () => {
   it('should return an empty list of non virtual venues when state contains no venues', () => {
     // given
     const state = {
@@ -13,7 +13,7 @@ describe('src | components | pages | Bookings | selectNonVirtualVenues', () => {
     const nonVirtualVenuesToDisplay = selectNonVirtualVenues(state)
 
     // then
-    expect(nonVirtualVenuesToDisplay).toEqual([])
+    expect(nonVirtualVenuesToDisplay).toStrictEqual([])
   })
 
   it('should return only the non virtual venues', () => {
@@ -52,7 +52,7 @@ describe('src | components | pages | Bookings | selectNonVirtualVenues', () => {
       },
     ]
 
-    expect(nonVirtualVenuesToDisplay).toEqual(nonVirtualVenuesListExpected)
+    expect(nonVirtualVenuesToDisplay).toStrictEqual(nonVirtualVenuesListExpected)
   })
 
   it('should return an empty list of offer when state is not initialized', () => {
@@ -66,6 +66,6 @@ describe('src | components | pages | Bookings | selectNonVirtualVenues', () => {
 
     // then
     const nonVirtualVenuesListExpected = []
-    expect(nonVirtualVenuesToDisplay).toEqual(nonVirtualVenuesListExpected)
+    expect(nonVirtualVenuesToDisplay).toStrictEqual(nonVirtualVenuesListExpected)
   })
 })
