@@ -104,12 +104,11 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         expect(textFields.at(0).prop('readOnly')).toBe(true)
       })
 
-      test('siret TextField cannot be edited when there is an initial siret', () => {
+      test('proper siret label is returned when isCreatedEntity is true', () => {
         // given
         const props = {
           isCreatedEntity: true,
           isModifiedEntity: true,
-          initialSiret: '12345567891011',
         }
 
         // when
@@ -118,7 +117,23 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         // then
         const textFields = wrapper.find(TextField)
         expect(textFields.at(0).prop('name')).toBe('siret')
-        expect(textFields.at(0).prop('readOnly')).toBe(true)
+        expect(textFields.at(0).prop('label')).toBe('SIRET du lieu qui accueille vos offres (si applicable) : ')
+      })
+
+      test('proper siret label is returned when isCreatedEntity is false', () => {
+        // given
+        const props = {
+          isCreatedEntity: false,
+          isModifiedEntity: true,
+        }
+
+        // when
+        const wrapper = shallow(<IdentifierFields {...props} />)
+
+        // then
+        const textFields = wrapper.find(TextField)
+        expect(textFields.at(0).prop('name')).toBe('siret')
+        expect(textFields.at(0).prop('label')).toBe('SIRET : ')
       })
     })
 
