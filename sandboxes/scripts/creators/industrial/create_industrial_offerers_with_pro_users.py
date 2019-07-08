@@ -12,7 +12,7 @@ OFFERER_PLACES
 from sandboxes.scripts.utils.select import pick_every
 from tests.test_utils import create_offerer, \
     create_user, \
-    create_user_offerer, create_bank_information
+    create_user_offerer, create_bank_information, PLAIN_DEFAULT_TESTING_PASSWORD
 from utils.logger import logger
 
 ATTACHED_PRO_USERS_COUNT = 2
@@ -61,7 +61,6 @@ def create_industrial_offerers_with_pro_users():
             email=email,
             first_name=first_name,
             last_name=last_name,
-            password=get_password_from_email(email),
             postal_code="{}100".format(departement_code),
             public_name="{} {}".format(first_name, last_name),
             validation_token='{}{}'.format(
@@ -138,7 +137,6 @@ def create_industrial_offerers_with_pro_users():
             email=email,
             first_name=first_name,
             last_name=last_name,
-            password=get_password_from_email(email),
             postal_code="{}100".format(departement_code),
             public_name="{} {}".format(first_name, last_name),
             validation_token=user_validation_token
@@ -175,7 +173,6 @@ def create_industrial_offerers_with_pro_users():
                 email=email,
                 first_name=first_name,
                 last_name=last_name,
-                password=get_password_from_email(email),
                 postal_code="{}100".format(departement_code),
                 public_name="{} {}".format(first_name, last_name),
                 validation_token=user_validation_token

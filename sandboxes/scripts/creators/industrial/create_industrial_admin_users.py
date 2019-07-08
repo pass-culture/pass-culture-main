@@ -1,6 +1,6 @@
 from models.pc_object import PcObject
 from sandboxes.scripts.utils.helpers import get_password_from_email
-from tests.test_utils import create_user
+from tests.test_utils import create_user, PLAIN_DEFAULT_TESTING_PASSWORD
 from utils.logger import logger
 
 ADMINS_COUNT = 1
@@ -23,7 +23,6 @@ def create_industrial_admin_users():
                 first_name="PC Test Admin",
                 is_admin=True,
                 last_name="{} {}".format(departement_code, admin_count),
-                password=get_password_from_email(email),
                 postal_code="{}100".format(departement_code),
                 public_name="PC Test Admin {} {}".format(departement_code, admin_count)
             )

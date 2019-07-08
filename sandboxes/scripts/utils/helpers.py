@@ -1,3 +1,4 @@
+from tests.test_utils import PLAIN_DEFAULT_TESTING_PASSWORD
 from utils.includes import RECOMMENDATION_INCLUDES, USER_INCLUDES
 
 def get_booking_helper(booking):
@@ -65,7 +66,7 @@ def get_password_from_email(email):
 
 def get_user_helper(user):
     return dict(user.as_dict(include=USER_INCLUDES), **{
-        "password": get_password_from_email(user.email),
+        "password": PLAIN_DEFAULT_TESTING_PASSWORD,
         "validationToken": user.validationToken
     })
 

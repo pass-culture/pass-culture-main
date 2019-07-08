@@ -22,7 +22,7 @@ def print_dumped_object(obj):
     print(json.dumps(obj, ensure_ascii=False, indent=2, sort_keys=True))
 
 
-def get_all_testcafe_helpers():
+def get_all_getters():
     module_names = [
         m for m in dir(getters)
         if type(getattr(getters, m)).__name__ == 'module'

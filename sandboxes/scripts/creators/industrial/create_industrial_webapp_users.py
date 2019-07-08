@@ -2,7 +2,7 @@ import uuid
 
 from models.pc_object import PcObject
 from sandboxes.scripts.utils.helpers import get_password_from_email
-from tests.test_utils import create_user
+from tests.test_utils import create_user, PLAIN_DEFAULT_TESTING_PASSWORD
 from utils.logger import logger
 
 departement_codeS = ["93", "97"]
@@ -50,7 +50,6 @@ def create_industrial_webapp_users():
                 first_name="PC Test Jeune",
                 last_name="{} {}".format(departement_code, short_tag),
                 needs_to_fill_cultural_survey=needs_to_fill_cultural_survey,
-                password=get_password_from_email(email),
                 postal_code="{}100".format(departement_code),
                 public_name="PC Test Jeune {} {}".format(departement_code, short_tag),
                 reset_password_token=reset_password_token

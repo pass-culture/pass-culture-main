@@ -1,7 +1,5 @@
-from pprint import pprint
-
 from sandboxes.scripts.save_sandbox import save_sandbox
-from sandboxes.scripts.testcafe_helpers import get_all_testcafe_helpers
+from sandboxes.scripts.testcafe_helpers import get_all_getters
 from tests.conftest import clean_database
 from tests.test_utils import assertCreatedCounts, \
     saveCounts
@@ -37,19 +35,13 @@ def test_save_industrial_sandbox(app):
 
 
 @clean_database
-def test_get_all_testcafe_helpers_find_all_items(app):
+def test_all_helpers_are_returning_actual_sandbox_data(app):
     # given
-    logger_info = logger.info
-    logger.info = lambda o: None
     save_sandbox('industrial')
 
     # when
-    testcafe_helpers = get_all_testcafe_helpers()
+    helpers = get_all_getters()
 
     # then
-    values = testcafe_helpers.values()
-    pprint(values)
-    assert None not in values
-
-    # teardown
-    logger.info = logger_info
+    for k, v in helpers.items():
+        assert v is not None, f"Getter '{k}' is not returning anything"
