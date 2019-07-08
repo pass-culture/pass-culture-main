@@ -3,7 +3,7 @@ import pytest
 import sys
 import copy
 
-project_jobs_infos =[{
+project_jobs_infos_mock =[{
     "build_parameters": {
         "CIRCLE_JOB": "tests-api"
     },
@@ -31,16 +31,14 @@ class CheckCIStatusTest:
         job_name = "tests-api"
         target_commit_sha1 = "56ePe4eVerbd4e9c52bce2342a0e28aa3003500f7b"
         actual_commit_sha1 = "fake_sha1"
-        incorrect_commit_project_jobs_infos = copy.deepcopy(project_jobs_infos)
-        incorrect_commit_project_jobs_infos[0]['all_commit_details'][0]['commit'] = actual_commit_sha1
-
-        print(project_jobs_infos)
+        incorrect_commit_project_jobs_infos_mock = copy.deepcopy(project_jobs_infos_mock)
+        incorrect_commit_project_jobs_infos_mock[0]['all_commit_details'][0]['commit'] = actual_commit_sha1
 
         # When
-        commit_status = extract_commit_status(target_commit_sha1, incorrect_commit_project_jobs_infos, job_name)
+        commit_status = extract_commit_status(target_commit_sha1, incorrect_commit_project_jobs_infos_mock, job_name)
 
         # Then
-        assert commit_status == False
+        assert commit_status is None
 
     def when_extract_commit_status_does_not_find_correct_circle_job(self):
 
@@ -48,15 +46,15 @@ class CheckCIStatusTest:
         job_name = "deploy_api"
         target_commit_sha1 = "56ePe4eVerbd4e9c52bce2342a0e28aa3003500f7b"
         actual_circle_job = "tests-api"
-        incorrect_job_project_jobs_infos = copy.deepcopy(project_jobs_infos)
-        incorrect_job_project_jobs_infos[0]['build_parameters']['CIRCLE_JOB'] = actual_circle_job
+        incorrect_job_project_jobs_infos_mock = copy.deepcopy(project_jobs_infos_mock)
+        incorrect_job_project_jobs_infos_mock[0]['build_parameters']['CIRCLE_JOB'] = actual_circle_job
 
 
         # When
-        commit_status = extract_commit_status(target_commit_sha1, incorrect_job_project_jobs_infos, job_name)
+        commit_status = extract_commit_status(target_commit_sha1, incorrect_job_project_jobs_infos_mock, job_name)
 
         # Then
-        assert commit_status == False
+        assert commit_status is None
 
     def when_extract_commit_status_finds_correct_circle_job(self):
 
@@ -65,7 +63,7 @@ class CheckCIStatusTest:
         commit_sha1 = "56ePe4eVerbd4e9c52bce2342a0e28aa3003500f7b"
 
         # When
-        commit_status = extract_commit_status(commit_sha1, project_jobs_infos, job_name)
+        commit_status = extract_commit_status(commit_sha1, project_jobs_infos_mock, job_name)
 
         # Then
         assert commit_status == "success"
@@ -77,12 +75,10 @@ class CheckCIStatusTest:
         requests_mock.get('https://circleci.com/api/v1.1/project/github/betagouv/' + project_name + '/tree/master', json=[{'job_id': '12'}], status_code=404)
 
         # When
-        with pytest.raises(SystemExit) as pytest_wrapped_e:
-            get_project_jobs_infos(project_name)
+        project_info = get_project_jobs_infos(project_name)
 
         # Then
-        assert pytest_wrapped_e.type == SystemExit
-        assert pytest_wrapped_e.value.code == 1
+        assert project_info is None
 
     def when_get_project_jobs_infos_is_called_with_right_project_name(self, requests_mock):
 
@@ -130,7 +126,7 @@ class CheckCIStatusTest:
 
         # Given
         commit_sha1 = 'commit_sha_12345'
-        mocker.patch('scripts.check_ci_status.get_project_jobs_infos', return_value = project_jobs_infos)
+        mocker.patch('scripts.check_ci_status.get_project_jobs_infos', return_value = project_jobs_infos_mock)
         mocker.patch('scripts.check_ci_status.extract_commit_status', return_value = False)
 
         # When
@@ -145,7 +141,7 @@ class CheckCIStatusTest:
 
         # Given
         commit_sha1 = 'commit_sha_12345'
-        mocker.patch('scripts.check_ci_status.get_project_jobs_infos', return_value = project_jobs_infos)
+        mocker.patch('scripts.check_ci_status.get_project_jobs_infos', return_value = project_jobs_infos_mock)
         mocker.patch('scripts.check_ci_status.extract_commit_status', return_value = "success")
 
         # When

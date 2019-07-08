@@ -204,24 +204,25 @@ pc -t I.P.S tag
 ```
 
 Le fichier version.txt de l'API est mis-à-jours ainsi que le package.json de Webapp et Pro. 
-Le tag est posé sur toutes les branches à la fois et elles sont poussées sur le repository distant. Les tests sont joués
-et on déploie sur Testing.
+Le tag est posé sur les branches local checkout (de préférence master): Api, Webapp et Pro. 
+Elles sont ensuite poussées sur le repository distant. 
+Les tests sont enfin joués et on déploie sur Testing.
 
 ## Deploy
 
-install jq
+Pré-requis : installer jq ('https://stedolan.github.io/jq/download/')
 
 Pour déployer une nouvelle version, par exemple en staging:
 **(Attention de ne pas déployer sur la production sans concertation !)**
 
 ```bash
-pc -e staging -t I.P.S 
+pc -e staging -t I.P.S deploy
 ```
 
 
 Pour déployer en production ensuite :
 ```bash
-pc -e production -t I.P.S
+pc -e production -t I.P.S deploy
 
 ```
 
@@ -272,6 +273,7 @@ ou
 
 ```bash
 pc pgcli
+```
 
 ### Connexion en ligne de commande python à un environnement (testing | staging | production)
 
