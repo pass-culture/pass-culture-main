@@ -4,7 +4,7 @@ from sandboxes.scripts.mocks.offerer_mocks import MOCK_NAMES
 from sandboxes.scripts.mocks.user_mocks import MOCK_DOMAINS, \
     MOCK_FIRST_NAMES, \
     MOCK_LAST_NAMES
-from sandboxes.scripts.utils.helpers import get_email, get_password_from_email
+from sandboxes.scripts.utils.helpers import get_email
 from sandboxes.scripts.utils.locations import create_locations_from_places, \
     OFFERER_PLACES
 
@@ -12,7 +12,7 @@ OFFERER_PLACES
 from sandboxes.scripts.utils.select import pick_every
 from tests.test_utils import create_offerer, \
     create_user, \
-    create_user_offerer, create_bank_information, PLAIN_DEFAULT_TESTING_PASSWORD
+    create_user_offerer, create_bank_information
 from utils.logger import logger
 
 ATTACHED_PRO_USERS_COUNT = 2

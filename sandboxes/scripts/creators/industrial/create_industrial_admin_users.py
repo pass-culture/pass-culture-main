@@ -1,17 +1,17 @@
 from models.pc_object import PcObject
-from sandboxes.scripts.utils.helpers import get_password_from_email
-from tests.test_utils import create_user, PLAIN_DEFAULT_TESTING_PASSWORD
+from tests.test_utils import create_user
 from utils.logger import logger
 
 ADMINS_COUNT = 1
-departement_codeS = ["93", "97"]
+departement_codes = ["93", "97"]
+
 
 def create_industrial_admin_users():
     logger.info('create_industrial_admin_users')
 
     users_by_name = {}
 
-    for departement_code in departement_codeS:
+    for departement_code in departement_codes:
 
         for admin_count in range(ADMINS_COUNT):
             email = "pctest.admin{}.{}@btmx.fr".format(departement_code, admin_count)

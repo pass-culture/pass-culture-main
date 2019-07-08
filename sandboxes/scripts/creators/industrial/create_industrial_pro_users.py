@@ -1,10 +1,10 @@
 from models.pc_object import PcObject
-from sandboxes.scripts.utils.helpers import get_password_from_email
 from tests.test_utils import create_user
 from utils.logger import logger
 
 PROS_COUNT = 1
 departement_codes = ["93", "97"]
+
 
 def create_industrial_pro_users():
     logger.info('create_industrial_pro_users')

@@ -1,8 +1,7 @@
 import uuid
 
 from models.pc_object import PcObject
-from sandboxes.scripts.utils.helpers import get_password_from_email
-from tests.test_utils import create_user, PLAIN_DEFAULT_TESTING_PASSWORD
+from tests.test_utils import create_user
 from utils.logger import logger
 
 departement_codeS = ["93", "97"]
