@@ -14,6 +14,7 @@ from utils.logger import logger
 
 DATE_REGEXP = re.compile('livres_tl(\d+).zip')
 THUMB_FOLDER_NAME_TITELIVE = 'Atoo'
+SYNCHONISABLE_FILE_EXTENSION = '_75.jpg'
 
 
 class TiteLiveThingThumbs(LocalProvider):
@@ -45,7 +46,7 @@ class TiteLiveThingThumbs(LocalProvider):
         self.logEvent(LocalProviderEventType.SyncPartStart,
                       get_date_from_filename(self.zip, DATE_REGEXP))
 
-        self.thumb_zipinfos = iter(filter(lambda f: f.filename.lower().endswith('_75.jpg'),
+        self.thumb_zipinfos = iter(filter(lambda f: f.filename.lower().endswith(SYNCHONISABLE_FILE_EXTENSION),
                                           sorted(self.zip.infolist(),
                                                  key=lambda f: f.filename)))
 
@@ -68,11 +69,12 @@ class TiteLiveThingThumbs(LocalProvider):
 
         return providable_info
 
-    def getObjectThumbDates(self, thing: Product) -> list:
-        assert thing.idAtProviders == self.thingId
-        zip_datetime = self.thumb_zipinfo.date_time
-        thumb_index = extract_thumb_index(self.thumb_zipinfo.filename)
-        return get_thumb_date_at_thumb_index(thumb_index, datetime(*zip_datetime))
+    def get_object_thumb_index(self) -> int:
+        return extract_thumb_index(self.thumb_zipinfo.filename)
+
+    def get_object_thumb_date(self, thing: Product) -> datetime:
+        thumbs_batch_datetime = self.thumb_zipinfo.date_time
+        return datetime(*thumbs_batch_datetime)
 
     def getObjectThumb(self, thing: Product, index: int) -> BytesIO:
         assert thing.idAtProviders == self.thingId
@@ -93,8 +95,7 @@ class TiteLiveThingThumbs(LocalProvider):
 
 
 def extract_thumb_index(filename: str) -> int:
-    return int(filename.split('_')[-2]) - 1
-
-
-def get_thumb_date_at_thumb_index(thumb_index: int, thumb_date: datetime) -> list:
-    return [None] * thumb_index + [thumb_date]
+    split_filename = filename.split('_')
+    if len(split_filename) > 2:
+        return int(split_filename[-2]) - 1
+    return None

@@ -71,6 +71,12 @@ class LocalProvider(Iterator):
     def getObjectThumb(self, obj, index):
         return None
 
+    def get_object_thumb_index(self) -> int:
+        return None
+
+    def get_object_thumb_date(self, obj: PcObject) -> datetime:
+        return None
+
     def getObjectThumbDates(self, obj):
         return []
 
@@ -115,26 +121,30 @@ class LocalProvider(Iterator):
         if not hasattr(obj, 'thumbCount'):
             return
         try:
-            thumb_dates = self.getObjectThumbDates(obj)
-            for index, thumb_date in enumerate(thumb_dates):
-                if thumb_date is None:
-                    continue
-                self.checkedThumbs += 1
-                existing_date = obj.thumb_date(index)
-                if existing_date is None \
-                        or existing_date < thumb_date:
-                    thumb = self.getObjectThumb(obj, index)
-                    if thumb is None:
-                        continue
-                    if existing_date is not None:
-                        obj.delete_thumb(index)
-                    self.save_thumb_from_thumb_count_to_index(index, obj, thumb)
-                    if existing_date is not None:
-                        logger.info("    Updating thumb #" + str(index) + " for " + str(obj))
-                        self.updatedThumbs += index + 1
-                    else:
-                        logger.info("    Creating thumb #" + str(index) + " for " + str(obj))
-                        self.createdThumbs += index + 1
+            new_thumb_index = self.get_object_thumb_index()
+            new_thumb_date = self.get_object_thumb_date(obj)
+            if new_thumb_index is None \
+                    or new_thumb_date is None:
+                return
+
+            self.checkedThumbs += 1
+            existing_thumb_date = obj.thumb_date(new_thumb_index)
+            if existing_thumb_date is None \
+                    or existing_thumb_date < new_thumb_date:
+
+                new_thumb = self.getObjectThumb(obj, new_thumb_index)
+                if new_thumb is None:
+                    return
+
+                self.save_thumb_from_thumb_count_to_index(new_thumb_index, obj, new_thumb)
+
+                if existing_thumb_date:
+                    logger.info("    Updating thumb #" + str(new_thumb_index) + " for " + str(obj))
+                    self.updatedThumbs += new_thumb_index + 1
+                else:
+                    logger.info("    Creating thumb #" + str(new_thumb_index) + " for " + str(obj))
+                    self.createdThumbs += new_thumb_index + 1
+
         except Exception as e:
             self.logEvent(LocalProviderEventType.SyncError, e.__class__.__name__)
             self.erroredThumbs += 1
