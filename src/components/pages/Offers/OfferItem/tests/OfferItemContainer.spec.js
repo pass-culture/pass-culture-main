@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 import { Provider } from 'react-redux'
 import configureStore from 'redux-mock-store'
 
-import RawOfferItem from '../RawOfferItem'
+import OfferItem from '../OfferItem'
 import mockedOffers from '../../tests/offersMock'
 
 const middlewares = []
@@ -26,7 +26,7 @@ describe('snapshot', () => {
     // when
     const wrapper = shallow(
       <Provider store={store}>
-        <RawOfferItem {...initialProps} />
+        <OfferItem {...initialProps} />
       </Provider>
     )
 

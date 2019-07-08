@@ -6,7 +6,7 @@ import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { NavLink } from 'react-router-dom'
 import { assignData, requestData } from 'redux-saga-data'
 
-import OfferItem from './OfferItem'
+import OfferItem from './OfferItem/OfferItemContainer'
 import HeroSection from 'components/layout/HeroSection/HeroSection'
 import Spinner from 'components/layout/Spinner'
 import Main from 'components/layout/Main'

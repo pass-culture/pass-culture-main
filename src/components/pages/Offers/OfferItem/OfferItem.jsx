@@ -11,7 +11,7 @@ import Thumb from 'components/layout/Thumb'
 import { offerNormalizer } from 'utils/normalizers'
 
 
-class RawOfferItem extends Component {
+class OfferItem extends Component {
   onDeactivateClick = () => {
     const { dispatch, offer } = this.props
     const { id, isActive } = offer || {}
@@ -75,7 +75,6 @@ class RawOfferItem extends Component {
     const { groupSizeMin, groupSizeMax, priceMin, priceMax } =
       aggregatedStock || {}
     const { name } = product || {}
-    console.log(offer)
     const thumbUrl = offer.activeMediation ? offer.activeMediation.thumbUrl : ''
     const numberOfMediations = get(mediations, 'length')
     const remainingStockQuantity = get(stocks, 'length')
@@ -195,7 +194,7 @@ class RawOfferItem extends Component {
   }
 }
 
-RawOfferItem.defaultProps = {
+OfferItem.defaultProps = {
   maxDescriptionLength: 300,
 }
-export default RawOfferItem
+export default OfferItem

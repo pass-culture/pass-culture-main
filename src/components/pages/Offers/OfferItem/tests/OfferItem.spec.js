@@ -7,9 +7,9 @@ import { NavLink } from 'react-router-dom'
 import Dotdotdot from 'react-dotdotdot'
 import Thumb from 'components/layout/Thumb'
 
-import RawOfferItem from '../RawOfferItem'
+import OfferItem from '../OfferItem'
 
-describe('src | components | pages | Offers | RawOfferItem', () => {
+describe('src | components | pages | Offers | OfferItem', () => {
   let dispatch = jest.fn()
   let props
 
@@ -31,7 +31,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // when
-      const wrapper = shallow(<RawOfferItem {...props} />)
+      const wrapper = shallow(<OfferItem {...props} />)
 
       // then
       expect(wrapper).toMatchSnapshot()
@@ -41,7 +41,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
   describe('click on "disable" button', () => {
     it('should dispatch an action with the correct payload', () => {
       // given
-      const wrapper = shallow(<RawOfferItem {...props} />)
+      const wrapper = shallow(<OfferItem {...props} />)
       const disableButton = wrapper.find('button')
       const expectedParams = {
         config: {
@@ -79,7 +79,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
         props.offer.activeMediation = {'thumbUrl': 'https://url.to/thumb'}
 
         // when
-        const wrapper = shallow(<RawOfferItem {...props} />)
+        const wrapper = shallow(<OfferItem {...props} />)
 
         // then
         const thumbComponent = wrapper.find(Thumb)
@@ -94,7 +94,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
         props.mediations = []
 
         // when
-        const wrapper = shallow(<RawOfferItem {...props} />)
+        const wrapper = shallow(<OfferItem {...props} />)
 
         // then
         const thumbComponent = wrapper.find(Thumb)
@@ -112,7 +112,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       props.stocks = []
 
       // when
-      const wrapper = shallow(<RawOfferItem {...props} />)
+      const wrapper = shallow(<OfferItem {...props} />)
 
       // then
       const navLinkComponent = wrapper.find(NavLink).first()
@@ -139,7 +139,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       }
 
       // when
-      const wrapper = shallow(<RawOfferItem {...props} />)
+      const wrapper = shallow(<OfferItem {...props} />)
 
       // then
       const offerInfosElement = wrapper.find('ul.infos').first()
@@ -164,7 +164,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       }
 
       // when
-      const wrapper = shallow(<RawOfferItem {...props} />)
+      const wrapper = shallow(<OfferItem {...props} />)
 
       // then
       const offerInfosElement = wrapper.find('ul.infos').first()
@@ -188,7 +188,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       }
 
       // when
-      const wrapper = shallow(<RawOfferItem {...props} />)
+      const wrapper = shallow(<OfferItem {...props} />)
 
       // then
       const offerInfosElement = wrapper.find('ul.infos').at(1)
@@ -213,7 +213,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
       }
 
       // when
-      const wrapper = shallow(<RawOfferItem {...props} />)
+      const wrapper = shallow(<OfferItem {...props} />)
 
       // then
       const offerInfosElement = wrapper.find('ul.infos').at(1)
@@ -257,7 +257,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
         }
 
         // when
-        const wrapper = shallow(<RawOfferItem {...props} />)
+        const wrapper = shallow(<OfferItem {...props} />)
 
         // then
         const ulElements = wrapper.find('ul')
@@ -294,7 +294,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
         }
 
         // when
-        const wrapper = shallow(<RawOfferItem {...props} />)
+        const wrapper = shallow(<OfferItem {...props} />)
 
         // then
         const ulElements = wrapper.find('ul')
@@ -331,7 +331,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
         }
 
         // when
-        const wrapper = shallow(<RawOfferItem {...props} />)
+        const wrapper = shallow(<OfferItem {...props} />)
 
         // then
         const ulElements = wrapper.find('ul')
@@ -385,7 +385,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
         }
 
         // when
-        const wrapper = mount(<RawOfferItem {...props} />, options)
+        const wrapper = mount(<OfferItem {...props} />, options)
 
         // then
         const ulElements = wrapper.find('ul')
@@ -427,7 +427,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
         }
 
         // when
-        const wrapper = shallow(<RawOfferItem {...props} />)
+        const wrapper = shallow(<OfferItem {...props} />)
 
         // then
         const ulElements = wrapper.find('ul')
@@ -481,7 +481,7 @@ describe('src | components | pages | Offers | RawOfferItem', () => {
         }
 
         // when
-        const wrapper = mount(<RawOfferItem {...props} />, options)
+        const wrapper = mount(<OfferItem {...props} />, options)
 
         // then
         const ulElements = wrapper.find('ul')

@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offers | RawOfferItem snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Offers | OfferItem snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawOfferItem
+  Symbol(enzyme.__unrendered__): <OfferItem
     dispatch={[MockFunction]}
     location={
       Object {

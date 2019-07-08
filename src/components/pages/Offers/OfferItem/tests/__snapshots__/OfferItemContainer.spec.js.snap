@@ -15,7 +15,7 @@ ShallowWrapper {
       }
     }
   >
-    <RawOfferItem
+    <OfferItem
       dispatch={[MockFunction]}
       location={
         Object {

@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import RawOfferItem from './RawOfferItem'
+import OfferItem from './OfferItem'
 import selectAggregatedStockByOfferId from 'selectors/selectAggregatedStockByOfferId'
 import selectMaxDateByOfferId from 'selectors/selectMaxDateByOfferId'
 import selectMediationsByOfferId from 'selectors/selectMediationsByOfferId'
@@ -37,4 +37,4 @@ function mapStateToProps(state, ownProps) {
 export default compose(
   withRouter,
   connect(mapStateToProps)
-)(RawOfferItem)
+)(OfferItem)

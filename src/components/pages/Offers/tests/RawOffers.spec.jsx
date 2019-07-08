@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 import { NavLink } from 'react-router-dom'
 
 import RawOffers from '../RawOffers'
-import OfferItem from '../OfferItem'
+import OfferItem from '../OfferItem/OfferItemContainer'
 import mockedOffers from './offersMock'
 
 const dispatchMock = jest.fn()
