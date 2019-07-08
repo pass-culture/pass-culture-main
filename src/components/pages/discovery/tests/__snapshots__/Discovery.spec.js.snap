@@ -22,11 +22,7 @@ ShallowWrapper {
     onRequestFailRedirectToHome={[MockFunction]}
     readRecommendations={null}
     recommendations={Array []}
-    resetReadRecommendations={[MockFunction]}
-    resetRecommendations={[MockFunction]}
-    saveLoadRecommendationsTimestamp={[MockFunction]}
-    shouldReloadRecommendations={false}
-    showFirstRecommendation={
+    redirectToFirstRecommendationIfNeeded={
       [MockFunction] {
         "calls": Array [
           Array [
@@ -41,6 +37,10 @@ ShallowWrapper {
         ],
       }
     }
+    resetReadRecommendations={[MockFunction]}
+    resetRecommendations={[MockFunction]}
+    saveLoadRecommendationsTimestamp={[MockFunction]}
+    shouldReloadRecommendations={false}
     showPasswordChangedPopin={
       [MockFunction] {
         "calls": Array [

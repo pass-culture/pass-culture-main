@@ -23,7 +23,7 @@ class Discovery extends React.PureComponent {
     const {
       recommendations,
       saveLoadRecommendationsTimestamp,
-      showFirstRecommendation,
+      redirectToFirstRecommendationIfNeeded,
       shouldReloadRecommendations,
       showPasswordChangedPopin,
     } = this.props
@@ -32,7 +32,22 @@ class Discovery extends React.PureComponent {
       this.handleDataRequest()
       saveLoadRecommendationsTimestamp()
     } else {
-      showFirstRecommendation(recommendations)
+      redirectToFirstRecommendationIfNeeded(recommendations)
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const {
+      location,
+      recommendations,
+      redirectToFirstRecommendationIfNeeded,
+    } = this.props
+    const { location: prevLocation } = prevProps
+    if (
+      prevLocation.pathname !== location.pathname &&
+      location.pathname === '/decouverte'
+    ) {
+      redirectToFirstRecommendationIfNeeded(recommendations)
     }
   }
 
@@ -46,7 +61,7 @@ class Discovery extends React.PureComponent {
     const {
       recommendations,
       resetReadRecommendations,
-      showFirstRecommendation,
+      redirectToFirstRecommendationIfNeeded,
     } = this.props
 
     const { data: loadedRecommendations } = (action && action.payload) || []
@@ -59,7 +74,7 @@ class Discovery extends React.PureComponent {
 
     this.setState(nextState, () => {
       resetReadRecommendations()
-      showFirstRecommendation(loadedRecommendations)
+      redirectToFirstRecommendationIfNeeded(loadedRecommendations)
     })
   }
 
@@ -142,11 +157,11 @@ Discovery.propTypes = {
   onRequestFailRedirectToHome: PropTypes.func.isRequired,
   readRecommendations: PropTypes.array,
   recommendations: PropTypes.array,
+  redirectToFirstRecommendationIfNeeded: PropTypes.func.isRequired,
   resetReadRecommendations: PropTypes.func.isRequired,
   resetRecommendations: PropTypes.func.isRequired,
   saveLoadRecommendationsTimestamp: PropTypes.func.isRequired,
   shouldReloadRecommendations: PropTypes.bool.isRequired,
-  showFirstRecommendation: PropTypes.func.isRequired,
   showPasswordChangedPopin: PropTypes.func.isRequired,
   withBackButton: PropTypes.bool,
 }

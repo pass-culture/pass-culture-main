@@ -65,19 +65,7 @@ const mapDispatchToProps = (dispatch, props) => ({
     setTimeout(() => history.replace('/connexion'), delayBeforeRedirect)
   },
 
-  resetReadRecommendations: () => {
-    dispatch(assignData({ readRecommendations: [] }))
-  },
-
-  resetRecommendations: () => {
-    dispatch(assignData({ recommendations: [] }))
-  },
-
-  saveLoadRecommendationsTimestamp: () => {
-    dispatch(saveLastRecommendationsRequestTimestamp())
-  },
-
-  showFirstRecommendation: loadedRecommendations => {
+  redirectToFirstRecommendationIfNeeded: loadedRecommendations => {
     const { history, location } = props
 
     const shouldReloadPage =
@@ -95,6 +83,18 @@ const mapDispatchToProps = (dispatch, props) => ({
     // quand on fait back dans le navigateur et qu'on revient
     // à l'URL /decouverte
     history.replace(`/decouverte/${firstOfferId}/${firstMediationId}`)
+  },
+
+  resetReadRecommendations: () => {
+    dispatch(assignData({ readRecommendations: [] }))
+  },
+
+  resetRecommendations: () => {
+    dispatch(assignData({ recommendations: [] }))
+  },
+
+  saveLoadRecommendationsTimestamp: () => {
+    dispatch(saveLastRecommendationsRequestTimestamp())
   },
 
   showPasswordChangedPopin: () => {

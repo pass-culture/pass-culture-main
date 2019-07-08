@@ -22,11 +22,11 @@ describe('src | components | pages | discovery | Discovery', () => {
       },
       onRequestFailRedirectToHome: jest.fn(),
       recommendations: [],
+      redirectToFirstRecommendationIfNeeded: jest.fn(),
       resetReadRecommendations: jest.fn(),
       resetRecommendations: jest.fn(),
       saveLoadRecommendationsTimestamp: jest.fn(),
       shouldReloadRecommendations: false,
-      showFirstRecommendation: jest.fn(),
       showPasswordChangedPopin: jest.fn(),
       withBackButton: false,
     }
@@ -90,7 +90,7 @@ describe('src | components | pages | discovery | Discovery', () => {
     it('should display the back button when I am on the back of an offer', () => {
       // given
       props.match.params.view = 'verso'
-      const wrapper = shallow(<RawDiscoveryPage {...props} />)
+      const wrapper = shallow(<Discovery {...props} />)
 
       // when
       const backLink = wrapper.find(BackLink)

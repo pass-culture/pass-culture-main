@@ -40,17 +40,5 @@ describe('src | components | menu | NavLink', () => {
       expect(link).toHaveLength(1)
       expect(item).toHaveLength(1)
     })
-
-    it('should render a link with no rel if target equal blank', () => {
-      // given
-      props.item.path = '/decouverte/:plop'
-      const wrapper = shallow(<NavLink {...props} />)
-
-      // when
-      const { to } = wrapper.find(Link).props()
-
-      // then
-      expect(to).toBe('/')
-    })
   })
 })

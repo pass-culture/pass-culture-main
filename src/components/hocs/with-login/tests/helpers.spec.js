@@ -4,8 +4,8 @@ import {
 } from '../helpers'
 
 describe('src | hocs | with-login | helpers', () => {
-  describe('getRedirectToCurrentLocationOrTypeform', () => {
-    it('should return current location when user has filled the Typeform', () => {
+  describe('getRedirectToCurrentLocationOrDiscovery', () => {
+    it('should return undefined when user has filled the Typeform', () => {
       // given
       const props = {
         currentUser: {
@@ -19,7 +19,7 @@ describe('src | hocs | with-login | helpers', () => {
       const result = getRedirectToCurrentLocationOrTypeform(props)
 
       // when
-      expect(result).toStrictEqual('/my-page?any=any')
+      expect(result).toEqual(undefined)
     })
 
     it('should return typeform location when user has not filled the Typeform', () => {
@@ -57,7 +57,7 @@ describe('src | hocs | with-login | helpers', () => {
       expect(result).toStrictEqual('/decouverte')
     })
 
-    it('should return current location when user has not filled the Typeform', () => {
+    it('should return undefined when user has not filled the Typeform', () => {
       // given
       const props = {
         currentUser: {
@@ -71,7 +71,7 @@ describe('src | hocs | with-login | helpers', () => {
       const result = getRedirectToCurrentLocationOrDiscovery(props)
 
       // when
-      expect(result).toStrictEqual('/my-page?any=any')
+      expect(result).toEqual(undefined)
     })
   })
 })

@@ -12,12 +12,13 @@ const withNotRequiredLogin = compose(
         payload: { datum },
       } = action
       const { history, location } = ownProps
-      history.push(
-        getRedirectToCurrentLocationOrDiscovery({
-          currentUser: datum,
-          ...location,
-        })
-      )
+      const redirect = getRedirectToCurrentLocationOrDiscovery({
+        currentUser: datum,
+        ...location,
+      })
+      if (redirect) {
+        history.push(redirect)
+      }
     },
     isRequired: false,
   })

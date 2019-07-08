@@ -5,14 +5,18 @@ export const getRedirectToSignin = ({ pathname, search }) => {
   return `/connexion?de=${fromUrl}`
 }
 
-export const getRedirectToCurrentLocationOrTypeform = ({ currentUser, pathname, search }) => {
+export const getRedirectToCurrentLocationOrTypeform = ({ currentUser }) => {
   const { needsToFillCulturalSurvey } = currentUser || {}
-  const currentLocation = `${pathname}${search}`
-  return needsToFillCulturalSurvey ? DEFAULT_TYPEFORM_LOCATION : currentLocation
+  if (needsToFillCulturalSurvey) {
+    return DEFAULT_TYPEFORM_LOCATION
+  }
+  return undefined
 }
 
-export const getRedirectToCurrentLocationOrDiscovery = ({ currentUser, pathname, search }) => {
+export const getRedirectToCurrentLocationOrDiscovery = ({ currentUser }) => {
   const { needsToFillCulturalSurvey } = currentUser || {}
-  const currentLocation = `${pathname}${search}`
-  return needsToFillCulturalSurvey ? currentLocation : '/decouverte'
+  if (!needsToFillCulturalSurvey) {
+    return '/decouverte'
+  }
+  return undefined
 }

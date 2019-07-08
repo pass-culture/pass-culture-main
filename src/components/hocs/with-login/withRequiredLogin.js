@@ -17,12 +17,13 @@ const withRequiredLogin = compose(
         payload: { datum },
       } = action
       const { history, location } = ownProps
-      history.push(
-        getRedirectToCurrentLocationOrTypeform({
-          currentUser: datum,
-          ...location,
-        })
-      )
+      const redirect = getRedirectToCurrentLocationOrTypeform({
+        currentUser: datum,
+        ...location,
+      })
+      if (redirect) {
+        history.push(redirect)
+      }
     },
     isRequired: true,
   })
