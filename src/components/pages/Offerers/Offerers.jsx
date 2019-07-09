@@ -13,7 +13,10 @@ import Icon from '../../layout/Icon'
 import Main from '../../layout/Main'
 import Spinner from '../../layout/Spinner'
 import TextField from '../../layout/form/fields/TextField'
-import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
+import {
+  mapApiToBrowser,
+  translateQueryParamsToApiParams,
+} from '../../../utils/translate'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 
 class Offerers extends Component {

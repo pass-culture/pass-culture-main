@@ -2,10 +2,10 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import { withRequiredLogin } from '../../hocs'
-import { assignData } from 'redux-saga-data'
 import { requestData } from 'redux-saga-data'
 import Offerers from './Offerers'
-import { closeNotification, showNotification } from 'pass-culture-shared'
+import {closeNotification, showNotification} from 'pass-culture-shared'
+import { assignData } from 'fetch-normalize-data'
 import { offererNormalizer } from '../../../utils/normalizers'
 
 export const mapStateToProps = state => {
@@ -16,10 +16,10 @@ export const mapStateToProps = state => {
   }
 }
 
-export const mapDispatchToProps = dispatch => ({
-  assignData: () => dispatch(assignData({ offerers: [], pendingOfferers: [] })),
+export const mapDispatchToProps = (dispatch) => ({
+  assignData:() => dispatch(assignData({ offerers: [], pendingOfferers: [] })),
 
-  closeNotification: () => dispatch(closeNotification()),
+  closeNotification:() => dispatch(closeNotification()),
 
   loadOfferers: (apiPath, handleFail, handleSuccess) => () => {
     dispatch(

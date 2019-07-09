@@ -8,12 +8,12 @@ describe('src | components | pages | Offerers | Offerers', () => {
 
   beforeEach(() => {
     props = {
-      assignData: jest.fn(),
-      closeNotification: jest.fn(),
+      assignData:jest.fn(),
+      closeNotification:jest.fn(),
       currentUser: {},
-      dispatch: jest.fn(),
-      loadOfferers: jest.fn(),
-      loadNotValidatedUserOfferers: jest.fn(),
+      dispatch:jest.fn(),
+      loadOfferers:jest.fn(),
+      loadNotValidatedUserOfferers:jest.fn(),
       offerers: [{ id: 'AE' }],
       pendingOfferers: [],
       pagination: {
@@ -25,7 +25,7 @@ describe('src | components | pages | Offerers | Offerers', () => {
         change: jest.fn(),
         parse: () => ({ 'mots-cles': null }),
       },
-      showNotification: jest.fn(),
+      showNotification:jest.fn(),
       location: {
         search: '',
       },

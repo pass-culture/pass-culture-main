@@ -144,22 +144,23 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
     })
 
     it('enable to show notification', () => {
-      // when
+      //when
       const url = '/offerers'
       mapDispatchToProps(dispatch).showNotification(url)()
 
       // then
-      expect(dispatch).toHaveBeenCalledWith({
-        patch: {
-          tag: 'offerers',
-          text:
-            'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
-          type: 'info',
-          url: '/offerers',
-          urlLabel: 'Nouveau lieu',
-        },
-        type: 'SHOW_NOTIFICATION',
-      })
+      expect(dispatch).toHaveBeenCalledWith(
+        {
+          "patch": {
+            "tag": "offerers",
+            "text": "Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)",
+            "type": "info",
+            "url": "/offerers",
+            "urlLabel": "Nouveau lieu",
+          },
+          "type": "SHOW_NOTIFICATION",
+        }
+      )
     })
   })
 })
