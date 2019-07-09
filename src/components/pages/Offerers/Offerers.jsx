@@ -57,16 +57,6 @@ class Offerers extends Component {
     )
   }
 
-  handleSuccess = (state, action) => {
-    const {
-      payload: { data },
-    } = action
-    this.setState({
-      hasMore: data.length > 0,
-      isLoading: false,
-    })
-  }
-
   handleFail = () => {
     this.setState({
       hasMore: false,
