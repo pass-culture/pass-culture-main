@@ -68,26 +68,26 @@ class CheckCIStatusTest:
         # Then
         assert commit_status == "success"
 
-    def when_get_project_jobs_infos_is_called_with_wrong_project_name(self, requests_mock):
+    def when_get_project_jobs_infos_is_called_with_wrong_branch_name(self, requests_mock):
 
         # Given
-        project_name = "wrong_project_name_987"
-        requests_mock.get('https://circleci.com/api/v1.1/project/github/betagouv/' + project_name + '/tree/master', json=[{'job_id': '12'}], status_code=404)
+        branch_name = 'master'
+        requests_mock.get('https://circleci.com/api/v1.1/project/github/betagouv/pass-culture-main/tree/' + branch_name, json=[{'job_id': '12'}], status_code=404)
 
         # When
-        project_info = get_project_jobs_infos(project_name)
+        project_info = get_project_jobs_infos(branch_name)
 
         # Then
         assert project_info is None
 
-    def when_get_project_jobs_infos_is_called_with_right_project_name(self, requests_mock):
+    def when_get_project_jobs_infos_is_called_with_right_branch_name(self, requests_mock):
 
         # Given
-        project_name = "pass-culture-api"
-        requests_mock.get('https://circleci.com/api/v1.1/project/github/betagouv/' + project_name + '/tree/master', json=[{'job_id': '12'}], status_code=200)
+        branch_name = 'master'
+        requests_mock.get('https://circleci.com/api/v1.1/project/github/betagouv/pass-culture-main/tree/' + branch_name, json=[{'job_id': '12'}], status_code=200)
 
         # When
-        job_statuses = get_project_jobs_infos(project_name)
+        job_statuses = get_project_jobs_infos(branch_name)
 
         # Then
         assert job_statuses == [{'job_id': '12'}]
@@ -141,12 +141,13 @@ class CheckCIStatusTest:
 
         # Given
         commit_sha1 = 'commit_sha_12345'
+        branch_name = 'master'
         mocker.patch('scripts.check_ci_status.get_project_jobs_infos', return_value = project_jobs_infos_mock)
         mocker.patch('scripts.check_ci_status.extract_commit_status', return_value = "success")
 
         # When
         with pytest.raises(SystemExit) as pytest_wrapped_e:
-            sys.argv = ["scripts/check_ci_status.py", commit_sha1]
+            sys.argv = ["scripts/check_ci_status.py", commit_sha1, branch_name]
             main()
 
         # Then

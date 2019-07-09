@@ -172,7 +172,7 @@ jobs:
     steps:
       - checkout
       - run: pip install requests
-      - run: python scripts/check_ci_status.py $CIRCLE_SHA1
+      - run: python scripts/check_ci_status.py $CIRCLE_SHA1 $CIRCLE_BRANCH
       - run: git submodule sync
       - run: git submodule update --init
       - run: ./check_build_status.py
@@ -265,6 +265,7 @@ workflows:
             branches:
               only:
                 - master
+                - /hotfix-v.*/
             tags:
               only: /^v.*/
       - tests-webapp:
@@ -272,6 +273,7 @@ workflows:
             branches:
               only:
                 - master
+                - /hotfix-v.*/
             tags:
               only: /^v.*/
       - tests-pro:
@@ -279,6 +281,7 @@ workflows:
             branches:
               only:
                 - master
+                - /hotfix-v.*/
             tags:
               only: /^v.*/
       - deploy-api:
