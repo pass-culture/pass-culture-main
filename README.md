@@ -193,7 +193,6 @@ La politique de tagging de version est la suivante :
 * Je m'aperçois que mon fix est lui-même buggé, je relivre un fix en staging => `20.2.1`
 * Mes deux fix sont cette fois OK, je livre en production => `20.2.1`
 
-
 Pour poser un tag sur une version :
 
 S'assurer d'avoir bien commité ses fichiers.
@@ -203,6 +202,8 @@ Checkout de master sur pass-culture-main, pass-culture-api, pass-culture-webapp 
 pc -t I.P.S tag
 ```
 
+Les seuls branches devant être tagguées sont master et hotfix-vI.P.S
+
 Le fichier version.txt de l'API est mis-à-jours ainsi que le package.json de Webapp et Pro. 
 Le tag est posé sur les branches local checkout (de préférence master): Api, Webapp et Pro. 
 Elles sont ensuite poussées sur le repository distant. 
@@ -210,10 +211,11 @@ Les tests sont enfin joués et on déploie sur Testing.
 
 ## Deploy
 
-Pré-requis : installer jq ('https://stedolan.github.io/jq/download/')
+Pré-requis : installer [jq](https://stedolan.github.io/jq/download/)
 
 Pour déployer une nouvelle version, par exemple en staging:
 **(Attention de ne pas déployer sur la production sans concertation !)**
+
 
 ```bash
 pc -e staging -t I.P.S deploy

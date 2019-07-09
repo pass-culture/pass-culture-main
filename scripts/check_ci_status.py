@@ -8,8 +8,8 @@ def extract_commit_status(commit_sha1: str, project_jobs_infos: str, test_name:s
             return job['status']
     return None
 
-def get_project_jobs_infos(project_name: str) -> Optional[str]:
-    project_url = 'https://circleci.com/api/v1.1/project/github/betagouv/' + project_name + '/tree/master'
+def get_project_jobs_infos(branch_name: str) -> Optional[str]:
+    project_url = 'https://circleci.com/api/v1.1/project/github/betagouv/pass-culture-main/tree/' + branch_name
     response = requests.get(project_url)
     if response.status_code != 200 :
         print('Error while requesting CircleCi. Return Code :', response.status_code)
@@ -21,12 +21,14 @@ def main():
     project_name = "pass-culture-main"
     tests_names = ["tests-script-pc", "tests-api", "tests-webapp", "tests-pro"]
 
-    if len(sys.argv) < 2:
-        print('Error : Scripts needs to be called with 1 argument, a commit hash')
+    if len(sys.argv) < 3:
+        print('Error : Scripts needs to be called with 2 arguments, a commit hash and a branch name')
         sys.exit(1)
 
     commit_sha1 = sys.argv[1]
-    project_jobs_infos = get_project_jobs_infos(project_name)
+    branch_name = sys.argv[2]
+
+    project_jobs_infos = get_project_jobs_infos(branch_name)
 
     if not project_jobs_infos:
         print('Error : Could not find projects jobs informations')
