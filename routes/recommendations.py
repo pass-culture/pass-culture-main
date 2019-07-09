@@ -2,18 +2,17 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.build_recommendations import move_requested_recommendation_first, \
-                                         move_tutorial_recommendations_first
+    move_tutorial_recommendations_first
 from models.api_errors import ResourceNotFound
 from models import PcObject, Recommendation
 from recommendations_engine import create_recommendations_for_discovery, \
-                                   create_recommendations_for_search, \
-                                   get_recommendation_search_params, \
-                                   give_requested_recommendation_to_user, \
-                                   OfferNotFoundException
+    create_recommendations_for_search, \
+    get_recommendation_search_params, \
+    give_requested_recommendation_to_user, \
+    OfferNotFoundException
 from repository.booking_queries import find_bookings_from_recommendation
-from repository.recommendation_queries import find_favored_recommendations_for_user, \
-                                              update_read_recommendations
-from utils.config import BLOB_SIZE, BLOB_READ_NUMBER, BLOB_UNREAD_NUMBER
+from repository.recommendation_queries import update_read_recommendations
+from utils.config import BLOB_SIZE
 from utils.human_ids import dehumanize
 from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
 from utils.logger import logger
@@ -64,7 +63,6 @@ def patch_recommendation(recommendation_id):
 @login_required
 @expect_json_data
 def put_read_recommendations():
-
     update_read_recommendations(request.json)
 
     read_recommendation_ids = [dehumanize(reco['id']) for reco in request.json]
@@ -74,11 +72,11 @@ def put_read_recommendations():
 
     return jsonify(_serialize_recommendations(read_recommendations)), 200
 
+
 @app.route('/recommendations', methods=['PUT'])
 @login_required
 @expect_json_data
 def put_recommendations():
-
     json_keys = request.json.keys()
 
     if 'readRecommendations' in json_keys:
@@ -125,13 +123,6 @@ def put_recommendations():
                                 for reco in recommendations])
                          + str(len(recommendations)))
 
-    return jsonify(_serialize_recommendations(recommendations)), 200
-
-
-@app.route('/recommendations/favorites', methods=['GET'])
-@login_required
-def get_favorite_recommendations():
-    recommendations = find_favored_recommendations_for_user(current_user)
     return jsonify(_serialize_recommendations(recommendations)), 200
 
 

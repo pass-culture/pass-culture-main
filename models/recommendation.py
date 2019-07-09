@@ -70,11 +70,6 @@ class Recommendation(PcObject, Model):
                        server_default=expression.false(),
                        default=False)
 
-    isFavorite = Column(Boolean,
-                        nullable=False,
-                        server_default=expression.false(),
-                        default=False)
-
     isFirst = Column(Boolean,
                      nullable=False,
                      server_default=expression.false(),

@@ -103,10 +103,6 @@ def filter_unseen_valid_recommendations_for_user(query, user, seen_recommendatio
     return new_query
 
 
-def find_favored_recommendations_for_user(user):
-    return Recommendation.query.filter_by(user=user, isFavorite=True).all()
-
-
 def update_read_recommendations(read_recommendations):
     if read_recommendations:
         for read_recommendation in read_recommendations:
