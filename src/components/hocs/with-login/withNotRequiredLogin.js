@@ -1,19 +1,16 @@
 import { compose } from 'redux'
 import withLogin from 'with-react-redux-login'
 
+import { getRedirectToOffersOrOfferers } from './helpers'
 import withFrenchQueryRouter from '../withFrenchQueryRouter'
 
 const withNotRequiredLogin = compose(
   withFrenchQueryRouter,
   withLogin({
     handleSuccess: (state, action, ownProps) => {
-      const { currentUser, history } = ownProps
-      const { hasOffers, hasPhysicalVenues } = currentUser || false
-      const hasOffersWithPhysicalVenues = hasOffers && hasPhysicalVenues
-      const redirectUrl = (hasOffersWithPhysicalVenues || hasPhysicalVenues)
-        ? '/offres'
-        : '/structures'
-      history.push(redirectUrl)
+      const { payload: { datum: currentUser } } = action
+      const { history } = ownProps
+      history.push(getRedirectToOffersOrOfferers({...currentUser}))
     },
     isRequired: false
   })

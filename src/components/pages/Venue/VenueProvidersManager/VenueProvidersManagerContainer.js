@@ -6,7 +6,6 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
-import { selectCurrentUser } from 'with-react-redux-login'
 
 import VenueProvidersManager from './VenueProvidersManager'
 import selectVenueProviderByVenueIdAndVenueProviderId from './selectors/selectVenueProviderByVenueIdAndVenueProviderId'

@@ -7,8 +7,10 @@ import withFrenchQueryRouter from '../withFrenchQueryRouter'
 const withRequiredLogin = compose(
   withFrenchQueryRouter,
   withLogin({
-    handleFail: (state, action, { history, location }) =>
-      history.push(getRedirectToSignin({...location})),
+    handleFail: (state, action, ownProps) => {
+      const { history, location } = ownProps
+      history.push(getRedirectToSignin({...location}))
+    },
     isRequired: true,
   })
 )

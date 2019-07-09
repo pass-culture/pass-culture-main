@@ -1,6 +1,7 @@
-import React from 'react'
-import Signup from '../Signup'
 import { shallow } from 'enzyme'
+import React from 'react'
+
+import Signup from '../Signup'
 
 describe('src | components | pages | Signup', () => {
   describe('snapshot', () => {
