@@ -56,3 +56,8 @@ def find_all_with_status_not_processable_for_bank_information(bank_information: 
 def _keep_only_venues_with_no_bank_information(query):
     query = query.filter(Venue.bankInformation == None)
     return query
+
+
+def get_payments_by_message_id(payment_message_id: str) -> [List[Payment]]:
+    payment_query = Payment.query.join(PaymentMessage).filter(PaymentMessage.name == payment_message_id)
+    return payment_query.all()

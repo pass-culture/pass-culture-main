@@ -6,12 +6,12 @@ import pytest
 from freezegun import freeze_time
 from lxml.etree import DocumentInvalid
 
-from models import PcObject, PaymentMessage
+from models import PcObject
 from models.payment import Payment
 from models.payment_status import TransactionStatus, PaymentStatus
 from scripts.payment.batch_steps import generate_new_payments, send_transactions, send_payments_details, \
     send_wallet_balances, \
-    send_payments_report, concatenate_payments_with_errors_and_retries, get_payments_by_message_id
+    send_payments_report, concatenate_payments_with_errors_and_retries
 from tests.conftest import clean_database, mocked_mail
 from tests.test_utils import create_offerer, create_venue, create_offer_with_thing_product, create_stock_from_offer, \
     create_booking, create_user, create_deposit, create_payment, create_bank_information
@@ -74,38 +74,6 @@ class GenerateNewPaymentsTest:
         # Then
         assert len(pending) == 2
         assert len(not_processable) == 1
-
-
-class GeneratePayementsByMessageIdTest:
-    @clean_database
-    def test_a_list_of_payments_is_returned(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        paying_stock = create_stock_from_offer(offer)
-        free_stock = create_stock_from_offer(offer, price=0)
-        user = create_user()
-        deposit = create_deposit(user, datetime.utcnow(), amount=500)
-        booking1 = create_booking(user, paying_stock, venue, is_used=True)
-        booking2 = create_booking(user, paying_stock, venue, is_used=True)
-        booking3 = create_booking(user, paying_stock, venue, is_used=True)
-        booking4 = create_booking(user, free_stock, venue, is_used=True)
-        payment1 = create_payment(booking1, offerer, 10, payment_message_name="ABCD123")
-        payment2 = create_payment(booking2, offerer, 10, payment_message_name="EFGH456")
-
-        PcObject.save(payment1, payment2)
-        PcObject.save(deposit, booking1, booking3, booking4)
-
-        payements = Payment.query.all()
-
-        # When
-        payements_by_id = get_payments_by_message_id('ABCD123')
-
-        # Then
-        assert len(payements) == 2
-        assert len(payements_by_id) == 1
-        payements_by_id[0].paymentMessage.name == 'ABCD123'
 
 
 class ConcatenatePaymentsWithErrorsAndRetriesTest:

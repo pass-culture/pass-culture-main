@@ -5,11 +5,11 @@ from models import PcObject
 from models.payment_status import TransactionStatus, PaymentStatus
 from repository.payment_queries import find_all_with_status_not_processable_for_bank_information
 from repository.payment_queries import find_message_checksum, find_error_payments, find_retry_payments, \
-    find_payments_by_message
+    find_payments_by_message, get_payments_by_message_id
 from tests.conftest import clean_database
 from tests.test_utils import create_bank_information, create_venue, create_offerer, create_stock, \
     create_offer_with_thing_product
-from tests.test_utils import create_payment_message, create_payment, create_booking, create_user, create_deposit
+from tests.test_utils import create_payment_message, create_payment, create_booking, create_user, create_deposit, create_stock_from_offer
 
 
 class FindMessageChecksumTest:
@@ -312,3 +312,31 @@ class FindAllWithStatusNotProcessableForBankInformationTest:
 
         # Then
         assert len(payments) == 0
+
+
+class GeneratePayementsByMessageIdTest:
+    @clean_database
+    def test_only_returns_payments_with_given_message(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        paying_stock = create_stock_from_offer(offer)
+        free_stock = create_stock_from_offer(offer, price=0)
+        user = create_user()
+        deposit = create_deposit(user, datetime.utcnow(), amount=500)
+        booking1 = create_booking(user, paying_stock, venue, is_used=True)
+        booking2 = create_booking(user, paying_stock, venue, is_used=True)
+        booking3 = create_booking(user, paying_stock, venue, is_used=True)
+        booking4 = create_booking(user, free_stock, venue, is_used=True)
+        payment1 = create_payment(booking1, offerer, 10, payment_message_name="ABCD123")
+        payment2 = create_payment(booking2, offerer, 10, payment_message_name="EFGH456")
+
+        PcObject.save(payment1, payment2)
+        PcObject.save(deposit, booking1, booking3, booking4)
+
+        # When
+        payements_by_id = get_payments_by_message_id('ABCD123')
+
+        # Then
+        assert payements_by_id[0].paymentMessage.name == 'ABCD123'

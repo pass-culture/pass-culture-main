@@ -1,10 +1,9 @@
 import os
-from pprint import pprint
 
-from scripts.payment.batch_steps import generate_new_payments, concatenate_payments_with_errors_and_retries, \
-    get_payments_by_message_id, send_transactions, send_payments_report, send_payments_details, send_wallet_balances
+from scripts.payment.batch_steps import generate_new_payments, concatenate_payments_with_errors_and_retries, send_transactions, send_payments_report, send_payments_details, send_wallet_balances
 from utils.logger import logger
 from utils.mailing import parse_email_addresses
+from repository.payment_queries import get_payments_by_message_id
 
 
 def generate_and_send_payments(payment_message_id: str = None):
@@ -17,16 +16,7 @@ def generate_and_send_payments(payment_message_id: str = None):
     PAYMENTS_DETAILS_RECIPIENTS = parse_email_addresses(os.environ.get('PAYMENTS_DETAILS_RECIPIENTS', None))
     WALLET_BALANCES_RECIPIENTS = parse_email_addresses(os.environ.get('WALLET_BALANCES_RECIPIENTS', None))
 
-    if payment_message_id is None:
-        logger.info('[BATCH][PAYMENTS] STEP 1 : generate payments')
-        pending_payments, not_processable_payments = generate_new_payments()
-
-        logger.info('[BATCH][PAYMENTS] STEP 2 : collect payments in ERROR and RETRY statuses')
-        payments_to_send = concatenate_payments_with_errors_and_retries(pending_payments)
-    else:
-        logger.info('[BATCH][PAYMENTS] STEP 1 Bis : collect payments corresponding to payment_message_id')
-        not_processable_payments = []
-        payments_to_send=get_payments_by_message_id(payment_message_id)
+    not_processable_payments, payments_to_send = check_if_a_payement_already_exists(payment_message_id)
 
     try:
         logger.info('[BATCH][PAYMENTS] STEP 3 : send transactions')
@@ -53,3 +43,17 @@ def generate_and_send_payments(payment_message_id: str = None):
         send_wallet_balances(WALLET_BALANCES_RECIPIENTS)
     except Exception as e:
         logger.error('[BATCH][PAYMENTS] STEP 6', e)
+
+
+def check_if_a_payement_already_exists(payment_message_id):
+    if payment_message_id is None:
+        logger.info('[BATCH][PAYMENTS] STEP 1 : generate payments')
+        pending_payments, not_processable_payments = generate_new_payments()
+
+        logger.info('[BATCH][PAYMENTS] STEP 2 : collect payments in ERROR and RETRY statuses')
+        payments_to_send = concatenate_payments_with_errors_and_retries(pending_payments)
+    else:
+        logger.info('[BATCH][PAYMENTS] STEP 1 Bis : collect payments corresponding to payment_message_id')
+        not_processable_payments = []
+        payments_to_send = get_payments_by_message_id(payment_message_id)
+    return not_processable_payments, payments_to_send
