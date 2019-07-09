@@ -1,11 +1,13 @@
-import { showNotification } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
+
+import {closeNotification, showNotification} from 'pass-culture-shared'
 import { stringify } from 'query-string'
 import React, { Component, Fragment } from 'react'
 import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { NavLink } from 'react-router-dom'
 import { assignData, requestData } from 'redux-saga-data'
+import get from 'lodash.get'
 
 import OffererItemContainer from './OffererItem/OffererItemContainer'
 import PendingOffererItem from './OffererItem/PendingOffererItem'
@@ -15,8 +17,10 @@ import Main from '../../layout/Main'
 import Spinner from '../../layout/Spinner'
 import TextField from '../../layout/form/fields/TextField'
 import { offererNormalizer } from '../../../utils/normalizers'
-import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
-
+import {
+  mapApiToBrowser,
+  translateQueryParamsToApiParams,
+} from '../../../utils/translate'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 
 class Offerers extends Component {
@@ -110,6 +114,13 @@ class Offerers extends Component {
           stateKey: 'pendingOfferers',
         })
       )
+    }
+  }
+
+  componentWillUnmount() {
+    const { dispatch, notification } = this.props
+    if (get(notification, 'tag') === 'offerers') {
+      dispatch(closeNotification())
     }
   }
 

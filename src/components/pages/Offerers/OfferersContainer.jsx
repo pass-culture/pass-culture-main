@@ -8,6 +8,7 @@ export const mapStateToProps = state => {
   return {
     pendingOfferers: state.data.pendingOfferers,
     offerers: state.data.offerers,
+    notification: state.notification,
   }
 }
 
