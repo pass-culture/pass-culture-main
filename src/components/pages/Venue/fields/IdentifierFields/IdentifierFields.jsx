@@ -12,19 +12,6 @@ import { formatSirenOrSiret } from 'utils/siren'
 
 const getIsCommentRequired = formSiret => !formSiret || formSiret.length !== 14
 
-const buildSiretLabel = isCreatedEntity => {
-  if (isCreatedEntity) {
-    return <Fragment> SIRET
-      <span className="siret-label-details">
-	        <span className="bold-siret-label">
-            {' du lieu qui accueille vos offres'}
-	        </span>
-        {' (si applicable) : '}
-	      </span>
-    </Fragment>
-  }
-  return 'SIRET : '
-}
 const IdentifierFields = ({
   fieldReadOnlyBecauseFrozenFormSiret,
   formSiret,
@@ -45,10 +32,26 @@ const IdentifierFields = ({
     </h2>
     <div className="field-group">
       {isCreatedEntity && <HiddenField name="managingOffererId" />}
-      <TextField
+      <div className="field text-field is-label-aligned">
+        <label htmlFor="siret" className="field-label">
+        { (isCreatedEntity)
+          ? (
+            <Fragment>
+              SIRET
+              <span className="siret-label-details">
+                <span className="siret-label-bold">
+                  {' du lieu qui accueille vos offres'}
+                </span>
+                {' (si applicable) : '}
+              </span>
+            </Fragment>
+          )
+        : 'SIRET : '
+        }
+      </label>
+        <TextField
         format={formatSirenOrSiret}
         innerClassName="col-50"
-        label={buildSiretLabel(isCreatedEntity)}
         name="siret"
         readOnly={readOnly || initialSiret !== null}
         renderValue={() => {
@@ -80,6 +83,7 @@ const IdentifierFields = ({
         type="siret"
         {...(initialSiret ? {} : { validate: siretValidate })}
       />
+      </div>
       <TextField
         label="Nom : "
         name="name"

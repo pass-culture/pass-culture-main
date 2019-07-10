@@ -105,18 +105,12 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       })
 
       test('proper siret label is returned when isCreatedEntity is true', () => {
-        // given
-        const props = {
-          isCreatedEntity: true,
-          isModifiedEntity: true,
-        }
-
         // when
         const wrapper = shallow(<IdentifierFields {...props} />)
 
         // then
-        const textFields = wrapper.find(TextField).at(0).dive().text()
-        expect(textFields).toBe('SIRET du lieu qui accueille vos offres (si applicable) : ')
+        const label = wrapper.find('label').at(0).text()
+        expect(label).toBe('SIRET du lieu qui accueille vos offres (si applicable) : ')
       })
 
       test('proper siret label is returned when isCreatedEntity is false', () => {
@@ -130,9 +124,8 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         const wrapper = shallow(<IdentifierFields {...props} />)
 
         // then
-        const textFields = wrapper.find(TextField)
-        expect(textFields.at(0).prop('name')).toBe('siret')
-        expect(textFields.at(0).prop('label')).toBe('SIRET : ')
+        const label = wrapper.find('label').at(0).text()
+        expect(label).toBe('SIRET : ')
       })
     })
 
