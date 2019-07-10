@@ -202,10 +202,10 @@ Checkout de master sur pass-culture-main, pass-culture-api, pass-culture-webapp 
 pc -t I.P.S tag
 ```
 
-Les seuls branches devant être tagguées sont master et hotfix-vI.P.S
+Les seuls branches devant être taguées sont master et hotfix-vI.P.S
 
-Le fichier version.txt de l'API est mis-à-jours ainsi que le package.json de Webapp et Pro. 
-Le tag est posé sur les branches local checkout (de préférence master): Api, Webapp et Pro. 
+Le fichier version.txt de l'API est mis à jours ainsi que le package.json de Webapp et Pro. 
+Le tag est posé sur les branches locales checkout (de préférence master): Api, Webapp et Pro. 
 Elles sont ensuite poussées sur le repository distant. 
 Les tests sont enfin joués et on déploie sur Testing.
 
