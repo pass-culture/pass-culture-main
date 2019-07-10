@@ -11,9 +11,22 @@ from tests.test_utils import create_bank_information, create_stock_with_thing_of
 from repository.reimbursement_queries import find_all_offerer_reimbursement_details
 from domain.reimbursement import generate_reimbursement_details_csv
 
-class ReimbursmentDetailsCSVTest:
+
+class ReimbursementDetailsCSVTest:
     @clean_database
-    def test_generate_payment_details_csv_with_human_readable_header_and_reimbursements_lines(self, app):
+    def test_generate_payment_details_csv_with_human_readable_header(self, app):
+        # given
+        reimbursement_details = []
+
+        # when
+        csv = generate_reimbursement_details_csv(reimbursement_details)
+
+        # then
+        assert _get_header(csv,
+                           0) == "Année;Virement;Créditeur;SIRET créditeur;Adresse créditeur;IBAN;Raison sociale du lieu;Nom de l'offre;Nom utilisateur;Prénom utilisateur;Contremarque;Date de validation de la réservation;Montant remboursé;Statut du remboursement"
+
+    @clean_database
+    def test_generate_payment_details_csv_with_right_values(self, app):
         # given
         user = create_user(email='user+plus@email.fr')
         deposit = create_deposit(user, datetime.utcnow(), amount=500, source='public')
@@ -54,11 +67,13 @@ class ReimbursmentDetailsCSVTest:
 
         # then
         assert _count_non_empty_lines(csv) == 6
-        assert _get_header(csv) == "Année;Virement;Créditeur;SIRET créditeur;Adresse créditeur;IBAN;Raison sociale du lieu;Nom de l'offre;Nom utilisateur;Prénom utilisateur;Contremarque;Date de validation de la réservation;Montant remboursé;Statut du remboursement"
+        assert _get_header(csv,
+                           1) == "2019;Juillet : remboursement 1ère quinzaine;La petite librairie;12345678912346;123 rue de Paris;FR7630006000011234567890189;La petite librairie;Test Book;Doe;John;ABCDEH;;11.00;Remboursement initié"
 
 
-def _get_header(csv):
-    return csv.split('\r\n')[0]
+def _get_header(csv, line):
+    return csv.split('\r\n')[line]
+
 
 def _count_non_empty_lines(csv):
     return len(list(filter(lambda line: line != '', csv.split('\r\n'))))

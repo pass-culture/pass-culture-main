@@ -7,10 +7,12 @@ from io import StringIO
 from typing import List
 
 from models import Booking, Payment, ThingType
+from models.payment_status import TransactionStatus
 from utils.date import english_to_french_month
 
 MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
 MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
+
 
 class ReimbursementRule(ABC):
     def is_active(self, booking: Booking):
@@ -121,25 +123,22 @@ class ReimbursementDetails:
         "Statut du remboursement"
     ]
 
-    def _get_current_status(self, current_status, current_status_details):
-        statuses = {
-        'TransactionStatus.PENDING': 'Remboursement en cours',
-        'TransactionStatus.NOT_PROCESSABLE': 'Remboursement impossible',
-        'TransactionStatus.SENT': 'Remboursé',
-        'TransactionStatus.ERROR': 'Erreur',
-        'TransactionStatus.RETRY': 'Remboursement retenté',
-        'TransactionStatus.BANNED': 'Banni'
+    def _get_reimbursement_current_status_in_details(self, current_status, current_status_details):
+        TRANSACTION_STATUSES_DETAILS = {
+            TransactionStatus.PENDING: 'Remboursement initié',
+            TransactionStatus.NOT_PROCESSABLE: 'Remboursement impossible',
+            TransactionStatus.SENT: 'Remboursement envoyé',
+            TransactionStatus.ERROR: 'Erreur d\'envoi du remboursement',
+            TransactionStatus.RETRY: 'Remboursement à renvoyer',
+            TransactionStatus.BANNED: 'Remboursement rejeté'
         }
 
-        human_friendly_status = statuses.get(current_status)
+        human_friendly_status = TRANSACTION_STATUSES_DETAILS.get(current_status)
 
         if current_status_details is None:
-            current_status_details = ""
-        else:
-            current_status_details = f": {current_status_details}"
+            return human_friendly_status
 
-        return human_friendly_status + current_status_details
-
+        return f"{human_friendly_status} : {current_status_details}"
 
     def __init__(self, payment: Payment = None, booking_used_date: datetime = None):
 
@@ -151,18 +150,19 @@ class ReimbursementDetails:
             offerer = venue.managingOfferer
 
             transfer_infos = payment.transactionLabel \
-                                    .replace('pass Culture Pro - ', '') \
-                                    .split(' ')
+                .replace('pass Culture Pro - ', '') \
+                .split(' ')
             transfer_label = " ".join(transfer_infos[:-1])
 
             date = transfer_infos[-1]
             [month_number, year] = date.split('-')
             french_month = english_to_french_month(int(year), int(month_number))
 
-            current_status = str(payment.currentStatus.status)
-            current_status_details = payment.currentStatus.detail
+            payment_current_status = payment.currentStatus.status
+            payment_current_status_details = payment.currentStatus.detail
 
-            human_friendly_status = self._get_current_status(current_status, current_status_details)
+            human_friendly_status = self._get_reimbursement_current_status_in_details(payment_current_status,
+                                                                                      payment_current_status_details)
 
             self.year = year
             self.transfer_name = "{} : {}".format(
@@ -187,7 +187,7 @@ class ReimbursementDetails:
             self.year,
             self.transfer_name,
             self.venue_name,
-            str(self.venue_siret),
+            self.venue_siret,
             self.venue_address,
             self.payment_iban,
             self.venue_name,
@@ -196,9 +196,10 @@ class ReimbursementDetails:
             self.user_first_name,
             self.booking_token,
             self.booking_used_date,
-            str(self.reimbursed_amount),
+            self.reimbursed_amount,
             self.status
         ]
+
 
 def find_all_booking_reimbursements(bookings):
     reimbursements = []
@@ -214,6 +215,7 @@ def find_all_booking_reimbursements(bookings):
 
     return reimbursements
 
+
 def _find_potential_rules(booking, cumulative_bookings_value):
     relevant_rules = []
     for rule in ReimbursementRules:
@@ -221,6 +223,7 @@ def _find_potential_rules(booking, cumulative_bookings_value):
             reimbursed_amount = rule.value.apply(booking)
             relevant_rules.append({'rule': rule, 'amount': reimbursed_amount})
     return relevant_rules
+
 
 def generate_reimbursement_details_csv(reimbursement_details: List[ReimbursementDetails]):
     output = StringIO()
