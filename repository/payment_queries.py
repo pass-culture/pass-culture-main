@@ -58,6 +58,6 @@ def _keep_only_venues_with_no_bank_information(query):
     return query
 
 
-def get_payments_by_message_id(payment_message_id: str) -> [List[Payment]]:
+def get_payments_by_message_id(payment_message_id: str) -> List[Payment]:
     payment_query = Payment.query.join(PaymentMessage).filter(PaymentMessage.name == payment_message_id)
     return payment_query.all()
