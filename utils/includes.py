@@ -144,6 +144,7 @@ RECOMMENDATION_INCLUDES = [
         ]
     },
     "thumbUrl",
+    "isFavorite"
 ]
 
 BOOKING_INCLUDES = [

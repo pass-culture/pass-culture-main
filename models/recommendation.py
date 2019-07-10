@@ -6,10 +6,13 @@ from sqlalchemy import BigInteger, \
     Column, \
     DateTime, \
     ForeignKey, \
-    String
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import expression
+    String, \
+    and_, \
+    exists
+from sqlalchemy.orm import relationship, column_property
+from sqlalchemy.sql import expression, select
 
+from models import Favorite
 from models.db import Model
 from models.pc_object import PcObject
 
@@ -77,6 +80,13 @@ class Recommendation(PcObject, Model):
 
     search = Column(String,
                     nullable=True)
+
+    isFavorite = column_property(
+        exists(select([Favorite.id]).
+               where(and_(userId == Favorite.userId,
+                          (offerId == Favorite.offerId))
+                     )
+               ))
 
     @property
     def thumbUrl(self):
