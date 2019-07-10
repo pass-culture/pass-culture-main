@@ -1,0 +1,51 @@
+from models import PcObject, Favorite
+from tests.conftest import clean_database, TestClient
+from tests.test_utils import create_offerer, create_venue, create_user, create_offer_with_thing_product, \
+    create_mediation, create_recommendation, API_URL, create_favorite
+from utils.human_ids import humanize
+
+
+class Delete:
+    class Returns200:
+        @clean_database
+        def when_venue_provider_exists(self, app):
+            # given
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
+            offer = create_offer_with_thing_product(venue, thumb_count=0)
+            mediation = create_mediation(offer, is_active=True)
+            recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
+            favorite = create_favorite(mediation, offer, user)
+            PcObject.save(recommendation, user, favorite)
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).delete(
+                f'{API_URL}/offers/favorites/' + humanize(favorite.id))
+
+            # Then
+            assert response.status_code == 200
+            deleted_favorite = Favorite.query.first()
+            assert deleted_favorite is None
+
+    class Returns404:
+        @clean_database
+        def when_favorite_does_not_exist(self, app):
+            # given
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
+            offer = create_offer_with_thing_product(venue, thumb_count=0)
+            mediation = create_mediation(offer, is_active=True)
+            recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
+            favorite = create_favorite(mediation, offer, user)
+            PcObject.save(recommendation, user, favorite)
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).delete(
+                f'{API_URL}/offers/favorites/' + 'ABCD')
+
+            # Then
+            assert response.status_code == 404
+            deleted_favorite = Favorite.query.first()
+            assert deleted_favorite == favorite

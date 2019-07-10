@@ -26,7 +26,7 @@ from models import Booking, \
     User, \
     UserOfferer, \
     BankInformation, \
-    Venue, PaymentMessage, VenueProvider, Provider, Product, Feature
+    Venue, PaymentMessage, VenueProvider, Provider, Product, Feature, Favorite
 from models.db import db
 from models.email import Email, EmailStatus
 from models.feature import FeatureToggle
@@ -474,7 +474,7 @@ def create_user_offerer(user, offerer, validation_token=None, is_admin=False):
 
 def create_recommendation(offer=None, user=None, mediation=None, idx=None, date_read=None,
                           valid_until_date=datetime.utcnow() + timedelta(days=7), search=None,
-                          is_clicked=False, is_favorite=False):
+                          is_clicked=False):
     recommendation = Recommendation()
     recommendation.id = idx
     recommendation.offer = offer
@@ -484,8 +484,15 @@ def create_recommendation(offer=None, user=None, mediation=None, idx=None, date_
     recommendation.validUntilDate = valid_until_date
     recommendation.search = search
     recommendation.isClicked = is_clicked
-    recommendation.isFavorite = is_favorite
     return recommendation
+
+
+def create_favorite(mediation= None, offer=None, user=None):
+    favorite = Favorite()
+    favorite.user = user
+    favorite.mediation = mediation
+    favorite.offer = offer
+    return favorite
 
 
 def create_event_occurrence(
