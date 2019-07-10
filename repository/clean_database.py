@@ -16,7 +16,7 @@ from models import Booking, \
     UserSession, \
     Venue, \
     Provider, \
-    VenueProvider, PaymentMessage, BankInformation, LocalProviderEvent, Feature
+    VenueProvider, PaymentMessage, BankInformation, LocalProviderEvent, Feature, Favorite
 from models.email import Email
 from models.install import install_features
 
@@ -31,6 +31,7 @@ def clean_all_database(*args, **kwargs):
     PaymentMessage.query.delete()
     Booking.query.delete()
     Stock.query.delete()
+    Favorite.query.delete()
     Recommendation.query.delete()
     Mediation.query.delete()
     Offer.query.delete()
