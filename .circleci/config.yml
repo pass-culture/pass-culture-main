@@ -1,6 +1,14 @@
 version: 2.1
 jobs:
 
+  tests-perf:
+    working_directory: ~/pass-culture/artillery
+    docker:
+      - image: node:slim
+    steps:
+      - checkout
+      - run: echo toto
+
   tests-script-pc:
     machine:
       image: circleci/classic:latest
@@ -259,7 +267,8 @@ workflows:
   version: 2
   commit:
     jobs:
-      - tests-script-pc
+#      - tests-script-pc
+      - tests-perf
       - tests-api:
           filters:
             branches:
