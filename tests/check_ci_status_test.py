@@ -24,9 +24,7 @@ project_jobs_infos_mock =[{
 
 class CheckCIStatusTest:
 
-
     def when_extract_commit_status_does_not_find_commit_in_jobs(self):
-
         # Given
         job_name = "tests-api"
         target_commit_sha1 = "56ePe4eVerbd4e9c52bce2342a0e28aa3003500f7b"
@@ -41,7 +39,6 @@ class CheckCIStatusTest:
         assert commit_status is None
 
     def when_extract_commit_status_does_not_find_correct_circle_job(self):
-
         # Given
         job_name = "deploy_api"
         target_commit_sha1 = "56ePe4eVerbd4e9c52bce2342a0e28aa3003500f7b"
@@ -57,7 +54,6 @@ class CheckCIStatusTest:
         assert commit_status is None
 
     def when_extract_commit_status_finds_correct_circle_job(self):
-
         # Given
         job_name = "tests-api"
         commit_sha1 = "56ePe4eVerbd4e9c52bce2342a0e28aa3003500f7b"
@@ -68,8 +64,7 @@ class CheckCIStatusTest:
         # Then
         assert commit_status == "success"
 
-    def when_get_project_jobs_infos_is_called_with_wrong_branch_name(self, requests_mock):
-
+    def when_get_project_jobs_infos_is_called_with_wrong_branch_name_returns_None(self, requests_mock):
         # Given
         branch_name = 'master'
         requests_mock.get('https://circleci.com/api/v1.1/project/github/betagouv/pass-culture-main/tree/' + branch_name, json=[{'job_id': '12'}], status_code=404)
@@ -80,8 +75,7 @@ class CheckCIStatusTest:
         # Then
         assert project_info is None
 
-    def when_get_project_jobs_infos_is_called_with_right_branch_name(self, requests_mock):
-
+    def when_get_project_jobs_infos_is_called_with_right_branch_name_returns_job_id(self, requests_mock):
         # Given
         branch_name = 'master'
         requests_mock.get('https://circleci.com/api/v1.1/project/github/betagouv/pass-culture-main/tree/' + branch_name, json=[{'job_id': '12'}], status_code=200)
@@ -92,8 +86,7 @@ class CheckCIStatusTest:
         # Then
         assert job_statuses == [{'job_id': '12'}]
 
-    def when_check_ci_is_called_without_an_argument(self, capsys ):
-
+    def when_check_ci_is_called_without_an_argument_exits_system(self, capsys):
         # Given
         sys.argv = ["scripts/check_ci_status.py"]
 
@@ -107,8 +100,7 @@ class CheckCIStatusTest:
         assert pytest_wrapped_e.type == SystemExit
         assert pytest_wrapped_e.value.code == 1
 
-    def when_check_ci_is_called_but_finds_no_job(self, mocker, capsys ):
-
+    def when_check_ci_is_called_but_finds_no_job_raises_exeption(self, mocker, capsys ):
         # Given
         commit_sha1 = 'commit_sha_12345'
         mocker.patch('scripts.check_ci_status.get_project_jobs_infos', return_value = False)
@@ -122,8 +114,7 @@ class CheckCIStatusTest:
         assert pytest_wrapped_e.value.code == 1
 
 
-    def when_check_ci_is_called_but_commit_has_failed(self, mocker, capsys ):
-
+    def when_check_ci_is_called_but_commit_has_failed_raises_system_error_exception(self, mocker, capsys ):
         # Given
         commit_sha1 = 'commit_sha_12345'
         mocker.patch('scripts.check_ci_status.get_project_jobs_infos', return_value = project_jobs_infos_mock)
@@ -138,7 +129,6 @@ class CheckCIStatusTest:
         assert pytest_wrapped_e.value.code == 1
 
     def when_check_ci_is_called_and_commit_is_successful(self, mocker, capsys ):
-
         # Given
         commit_sha1 = 'commit_sha_12345'
         branch_name = 'master'
