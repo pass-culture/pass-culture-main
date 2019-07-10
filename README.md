@@ -169,7 +169,7 @@ Ou en tant qu'user avec :
 email: pctest.pro93.0@btmx.fr
 ```
 
-Le mot de passe est toujours : `AZERTY123`
+Le mot de passe est toujours : `user@AZERTY123`
 
 (Ces deux utilisateurs existent également pour le 97, pour les utiliser, il suffit de remplacer 93 par 97)
 
