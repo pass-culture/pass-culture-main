@@ -4,7 +4,7 @@ jobs:
   tests-perf:
     working_directory: ~/pass-culture/artillery
     docker:
-      - image: node:slim
+      - image: edupedup/artillery:0.2
     steps:
       - checkout
       - run: echo toto
