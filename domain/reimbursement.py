@@ -123,7 +123,7 @@ class ReimbursementDetails:
         "Statut du remboursement"
     ]
 
-    def _get_reimbursement_current_status_in_details(self, current_status, current_status_details):
+    def _get_reimbursement_current_status_in_details(self, current_status: str, current_status_details: str):
         TRANSACTION_STATUSES_DETAILS = {
             TransactionStatus.PENDING: 'Remboursement initié',
             TransactionStatus.NOT_PROCESSABLE: 'Remboursement impossible',
@@ -146,6 +146,7 @@ class ReimbursementDetails:
             booking = payment.booking
             user = booking.user
             offer = booking.stock.resolvedOffer
+
             venue = offer.venue
             offerer = venue.managingOfferer
 
@@ -160,6 +161,7 @@ class ReimbursementDetails:
 
             payment_current_status = payment.currentStatus.status
             payment_current_status_details = payment.currentStatus.detail
+
 
             human_friendly_status = self._get_reimbursement_current_status_in_details(payment_current_status,
                                                                                       payment_current_status_details)
