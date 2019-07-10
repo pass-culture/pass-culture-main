@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Fragment } from 'react'
 
 import { siretValidate } from './validators'
 import { Icon } from 'components/layout/Icon'
@@ -12,9 +12,19 @@ import { formatSirenOrSiret } from 'utils/siren'
 
 const getIsCommentRequired = formSiret => !formSiret || formSiret.length !== 14
 
-const buildSiretLabel = isCreatedEntity =>
-  `SIRET${isCreatedEntity ? ' du lieu qui accueille vos offres (si applicable)' : ''} : `
-
+const buildSiretLabel = isCreatedEntity => {
+  if (isCreatedEntity) {
+    return <Fragment> SIRET
+      <span className="siret-label-details">
+	        <span className="bold-siret-label">
+            {' du lieu qui accueille vos offres'}
+	        </span>
+        {' (si applicable) : '}
+	      </span>
+    </Fragment>
+  }
+  return 'SIRET : '
+}
 const IdentifierFields = ({
   fieldReadOnlyBecauseFrozenFormSiret,
   formSiret,

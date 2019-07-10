@@ -44,7 +44,21 @@ ShallowWrapper {
             format={[Function]}
             id={null}
             innerClassName="col-50"
-            label="SIRET du lieu qui accueille vos offres (si applicable) : "
+            label={
+              <React.Fragment>
+                 SIRET
+                <span
+                  className="siret-label-details"
+                >
+                  <span
+                    className="bold-siret-label"
+                  >
+                     du lieu qui accueille vos offres
+                  </span>
+                   (si applicable) : 
+                </span>
+              </React.Fragment>
+            }
             name="siret"
             parse={null}
             placeholder=""
@@ -160,7 +174,21 @@ ShallowWrapper {
               format={[Function]}
               id={null}
               innerClassName="col-50"
-              label="SIRET du lieu qui accueille vos offres (si applicable) : "
+              label={
+                <React.Fragment>
+                   SIRET
+                  <span
+                    className="siret-label-details"
+                  >
+                    <span
+                      className="bold-siret-label"
+                    >
+                       du lieu qui accueille vos offres
+                    </span>
+                     (si applicable) : 
+                  </span>
+                </React.Fragment>
+              }
               name="siret"
               parse={null}
               placeholder=""
@@ -263,7 +291,19 @@ ShallowWrapper {
               "format": [Function],
               "id": null,
               "innerClassName": "col-50",
-              "label": "SIRET du lieu qui accueille vos offres (si applicable) : ",
+              "label": <React.Fragment>
+                 SIRET
+                <span
+                  className="siret-label-details"
+                >
+                  <span
+                    className="bold-siret-label"
+                  >
+                     du lieu qui accueille vos offres
+                  </span>
+                   (si applicable) : 
+                </span>
+              </React.Fragment>,
               "name": "siret",
               "parse": null,
               "placeholder": "",
@@ -406,7 +446,21 @@ ShallowWrapper {
               format={[Function]}
               id={null}
               innerClassName="col-50"
-              label="SIRET du lieu qui accueille vos offres (si applicable) : "
+              label={
+                <React.Fragment>
+                   SIRET
+                  <span
+                    className="siret-label-details"
+                  >
+                    <span
+                      className="bold-siret-label"
+                    >
+                       du lieu qui accueille vos offres
+                    </span>
+                     (si applicable) : 
+                  </span>
+                </React.Fragment>
+              }
               name="siret"
               parse={null}
               placeholder=""
@@ -522,7 +576,21 @@ ShallowWrapper {
                 format={[Function]}
                 id={null}
                 innerClassName="col-50"
-                label="SIRET du lieu qui accueille vos offres (si applicable) : "
+                label={
+                  <React.Fragment>
+                     SIRET
+                    <span
+                      className="siret-label-details"
+                    >
+                      <span
+                        className="bold-siret-label"
+                      >
+                         du lieu qui accueille vos offres
+                      </span>
+                       (si applicable) : 
+                    </span>
+                  </React.Fragment>
+                }
                 name="siret"
                 parse={null}
                 placeholder=""
@@ -625,7 +693,19 @@ ShallowWrapper {
                 "format": [Function],
                 "id": null,
                 "innerClassName": "col-50",
-                "label": "SIRET du lieu qui accueille vos offres (si applicable) : ",
+                "label": <React.Fragment>
+                   SIRET
+                  <span
+                    className="siret-label-details"
+                  >
+                    <span
+                      className="bold-siret-label"
+                    >
+                       du lieu qui accueille vos offres
+                    </span>
+                     (si applicable) : 
+                  </span>
+                </React.Fragment>,
                 "name": "siret",
                 "parse": null,
                 "placeholder": "",
