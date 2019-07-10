@@ -129,8 +129,11 @@ class Post:
             # then
             assert response.status_code == 201
             offerer = Offerer.query.first()
-            assert len(offerer.UserOfferers) == 2
-            assert offerer.UserOfferers[1].validationToken is not None
+            created_user_offerer = UserOfferer.query\
+                .filter(UserOfferer.offerer == offerer)\
+                .filter(UserOfferer.user == user)\
+                .one()
+            assert created_user_offerer.validationToken is not None
 
 
         @clean_database

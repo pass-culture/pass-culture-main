@@ -22,9 +22,12 @@ class CheckFeatureConsistencyTest:
     def test_returns_none_if_database_and_enum_are_consistent(self, app):
         # Given
         find_all_features = MagicMock()
-        feature = Feature()
-        feature.populate_from_dict({'name': FeatureToggle.WEBAPP_SIGNUP})
-        find_all_features.return_value = [feature]
+        features = []
+        for feature_toggle in FeatureToggle:
+            feature = Feature()
+            feature.populate_from_dict({'name': feature_toggle})
+            features.append(feature)
+        find_all_features.return_value = features
 
         # When / Then
         assert check_feature_consistency(find_all_features) is None
