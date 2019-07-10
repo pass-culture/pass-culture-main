@@ -9,6 +9,7 @@ from models.db import Model
 
 class FeatureToggle(enum.Enum):
     WEBAPP_SIGNUP = 'Permettre aux bénéficiaires de créer un compte'
+    FAVORITE_OFFER = 'Permettre aux bénéficiaires d''ajouter des offres en favoris'
 
 
 class Feature(PcObject, Model, DeactivableMixin):
