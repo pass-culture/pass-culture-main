@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import Finishable from '../../layout/Finishable'
 import { ShareButton } from '../../share/ShareButton'
 import VersoWallet from './wallet/VersoWalletContainer'
-import VersoButtonFavorite from './favorite/VersoButtonFavoriteContainer'
+import Favorite from './favorite/FavoriteContainer'
 import CancelThisLinkContainer from './booking/cancel-this-link/CancelThisLinkContainer'
 import BookThisLinkContainer from './booking/book-this-link/BookThisLinkContainer'
 
@@ -15,7 +15,7 @@ const VersoControl = ({ booking, isFinished }) => (
         <VersoWallet />
       </li>
       <li>
-        <VersoButtonFavorite />
+        <Favorite />
       </li>
       <li>
         <ShareButton />

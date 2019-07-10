@@ -85,7 +85,7 @@ const routes = [
   },
   {
     component: FavoritesPage,
-    disabled: true,
+    disabled: isFeatureDisabled('FAVORITE_OFFER'),
     icon: 'like-w',
     path: '/favoris',
     title: 'Mes préférés',

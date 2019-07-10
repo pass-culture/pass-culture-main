@@ -27,7 +27,7 @@ ShallowWrapper {
     "props": Object {
       "children": <span
         aria-hidden={true}
-        className="icon-ico-share"
+        className="font-icon icon-ico-share"
         title="Partager cette offre"
       />,
       "className": "no-border no-background",
@@ -43,7 +43,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "aria-hidden": true,
-        "className": "icon-ico-share",
+        "className": "font-icon icon-ico-share",
         "title": "Partager cette offre",
       },
       "ref": null,
@@ -60,7 +60,7 @@ ShallowWrapper {
       "props": Object {
         "children": <span
           aria-hidden={true}
-          className="icon-ico-share"
+          className="font-icon icon-ico-share"
           title="Partager cette offre"
         />,
         "className": "no-border no-background",
@@ -76,7 +76,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "aria-hidden": true,
-          "className": "icon-ico-share",
+          "className": "font-icon icon-ico-share",
           "title": "Partager cette offre",
         },
         "ref": null,

@@ -34,15 +34,20 @@
   }
 }
 
+.font-icon {
+  font-size: 2.7rem;
+}
+
+.fav-button {
+  background-color: transparent;
+  border: 0;
+}
+
 #verso-cancel-booking-button:disabled {
   opacity: 1;
 }
 
 @media screen and (max-width: 370px) {
-  .verso-control span[class^='icon-'] {
-    font-size: 28px;
-  }
-
   .verso-control .pc-ticket-button-price,
   .verso-control .pc-ticket-button-label {
     padding-left: 6px;
@@ -51,10 +56,6 @@
 }
 
 @media screen and (min-width: 371px) {
-  .verso-control span[class^='icon-'] {
-    font-size: 44px;
-  }
-
   .verso-control .pc-ticket-button-price,
   .verso-control .pc-ticket-button-label {
     padding-left: 12px;

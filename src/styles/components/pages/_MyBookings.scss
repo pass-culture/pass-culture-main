@@ -101,6 +101,10 @@
   font-size: 1.4rem;
   margin-bottom: 0.75rem;
   padding: 0.4rem 1.5rem;
+
+  &:hover {
+    color: $white;
+  }
 }
 
 .mb-text {

@@ -1,16 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | VersoButtonFavorite should match snapshot, with required props 1`] = `
+exports[`src | components | verso | verso-controls | favorite | Favorite should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <VersoButtonFavorite
-    isFavorite={false}
-    onClick={
+  Symbol(enzyme.__unrendered__): <Favorite
+    handleFavorite={
       [MockFunction] {
         "calls": Array [
           Array [
             false,
-            null,
+            Object {
+              "offer": Object {
+                "favorites": Array [],
+              },
+            },
+            [Function],
           ],
         ],
         "results": Array [
@@ -21,7 +25,13 @@ ShallowWrapper {
         ],
       }
     }
-    recommendationId={null}
+    recommendation={
+      Object {
+        "offer": Object {
+          "favorites": Array [],
+        },
+      }
+    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -37,12 +47,12 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "children": <span
-        aria-hidden={true}
-        className="icon-ico-like"
+      "children": <i
+        aria-hidden="true"
+        className="font-icon icon-ico-like"
         title="Ajouter aux favoris"
       />,
-      "className": "no-border no-background",
+      "className": "fav-button",
       "disabled": true,
       "onClick": undefined,
       "type": "button",
@@ -53,13 +63,13 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "aria-hidden": true,
-        "className": "icon-ico-like",
+        "aria-hidden": "true",
+        "className": "font-icon icon-ico-like",
         "title": "Ajouter aux favoris",
       },
       "ref": null,
       "rendered": null,
-      "type": "span",
+      "type": "i",
     },
     "type": "button",
   },
@@ -69,12 +79,12 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "children": <span
-          aria-hidden={true}
-          className="icon-ico-like"
+        "children": <i
+          aria-hidden="true"
+          className="font-icon icon-ico-like"
           title="Ajouter aux favoris"
         />,
-        "className": "no-border no-background",
+        "className": "fav-button",
         "disabled": true,
         "onClick": undefined,
         "type": "button",
@@ -85,13 +95,13 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "aria-hidden": true,
-          "className": "icon-ico-like",
+          "aria-hidden": "true",
+          "className": "font-icon icon-ico-like",
           "title": "Ajouter aux favoris",
         },
         "ref": null,
         "rendered": null,
-        "type": "span",
+        "type": "i",
       },
       "type": "button",
     },

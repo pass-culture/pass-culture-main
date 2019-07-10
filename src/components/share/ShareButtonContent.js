@@ -101,7 +101,7 @@ class ShareButtonContent extends React.PureComponent {
       >
         <span
           aria-hidden
-          className="icon-ico-share"
+          className="font-icon icon-ico-share"
           title="Partager cette offre"
         />
       </button>
