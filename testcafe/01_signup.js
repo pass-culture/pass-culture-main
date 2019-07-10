@@ -48,7 +48,7 @@ test('Je créé un compte avec un nouveau siren, je suis redirigé·e vers la pa
   const email = 'pctest0.pro93.cafe0@btmx.fr'
   const firstName = 'PC Test 0 Pro'
   const lastName = '93 Café0'
-  const password = 'pctest0.Pro93.cafe0'
+  const password = 'user@AZERTY123'
   const siren = '501106520'
 
   // then
@@ -141,7 +141,7 @@ test('Je crée un compte avec un siren déjà dans la base, je suis redirigé·e
   const email = 'pctest0.pro93.cafe1@btmx.fr'
   const firstName = 'PC Test Pro'
   const lastName = '93 Café1'
-  const password = 'pctest0.Pro93.cafe1'
+  const password = 'user@AZERTY123'
   const { siren } = offerer
   await t
     .typeText(emailInput, email)
