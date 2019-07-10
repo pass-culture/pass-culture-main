@@ -41,7 +41,7 @@ describe('src | components | pages | discovery | Discovery', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  xdescribe('constructor', () => {
+  describe('constructor', () => {
     it('should initialize state correctly', () => {
       // given
       const wrapper = shallow(<Discovery {...props} />)
@@ -51,7 +51,7 @@ describe('src | components | pages | discovery | Discovery', () => {
         atWorldsEnd: false,
         hasError: false,
         isEmpty: null,
-        isLoading: true,
+        isLoading: false,
       }
       expect(wrapper.state()).toStrictEqual(expected)
     })

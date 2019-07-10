@@ -18,7 +18,7 @@ import {
 import { recommendationNormalizer } from '../../../utils/normalizers'
 import { saveLastRecommendationsRequestTimestamp } from '../../../reducers/data'
 
-const mapStateToProps = (state, props) => {
+export const mapStateToProps = (state, props) => {
   const { match } = props
   const withBackButton = shouldShowVerso(match)
   const { readRecommendations, recommendations } = (state && state.data) || {}
@@ -33,7 +33,7 @@ const mapStateToProps = (state, props) => {
   }
 }
 
-const mapDispatchToProps = (dispatch, props) => ({
+export const mapDispatchToProps = (dispatch, props) => ({
   loadRecommendations: (
     handleRequestSuccess,
     handleRequestFail,

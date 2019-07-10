@@ -94,6 +94,7 @@ describe('src | components | pages | discovery | tests | utils', () => {
         const expected = true
         expect(result).toStrictEqual(expected)
       })
+
       it('when location equals /decouverte with a trailing slash', () => {
         // given
         const value = '/decouverte/'
