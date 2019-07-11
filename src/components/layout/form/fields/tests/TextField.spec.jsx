@@ -22,7 +22,10 @@ describe('src | components | layout | form | TextField', () => {
           <form>
             <TextField name="title" />
             <TextField name="text" />
-            <button onClick={handleSubmit} type="submit">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -35,7 +38,7 @@ describe('src | components | layout | form | TextField', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  it('should submit a form with a title text field', done => {
+  it('should submit a form with a title text field', () => {return new Promise(done => {
     // given
     const initialValues = {
       text: 'Ca parle de canapés.',
@@ -49,7 +52,10 @@ describe('src | components | layout | form | TextField', () => {
           <form>
             <TextField name="title" />
             <TextField name="text" />
-            <button onClick={handleSubmit} type="submit">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -67,9 +73,9 @@ describe('src | components | layout | form | TextField', () => {
 
     // then
     function onSubmit(formValues) {
-      expect(formValues.title).toEqual("J'irai droit au But")
-      expect(formValues.text).toEqual(initialValues.text)
+      expect(formValues.title).toStrictEqual("J'irai droit au But")
+      expect(formValues.text).toStrictEqual(initialValues.text)
       done()
     }
-  })
+  })})
 })

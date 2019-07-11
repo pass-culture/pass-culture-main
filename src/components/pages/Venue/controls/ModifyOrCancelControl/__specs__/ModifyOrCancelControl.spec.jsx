@@ -32,7 +32,7 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl ',
   })
 
   describe('mount', () => {
-    it('should redirect to offerer page and reset form when click on cancel creation form', done => {
+    it('should redirect to offerer page and reset form when click on cancel creation form', () => {return new Promise(done => {
       // given
       const props = {
         isCreatedEntity: true,
@@ -47,7 +47,10 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl ',
             <Fragment>
               <Field
                 name="foo"
-                render={({ input }) => <input name="foo" {...input} />}
+                render={({ input }) => (<input
+                  name="foo"
+                  {...input}
+                                        />)}
               />
               <ModifyOrCancelControl
                 form={form}
@@ -69,7 +72,7 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl ',
       setTimeout(() => {
         // then
         wrapper.update()
-        expect(wrapper.find("input[name='foo']").props().value).toEqual('bar')
+        expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('bar')
 
         // when
         const cancelButton = wrapper.find('button[type="reset"]')
@@ -77,13 +80,13 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl ',
 
         // then
         const expectedPush = `/structures/${props.offererId}`
-        expect(wrapper.find("input[name='foo']").props().value).toEqual('')
+        expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('')
         expect(history.push).toHaveBeenCalledWith(expectedPush)
 
         // done
         done()
       })
-    })
+    })})
 
     it('should redirect to venue page and reset form when click on cancel modified form', () => {
       // given
@@ -101,7 +104,10 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl ',
             <Fragment>
               <Field
                 name="foo"
-                render={({ input }) => <input name="foo" {...input} />}
+                render={({ input }) => (<input
+                  name="foo"
+                  {...input}
+                                        />)}
               />
               <ModifyOrCancelControl
                 form={form}
@@ -120,7 +126,7 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl ',
         .simulate('change', { target: { value: 'bar' } })
 
       // then
-      expect(wrapper.find("input[name='foo']").props().value).toEqual('bar')
+      expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('bar')
 
       // when
       const cancelButton = wrapper.find('button[type="reset"]')
@@ -130,7 +136,7 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl ',
       const expectedPush = `/structures/${props.offererId}/lieux/${
         props.venueId
       }`
-      expect(wrapper.find("input[name='foo']").props().value).toEqual('')
+      expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('')
       expect(history.push).toHaveBeenCalledWith(expectedPush)
     })
   })

@@ -67,7 +67,8 @@ export class ProductFields extends Component {
               dispatch(assignModalConfig({ extraClassName: null }))
               closeInfo()
               this.isPriceInputDeactivate = false
-            }}>
+            }}
+          >
             J'ai compris
           </button>
         </div>
@@ -93,18 +94,27 @@ export class ProductFields extends Component {
     return (
       <Fragment>
         <td title="Gratuit si vide">
-          <HiddenField name="offerId" type="hidden" />
-          <HiddenField name="venueId" type="hidden" />
+          <HiddenField
+            name="offerId"
+            type="hidden"
+          />
+          <HiddenField
+            name="venueId"
+            type="hidden"
+          />
           <PriceField
+            format={formatPrice(readOnly)}
             name="price"
             onBlur={this.onPriceBlur}
-            format={formatPrice(readOnly)}
             placeholder="Gratuit"
             readOnly={readOnly}
             title="Prix"
           />
         </td>
-        <td className="tooltiped" title="Laissez vide si pas de limite">
+        <td
+          className="tooltiped"
+          title="Laissez vide si pas de limite"
+        >
           <DateField
             maxDate={isEvent ? moment(beginningDatetime) : undefined}
             name="bookingLimitDatetime"
@@ -126,7 +136,8 @@ export class ProductFields extends Component {
                   className="button tooltip tooltip-info"
                   data-place="bottom"
                   data-tip={`<p>${tip}</p>`}
-                  data-type="info">
+                  data-type="info"
+                >
                   <Icon svg="picto-info" />
                 </span>
               )
@@ -149,7 +160,8 @@ export class ProductFields extends Component {
                   className="button tooltip tooltip-info"
                   data-place="bottom"
                   data-tip="<p>Laissez ce champ vide pour un nombre de places ou stock illimité.</p>"
-                  data-type="info">
+                  data-type="info"
+                >
                   <Icon svg="picto-info" />
                 </span>
               )
@@ -158,7 +170,10 @@ export class ProductFields extends Component {
           />
         </td>
 
-        <td className="is-small remaining-stock" id="remaining-stock">
+        <td
+          className="is-small remaining-stock"
+          id="remaining-stock"
+        >
           {remainingStocksCount}
         </td>
       </Fragment>

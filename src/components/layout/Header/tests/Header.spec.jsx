@@ -41,7 +41,7 @@ describe('src | components | Layout | Header', () => {
 
         // then
         expect(navLinks).toHaveLength(7)
-        expect(linkTitle).toEqual('Votre structure juridique')
+        expect(linkTitle).toStrictEqual('Votre structure juridique')
       })
 
       it('should display Vos structures when many offerers', () => {
@@ -60,7 +60,7 @@ describe('src | components | Layout | Header', () => {
 
         // then
         expect(navLinks).toHaveLength(7)
-        expect(linkTitle).toEqual('Vos structures juridiques')
+        expect(linkTitle).toStrictEqual('Vos structures juridiques')
       })
     })
 

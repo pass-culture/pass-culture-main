@@ -13,12 +13,14 @@ const ReturnOrSubmitControl = ({
   <div className="control">
     <div
       className="field is-grouped is-grouped-centered"
-      style={{ justifyContent: 'space-between' }}>
+      style={{ justifyContent: 'space-between' }}
+    >
       <div className="control">
         {readOnly ? (
           <NavLink
             className="button is-primary is-medium"
-            to={`/structures/${offererId}`}>
+            to={`/structures/${offererId}`}
+          >
             Terminer
           </NavLink>
         ) : (
@@ -27,7 +29,8 @@ const ReturnOrSubmitControl = ({
               'is-loading': isRequestPending,
             })}
             disabled={!canSubmit}
-            type="submit">
+            type="submit"
+          >
             {isCreatedEntity ? 'Créer' : 'Valider'}
           </button>
         )}

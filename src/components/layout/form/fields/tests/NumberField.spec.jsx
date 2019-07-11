@@ -21,7 +21,10 @@ describe('src | components | layout | form | NumberField', () => {
           <form>
             <NumberField name="foo" />
             <NumberField name="bar" />
-            <button onClick={handleSubmit} type="submit">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -34,7 +37,7 @@ describe('src | components | layout | form | NumberField', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  it('should submit a form with number field when number is a decimal with a dot', done => {
+  it('should submit a form with number field when number is a decimal with a dot', () => {return new Promise(done => {
     // given
     const initialValues = {
       bar: '3',
@@ -48,7 +51,10 @@ describe('src | components | layout | form | NumberField', () => {
           <form>
             <NumberField name="bar" />
             <NumberField name="foo" />
-            <button onClick={handleSubmit} type="submit">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -66,13 +72,13 @@ describe('src | components | layout | form | NumberField', () => {
 
     // then
     function onSubmit(formValues) {
-      expect(formValues.bar).toEqual(6)
-      expect(formValues.foo).toEqual(initialValues.foo)
+      expect(formValues.bar).toStrictEqual(6)
+      expect(formValues.foo).toStrictEqual(initialValues.foo)
       done()
     }
-  })
+  })})
 
-  it('should submit a form with number field when number is a decimal with a comma', done => {
+  it('should submit a form with number field when number is a decimal with a comma', () => {return new Promise(done => {
     // given
     const initialValues = {
       bar: '3',
@@ -86,7 +92,10 @@ describe('src | components | layout | form | NumberField', () => {
           <form>
             <NumberField name="bar" />
             <NumberField name="foo" />
-            <button onClick={handleSubmit} type="submit">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -104,9 +113,9 @@ describe('src | components | layout | form | NumberField', () => {
 
     // then
     function onSubmit(formValues) {
-      expect(formValues.bar).toEqual(6)
-      expect(formValues.foo).toEqual(initialValues.foo)
+      expect(formValues.bar).toStrictEqual(6)
+      expect(formValues.foo).toStrictEqual(initialValues.foo)
       done()
     }
-  })
+  })})
 })

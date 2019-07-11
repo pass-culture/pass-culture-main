@@ -7,7 +7,7 @@ describe('components | pages | Venue | GeoFields | sanitizeCoordinates', () => 
     // when
     let result = sanitizeCoordinates(input)
     // then
-    expect(result).toEqual(0)
+    expect(result).toStrictEqual(0)
   })
   it('should return a number when given an int', () => {
     // given
@@ -15,7 +15,7 @@ describe('components | pages | Venue | GeoFields | sanitizeCoordinates', () => 
     // when
     let result = sanitizeCoordinates(input)
     // then
-    expect(result).toEqual(input)
+    expect(result).toStrictEqual(input)
     expect(typeof result).toBe('number')
   })
   it('should return a number when given a float', () => {
@@ -24,7 +24,7 @@ describe('components | pages | Venue | GeoFields | sanitizeCoordinates', () => 
     // when
     let result = sanitizeCoordinates(input)
     // then
-    expect(result).toEqual(input)
+    expect(result).toStrictEqual(input)
     expect(typeof result).toBe('number')
   })
   it('should return a number when string representing a float', () => {
@@ -33,7 +33,7 @@ describe('components | pages | Venue | GeoFields | sanitizeCoordinates', () => 
     // when
     let result = sanitizeCoordinates(input)
     // then
-    expect(result).toEqual(32.2)
+    expect(result).toStrictEqual(32.2)
     expect(typeof result).toBe('number')
   })
   it('should translate french notation (coma) to english (dot)', () => {
@@ -42,7 +42,7 @@ describe('components | pages | Venue | GeoFields | sanitizeCoordinates', () => 
     // when
     let result = sanitizeCoordinates(input)
     // then
-    expect(result).toEqual(32.2)
+    expect(result).toStrictEqual(32.2)
     expect(typeof result).toBe('number')
   })
   it('should ignore and remove special chars', () => {
@@ -51,7 +51,7 @@ describe('components | pages | Venue | GeoFields | sanitizeCoordinates', () => 
     // when
     let result = sanitizeCoordinates(input)
     // then
-    expect(result).toEqual(322)
+    expect(result).toStrictEqual(322)
     expect(typeof result).toBe('number')
   })
   it('should return negative value for negative string value with dot', () => {
@@ -60,7 +60,7 @@ describe('components | pages | Venue | GeoFields | sanitizeCoordinates', () => 
     // when
     let result = sanitizeCoordinates(input)
     // then
-    expect(result).toEqual(-32.2)
+    expect(result).toStrictEqual(-32.2)
     expect(typeof result).toBe('number')
   })
   it('should return negative value for negative string value with comma', () => {
@@ -69,7 +69,7 @@ describe('components | pages | Venue | GeoFields | sanitizeCoordinates', () => 
     // when
     let result = sanitizeCoordinates(input)
     // then
-    expect(result).toEqual(-32.2)
+    expect(result).toStrictEqual(-32.2)
     expect(typeof result).toBe('number')
   })
 })

@@ -161,48 +161,52 @@ class UploadThumb extends Component {
               'has-image': Boolean(image),
               'no-drag': readOnly,
             })}
+            disableClick={Boolean(image || readOnly)}
             onDragEnter={this.handleDragStart}
             onDragLeave={this.handleDragStop}
             onDrop={this.handleDrop}
-            disableClick={Boolean(image || readOnly)}>
+          >
             {!image && (
               <div
                 className={`drag-n-drop ${dragging ? 'dragged' : ''}`}
-                style={{ borderRadius, width, height }}>
+                style={{ borderRadius, width, height }}
+              >
                 Cliquez ou glissez-déposez pour charger une image
               </div>
             )}
             <AvatarEditor
-              ref={this.avatarEditor}
-              width={width}
-              height={height}
-              scale={zoom}
               border={border}
               borderRadius={borderRadius}
               color={[255, 255, 255, readOnly || !image ? 1 : 0.6]}
+              height={height}
               image={image}
               onImageChange={this.onImageChange}
+              ref={this.avatarEditor}
+              scale={zoom}
+              width={width}
             />
             {!readOnly && image && (
               <div id="zoomControl">
                 <button
+                  className="change-zoom decrement"
                   onClick={this.decrement}
-                  className="change-zoom decrement">
+                >
                   <span>-</span>
                 </button>
                 <input
-                  ref={this.setZoomInput}
                   className="zoom level-left"
-                  type="range"
-                  min="1"
                   max="4"
-                  step="0.01"
-                  value={zoom}
+                  min="1"
                   onChange={this.onZoomChange}
+                  ref={this.setZoomInput}
+                  step="0.01"
+                  type="range"
+                  value={zoom}
                 />
                 <button
+                  className="change-zoom increment"
                   onClick={this.increment}
-                  className="change-zoom increment">
+                >
                   <span>+</span>
                 </button>
               </div>
@@ -220,8 +224,9 @@ class UploadThumb extends Component {
               <div className="control">
                 {readOnly && (
                   <button
+                    className="button is-primary"
                     onClick={e => this.setState({ isEdited: true })}
-                    className="button is-primary">
+                  >
                     Modifier l'image
                   </button>
                 )}
@@ -229,9 +234,10 @@ class UploadThumb extends Component {
                   !readOnly &&
                   image && (
                     <button
-                      onClick={this.onUploadClick}
                       className="button is-primary"
-                      disabled={isUploadDisabled}>
+                      disabled={isUploadDisabled}
+                      onClick={this.onUploadClick}
+                    >
                       Enregistrer
                     </button>
                   )}
@@ -239,14 +245,14 @@ class UploadThumb extends Component {
               {!readOnly && image && !this.props.image && (
                 <div className="control">
                   <button
+                    className="button is-primary is-outlined"
                     onClick={e =>
                       this.setState({
                         image: null,
                         dragging: false,
                         isUploadDisabled: false,
-                      })
-                    }
-                    className="button is-primary is-outlined">
+                      })}
+                  >
                     Retirer l'image
                   </button>
                 </div>
@@ -254,10 +260,10 @@ class UploadThumb extends Component {
               {!readOnly && hasExistingImage && (
                 <div className="control">
                   <button
+                    className="button is-primary is-outlined"
                     onClick={e =>
-                      this.setState({ isEdited: false, dragging: false })
-                    }
-                    className="button is-primary is-outlined">
+                      this.setState({ isEdited: false, dragging: false })}
+                  >
                     Annuler la modification
                   </button>
                 </div>

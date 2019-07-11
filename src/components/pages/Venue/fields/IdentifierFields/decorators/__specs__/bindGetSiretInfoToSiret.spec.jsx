@@ -40,9 +40,18 @@ describe('src | components | pages | Venue | IdentifierFields | bindGetSiretInfo
         onSubmit={onSubmit}
         render={({ handleSubmit }) => (
           <form>
-            <Field name="siret" render={({ input }) => <input {...input} />} />
-            <Field name="name" render={({ input }) => <input {...input} />} />
-            <button onClick={handleSubmit} type="submit">
+            <Field
+              name="siret"
+              render={({ input }) => <input {...input} />}
+            />
+            <Field
+              name="name"
+              render={({ input }) => <input {...input} />}
+            />
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -64,7 +73,7 @@ describe('src | components | pages | Venue | IdentifierFields | bindGetSiretInfo
         name: NAME,
         siret: SIRET,
       }
-      expect(formValues).toEqual(expectedFormValues)
+      expect(formValues).toStrictEqual(expectedFormValues)
     }
   })
 })

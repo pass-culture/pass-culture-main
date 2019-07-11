@@ -30,7 +30,7 @@ export function apiUrl(path) {
 
 function getMobileOperatingSystem() {
   if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
-    var userAgent = navigator.userAgent || navigator.vendor || window.opera
+    let userAgent = navigator.userAgent || navigator.vendor || window.opera
 
     // Windows Phone must come first because its UA also contains "Android"
     if (/windows phone/i.test(userAgent)) {
@@ -65,7 +65,7 @@ if (typeof window !== 'undefined') {
 
 export const IS_LOCALHOST = Boolean(calculatedLocalhost)
 
-var CALC_ROOT_PATH = ''
+let CALC_ROOT_PATH = ''
 if (typeof window !== 'undefined' && window.cordova) {
   document.body.className += ' cordova'
   if (MOBILE_OS === 'android') {

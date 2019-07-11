@@ -9,13 +9,16 @@ const noOperation = () => {}
 export const HiddenField = ({ name, validator }) => (
   <Field
     name={name}
-    validate={validator}
     render={({ input, meta }) => (
       <div>
-        <input type="hidden" {...input} />
+        <input
+          type="hidden"
+          {...input}
+        />
         <FieldErrors meta={meta} />
       </div>
     )}
+    validate={validator}
   />
 )
 

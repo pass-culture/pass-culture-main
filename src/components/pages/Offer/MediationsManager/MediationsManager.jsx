@@ -54,7 +54,10 @@ class MediationsManager extends Component {
         </div>
         <ul className="mediations-list">
           {mediations.map(m => (
-            <MediationItem key={m.id} mediation={m} />
+            <MediationItem
+              key={m.id}
+              mediation={m}
+            />
           ))}
         </ul>
         <p>
@@ -63,7 +66,8 @@ class MediationsManager extends Component {
               className={`button is-primary ${
                 numberOfMediations > 0 ? 'is-outlined' : ''
               }`}
-              to={`/offres/${get(offer, 'id')}/accroches/nouveau`}>
+              to={`/offres/${get(offer, 'id')}/accroches/nouveau`}
+            >
               <span className="icon">
                 <Icon
                   svg={numberOfMediations > 0 ? 'ico-stars' : 'ico-stars-w'}

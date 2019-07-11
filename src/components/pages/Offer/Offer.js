@@ -336,11 +336,13 @@ class Offer extends Component {
     return (
       <Main
         backTo={{ path: '/offres', label: 'Vos offres' }}
+        handleDataRequest={this.handleDataRequest}
         name="offer"
-        handleDataRequest={this.handleDataRequest}>
+      >
         <HeroSection
           subtitle={productName && productName.toUpperCase()}
-          title={title}>
+          title={title}
+        >
           <p className="subtitle">
             Renseignez les détails de cette offre, puis mettez-la en avant en
             ajoutant une ou plusieurs accroches.
@@ -355,14 +357,19 @@ class Offer extends Component {
 
           <Form
             action={formApiPath}
+            handleSuccess={this.handleFormSuccess}
             method={method}
             name="offer"
-            handleSuccess={this.handleFormSuccess}
             patch={formInitialValues}
             readOnly={readOnly}
             Tag={null}>
             <div className="field-group">
-              <Field isExpanded label="Titre de l'offre" name="name" required />
+              <Field
+                isExpanded
+                label="Titre de l'offre"
+                name="name"
+                required
+              />
               <Field
                 label="Type"
                 name="type"
@@ -384,9 +391,9 @@ class Offer extends Component {
                   <Field
                     label="Genre musical"
                     name="musicType"
+                    optionLabel="label"
                     options={musicOptions}
                     optionValue="code"
-                    optionLabel="label"
                     setKey="extraData"
                     type="select"
                   />
@@ -395,9 +402,9 @@ class Offer extends Component {
                     <Field
                       label="Sous genre"
                       name="musicSubType"
+                      optionLabel="label"
                       options={musicSubOptions}
                       optionValue="code"
-                      optionLabel="label"
                       setKey="extraData"
                       type="select"
                     />
@@ -410,22 +417,22 @@ class Offer extends Component {
                   <Field
                     label="Type de spectacle"
                     name="showType"
+                    optionLabel="label"
                     options={showOptions}
                     optionValue="code"
-                    optionLabel="label"
                     setKey="extraData"
                     type="select"
                   />
 
                   {get(showSubOptions, 'length') > 0 && (
                     <Field
-                      type="select"
                       label="Sous type"
                       name="showSubType"
-                      setKey="extraData"
+                      optionLabel="label"
                       options={showSubOptions}
                       optionValue="code"
-                      optionLabel="label"
+                      setKey="extraData"
+                      type="select"
                     />
                   )}
                 </Fragment>
@@ -433,17 +440,24 @@ class Offer extends Component {
               {!isCreatedEntity && product && (
                 <div className="field is-horizontal field-text">
                   <div className="field-label">
-                    <label className="label" htmlFor="input_offers_name">
+                    <label
+                      className="label"
+                      htmlFor="input_offers_name"
+                    >
                       <div className="subtitle">
                         {isEventType ? 'Dates :' : 'Stocks :'}
                       </div>
                     </label>
                   </div>
                   <div className="field-body">
-                    <div className="control" style={{ paddingTop: '0.25rem' }}>
+                    <div
+                      className="control"
+                      style={{ paddingTop: '0.25rem' }}
+                    >
                       <span
                         className="nb-dates"
-                        style={{ paddingTop: '0.25rem' }}>
+                        style={{ paddingTop: '0.25rem' }}
+                      >
                         {pluralize(
                           get(stocks, 'length'),
                           isEventType ? 'date' : 'stock'
@@ -454,7 +468,8 @@ class Offer extends Component {
                         onClick={event => {
                           event.preventDefault()
                           query.change({ gestion: '' })
-                        }}>
+                        }}
+                      >
                         <span className="icon">
                           <Icon svg="ico-calendar" />
                         </span>
@@ -492,7 +507,11 @@ class Offer extends Component {
                           {venue
                             ? "Erreur dans les données: Le lieu rattaché à cette offre n'est pas compatible avec le type de l'offre"
                             : 'Il faut obligatoirement une structure avec un lieu.'}
-                          <Field type="hidden" name="__BLOCK_FORM__" required />
+                          <Field
+                            name="__BLOCK_FORM__"
+                            required
+                            type="hidden"
+                          />
                         </p>
                       </div>
                     </div>
@@ -528,20 +547,20 @@ class Offer extends Component {
                   )}
                   {isEventType && (
                     <Field
-                      label="Durée"
-                      placeholder="HH:MM"
-                      name="durationMinutes"
-                      type="duration"
                       getDurationInHours={getDurationInHours}
                       getDurationInMinutes={getDurationInMinutes}
+                      label="Durée"
                       limitTimeInHours={DURATION_LIMIT_TIME}
+                      name="durationMinutes"
+                      placeholder="HH:MM"
+                      type="duration"
                     />
                   )}
                   <Field
                     label="Email auquel envoyer les réservations"
                     name="bookingEmail"
-                    type="email"
                     sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                    type="email"
                   />
                 </div>
                 <h2 className="main-list-title">Infos artistiques</h2>
@@ -558,19 +577,19 @@ class Offer extends Component {
 
                   {this.hasConditionalField('speaker') && (
                     <Field
-                      type="text"
                       label="Intervenant"
                       name="speaker"
                       setKey="extraData"
+                      type="text"
                     />
                   )}
 
                   {this.hasConditionalField('author') && (
                     <Field
-                      type="text"
                       label="Auteur"
                       name="author"
                       setKey="extraData"
+                      type="text"
                     />
                   )}
 
@@ -620,26 +639,32 @@ class Offer extends Component {
             <hr />
             <div
               className="field is-grouped is-grouped-centered"
-              style={{ justifyContent: 'space-between' }}>
+              style={{ justifyContent: 'space-between' }}
+            >
               <div className="control">
                 {readOnly ? (
                   <button
                     className="button is-secondary is-medium"
-                    onClick={() => query.changeToModification()}>
+                    onClick={() => query.changeToModification()}
+                  >
                     Modifier l'offre
                   </button>
                 ) : (
                   <button
                     className="button is-secondary is-medium"
                     id="cancel-button"
-                    onClick={() => query.changeToReadOnly({}, { id: offerId })}>
+                    onClick={() => query.changeToReadOnly({}, { id: offerId })}
+                  >
                     Annuler
                   </button>
                 )}
               </div>
               <div className="control">
                 {readOnly ? (
-                  <NavLink to="/offres" className="button is-primary is-medium">
+                  <NavLink
+                    className="button is-primary is-medium"
+                    to="/offres"
+                  >
                     Terminer{' '}
                     {isModifiedEntity && !isOfferActive && 'et activer'}
                   </NavLink>

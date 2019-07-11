@@ -10,7 +10,7 @@ describe('src | components | pages | Offerers | decorators | createVenueForOffe
 
     // then
     const expected = ""
-    expect(result).toEqual(expected)
+    expect(result).toStrictEqual(expected)
   })
 
   it("should return an url with first offerer's id when two offerers are given", () => {
@@ -22,6 +22,6 @@ describe('src | components | pages | Offerers | decorators | createVenueForOffe
 
     // then
     const expected = "/structures/CQ/lieux/creation"
-    expect(result).toEqual(expected)
+    expect(result).toStrictEqual(expected)
   })
 })

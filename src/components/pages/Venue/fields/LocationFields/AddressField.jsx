@@ -26,13 +26,15 @@ export const AddressFieldRender = ({className, disabled, form, id, innerClassNam
       'is-label-aligned': label,
       'is-read-only': readOnly,
     })}
-    id={id}>
+    id={id}
+  >
     <label
+      className={classnames('field-label', {empty: !label})}
       htmlFor={name}
-      className={classnames('field-label', {empty: !label})}>
+    >
       {label && (
         <span>
-            <span>{label}</span>
+          <span>{label}</span>
           {required && !readOnly && (
             <span className="field-asterisk">*</span>
           )}
@@ -45,7 +47,8 @@ export const AddressFieldRender = ({className, disabled, form, id, innerClassNam
           className={classnames(
             'field-inner flex-columns items-center',
             innerClassName
-          )}>
+          )}
+        >
           <LocationViewer
             {...input}
             {...addressProps}
@@ -67,9 +70,9 @@ export const AddressFieldRender = ({className, disabled, form, id, innerClassNam
           />
         </div>
       </div>
-      <FieldErrors meta={meta}/>
+      <FieldErrors meta={meta} />
     </div>
-    <div/>
+    <div />
   </div>
 )
 
@@ -91,11 +94,10 @@ export const AddressField = ({
                                validate,
                                ...addressProps
                              }) => (
-  <Field
-    format={format}
-    name={name}
-    validate={composeValidators(validate, getRequiredValidate(required))}
-    render={AddressFieldRender({
+                               <Field
+                                 format={format}
+                                 name={name}
+                                 render={AddressFieldRender({
       className,
       disabled,
       form,
@@ -108,7 +110,8 @@ export const AddressField = ({
       required,
       addressProps
     })}
-  />
+                                 validate={composeValidators(validate, getRequiredValidate(required))}
+                               />
 )
 
 AddressField.defaultProps = {

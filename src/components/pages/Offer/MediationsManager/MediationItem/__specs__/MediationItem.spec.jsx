@@ -37,10 +37,10 @@ describe('src | components | pages | Offer | MediationItem', () => {
       const form = wrapper.find(Form)
       expect(form).toHaveLength(1)
       expect(form.prop('action')).toBe('/mediations/AE')
-      expect(form.prop('handleSuccessNotification')).toBe(null)
+      expect(form.prop('handleSuccessNotification')).toBeNull()
       expect(form.prop('isAutoSubmit')).toBe(true)
       expect(form.prop('name')).toBe('mediation-AE')
-      expect(form.prop('patch')).toEqual({id: 'AE', isActive: true, thumbUrl: 'http://example.com/image.jpg'})
+      expect(form.prop('patch')).toStrictEqual({id: 'AE', isActive: true, thumbUrl: 'http://example.com/image.jpg'})
       expect(form.prop('Tag')).toBe('li')
     })
 

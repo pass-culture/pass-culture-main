@@ -290,9 +290,9 @@ class Mediation extends PureComponent {
                 <div className="columns crop-explain">
                   <div className="column">
                     <img
+                      alt="Explication"
                       src="/bad-crop.png"
                       title="Exemple de cadrage"
-                      alt="Explication"
                     />
                   </div>
                   <div className="column explain-text explain-bad">
@@ -303,9 +303,9 @@ class Mediation extends PureComponent {
                   </div>
                   <div className="column">
                     <img
+                      alt="Explication"
                       src="/good-crop.png"
                       title="Exemple de cadrage"
-                      alt="Explication"
                     />
                   </div>
                   <div className="column explain-text explain-good">
@@ -330,12 +330,12 @@ class Mediation extends PureComponent {
                 height={IMAGE_UPLOAD_SIZE}
                 image={image || imageUrl}
                 index={0}
-                width={IMAGE_UPLOAD_SIZE}
+                onImageChange={this.onImageChange}
                 readOnly
                 required
-                onImageChange={this.onImageChange}
                 storeKey="mediations"
                 type="thumb"
+                width={IMAGE_UPLOAD_SIZE}
               />
             </div>
           </div>
@@ -345,11 +345,11 @@ class Mediation extends PureComponent {
             <div className="field">
               <label className="label">Crédit photo</label>
               <input
-                id="mediation-credit"
-                type="text"
                 className="input is-rounded"
-                value={credit}
+                id="mediation-credit"
                 onChange={e => this.setState({ credit: e.target.value })}
+                type="text"
+                value={credit}
               />
             </div>
           </div>
@@ -357,11 +357,13 @@ class Mediation extends PureComponent {
         <hr />
         <div
           className="field is-grouped is-grouped-centered"
-          style={{ justifyContent: 'space-between' }}>
+          style={{ justifyContent: 'space-between' }}
+        >
           <div className="control">
             <NavLink
+              className="button is-primary is-outlined is-medium"
               to={backPath}
-              className="button is-primary is-outlined is-medium">
+            >
               Annuler
             </NavLink>
           </div>
@@ -371,7 +373,8 @@ class Mediation extends PureComponent {
                 'is-loading': isLoading,
               })}
               disabled={!image}
-              onClick={this.onSubmit}>
+              onClick={this.onSubmit}
+            >
               Valider
             </button>
           </div>
@@ -381,9 +384,10 @@ class Mediation extends PureComponent {
 
     return (
       <Main
-        name="mediation"
         backTo={{ path: backPath, label: "Revenir à l'offre" }}
-        handleDataRequest={this.handleDataRequest}>
+        handleDataRequest={this.handleDataRequest}
+        name="mediation"
+      >
         <HeroSection title={`${isNew ? 'Créez' : 'Modifiez'} une accroche`}>
           <p className="subtitle">
             Ajoutez un visuel marquant pour mettre en avant cette offre.
@@ -416,17 +420,18 @@ class Mediation extends PureComponent {
           <div className="field is-grouped">
             <p className="control is-expanded">
               <input
-                type="url"
                 className="input is-rounded"
-                placeholder="URL du fichier"
-                value={inputUrl}
                 onChange={this.onUrlChange}
+                placeholder="URL du fichier"
+                type="url"
+                value={inputUrl}
               />
             </p>
             <p className="control">
               <button
                 className="button is-primary is-outlined is-medium"
-                onClick={this.onOkClick}>
+                onClick={this.onOkClick}
+              >
                 OK
               </button>
             </p>

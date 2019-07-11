@@ -2,7 +2,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import Bookings from '../Bookings'
-import DownloadButtonContainer from "../../../layout/DownloadButton/DownloadButtonContainer";
+import DownloadButtonContainer from "../../../layout/DownloadButton/DownloadButtonContainer"
 
 describe('src | components | pages | Bookings', () => {
   describe('snapshot', () => {
@@ -22,7 +22,7 @@ describe('src | components | pages | Bookings', () => {
       }
 
       // when
-      const wrapper = shallow(<Bookings {...props}/>)
+      const wrapper = shallow(<Bookings {...props} />)
 
       // then
       const downloadButton = wrapper.find(DownloadButtonContainer)
@@ -37,7 +37,7 @@ describe('src | components | pages | Bookings', () => {
       }
 
       // when
-      const wrapper = shallow(<Bookings {...props}/>)
+      const wrapper = shallow(<Bookings {...props} />)
 
       // then
       const downloadButton = wrapper.find(DownloadButtonContainer)

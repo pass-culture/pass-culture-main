@@ -68,7 +68,7 @@ describe('src | components | pages | Profil', () => {
     innerForm.simulate('submit')
 
     // then
-    expect(dispatch.mock.calls[0][0]).toEqual({
+    expect(dispatch.mock.calls[0][0]).toStrictEqual({
       config: {
         apiPath: '/users/current',
         body: {

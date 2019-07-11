@@ -10,10 +10,12 @@ const SelectSourceField = ({ handleChange, providers, venueProviders }) => ({
     {...input}
     className="field-select"
     id="provider-options"
-    onChange={event => handleChange(event, input)}>
+    onChange={event => handleChange(event, input)}
+  >
     <option
       key={DEFAULT_PROVIDER_OPTION.id}
-      value={JSON.stringify(DEFAULT_PROVIDER_OPTION)}>
+      value={JSON.stringify(DEFAULT_PROVIDER_OPTION)}
+    >
       {DEFAULT_PROVIDER_OPTION.name}
     </option>
     {providers.map((provider, index) => {
@@ -26,7 +28,8 @@ const SelectSourceField = ({ handleChange, providers, venueProviders }) => ({
         <option
           disabled={isProviderDisabled}
           key={index}
-          value={JSON.stringify(provider)}>
+          value={JSON.stringify(provider)}
+        >
           {provider.name}
         </option>
       )

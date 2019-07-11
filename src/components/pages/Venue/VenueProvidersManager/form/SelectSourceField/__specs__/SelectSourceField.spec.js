@@ -30,16 +30,16 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Sele
     expect(options).toHaveLength(3)
     expect(selectRendered.prop('className')).toBe('field-select')
     expect(selectRendered.prop('id')).toBe('provider-options')
-    expect(options.at(0).prop('value')).toEqual(
+    expect(options.at(0).prop('value')).toStrictEqual(
       '{"id":"default","name":"Choix de la source"}'
     )
-    expect(options.at(1).prop('value')).toEqual(
+    expect(options.at(1).prop('value')).toStrictEqual(
       '{"id":"A","name":"A","requireProviderIdentifier":false}'
     )
     expect(options.at(1).prop('disabled')).toBe(true)
-    expect(options.at(2).prop('value')).toEqual(
+    expect(options.at(2).prop('value')).toStrictEqual(
       '{"id":"B","name":"B","requireProviderIdentifier":true}'
     )
-    expect(options.at(2).prop('disabled')).toEqual(false)
+    expect(options.at(2).prop('disabled')).toStrictEqual(false)
   })
 })

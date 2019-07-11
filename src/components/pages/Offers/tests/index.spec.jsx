@@ -60,7 +60,7 @@ describe('src | components | pages | Offers', () => {
         .find('RawOffers')
         .props()
         .query.parse()
-      expect(queryParams).toEqual({})
+      expect(queryParams).toStrictEqual({})
     })
   })
 })

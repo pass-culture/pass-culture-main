@@ -11,11 +11,18 @@ const MediationItem = ({ mediation }) => {
       name={`mediation-${id}`}
       patch={mediation}
       Tag="li">
-      <img alt={`accroche-${id}`} disabled={!isActive} src={thumbUrl} />
+      <img
+        alt={`accroche-${id}`}
+        disabled={!isActive}
+        src={thumbUrl}
+      />
       <br />
       <br />
       <div className="columns is-centered">
-        <Field name="isActive" type="checkbox" />
+        <Field
+          name="isActive"
+          type="checkbox"
+        />
       </div>
     </Form>
   )

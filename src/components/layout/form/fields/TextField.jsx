@@ -72,7 +72,6 @@ export class TextField extends Component {
       <Field
         format={format}
         name={name}
-        validate={composeValidators(validate, getRequiredValidate(required))}
         parse={parse || createParseNumberValue(type)}
         render={({ input, meta }) => {
           const inputType = readOnly ? 'text' : type
@@ -83,10 +82,12 @@ export class TextField extends Component {
                 'is-label-aligned': label,
                 'is-read-only': readOnly,
               })}
-              id={id}>
+              id={id}
+            >
               <label
+                className={classnames('field-label', { empty: !label })}
                 htmlFor={name}
-                className={classnames('field-label', { empty: !label })}>
+              >
                 {label && (
                   <span>
                     <span>{label}</span>
@@ -102,7 +103,8 @@ export class TextField extends Component {
                     className={classnames(
                       'field-inner flex-columns items-center',
                       innerClassName
-                    )}>
+                    )}
+                  >
                     <input
                       id={name}
                       {...input}
@@ -128,6 +130,7 @@ export class TextField extends Component {
             </div>
           )
         }}
+        validate={composeValidators(validate, getRequiredValidate(required))}
       />
     )
   }

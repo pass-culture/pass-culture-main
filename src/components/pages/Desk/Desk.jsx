@@ -179,7 +179,11 @@ class Desk extends React.PureComponent {
     const { booking, level, message } = this.getValuesFromStatus(
       this.state.status
     )
-    return <DeskState booking={booking} level={level} message={message} />
+    return (<DeskState
+      booking={booking}
+      level={level}
+      message={message}
+            />)
   }
 
   componentDidMount() {
@@ -208,28 +212,30 @@ class Desk extends React.PureComponent {
 
           <input
             className="input is-undefined"
-            type="text"
-            ref={this.getRef()}
+            maxLength={CODE_MAX_LENGTH}
             name="code"
             onChange={this.handleCodeChange}
-            maxLength={CODE_MAX_LENGTH}
+            ref={this.getRef()}
+            type="text"
             value={this.state.code}
           />
 
           <button
-            disabled={this.state.status !== CODE_VERIFICATION_SUCCESS}
             className="button"
+            disabled={this.state.status !== CODE_VERIFICATION_SUCCESS}
+            onClick={() => this.handleCodeRegistration(this.state.code)}
             type="submit"
-            onClick={() => this.handleCodeRegistration(this.state.code)}>
+          >
             Valider
           </button>
 
           {this.renderChildComponent()}
 
           <NavLink
-            id="exitlink"
             className="button is-primary is-medium is-pulled-right"
-            to="/accueil">
+            id="exitlink"
+            to="/accueil"
+          >
             Terminer
           </NavLink>
         </div>

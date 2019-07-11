@@ -8,9 +8,15 @@ import Main from '../layout/Main'
 
 const LostPasswordPage = ({ change, envoye, errors, token }) => {
   return (
-    <Main name="sign-in" fullscreen>
+    <Main
+      fullscreen
+      name="sign-in"
+    >
       <div className="logo-side">
-        <Logo noLink signPage />
+        <Logo
+          noLink
+          signPage
+        />
       </div>
       <div className="container">
         <div className="columns">
@@ -66,15 +72,15 @@ const LostPasswordPage = ({ change, envoye, errors, token }) => {
                   <Form
                     action="/users/new-password"
                     BlockComponent={null}
-                    layout="vertical"
-                    name="user"
                     handleSuccessNotification={null}
                     handleSuccessRedirect={() => '/mot-de-passe-perdu?change=1'}
+                    layout="vertical"
+                    name="user"
                     patch={{ token }}>
                     <Field
-                      type="hidden"
                       name="token"
                       storeValue={() => token}
+                      type="hidden"
                     />
 
                     <Field
@@ -92,8 +98,9 @@ const LostPasswordPage = ({ change, envoye, errors, token }) => {
                     </div>
                     <div className="field buttons-field">
                       <SubmitButton
+                        className="button is-primary is-outlined"
                         id="changePassword"
-                        className="button is-primary is-outlined">
+                      >
                         Envoyer
                       </SubmitButton>
                     </div>
@@ -121,12 +128,12 @@ const LostPasswordPage = ({ change, envoye, errors, token }) => {
                   <Form
                     action="/users/reset-password"
                     BlockComponent={null}
-                    layout="vertical"
-                    name="user"
                     handleSuccessNotification={null}
                     handleSuccessRedirect={() =>
                       '/mot-de-passe-perdu?envoye=1'
-                    }>
+                    }
+                    layout="vertical"
+                    name="user">
                     <Field
                       label="Adresse e-mail"
                       name="email"
@@ -137,8 +144,9 @@ const LostPasswordPage = ({ change, envoye, errors, token }) => {
 
                     <div className="field buttons-field">
                       <SubmitButton
+                        className="button is-primary is-outlined"
                         id="sendTokenByMail"
-                        className="button is-primary is-outlined">
+                      >
                         Envoyer
                       </SubmitButton>
                     </div>

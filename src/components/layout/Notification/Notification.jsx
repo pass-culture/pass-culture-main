@@ -41,37 +41,45 @@ class Notification extends Component {
 
     return (
       <div
-      className={classnames(`notification is-${type || 'info'}`, {
+        className={classnames(`notification is-${type || 'info'}`, {
         fullscreen: isFullscreen
-      })}>
+      })}
+      >
         <div
-        className={classnames('is-flex fullscreen', {
+          className={classnames('is-flex fullscreen', {
           'small-padding': !isFullscreen,
-        })}>
+        })}
+        >
           <div className="notification-description">
             <Icon svg={svg} />
             <span className="ml8 mb6">{text}</span>
           </div>
           <div className="notification-action-links">
             {url && (
-              <a className="close pl12" href={url}>{urlLabel}</a>
+              <a
+                className="close pl12"
+                href={url}
+              >{urlLabel}
+              </a>
             )}
             {tooltip ? (
               <span
-              className={classnames({
+                className={classnames({
                 'has-text-weight-semibold tooltip small-padding is-2': !isFullscreen,
               })}
-              data-place={tooltip.place}
-              data-tip={tooltip.tip}
-              data-type={tooltip.type}>
-              {tooltip.children}
+                data-place={tooltip.place}
+                data-tip={tooltip.tip}
+                data-type={tooltip.type}
+              >
+                {tooltip.children}
               </span>
             ) : (
               <button
-              className="close pl12"
-              onClick={this.dispatchCloseNotification}>
-              {url ? 'Fermer' : 'OK'}
-            </button>
+                className="close pl12"
+                onClick={this.dispatchCloseNotification}
+              >
+                {url ? 'Fermer' : 'OK'}
+              </button>
             )}
           </div>
         </div>

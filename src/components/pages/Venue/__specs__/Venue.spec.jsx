@@ -128,7 +128,7 @@ describe('src | components | pages | Venue', () => {
         const wrapper = shallow(<Venue {...props} />)
 
         // then
-        expect(wrapper.prop('backTo')).toEqual({
+        expect(wrapper.prop('backTo')).toStrictEqual({
           label: 'Maison du chocolat',
           path: '/structures/APEQ',
         })
@@ -189,7 +189,7 @@ describe('src | components | pages | Venue', () => {
     })
   })
 
-  describe('Form Success', () => {
+  describe('form Success', () => {
     describe('handleFormSuccess', () => {
       describe('when creating a venue', () => {
         beforeEach(() => {

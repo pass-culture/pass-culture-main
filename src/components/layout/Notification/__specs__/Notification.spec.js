@@ -20,8 +20,7 @@ describe('src | components | layout | Notification', () => {
     it('should match snapshot', () => {
       // when
       const wrapper = shallow(
-        <Notification {...props}>
-        </Notification>
+        <Notification {...props} />
       )
 
       // then
@@ -41,7 +40,7 @@ describe('src | components | layout | Notification', () => {
         }
 
         // when
-        const wrapper = shallow(<Notification {...props}/>)
+        const wrapper = shallow(<Notification {...props} />)
         const link = wrapper.find('a')
         const icon = wrapper.find(Icon)
         const firstDiv = wrapper.find('div').at(0)
@@ -52,7 +51,7 @@ describe('src | components | layout | Notification', () => {
         expect(link).toHaveLength(0)
         expect(firstDiv.prop('className')).toBe('notification is-warning')
         expect(icon.prop('svg')).toBe('picto-warning')
-        expect(button.text()).toEqual('OK')
+        expect(button.text()).toStrictEqual('OK')
       })
     })
 
@@ -68,7 +67,7 @@ describe('src | components | layout | Notification', () => {
           }
 
         // when
-        const wrapper = shallow(<Notification {...props}/>)
+        const wrapper = shallow(<Notification {...props} />)
         const link = wrapper.find('a')
         const icon = wrapper.find(Icon)
         const firstDiv = wrapper.find('div').at(0)
@@ -78,9 +77,9 @@ describe('src | components | layout | Notification', () => {
         expect(icon).toHaveLength(1)
         expect(firstDiv.prop('className')).toBe('notification is-info')
         expect(icon.prop('svg')).toBe('picto-info')
-        expect(link.props().href).toEqual(props.notification.url)
-        expect(link.text()).toEqual(props.notification.urlLabel)
-        expect(button.text()).toEqual('Fermer')
+        expect(link.props().href).toStrictEqual(props.notification.url)
+        expect(link.text()).toStrictEqual(props.notification.urlLabel)
+        expect(button.text()).toStrictEqual('Fermer')
       })
       it('should close notification popup when clicking on button', () => {
         // given
@@ -93,7 +92,7 @@ describe('src | components | layout | Notification', () => {
           }
 
         // when
-        const wrapper = shallow(<Notification {...props}/>)
+        const wrapper = shallow(<Notification {...props} />)
         wrapper.find('button').simulate('click')
         const expected = {"type": "CLOSE_NOTIFICATION"}
 
@@ -115,7 +114,7 @@ describe('src | components | layout | Notification', () => {
           }
 
         // when
-        const wrapper = shallow(<Notification {...props}/>)
+        const wrapper = shallow(<Notification {...props} />)
         const icon = wrapper.find(Icon)
         const spans = wrapper.find('span')
         const button = wrapper.find('button')
@@ -123,7 +122,7 @@ describe('src | components | layout | Notification', () => {
         // then
         expect(button).toHaveLength(0)
         expect(icon.prop('svg')).toBe('picto-tip')
-        expect(spans.at(1).prop('data-tip')).toEqual(props.notification.tooltip.tip)
+        expect(spans.at(1).prop('data-tip')).toStrictEqual(props.notification.tooltip.tip)
       })
     })
   })

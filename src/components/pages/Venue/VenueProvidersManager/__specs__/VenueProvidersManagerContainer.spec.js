@@ -24,7 +24,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       const result = mapStateToProps(state, props)
 
       // then
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         providers: [
           { id: 'AF', localClass: 'a' },
           { id: 'AG', localClass: 'b' },
@@ -101,14 +101,14 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         functions.loadProvidersAndVenueProviders()
 
         // then
-        expect(dispatch.mock.calls[0][0]).toEqual({
+        expect(dispatch.mock.calls[0][0]).toStrictEqual({
           config: {
             apiPath: '/providers',
             method: 'GET',
           },
           type: 'REQUEST_DATA_GET_/PROVIDERS',
         })
-        expect(dispatch.mock.calls[1][0]).toEqual({
+        expect(dispatch.mock.calls[1][0]).toStrictEqual({
           config: {
             apiPath: '/venueProviders?venueId=AE',
             method: 'GET',

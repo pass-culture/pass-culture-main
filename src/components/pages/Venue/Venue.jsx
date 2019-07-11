@@ -129,19 +129,24 @@ class Venue extends Component {
     return (
       <Main
         backTo={this.buildBackToInfos(offererName, initialName, offererId)}
+        handleDataRequest={noop}
         name="venue"
-        handleDataRequest={noop}>
-        <HeroSection subtitle={initialName} title="Lieu">
+      >
+        <HeroSection
+          subtitle={initialName}
+          title="Lieu"
+        >
           {isCreatedEntity && (
             <p className="subtitle">Ajoutez un lieu où accéder à vos offres.</p>
           )}
 
           {this.checkIfVenueExists(initialId) && !isCreatedEntity && (
             <NavLink
+              className="cta button is-primary"
               to={`/offres/creation?lieu=${initialId}`}
-              className="cta button is-primary">
+            >
               <span className="icon">
-                <Icon svg="ico-offres-w"/>
+                <Icon svg="ico-offres-w" />
               </span>
               <span>Créer une offre</span>
             </NavLink>
@@ -149,7 +154,7 @@ class Venue extends Component {
         </HeroSection>
 
         {!isCreatedEntity && (
-          <VenueProvidersManagerContainer venue={formInitialValues}/>
+          <VenueProvidersManagerContainer venue={formInitialValues} />
         )}
 
         {showForm && (
@@ -185,7 +190,10 @@ class Venue extends Component {
                 fieldReadOnlyBecauseFrozenFormSiretOnModification
 
               return (
-                <form onSubmit={handleSubmit} name="venue">
+                <form
+                  name="venue"
+                  onSubmit={handleSubmit}
+                >
                   <IdentifierFields
                     fieldReadOnlyBecauseFrozenFormSiret={
                       fieldReadOnlyBecauseFrozenFormSiret
@@ -217,19 +225,20 @@ class Venue extends Component {
                     }
                     readOnly={readOnly}
                   />
-                  <hr/>
+                  <hr />
                   <div
                     className="field is-grouped is-grouped-centered"
-                    style={{justifyContent: 'space-between'}}>
+                    style={{justifyContent: 'space-between'}}
+                  >
                     <ModifyOrCancelControl
                       form={form}
                       history={history}
                       isCreatedEntity={isCreatedEntity}
                       offererId={offererId}
-                      venueId={venueId}
                       readOnly={readOnly}
+                      venueId={venueId}
                     />
-                    {readOnly && <CreateControl venueId={venueId}/>}
+                    {readOnly && <CreateControl venueId={venueId} />}
                     <ReturnOrSubmitControl
                       canSubmit={canSubmit}
                       isCreatedEntity={isCreatedEntity}

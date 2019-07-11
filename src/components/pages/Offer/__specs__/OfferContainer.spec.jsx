@@ -25,7 +25,7 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
       const result = mapStateToProps(state, props)
 
       // then
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         formInitialValues: expect.any(Object),
         formOffererId: 'BA',
         formVenueId: 'DA',

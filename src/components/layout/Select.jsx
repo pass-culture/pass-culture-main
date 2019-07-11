@@ -12,12 +12,19 @@ const Select = ({
     <select
       className={className || 'select'}
       onChange={onOptionClick}
-      value={value || defaultLabel}>
-      <option key={-1} disabled>
+      value={value || defaultLabel}
+    >
+      <option
+        disabled
+        key={-1}
+      >
         {defaultLabel}
       </option>
       {options.map(({ label, value }, index) => (
-        <option key={index} value={value}>
+        <option
+          key={index}
+          value={value}
+        >
           {label}
         </option>
       ))}

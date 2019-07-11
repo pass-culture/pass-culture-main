@@ -2076,6 +2076,6 @@ describe('selectOfferById', () => {
     const offer = selectOfferById(state, offerId)
 
     // Then
-    expect(offer.id).toEqual(offerId)
+    expect(offer.id).toStrictEqual(offerId)
   })
 })

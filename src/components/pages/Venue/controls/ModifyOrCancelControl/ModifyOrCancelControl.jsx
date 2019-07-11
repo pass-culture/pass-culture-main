@@ -15,7 +15,8 @@ const ModifyOrCancelControl = ({
       <NavLink
         className="button is-secondary is-medium"
         id="modify-venue"
-        to={`/structures/${offererId}/lieux/${venueId}?modification`}>
+        to={`/structures/${offererId}/lieux/${venueId}?modification`}
+      >
         Modifier le lieu
       </NavLink>
     ) : (
@@ -28,7 +29,8 @@ const ModifyOrCancelControl = ({
             : `/structures/${offererId}/lieux/${venueId}`
           history.push(next)
         }}
-        type="reset">
+        type="reset"
+      >
         Annuler
       </button>
     )}
@@ -44,8 +46,8 @@ ModifyOrCancelControl.propTypes = {
   history: PropTypes.object.isRequired,
   isCreatedEntity: PropTypes.bool.isRequired,
   offererId: PropTypes.string.isRequired,
-  venueId: PropTypes.string,
   readOnly: PropTypes.bool.isRequired,
+  venueId: PropTypes.string,
 }
 
 export default ModifyOrCancelControl

@@ -89,8 +89,8 @@ class EditAndDeleteControl extends Component {
             className="button is-small is-secondary edit-stock"
             id={`edit-stock-${stockId}-button`}
             onClick={() =>
-              query.changeToModification(null, { id: stockId, key: 'stock' })
-            }>
+              query.changeToModification(null, { id: stockId, key: 'stock' })}
+          >
             <span className="icon">
               <Icon svg="ico-pen-r" />
             </span>
@@ -100,8 +100,9 @@ class EditAndDeleteControl extends Component {
           {!isDeleting && (
             <button
               className="button is-small is-secondary delete-stock"
+              onClick={this.onDeleteClick}
               style={{ width: '100%' }}
-              onClick={this.onDeleteClick}>
+            >
               <span className="icon">
                 <Icon svg="ico-close-r" />
               </span>
@@ -115,11 +116,11 @@ class EditAndDeleteControl extends Component {
 
 EditAndDeleteControl.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  formInitialValues: PropTypes.object.isRequired,
+  handleSetErrors: PropTypes.func.isRequired,
   isEvent: PropTypes.bool.isRequired,
   query: PropTypes.object.isRequired,
   stock: PropTypes.object.isRequired,
-  formInitialValues: PropTypes.object.isRequired,
-  handleSetErrors: PropTypes.func.isRequired,
 }
 
 export default withFrenchQueryRouter(EditAndDeleteControl)

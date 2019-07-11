@@ -13,7 +13,10 @@ const Link = props => {
   if (typeof props.href === 'undefined' && props.onClick) {
     return <button {...props} />
   } else {
-    return <LinkComponent {...linkProps} to={props.href} />
+    return (<LinkComponent
+      {...linkProps}
+      to={props.href}
+            />)
   }
 }
 

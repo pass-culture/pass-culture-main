@@ -64,33 +64,43 @@ class Profil extends React.Component {
     const backTo = { path: '/accueil', label: 'Accueil' }
 
     return (
-      <Main name="profile" backTo={backTo}>
+      <Main
+        backTo={backTo}
+        name="profile"
+      >
         <HeroSection title="Profil" />
         <Form
-          onSubmit={this.handleOnSubmit}
           initialValues={currentUser}
+          onSubmit={this.handleOnSubmit}
           render={({ handleSubmit }) => (
             <form onSubmit={handleSubmit}>
               <div>
                 <div className="field-profil-input">
                   <TextField
-                    name="publicName"
                     label="Nom :"
+                    name="publicName"
                     placeholder="3 caractères minimum"
                     required
                   />
-                  <TextField name="email" type="email" label="E-mail :" required />
+                  <TextField
+                    label="E-mail :"
+                    name="email"
+                    required
+                    type="email"
+                  />
                 </div>
 
                 <div
                   className="field is-grouped"
-                  style={{ justifyContent: 'space-between' }}>
+                  style={{ justifyContent: 'space-between' }}
+                >
                   <div className="control">
                     <button
                       className={classnames('button is-primary is-medium', {
                         'is-loading': isLoading,
                       })}
-                      type="submit">
+                      type="submit"
+                    >
                       Enregistrer
                     </button>
                   </div>

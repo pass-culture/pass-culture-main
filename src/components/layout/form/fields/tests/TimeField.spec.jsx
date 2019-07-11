@@ -22,7 +22,10 @@ describe('src | components | layout | form | TimeField', () => {
           <form>
             <DateField name="myDate" />
             <TimeField name="myTime" />
-            <button onClick={handleSubmit} type="submit">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -35,7 +38,7 @@ describe('src | components | layout | form | TimeField', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  it('should submit a form with a time', done => {
+  it('should submit a form with a time', () => {return new Promise(done => {
     // given
     const initialValues = {
       myDate: '2019-04-27T20:00:00Z',
@@ -48,7 +51,10 @@ describe('src | components | layout | form | TimeField', () => {
           <form>
             <DateField name="myDate" />
             <TimeField name="myTime" />
-            <button onClick={handleSubmit} type="submit">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -65,9 +71,9 @@ describe('src | components | layout | form | TimeField', () => {
 
     // then
     function onSubmit(formValues) {
-      expect(formValues.myDate).toEqual('2019-04-27T20:00:00Z')
-      expect(formValues.myTime).toEqual('03:45')
+      expect(formValues.myDate).toStrictEqual('2019-04-27T20:00:00Z')
+      expect(formValues.myTime).toStrictEqual('03:45')
       done()
     }
-  })
+  })})
 })

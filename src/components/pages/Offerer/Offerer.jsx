@@ -87,9 +87,13 @@ class Offerer extends Component {
     return (
       <Main
         backTo={{ label: 'Vos structures juridiques', path: '/structures' }}
+        handleDataRequest={this.handleDataRequest}
         name="offerer"
-        handleDataRequest={this.handleDataRequest}>
-        <HeroSection subtitle={get(offerer, 'name')} title="Structure">
+      >
+        <HeroSection
+          subtitle={get(offerer, 'name')}
+          title="Structure"
+        >
           <p className="subtitle">
             Détails de la structure rattachée, des lieux et des fournisseurs de
             ses offres.
@@ -98,7 +102,6 @@ class Offerer extends Component {
 
         <Form
           action={`/offerers/${get(offerer, 'id') || ''}`}
-          name="offerer"
           className="section"
           formatPatch={patch =>
             formatPatch(
@@ -106,12 +109,13 @@ class Offerer extends Component {
               patchConfig,
               OFFERER_CREATION_PATCH_KEYS,
               OFFERER_MODIFICATION_PATCH_KEYS
-            )
-          }
-          handleSuccess={this.handleSuccess}
+            )}
           handleFail={this.handleFail}
+          handleSuccess={this.handleSuccess}
+          name="offerer"
           patch={offerer}
-          readOnly={readOnly}>
+          readOnly={readOnly}
+        >
           <div className="section">
             <div className="field-group">
               <Field
@@ -160,8 +164,8 @@ class Offerer extends Component {
                 isExpanded
                 label="BIC"
                 name="bic"
-                type="bic"
                 readOnly={areBankInfosReadOnly}
+                type="bic"
               />
               <Field
                 className={classnames({
@@ -170,8 +174,8 @@ class Offerer extends Component {
                 isExpanded
                 label="IBAN"
                 name="iban"
-                type="iban"
                 readOnly={areBankInfosReadOnly}
+                type="iban"
               />
             </div>
             {isCreatedEntity ? (

@@ -231,7 +231,8 @@ class LocationViewer extends Component {
         highlighted,
         placeholder,
       })}
-      key={id}>
+      key={id}
+    >
       {label}
     </div>
   )
@@ -300,16 +301,20 @@ class LocationViewer extends Component {
     return (
       <div className="location-viewer">
         {this.renderInput()}
-        <Map center={[latitude, longitude]} zoom={zoom} className="map">
+        <Map
+          center={[latitude, longitude]}
+          className="map"
+          zoom={zoom}
+        >
           <TileLayer url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png" />
           {marker && (
             <Marker
+              alt={[marker.latitude, marker.longitude].join('-')}
               draggable={!readOnly}
+              icon={markerIcon}
               onDragend={this.onMarkerDragend}
               position={[marker.latitude, marker.longitude]}
-              icon={markerIcon}
               ref={this.refmarker}
-              alt={[marker.latitude, marker.longitude].join('-')}
             />
           )}
         </Map>

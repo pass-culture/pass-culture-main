@@ -41,7 +41,7 @@ describe('src | components | pages | Offerers | OffererItemContainer', () => {
           "validationToken": null
         }]
       }
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
   })
 })

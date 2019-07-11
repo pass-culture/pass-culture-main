@@ -29,7 +29,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
       const result = mapStateToProps(state, props)
 
       // then
-      expect(result).toEqual({})
+      expect(result).toStrictEqual({})
     })
 
     it('should return an object when offer was found', () => {
@@ -42,7 +42,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
       const result = mapStateToProps(state, props)
 
       // then
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         isEvent: true,
         offer: {
           id: 'A1',

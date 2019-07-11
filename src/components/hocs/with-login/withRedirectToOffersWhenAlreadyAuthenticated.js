@@ -4,9 +4,9 @@ export const redirectToUrl = (data) => {
   const { currentUser } = data
   const { hasOffers, hasPhysicalVenues } = currentUser || false
   const hasOffersWithPhysicalVenues = hasOffers && hasPhysicalVenues
-  console.log('currentUser', currentUser);
-  console.log('hasOffersWithPhysicalVenues', hasOffersWithPhysicalVenues);
-  console.log(' hasPhysicalVenues',  hasPhysicalVenues);
+  console.log('currentUser', currentUser)
+  console.log('hasOffersWithPhysicalVenues', hasOffersWithPhysicalVenues)
+  console.log(' hasPhysicalVenues',  hasPhysicalVenues)
   return hasOffersWithPhysicalVenues || hasPhysicalVenues ? '/offres' : '/structures'
 }
 

@@ -4,7 +4,10 @@ const Thumb = ({ src, translated }) => {
   const backgroundStyle = { backgroundImage: `url('${src}')` }
   return (
     <div className="thumb">
-      <div className="background" style={backgroundStyle} />
+      <div
+        className="background"
+        style={backgroundStyle}
+      />
     </div>
   )
 }

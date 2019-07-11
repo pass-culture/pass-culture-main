@@ -22,7 +22,8 @@ const Reimbursements = () => (
       <DownloadButtonContainer
         filename="remboursements_pass_culture"
         href={`${API_URL}/reimbursements/csv`}
-        mimeType="text/csv">
+        mimeType="text/csv"
+      >
         Télécharger la liste des remboursements
       </DownloadButtonContainer>
     </div>

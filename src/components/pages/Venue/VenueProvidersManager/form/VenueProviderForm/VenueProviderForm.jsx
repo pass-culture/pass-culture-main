@@ -22,7 +22,10 @@ const VenueProviderForm = ({
         <div className="provider-picto">
           <span className="field picto">
             <label htmlFor="provider-options">
-              <Icon svg="picto-db-default" alt="Choix de la source" />
+              <Icon
+                alt="Choix de la source"
+                svg="picto-db-default"
+              />
             </label>
           </span>
         </div>
@@ -55,8 +58,12 @@ const VenueProviderForm = ({
             <span
               className="tooltip tooltip-info"
               data-place="bottom"
-              data-tip={`<p>Veuillez saisir un compte.</p>`}>
-              <Icon svg="picto-info" alt="image d'aide à l'information" />
+              data-tip={`<p>Veuillez saisir un compte.</p>`}
+            >
+              <Icon
+                alt="image d'aide à l'information"
+                svg="picto-info"
+              />
             </span>
           )}
         </div>
@@ -66,7 +73,8 @@ const VenueProviderForm = ({
         <div className="provider-import-button-container">
           <button
             className="button is-intermediate provider-import-button"
-            type="submit">
+            type="submit"
+          >
             Importer
           </button>
         </div>
@@ -81,8 +89,8 @@ VenueProviderForm.propTypes = {
   isLoadingMode: PropTypes.bool.isRequired,
   isProviderSelected: PropTypes.bool.isRequired,
   providers: PropTypes.array.isRequired,
-  venueProviders: PropTypes.array.isRequired,
   venueIdAtOfferProviderIsRequired: PropTypes.bool.isRequired,
+  venueProviders: PropTypes.array.isRequired,
 }
 
 export default VenueProviderForm

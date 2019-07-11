@@ -111,7 +111,7 @@ global.fetch = url => {
 }
 
 describe('src | components | pages | VenueContainer', () => {
-  it('resets the form when click on terminer', done => {
+  it('resets the form when click on terminer', () => {return new Promise(done => {
     // given
     const { store } = configureStore()
     store.dispatch(
@@ -148,7 +148,7 @@ describe('src | components | pages | VenueContainer', () => {
         wrapper.update()
         expect(
           wrapper.find("input[name='bookingEmail']").props().value
-        ).toEqual('foo@foo.com')
+        ).toStrictEqual('foo@foo.com')
 
         // when
         const cancelButton = wrapper.find('button[type="reset"]')
@@ -157,15 +157,15 @@ describe('src | components | pages | VenueContainer', () => {
         // then
         expect(
           wrapper.find("input[name='bookingEmail']").props().value
-        ).toEqual('')
+        ).toStrictEqual('')
 
         // done
         done()
       })
     })
-  })
+  })})
 
-  it('fills the form with a valid siret', done => {
+  it('fills the form with a valid siret', () => {return new Promise(done => {
     // given
     const { store } = configureStore()
     const history = createBrowserHistory()
@@ -185,7 +185,7 @@ describe('src | components | pages | VenueContainer', () => {
     setTimeout(() => {
       // then (offerer request is done, form is now available)
       wrapper.update()
-      expect(wrapper.find("textarea[name='comment']").props().required).toEqual(
+      expect(wrapper.find("textarea[name='comment']").props().required).toStrictEqual(
         true
       )
 
@@ -201,16 +201,16 @@ describe('src | components | pages | VenueContainer', () => {
         // then
         expect(
           wrapper.find("textarea[name='comment']").props().required
-        ).toEqual(false)
-        expect(wrapper.find("input[name='address']").props().readOnly).toEqual(
+        ).toStrictEqual(false)
+        expect(wrapper.find("input[name='address']").props().readOnly).toStrictEqual(
           true
         )
-        expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
+        expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(
           true
         )
         expect(
           wrapper.find("input[name='postalCode']").props().readOnly
-        ).toEqual(true)
+        ).toStrictEqual(true)
         // TODO: latitude et longitude should be readOnly
         // but jest says it is not the case
         // (but localhost test prooves it that it is true)
@@ -224,7 +224,7 @@ describe('src | components | pages | VenueContainer', () => {
         // when (siret has filled other inputs, submit button is not anymore disabled)
         wrapper.update()
         const submitButton = wrapper.find('button[type="submit"]')
-        expect(submitButton.props().disabled).toEqual(false)
+        expect(submitButton.props().disabled).toStrictEqual(false)
         submitButton.simulate('submit')
 
         // then
@@ -247,16 +247,16 @@ describe('src | components | pages | VenueContainer', () => {
         }
         const receivedConfig = mockRequestDataCatch.mock.calls.slice(-1)[0][0]
         Object.keys(expectedSubConfig).forEach(key =>
-          expect(receivedConfig[key]).toEqual(expectedSubConfig[key])
+          expect(receivedConfig[key]).toStrictEqual(expectedSubConfig[key])
         )
 
         // done
         done()
       })
     })
-  })
+  })})
 
-  it('reputs geo fields to not readonly mode when we delete the siret', done => {
+  it('reputs geo fields to not readonly mode when we delete the siret', () => {return new Promise(done => {
     // given
     const { store } = configureStore()
     const history = createBrowserHistory()
@@ -276,7 +276,7 @@ describe('src | components | pages | VenueContainer', () => {
     setTimeout(() => {
       // then (offerer request is done, form is now available)
       wrapper.update()
-      expect(wrapper.find("textarea[name='comment']").props().required).toEqual(
+      expect(wrapper.find("textarea[name='comment']").props().required).toStrictEqual(
         true
       )
 
@@ -293,17 +293,17 @@ describe('src | components | pages | VenueContainer', () => {
         wrapper.update()
         expect(
           wrapper.find("textarea[name='comment']").props().required
-        ).toEqual(false)
-        expect(wrapper.find("input[name='address']").props().readOnly).toEqual(
+        ).toStrictEqual(false)
+        expect(wrapper.find("input[name='address']").props().readOnly).toStrictEqual(
           true
         )
-        expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
+        expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(
           true
         )
         expect(
           wrapper.find("input[name='postalCode']").props().readOnly
-        ).toEqual(true)
-        expect(wrapper.find('Marker').props().draggable).toEqual(false)
+        ).toStrictEqual(true)
+        expect(wrapper.find('Marker').props().draggable).toStrictEqual(false)
 
         // when (siret has filled other inputs, submit button is not anymore disabled)
         wrapper
@@ -314,25 +314,25 @@ describe('src | components | pages | VenueContainer', () => {
         wrapper.update()
         expect(
           wrapper.find("textarea[name='comment']").props().required
-        ).toEqual(true)
-        expect(wrapper.find("input[name='address']").props().readOnly).toEqual(
+        ).toStrictEqual(true)
+        expect(wrapper.find("input[name='address']").props().readOnly).toStrictEqual(
           false
         )
-        expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
+        expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(
           false
         )
         expect(
           wrapper.find("input[name='postalCode']").props().readOnly
-        ).toEqual(false)
-        expect(wrapper.find('Marker').props().draggable).toEqual(true)
+        ).toStrictEqual(false)
+        expect(wrapper.find('Marker').props().draggable).toStrictEqual(true)
 
         // done
         done()
       })
     })
-  })
+  })})
 
-  it('fills the form with a valid address', done => {
+  it('fills the form with a valid address', () => {return new Promise(done => {
     // given
     const { store } = configureStore()
     const history = createBrowserHistory()
@@ -374,22 +374,22 @@ describe('src | components | pages | VenueContainer', () => {
         setTimeout(() => {
           // then (address has filled other inputs)
           wrapper.update()
-          expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
+          expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(
             true
           )
           expect(
             wrapper.find("input[name='postalCode']").props().readOnly
-          ).toEqual(true)
+          ).toStrictEqual(true)
           expect(
             wrapper.find("input[name='latitude']").props().readOnly
-          ).toEqual(true)
+          ).toStrictEqual(true)
           expect(
             wrapper.find("input[name='longitude']").props().readOnly
-          ).toEqual(true)
+          ).toStrictEqual(true)
 
           // when
           const submitButton = wrapper.find('button[type="submit"]')
-          expect(submitButton.props().disabled).toEqual(false)
+          expect(submitButton.props().disabled).toStrictEqual(false)
           submitButton.simulate('submit')
 
           // then
@@ -412,7 +412,7 @@ describe('src | components | pages | VenueContainer', () => {
           }
           const receivedConfig = mockRequestDataCatch.mock.calls.slice(-1)[0][0]
           Object.keys(expectedSubConfig).forEach(key =>
-            expect(receivedConfig[key]).toEqual(expectedSubConfig[key])
+            expect(receivedConfig[key]).toStrictEqual(expectedSubConfig[key])
           )
 
           // done
@@ -420,9 +420,9 @@ describe('src | components | pages | VenueContainer', () => {
         })
       }, 500)
     })
-  })
+  })})
 
-  it('reputs geo fields to not readonly mode when we delete the address', done => {
+  it('reputs geo fields to not readonly mode when we delete the address', () => {return new Promise(done => {
     // given
     const { store } = configureStore()
     const history = createBrowserHistory()
@@ -464,18 +464,18 @@ describe('src | components | pages | VenueContainer', () => {
         setTimeout(() => {
           // then (address has filled other inputs)
           wrapper.update()
-          expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
+          expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(
             true
           )
           expect(
             wrapper.find("input[name='postalCode']").props().readOnly
-          ).toEqual(true)
+          ).toStrictEqual(true)
           expect(
             wrapper.find("input[name='latitude']").props().readOnly
-          ).toEqual(true)
+          ).toStrictEqual(true)
           expect(
             wrapper.find("input[name='longitude']").props().readOnly
-          ).toEqual(true)
+          ).toStrictEqual(true)
 
           // when
           wrapper
@@ -483,27 +483,27 @@ describe('src | components | pages | VenueContainer', () => {
             .simulate('change', { target: { value: ADDRESS.slice(0, -1) } })
 
           // then
-          expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
+          expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(
             false
           )
           expect(
             wrapper.find("input[name='postalCode']").props().readOnly
-          ).toEqual(false)
+          ).toStrictEqual(false)
           expect(
             wrapper.find("input[name='latitude']").props().readOnly
-          ).toEqual(false)
+          ).toStrictEqual(false)
           expect(
             wrapper.find("input[name='longitude']").props().readOnly
-          ).toEqual(false)
+          ).toStrictEqual(false)
 
           // done
           done()
         })
       }, 500)
     })
-  })
+  })})
 
-  it('fills the form with valid coordinates (even if they are negative)', done => {
+  it('fills the form with valid coordinates (even if they are negative)', () => {return new Promise(done => {
     // given
     const { store } = configureStore()
     const history = createBrowserHistory()
@@ -542,25 +542,25 @@ describe('src | components | pages | VenueContainer', () => {
       setTimeout(() => {
         // then (address has filled other inputs, submit button is not anymore disabled)
         wrapper.update()
-        expect(wrapper.find("input[name='address']").props().readOnly).toEqual(
+        expect(wrapper.find("input[name='address']").props().readOnly).toStrictEqual(
           false
         )
-        expect(wrapper.find("input[name='city']").props().readOnly).toEqual(
+        expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(
           false
         )
         expect(
           wrapper.find("input[name='postalCode']").props().readOnly
-        ).toEqual(false)
-        expect(wrapper.find("input[name='latitude']").props().readOnly).toEqual(
+        ).toStrictEqual(false)
+        expect(wrapper.find("input[name='latitude']").props().readOnly).toStrictEqual(
           false
         )
         expect(
           wrapper.find("input[name='longitude']").props().readOnly
-        ).toEqual(false)
+        ).toStrictEqual(false)
 
         // when
         const submitButton = wrapper.find('button[type="submit"]')
-        expect(submitButton.props().disabled).toEqual(false)
+        expect(submitButton.props().disabled).toStrictEqual(false)
         submitButton.simulate('submit')
 
         // then
@@ -583,16 +583,16 @@ describe('src | components | pages | VenueContainer', () => {
         }
         const receivedConfig = mockRequestDataCatch.mock.calls.slice(-1)[0][0]
         Object.keys(expectedSubConfig).forEach(key =>
-          expect(receivedConfig[key]).toEqual(expectedSubConfig[key])
+          expect(receivedConfig[key]).toStrictEqual(expectedSubConfig[key])
         )
 
         // done
         done()
       })
     })
-  })
+  })})
 
-  it('fills the form with a dragging a marker', done => {
+  it('fills the form with a dragging a marker', () => {return new Promise(done => {
     // given
     const { store } = configureStore()
     const history = createBrowserHistory()
@@ -614,17 +614,17 @@ describe('src | components | pages | VenueContainer', () => {
     setTimeout(() => {
       // then (address has filled other inputs, submit button is not anymore disabled)
       wrapper.update()
-      expect(wrapper.find("input[name='address']").props().readOnly).toEqual(
+      expect(wrapper.find("input[name='address']").props().readOnly).toStrictEqual(
         false
       )
-      expect(wrapper.find("input[name='city']").props().readOnly).toEqual(false)
-      expect(wrapper.find("input[name='postalCode']").props().readOnly).toEqual(
+      expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(false)
+      expect(wrapper.find("input[name='postalCode']").props().readOnly).toStrictEqual(
         false
       )
-      expect(wrapper.find("input[name='latitude']").props().readOnly).toEqual(
+      expect(wrapper.find("input[name='latitude']").props().readOnly).toStrictEqual(
         false
       )
-      expect(wrapper.find("input[name='longitude']").props().readOnly).toEqual(
+      expect(wrapper.find("input[name='longitude']").props().readOnly).toStrictEqual(
         false
       )
 
@@ -648,7 +648,7 @@ describe('src | components | pages | VenueContainer', () => {
           // when (address has filled other inputs, submit button is not anymore disabled)
           wrapper.update()
           const submitButton = wrapper.find('button[type="submit"]')
-          expect(submitButton.props().disabled).toEqual(false)
+          expect(submitButton.props().disabled).toStrictEqual(false)
           submitButton.simulate('submit')
 
           // then
@@ -671,7 +671,7 @@ describe('src | components | pages | VenueContainer', () => {
           }
           const receivedConfig = mockRequestDataCatch.mock.calls.slice(-1)[0][0]
           Object.keys(expectedSubConfig).forEach(key =>
-            expect(receivedConfig[key]).toEqual(expectedSubConfig[key])
+            expect(receivedConfig[key]).toStrictEqual(expectedSubConfig[key])
           )
 
           // done
@@ -679,7 +679,7 @@ describe('src | components | pages | VenueContainer', () => {
         })
       }, 500)
     })
-  })
+  })})
 })
 
 describe('src | components | pages | VenueContainer | mapStateToProps', () => {
@@ -715,7 +715,7 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
       const result = mapStateToProps(state, props)
 
       // then
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         adminUserOfferer: {
           offererId: 1,
           rights: 'RightsType.admin',
@@ -759,7 +759,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
       )
 
       // then
-      expect(dispatch.mock.calls[0][0]).toEqual({
+      expect(dispatch.mock.calls[0][0]).toStrictEqual({
         config: {
           apiPath: '/offerers/APEQ',
           handleSuccess: expect.any(Function),
@@ -773,7 +773,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
         },
         type: 'REQUEST_DATA_GET_/OFFERERS/APEQ',
       })
-      expect(dispatch.mock.calls[1][0]).toEqual({
+      expect(dispatch.mock.calls[1][0]).toStrictEqual({
         config: { apiPath: '/userOfferers/APEQ', method: 'GET' },
         type: 'REQUEST_DATA_GET_/USEROFFERERS/APEQ',
       })

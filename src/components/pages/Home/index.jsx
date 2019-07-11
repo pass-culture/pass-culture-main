@@ -7,7 +7,10 @@ import Main from 'components/layout/Main'
 
 const Card = ({ svg, title, text, navLink }) => {
   return (
-    <NavLink to={navLink} className="home-card column">
+    <NavLink
+      className="home-card column"
+      to={navLink}
+    >
       <Icon svg={svg} />
       <div className="home-card-text">
         <h1 className="title is-1 is-spaced">{title}</h1>
@@ -19,19 +22,22 @@ const Card = ({ svg, title, text, navLink }) => {
 
 const Home = ({ currentUser }) => {
   return (
-    <Main name="home" whiteHeader>
+    <Main
+      name="home"
+      whiteHeader
+    >
       <div className="home-cards columns">
         <Card
-          svg="ico-guichet-w"
-          title="Guichet"
-          text="Enregistrez les codes de réservation des porteurs du Pass."
           navLink="/guichet"
+          svg="ico-guichet-w"
+          text="Enregistrez les codes de réservation des porteurs du Pass."
+          title="Guichet"
         />
         <Card
-          svg="ico-offres-w"
-          title="Vos offres"
-          text="Créez et mettez en avant vos offres présentes sur le Pass."
           navLink="/offres"
+          svg="ico-offres-w"
+          text="Créez et mettez en avant vos offres présentes sur le Pass."
+          title="Vos offres"
         />
       </div>
     </Main>

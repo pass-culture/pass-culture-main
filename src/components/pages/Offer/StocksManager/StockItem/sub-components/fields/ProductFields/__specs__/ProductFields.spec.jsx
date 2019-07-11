@@ -61,15 +61,15 @@ describe('src | components | pages | Offer | StockItem | ProductFields', () => {
         const expected = '/offres/TY?gestion&date=K9&stock=DG'
 
         // then
-        expect(wrapper.state()).toEqual('expected')
+        expect(wrapper.state()).toStrictEqual('expected')
         expect(historyMock.push).toHaveBeenCalledWith(expected)
       })
     })
   })
 
   describe.skip('render', () => {
-    describe('Quantity Field', () => {
-      describe('With editedStockId', () => {
+    describe('quantity Field', () => {
+      describe('with editedStockId', () => {
         // security error
         it('should update field with good params', () => {
           // given

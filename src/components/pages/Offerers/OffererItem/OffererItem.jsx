@@ -11,7 +11,10 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
   const $offersCount =
     nOffers && nOffers > 0 ? (
       <li>
-        <NavLink to={`/offres?structure=${id}`} className="has-text-primary">
+        <NavLink
+          className="has-text-primary"
+          to={`/offres?structure=${id}`}
+        >
           <Icon svg="ico-offres-r" />
           {pluralize(nOffers, 'offres')}
         </NavLink>
@@ -27,8 +30,9 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
     <Fragment>
       <li>
         <NavLink
+          className="has-text-primary"
           to={`/offres/creation?structure=${id}`}
-          className="has-text-primary">
+        >
           <Icon svg="ico-offres-r" />
           Nouvelle offre {canCreateOnlyVirtualOffer && 'numérique'}
         </NavLink>
@@ -36,7 +40,10 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
       {$offersCount}
     </Fragment>
   ) : (
-    <li className="is-italic" key={0}>
+    <li
+      className="is-italic"
+      key={0}
+    >
       Créez un lieu pour pouvoir y associer des offres.
     </li>
   )
@@ -50,8 +57,9 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
       </li>
       <li>
         <NavLink
+          className="has-text-primary"
           to={`/structures/${id}/lieux/creation`}
-          className="has-text-primary">
+        >
           <Icon svg="ico-venue-r" /> Nouveau lieu
         </NavLink>
       </li>
@@ -65,7 +73,10 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
           <NavLink to={showPath}>{name}</NavLink>
         </p>
         {!isValidated && (
-          <p className="is-italic mb12" id="offerer-item-validation">
+          <p
+            className="is-italic mb12"
+            id="offerer-item-validation"
+          >
             Structure en cours de validation par l&apos;équipe Pass Culture.
           </p>
         )}
@@ -89,8 +100,8 @@ OffererItem.defaultProps = {
 }
 
 OffererItem.propTypes = {
-  venues: PropTypes.array,
   physicalVenues: PropTypes.array,
+  venues: PropTypes.array,
 }
 
 export default OffererItem

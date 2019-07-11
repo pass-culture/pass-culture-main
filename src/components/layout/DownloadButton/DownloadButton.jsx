@@ -27,7 +27,8 @@ class DownloadButton extends PureComponent {
         disabled={isLoading}
         download
         onClick={this.onClick}
-        type="button">
+        type="button"
+      >
         {children}
       </button>
     )

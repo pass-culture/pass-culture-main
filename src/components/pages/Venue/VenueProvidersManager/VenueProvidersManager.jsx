@@ -179,7 +179,8 @@ class VenueProvidersManager extends Component {
               disabled={isCreationMode}
               id="add-venue-provider-btn"
               onClick={this.addVenueProvider}
-              type="button">
+              type="button"
+            >
               + Importer des offres
             </button>
           </div>

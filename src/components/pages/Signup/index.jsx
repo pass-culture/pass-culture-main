@@ -12,18 +12,28 @@ import Main from '../../layout/Main'
 
 const SignupPage = ({ errors, location }) => {
   return (
-    <Main name="sign-up" fullscreen>
+    <Main
+      fullscreen
+      name="sign-up"
+    >
       <div className="logo-side">
-        <Logo noLink signPage />
+        <Logo
+          noLink
+          signPage
+        />
       </div>
       <div className="container">
         <div className="columns">
           <div className="column is-offset-6 is-two-fifths">
             <Switch location={location}>
-              <Route exact path="/inscription" component={SignupForm} />
               <Route
-                path="/inscription/confirmation"
+                component={SignupForm}
+                exact
+                path="/inscription"
+              />
+              <Route
                 component={SignupConfirmation}
+                path="/inscription/confirmation"
               />
             </Switch>
           </div>

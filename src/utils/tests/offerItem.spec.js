@@ -10,7 +10,7 @@ describe('getOfferTypeLabel', () => {
       const offerTypeLabel = getOfferTypeLabel(product)
 
       // then
-      expect(offerTypeLabel).toEqual('Conférence — Débat — Dédicace')
+      expect(offerTypeLabel).toStrictEqual('Conférence — Débat — Dédicace')
     })
   })
 
@@ -23,7 +23,7 @@ describe('getOfferTypeLabel', () => {
       const offerTypeLabel = getOfferTypeLabel(product)
 
       // then
-      expect(offerTypeLabel).toEqual('Jeux (Biens physiques)')
+      expect(offerTypeLabel).toStrictEqual('Jeux (Biens physiques)')
     })
   })
 })

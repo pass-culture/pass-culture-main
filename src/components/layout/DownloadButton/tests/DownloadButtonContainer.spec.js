@@ -16,7 +16,7 @@ global.fetch = url => {
   return response
 }
 
-window.location.assign = jest.fn()
+jest.spyOn(window.location, 'assign')
 const mockDownloadUrl = 'http://plop.com'
 window.URL = { createObjectURL: jest.fn(() => mockDownloadUrl) }
 
@@ -27,7 +27,7 @@ describe('src | components | Layout | DownloadButtonContainer', () => {
       href: 'https://foo.com/reimbursements/csv',
     }
     const { store } = configureStore()
-    store.dispatch = jest.fn()
+    jest.spyOn(store, 'dispatch')
 
     // when
     const wrapper = mount(
@@ -49,7 +49,7 @@ describe('src | components | Layout | DownloadButtonContainer', () => {
       href: 'https://foo.com/wrong-url',
     }
     const { store } = configureStore()
-    store.dispatch = jest.fn()
+    jest.spyOn(store, 'dispatch')
 
     // when
     const wrapper = mount(

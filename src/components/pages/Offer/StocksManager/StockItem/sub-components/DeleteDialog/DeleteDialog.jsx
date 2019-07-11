@@ -6,7 +6,10 @@ class DeleteDialog extends Component {
 
     return (
       <tr>
-        <td colSpan="6" className="is-size-7">
+        <td
+          className="is-size-7"
+          colSpan="6"
+        >
           En confirmant l'annulation de {isEvent ? 'cette date' : 'ce stock'},
           vous supprimerez aussi toutes les réservations associées.{' '}
           {isEvent && <br />}
@@ -14,12 +17,18 @@ class DeleteDialog extends Component {
         </td>
 
         <td>
-          <button className="button is-primary" onClick={onConfirmDeleteClick}>
+          <button
+            className="button is-primary"
+            onClick={onConfirmDeleteClick}
+          >
             Oui
           </button>
         </td>
         <td>
-          <button className="button is-primary" onClick={onCancelDeleteClick}>
+          <button
+            className="button is-primary"
+            onClick={onCancelDeleteClick}
+          >
             Non
           </button>
         </td>

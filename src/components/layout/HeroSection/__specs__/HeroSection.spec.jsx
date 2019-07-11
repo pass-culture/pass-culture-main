@@ -30,7 +30,7 @@ describe('src | components | layout | HeroSection', () => {
         }
 
         // when
-        const wrapper = shallow(<HeroSection {...props}/>)
+        const wrapper = shallow(<HeroSection {...props} />)
         const subtitle = wrapper.find('h2')
 
         // then

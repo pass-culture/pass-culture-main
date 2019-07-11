@@ -24,7 +24,8 @@ const Bookings = ({pathToCsvFile, showDownloadButton}) => (
         <DownloadButtonContainer
           filename="reservations_pass_culture"
           href={pathToCsvFile}
-          mimeType="text/csv">
+          mimeType="text/csv"
+        >
           Télécharger la liste des réservations
         </DownloadButtonContainer>
       )}

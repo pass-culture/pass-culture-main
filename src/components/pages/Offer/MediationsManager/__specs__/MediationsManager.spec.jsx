@@ -69,7 +69,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       wrapper.unmount()
 
       // then
-      expect(dispatch.mock.calls[1][0]).toEqual({type: 'CLOSE_NOTIFICATION'})
+      expect(dispatch.mock.calls[1][0]).toStrictEqual({type: 'CLOSE_NOTIFICATION'})
     })
 
     it('should render a NavLink component when there is an offer', () => {
