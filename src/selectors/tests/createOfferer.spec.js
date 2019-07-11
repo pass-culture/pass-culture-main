@@ -1,5 +1,5 @@
 import selectOffererById from '../selectOffererById'
-import state from './mockState'
+import state from './mockState.json'
 
 describe('selectOffererById', () => {
   it('should retrieve offerer from state when id is given', () => {
