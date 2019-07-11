@@ -68,7 +68,7 @@ describe('src | components | layout | form | DateField', () => {
     wrapper
       .find('DatePicker')
       .props()
-      .onChange(moment('2019-04-28T20:00:00Z'))
+      .handleOnChange(moment('2019-04-28T20:00:00Z'))
     wrapper.find('button[type="submit"]').simulate('click')
 
     // then

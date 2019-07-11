@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { formatSirenOrSiret } from 'utils/siren'
 
 class SirenInput extends Component {
-  onChange = event => {
+  handleOnChange = event => {
     const { onChange: onFieldChange, type } = this.props
 
     event.persist()
@@ -31,7 +31,7 @@ class SirenInput extends Component {
     const $input = (
       <BasicInput
         {...this.props}
-        onChange={this.onChange}
+        onChange={this.handleOnChange}
         type="text"
         value={formatSirenOrSiret(value)}
       />

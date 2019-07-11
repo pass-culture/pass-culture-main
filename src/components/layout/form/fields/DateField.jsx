@@ -59,7 +59,7 @@ export class DateField extends PureComponent {
 
   onDateChange = input => date => {
     const changedValue = date ? date.toISOString() : null
-    input.onChange(changedValue)
+    input.handleOnChange(changedValue)
     this.setState({ hasPressedDelete: false })
   }
 
@@ -67,7 +67,7 @@ export class DateField extends PureComponent {
     const isDeleteKey = event.keyCode === 8
     if (!isDeleteKey) return
 
-    input.onChange(null)
+    input.handleOnChange(null)
     this.setState({ hasPressedDelete: true })
   }
 

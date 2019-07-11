@@ -47,8 +47,8 @@ Block.defaultProps = {
   confirmText: 'Oui',
   text: (
     <div className="m12">
-      Êtes-vous sûr de vouloir quitter cette page ? <br />
-      Les modifications ne seront pas enregistrées.
+      { "Êtes-vous sûr de vouloir quitter cette page ?" } <br />
+      { "Les modifications ne seront pas enregistrées."}
     </div>
   ),
 }

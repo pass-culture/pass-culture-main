@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { isValidIBAN, friendlyFormatIBAN } from 'ibantools'
 
 class IbanInput extends PureComponent {
-  onChange = event => {
+  handleOnChange = event => {
     const { dispatch, onChange: onFieldChange } = this.props
     event.persist()
     const value = removeWhitespaces(event.target.value)
@@ -19,7 +19,7 @@ class IbanInput extends PureComponent {
     return (
       <BasicInput
         {...this.props}
-        onChange={this.onChange}
+        onChange={this.handleOnChange}
         type="text"
         value={friendlyFormatIBAN(this.props.value)}
       />

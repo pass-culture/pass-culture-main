@@ -4,23 +4,26 @@ import { connect } from 'react-redux'
 import { isValidBIC } from 'ibantools'
 
 class BicInput extends PureComponent {
-  onChange = event => {
+  handleOnChange = event => {
     event.persist()
     const value = removeWhitespaces(event.target.value)
-    this.props.onChange(value, { event })
+    const { onChange } = this.props
+    onChange(value, { event })
 
     if (!isValidBIC(value)) {
-      this.props.dispatch(mergeErrors('offerer', { bic: ['BIC invalide'] }))
+      const { dispatch } = this.props
+      dispatch(mergeErrors('offerer', { bic: ['BIC invalide'] }))
     }
   }
 
   render() {
+    const { value } = this.props
     return (
       <BasicInput
         {...this.props}
-        onChange={this.onChange}
+        onChange={this.handleOnChange}
         type="text"
-        value={this.props.value.toUpperCase()}
+        value={value.toUpperCase()}
       />
     )
   }
