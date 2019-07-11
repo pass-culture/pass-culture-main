@@ -41,7 +41,7 @@ describe('src | components | verso | verso-controls | VersoControl', () => {
     expect(bookthis).toHaveLength(0)
   })
 
-  it('should render component with a already booked/cancellable offer', () => {
+  it('should render component with a already booked/cancellable offer (réécrire)', () => {
     // given
     const props = { booking: {}, isFinished: true }
 

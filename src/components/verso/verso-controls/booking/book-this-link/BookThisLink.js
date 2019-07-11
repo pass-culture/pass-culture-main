@@ -26,7 +26,7 @@ const BookThisLink = ({ isFinished, linkDestination, priceValue }) => (
       free="Gratuit"
       value={priceValue}
     />
-    <span className="pc-ticket-button-label">J&apos;y vais!</span>
+    <span className="pc-ticket-button-label">{'J’y vais !'}</span>
   </Link>
 )
 
@@ -37,7 +37,7 @@ BookThisLink.defaultProps = {
 BookThisLink.propTypes = {
   isFinished: PropTypes.bool,
   linkDestination: PropTypes.string.isRequired,
-  priceValue: PropTypes.array.isRequired,
+  priceValue: PropTypes.arrayOf.isRequired,
 }
 
 export default BookThisLink

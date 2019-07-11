@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import PropTypes from 'prop-types'
 
@@ -42,7 +40,7 @@ VersoControl.defaultProps = {
 }
 
 VersoControl.propTypes = {
-  booking: PropTypes.object,
+  booking: PropTypes.shape(),
   isFinished: PropTypes.bool,
 }
 

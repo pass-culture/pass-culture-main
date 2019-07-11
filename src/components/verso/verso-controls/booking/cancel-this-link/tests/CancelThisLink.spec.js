@@ -6,7 +6,7 @@ import { createBrowserHistory } from 'history'
 import CancelThisLink from '../CancelThisLink'
 import Price from '../../../../../layout/Price'
 
-describe('src | components | verso | verso-controls | booking | CancelThisLink', () => {
+describe('src | components | verso | verso-controls | booking | CancelThisLink', () => {
   let props
   let dispatch
   let push
@@ -90,7 +90,7 @@ describe('src | components | verso | verso-controls | booking | CancelThisLink
               onClick={anyFunction}
               type="button"
             >
-              <span>Oui</span>
+              <span>{'Oui'}</span>
             </button>,
             <button
               className="no-border no-background no-outline is-block py12 is-bold fs14"
@@ -99,7 +99,7 @@ describe('src | components | verso | verso-controls | booking | CancelThisLink
               onClick={anyFunction}
               type="button"
             >
-              <span>Non</span>
+              <span>{'Non'}</span>
             </button>,
           ],
           text: 'Souhaitez-vous réellement annuler cette réservation ?',

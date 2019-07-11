@@ -8,50 +8,47 @@ import VersoContentOfferContainer from './verso-content/verso-content-offer/Vers
 import VersoContentTuto from './verso-content/VersoContentTuto'
 import Footer from '../layout/Footer'
 
-class Verso extends React.PureComponent {
-  render() {
-    const {
-      areDetailsVisible,
-      backgroundColor,
-      contentInlineStyle,
-      extraClassName,
-      forceDetailsVisible,
-      isTuto,
-      imageURL,
-      offerName,
-      offerVenueNameOrPublicName,
-    } = this.props
+const Verso = ({
+    areDetailsVisible,
+    backgroundColor,
+    contentInlineStyle,
+    extraClassName,
+    forceDetailsVisible,
+    isTuto,
+    imageURL,
+    offerName,
+    offerVenueNameOrPublicName,
+  }) => {
+  const flipped = forceDetailsVisible || areDetailsVisible
 
-    const flipped = forceDetailsVisible || areDetailsVisible
-    return (
-      <div
-        className={classnames('verso is-overlay', extraClassName, {
-          flipped,
-        })}
-      >
-        <div className="verso-wrapper is-black-text scroll-y flex-rows is-relative text-left">
-          <VersoHeader
-            backgroundColor={backgroundColor}
-            subtitle={offerVenueNameOrPublicName}
-            title={offerName}
-          />
-          {!isTuto && <VersoControl />}
-          <div
-            className="verso-content"
-            style={contentInlineStyle}
-          >
-            {!isTuto && <VersoContentOfferContainer />}
-            {isTuto && <VersoContentTuto imageURL={imageURL} />}
-          </div>
-        </div>
-        <Footer
-          borderTop
-          colored={!isTuto}
-          id="verso-footer"
+  return (
+    <div
+      className={classnames('verso is-overlay', extraClassName, {
+        flipped,
+      })}
+    >
+      <div className="verso-wrapper is-black-text scroll-y flex-rows is-relative text-left">
+        <VersoHeader
+          backgroundColor={backgroundColor}
+          subtitle={offerVenueNameOrPublicName}
+          title={offerName}
         />
+        {!isTuto && <VersoControl />}
+        <div
+          className="verso-content"
+          style={contentInlineStyle}
+        >
+          {!isTuto && <VersoContentOfferContainer />}
+          {isTuto && <VersoContentTuto imageURL={imageURL} />}
+        </div>
       </div>
-    )
-  }
+      <Footer
+        borderTop
+        colored={!isTuto}
+        id="verso-footer"
+      />
+    </div>
+  )
 }
 
 Verso.defaultProps = {
@@ -66,7 +63,7 @@ Verso.defaultProps = {
 Verso.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
   backgroundColor: PropTypes.string,
-  contentInlineStyle: PropTypes.object.isRequired,
+  contentInlineStyle: PropTypes.shape().isRequired,
   extraClassName: PropTypes.string,
   forceDetailsVisible: PropTypes.bool,
   imageURL: PropTypes.string,

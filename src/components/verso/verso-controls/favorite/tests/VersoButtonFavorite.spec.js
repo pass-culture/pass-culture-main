@@ -1,4 +1,3 @@
-// $(yarn bin)/jest --env=jsdom ./src/components/verso/verso-controls/favorite/tests/VersoButtonFavorite.spec.js --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 

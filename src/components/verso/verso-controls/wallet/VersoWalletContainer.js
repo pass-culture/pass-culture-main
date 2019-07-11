@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import { connect } from 'react-redux'
 import { selectCurrentUser } from 'with-react-redux-login'
 

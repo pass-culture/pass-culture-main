@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -22,7 +20,7 @@ class VersoContentOffer extends React.PureComponent {
     if (!description) return null
     return (
       <div>
-        <h3>Et en détails ?</h3>
+        <h3>{'Et en détails ?'}</h3>
         <pre
           className="is-raw-description"
           id="verso-offer-description"
@@ -58,7 +56,7 @@ class VersoContentOffer extends React.PureComponent {
     const subType = get(musicSubType, 'label') || get(showSubType, 'label')
     return (
       <div>
-        <h3>Quoi ?</h3>
+        <h3>{'Quoi ?'}</h3>
         <div>
           <span
             className="is-bold"
@@ -66,18 +64,18 @@ class VersoContentOffer extends React.PureComponent {
           >
             {appLabel}
           </span>
-          {durationMinutes && <span> - Durée {duration}</span>}
+          {durationMinutes && <span>{' - Durée'} {duration}</span>}
         </div>
         {type && (
           <div>
-            Genre : {type}
+            {'Genre : '}{type}
             {subType && `/ ${subType}`}
           </div>
         )}
-        {author && <div>Auteur : {author}</div>}
-        {performer && <div>Interprète : {performer}</div>}
-        {speaker && <div>Intervenant : {speaker}</div>}
-        {stageDirector && <div>Metteur en scène : {stageDirector}</div>}
+        {author && <div>{'Auteur : '}{author}</div>}
+        {performer && <div>{'Interprète : '}{performer}</div>}
+        {speaker && <div>{'Intervenant : '}{speaker}</div>}
+        {stageDirector && <div>{'Metteur en scène : '}{stageDirector}</div>}
       </div>
     )
   }
@@ -108,8 +106,8 @@ class VersoContentOffer extends React.PureComponent {
     return (
       <React.Fragment>
         <li>
-          Dès maintenant
-          {limitDatetime && ` et jusqu&apos;au ${limitDatetime}`}{' '}
+          {'Dès maintenant'}
+          {limitDatetime && ` et jusqu’au ${limitDatetime}`}{' '}
         </li>
       </React.Fragment>
     )
@@ -126,10 +124,10 @@ class VersoContentOffer extends React.PureComponent {
 
     return (
       <div>
-        <h3>Quand ?</h3>
+        <h3>{'Quand ?'}</h3>
         <ul className="dates-info">
           {isFinished ? (
-            <li>L&apos;offre n&apos;est plus disponible.</li>
+            <li>{'L’offre n’est plus disponible.'}</li>
           ) : (
             offerDateInfos
           )}
@@ -147,7 +145,7 @@ class VersoContentOffer extends React.PureComponent {
 
     return (
       <div>
-        <h3>Où ?</h3>
+        <h3>{'Où ?'}</h3>
         <div className="flex-columns flex-between">
           <p className="address-info">
             <span className="is-block">{publicName || name}</span>
@@ -199,16 +197,16 @@ VersoContentOffer.defaultProps = {
 }
 
 VersoContentOffer.propTypes = {
-  bookables: PropTypes.array,
+  bookables: PropTypes.arrayOf,
   handleRequestMusicAndShowTypes: PropTypes.func.isRequired,
   isFinished: PropTypes.bool,
   maxShownDates: PropTypes.number,
-  musicSubType: PropTypes.object,
-  musicType: PropTypes.object,
+  musicSubType: PropTypes.shape(),
+  musicType: PropTypes.shape(),
   onlineOfferUrl: PropTypes.string,
-  recommendation: PropTypes.object,
-  showSubType: PropTypes.object,
-  showType: PropTypes.object,
+  recommendation: PropTypes.shape(),
+  showSubType: PropTypes.shape(),
+  showType: PropTypes.shape(),
 }
 
 export default VersoContentOffer

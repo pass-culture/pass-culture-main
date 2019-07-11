@@ -4,11 +4,13 @@ import { shallow } from 'enzyme'
 import VersoContentTuto from '../VersoContentTuto'
 
 describe('src | components | verso | verso-content | VersoContentTuto', () => {
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // given
     const props = { imageURL: 'https://example.net/img.jpg' }
+
     // when
     const wrapper = shallow(<VersoContentTuto {...props} />)
+
     // then
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()

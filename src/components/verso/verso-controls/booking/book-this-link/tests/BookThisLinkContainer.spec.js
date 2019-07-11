@@ -26,7 +26,7 @@ set(mockedState, 'data', {
   ],
 })
 
-describe('src | components | verso | verso-controls | booking | BookThisLinkContainer', () => {
+describe('src | components | verso | verso-controls | booking | BookThisLinkContainer', () => {
   describe('mapStateToProps', () => {
     it('should return an object with an url and an array of prices', () => {
       // given

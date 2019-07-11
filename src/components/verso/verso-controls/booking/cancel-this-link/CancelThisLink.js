@@ -35,9 +35,7 @@ class CancelThisLink extends React.PureComponent {
   onFailure = (state, request) => {
     const { dispatch } = this.props
     const { payload } = request
-    const message = get(payload, 'errors.booking') || [
-      `Une erreur inconnue s'est produite`,
-    ]
+    const message = get(payload, 'errors.booking') || [`Une erreur inconnue s'est produite`]
 
     const options = {
       buttons: [
@@ -75,11 +73,7 @@ class CancelThisLink extends React.PureComponent {
 
     const options = {
       buttons: [
-        this.buildButton(
-          'Oui',
-          'popin-cancel-booking-yes',
-          this.onCancelYes(booking)
-        ),
+        this.buildButton('Oui', 'popin-cancel-booking-yes', this.onCancelYes(booking)),
         this.buildButton('Non', 'popin-cancel-booking-no', this.onCancelNo()),
       ],
       text: 'Souhaitez-vous réellement annuler cette réservation ?',
@@ -87,6 +81,8 @@ class CancelThisLink extends React.PureComponent {
     }
     dispatch(openSharePopin(options))
   }
+
+  handleOnClick = (isFinished, booking) => () => !isFinished && this.openCancelPopin(booking)
 
   render() {
     const { booking, isCancelled, isFinished, priceValue } = this.props
@@ -96,7 +92,7 @@ class CancelThisLink extends React.PureComponent {
         className="flex-columns no-border no-background"
         disabled={isFinished}
         id="verso-cancel-booking-button"
-        onClick={() => !isFinished && this.openCancelPopin(booking)}
+        onClick={this.handleOnClick(isFinished, booking)}
         type="button"
       >
         <span className="pc-ticket-button-price reserved">
@@ -111,7 +107,7 @@ class CancelThisLink extends React.PureComponent {
             />
           )}
         </span>
-        <span className="pc-ticket-button-label">Annuler</span>
+        <span className="pc-ticket-button-label">{'Annuler'}</span>
       </button>
     )
   }
@@ -122,9 +118,9 @@ CancelThisLink.defaultProps = {
 }
 
 CancelThisLink.propTypes = {
-  booking: PropTypes.object.isRequired,
+  booking: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
+  history: PropTypes.shape().isRequired,
   isCancelled: PropTypes.bool.isRequired,
   isFinished: PropTypes.bool,
   priceValue: PropTypes.number.isRequired,

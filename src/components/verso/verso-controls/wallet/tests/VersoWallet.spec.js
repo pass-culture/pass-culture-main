@@ -2,7 +2,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 import VersoWallet from '../VersoWallet'
 
-describe('src | components | verso | verso-controls | wallet | VersoWallet', () => {
+describe('src | components | verso | verso-controls | wallet | VersoWallet', () => {
   it('should match snapshot', () => {
     // given
     const props = { value: 10 }
