@@ -367,7 +367,7 @@ def create_offer_with_event_product(venue=None, product=None, event_name='Test e
                                     date_created=datetime.utcnow(),
                                     booking_email='booking.email@test.com', thumb_count=0, dominant_color=None,
                                     event_type=EventType.SPECTACLE_VIVANT, is_national=False, is_active=True,
-                                    idx=None, last_provider_id=None, id_at_providers=None) -> Offer:
+                                    idx=None, last_provider_id=None, id_at_providers=None, description=None) -> Offer:
     offer = Offer()
     if product is None:
         product = create_product_with_Event_type(event_name=event_name, event_type=event_type,
@@ -378,6 +378,7 @@ def create_offer_with_event_product(venue=None, product=None, event_name='Test e
     offer.venue = venue
     offer.name = product.name
     offer.type = product.type
+    offer.description = description
     offer.isNational = product.isNational
     offer.durationMinutes = product.durationMinutes
     offer.dateCreated = date_created

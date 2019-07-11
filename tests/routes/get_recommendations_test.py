@@ -14,7 +14,7 @@ from tests.test_utils import create_event_occurrence, \
     create_product_with_Thing_type, \
     create_offer_with_thing_product, \
     create_user, \
-    create_venue
+    create_venue, create_product_with_Event_type
 from utils.date import strftime
 
 TWENTY_DAYS_FROM_NOW = datetime.utcnow() + timedelta(days=20)
@@ -755,3 +755,33 @@ class Get:
             # Then
             assert response.status_code == 200
             assert len(response.json) == 0
+
+        @clean_database
+        def when_searching_by_keywords_offer_with_matching_pattern_in_name_return_firsts(self, app):
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer1 = create_offer_with_event_product(venue, event_name='Training',
+                                                     description='Modern modern Jazz, Salsa & Co')
+            offer2 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
+
+            event_occurrence1 = create_event_occurrence(offer1, beginning_datetime=self.in_one_hour,
+                                                        end_datetime=self.ten_days_from_now)
+            event_occurrence2 = create_event_occurrence(offer2, beginning_datetime=self.in_one_hour,
+                                                        end_datetime=self.ten_days_from_now)
+
+            recommendation1 = create_recommendation(offer1, user)
+            recommendation2 = create_recommendation(offer2, user)
+            stock1 = create_stock_from_event_occurrence(event_occurrence1)
+            stock2 = create_stock_from_event_occurrence(event_occurrence2)
+            PcObject.save(stock1, stock2, recommendation1, recommendation2)
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).get(
+                RECOMMENDATION_URL + '?keywords=modern'
+            )
+
+            # Then
+            assert response.status_code == 200
+            assert len(response.json) == 2
+            assert response.json[0]['offer']['name'] == 'Training in Modern Jazz'

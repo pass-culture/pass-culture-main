@@ -3,6 +3,7 @@ from typing import List
 
 from sqlalchemy import desc, func, and_, or_
 from sqlalchemy.orm import aliased, joinedload, Load
+from sqlalchemy.orm.query import Query
 
 from domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
@@ -166,7 +167,22 @@ def filter_offers_with_keywords_string(query, keywords_string):
 
     query = query.filter(keywords_filter)
 
+    query = _order_by_offer_name_containing_keyword_string(keywords_string, query)
+
     return query
+
+
+def _order_by_offer_name_containing_keyword_string(keywords_string: str, query: Query) -> Query:
+    offer_alias = aliased(Offer)
+    return query.order_by(
+        desc(
+            Offer.query
+                .filter(Offer.id == offer_alias.id)
+                .filter(Offer.name.ilike('%' + keywords_string + '%'))
+                .order_by(offer_alias.name)
+                .exists()
+        )
+    )
 
 
 def get_is_offer_selected_by_keywords_string_at_column(offer, keywords_string, column):
