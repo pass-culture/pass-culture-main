@@ -3,8 +3,8 @@ import { SignoutButton } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 
-import { Icon } from 'components/layout/Icon'
-import Logo from 'components/layout/Logo'
+import { Icon } from '../Icon'
+import Logo from '../Logo'
 
 class Header extends Component {
   constructor() {
@@ -27,7 +27,7 @@ class Header extends Component {
             />
             <span
               className="navbar-burger"
-              onClick={e =>
+              onClick={() =>
                 this.setState({
                   showMobileMenu: !showMobileMenu,
                 })}
@@ -50,7 +50,7 @@ class Header extends Component {
                 <span className="icon">
                   <Icon svg="ico-guichet-w" />
                 </span>
-                <span>Guichet</span>
+                <span>{"Guichet"}</span>
               </NavLink>
               {!whiteHeader && (
                 <NavLink
@@ -60,7 +60,7 @@ class Header extends Component {
                   <span className="icon">
                     <Icon svg="ico-offres-w" />
                   </span>
-                  <span>Vos offres</span>
+                  <span>{"Vos offres"}</span>
                 </NavLink>
               )}
               <a
@@ -72,7 +72,7 @@ class Header extends Component {
                 <span className="icon">
                   <Icon svg="ico-help-w" />
                 </span>
-                <span>Aide</span>
+                <span>{"Aide"}</span>
               </a>
               <div className="navbar-item has-dropdown is-hoverable">
                 <NavLink
@@ -92,7 +92,7 @@ class Header extends Component {
                     <span className="icon">
                       <Icon svg="ico-user" />
                     </span>
-                    <span>Profil</span>
+                    <span>{"Profil"}</span>
                   </NavLink>
                   <NavLink
                     className="navbar-item"
@@ -115,7 +115,7 @@ class Header extends Component {
                       <span className="icon">
                         <Icon svg="ico-delegation-r" />
                       </span>
-                      <span>Délégations</span>
+                      <span>{"Délégations"}</span>
                     </NavLink>
                   )}
                   <NavLink
@@ -125,7 +125,7 @@ class Header extends Component {
                     <span className="icon">
                       <Icon svg="ico-bookings" />
                     </span>
-                    <span>Suivi des réservations</span>
+                    <span>{"Suivi des réservations"}</span>
                   </NavLink>
                   <NavLink
                     className="navbar-item"
@@ -134,7 +134,7 @@ class Header extends Component {
                     <span className="icon">
                       <Icon svg="ico-compta" />
                     </span>
-                    <span>Suivi des remboursements</span>
+                    <span>{"Suivi des remboursements"}</span>
                   </NavLink>
                   {false && (
                     <NavLink
@@ -144,7 +144,7 @@ class Header extends Component {
                       <span className="icon">
                         <Icon svg="ico-compta" />
                       </span>
-                      <span>Comptabilité</span>
+                      <span>{"Comptabilité"}</span>
                     </NavLink>
                   )}
                   <SignoutButton
@@ -154,7 +154,7 @@ class Header extends Component {
                     <span className="icon">
                       <Icon svg="ico-deconnect" />
                     </span>
-                    <span>Déconnexion</span>
+                    <span>{"Déconnexion"}</span>
                   </SignoutButton>
                 </div>
               </div>
@@ -166,4 +166,10 @@ class Header extends Component {
   }
 }
 
-export default Header
+Header.propTypes = {
+  name: PropTypes.string,
+  whiteHeader: PropTypes.string,
+  offerers: PropTypes.array,
+}
+
+export default

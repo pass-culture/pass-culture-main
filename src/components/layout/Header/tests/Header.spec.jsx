@@ -2,7 +2,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import Header from '../Header'
-import { Icon } from 'components/layout/Icon'
+import { Icon } from '../../Icon'
 
 describe('src | components | Layout | Header', () => {
   describe('snapshot', () => {
