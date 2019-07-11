@@ -6,16 +6,17 @@ import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
 
 class Notification extends Component {
-  dispatchCloseNotification = () => {
-    const { dispatch } = this.props
-    dispatch(closeNotification())
-  }
 
   componentDidUpdate() {
     const { notification } = this.props
     if (get(notification, 'tooltip')) {
       ReactTooltip.rebuild()
     }
+  }
+
+  handleDispatchCloseNotification = () => {
+    const { dispatch } = this.props
+    dispatch(closeNotification())
   }
 
   render() {
@@ -76,7 +77,7 @@ class Notification extends Component {
             ) : (
               <button
                 className="close pl12"
-                onClick={this.dispatchCloseNotification}
+                onClick={this.handleDispatchCloseNotification}
               >
                 {url ? 'Fermer' : 'OK'}
               </button>
