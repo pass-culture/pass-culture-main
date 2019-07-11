@@ -1,7 +1,10 @@
 import DiscoveryPage from '../../pages/discovery'
+import FavoritesPage from '../../pages/FavoritesPage'
+import MyBookingsContainer from '../../pages/my-bookings'
 import ProfilePage from '../../pages/profile'
 import SearchContainer from '../../pages/search/SearchContainer'
 import { getMenuRoutes } from '../utils'
+import routes from '../../router/routes'
 
 describe('getMenuRoutes', () => {
   it('should filter routes for menu from mock', () => {
