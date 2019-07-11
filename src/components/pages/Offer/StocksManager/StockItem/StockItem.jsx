@@ -28,7 +28,7 @@ export class StockItem extends Component {
     this.setState({ tbodyElement: this.tbodyElement })
   }
 
-  handleRequestFail = formResolver => (state, action) => {
+  handleRequestFail = () => (state, action) => {
     const { handleSetErrors } = this.props
     const {
       payload: { errors },
@@ -57,7 +57,7 @@ export class StockItem extends Component {
     })
   }
 
-  onFormSubmit = formValues => {
+  handleOnFormSubmit = formValues => {
     const { dispatch, handleSetErrors, query, stockPatch } = this.props
     const { id: stockId } = stockPatch
     const context = query.context({ id: stockId, key: 'stock' })
@@ -147,7 +147,7 @@ export class StockItem extends Component {
         <Form
           decorators={decorators}
           initialValues={stockPatch}
-          onSubmit={this.onFormSubmit}
+          onSubmit={this.handleOnFormSubmit}
           render={formProps => {
             const { form, values, handleSubmit } = formProps
             const { beginningDatetime } = values
@@ -210,12 +210,7 @@ export class StockItem extends Component {
 }
 
 StockItem.defaultProps = {
-  closeInfo: PropTypes.func.isRequired,
-  formBeginningDatetime: null,
-  formBookingLimitDatetime: null,
-  formEndDatetime: null,
   offer: null,
-  showInfo: PropTypes.func.isRequired,
   stocks: null,
   timezone: null,
 }
