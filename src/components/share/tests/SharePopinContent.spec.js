@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/components/share/tests/SharePopinContent --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 
@@ -29,6 +28,7 @@ describe('src | components | share | SharePopinContent', () => {
       expect(wrapper).toMatchSnapshot()
     })
   })
+
   describe('functions', () => {
     describe('closeHandler', () => {
       describe('when options are true', () => {

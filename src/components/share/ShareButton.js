@@ -8,7 +8,6 @@ import ShareButtonContent from './ShareButtonContent'
 import { getShareURL } from '../../helpers'
 import currentRecommendationSelector from '../../selectors/currentRecommendation'
 
-// TODO Add some unit tests on this
 const mapStateToProps = (state, ownProps) => {
   const { location } = ownProps
   const { mediationId, offerId } = ownProps.match.params

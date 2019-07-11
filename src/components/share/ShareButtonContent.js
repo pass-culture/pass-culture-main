@@ -20,7 +20,7 @@ export const getMailToLinkButton = (email, headers) => (
     headers={headers}
     key="MailToLink"
   >
-    <span>Envoyer par e-mail</span>
+    <span>{'Envoyer par e-mail'}</span>
   </MailToLink>
 )
 
@@ -28,10 +28,10 @@ export const getCloseButton = onClose => (
   <button
     className="no-border no-background no-outline is-block py12 is-bold fs14"
     key="closeButton"
-    onClick={() => onClose()}
+    onClick={onClose}
     type="button"
   >
-    <span>Fermer</span>
+    <span>{'Fermer'}</span>
   </button>
 )
 
@@ -43,7 +43,7 @@ class ShareButtonContent extends React.PureComponent {
 
   onCopyHandler = status => {
     this.setState({ iscopied: status }, () => {
-      this.onClickShare()
+      this.handleOnClickShare()
     })
   }
 
@@ -53,7 +53,7 @@ class ShareButtonContent extends React.PureComponent {
     this.setState({ iscopied: false })
   }
 
-  onClickShare = () => {
+  handleOnClickShare = () => {
     const { dispatch, email, offerName, text, url } = this.props
 
     try {
@@ -95,7 +95,7 @@ class ShareButtonContent extends React.PureComponent {
         className="no-border no-background"
         disabled={isDisabled}
         id={id}
-        onClick={this.onClickShare}
+        onClick={this.handleOnClickShare}
         type="button"
       >
         <span

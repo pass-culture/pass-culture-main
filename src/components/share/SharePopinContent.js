@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Transition } from 'react-transition-group'
@@ -23,7 +21,7 @@ const transitionStyles = {
 }
 
 class SharePopinContent extends React.PureComponent {
-  closeHandler = () => {
+  handleCloseHandler = () => {
     const { dispatch } = this.props
     dispatch(closeSharePopin())
   }
@@ -32,7 +30,7 @@ class SharePopinContent extends React.PureComponent {
     <button
       className="pc-text-button is-absolute fs16"
       id="share-popin-close-button"
-      onClick={this.closeHandler}
+      onClick={this.handleCloseHandler}
       type="button"
     >
       <span

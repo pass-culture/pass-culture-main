@@ -9,7 +9,7 @@ import ShareButtonContent, {
 
 const dispatchMock = jest.fn()
 
-describe('src | components | share | getCopyToClipboardButton', () => {
+describe('src | components | share | getCopyToClipboardButton', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
@@ -24,7 +24,7 @@ describe('src | components | share | getCopyToClipboardButton', () => {
   })
 })
 
-describe('src | components | share | getMailToLinkButton', () => {
+describe('src | components | share | getMailToLinkButton', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
@@ -43,7 +43,7 @@ describe('src | components | share | getMailToLinkButton', () => {
   })
 })
 
-describe('src | components | share | getCloseButton', () => {
+describe('src | components | share | getCloseButton', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
