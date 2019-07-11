@@ -12,12 +12,8 @@ class Debug extends React.PureComponent {
     const { dispatchShowModal } = this.props
     dispatchShowModal(
       <div className="debug-modal">
-        <h1 className="title">
-          {'Pass Culture Debug'}
-        </h1>
-        <pre>
-          {get(window, 'logContent', []).map(this.renderLine)}
-        </pre>
+        <h1 className="title">{'Pass Culture Debug'}</h1>
+        <pre>{get(window, 'logContent', []).map(this.renderLine)}</pre>
       </div>,
       {
         fullscreen: true,
@@ -51,15 +47,15 @@ class Debug extends React.PureComponent {
     >
       <div className="header">
         {`${method.toUpperCase()} | `}
-        <time dateTime={time}>
-          {moment(time).format('h:mm:ss')}
-        </time>
+        <time dateTime={time}>{moment(time).format('h:mm:ss')}</time>
       </div>
-      <div className="log">
-        {values.map(this.displayVariable).join('\n')}
-      </div>
+      <div className="log">{values.map(this.displayVariable).join('\n')}</div>
     </code>
   )
+
+  handleOnClick = e => {
+    return e.detail === 3 && e.shiftKey && this.showDebug(e)
+  }
 
   render() {
     const { children, className } = this.props
@@ -71,7 +67,7 @@ class Debug extends React.PureComponent {
       // eslint-disable-next-line
       <div
         className={className}
-        onClick={e => e.detail === 3 && e.shiftKey && this.showDebug(e)}
+        onClick={this.handleOnClick}
         onTouchEnd={this.handleTouchRelease}
         onTouchStart={this.handleTouchPress}
       >
