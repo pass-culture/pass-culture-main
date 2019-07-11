@@ -102,17 +102,17 @@ class Product(PcObject,
         return api_errors
 
 
-Product.__ts_vector__ = create_tsvector(
-    cast(coalesce(Product.name, ''), TEXT),
-    cast(coalesce(Product.description, ''), TEXT),
-    coalesce(Product.extraData['author'].cast(TEXT), ''),
-    coalesce(Product.extraData['byArtist'].cast(TEXT), '')
-)
+Product.__ts_vectors__ = list(map(create_tsvector,
+                                  [Product.name,
+                                   Product.description,
+                                   Product.extraData['author'].cast(TEXT),
+                                   Product.extraData['byArtist'].cast(TEXT)]))
+
 
 Product.__table_args__ = (
     Index(
         'idx_product_fts',
-        Product.__ts_vector__,
+        *Product.__ts_vectors__,
         postgresql_using='gin'
     ),
 )

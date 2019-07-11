@@ -79,16 +79,16 @@ class Offerer(PcObject,
         return n_offers
 
 
-Offerer.__ts_vector__ = create_tsvector(
-    cast(coalesce(Offerer.name, ''), TEXT),
-    cast(coalesce(Offerer.address, ''), TEXT),
-    cast(coalesce(Offerer.siren, ''), TEXT)
-)
+Offerer.__ts_vectors__ = list(map(create_tsvector,
+                                  [Offerer.name,
+                                   Offerer.address,
+                                   Offerer.siren]))
+
 
 Offerer.__table_args__ = (
     Index(
         'idx_offerer_fts',
-        Offerer.__ts_vector__,
+        *Offerer.__ts_vectors__,
         postgresql_using='gin'
     ),
 )

@@ -191,17 +191,17 @@ def create_digital_venue(offerer):
     return digital_venue
 
 
-Venue.__ts_vector__ = create_tsvector(
-    cast(coalesce(Venue.name, ''), TEXT),
-    cast(coalesce(Venue.publicName, ''), TEXT),
-    cast(coalesce(Venue.address, ''), TEXT),
-    cast(coalesce(Venue.siret, ''), TEXT)
-)
+Venue.__ts_vectors__ = list(map(create_tsvector,
+                                [Venue.name,
+                                 Venue.publicName,
+                                 Venue.address,
+                                 Venue.siret]))
+
 
 Venue.__table_args__ = (
     Index(
         'idx_venue_fts',
-        Venue.__ts_vector__,
+        *Venue.__ts_vectors__,
         postgresql_using='gin'
     ),
 )

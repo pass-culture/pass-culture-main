@@ -50,10 +50,11 @@ def create_get_filter_matching_ts_query_in_any_model(*models):
     def get_filter_matching_ts_query_in_any_model(ts_query):
         return or_(
             *[
-                model.__ts_vector__.match(
+                ts_vector.match(
                     ts_query,
                     postgresql_regconfig=LANGUAGE+'_unaccent'
                 )
+                for ts_vector in model.__ts_vectors__
                 for model in models
             ]
         )

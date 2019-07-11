@@ -175,17 +175,17 @@ class Offer(PcObject,
         return matching_type_thing.value['proLabel']
 
 
-Offer.__ts_vector__ = create_tsvector(
-    cast(coalesce(Offer.name, ''), TEXT),
-    coalesce(Offer.extraData['author'].cast(TEXT), ''),
-    coalesce(Offer.extraData['byArtist'].cast(TEXT), ''),
-    cast(coalesce(Offer.description, ''), TEXT),
-)
+Offer.__ts_vectors__ = list(map(create_tsvector,
+                                [Offer.name,
+                                 Offer.extraData['author'].cast(TEXT),
+                                 Offer.extraData['byArtist'].cast(TEXT),
+                                 Offer.description]))
+
 
 Offer.__table_args__ = (
     Index(
         'idx_offer_fts',
-        Offer.__ts_vector__,
+        *Offer.__ts_vectors__,
         postgresql_using='gin'
     ),
 )
