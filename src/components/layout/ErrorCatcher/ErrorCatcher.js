@@ -1,18 +1,16 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import logger from '../../../utils/logger'
 
 class ErrorCatcher extends PureComponent {
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+
   constructor(props) {
     super(props)
     this.state = { hasError: false }
-  }
-
-  static getDerivedStateFromError() {
-    return { hasError: true }
   }
 
   componentDidCatch(error, info) {
@@ -22,24 +20,30 @@ class ErrorCatcher extends PureComponent {
     logger.error(`With info: ${JSON.stringify(info)}`)
   }
 
+  handleOnClick = () => {
+    const { history } = this.props
+
+    history.replace('/decouverte')
+    window.location.reload()
+  }
+
   render() {
     const { hasError } = this.state
-    const { children, history } = this.props
+    const { children } = this.props
+
     if (!hasError) return children
+
     return (
       <div id="error-catcher">
         <div className="flex-1 flex-rows flex-center">
-          <h2 className="fs20">Une erreur est survenue.</h2>
+          <h2 className="fs20">{'Une erreur est survenue.'}</h2>
           <p className="mt12">
             <button
               className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
-              onClick={() => {
-                history.replace('/decouverte')
-                window.location.reload()
-              }}
+              onClick={this.handleOnClick}
               type="button"
             >
-              <span>Retour aux offres</span>
+              <span>{'Retour aux offres'}</span>
             </button>
           </p>
         </div>
@@ -50,7 +54,7 @@ class ErrorCatcher extends PureComponent {
 
 ErrorCatcher.propTypes = {
   children: PropTypes.node.isRequired,
-  history: PropTypes.object.isRequired,
+  history: PropTypes.shape().isRequired,
 }
 
 export default ErrorCatcher

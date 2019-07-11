@@ -1,6 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
-// jest --env=jsdom ./src/components/layout/error-catcher/tests/index --watch
 import { shallow } from 'enzyme'
 import React from 'react'
 
@@ -14,7 +11,7 @@ describe('src | components | layout | ErrorCatcher', () => {
   it('match snapshot and render the children as is', () => {
     // given
     const props = { ...routerProps }
-    const Children = () => <span>any child component</span>
+    const Children = () => <span>{'any child component'}</span>
 
     // when
     const wrapper = shallow(
