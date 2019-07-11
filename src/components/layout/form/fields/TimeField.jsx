@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import classnames from 'classnames'
 import React from 'react'
 import PropTypes from 'prop-types'
@@ -7,29 +5,23 @@ import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
 import ReactTimeInput from 'react-time-input'
 
-import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
+import getRequiredValidate from '../utils/getRequiredValidate'
 
 export const TimeField = ({
-  autoComplete,
   className,
-  clearable,
-  disabled,
   id,
   label,
-  locale,
   name,
-  placeholder,
   readOnly,
   renderValue,
   required,
-  type,
   validate,
   // see https://www.npmjs.com/package/react-time-input
   ...ReactTimeInputProps
 }) => (
   <Field
     name={name}
-    render={({ input, meta }) => {
+    render={({ input }) => {
       return (
         <div
           className={classnames('field time-field', className, {

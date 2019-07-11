@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import classnames from 'classnames'
 import React, { Fragment } from 'react'
 import Textarea from 'react-autosize-textarea'
@@ -7,8 +5,8 @@ import { Field } from 'react-final-form'
 import PropTypes from 'prop-types'
 import { composeValidators } from 'react-final-form-utils'
 
-import FieldErrors from 'components/layout/form/FieldErrors'
-import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
+import FieldErrors from '../FieldErrors'
+import getRequiredValidate from '../utils/getRequiredValidate'
 
 function formatInputValueWhenTooLong(value, maxLength) {
   const valueLength = value.length
@@ -27,7 +25,6 @@ export const TextareaField = ({
   readOnly,
   required,
   validate,
-  validating,
   // see https://github.com/buildo/react-autosize-textarea
   ...ReactAutosizeProps
 }) => (

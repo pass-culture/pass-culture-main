@@ -4,7 +4,7 @@ import moment from 'moment'
 import React from 'react'
 import { Form } from 'react-final-form'
 
-import { DateField, onKeyDown } from '../DateField'
+import { DateField } from '../DateField'
 
 describe('src | components | layout | form | DateField', () => {
   it('should match snapchot', () => {

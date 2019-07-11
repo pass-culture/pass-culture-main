@@ -25,7 +25,7 @@ describe('src | components | layout | form | NumberField', () => {
               onClick={handleSubmit}
               type="submit"
             >
-              Submit
+              {"Submit"}
             </button>
           </form>
         )}
@@ -55,7 +55,7 @@ describe('src | components | layout | form | NumberField', () => {
               onClick={handleSubmit}
               type="submit"
             >
-              Submit
+              {"Submit"}
             </button>
           </form>
         )}
@@ -96,7 +96,7 @@ describe('src | components | layout | form | NumberField', () => {
               onClick={handleSubmit}
               type="submit"
             >
-              Submit
+              {"Submit"}
             </button>
           </form>
         )}
