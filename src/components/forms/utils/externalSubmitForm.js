@@ -1,5 +1,5 @@
 // soumission du form depuis un element exterieur au form
-export const externalSubmitForm = formid => {
+export const externalSubmitForm = formid => () => {
   // NOTE -> submit form from external button will reload the page in firefox
   // SEE -> https://github.com/facebook/react/issues/12639
   const opts = { cancelable: true }

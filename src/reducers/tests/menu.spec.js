@@ -9,7 +9,7 @@ describe('src | reducers | menu  ', () => {
     const updatedState = menu(undefined, action)
 
     // then
-    expect(updatedState).toEqual(false)
+    expect(updatedState).toStrictEqual(false)
   })
 })
 

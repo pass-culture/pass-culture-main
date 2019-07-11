@@ -13,7 +13,7 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       const showType = selectShowTypeByCode(state, String(code))
 
       // then
-      expect(showType.code).toEqual(code)
+      expect(showType.code).toStrictEqual(code)
     })
 
     it('does not find any show type', () => {
@@ -24,7 +24,7 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       const showType = selectShowTypeByCode(state, String(code))
 
       // then
-      expect(showType).toEqual(undefined)
+      expect(showType).toStrictEqual(undefined)
     })
   })
 })

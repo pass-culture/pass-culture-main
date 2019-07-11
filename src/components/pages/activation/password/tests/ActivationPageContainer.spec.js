@@ -31,7 +31,7 @@ describe('src | components | pages | activation | password | ActivationPageConta
       const result = mapDispatchToProps(dispatch)
 
       // then
-      expect(result).toEqual(expectedResult)
+      expect(result).toStrictEqual(expectedResult)
     })
 
     describe('checkTokenIsValid', () => {

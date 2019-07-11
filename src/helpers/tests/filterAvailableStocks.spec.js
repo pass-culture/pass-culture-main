@@ -7,7 +7,7 @@ describe('src | helpers | filterAvailableStocks', () => {
     const result = filterAvailableStocks({})
 
     // then
-    expect(result).toEqual([])
+    expect(result).toStrictEqual([])
   })
 
   it('should return an array without null items', () => {
@@ -18,7 +18,7 @@ describe('src | helpers | filterAvailableStocks', () => {
     const result = filterAvailableStocks(stocks)
 
     // then
-    expect(result).toEqual([{}, {}])
+    expect(result).toStrictEqual([{}, {}])
   })
 
   it('should return an array containing stocks with booking limit datetime after now only', () => {
@@ -35,7 +35,7 @@ describe('src | helpers | filterAvailableStocks', () => {
 
     // then
     expect(result).toHaveLength(1)
-    expect(result).toEqual([
+    expect(result).toStrictEqual([
       { bookingLimitDatetime: bookingLimitDatetimeOneDayAfterNow },
     ])
   })

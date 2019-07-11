@@ -17,11 +17,14 @@ const transitionStyles = {
 }
 
 const Overlay = ({ isVisible }) => (
-  <Transition in={isVisible} timeout={!isVisible ? duration : 0}>
+  <Transition
+    in={isVisible}
+    timeout={!isVisible ? duration : 0}
+  >
     {state => (
       <div
-        id="overlay"
         className="is-overlay"
+        id="overlay"
         style={{ ...defaultStyle, ...transitionStyles[state] }}
       />
     )}

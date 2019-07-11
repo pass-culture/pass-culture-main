@@ -9,13 +9,17 @@ const noop = () => {}
 const HiddenField = ({ name, validator, ...inputProps }) => (
   <Field
     name={name}
-    validate={validator}
     render={({ input, meta }) => (
       <div>
-        <input type="hidden" {...input} {...inputProps} />
+        <input
+          type="hidden"
+          {...input}
+          {...inputProps}
+        />
         <FormError meta={meta} />
       </div>
     )}
+    validate={validator}
   />
 )
 

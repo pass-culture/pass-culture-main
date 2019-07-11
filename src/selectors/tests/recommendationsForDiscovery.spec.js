@@ -18,17 +18,17 @@ describe('selectRecommendationsForDiscovery', () => {
     const result = selectRecommendationsForDiscovery(state)
 
     // then
-    expect(result.length).toEqual(1)
-    expect(result[0].mediation.firstThumbDominantColor).toEqual([205, 54, 70])
-    expect(result[0].mediation.frontText).toEqual(
+    expect(result).toHaveLength(1)
+    expect(result[0].mediation.firstThumbDominantColor).toStrictEqual([205, 54, 70])
+    expect(result[0].mediation.frontText).toStrictEqual(
       'Vous avez parcouru toutes les offres. Revenez bientôt pour découvrir les nouveautés.'
     )
-    expect(result[0].mediation.id).toEqual('fin')
-    expect(result[0].mediation.thumbCount).toEqual(1)
-    expect(result[0].thumbUrl).toEqual(`${ROOT_PATH}/splash-finReco@2x.png`)
-    expect(result[0].mediation.tutoIndex).toEqual(-1)
-    expect(result[0].mediationId).toEqual('fin')
-    expect(result[0].uniqId).toEqual('tuto_-1')
+    expect(result[0].mediation.id).toStrictEqual('fin')
+    expect(result[0].mediation.thumbCount).toStrictEqual(1)
+    expect(result[0].thumbUrl).toStrictEqual(`${ROOT_PATH}/splash-finReco@2x.png`)
+    expect(result[0].mediation.tutoIndex).toStrictEqual(-1)
+    expect(result[0].mediationId).toStrictEqual('fin')
+    expect(result[0].uniqId).toStrictEqual('tuto_-1')
   })
 
   it('should return an array of 2 elements with one recommendation with the fake end reco at the end of array', () => {
@@ -45,7 +45,7 @@ describe('selectRecommendationsForDiscovery', () => {
     const result = selectRecommendationsForDiscovery(state)
 
     // then
-    expect(result.length).toEqual(2)
-    expect(result[1].uniqId).toEqual('tuto_-1')
+    expect(result).toHaveLength(2)
+    expect(result[1].uniqId).toStrictEqual('tuto_-1')
   })
 })

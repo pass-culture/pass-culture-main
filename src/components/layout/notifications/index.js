@@ -7,12 +7,12 @@ const Notifications = ({ ...rest }) => (
   // https://github.com/fkhadra/react-toastify#toastcontainer
   <ToastContainer
     hideProgressBar
-    transition={Slide}
     position="top-center"
+    transition={Slide}
     {...rest}
-    closeButton={<NotificationCloseButton />}
     bodyClassName="react-toastify-body"
     className="react-toastify-container"
+    closeButton={<NotificationCloseButton />}
     toastClassName="react-toastify-toast"
   />
 )

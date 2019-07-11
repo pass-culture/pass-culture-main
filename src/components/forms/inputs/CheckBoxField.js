@@ -22,17 +22,15 @@ const CheckBoxField = ({ children, className, name, required }) => {
   return (
     <Field
       name={name}
-      type="checkbox"
-      validate={validateFunc || undefined}
       render={({ input, meta }) => (
         <Fragment>
           <p className={className}>
             <span className={className}>
               <input
                 {...input}
-                type="checkbox"
                 className="input no-background"
                 required={!!required}
+                type="checkbox"
               />
               {children}
             </span>
@@ -40,6 +38,8 @@ const CheckBoxField = ({ children, className, name, required }) => {
           <FormError meta={meta} />
         </Fragment>
       )}
+      type="checkbox"
+      validate={validateFunc || undefined}
     />
   )
 }

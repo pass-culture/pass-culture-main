@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import classnames from 'classnames'
 import get from 'lodash.get'
 import moment from 'moment'
@@ -60,14 +58,12 @@ class Booking extends PureComponent {
     this.setState({ mounted: false })
   }
 
-  onFormMutation = ({ invalid, values }) => {
-    const nextCanSubmitForm = Boolean(
-      !invalid && values.stockId && values.price >= 0
-    )
+  handleOnFormMutation = ({ invalid, values }) => {
+    const nextCanSubmitForm = Boolean(!invalid && values.stockId && values.price >= 0)
     this.setState({ canSubmitForm: nextCanSubmitForm })
   }
 
-  onFormSubmit = formValues => {
+  handleOnFormSubmit = formValues => {
     const onSubmittingStateChanged = () => {
       this.actions.requestData({
         apiPath: '/bookings',
@@ -125,13 +121,13 @@ class Booking extends PureComponent {
     this.setState(nextState)
   }
 
-  cancelBookingHandler = () => {
+  handleCancelBookingHandler = () => {
     const { match, history } = this.props
     const baseUrl = match.url.replace('/booking', '')
     history.replace(baseUrl)
   }
 
-  getBackToOffer = () => {
+  handleGetBackToOffer = () => {
     const { dispatch, history, match } = this.props
     const offerId = get(match.params, 'offerId')
     const url = `/decouverte/${offerId}`
@@ -157,45 +153,45 @@ class Booking extends PureComponent {
       <Fragment>
         {showCancelButton && (
           <button
-            type="reset"
-            id="booking-close-button"
             className="text-center my5"
-            onClick={this.cancelBookingHandler}
+            id="booking-close-button"
+            onClick={this.handleCancelBookingHandler}
+            type="reset"
           >
-            <span>Annuler</span>
+            <span>{'Annuler'}</span>
           </button>
         )}
 
         {showSubmitButton && (
           <button
-            type="submit"
-            id="booking-validation-button"
             className="has-text-centered my5"
-            onClick={() => externalSubmitForm(BOOKING_FORM_ID)}
+            id="booking-validation-button"
+            onClick={externalSubmitForm(BOOKING_FORM_ID)}
+            type="submit"
           >
-            <b>Valider</b>
+            <b>{'Valider'}</b>
           </button>
         )}
 
         {bookedPayload && (
           <button
-            type="button"
-            id="booking-success-ok-button"
             className="text-center my5"
-            onClick={this.cancelBookingHandler}
+            id="booking-success-ok-button"
+            onClick={this.handleCancelBookingHandler}
+            type="button"
           >
-            <b>OK</b>
+            <b>{'OK'}</b>
           </button>
         )}
 
         {isCancelled && (
           <button
-            type="button"
-            id="booking-cancellation-confirmation-button"
             className="text-center my5"
-            onClick={this.getBackToOffer}
+            id="booking-cancellation-confirmation-button"
+            onClick={this.handleGetBackToOffer}
+            type="button"
           >
-            <b>OK</b>
+            <b>{'OK'}</b>
           </button>
         )}
       </Fragment>
@@ -204,25 +200,11 @@ class Booking extends PureComponent {
 
   render() {
     const userConnected = false
-    const {
-      bookables,
-      booking,
-      extraClassName,
-      isCancelled,
-      isEvent,
-      recommendation,
-    } = this.props
+    const { bookables, booking, extraClassName, isCancelled, isEvent, recommendation } = this.props
 
-    const {
-      bookedPayload,
-      errors,
-      isErrored,
-      isSubmitting,
-      mounted,
-    } = this.state
+    const { bookedPayload, errors, isErrored, isSubmitting, mounted } = this.state
 
-    const showForm =
-      !isSubmitting && !bookedPayload && !isErrored && !isCancelled
+    const showForm = !isSubmitting && !bookedPayload && !isErrored && !isCancelled
     const defaultBookable = !isEvent && get(bookables, '[0]')
     const isReadOnly = isEvent && bookables.length === 1
     let initialDate = null
@@ -235,55 +217,52 @@ class Booking extends PureComponent {
       bookables,
       date: (initialDate && { date: initialDate }) || null,
       price:
-        defaultBookable && priceIsDefined(defaultBookable.price)
-          ? defaultBookable.price
-          : null,
+        defaultBookable && priceIsDefined(defaultBookable.price) ? defaultBookable.price : null,
       recommendationId: recommendation && recommendation.id,
       stockId: (defaultBookable && defaultBookable.id) || null,
     }
     return (
-      <Transition in={mounted} timeout={0}>
+      <Transition
+        in={mounted}
+        timeout={0}
+      >
         {state => (
           <div
+            className={classnames('is-overlay is-clipped flex-rows', extraClassName)}
             id="booking-card"
-            className={classnames(
-              'is-overlay is-clipped flex-rows',
-              extraClassName
-            )}
             style={{ ...defaultStyle, ...transitionStyles[state] }}
           >
             <div className="main flex-rows flex-1 scroll-y">
               <BookingHeader recommendation={recommendation} />
               <div
-                className={`content flex-1 flex-center ${
-                  isCancelled ? '' : 'items-center'
-                }`}
+                className={`content flex-1 flex-center ${isCancelled ? '' : 'items-center'}`}
                 style={{ backgroundImage }}
               >
                 <div className={`${isCancelled ? '' : 'py36 px12'} flex-rows`}>
                   {isSubmitting && <BookingLoader />}
 
-                  {bookedPayload && (
-                    <BookingSuccess isEvent={isEvent} data={bookedPayload} />
-                  )}
+                  {bookedPayload && <BookingSuccess
+                    data={bookedPayload}
+                    isEvent={isEvent}
+                                    />}
 
-                  {isCancelled && (
-                    <BookingCancel isEvent={isEvent} data={booking} />
-                  )}
+                  {isCancelled && <BookingCancel
+                    data={booking}
+                    isEvent={isEvent}
+                                  />}
 
                   {isErrored && <BookingError errors={errors} />}
 
                   {showForm && (
                     <BookingForm
                       className="flex-1 flex-rows flex-center items-center"
+                      disabled={userConnected}
                       formId={BOOKING_FORM_ID}
                       initialValues={formInitialValues}
                       isEvent={isEvent}
                       isReadOnly={isReadOnly}
-                      disabled={userConnected}
-                      onSubmit={this.onFormSubmit}
-                      onMutation={this.onFormMutation}
-                      onValidation={this.onFormValidation}
+                      onMutation={this.handleOnFormMutation}
+                      onSubmit={this.handleOnFormSubmit}
                     />
                   )}
                 </div>
@@ -309,15 +288,15 @@ Booking.defaultProps = {
 }
 
 Booking.propTypes = {
-  bookables: PropTypes.array,
-  booking: PropTypes.object,
+  bookables: PropTypes.arrayOf(),
+  booking: PropTypes.shape(),
   dispatch: PropTypes.func.isRequired,
   extraClassName: PropTypes.string,
-  history: PropTypes.object.isRequired,
+  history: PropTypes.shape().isRequired,
   isCancelled: PropTypes.bool,
   isEvent: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
-  match: PropTypes.object.isRequired,
-  recommendation: PropTypes.object,
+  match: PropTypes.shape().isRequired,
+  recommendation: PropTypes.shape(),
 }
 
 export default Booking

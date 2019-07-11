@@ -28,7 +28,7 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
   })
 
   describe('functions', () => {
-    it('should redirect to discovery when already authenticated and needsToFillCulturalSurvey', done => {
+    it('should redirect to discovery when already authenticated and needsToFillCulturalSurvey', () => {return new Promise(done => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
@@ -58,7 +58,7 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
           </Router>
         </Provider>
       )
-    })
+    })})
     it('should redirect to currentLocation when already authenticated and not needsToFillCulturalSurvey', () => {
       // given
       const history = createBrowserHistory()

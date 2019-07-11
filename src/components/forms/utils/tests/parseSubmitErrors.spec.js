@@ -16,6 +16,6 @@ describe('src | components | forms | utils | parseSubmitErrors ', () => {
     }
 
     // then
-    expect(result).toEqual(expected)
+    expect(result).toStrictEqual(expected)
   })
 })

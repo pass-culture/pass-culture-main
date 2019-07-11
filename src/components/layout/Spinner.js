@@ -35,7 +35,10 @@ class Spinner extends Component {
     const { className, label, style, Tag } = this.props
     const { nbDots } = this.state
     return (
-      <Tag className={classnames('spinner', className)} style={style}>
+      <Tag
+        className={classnames('spinner', className)}
+        style={style}
+      >
         <Icon svg="ico-loader-r" />
         <span
           className="content"

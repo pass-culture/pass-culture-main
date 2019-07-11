@@ -3,7 +3,10 @@ import { Link } from 'react-router-dom'
 
 const NoBookings = () => (
   <Fragment>
-    <Link className="mb-link-offers" to="/decouverte">
+    <Link
+      className="mb-link-offers"
+      to="/decouverte"
+    >
       Lancez-vous
     </Link>
     <p className="mb-text">

@@ -24,10 +24,13 @@ export class RawRequestEmailForm extends React.PureComponent {
     const { canSubmit, isLoading, formErrors } = this.props
     return (
       <div
-        id="reset-password-page-request"
         className="is-full-layout flex-rows"
+        id="reset-password-page-request"
       >
-        <main role="main" className="pc-main is-white-text flex-1">
+        <main
+          className="pc-main is-white-text flex-1"
+          role="main"
+        >
           <div className="pc-scroll-container">
             <div className="is-full-layout flex-rows flex-center padded-2x">
               <h2 className="mb36">
@@ -42,12 +45,12 @@ export class RawRequestEmailForm extends React.PureComponent {
               </h2>
               <div>
                 <InputField
-                  required
-                  name="email"
-                  theme="primary"
                   disabled={isLoading}
-                  placeholder="Ex. : nom@domaine.fr"
                   label="Adresse e-mail"
+                  name="email"
+                  placeholder="Ex. : nom@domaine.fr"
+                  required
+                  theme="primary"
                 />
                 {formErrors && <FormError customMessage={formErrors} />}
               </div>

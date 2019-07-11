@@ -3,7 +3,7 @@ import state from '../../mocks/stateWithTypes'
 
 describe('selectTypeSublabels', () => {
   it('should select the global state', () => {
-    expect(selectTypeSublabelsSelector(state)).toEqual([
+    expect(selectTypeSublabelsSelector(state)).toStrictEqual([
       'Applaudir',
       'Jouer',
       'Lire',
@@ -52,6 +52,6 @@ describe('selectTypes', () => {
         sublabel: 'Rencontrer',
       },
     ]
-    expect(selectTypes(state)).toEqual(expected)
+    expect(selectTypes(state)).toStrictEqual(expected)
   })
 })

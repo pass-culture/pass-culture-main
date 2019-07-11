@@ -14,7 +14,10 @@ class MailToLink extends React.PureComponent {
   renderLink = () => {
     const { email, obfuscate, headers, children, ...others } = this.props
     return (
-      <a href={createMailToLink(email, headers)} {...others}>
+      <a
+        href={createMailToLink(email, headers)}
+        {...others}
+      >
         {children}
       </a>
     )

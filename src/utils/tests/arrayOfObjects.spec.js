@@ -41,7 +41,7 @@ describe('src | utils | arrayOfObjects | sortAlphabeticallyArrayOfObjectsByPrope
       },
     ]
     // then
-    expect(result).toEqual(expected)
+    expect(result).toStrictEqual(expected)
   })
 })
 
@@ -98,7 +98,7 @@ describe('src | utils | arrayOfObjects | sortAlphabeticallyArrayOfObjectsByPrope
     ]
 
     // then
-    expect(result).toEqual(expected)
+    expect(result).toStrictEqual(expected)
   })
 
   //   it.skip("should return the array sorted by property even if it contains special chars", () => {
@@ -151,6 +151,6 @@ describe('src | utils | arrayOfObjects | sortAlphabeticallyArrayOfObjectsByPrope
     )
 
     // then
-    expect(result).toEqual(typesArray)
+    expect(result).toStrictEqual(typesArray)
   })
 })

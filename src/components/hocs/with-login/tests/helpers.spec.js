@@ -19,7 +19,7 @@ describe('src | hocs | with-login | helpers', () => {
       const result = getRedirectToCurrentLocationOrTypeform(props)
 
       // when
-      expect(result).toEqual('/my-page?any=any')
+      expect(result).toStrictEqual('/my-page?any=any')
     })
 
     it('should return typeform location when user has not filled the Typeform', () => {
@@ -36,7 +36,7 @@ describe('src | hocs | with-login | helpers', () => {
       const result = getRedirectToCurrentLocationOrTypeform(props)
 
       // when
-      expect(result).toEqual('/typeform')
+      expect(result).toStrictEqual('/typeform')
     })
   })
   describe('getRedirectToCurrentLocationOrDiscovery', () => {
@@ -54,7 +54,7 @@ describe('src | hocs | with-login | helpers', () => {
       const result = getRedirectToCurrentLocationOrDiscovery(props)
 
       // when
-      expect(result).toEqual('/decouverte')
+      expect(result).toStrictEqual('/decouverte')
     })
 
     it('should return current location when user has not filled the Typeform', () => {
@@ -71,7 +71,7 @@ describe('src | hocs | with-login | helpers', () => {
       const result = getRedirectToCurrentLocationOrDiscovery(props)
 
       // when
-      expect(result).toEqual('/my-page?any=any')
+      expect(result).toStrictEqual('/my-page?any=any')
     })
   })
 })

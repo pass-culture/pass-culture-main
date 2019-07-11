@@ -65,22 +65,25 @@ class SearchDetails extends PureComponent {
           <Route
             path="/recherche/resultats/:option?/item/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/(booking|cancelled)/:bookingId?"
             render={route => (
-              <BookingContainer extraClassName="with-header" {...route} />
+              <BookingContainer
+                extraClassName="with-header"
+                {...route}
+              />
             )}
           />
         )}
         {recommendation && (
           <Fragment>
             <VersoContainer
-              recommendation={recommendation}
               extraClassName="with-header"
               forceDetailsVisible={forceDetailsVisible}
+              recommendation={recommendation}
             />
             <RectoContainer
-              recommendation={recommendation}
               areDetailsVisible={forceDetailsVisible}
               extraClassName="with-header"
               position="current"
+              recommendation={recommendation}
             />
           </Fragment>
         )}

@@ -19,7 +19,10 @@ const renderBookingList = items => (
   <ul className="bookings">
     {items.map(booking => {
       const key = booking.id
-      return <MyBookingContainer key={key} booking={booking} />
+      return (<MyBookingContainer
+        booking={booking}
+        key={key}
+              />)
     })}
   </ul>
 )
@@ -63,17 +66,20 @@ export class RawMyBookingsPage extends Component {
     const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
     return (
       <div
-        id="bookings-page"
         className="page is-relative flex-rows with-header"
+        id="bookings-page"
       >
         {!isLoading && (
           <React.Fragment>
             <PageHeader title="Mes réservations" />
             <main
-              role="main"
               className="pc-main pc-gradient flex-rows flex-start is-clipped"
+              role="main"
             >
-              <div className="pc-scroll-container" style={{ backgroundImage }}>
+              <div
+                className="pc-scroll-container"
+                style={{ backgroundImage }}
+              >
                 {soonBookingsLength > 0 && (
                   <div className="px12 mt36">
                     <h4 className="mb16 fs19 is-uppercase is-white-text">
@@ -93,13 +99,16 @@ export class RawMyBookingsPage extends Component {
                 {(isEmpty || hasNoBooking) && <NoBookingView />}
               </div>
             </main>
-            <NavigationFooter theme="purple" className="dotted-top-white" />
+            <NavigationFooter
+              className="dotted-top-white"
+              theme="purple"
+            />
           </React.Fragment>
         )}
         {!isEmpty && (
           <LoaderContainer
-            isEmpty={isEmpty}
             hasError={hasError}
+            isEmpty={isEmpty}
             isLoading={isLoading}
           />
         )}

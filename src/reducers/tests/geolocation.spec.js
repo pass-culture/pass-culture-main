@@ -20,7 +20,7 @@ describe('src | reducers | geolocation  ', () => {
     }
 
     // then
-    expect(updatedState).toEqual(expected)
+    expect(updatedState).toStrictEqual(expected)
   })
 
   it('should set state when action is SET_GEOLOCATION_POSITION ', () => {
@@ -40,7 +40,7 @@ describe('src | reducers | geolocation  ', () => {
     }
 
     // then
-    expect(updatedState).toEqual(expected)
+    expect(updatedState).toStrictEqual(expected)
   })
 
   it('should set state when action is SET_GEOLOCATION_WATCH_ID ', () => {
@@ -56,7 +56,7 @@ describe('src | reducers | geolocation  ', () => {
     const expected = { watchId: 1 }
 
     // then
-    expect(updatedState).toEqual(expected)
+    expect(updatedState).toStrictEqual(expected)
   })
 })
 

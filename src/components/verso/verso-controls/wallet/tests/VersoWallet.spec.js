@@ -23,7 +23,7 @@ describe('src | components | verso | verso-controls | wallet | VersoWallet', ()
     const wrapper = shallow(<VersoWallet {...props} />)
 
     // then
-    expect(wrapper.prop('id')).toEqual('verso-wallet')
+    expect(wrapper.prop('id')).toStrictEqual('verso-wallet')
   })
 
   it('wallet display should have a label', () => {
@@ -35,7 +35,7 @@ describe('src | components | verso | verso-controls | wallet | VersoWallet', ()
 
     // then
     expect(label).toHaveLength(1)
-    expect(label.text()).toEqual('Mon Pass')
+    expect(label.text()).toStrictEqual('Mon Pass')
   })
 
   it('wallet display should show a price', () => {
@@ -48,6 +48,6 @@ describe('src | components | verso | verso-controls | wallet | VersoWallet', ()
 
     // then
     expect(value).toHaveLength(1)
-    expect(value.text()).toEqual(`${props.value}\u00a0€`)
+    expect(value.text()).toStrictEqual(`${props.value}\u00a0€`)
   })
 })

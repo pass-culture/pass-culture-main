@@ -21,10 +21,10 @@ describe('src | reducers | card  ', () => {
     const updatedState = card(state, action)
 
     // then
-    expect(updatedState).toEqual(state)
+    expect(updatedState).toStrictEqual(state)
   })
 
-  describe('When action.type is CLOSE_DETAILS_VIEW', () => {
+  describe('when action.type is CLOSE_DETAILS_VIEW', () => {
     it('should return correct update state', () => {
       // given
       const action = { type: CLOSE_DETAILS_VIEW }
@@ -34,11 +34,11 @@ describe('src | reducers | card  ', () => {
       const expected = { areDetailsVisible: false, unFlippable: false }
 
       // then
-      expect(queriesReducer).toEqual(expected)
+      expect(queriesReducer).toStrictEqual(expected)
     })
   })
 
-  describe('When action.type is SHOW_DETAILS_VIEW', () => {
+  describe('when action.type is SHOW_DETAILS_VIEW', () => {
     it('should return correct update state', () => {
       // given
       const action = { type: SHOW_DETAILS_VIEW }
@@ -48,11 +48,11 @@ describe('src | reducers | card  ', () => {
       const expected = { areDetailsVisible: true }
 
       // then
-      expect(queriesReducer).toEqual(expected)
+      expect(queriesReducer).toStrictEqual(expected)
     })
   })
 
-  describe('When action.type is MAKE_UNDRAGGABLE', () => {
+  describe('when action.type is MAKE_UNDRAGGABLE', () => {
     it('should return correct update state', () => {
       // given
       const action = { type: MAKE_UNDRAGGABLE }
@@ -62,11 +62,11 @@ describe('src | reducers | card  ', () => {
       const expected = { draggable: false }
 
       // then
-      expect(queriesReducer).toEqual(expected)
+      expect(queriesReducer).toStrictEqual(expected)
     })
   })
 
-  describe('When action.type is MAKE_DRAGGABLE', () => {
+  describe('when action.type is MAKE_DRAGGABLE', () => {
     it('should return correct update state', () => {
       // given
       const action = { type: MAKE_DRAGGABLE }
@@ -76,11 +76,11 @@ describe('src | reducers | card  ', () => {
       const expected = { draggable: true }
 
       // then
-      expect(queriesReducer).toEqual(expected)
+      expect(queriesReducer).toStrictEqual(expected)
     })
   })
 
-  describe('When action.type is SHOW_UNFLIPPABLE_DETAILS_VIEW', () => {
+  describe('when action.type is SHOW_UNFLIPPABLE_DETAILS_VIEW', () => {
     it('should return correct update state', () => {
       // given
       const action = {
@@ -95,7 +95,7 @@ describe('src | reducers | card  ', () => {
       }
 
       // then
-      expect(queriesReducer).toEqual(expected)
+      expect(queriesReducer).toStrictEqual(expected)
     })
   })
 

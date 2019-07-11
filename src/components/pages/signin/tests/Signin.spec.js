@@ -30,7 +30,7 @@ describe('src | components | pages | signin | Signin', () => {
       const expected = { isloading: false }
 
       // then
-      expect(wrapper.state()).toEqual(expected)
+      expect(wrapper.state()).toStrictEqual(expected)
     })
   })
 

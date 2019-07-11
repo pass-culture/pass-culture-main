@@ -12,14 +12,18 @@ const ProfileUpdateSuccess = ({ config, match }) => {
   const item = config[match.params.view]
   return (
     <div
-      id="profile-page-main-view"
       className="pc-page-view pc-theme-default flex-rows with-header"
+      id="profile-page-main-view"
     >
-      <PageHeader backTo="/profil" closeTo={null} title={item.title} />
+      <PageHeader
+        backTo="/profil"
+        closeTo={null}
+        title={item.title}
+      />
       <main
+        className="pc-main padded is-relative flex-1 flex-rows text-center"
         role="main"
         style={{ backgroundImage: BACKGROUND_IMAGE }}
-        className="pc-main padded is-relative flex-1 flex-rows text-center"
       >
         <h2 className="is-block fs22">
           <span
@@ -35,12 +39,18 @@ const ProfileUpdateSuccess = ({ config, match }) => {
           Pensez à l&apos;utiliser lors de votre prochaine connexion
         </div>
         <div className="mt24 is-bold fs16">
-          <Link to="/profil" className="is-red-text">
+          <Link
+            className="is-red-text"
+            to="/profil"
+          >
             <span>Retour au profil</span>
           </Link>
         </div>
       </main>
-      <NavigationFooter theme="white" className="dotted-top-red" />
+      <NavigationFooter
+        className="dotted-top-red"
+        theme="white"
+      />
     </div>
   )
 }

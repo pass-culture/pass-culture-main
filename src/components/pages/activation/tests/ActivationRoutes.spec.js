@@ -24,7 +24,7 @@ describe('src | components | pages | activation | ActivationRoutes', () => {
     // then
     const routes = wrapper.find(Route)
     expect(routes.at(2).prop('path')).toBe('/activation/:token')
-    expect(routes.at(2).prop('component')).toEqual(ActivationPageContainer)
+    expect(routes.at(2).prop('component')).toStrictEqual(ActivationPageContainer)
   })
 
   it('should render error component when route is exactly /activation/error', () => {
@@ -34,7 +34,7 @@ describe('src | components | pages | activation | ActivationRoutes', () => {
     // then
     const routes = wrapper.find(Route)
     expect(routes.at(0).prop('path')).toBe('/activation/error')
-    expect(routes.at(0).prop('component')).toEqual(ActivationError)
+    expect(routes.at(0).prop('component')).toStrictEqual(ActivationError)
     expect(routes.at(0).prop('exact')).toBeDefined()
   })
 
@@ -54,7 +54,7 @@ describe('src | components | pages | activation | ActivationRoutes', () => {
     // then
     const routes = wrapper.find(Route)
     expect(routes.at(1).prop('path')).toBe('/activation/lien-invalide')
-    expect(routes.at(1).prop('component')).toEqual(InvalidLink)
+    expect(routes.at(1).prop('component')).toStrictEqual(InvalidLink)
     expect(routes.at(1).prop('exact')).toBeDefined()
   })
 })

@@ -71,7 +71,10 @@ class Signin extends React.PureComponent {
   render() {
     const { isloading } = this.state
     return (
-      <div id="sign-in-page" className="page pc-gradient is-relative">
+      <div
+        className="page pc-gradient is-relative"
+        id="sign-in-page"
+      >
         <Form
           onSubmit={this.onFormSubmit}
           render={({
@@ -89,11 +92,11 @@ class Signin extends React.PureComponent {
               (!hasValidationErrors && hasSubmitErrors && dirtySinceLastSubmit)
             return (
               <form
-                noValidate
                 autoComplete="off"
-                disabled={isloading}
-                onSubmit={handleSubmit}
                 className="pc-final-form flex-rows is-full-layout"
+                disabled={isloading}
+                noValidate
+                onSubmit={handleSubmit}
               >
                 <div className="flex-1 flex-rows flex-center is-white-text padded-2x overflow-y">
                   <FormHeader />

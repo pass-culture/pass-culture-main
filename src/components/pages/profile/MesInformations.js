@@ -16,11 +16,14 @@ class MesInformations extends React.PureComponent {
     // pour cela on utilise le resolver retournant une valeur falsey
     const value = (resolver && resolver(user, key)) || user[key]
     return (
-      <div key={key} className="item dotted-bottom-black">
+      <div
+        className="item dotted-bottom-black"
+        key={key}
+      >
         <NavLink
+          className="pc-text-button text-left no-decoration flex-columns items-center pt20 pb22"
           disabled={disabled}
           to={`/profil/${routeName}`}
-          className="pc-text-button text-left no-decoration flex-columns items-center pt20 pb22"
         >
           <span className="is-block flex-1">
             <span className="pc-label pb3 is-block is-grey-text is-uppercase fs13 is-medium">
@@ -57,7 +60,10 @@ class MesInformations extends React.PureComponent {
       // const dptCode = user.departementCode
       // const departementName = getDepartementByCode(dptCode)
       // const departement = `${dptCode} - ${departementName}`
-      <div id="mes-informations" className="pb40 pt20">
+      <div
+        className="pb40 pt20"
+        id="mes-informations"
+      >
         <h3 className="dotted-bottom-primary is-primary-text is-uppercase pb6 px12 fs15">
           <span className="is-italic">Mes Informations</span>
         </h3>

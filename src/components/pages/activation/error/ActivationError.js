@@ -11,9 +11,9 @@ const ActivationError = () => {
   }
   return (
     <main
-      role="main"
-      id="activation-error-page"
       className="pc-main padded-2x flex-rows flex-center"
+      id="activation-error-page"
+      role="main"
     >
       <div className="flex-center flex-row">
         <p className="fs20">Il semblerait que le lien cliqué soit incorrect.</p>
@@ -21,11 +21,11 @@ const ActivationError = () => {
 
       <div className="flex-center flex-row padded">
         <MailToLink
-          obfuscate
+          className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
           email={SUPPORT_EMAIL}
           headers={emailHeaders}
           id="activation-error-contact-us"
-          className="no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16"
+          obfuscate
         >
           <span>Contactez-nous</span>
         </MailToLink>

@@ -6,7 +6,7 @@ describe('src | components | booking | utils | flattenErrors', () => {
     it('should return the new array', () => {
       const acc = []
       const err = ['error one', 'error two']
-      expect(flattenErrors(acc, err)).toEqual(['error one', 'error two'])
+      expect(flattenErrors(acc, err)).toStrictEqual(['error one', 'error two'])
     })
   })
 
@@ -14,7 +14,7 @@ describe('src | components | booking | utils | flattenErrors', () => {
     it('should return the new array', () => {
       const acc = []
       const err = [['error one', 'error two'], ['error three']]
-      expect(flattenErrors(acc, err)).toEqual([
+      expect(flattenErrors(acc, err)).toStrictEqual([
         'error one',
         'error two',
         'error three',
@@ -42,7 +42,7 @@ describe('src | components | booking | utils | flattenErrors', () => {
     it('should return the new array', () => {
       const acc = []
       const err = ['error one', { errorTwo: 'error' }]
-      expect(flattenErrors(acc, err)).toEqual([
+      expect(flattenErrors(acc, err)).toStrictEqual([
         'error one',
         { errorTwo: 'error' },
       ])

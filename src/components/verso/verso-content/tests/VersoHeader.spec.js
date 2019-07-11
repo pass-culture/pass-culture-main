@@ -25,7 +25,7 @@ describe('src | components | verso | VersoHeader', () => {
     const element = wrapper.find('#verso-offer-name')
     // then
     const expected = props.title
-    expect(element.text()).toEqual(expected)
+    expect(element.text()).toStrictEqual(expected)
   })
   it('check if has subtitle', () => {
     // when
@@ -33,7 +33,7 @@ describe('src | components | verso | VersoHeader', () => {
     const element = wrapper.find('#verso-offer-venue')
     // then
     const expected = props.subtitle
-    expect(element.text()).toEqual(expected)
+    expect(element.text()).toStrictEqual(expected)
   })
   it('check if has background color', () => {
     // when

@@ -48,7 +48,11 @@ const App = ({ location, children, history }) => {
           {/* TODO: mettre ici le composant from password */}
           {children}
           <Overlay />
-          <Route component={MenuContainer} history={history} path="*/menu" />
+          <Route
+            component={MenuContainer}
+            history={history}
+            path="*/menu"
+          />
           <Splash />
           <SharePopin />
           <Notifications />

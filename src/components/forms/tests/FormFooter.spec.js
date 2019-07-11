@@ -115,7 +115,7 @@ describe('src | components | forms | FormFooter', () => {
       const submitButtonProps = wrapper.find('button').props()
 
       // then
-      expect(submitButtonProps.id).toEqual('fake submit id')
+      expect(submitButtonProps.id).toStrictEqual('fake submit id')
     })
 
     it('render submit as text link', () => {
@@ -134,7 +134,7 @@ describe('src | components | forms | FormFooter', () => {
       const submitButtonProps = wrapper.find('Link').props()
 
       // then
-      expect(submitButtonProps.id).toEqual('fake submit id')
+      expect(submitButtonProps.id).toStrictEqual('fake submit id')
     })
 
     it('render cancel button only', () => {
@@ -153,7 +153,7 @@ describe('src | components | forms | FormFooter', () => {
       const submitButtonProps = wrapper.find('Link').props()
 
       // then
-      expect(submitButtonProps.id).toEqual('fake cancel id')
+      expect(submitButtonProps.id).toStrictEqual('fake cancel id')
     })
   })
 

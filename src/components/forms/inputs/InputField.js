@@ -25,10 +25,12 @@ const InputField = ({
   return (
     <Field
       name={name}
-      validate={validateFunc || undefined}
       render={({ input, meta }) => (
         <p className={`${className}`}>
-          <label htmlFor={name} className="pc-final-form-text">
+          <label
+            className="pc-final-form-text"
+            htmlFor={name}
+          >
             {label && (
               <InputLabel
                 label={label}
@@ -39,19 +41,20 @@ const InputField = ({
             <span className="pc-final-form-inner">
               <input
                 {...input}
-                id={name}
-                type="text"
-                disabled={disabled}
-                required={!!required} // cast to boolean
-                placeholder={placeholder}
                 autoComplete={autoComplete ? 'on' : 'off'}
                 className="pc-final-form-input is-block"
+                disabled={disabled}
+                id={name} // cast to boolean
+                placeholder={placeholder}
+                required={!!required}
+                type="text"
               />
             </span>
             <FormError meta={meta} />
           </label>
         </p>
       )}
+      validate={validateFunc || undefined}
     />
   )
 }

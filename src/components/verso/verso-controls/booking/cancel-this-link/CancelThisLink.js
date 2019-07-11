@@ -9,8 +9,8 @@ import { closeSharePopin, openSharePopin } from '../../../../../reducers/share'
 class CancelThisLink extends React.PureComponent {
   buildButton = (label, id, onClick) => (
     <button
-      id={id}
       className="no-border no-background no-outline is-block py12 is-bold fs14"
+      id={id}
       key={label}
       onClick={onClick}
       type="button"
@@ -93,18 +93,21 @@ class CancelThisLink extends React.PureComponent {
 
     return (
       <button
+        className="flex-columns no-border no-background"
         disabled={isFinished}
         id="verso-cancel-booking-button"
-        type="button"
-        className="flex-columns no-border no-background"
         onClick={() => !isFinished && this.openCancelPopin(booking)}
+        type="button"
       >
         <span className="pc-ticket-button-price reserved">
-          <Price free="Gratuit" value={priceValue} />
+          <Price
+            free="Gratuit"
+            value={priceValue}
+          />
           {!isCancelled && (
             <i
-              id="verso-cancel-booking-button-reserved"
               className="icon-ico-check fs24"
+              id="verso-cancel-booking-button-reserved"
             />
           )}
         </span>

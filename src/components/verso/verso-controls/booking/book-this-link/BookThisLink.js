@@ -15,16 +15,16 @@ export const formatOutputPrice = ([startingPrice, endingPrice], devise) => (
 
 const BookThisLink = ({ isFinished, linkDestination, priceValue }) => (
   <Link
-    to={linkDestination}
+    className="flex-columns is-bold is-white-text fs18"
     disabled={isFinished}
     id="verso-booking-button"
-    className="flex-columns is-bold is-white-text fs18"
+    to={linkDestination}
   >
     <Price
-      free="Gratuit"
       className="pc-ticket-button-price flex-columns items-center"
-      value={priceValue}
       format={formatOutputPrice}
+      free="Gratuit"
+      value={priceValue}
     />
     <span className="pc-ticket-button-label">J&apos;y vais!</span>
   </Link>

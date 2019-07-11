@@ -27,6 +27,6 @@ describe('src | components | pages | RawBetaPage', () => {
     const element = wrapper.find('#beta-connexion-link')
     // then
     expect(element).toHaveLength(1)
-    expect(element.prop('href')).toEqual('/connexion')
+    expect(element.prop('href')).toStrictEqual('/connexion')
   })
 })

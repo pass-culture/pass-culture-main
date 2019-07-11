@@ -114,7 +114,7 @@ describe('src | components | pages | search | SearchResults', () => {
 
       // then
       expect(wrapper.state(['isLoading'])).toBe(true)
-      expect(props.query.change).toBeCalledWith(
+      expect(props.query.change).toHaveBeenCalledWith(
         { page },
         { historyMethod: 'replace' }
       )
@@ -166,7 +166,7 @@ describe('src | components | pages | search | SearchResults', () => {
           expect(resultsTitle.children).toBe(
             "Il n'y a pas d'offres dans cette catégorie pour le moment."
           )
-          expect(SearchResultItemWrapper.length).toBe(0)
+          expect(SearchResultItemWrapper).toHaveLength(0)
         })
       })
     })
@@ -210,7 +210,7 @@ describe('src | components | pages | search | SearchResults', () => {
 
           // then
           expect(resultsTitle.children).toBe('"fakeKeywords" : 0 résultat')
-          expect(SearchResultItemWrapper.length).toBe(0)
+          expect(SearchResultItemWrapper).toHaveLength(0)
         })
       })
     })

@@ -7,25 +7,32 @@ import { EmailField, PasswordField } from '../../forms/inputs'
 
 const FormInputs = () => (
   <div>
-    <input type="hidden" name="name" value="user" />
+    <input
+      name="name"
+      type="hidden"
+      value="user"
+    />
     <EmailField
-      id="user-identifier"
-      required
       className="mb36"
-      name="identifier"
+      id="user-identifier"
       label="Adresse e-mail"
+      name="identifier"
       placeholder="Identifiant (email)"
+      required
     />
     <PasswordField
       // NOTE on ne teste pas la force du password au signin
-      required={validateRequiredField}
-      id="user-password"
       className="mb36"
-      name="password"
+      id="user-password"
       label="Mot de passe"
+      name="password"
       placeholder="Mot de passe"
+      required={validateRequiredField}
     />
-    <Link to="/mot-de-passe-perdu" className="is-white-text is-underline fs16">
+    <Link
+      className="is-white-text is-underline fs16"
+      to="/mot-de-passe-perdu"
+    >
       <span>Mot de passe oublié&nbsp;?</span>
     </Link>
   </div>

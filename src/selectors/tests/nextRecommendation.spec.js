@@ -15,7 +15,7 @@ describe('nextRecommendationSelector', () => {
       const result = nextRecommendationSelector(state, offerId, mediationId)
 
       // then
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
   })
 
@@ -169,7 +169,7 @@ describe('nextRecommendationSelector', () => {
       const result = nextRecommendationSelector(state, offerId, mediationId)
 
       // then
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
   })
 })

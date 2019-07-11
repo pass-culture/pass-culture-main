@@ -6,8 +6,14 @@ import { Link } from 'react-router-dom'
 import { withNotRequiredLogin } from '../hocs'
 
 export const RawBetaPage = () => (
-  <div id="beta-page" className="page pc-gradient flex-rows">
-    <main role="main" className="pc-main padded flex-rows flex-center flex-0">
+  <div
+    className="page pc-gradient flex-rows"
+    id="beta-page"
+  >
+    <main
+      className="pc-main padded flex-rows flex-center flex-0"
+      role="main"
+    >
       <h1 className="text-left fs32">
         <span className="is-bold is-italic is-block">Bienvenue</span>
         <span className="is-italic is-block is-semi-bold">
@@ -22,11 +28,14 @@ export const RawBetaPage = () => (
         </span>
       </p>
     </main>
-    <footer role="navigation" className="pc-footer flex-columns flex-end">
+    <footer
+      className="pc-footer flex-columns flex-end"
+      role="navigation"
+    >
       <Link
+        className="flex-center items-center"
         id="beta-connexion-link"
         to="/connexion"
-        className="flex-center items-center"
       >
         <span className="fs32 is-italic is-semi-bold">C&apos;est par là</span>
         <span

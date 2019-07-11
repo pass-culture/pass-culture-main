@@ -35,7 +35,7 @@ describe('src | components | pages | search | FilterByDates', () => {
   it('should match the snapshot', () => {
     // given
     const snapshotDate = new Date('2019-06-02T12:41:33.680Z')
-    global.Date = jest.fn(() => snapshotDate)
+    jest.spyOn(global, 'Date').mockImplementation(() => snapshotDate)
 
     // when
     const wrapper = shallow(<FilterByDates {...props} />)
@@ -74,7 +74,7 @@ describe('src | components | pages | search | FilterByDates', () => {
         date: null,
         jours: null,
       })
-      expect(wrapper.state(['pickedDate'])).toBe(null)
+      expect(wrapper.state(['pickedDate'])).toBeNull()
     })
   })
 
@@ -89,7 +89,7 @@ describe('src | components | pages | search | FilterByDates', () => {
         wrapper.instance().onChangeDate(day)()
 
         // then
-        expect(wrapper.state(['pickedDate'])).toBe(null)
+        expect(wrapper.state(['pickedDate'])).toBeNull()
         expect(props.filterActions.add).toHaveBeenCalled()
       })
 
@@ -103,7 +103,7 @@ describe('src | components | pages | search | FilterByDates', () => {
         wrapper.instance().onChangeDate(day)()
 
         // then
-        expect(wrapper.state(['pickedDate'])).toBe(null)
+        expect(wrapper.state(['pickedDate'])).toBeNull()
         expect(props.filterActions.remove).toHaveBeenCalled()
       })
 
@@ -118,7 +118,7 @@ describe('src | components | pages | search | FilterByDates', () => {
         wrapper.instance().onChangeDate(day)()
 
         // then
-        expect(wrapper.state(['pickedDate'])).toBe(null)
+        expect(wrapper.state(['pickedDate'])).toBeNull()
         expect(props.filterActions.remove).toHaveBeenCalledWith(
           'jours',
           day,
@@ -137,7 +137,7 @@ describe('src | components | pages | search | FilterByDates', () => {
         wrapper.instance().onChangeDate(day)()
 
         // then
-        expect(wrapper.state(['pickedDate'])).toBe(null)
+        expect(wrapper.state(['pickedDate'])).toBeNull()
         expect(props.filterActions.add).toHaveBeenCalledWith(
           'jours',
           day,
@@ -163,7 +163,7 @@ describe('src | components | pages | search | FilterByDates', () => {
       })
 
       // then
-      expect(wrapper.state(['pickedDate'])).toBe(null)
+      expect(wrapper.state(['pickedDate'])).toBeNull()
     })
   })
 

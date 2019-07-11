@@ -6,19 +6,19 @@ const resetObj = { price: null, stockId: null, time: null }
 
 describe('src | components | booking | utils | onCalendarUpdates', () => {
   it('should throw if no form values defined || not object', () => {
-    expect(() => onCalendarUpdates()).toThrowError()
-    expect(() => onCalendarUpdates(null)).toThrowError()
-    expect(() => onCalendarUpdates(null, null)).toThrowError()
+    expect(() => onCalendarUpdates()).toThrow()
+    expect(() => onCalendarUpdates(null)).toThrow()
+    expect(() => onCalendarUpdates(null, null)).toThrow()
     let formValues = null
-    expect(() => onCalendarUpdates(null, null, formValues)).toThrowError()
+    expect(() => onCalendarUpdates(null, null, formValues)).toThrow()
     formValues = undefined
-    expect(() => onCalendarUpdates(null, null, formValues)).toThrowError()
+    expect(() => onCalendarUpdates(null, null, formValues)).toThrow()
     formValues = false
-    expect(() => onCalendarUpdates(null, null, formValues)).toThrowError()
+    expect(() => onCalendarUpdates(null, null, formValues)).toThrow()
   })
   it('should not throw if form values is object', () => {
     const formValues = { price: null, stockId: null, time: null }
-    expect(() => onCalendarUpdates(null, null, formValues)).not.toThrowError()
+    expect(() => onCalendarUpdates(null, null, formValues)).not.toThrow()
   })
   it('should returns form values if selection is falsey', () => {
     const formValues = {}

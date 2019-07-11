@@ -16,6 +16,6 @@ describe('src | reducers | data  ', () => {
     const updatedState = data(undefined, action)
 
     // then
-    expect(updatedState).toEqual(expected)
+    expect(updatedState).toStrictEqual(expected)
   })
 })

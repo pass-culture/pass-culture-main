@@ -45,7 +45,10 @@ class Debug extends React.PureComponent {
   }
 
   renderLine = ({ time, method, hash, values }) => (
-    <code key={hash} title={time}>
+    <code
+      key={hash}
+      title={time}
+    >
       <div className="header">
         {`${method.toUpperCase()} | `}
         <time dateTime={time}>
@@ -68,9 +71,9 @@ class Debug extends React.PureComponent {
       // eslint-disable-next-line
       <div
         className={className}
-        onTouchStart={this.handleTouchPress}
-        onTouchEnd={this.handleTouchRelease}
         onClick={e => e.detail === 3 && e.shiftKey && this.showDebug(e)}
+        onTouchEnd={this.handleTouchRelease}
+        onTouchStart={this.handleTouchPress}
       >
         {children}
       </div>

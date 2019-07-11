@@ -9,10 +9,10 @@ const NavigationFooter = ({ className, disabled, location, theme }) => {
   return (
     <footer className={cssclass}>
       <Link
-        to={menuUrl}
+        className={`no-border no-background no-outline no-select pc-theme-${theme}`}
         disabled={disabled}
         id="open-menu-button"
-        className={`no-border no-background no-outline no-select pc-theme-${theme}`}
+        to={menuUrl}
       >
         <span
           aria-hidden

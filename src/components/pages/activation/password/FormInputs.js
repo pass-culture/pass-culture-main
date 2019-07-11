@@ -30,58 +30,73 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
         <div>
           <div className="mt36">
             <span className="is-block is-normal fs19">Adresse e-mail</span>
-            <span className="is-block is-bold fs20" id="activation-email">
+            <span
+              className="is-block is-bold fs20"
+              id="activation-email"
+            >
               {email}
             </span>
           </div>
           <PasswordField
-            required={() => undefined}
-            theme="primary"
             className="mt36"
-            name="newPassword"
             disabled={isLoading}
+            help="Il doit contenir au minimum 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial."
             id="activation-newPassword"
             label="Nouveau mot de passe"
-            help="Il doit contenir au minimum 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial."
+            name="newPassword"
+            required={() => undefined}
+            theme="primary"
           />
           <PasswordField
+            className="mt36"
+            disabled={isLoading}
+            id="activation-newPasswordConfirm"
+            label="Confirmez le mot de passe"
+            name="newPasswordConfirm"
             required={(value, formvalues) => {
               const mainvalue = formvalues.newPassword
               return validateMatchingFields(value, mainvalue)
             }}
             theme="primary"
-            className="mt36"
-            disabled={isLoading}
-            name="newPasswordConfirm"
-            id="activation-newPasswordConfirm"
-            label="Confirmez le mot de passe"
           />
           <CheckBoxField
-            name="cguCheckBox"
-            id="activation-accept-CGU"
             className="checkbox-accept-CGU"
+            id="activation-accept-CGU"
+            name="cguCheckBox"
             required
             theme="primary"
           >
             <span>
               J’ai lu et accepte les{' '}
               <a
-                id="accept-cgu-link"
-                href="https://pass.culture.fr/assets/docs/cgu-j.html"
-                target="_blank"
-                rel="noopener noreferrer"
                 className="fs16"
+                href="https://pass.culture.fr/assets/docs/cgu-j.html"
+                id="accept-cgu-link"
+                rel="noopener noreferrer"
+                target="_blank"
               >
                 Conditions générales d’utilisation
               </a>{' '}
               du pass Culture
             </span>
           </CheckBoxField>
-          <HiddenField name="email" id="activation-email-hidden" />
-          <HiddenField name="token" id="activation-token-hidden" />
+          <HiddenField
+            id="activation-email-hidden"
+            name="email"
+          />
+          <HiddenField
+            id="activation-token-hidden"
+            name="token"
+          />
           {/* gestion des retours erreurs de l'API */}
-          <HiddenField name="global" id="activation-global-hidden" />
-          <HiddenField name="identifier" id="activation-identifier-hidden" />
+          <HiddenField
+            id="activation-global-hidden"
+            name="global"
+          />
+          <HiddenField
+            id="activation-identifier-hidden"
+            name="identifier"
+          />
           {formErrors && <FormError customMessage={formErrors} />}
         </div>
       </div>

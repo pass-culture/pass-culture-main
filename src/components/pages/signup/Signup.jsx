@@ -60,8 +60,8 @@ class Signup extends PureComponent {
     const { isFormLoading } = this.state
     return (
       <main
-        role="main"
         className="signup-page page with-footer"
+        role="main"
       >
         <div className="section pc-final-form">
           <Form
@@ -72,8 +72,8 @@ class Signup extends PureComponent {
               const canSubmit = getCanSubmit(formProps)
               return (
                 <form
-                  className="pc-final-form flex-rows is-full-layout"
                   autoComplete="off"
+                  className="pc-final-form flex-rows is-full-layout"
                   disabled={isFormLoading}
                   noValidate
                   onSubmit={handleSubmit}

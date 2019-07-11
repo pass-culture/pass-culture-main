@@ -41,7 +41,7 @@ describe('src | helpers | isSameDayInEachTimezone', () => {
     const result = isSameDayInEachTimezone(datea, dateb)
     expect(result).toStrictEqual(expected)
   })
-  xit('return false, dates are not the same day', () => {
+  it.skip('return false, dates are not the same day', () => {
     const expected = false
     let date = new Date('2018-12-25 1:00:00')
     const datea = moment(date)

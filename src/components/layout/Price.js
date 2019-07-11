@@ -7,7 +7,10 @@ const Price = ({ format, free, value, className, ...rest }) => {
   const price = getDisplayPrice(value, free, format)
   const classes = `price ${className}`
   return (
-    <span {...rest} className={classes}>
+    <span
+      {...rest}
+      className={classes}
+    >
       {price}
     </span>
   )

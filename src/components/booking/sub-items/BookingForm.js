@@ -46,10 +46,9 @@ const BookingForm = ({
   onSubmit,
 }) => (
   <FinalForm
-    validate={null}
-    onSubmit={onSubmit}
     decorators={decorators}
     initialValues={initialValues || {}}
+    onSubmit={onSubmit}
     render={({ form, values, handleSubmit }) => {
       const { stockId, price } = values
       const calendarDates = getCalendarProvider(values)
@@ -64,11 +63,14 @@ const BookingForm = ({
       const readOnlyClassname = isReadOnly ? 'is-read-only' : ''
       return (
         <React.Fragment>
-          <FormSpy onChange={onMutation} subscription={spySubscriptions} />
+          <FormSpy
+            onChange={onMutation}
+            subscription={spySubscriptions}
+          />
           <form
-            id={formId}
-            disabled={disabled}
             className={`${className} ${readOnlyClassname}`}
+            disabled={disabled}
+            id={formId}
             onSubmit={handleSubmit}
           >
             <HiddenField name="price" />
@@ -83,36 +85,39 @@ const BookingForm = ({
                     const dateFormat = 'DD MMMM YYYY'
                     return (
                       <DatePickerField
+                        className="text-center mb36"
+                        dateFormat={dateFormat}
                         hideToday
-                        name="date"
                         id="booking-form-date-picker-field"
                         label={calendarLabel}
-                        readOnly={calendarReadOnly}
-                        className="text-center mb36"
-                        selected={selectedValue}
-                        provider={calendarDates}
-                        dateFormat={dateFormat}
-                        popperPlacement="bottom"
-                        popperRefContainer={datepickerPopper}
-                        placeholder={moment().format(dateFormat)}
+                        name="date"
                         onChange={date => {
                           // legacy ancien calendrier
                           input.onChange({ date })
                         }}
+                        placeholder={moment().format(dateFormat)}
+                        popperPlacement="bottom"
+                        popperRefContainer={datepickerPopper}
+                        provider={calendarDates}
+                        readOnly={calendarReadOnly}
+                        selected={selectedValue}
                       />
                     )
                   }}
                 />
-                <div id="datepicker-popper-container" ref={datepickerPopper} />
+                <div
+                  id="datepicker-popper-container"
+                  ref={datepickerPopper}
+                />
                 {hoursAndPrices && (
                   <SelectField
-                    name="time"
-                    id="booking-form-time-picker-field"
-                    readOnly={hourReadOnly}
-                    provider={hoursAndPrices}
-                    placeholder="Heure et prix"
-                    label={(typeof hourLabel === 'string' && hourLabel) || ''}
                     className="text-center"
+                    id="booking-form-time-picker-field"
+                    label={(typeof hourLabel === 'string' && hourLabel) || ''}
+                    name="time"
+                    placeholder="Heure et prix"
+                    provider={hoursAndPrices}
+                    readOnly={hourReadOnly}
                   />
                 )}
               </React.Fragment>
@@ -129,6 +134,7 @@ const BookingForm = ({
         </React.Fragment>
       )
     }}
+    validate={null}
   />
 )
 

@@ -6,42 +6,42 @@ describe('src | utils | strings | hasLowercase', () => {
     const expected = false
     let value = ''
     let received = hasLowercase(value)
-    expect(received).toEqual(expected)
+    expect(received).toStrictEqual(expected)
     value = false
     received = hasLowercase(value)
-    expect(received).toEqual(expected)
+    expect(received).toStrictEqual(expected)
     value = null
     received = hasLowercase(value)
-    expect(received).toEqual(expected)
+    expect(received).toStrictEqual(expected)
     value = 1234
     received = hasLowercase(value)
-    expect(received).toEqual(expected)
+    expect(received).toStrictEqual(expected)
     value = 0
     received = hasLowercase(value)
-    expect(received).toEqual(expected)
+    expect(received).toStrictEqual(expected)
     value = undefined
     received = hasLowercase(value)
-    expect(received).toEqual(expected)
+    expect(received).toStrictEqual(expected)
     value = null
     received = hasLowercase(value)
-    expect(received).toEqual(expected)
+    expect(received).toStrictEqual(expected)
     value = []
     received = hasLowercase(value)
-    expect(received).toEqual(expected)
+    expect(received).toStrictEqual(expected)
     value = {}
     received = hasLowercase(value)
-    expect(received).toEqual(expected)
+    expect(received).toStrictEqual(expected)
     value = '      '
     received = hasLowercase(value)
-    expect(received).toEqual(expected)
+    expect(received).toStrictEqual(expected)
   })
   it('return true', () => {
     const expected = true
     let value = 'a'
     let received = hasLowercase(value)
-    expect(received).toEqual(expected)
+    expect(received).toStrictEqual(expected)
     value = '     a'
     received = hasLowercase(value)
-    expect(received).toEqual(expected)
+    expect(received).toStrictEqual(expected)
   })
 })

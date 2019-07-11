@@ -2,7 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const SubmitButton = ({ disabled }) => (
-  <button className="header-submit" disabled={disabled} type="submit">
+  <button
+    className="header-submit"
+    disabled={disabled}
+    type="submit"
+  >
     OK
   </button>
 )

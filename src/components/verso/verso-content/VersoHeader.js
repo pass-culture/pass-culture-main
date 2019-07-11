@@ -10,15 +10,18 @@ const VersoHeader = ({ backgroundColor, subtitle, title }) => (
   >
     {title && (
       <h1
+        className="fs40 is-medium is-hyphens"
         id="verso-offer-name"
         style={{ lineHeight: '2.7rem' }}
-        className="fs40 is-medium is-hyphens"
       >
         {title}
       </h1>
     )}
     {subtitle && (
-      <h2 id="verso-offer-venue" className="fs22 is-normal is-hyphens">
+      <h2
+        className="fs22 is-normal is-hyphens"
+        id="verso-offer-venue"
+      >
         {subtitle}
       </h2>
     )}

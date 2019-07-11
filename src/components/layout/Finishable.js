@@ -10,7 +10,11 @@ const Finishable = ({ finished, children }) => {
       {children}
       <span className="finish-ribon">
         <span className="finish-ribon-background" />
-        <Icon className="finish-ribon-img" svg="badge-termine" alt="Terminé" />
+        <Icon
+          alt="Terminé"
+          className="finish-ribon-img"
+          svg="badge-termine"
+        />
       </span>
     </div>
   )

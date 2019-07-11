@@ -2,9 +2,9 @@ import React from 'react'
 
 const InvalidLink = () => (
   <main
-    role="main"
-    id="activation-link-error-page"
     className="pc-main padded-2x flex-rows flex-center"
+    id="activation-link-error-page"
+    role="main"
   >
     <div className="flex-center flex-row">
       <p className="fs20">Le lien sur lequel vous avez cliqué est invalide.</p>

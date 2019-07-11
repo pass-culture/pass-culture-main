@@ -27,12 +27,15 @@ describe('src | components | forms | inputs | HiddenField', () => {
 
     // when
     const wrapper = render(
-      <Form onSubmit={jest.fn()} render={() => <HiddenField {...props} />} />
+      <Form
+        onSubmit={jest.fn()}
+        render={() => <HiddenField {...props} />}
+      />
     )
     const inputElement = wrapper.find('#the-input-id')
 
     // then
     expect(inputElement).toHaveLength(1)
-    expect(inputElement.prop('any-native-input-prop')).toEqual('a value')
+    expect(inputElement.prop('any-native-input-prop')).toStrictEqual('a value')
   })
 })

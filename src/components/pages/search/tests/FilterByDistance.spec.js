@@ -47,7 +47,7 @@ describe('src | components | pages | search | FilterByDistance', () => {
   })
 
   describe('onChangeDistance()', () => {
-    describe('I am not geolocated', () => {
+    describe('i am not geolocated', () => {
       it('should set the distance to 1 when I change the select field to 1', () => {
         // given
         const distance = 1
@@ -70,7 +70,7 @@ describe('src | components | pages | search | FilterByDistance', () => {
       })
     })
 
-    describe('I am geolocated', () => {
+    describe('i am geolocated', () => {
       it('should set the distance to 1 when I change the select field to 1', () => {
         // given
         props.geolocation.latitude = 48.854892

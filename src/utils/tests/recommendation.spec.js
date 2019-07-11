@@ -13,7 +13,7 @@ describe('utils recommendation', () => {
     const result = setUniqIdOnRecommendation(recommendation)
 
     // Then
-    expect(result.uniqId).toEqual('product_42')
+    expect(result.uniqId).toStrictEqual('product_42')
   })
 
   describe('when recommendation is a tuto', () => {
@@ -30,7 +30,7 @@ describe('utils recommendation', () => {
       const result = setUniqIdOnRecommendation(recommendation)
 
       // Then
-      expect(result.uniqId).toEqual('tuto_test')
+      expect(result.uniqId).toStrictEqual('tuto_test')
     })
   })
 })

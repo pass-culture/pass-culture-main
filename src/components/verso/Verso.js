@@ -31,17 +31,24 @@ class Verso extends React.PureComponent {
       >
         <div className="verso-wrapper is-black-text scroll-y flex-rows is-relative text-left">
           <VersoHeader
-            title={offerName}
-            subtitle={offerVenueNameOrPublicName}
             backgroundColor={backgroundColor}
+            subtitle={offerVenueNameOrPublicName}
+            title={offerName}
           />
           {!isTuto && <VersoControl />}
-          <div className="verso-content" style={contentInlineStyle}>
+          <div
+            className="verso-content"
+            style={contentInlineStyle}
+          >
             {!isTuto && <VersoContentOfferContainer />}
             {isTuto && <VersoContentTuto imageURL={imageURL} />}
           </div>
         </div>
-        <Footer id="verso-footer" borderTop colored={!isTuto} />
+        <Footer
+          borderTop
+          colored={!isTuto}
+          id="verso-footer"
+        />
       </div>
     )
   }

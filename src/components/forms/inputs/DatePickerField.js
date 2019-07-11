@@ -17,9 +17,9 @@ const DatePickerCustomInput = React.forwardRef((props, ref) => {
     <div className={`react-datepicker__input-container_wrapper ${cssclass}`}>
       <input
         {...props}
+        className="pc-final-form-datepicker-input"
         readOnly
         ref={ref}
-        className="pc-final-form-datepicker-input"
       />
     </div>
   )
@@ -70,20 +70,26 @@ const DatePickerField = ({
   const inputName = id || name
   return (
     <div className={`${className}`}>
-      <label htmlFor={inputName} className="pc-final-form-datepicker">
-        {label && <InputLabel label={label} required={required} />}
+      <label
+        className="pc-final-form-datepicker"
+        htmlFor={inputName}
+      >
+        {label && <InputLabel
+          label={label}
+          required={required}
+                  />}
         <div className="pc-final-form-inner">
           <DatePicker
-            shouldCloseOnSelect
-            id={inputName}
-            locale={locale}
-            readOnly={readOnly}
-            onChange={onChange}
+            customInput={<DatePickerCustomInput readOnly={readOnly} />}
             dateFormat={dateFormat}
+            id={inputName}
             includeDates={provider}
             isClearable={isClearable}
+            locale={locale}
+            onChange={onChange}
             placeholderText={placeholder}
-            customInput={<DatePickerCustomInput readOnly={readOnly} />}
+            readOnly={readOnly}
+            shouldCloseOnSelect
             {...moreprops}
           />
         </div>

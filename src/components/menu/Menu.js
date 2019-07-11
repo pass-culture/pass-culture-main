@@ -30,9 +30,16 @@ class Menu extends PureComponent {
     const { currentUser, history, readRecommendations } = this.props
 
     return (
-      <Transition appear in timeout={250}>
+      <Transition
+        appear
+        in
+        timeout={250}
+      >
         {status => (
-          <div className={`is-overlay ${status}`} id="main-menu">
+          <div
+            className={`is-overlay ${status}`}
+            id="main-menu"
+          >
             <div className="inner is-full-layout is-relative flex-rows flex-end">
               <div
                 className="pc-theme-red is-relative pc-scroll-container"
@@ -43,12 +50,21 @@ class Menu extends PureComponent {
                   closeTo={this.urlWithoutMenuElement(history)()}
                 />
                 <Header currentUser={currentUser} />
-                <nav className="flex-rows pb0" id="main-menu-navigation">
+                <nav
+                  className="flex-rows pb0"
+                  id="main-menu-navigation"
+                >
                   {menuRoutes.map(route =>
                     route.href ? (
-                      <SimpleLink item={route} key={route.href} />
+                      <SimpleLink
+                        item={route}
+                        key={route.href}
+                      />
                     ) : (
-                      <NavLink item={route} key={route.path} />
+                      <NavLink
+                        item={route}
+                        key={route.path}
+                      />
                     )
                   )}
                   <SignoutButtonContainer

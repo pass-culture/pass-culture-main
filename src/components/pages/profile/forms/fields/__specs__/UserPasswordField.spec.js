@@ -33,7 +33,7 @@ describe('src | components | pages | profile | forms | fields | UserPasswordFiel
     // then
     const passwordFields = wrapper.find(PasswordField)
     expect(passwordFields).toHaveLength(3)
-    expect(passwordFields.at(0).prop('required')).toEqual(expect.any(Function))
+    expect(passwordFields.at(0).prop('required')).toStrictEqual(expect.any(Function))
     expect(passwordFields.at(0).prop('name')).toBe('oldPassword')
     expect(passwordFields.at(0).prop('disabled')).toBe(false)
     expect(passwordFields.at(0).prop('label')).toBe(
@@ -46,7 +46,7 @@ describe('src | components | pages | profile | forms | fields | UserPasswordFiel
     expect(passwordFields.at(1).prop('label')).toBe(
       'Saisissez votre nouveau mot de passe'
     )
-    expect(passwordFields.at(2).prop('required')).toEqual(expect.any(Function))
+    expect(passwordFields.at(2).prop('required')).toStrictEqual(expect.any(Function))
     expect(passwordFields.at(2).prop('className')).toBe('mt36')
     expect(passwordFields.at(2).prop('name')).toBe('newPasswordConfirm')
     expect(passwordFields.at(2).prop('disabled')).toBe(false)
@@ -78,7 +78,7 @@ describe('src | components | pages | profile | forms | fields | UserPasswordFiel
         const result = wrapper.instance().buildOldPasswordLabel()('fake label')
 
         // then
-        expect(result).toBe(undefined)
+        expect(result).toBeUndefined()
       })
 
       it('should return missing old password message when old password is not provided', () => {

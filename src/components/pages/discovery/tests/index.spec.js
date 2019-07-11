@@ -43,12 +43,12 @@ describe('src | components | pages | discovery | RawDiscoveryPage', () => {
         isEmpty: null,
         isLoading: true,
       }
-      expect(wrapper.state()).toEqual(expected)
+      expect(wrapper.state()).toStrictEqual(expected)
     })
   })
 
   describe('handleDataRequest', () => {
-    describe('One case', () => {
+    describe('one case', () => {
       it('should update recommendation infos using API when Main component is rendered', () => {
         // given
         shallow(<RawDiscoveryPage {...props} />)
@@ -70,8 +70,8 @@ describe('src | components | pages | discovery | RawDiscoveryPage', () => {
           },
           type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?',
         }
-        expect(props.dispatch.mock.calls.length).toBe(1)
-        expect(props.dispatch.mock.calls[0][0]).toEqual(
+        expect(props.dispatch.mock.calls).toHaveLength(1)
+        expect(props.dispatch.mock.calls[0][0]).toStrictEqual(
           expectedRequestDataAction
         )
       })

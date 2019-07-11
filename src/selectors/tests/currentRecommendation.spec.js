@@ -145,7 +145,7 @@ describe('currentRecommendationSelector', () => {
       const result = currentRecommendationSelector(state, offerId, mediationId)
 
       // then
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
   })
 })

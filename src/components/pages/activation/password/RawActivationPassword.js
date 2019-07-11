@@ -82,25 +82,28 @@ class RawActivationPassword extends React.PureComponent {
 
     return (
       <div
-        id="activation-password-page"
         className="pc-scroll-container flex-rows"
+        id="activation-password-page"
       >
         <Form
-          onSubmit={this.onFormSubmit}
           initialValues={initialValues}
+          onSubmit={this.onFormSubmit}
           render={formProps => {
             const formValues = formProps.values || {}
             const canSubmit = !isLoading && canSubmitForm(formProps)
             const formErrors = !formProps.pristine && formProps.error
             return (
               <form
-                noValidate
                 autoComplete="off"
-                disabled={isLoading}
-                onSubmit={formProps.handleSubmit}
                 className="pc-final-form is-full-layout flex-rows"
+                disabled={isLoading}
+                noValidate
+                onSubmit={formProps.handleSubmit}
               >
-                <main role="main" className="pc-main padded-2x is-white-text">
+                <main
+                  className="pc-main padded-2x is-white-text"
+                  role="main"
+                >
                   <FormInputs
                     formErrors={formErrors}
                     formValues={formValues}

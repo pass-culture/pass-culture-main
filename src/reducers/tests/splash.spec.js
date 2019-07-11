@@ -18,7 +18,7 @@ describe('src | reducers | splash  ', () => {
     const updatedState = splash(undefined, action)
 
     // then
-    expect(updatedState).toEqual(initialState)
+    expect(updatedState).toStrictEqual(initialState)
   })
   it('should set state when action is CLOSE_SPLASH ', () => {
     // given
@@ -30,7 +30,7 @@ describe('src | reducers | splash  ', () => {
     const expected = { isActive: false }
 
     // then
-    expect(updatedState).toEqual(expected)
+    expect(updatedState).toStrictEqual(expected)
   })
 
   it('should set state when action is SHOW_SPLASH ', () => {
@@ -43,7 +43,7 @@ describe('src | reducers | splash  ', () => {
     const expected = { isActive: true }
 
     // then
-    expect(updatedState).toEqual(expected)
+    expect(updatedState).toStrictEqual(expected)
   })
 })
 

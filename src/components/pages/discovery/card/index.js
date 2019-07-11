@@ -71,7 +71,10 @@ export class RawCard extends PureComponent {
           <VersoContainer recommendation={recommendation} />
         )}
         {recommendation && (
-          <RectoContainer recommendation={recommendation} position={position} />
+          <RectoContainer
+            position={position}
+            recommendation={recommendation}
+          />
         )}
       </div>
     )

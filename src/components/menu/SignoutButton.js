@@ -11,7 +11,10 @@ const SignoutButton = ({ onSignoutClick, ...props }) => (
     type="button"
   >
     <span className="menu-icon mr16 text-center">
-      <Icon alt="" svg="ico-deconnect-w" />
+      <Icon
+        alt=""
+        svg="ico-deconnect-w"
+      />
     </span>
     <span className="pt5">Déconnexion</span>
   </button>

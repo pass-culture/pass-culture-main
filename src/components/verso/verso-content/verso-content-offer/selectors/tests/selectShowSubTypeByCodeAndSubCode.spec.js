@@ -18,7 +18,7 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       )
 
       // then
-      expect(showSubType.code).toEqual(subCode)
+      expect(showSubType.code).toStrictEqual(subCode)
     })
 
     it('does not find any show sub type', () => {
@@ -34,7 +34,7 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       )
 
       // then
-      expect(showSubType).toEqual(undefined)
+      expect(showSubType).toStrictEqual(undefined)
     })
   })
 })

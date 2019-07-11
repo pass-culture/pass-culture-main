@@ -16,7 +16,7 @@ describe('src | components | pages | profile | forms | ProfileFormContainer', ()
       const result = mapStateToProps(state)
 
       // then
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         initialValues: {
           publicName: 'fake name',
         },

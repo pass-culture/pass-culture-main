@@ -28,8 +28,8 @@ const FormError = ({ className, customMessage, id, meta, theme }) => {
     : (Array.isArray(errorMessage) && errorMessage) || [].concat(errorMessage)
   return (
     <span
-      id={id}
       className={`pc-final-form-errors is-block mt7 pc-theme-${theme} no-no-background ${className}`}
+      id={id}
     >
       {(errorMessage && (
         <span className="flex-columns">
@@ -43,8 +43,8 @@ const FormError = ({ className, customMessage, id, meta, theme }) => {
           <span className="flex-1 is-semi-bold fs15">
             {errorMessage.map((err, index) => (
               <span
-                key={setDangerousArrayKeyIndex(index)}
                 className="pc-error-message is-block mt2"
+                key={setDangerousArrayKeyIndex(index)}
               >
                 {err}
               </span>

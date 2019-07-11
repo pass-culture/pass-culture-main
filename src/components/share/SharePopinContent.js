@@ -30,10 +30,10 @@ class SharePopinContent extends React.PureComponent {
 
   renderCloseButton = () => (
     <button
-      type="button"
-      id="share-popin-close-button"
       className="pc-text-button is-absolute fs16"
+      id="share-popin-close-button"
       onClick={this.closeHandler}
+      type="button"
     >
       <span
         aria-hidden
@@ -47,19 +47,22 @@ class SharePopinContent extends React.PureComponent {
     const { visible, options } = this.props
     const { buttons, text, title } = options
     return (
-      <Transition in={visible} timeout={transitionDelay}>
+      <Transition
+        in={visible}
+        timeout={transitionDelay}
+      >
         {status => (
           <div
-            id="share-popin"
             className={`is-absolute mx6 mt6 transition-${status}`}
+            id="share-popin"
             style={{ ...defaultStyle, ...transitionStyles[status] }}
           >
             {options && (
               <div className="pc-theme-gradient inner is-relative is-clipped">
                 {this.renderCloseButton()}
                 <div
-                  id="share-popin-fixed-container"
                   className="fs16 text-left"
+                  id="share-popin-fixed-container"
                 >
                   <div className="ml24 mr48 mt20 mb32">
                     {/* <!-- Popin event text --> */}

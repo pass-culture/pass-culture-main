@@ -35,9 +35,9 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
       const result = mapStateToProps(initialState, props)
 
       // then
-      expect(result.bookables).not.toBe(null)
+      expect(result.bookables).not.toBeNull()
       expect(result.isFinished).toBe(false)
-      expect(result.recommendation).not.toBe(null)
+      expect(result.recommendation).not.toBeNull()
     })
   })
 })

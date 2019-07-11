@@ -26,40 +26,56 @@ const ProfilePage = ({ currentUser, location }) => {
   const possibleRoutes = Object.keys(routes).join('|')
 
   return (
-    <div id="profile-page" className="page is-relative">
+    <div
+      className="page is-relative"
+      id="profile-page"
+    >
       {currentUser && (
         <Switch location={location}>
           <Route
             exact
-            path="/profil/:menu(menu)?"
             key="route-profile-main-view"
+            path="/profil/:menu(menu)?"
             render={() => (
-              <ProfileMainView currentUser={currentUser} config={config} />
+              <ProfileMainView
+                config={config}
+                currentUser={currentUser}
+              />
             )}
           />
           <Route
             exact
-            path={`/profil/:view(${possibleRoutes})/success/:menu(menu)?`}
             key="route-profile-update-success"
+            path={`/profil/:view(${possibleRoutes})/success/:menu(menu)?`}
             render={routeProps => (
-              <ProfileUpdateSuccess {...routeProps} config={routes} />
+              <ProfileUpdateSuccess
+                {...routeProps}
+                config={routes}
+              />
             )}
           />
           <Route
             exact
-            path={`/profil/:view(${possibleRoutes})/:menu(menu)?`}
             key="route-profile-edit-form"
+            path={`/profil/:view(${possibleRoutes})/:menu(menu)?`}
             render={routeProps => {
               const { view } = routeProps.match.params
               const Component = routes[view].component
               if (!Component) return null
               const { title } = routes[view]
-              return <Component {...routeProps} title={title} />
+              return (<Component
+                {...routeProps}
+                title={title}
+                      />)
             }}
           />
           <Route
             component={routeProps => (
-              <NotMatch {...routeProps} delay={3} redirect="/profil" />
+              <NotMatch
+                {...routeProps}
+                delay={3}
+                redirect="/profil"
+              />
             )}
           />
         </Switch>

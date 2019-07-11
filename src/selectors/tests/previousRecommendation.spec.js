@@ -15,7 +15,7 @@ describe('previousRecommendationSelector', () => {
       const result = previousRecommendationSelector(state, offerId, mediationId)
 
       // then
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
   })
   describe('when there is offerId and no mediationId', () => {
@@ -158,7 +158,7 @@ describe('previousRecommendationSelector', () => {
       const result = previousRecommendationSelector(state, offerId, mediationId)
 
       // then
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
   })
 })

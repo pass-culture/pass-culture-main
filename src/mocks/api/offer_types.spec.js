@@ -8,9 +8,7 @@
 // console.log('response', response);
 
 describe.skip('#getUser() using Promises', () => {
-  it('should load user data', () => {
-    // give
-  })
+  it.todo('should load user data')
 })
 
 // describe('asyncFetch', () => {

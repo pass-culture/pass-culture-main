@@ -29,8 +29,8 @@ describe('src | components | VersoButtonFavorite', () => {
     const iconProps = wrapper.find('span').props()
 
     // then
-    expect(iconProps.title).toEqual('Retirer des favoris')
-    expect(iconProps.className).toEqual('icon-ico-like-on')
+    expect(iconProps.title).toStrictEqual('Retirer des favoris')
+    expect(iconProps.className).toStrictEqual('icon-ico-like-on')
   })
 
   it('should display add to favorite icon', () => {
@@ -45,7 +45,7 @@ describe('src | components | VersoButtonFavorite', () => {
     const iconProps = wrapper.find('span').props()
 
     // then
-    expect(iconProps.title).toEqual('Ajouter aux favoris')
-    expect(iconProps.className).toEqual('icon-ico-like')
+    expect(iconProps.title).toStrictEqual('Ajouter aux favoris')
+    expect(iconProps.className).toStrictEqual('icon-ico-like')
   })
 })

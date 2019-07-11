@@ -45,7 +45,7 @@ describe('src | components | share | MailToLink', () => {
           const wrapper = shallow(<MailToLink {...props} />)
 
           // // then
-          expect(wrapper.find('a').props().href).toEqual(
+          expect(wrapper.find('a').props().href).toStrictEqual(
             'mailto:email@fake.com?'
           )
         })
@@ -66,7 +66,7 @@ describe('src | components | share | MailToLink', () => {
           const wrapper = shallow(<MailToLink {...props} />)
 
           // then
-          expect(wrapper.find('a').props().href).toEqual('mailto:obfuscated')
+          expect(wrapper.find('a').props().href).toStrictEqual('mailto:obfuscated')
         })
         it.skip('should change window location on click', () => {
           // FIXME
@@ -77,7 +77,7 @@ describe('src | components | share | MailToLink', () => {
           wrapper.find('a').simulate('click', event)
 
           // then
-          expect(window.location.href).toEqual(
+          expect(window.location.href).toStrictEqual(
             'mailto:email@fake.com?body=http%3A%2F%2Flocalhost%3A3000%2Fdecouverte%2FAE%2F%3Fshared_by%3DAE&subject=Fake%20Title'
           )
         })

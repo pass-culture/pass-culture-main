@@ -22,7 +22,10 @@ describe('src | components | layout | Splash', () => {
 
       // when
       const wrapper = shallow(
-        <Provider store={store} {...props}>
+        <Provider
+          store={store}
+          {...props}
+        >
           <Splash />
         </Provider>
       )

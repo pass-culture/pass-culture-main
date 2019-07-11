@@ -11,7 +11,7 @@ describe('src | helpers | isVersoView', () => {
 
       // then
       const expected = false
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
 
     it('should return false if match a string', () => {
@@ -23,7 +23,7 @@ describe('src | helpers | isVersoView', () => {
 
       // then
       const expected = false
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
 
     it('should return false if match is an array', () => {
@@ -35,7 +35,7 @@ describe('src | helpers | isVersoView', () => {
 
       // then
       const expected = false
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
   })
 
@@ -49,7 +49,7 @@ describe('src | helpers | isVersoView', () => {
 
       // then
       const expected = false
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
 
     it('should return false if params property is null', () => {
@@ -61,7 +61,7 @@ describe('src | helpers | isVersoView', () => {
 
       // then
       const expected = false
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
 
     it('should return false if params property is not an object', () => {
@@ -73,7 +73,7 @@ describe('src | helpers | isVersoView', () => {
 
       // then
       const expected = false
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
   })
 
@@ -87,7 +87,7 @@ describe('src | helpers | isVersoView', () => {
 
       // then
       const expected = false
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
 
     it('should return false if mediationId and view property are null', () => {
@@ -104,7 +104,7 @@ describe('src | helpers | isVersoView', () => {
 
       // then
       const expected = false
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
 
     it('should return false if mediationId is not equal to verso', () => {
@@ -121,7 +121,7 @@ describe('src | helpers | isVersoView', () => {
 
       // then
       const expected = false
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
 
     it('should return true if mediationId equals verso', () => {
@@ -138,7 +138,7 @@ describe('src | helpers | isVersoView', () => {
 
       // then
       const expected = true
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
 
     it('should return true if view equals verso', () => {
@@ -155,7 +155,7 @@ describe('src | helpers | isVersoView', () => {
 
       // then
       const expected = true
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
   })
 })

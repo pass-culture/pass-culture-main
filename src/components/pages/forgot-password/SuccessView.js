@@ -44,10 +44,13 @@ const SuccessView = ({ token }) => {
     ? renderResetSuccessMessage
     : renderRequestSuccessMessage
   return (
-    <div id="reset-password-page-success" className="is-full-layout flex-rows">
+    <div
+      className="is-full-layout flex-rows"
+      id="reset-password-page-success"
+    >
       <main
-        role="main"
         className="pc-main padded-2x flex-rows flex-center flex-1"
+        role="main"
       >
         <div className="is-italic fs22 is-white-text">
           {renderSuccessMessage()}

@@ -50,18 +50,21 @@ class SelectField extends React.PureComponent {
           render={({ input }) => (
             <Select
               {...moreprops}
-              size="large"
-              showSearch={canSearch}
-              onChange={input.onChange}
-              placeholder={placeholder}
-              optionFilterProp="children"
               filterOption={filterOption}
-              value={input.value || undefined}
               getPopupContainer={() => this.popupContainer}
+              onChange={input.onChange}
+              optionFilterProp="children"
+              placeholder={placeholder}
+              showSearch={canSearch}
+              size="large"
+              value={input.value || undefined}
             >
               {provider &&
                 provider.map(obj => (
-                  <Select.Option key={obj.id} value={obj.id}>
+                  <Select.Option
+                    key={obj.id}
+                    value={obj.id}
+                  >
                     {obj.label}
                   </Select.Option>
                 ))}
@@ -69,8 +72,8 @@ class SelectField extends React.PureComponent {
           )}
         />
         <div
-          ref={this.setContainerRef}
           className="select-field-popup-container is-relative"
+          ref={this.setContainerRef}
         />
       </Form.Item>
     )

@@ -13,7 +13,7 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       const musicType = selectMusicTypeByCode(state, String(code))
 
       // then
-      expect(musicType.code).toEqual(code)
+      expect(musicType.code).toStrictEqual(code)
     })
 
     it('does not find any music type', () => {
@@ -24,7 +24,7 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       const musicType = selectMusicTypeByCode(state, String(code))
 
       // then
-      expect(musicType).toEqual(undefined)
+      expect(musicType).toStrictEqual(undefined)
     })
   })
 })

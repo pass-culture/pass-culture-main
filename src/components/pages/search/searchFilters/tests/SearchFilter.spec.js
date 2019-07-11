@@ -43,7 +43,7 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
     it('should initialize state with current query arguments', () => {
       // given
       const queryParams = { prop: 'mocked object' }
-      props.query.parse = jest.fn(() => queryParams)
+      jest.spyOn(props.query, 'parse').mockImplementation(() => queryParams)
       const wrapper = shallow(<SearchFilter {...props} />)
 
       // when
@@ -79,7 +79,7 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
 
       // then
       const params = wrapper.find('SearchFilter').state()
-      expect(params).toEqual({
+      expect(params).toStrictEqual({
         filterParamsMatchingQueryParams: false,
         initialDateParams: true,
         params: {

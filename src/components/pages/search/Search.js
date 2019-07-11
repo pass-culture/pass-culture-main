@@ -228,7 +228,10 @@ class Search extends PureComponent {
     }
 
     return (
-      <main className="search-page page with-footer with-header" role="main">
+      <main
+        className="search-page page with-footer with-header"
+        role="main"
+      >
         <PageHeader
           backActionOnClick={this.reinitializeStates}
           backTo={this.hasBackLink(location) && this.goBack()}
@@ -254,7 +257,10 @@ class Search extends PureComponent {
                           className="control has-icons-right flex-1"
                           key={keywordsKey}
                         >
-                          <label className="is-hidden" htmlFor="keywords">
+                          <label
+                            className="is-hidden"
+                            htmlFor="keywords"
+                          >
                             Veuillez entrer un mot-clé
                           </label>
                           <input
@@ -301,8 +307,7 @@ class Search extends PureComponent {
                         <button
                           className="no-border no-background no-outline"
                           onClick={() =>
-                            this.onClickToggleFilterButton(isFilterVisible)
-                          }
+                            this.onClickToggleFilterButton(isFilterVisible)}
                           type="button"
                         >
                           <Icon

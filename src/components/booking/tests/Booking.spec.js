@@ -76,7 +76,7 @@ describe('src | components | booking', () => {
         okButton.simulate('click')
 
         // then
-        expect(dispatch.mock.calls[1][0]).toEqual({ type: 'SHOW_DETAILS_VIEW' })
+        expect(dispatch.mock.calls[1][0]).toStrictEqual({ type: 'SHOW_DETAILS_VIEW' })
       })
 
       it('should dispatch an action to update current user information', () => {
@@ -91,7 +91,7 @@ describe('src | components | booking', () => {
         okButton.simulate('click')
 
         // then
-        expect(dispatch.mock.calls[0][0]).toEqual({
+        expect(dispatch.mock.calls[0][0]).toStrictEqual({
           config: {
             apiPath: '/users/current',
             method: 'PATCH',

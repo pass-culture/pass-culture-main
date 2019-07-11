@@ -9,14 +9,26 @@ import { ROOT_PATH } from '../../utils/config'
 const FavoritesPage = () => {
   const backgroundImage = `url('${ROOT_PATH}/mosaic-k.png')`
   return (
-    <div id="terms-page" className="page is-relative flex-rows">
+    <div
+      className="page is-relative flex-rows"
+      id="terms-page"
+    >
       <PageHeader title="Mes préférés" />
-      <main role="main" className="pc-main my12">
+      <main
+        className="pc-main my12"
+        role="main"
+      >
         <Scrollbars>
-          <div className="padded content" style={{ backgroundImage }} />
+          <div
+            className="padded content"
+            style={{ backgroundImage }}
+          />
         </Scrollbars>
       </main>
-      <NavigationFooter theme="white" className="dotted-top-red" />
+      <NavigationFooter
+        className="dotted-top-red"
+        theme="white"
+      />
     </div>
   )
 }

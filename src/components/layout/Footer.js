@@ -38,11 +38,14 @@ const Footer = ({
     <footer {...footerProps}>
       <div className="button-wrapper flex-center">
         <Link
-          to={menuUrl}
           className="profile-button is-block text-center"
           style={{ paddingTop: '0.4rem' }}
+          to={menuUrl}
         >
-          <ProfilePicture alt="Mon menu" {...maybeColored} />
+          <ProfilePicture
+            alt="Mon menu"
+            {...maybeColored}
+          />
         </Link>
       </div>
     </footer>

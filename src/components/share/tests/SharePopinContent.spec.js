@@ -86,7 +86,7 @@ describe('src | components | share | SharePopinContent', () => {
           }
 
           // then
-          expect(wrapper.state()).toEqual(expected)
+          expect(wrapper.state()).toStrictEqual(expected)
         })
       })
     })

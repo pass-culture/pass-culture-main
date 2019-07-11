@@ -9,7 +9,7 @@ describe('getHeaderColor', () => {
     const result = getHeaderColor(recommendationColor)
 
     // then
-    expect(result).toEqual('black')
+    expect(result).toStrictEqual('black')
   })
   it('should render the corresponding color', () => {
     // given
@@ -19,14 +19,14 @@ describe('getHeaderColor', () => {
     const result = getHeaderColor(recommendationColor)
 
     // then
-    expect(result).toEqual('hsl(260, 100%, 7.5%)')
+    expect(result).toStrictEqual('hsl(260, 100%, 7.5%)')
   })
   it('should return black by default when array given', () => {
     // when
     const result = getHeaderColor([])
 
     // then
-    expect(result).toEqual('black')
+    expect(result).toStrictEqual('black')
   })
   it('should return black by default when string given', () => {
     // given
@@ -36,6 +36,6 @@ describe('getHeaderColor', () => {
     const result = getHeaderColor(recommendationColor)
 
     // then
-    expect(result).toEqual('black')
+    expect(result).toStrictEqual('black')
   })
 })

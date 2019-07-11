@@ -13,35 +13,48 @@ import SuccessView from './forgot-password/SuccessView'
 const ForgotPasswordPage = ({ location }) => {
   const { token } = queryString.parse(location.search)
   return (
-    <div id="forgot-password-page" className="page pc-gradient is-relative">
+    <div
+      className="page pc-gradient is-relative"
+      id="forgot-password-page"
+    >
       <Switch location={location}>
         <Route
           exact
-          path="/mot-de-passe-perdu/success"
           key="forgot-password-success-view"
+          path="/mot-de-passe-perdu/success"
           render={routeProps => (
             // si token -> affiche le form success pour le confirm
             // sinon -> affiche le form success pour le request
-            <SuccessView {...routeProps} token={token} />
+            <SuccessView
+              {...routeProps}
+              token={token}
+            />
           )}
         />
         <Route
           exact
-          path="/mot-de-passe-perdu"
           key="forgot-password-form-view"
+          path="/mot-de-passe-perdu"
           render={routeProps => {
             const initialValues = { token }
             const FormComponent = !token
               ? RequestEmailForm
               : ResetThePasswordForm
             return (
-              <FormComponent {...routeProps} initialValues={initialValues} />
+              <FormComponent
+                {...routeProps}
+                initialValues={initialValues}
+              />
             )
           }}
         />
         <Route
           component={routeProps => (
-            <NotMatch {...routeProps} delay={3} redirect="/connexion" />
+            <NotMatch
+              {...routeProps}
+              delay={3}
+              redirect="/connexion"
+            />
           )}
         />
       </Switch>

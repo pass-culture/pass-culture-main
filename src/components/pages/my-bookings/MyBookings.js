@@ -10,7 +10,10 @@ import PageHeader from '../../layout/Header/PageHeader'
 const build = myBookings => (
   <ul>
     {myBookings.map(myBooking => (
-      <MyBookingContainer booking={myBooking} key={myBooking.id} />
+      <MyBookingContainer
+        booking={myBooking}
+        key={myBooking.id}
+      />
     ))}
   </ul>
 )
@@ -51,7 +54,10 @@ class MyBookings extends Component {
     const { isEmpty, isLoading, hasError } = this.state
 
     if (isLoading) {
-      return <LoaderContainer hasError={hasError} isLoading={isLoading} />
+      return (<LoaderContainer
+        hasError={hasError}
+        isLoading={isLoading}
+              />)
     }
 
     return (
@@ -74,7 +80,10 @@ class MyBookings extends Component {
             </section>
           )}
         </main>
-        <NavigationFooter className="dotted-top-white" theme="purple" />
+        <NavigationFooter
+          className="dotted-top-white"
+          theme="purple"
+        />
       </div>
     )
   }

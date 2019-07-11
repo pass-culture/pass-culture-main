@@ -71,9 +71,8 @@ const withPasswordForm = (
       const { isloading } = this.state
       return (
         <FinalForm
-          validate={validator || noop}
-          onSubmit={this.onFormSubmit}
           initialValues={this.initialValues || {}}
+          onSubmit={this.onFormSubmit}
           render={({
             // https://github.com/final-form/final-form#formstate
             dirtySinceLastSubmit,
@@ -91,21 +90,22 @@ const withPasswordForm = (
               (!hasValidationErrors && hasSubmitErrors && dirtySinceLastSubmit)
             return (
               <form
-                noValidate
                 autoComplete="off"
-                disabled={isloading}
-                onSubmit={handleSubmit}
                 className="pc-final-form is-full-layout"
+                disabled={isloading}
+                noValidate
+                onSubmit={handleSubmit}
               >
                 <WrappedComponent
                   {...this.props}
                   canSubmit={canSubmit}
-                  isLoading={isloading}
                   formErrors={!pristine && preSubmitError}
+                  isLoading={isloading}
                 />
               </form>
             )
           }}
+          validate={validator || noop}
         />
       )
     }

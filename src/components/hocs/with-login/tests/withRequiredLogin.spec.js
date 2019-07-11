@@ -28,7 +28,7 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin', () 
   })
 
   describe('functions', () => {
-    it('should redirect to signin when not authenticated', done => {
+    it('should redirect to signin when not authenticated', () => {return new Promise(done => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
@@ -53,8 +53,8 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin', () 
           </Router>
         </Provider>
       )
-    })
-    it('should redirect to typeform when authenticated and not needsToFillCulturalSurvey', done => {
+    })})
+    it('should redirect to typeform when authenticated and not needsToFillCulturalSurvey', () => {return new Promise(done => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
@@ -84,7 +84,7 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin', () 
           </Router>
         </Provider>
       )
-    })
+    })})
 
     it('should not redirect when authenticated and needsToFillCulturalSurvey', () => {
       // given

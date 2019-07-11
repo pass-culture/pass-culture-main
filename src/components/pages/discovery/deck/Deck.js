@@ -148,13 +148,13 @@ class Deck extends Component {
 
     return (
       <Draggable
-        speed={{ x: 5 }}
-        key={refreshKey}
-        position={position}
-        onStop={this.onStop}
+        axis={areDetailsVisible ? 'none' : 'exclude'}
         bounds={draggableBounds}
         enableUserSelectHack={false}
-        axis={areDetailsVisible ? 'none' : 'exclude'}
+        key={refreshKey}
+        onStop={this.onStop}
+        position={position}
+        speed={{ x: 5 }}
       >
         <div className="is-overlay">
           <div className="inner is-relative">
@@ -184,9 +184,9 @@ class Deck extends Component {
 
     return (
       <div
-        id="deck"
         className="is-clipped is-relative"
         data-nb-recos={recommendations.length}
+        id="deck"
       >
         {showCloseButton && (
           <CloseLink
@@ -197,7 +197,6 @@ class Deck extends Component {
         {this.renderDraggableCards()}
         {showNavigation && currentRecommendation && (
           <DeckNavigation
-            recommendation={currentRecommendation}
             flipHandler={
               (!isFlipDisabled && this.handleShowCardDetails) || null
             }
@@ -206,6 +205,7 @@ class Deck extends Component {
               (previousRecommendation && this.handleGoPrevious) || null
             }
             height={height}
+            recommendation={currentRecommendation}
           />
         )}
       </div>

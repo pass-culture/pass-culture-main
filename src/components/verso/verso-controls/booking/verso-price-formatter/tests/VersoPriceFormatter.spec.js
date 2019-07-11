@@ -31,7 +31,7 @@ describe('src | components | VersoPriceFormatter', () => {
     const wrapper = shallow(<VersoPriceFormatter {...props} />)
 
     // then
-    expect(wrapper.text()).toEqual(`12${nbsp}poires`)
+    expect(wrapper.text()).toStrictEqual(`12${nbsp}poires`)
   })
 
   it('should return a multi formatted price', () => {
@@ -48,6 +48,6 @@ describe('src | components | VersoPriceFormatter', () => {
     const wrapper = shallow(<VersoPriceFormatter {...props} />)
 
     // then
-    expect(wrapper.text()).toEqual(`12${nbsp}${arrow}${nbsp}22${nbsp}poires`)
+    expect(wrapper.text()).toStrictEqual(`12${nbsp}${arrow}${nbsp}22${nbsp}poires`)
   })
 })

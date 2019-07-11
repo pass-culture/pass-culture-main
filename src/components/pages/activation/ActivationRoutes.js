@@ -7,13 +7,24 @@ import ActivationPageContainer from './password/ActivationPageContainer'
 
 const ActivationRoutes = () => (
   <div
-    id="activation-page"
     className="is-full-layout is-relative pc-gradient is-white-text flex-rows"
+    id="activation-page"
   >
     <Switch>
-      <Route path="/activation/error" component={ActivationError} exact />
-      <Route path="/activation/lien-invalide" component={InvalidLink} exact />
-      <Route path="/activation/:token" component={ActivationPageContainer} />
+      <Route
+        component={ActivationError}
+        exact
+        path="/activation/error"
+      />
+      <Route
+        component={InvalidLink}
+        exact
+        path="/activation/lien-invalide"
+      />
+      <Route
+        component={ActivationPageContainer}
+        path="/activation/:token"
+      />
       <Redirect to="/activation/error" />
     </Switch>
   </div>

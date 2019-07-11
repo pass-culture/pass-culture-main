@@ -18,7 +18,7 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       )
 
       // then
-      expect(musicSubType.code).toEqual(subCode)
+      expect(musicSubType.code).toStrictEqual(subCode)
     })
 
     it('does not find any music sub type', () => {
@@ -34,7 +34,7 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       )
 
       // then
-      expect(musicSubType).toEqual(undefined)
+      expect(musicSubType).toStrictEqual(undefined)
     })
   })
 })

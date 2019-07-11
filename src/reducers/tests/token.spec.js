@@ -10,7 +10,7 @@ describe('src | reducers | token  ', () => {
       const result = setTokenStatus(tokenStatus)
 
       // then
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         payload: true,
         type: 'SET_TOKEN_STATUS',
       })
@@ -23,7 +23,7 @@ describe('src | reducers | token  ', () => {
       const nextState = tokenReducer()
 
       // then
-      expect(nextState).toEqual({
+      expect(nextState).toStrictEqual({
         hasBeenChecked: false,
         isValid: false,
       })
@@ -38,7 +38,7 @@ describe('src | reducers | token  ', () => {
         )
 
         // then
-        expect(nextState).toEqual({
+        expect(nextState).toStrictEqual({
           hasBeenChecked: true,
           isValid: true,
         })
@@ -52,7 +52,7 @@ describe('src | reducers | token  ', () => {
         )
 
         // then
-        expect(nextState).toEqual({
+        expect(nextState).toStrictEqual({
           hasBeenChecked: true,
           isValid: false,
         })

@@ -127,6 +127,6 @@ describe('getMenuRoutes', () => {
     ]
 
     // then
-    expect(result).toEqual(expected)
+    expect(result).toStrictEqual(expected)
   })
 })

@@ -85,8 +85,8 @@ describe('src | components | verso | verso-controls | booking | CancelThisLink
           buttons: [
             <button
               className="no-border no-background no-outline is-block py12 is-bold fs14"
-              key="Oui"
               id="popin-cancel-booking-yes"
+              key="Oui"
               onClick={anyFunction}
               type="button"
             >
@@ -94,8 +94,8 @@ describe('src | components | verso | verso-controls | booking | CancelThisLink
             </button>,
             <button
               className="no-border no-background no-outline is-block py12 is-bold fs14"
-              key="Non"
               id="popin-cancel-booking-no"
+              key="Non"
               onClick={anyFunction}
               type="button"
             >

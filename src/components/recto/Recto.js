@@ -14,8 +14,8 @@ const Recto = ({ areDetailsVisible, extraClassName, recommendation }) => {
       {thumbUrl && (
         <Thumb
           src={thumbUrl}
-          withMediation={mediation}
           translated={areDetailsVisible}
+          withMediation={mediation}
         />
       )}
       {mediation && mediation.frontText && (

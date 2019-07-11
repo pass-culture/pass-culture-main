@@ -152,7 +152,10 @@ class SearchFilter extends Component {
 
     return (
       <div className="is-relative is-clipped">
-        <Transition in={isVisible} timeout={transitionDelay}>
+        <Transition
+          in={isVisible}
+          timeout={transitionDelay}
+        >
           {status => (
             <div
               className={`is-full-width transition-status-${status} mb20`}

@@ -18,7 +18,10 @@ describe('src | components | pages | typeform | TypeForm', () => {
 
     // when
     const wrapper = shallow(
-      <MemoryRouter initialEntries={['/typeform']} keyLength={0}>
+      <MemoryRouter
+        initialEntries={['/typeform']}
+        keyLength={0}
+      >
         <TypeForm {...props} />
       </MemoryRouter>
     )

@@ -38,7 +38,7 @@ describe('src | components | pages | discovery | RawDeckNavigation', () => {
   })
 
   describe('render', () => {
-    describe(`Prix de l'offre`, () => {
+    describe(`prix de l'offre`, () => {
       it('should equal Gratuit when offer price is 0', () => {
         // given
         const props = {
@@ -56,7 +56,7 @@ describe('src | components | pages | discovery | RawDeckNavigation', () => {
         const element = wrapper.find('span#deck-navigation-offer-price')
         // then
         expect(element).toBeDefined()
-        expect(element.text()).toEqual('Gratuit')
+        expect(element.text()).toStrictEqual('Gratuit')
       })
       it(`should equal '0 -> 12 €' when offer price range is [0, 12]`, () => {
         // given
@@ -78,7 +78,7 @@ describe('src | components | pages | discovery | RawDeckNavigation', () => {
         const element = wrapper.find('span#deck-navigation-offer-price')
         // then
         expect(element).toBeDefined()
-        expect(element.text()).toEqual('0 → 12 €')
+        expect(element.text()).toStrictEqual('0 → 12 €')
       })
       it(`should equal '12 -> 56 €' when offer price range is [12, 56]`, () => {
         // given
@@ -101,12 +101,12 @@ describe('src | components | pages | discovery | RawDeckNavigation', () => {
         const element = wrapper.find('span#deck-navigation-offer-price')
         // then
         expect(element).toBeDefined()
-        expect(element.text()).toEqual('12 → 56 €')
+        expect(element.text()).toStrictEqual('12 → 56 €')
       })
     })
 
-    describe('Background Color', () => {
-      describe('When no color given in recommendation', () => {
+    describe('background Color', () => {
+      describe('when no color given in recommendation', () => {
         it('should render black by default', () => {
           // given
           const props = {
@@ -118,13 +118,13 @@ describe('src | components | pages | discovery | RawDeckNavigation', () => {
           const wrapper = shallow(<RawDeckNavigation {...props} />)
 
           // then
-          expect(wrapper.props().style.background).toEqual(
+          expect(wrapper.props().style.background).toStrictEqual(
             'linear-gradient(to bottom, rgba(0,0,0,0) 0%,black 30%,black 100%)'
           )
         })
       })
 
-      describe('With a color given in recommendation', () => {
+      describe('with a color given in recommendation', () => {
         it('should render associate color', () => {
           // given
           const props = {
@@ -138,7 +138,7 @@ describe('src | components | pages | discovery | RawDeckNavigation', () => {
           const wrapper = shallow(<RawDeckNavigation {...props} />)
 
           // then
-          expect(wrapper.props().style.background).toEqual(
+          expect(wrapper.props().style.background).toStrictEqual(
             'linear-gradient(to bottom, rgba(0,0,0,0) 0%,hsl(324, 100%, 7.5%) 30%,hsl(324, 100%, 7.5%) 100%)'
           )
         })

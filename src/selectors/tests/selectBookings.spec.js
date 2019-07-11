@@ -24,7 +24,7 @@ describe('src | selectors | selectBookings', () => {
 
       // Then
       expect(result).toBeDefined()
-      expect(result).toEqual({ id: 'bar' })
+      expect(result).toStrictEqual({ id: 'bar' })
       expect(result).toBe(state.data.bookings[1])
     })
   })

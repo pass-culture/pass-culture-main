@@ -38,14 +38,21 @@ class Splash extends React.PureComponent {
   render() {
     const { close } = this.state
     return (
-      <Transition unmountOnExit in={!close} timeout={duration}>
+      <Transition
+        in={!close}
+        timeout={duration}
+        unmountOnExit
+      >
         {state => (
           <div
-            id="splash"
             className="pc-gradient is-overlay text-center"
+            id="splash"
             style={{ ...defaultStyle, ...transitionStyles[state] }}
           >
-            <Icon svg="logo-group" alt="Logo Pass Culture" />
+            <Icon
+              alt="Logo Pass Culture"
+              svg="logo-group"
+            />
           </div>
         )}
       </Transition>

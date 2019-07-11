@@ -7,18 +7,18 @@ import { openSharePopin, closeSharePopin } from '../../reducers/share'
 
 export const getCopyToClipboardButton = (url, onClick) => (
   <CopyToClipboardButton
-    key="CopyToClipboard"
-    value={url}
     className="py12 is-bold fs14"
+    key="CopyToClipboard"
     onClick={onClick}
+    value={url}
   />
 )
 export const getMailToLinkButton = (email, headers) => (
   <MailToLink
-    key="MailToLink"
+    className="no-underline is-block is-white-text py12 is-bold fs14"
     email={email}
     headers={headers}
-    className="no-underline is-block is-white-text py12 is-bold fs14"
+    key="MailToLink"
   >
     <span>Envoyer par e-mail</span>
   </MailToLink>
@@ -26,10 +26,10 @@ export const getMailToLinkButton = (email, headers) => (
 
 export const getCloseButton = onClose => (
   <button
-    key="closeButton"
-    type="button"
     className="no-border no-background no-outline is-block py12 is-bold fs14"
+    key="closeButton"
     onClick={() => onClose()}
+    type="button"
   >
     <span>Fermer</span>
   </button>
@@ -92,11 +92,11 @@ class ShareButtonContent extends React.PureComponent {
     const isDisabled = !offerName || !url
     return (
       <button
-        id={id}
-        type="button"
-        disabled={isDisabled}
         className="no-border no-background"
+        disabled={isDisabled}
+        id={id}
         onClick={this.onClickShare}
+        type="button"
       >
         <span
           aria-hidden

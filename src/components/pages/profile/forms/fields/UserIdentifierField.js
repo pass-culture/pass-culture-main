@@ -11,10 +11,10 @@ export const UserIdentifierField = props => {
     <div className="pc-scroll-container">
       <div className="py30 px12 flex-1">
         <InputField
-          required
-          name="publicName"
-          label="Votre identifiant"
           disabled={isLoading}
+          label="Votre identifiant"
+          name="publicName"
+          required
         />
       </div>
     </div>

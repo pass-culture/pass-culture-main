@@ -112,7 +112,10 @@ describe('src | components | pages | activation | password | RawActivationPasswo
     it('should redirect to activation error page', () => {
       // when
       const wrapper = shallow(
-        <RawActivationPassword {...props} isValidUrl={false} />
+        <RawActivationPassword
+          {...props}
+          isValidUrl={false}
+        />
       )
 
       // then
@@ -238,12 +241,12 @@ describe('src | components | pages | activation | password | RawActivationPasswo
         await wrapper.find(Form).prop('onSubmit')(activationData)
 
         // then
-        expect(wrapper.state('isLoading')).toEqual(true)
+        expect(wrapper.state('isLoading')).toStrictEqual(true)
       })
 
       it('should redirect user to activation/error when failed', async () => {
         // given
-        props.loginUserAfterPasswordSaveSuccess = jest.fn((_, fail) => fail())
+        jest.spyOn(props, 'loginUserAfterPasswordSaveSuccess').mockImplementation((_, fail) => fail())
 
         // when
         const wrapper = shallow(<RawActivationPassword {...props} />)

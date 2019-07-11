@@ -25,7 +25,7 @@ describe('src | components | pages | activation | ActivationError', () => {
 
     // then
     expect(mailToLink).toHaveLength(1)
-    expect(mailToLink.prop('email')).toEqual(SUPPORT_EMAIL)
+    expect(mailToLink.prop('email')).toStrictEqual(SUPPORT_EMAIL)
     expect(mailToLink.prop('headers')).toStrictEqual({
       subject: decodeURI(SUPPORT_EMAIL_SUBJECT),
     })

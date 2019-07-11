@@ -25,7 +25,10 @@ class FilterByDistance extends PureComponent {
 
     return (
       <React.Fragment>
-        <div className="pt18 text-center mb20" id="filter-by-distance">
+        <div
+          className="pt18 text-center mb20"
+          id="filter-by-distance"
+        >
           <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
             {'Où'}
           </h2>
@@ -36,7 +39,10 @@ class FilterByDistance extends PureComponent {
             onChange={this.onChangeDistance}
           >
             {options.map(({ label, value }) => (
-              <option key={value} value={value}>
+              <option
+                key={value}
+                value={value}
+              >
                 {label}
               </option>
             ))}

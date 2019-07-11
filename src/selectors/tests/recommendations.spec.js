@@ -31,7 +31,7 @@ describe('selectRecommendations', () => {
     const result = selectRecommendations(state)
 
     // then
-    expect(result).toEqual([])
+    expect(result).toStrictEqual([])
   })
 
   it('should return recommendations', () => {
@@ -168,8 +168,8 @@ describe('selectRecommendations', () => {
     const result = selectRecommendations(state2)
 
     // then
-    expect(result[0]).toEqual(expected)
-    expect(result.length).toEqual(46)
+    expect(result[0]).toStrictEqual(expected)
+    expect(result).toHaveLength(46)
   })
 
   describe('computes rounded distances', () => {
@@ -204,7 +204,7 @@ describe('selectRecommendations', () => {
         const result = selectRecommendations(state)
 
         // then
-        expect(result[0].distance).toEqual('6 m')
+        expect(result[0].distance).toStrictEqual('6 m')
       })
     })
     describe('when recommendation and user are less than 100 meters away', () => {
@@ -238,7 +238,7 @@ describe('selectRecommendations', () => {
         const result = selectRecommendations(state)
 
         // then
-        expect(result[0].distance).toEqual('65 m')
+        expect(result[0].distance).toStrictEqual('65 m')
       })
     })
     describe('when recommendation and user are less than 1000 meters away', () => {
@@ -272,7 +272,7 @@ describe('selectRecommendations', () => {
         const result = selectRecommendations(state)
 
         // then
-        expect(result[0].distance).toEqual('470 m')
+        expect(result[0].distance).toStrictEqual('470 m')
       })
     })
     describe('when recommendation and user are less than 5000 meters away', () => {
@@ -306,7 +306,7 @@ describe('selectRecommendations', () => {
         const result = selectRecommendations(state)
 
         // then
-        expect(result[0].distance).toEqual('2.2 km')
+        expect(result[0].distance).toStrictEqual('2.2 km')
       })
     })
     describe('when recommendation and user are more than 5000 meters away', () => {
@@ -340,7 +340,7 @@ describe('selectRecommendations', () => {
         const result = selectRecommendations(state)
 
         // then
-        expect(result[0].distance).toEqual('17 km')
+        expect(result[0].distance).toStrictEqual('17 km')
       })
     })
   })
@@ -377,7 +377,7 @@ describe('selectRecommendations', () => {
         const result = selectRecommendations(state)
 
         // then
-        expect(result[0].distance).toEqual('-')
+        expect(result[0].distance).toStrictEqual('-')
       })
     })
     describe('when there is no offer for the recommendation', () => {
@@ -433,7 +433,7 @@ describe('selectRecommendations', () => {
         const result = selectRecommendations(state)
 
         // then
-        expect(result[0].distance).toEqual('-')
+        expect(result[0].distance).toStrictEqual('-')
       })
     })
     describe('when there is no venue for the recommendation', () => {
@@ -537,7 +537,7 @@ describe('selectRecommendations', () => {
         const result = selectRecommendations(state)
 
         // then
-        expect(result[0].distance).toEqual('-')
+        expect(result[0].distance).toStrictEqual('-')
       })
     })
   })

@@ -14,7 +14,7 @@ const format = 'dddd DD/MM/YYYY à HH:mm'
 
 describe('src | selectors| selectBookables', () => {
   describe('addModifierString', () => {
-    it('Add property named __modifiers__ to array of objects', () => {
+    it('add property named __modifiers__ to array of objects', () => {
       let value = []
       let expected = []
       let result = addModifierString()(value)
@@ -143,7 +143,7 @@ describe('src | selectors| selectBookables', () => {
       expect(results[0].userHasAlreadyBookedThisDate).toBe(true)
     })
   })
-  xdescribe('markAsBooked', () => {})
-  xdescribe('sortByDate', () => {})
-  xdescribe('selectBookables', () => {})
+  describe.skip('markAsBooked', () => {})
+  describe.skip('sortByDate', () => {})
+  describe.skip('selectBookables', () => {})
 })

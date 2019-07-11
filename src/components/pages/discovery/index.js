@@ -130,8 +130,8 @@ export class RawDiscoveryPage extends React.PureComponent {
     return (
       <Fragment>
         <main
-          role="main"
           className="discovery-page no-padding page with-footer"
+          role="main"
         >
           {(match.params.view === 'verso' ||
             match.params.mediationId === 'verso') && (
@@ -156,11 +156,14 @@ export class RawDiscoveryPage extends React.PureComponent {
               />
             </Fragment>
           )}
-          <Footer id="deck-footer" borderTop />
+          <Footer
+            borderTop
+            id="deck-footer"
+          />
         </main>
         <LoaderContainer
-          isEmpty={isEmpty}
           hasError={hasError}
+          isEmpty={isEmpty}
           isLoading={isLoading}
         />
       </Fragment>

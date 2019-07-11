@@ -14,7 +14,7 @@ describe('src | helpers | createMailToLink ', () => {
     const result = createMailToLink(email, headers)
 
     // then
-    expect(result).toEqual(
+    expect(result).toStrictEqual(
       'mailto:email@fake.url?body=http%3A%2F%2Flocalhost%3A3000%2Fdecouverte%2FAE%2F%3Fshared_by%3DAE&subject=Fake%20Title'
     )
   })
@@ -30,7 +30,7 @@ describe('src | helpers | createMailToLink ', () => {
     const result = createMailToLink(email, headers)
 
     // then
-    expect(result).toEqual(
+    expect(result).toStrictEqual(
       'mailto:?body=http%3A%2F%2Flocalhost%3A3000%2Fdecouverte%2FAE%2F%3Fshared_by%3DAE&subject=Fake%20Title'
     )
   })
@@ -43,6 +43,6 @@ describe('src | helpers | createMailToLink ', () => {
     const result = createMailToLink(email, headers)
 
     // then
-    expect(result).toEqual('mailto:')
+    expect(result).toStrictEqual('mailto:')
   })
 })

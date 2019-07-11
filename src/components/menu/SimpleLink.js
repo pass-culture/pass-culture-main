@@ -12,7 +12,10 @@ const SimpleLink = ({ item }) => (
     rel={(item.target === '_blank' && 'noopener noreferer') || null}
     target={item.target}
   >
-    <Item icon={item.icon} title={item.title} />
+    <Item
+      icon={item.icon}
+      title={item.title}
+    />
   </a>
 )
 

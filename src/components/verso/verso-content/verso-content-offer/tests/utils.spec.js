@@ -12,7 +12,7 @@ describe('src | components | verso | verso-content | verso-content-offer | utils
       const duration = getDurationFromMinutes(durationMinutes)
 
       // then
-      expect(duration).toEqual('15m')
+      expect(duration).toStrictEqual('15m')
     })
 
     it('égale à une heure ronde', () => {
@@ -23,7 +23,7 @@ describe('src | components | verso | verso-content | verso-content-offer | utils
       const duration = getDurationFromMinutes(durationMinutes)
 
       // then
-      expect(duration).toEqual('2h')
+      expect(duration).toStrictEqual('2h')
     })
 
     it('superieure à une heure et inférieure à 12h', () => {
@@ -34,7 +34,7 @@ describe('src | components | verso | verso-content | verso-content-offer | utils
       const duration = getDurationFromMinutes(durationMinutes)
 
       // then
-      expect(duration).toEqual('2h03')
+      expect(duration).toStrictEqual('2h03')
     })
   })
 })

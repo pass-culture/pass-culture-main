@@ -67,7 +67,10 @@ class FilterByDates extends PureComponent {
     const pickedDaysInQuery = decodeURI(filterState.params.jours || '')
 
     return (
-      <div id="filter-by-dates" className="pt18">
+      <div
+        className="pt18"
+        id="filter-by-dates"
+      >
         <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
           {'Quand'}
         </h2>
@@ -82,17 +85,17 @@ class FilterByDates extends PureComponent {
 
               return (
                 <label
+                  className="item flex-columns items-center py5 pl7 pr22"
                   htmlFor={`filter-by-dates-days-${index}-checkbox`}
                   key={value}
-                  className="item flex-columns items-center py5 pl7 pr22"
                 >
                   <span className="flex-0 field field-checkbox">
                     <input
-                      id={`filter-by-dates-days-${index}-checkbox`}
-                      type="checkbox"
-                      className="input no-background"
                       checked={checked}
+                      className="input no-background"
+                      id={`filter-by-dates-days-${index}-checkbox`}
                       onChange={this.onChangeDate(value)}
+                      type="checkbox"
                       value={value}
                     />
                   </span>
@@ -101,12 +104,12 @@ class FilterByDates extends PureComponent {
               )
             })}
             <DatePickerField
-              name="pick-by-date-filter"
               className="item fs19 py5 px7"
               minDate={new Date()}
-              selected={pickedDate}
+              name="pick-by-date-filter"
               onChange={this.onChangePickedDate}
               popperRefContainer={this.datepickerPopper}
+              selected={pickedDate}
             />
           </div>
         </div>

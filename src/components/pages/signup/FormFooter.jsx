@@ -14,7 +14,10 @@ const FormFooter = ({ canSubmit, isLoading }) => (
     >
       Créer
     </button>
-    <NavLink to="/connexion" className="button is-secondary">
+    <NavLink
+      className="button is-secondary"
+      to="/connexion"
+    >
       {"J'ai déjà un compte"}
     </NavLink>
   </footer>

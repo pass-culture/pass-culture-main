@@ -13,7 +13,10 @@ const renderSubmitButton = obj => {
   }
   if (obj.id) props.id = obj.id
   return (
-    <button type="submit" {...props}>
+    <button
+      type="submit"
+      {...props}
+    >
       <span className="is-block">{obj.label}</span>
     </button>
   )

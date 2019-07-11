@@ -38,8 +38,8 @@ describe('src | components | pages | search | BookingError', () => {
       const list = wrapper.find('#booking-error-reasons p')
       // then
       expect(list).toHaveLength(5)
-      expect(list.at(1).text()).toEqual('Reason value 1')
-      expect(list.at(4).text()).toEqual('Reason value 4')
+      expect(list.at(1).text()).toStrictEqual('Reason value 1')
+      expect(list.at(4).text()).toStrictEqual('Reason value 4')
     })
   })
 })

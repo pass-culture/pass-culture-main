@@ -3,7 +3,10 @@ import React from 'react'
 import NavigationFooter from '../../layout/NavigationFooter'
 
 const Footer = () => (
-  <NavigationFooter theme="white" className="dotted-top-red" />
+  <NavigationFooter
+    className="dotted-top-red"
+    theme="white"
+  />
 )
 
 export default Footer

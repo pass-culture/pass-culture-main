@@ -24,10 +24,13 @@ export class RawResetThePasswordForm extends React.PureComponent {
     const { canSubmit, formErrors, isLoading } = this.props
     return (
       <div
-        id="reset-password-page-request"
         className="is-full-layout flex-rows"
+        id="reset-password-page-request"
       >
-        <main role="main" className="pc-main is-white-text flex-1">
+        <main
+          className="pc-main is-white-text flex-1"
+          role="main"
+        >
           <div className="pc-scroll-container">
             <div className="is-full-layout flex-rows flex-center padded-2x">
               <div className="fs22">
@@ -46,20 +49,20 @@ export class RawResetThePasswordForm extends React.PureComponent {
               </div>
               <div>
                 <PasswordField
-                  required
-                  theme="primary"
                   className="mt36"
-                  name="newPassword"
                   disabled={isLoading}
                   label="Saisissez votre nouveau mot de passe"
-                />
-                <PasswordField
+                  name="newPassword"
                   required
                   theme="primary"
+                />
+                <PasswordField
                   className="mt36"
-                  name="newPasswordConfirm"
                   disabled={isLoading}
                   label="Confirmez votre nouveau mot de passe"
+                  name="newPasswordConfirm"
+                  required
+                  theme="primary"
                 />
                 <HiddenField name="token" />
                 {formErrors && <FormError customMessage={formErrors} />}

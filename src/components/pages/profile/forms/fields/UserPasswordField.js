@@ -24,24 +24,24 @@ export class UserPasswordField extends React.PureComponent {
       <div className="pc-scroll-container">
         <div className="py30 px12 flex-1">
           <PasswordField
-            required={this.buildOldPasswordLabel()}
-            name="oldPassword"
             disabled={isLoading}
             label="Saisissez votre mot de passe actuel"
+            name="oldPassword"
+            required={this.buildOldPasswordLabel()}
           />
           <PasswordField
-            required
             className="mt36"
-            name="newPassword"
             disabled={isLoading}
             label="Saisissez votre nouveau mot de passe"
+            name="newPassword"
+            required
           />
           <PasswordField
-            required={this.validateNewPassword()}
             className="mt36"
-            name="newPasswordConfirm"
             disabled={isLoading}
             label="Confirmez votre nouveau mot de passe"
+            name="newPasswordConfirm"
+            required={this.validateNewPassword()}
           />
           {formErrors && <FormError customMessage={formErrors} />}
         </div>

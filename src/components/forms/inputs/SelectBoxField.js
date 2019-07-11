@@ -17,9 +17,9 @@ const renderOption = (object, identifier) => {
   const keySalt = slugify(object.value)
   return (
     <option
-      value={identifier}
-      key={`${keySalt}::${identifier}`}
       className={`${CLASSNAME_PREFIX}__option`}
+      key={`${keySalt}::${identifier}`}
+      value={identifier}
     >
       {object.label}
     </option>
@@ -30,9 +30,9 @@ const renderOptionsGroup = (group, groupIndex) => {
   const groupkey = slugify(group.label)
   return (
     <optgroup
+      className={`${CLASSNAME_PREFIX}__optgroup`}
       key={groupkey}
       label={group.label}
-      className={`${CLASSNAME_PREFIX}__optgroup`}
     >
       {group.options &&
         group.options.map((obj, optionIndex) => {
@@ -90,18 +90,24 @@ class SelectBoxField extends React.PureComponent {
         name={name}
         render={({ input, meta }) => (
           <div className={`${className}`}>
-            <label htmlFor={id || name} className={CLASSNAME_PREFIX}>
-              {label && <InputLabel label={label} required={required} />}
+            <label
+              className={CLASSNAME_PREFIX}
+              htmlFor={id || name}
+            >
+              {label && <InputLabel
+                label={label}
+                required={required}
+                        />}
               {help && <InputHelp label={help} />}
               <span className="pc-final-form-inner">
                 <select
-                  id={id || name}
-                  disabled={disabled}
                   className="pc-final-form-input"
+                  disabled={disabled}
+                  id={id || name}
                   // recompose value/onchange input
                   {...input}
-                  value={value}
                   onChange={this.onChange(input)}
+                  value={value}
                 >
                   {placeholder && this.renderPlaceHolderOption()}
                   {provider &&
@@ -114,7 +120,10 @@ class SelectBoxField extends React.PureComponent {
                     })}
                 </select>
               </span>
-              <FormError id={`${id || name}-error`} meta={meta} />
+              <FormError
+                id={`${id || name}-error`}
+                meta={meta}
+              />
             </label>
           </div>
         )}

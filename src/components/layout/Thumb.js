@@ -9,14 +9,17 @@ const Thumb = ({ withMediation, src, translated }) => {
   })
   return (
     <div className="thumb">
-      {!withMediation && <div className="background" style={backgroundStyle} />}
+      {!withMediation && <div
+        className="background"
+        style={backgroundStyle}
+                         />}
       <div
-        style={thumbStyle}
         className={classnames({
           image: true,
           translatable: translated !== undefined,
           translated,
         })}
+        style={thumbStyle}
       />
     </div>
   )

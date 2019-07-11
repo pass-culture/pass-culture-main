@@ -74,13 +74,12 @@ class ProfileForm extends React.PureComponent {
     const { isLoading } = this.state
     return (
       <div
-        id="profile-page-form-view"
         className="pc-page-view pc-theme-default flex-rows with-header"
+        id="profile-page-form-view"
       >
         <FinalForm
-          validate={validator}
-          onSubmit={this.onFormSubmit}
           initialValues={initialValues}
+          onSubmit={this.onFormSubmit}
           render={({
             dirtySinceLastSubmit,
             error: preSubmitError,
@@ -97,11 +96,11 @@ class ProfileForm extends React.PureComponent {
               (!hasValidationErrors && hasSubmitErrors && dirtySinceLastSubmit)
             return (
               <form
-                noValidate
                 autoComplete="off"
-                onSubmit={handleSubmit}
-                onReset={this.onFormReset}
                 className="pc-final-form flex-rows"
+                noValidate
+                onReset={this.onFormReset}
+                onSubmit={handleSubmit}
               >
                 <PageHeader
                   backTo="/profil"
@@ -112,24 +111,25 @@ class ProfileForm extends React.PureComponent {
                   useSubmit
                 />
                 <main
+                  className="pc-main is-clipped is-relative flex-1"
                   role="main"
                   style={{ backgroundImage: BACKGROUND_IMAGE }}
-                  className="pc-main is-clipped is-relative flex-1"
                 >
                   <WrappedComponent
                     {...this.props}
-                    isLoading={isLoading}
                     formErrors={!pristine && preSubmitError}
+                    isLoading={isLoading}
                   />
                 </main>
               </form>
             )
           }}
+          validate={validator}
         />
         <NavigationFooter
-          theme="white"
-          disabled={isLoading}
           className="dotted-top-red"
+          disabled={isLoading}
+          theme="white"
         />
       </div>
     )

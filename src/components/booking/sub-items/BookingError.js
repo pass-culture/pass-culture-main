@@ -13,7 +13,10 @@ const getArrayIndex = index => `error_${index}`
 const renderErrorReason = (msg, index) => {
   if (!msg) return null
   return (
-    <p data-index={index} key={getArrayIndex(index)}>
+    <p
+      data-index={index}
+      key={getArrayIndex(index)}
+    >
       {msg}
     </p>
   )
@@ -28,10 +31,16 @@ const BookingError = ({ errors }) => {
     <div className="booked text-center">
       <h3 className="mb16">
         <span className="is-block">
-          <Icon svg="picto-echec" alt="erreur" />
+          <Icon
+            alt="erreur"
+            svg="picto-echec"
+          />
         </span>
       </h3>
-      <div id="booking-error-reasons" className="fs20">
+      <div
+        className="fs20"
+        id="booking-error-reasons"
+      >
         <p className="mb36">Une erreur est survenue lors de la réservation</p>
         {entries && entries.map(renderErrorReason)}
       </div>

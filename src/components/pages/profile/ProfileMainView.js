@@ -13,13 +13,13 @@ const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k.png')`
 
 const ProfileMainView = ({ config, currentUser }) => (
   <div
-    id="profile-page-main-view"
     className="pc-page-view pc-theme-default flex-rows with-header"
+    id="profile-page-main-view"
   >
     <PageHeader title="Mon compte" />
     <main
-      role="main"
       className="pc-main is-clipped is-relative"
+      role="main"
       style={{ backgroundImage: BACKGROUND_IMAGE }}
     >
       <div className="pc-scroll-container">
@@ -34,10 +34,16 @@ const ProfileMainView = ({ config, currentUser }) => (
             {currentUser && <MonPassCulture currentUser={currentUser} />}
           </div>
         </div>
-        <MesInformations user={currentUser} fields={config} />
+        <MesInformations
+          fields={config}
+          user={currentUser}
+        />
       </div>
     </main>
-    <NavigationFooter theme="white" className="dotted-top-red" />
+    <NavigationFooter
+      className="dotted-top-red"
+      theme="white"
+    />
   </div>
 )
 

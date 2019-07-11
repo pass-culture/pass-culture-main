@@ -13,10 +13,19 @@ const MyBooking = ({
   thumbUrl,
   token,
 }) => (
-  <li className="mb-my-booking" data-token={token}>
-    <Link className="mb-link" to={offerVersoUrl}>
+  <li
+    className="mb-my-booking"
+    data-token={token}
+  >
+    <Link
+      className="mb-link"
+      to={offerVersoUrl}
+    >
       <div className="mb-thumb">
-        {thumbUrl && <img alt="" src={thumbUrl} />}
+        {thumbUrl && <img
+          alt=""
+          src={thumbUrl}
+                     />}
       </div>
       <div className="mb-infos">
         <div className="mb-heading">
@@ -27,7 +36,10 @@ const MyBooking = ({
       </div>
       <div className="mb-arrow">
         {isCancelled && <Ribbon />}
-        <Icon className="mb-arrow-img" svg="ico-next-S" />
+        <Icon
+          className="mb-arrow-img"
+          svg="ico-next-S"
+        />
       </div>
     </Link>
   </li>

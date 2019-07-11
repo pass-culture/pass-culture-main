@@ -13,7 +13,7 @@ describe('src | reducers | share  ', () => {
     }
 
     // then
-    expect(updatedState).toEqual(expected)
+    expect(updatedState).toStrictEqual(expected)
   })
 })
 

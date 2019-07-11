@@ -5,10 +5,16 @@ import PropTypes from 'prop-types'
 
 const VersoWallet = ({ value }) => (
   <div id="verso-wallet">
-    <small id="verso-wallet-label" className="is-block">
+    <small
+      className="is-block"
+      id="verso-wallet-label"
+    >
       Mon Pass
     </small>
-    <span id="verso-wallet-value" className="fs24 is-block">
+    <span
+      className="fs24 is-block"
+      id="verso-wallet-value"
+    >
       {value}&nbsp;€
     </span>
   </div>

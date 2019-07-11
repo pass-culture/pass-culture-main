@@ -6,11 +6,11 @@ import PropTypes from 'prop-types'
 const VersoActionsBar = ({ url }) => (
   <nav className="verso-actions-bar items-center flex-center flex-columns fs16">
     <a
-      target="_blank"
-      rel="noopener noreferrer"
+      className="is-red-text is-bold flex-columns items-center flex-center"
       href={url}
       id="verso-online-booked-button"
-      className="is-red-text is-bold flex-columns items-center flex-center"
+      rel="noopener noreferrer"
+      target="_blank"
     >
       <i className="icon icon-ico-linkexternal fs30" />
       <span className="fs16">Accéder</span>

@@ -35,13 +35,13 @@ describe('src | components | search | searchByType | NavByOfferType', () => {
       const categories = wrapper.find('.item')
 
       // then
-      expect(categories.length).toBe(props.categories.length)
+      expect(categories).toHaveLength(props.categories.length)
       categories.forEach(category => {
         expect(category.children().is(SearchPicture)).toBe(true)
       })
     })
 
-    describe('I click on one category', () => {
+    describe('i click on one category', () => {
       it('should reset the search value of the store', () => {
         // given
         const wrapper = shallow(<NavByOfferType {...props} />)

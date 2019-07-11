@@ -45,7 +45,10 @@ class SearchResultItem extends Component {
           <hr className="dotted-top-primary" />
           <div className="flex-columns">
             <div className="image flex-0 dotted-right-primary flex-rows flex-center">
-              <img src={recommendation.thumbUrl} alt="" />
+              <img
+                alt=""
+                src={recommendation.thumbUrl}
+              />
             </div>
             <div className="m18 flex-1">
               {recommendation.offer && (
@@ -59,7 +62,10 @@ class SearchResultItem extends Component {
                   <div className="fs13">
                     {recommendation.offer.product.offerType.appLabel}
                   </div>
-                  <div id="recommendation-date" className="fs13">
+                  <div
+                    className="fs13"
+                    id="recommendation-date"
+                  >
                     {recommendation.offer &&
                       getRecommendationDateString(recommendation.offer)}
                   </div>
@@ -67,7 +73,11 @@ class SearchResultItem extends Component {
               )}
             </div>
             <div className="flex-center items-center is-primary-text">
-              <span aria-hidden className="icon-legacy-next" title="" />
+              <span
+                aria-hidden
+                className="icon-legacy-next"
+                title=""
+              />
             </div>
           </div>
         </div>

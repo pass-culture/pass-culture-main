@@ -33,10 +33,12 @@ const EmailField = ({
   return (
     <Field
       name={name}
-      validate={validateFunc || undefined}
       render={({ input, meta }) => (
         <p className={`${className}`}>
-          <label htmlFor={id || name} className="pc-final-form-text">
+          <label
+            className="pc-final-form-text"
+            htmlFor={id || name}
+          >
             {label && (
               <InputLabel
                 label={label}
@@ -47,19 +49,23 @@ const EmailField = ({
             <span className="pc-final-form-inner">
               <input
                 {...input}
-                id={id || name}
-                type="email"
-                disabled={disabled}
-                required={!!required} // cast to boolean
-                placeholder={placeholder}
                 autoComplete={autoComplete ? 'on' : 'off'}
                 className="pc-final-form-input is-block"
+                disabled={disabled}
+                id={id || name} // cast to boolean
+                placeholder={placeholder}
+                required={!!required}
+                type="email"
               />
             </span>
-            <FormError id={`${id || name}-error`} meta={meta} />
+            <FormError
+              id={`${id || name}-error`}
+              meta={meta}
+            />
           </label>
         </p>
       )}
+      validate={validateFunc || undefined}
     />
   )
 }

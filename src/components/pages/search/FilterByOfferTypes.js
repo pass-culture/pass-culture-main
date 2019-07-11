@@ -22,7 +22,10 @@ class FilterByOfferTypes extends PureComponent {
     const typesValue = decodeURI(filterState.params.categories || '')
 
     return (
-      <div className="pt18" id="filter-by-offer-types">
+      <div
+        className="pt18"
+        id="filter-by-offer-types"
+      >
         <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
           {'Quoi'}
         </h2>

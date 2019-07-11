@@ -20,7 +20,7 @@ describe('src | components | verso | verso-controls | booking | BookThisLink', (
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
     expect(buttonLabel).toHaveLength(1)
-    expect(buttonLabel.text()).toEqual("J'y vais!")
+    expect(buttonLabel.text()).toStrictEqual("J'y vais!")
   })
 
   it('should render Gratuit label when price value is 0', () => {
@@ -45,7 +45,7 @@ describe('src | components | verso | verso-controls | booking | BookThisLink', (
 
     // then
     expect(price).toHaveLength(1)
-    expect(price.text()).toEqual('Gratuit')
+    expect(price.text()).toStrictEqual('Gratuit')
   })
 
   it('should render a price range when multiples prices are given', () => {
@@ -72,7 +72,7 @@ describe('src | components | verso | verso-controls | booking | BookThisLink', (
     // then
     const price = wrapper.find('.price')
     expect(price).toHaveLength(1)
-    expect(price.text()).toEqual(`0${nbsp}${arrow}${nbsp}30${nbsp}€`)
+    expect(price.text()).toStrictEqual(`0${nbsp}${arrow}${nbsp}30${nbsp}€`)
   })
 
   describe('formatOutputPrice', () => {

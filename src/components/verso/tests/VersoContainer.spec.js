@@ -69,7 +69,7 @@ describe('src | components | verso | VersoContainer', () => {
       result = checkIsTuto(recommendation)
 
       // then
-      expect(result).toEqual(false)
+      expect(result).toStrictEqual(false)
     })
 
     it('return false when mediation is not given', () => {
@@ -81,7 +81,7 @@ describe('src | components | verso | VersoContainer', () => {
       result = checkIsTuto(recommendation)
 
       // then
-      expect(result).toEqual(false)
+      expect(result).toStrictEqual(false)
     })
   })
 
@@ -98,7 +98,7 @@ describe('src | components | verso | VersoContainer', () => {
       result = getOfferVenueNameOrPublicName(recommendation)
 
       // then
-      expect(result).toEqual(venuePublicName)
+      expect(result).toStrictEqual(venuePublicName)
     })
 
     it('return a venue name value when provided and venue publicName is not given', () => {
@@ -112,7 +112,7 @@ describe('src | components | verso | VersoContainer', () => {
 
       // then
       expected = 'Offer title'
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
 
     it('return a venue public name value when provided and venue name is not given', () => {
@@ -126,7 +126,7 @@ describe('src | components | verso | VersoContainer', () => {
 
       // then
       expected = 'Offer title'
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
 
     it('return null when venue name or public name are not provided', () => {
@@ -139,7 +139,7 @@ describe('src | components | verso | VersoContainer', () => {
 
       // then
       expected = null
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
   })
 
@@ -152,7 +152,7 @@ describe('src | components | verso | VersoContainer', () => {
       result = getOfferName(recommendation)
       // then
       expected = name
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
 
     it('return null', () => {
@@ -163,7 +163,7 @@ describe('src | components | verso | VersoContainer', () => {
       result = getOfferName(recommendation)
       // then
       expected = null
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
   })
 
@@ -175,7 +175,7 @@ describe('src | components | verso | VersoContainer', () => {
       // then
       result = getBackgroundColor(recommendation)
       // then
-      expect(result).toEqual(backgroundColor)
+      expect(result).toStrictEqual(backgroundColor)
     })
   })
 

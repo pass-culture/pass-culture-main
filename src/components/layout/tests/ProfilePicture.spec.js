@@ -32,8 +32,8 @@ describe('src | components | pages | ProfilePicture', () => {
       const img = wrapper.find('img').props()
 
       // then
-      expect(img.src).toEqual(`${ROOT_PATH}/icons/ico-user-circled-w.svg`)
-      expect(img.alt).toEqual('Avatar')
+      expect(img.src).toStrictEqual(`${ROOT_PATH}/icons/ico-user-circled-w.svg`)
+      expect(img.alt).toStrictEqual('Avatar')
     })
   })
 })

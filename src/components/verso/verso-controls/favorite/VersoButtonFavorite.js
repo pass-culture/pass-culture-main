@@ -12,10 +12,10 @@ const getButtonLabel = isFavorite =>
 
 const VersoButtonFavorite = ({ isFavorite, onClick, recommendationId }) => (
   <button
+    className="no-border no-background"
     disabled={DISABLE_FEATURE_NOT_YET_IMPLEMENTED}
     onClick={onClick(isFavorite, recommendationId)}
     type="button"
-    className="no-border no-background"
   >
     <span
       aria-hidden

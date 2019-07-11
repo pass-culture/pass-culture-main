@@ -44,10 +44,12 @@ class PasswordField extends React.PureComponent {
         name={name}
         // fallback to form validator
         // si le champs n'est pas marqué comme requis
-        validate={validateFunc || undefined}
         render={({ input, meta }) => (
           <p className={`${className}`}>
-            <label htmlFor={id || name} className="pc-final-form-password">
+            <label
+              className="pc-final-form-password"
+              htmlFor={id || name}
+            >
               {label && (
                 <InputLabel
                   label={label}
@@ -59,19 +61,19 @@ class PasswordField extends React.PureComponent {
               <span className="pc-final-form-inner">
                 <input
                   {...input}
-                  id={id || name}
-                  type={inputType}
-                  disabled={disabled}
-                  required={!!required} // cast to boolean
-                  placeholder={placeholder}
                   autoComplete={autoComplete ? 'on' : 'off'}
                   className="pc-final-form-input"
+                  disabled={disabled}
+                  id={id || name} // cast to boolean
+                  placeholder={placeholder}
+                  required={!!required}
+                  type={inputType}
                 />
 
                 <button
-                  type="button"
-                  onClick={this.onToggleVivisbility}
                   className="no-border no-outline no-background mx12 flex-0 is-primary-text"
+                  onClick={this.onToggleVivisbility}
+                  type="button"
                 >
                   <span
                     aria-hidden
@@ -80,10 +82,14 @@ class PasswordField extends React.PureComponent {
                   />
                 </button>
               </span>
-              <FormError id={`${id || name}-error`} meta={meta} />
+              <FormError
+                id={`${id || name}-error`}
+                meta={meta}
+              />
             </label>
           </p>
         )}
+        validate={validateFunc || undefined}
       />
     )
   }

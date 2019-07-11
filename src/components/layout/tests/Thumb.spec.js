@@ -36,13 +36,13 @@ describe('src | components | pages | Thumb', () => {
           .props()
 
         // then
-        expect(backgroundDiv.style.backgroundImage).toEqual(
+        expect(backgroundDiv.style.backgroundImage).toStrictEqual(
           "url('http://fake.url')"
         )
-        expect(backgroundDiv.style.backgroundSize).toEqual(null)
-        expect(thumbDiv.style.backgroundImage).toEqual("url('http://fake.url')")
-        expect(thumbDiv.style.backgroundSize).toEqual(null)
-        expect(thumbDiv.className).toEqual('image translatable')
+        expect(backgroundDiv.style.backgroundSize).toStrictEqual(null)
+        expect(thumbDiv.style.backgroundImage).toStrictEqual("url('http://fake.url')")
+        expect(thumbDiv.style.backgroundSize).toStrictEqual(null)
+        expect(thumbDiv.className).toStrictEqual('image translatable')
       })
     })
     describe('with Mediation', () => {
@@ -65,10 +65,10 @@ describe('src | components | pages | Thumb', () => {
           .props()
 
         // then
-        expect(backgroundDiv.exists()).toEqual(false)
-        expect(thumbDiv.style.backgroundImage).toEqual("url('http://fake.url')")
-        expect(thumbDiv.style.backgroundSize).toEqual('cover')
-        expect(thumbDiv.className).toEqual('image translatable translated')
+        expect(backgroundDiv.exists()).toStrictEqual(false)
+        expect(thumbDiv.style.backgroundImage).toStrictEqual("url('http://fake.url')")
+        expect(thumbDiv.style.backgroundSize).toStrictEqual('cover')
+        expect(thumbDiv.className).toStrictEqual('image translatable translated')
       })
     })
   })

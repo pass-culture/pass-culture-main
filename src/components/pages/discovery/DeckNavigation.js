@@ -44,11 +44,14 @@ export class RawDeckNavigation extends React.PureComponent {
     return (
       (handleGoPrevious && (
         <button
-          type="button"
           className="button before"
           onClick={handleGoPrevious}
+          type="button"
         >
-          <Icon svg="ico-prev-w-group" alt="Précédent" />
+          <Icon
+            alt="Précédent"
+            svg="ico-prev-w-group"
+          />
         </button>
       )) || <span />
     )
@@ -58,8 +61,15 @@ export class RawDeckNavigation extends React.PureComponent {
     const { handleGoNext } = this.props
     return (
       (handleGoNext && (
-        <button type="button" className="button after" onClick={handleGoNext}>
-          <Icon svg="ico-next-w-group" alt="Suivant" />
+        <button
+          className="button after"
+          onClick={handleGoNext}
+          type="button"
+        >
+          <Icon
+            alt="Suivant"
+            svg="ico-next-w-group"
+          />
         </button>
       )) || <span />
     )
@@ -87,7 +97,10 @@ export class RawDeckNavigation extends React.PureComponent {
 
     const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 30%,${headerColor} 100%)`
     return (
-      <div id="deck-navigation" style={{ background: backgroundGradient }}>
+      <div
+        id="deck-navigation"
+        style={{ background: backgroundGradient }}
+      >
         <div
           className="controls flex-columns items-end wrap-3"
           style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')` }}
@@ -98,21 +111,21 @@ export class RawDeckNavigation extends React.PureComponent {
           {(flipHandler && (
             <div className="flex-rows">
               <Draggable
+                axis="y"
                 bounds={toRectoDraggableBounds}
                 onStop={this.onStop}
-                axis="y"
               >
                 <div id="dragButton">
                   <button
+                    className="button to-recto"
                     id="deck-open-verso-button"
-                    type="button"
                     onClick={flipHandler}
                     onDragLeave={flipHandler}
-                    className="button to-recto"
+                    type="button"
                   >
                     <Icon
-                      className=" "
                       alt="Plus d'infos"
+                      className=" "
                       svg="ico-slideup-w"
                     />
                   </button>
@@ -122,8 +135,8 @@ export class RawDeckNavigation extends React.PureComponent {
                   >
                     <Finishable finished={isFinished}>
                       <Price
-                        id="deck-navigation-offer-price"
                         free="Gratuit"
+                        id="deck-navigation-offer-price"
                         value={priceRange}
                       />
                       <div className="separator">{offer ? '\u00B7' : ' '}</div>

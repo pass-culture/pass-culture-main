@@ -5,8 +5,16 @@ import { Link } from 'react-router-dom'
 import Icon from '../Icon'
 
 const CloseLink = ({ actionOnClick, closeTitle, closeTo }) => (
-  <Link className="close-link" onClick={actionOnClick} to={closeTo}>
-    <Icon alt={closeTitle} className="close-link-img" svg="ico-close" />
+  <Link
+    className="close-link"
+    onClick={actionOnClick}
+    to={closeTo}
+  >
+    <Icon
+      alt={closeTitle}
+      className="close-link-img"
+      svg="ico-close"
+    />
   </Link>
 )
 

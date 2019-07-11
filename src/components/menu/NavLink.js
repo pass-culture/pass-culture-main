@@ -12,7 +12,10 @@ const NavLink = ({ item }) => (
     role="menuitem"
     to={item.path.startsWith('/decouverte') ? '/' : item.path}
   >
-    <Item icon={item.icon} title={item.title} />
+    <Item
+      icon={item.icon}
+      title={item.title}
+    />
   </Link>
 )
 

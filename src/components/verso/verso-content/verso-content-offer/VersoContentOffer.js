@@ -23,7 +23,10 @@ class VersoContentOffer extends React.PureComponent {
     return (
       <div>
         <h3>Et en détails ?</h3>
-        <pre className="is-raw-description" id="verso-offer-description">
+        <pre
+          className="is-raw-description"
+          id="verso-offer-description"
+        >
           {description}
         </pre>
       </div>
@@ -57,7 +60,10 @@ class VersoContentOffer extends React.PureComponent {
       <div>
         <h3>Quoi ?</h3>
         <div>
-          <span id="verso-offer-label" className="is-bold">
+          <span
+            className="is-bold"
+            id="verso-offer-label"
+          >
             {appLabel}
           </span>
           {durationMinutes && <span> - Durée {duration}</span>}
@@ -150,11 +156,14 @@ class VersoContentOffer extends React.PureComponent {
             {city && <span className="is-block">{city}</span>}
           </p>
           {latitude && longitude && (
-            <a className="distance" href={navigationLink(latitude, longitude)}>
+            <a
+              className="distance"
+              href={navigationLink(latitude, longitude)}
+            >
               <span>{distance}&nbsp;</span>
               <Icon
-                svg="ico-geoloc-solid2"
                 alt="Géolocalisation dans Open Street Map"
+                svg="ico-geoloc-solid2"
               />
             </a>
           )}

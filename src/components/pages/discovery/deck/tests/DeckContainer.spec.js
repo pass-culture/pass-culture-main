@@ -158,7 +158,7 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
       const result = mapSizeToProps(dimensions)
 
       // then
-      expect(result).toEqual(expectedResult)
+      expect(result).toStrictEqual(expectedResult)
     })
 
     it('should return an object containing height and width equal to 500 when width > 500', () => {
@@ -173,7 +173,7 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
       const result = mapSizeToProps(dimensions)
 
       // then
-      expect(result).toEqual(expectedResult)
+      expect(result).toStrictEqual(expectedResult)
     })
   })
 })

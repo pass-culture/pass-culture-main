@@ -23,8 +23,8 @@ describe('src | components | pages | discovery | RawCard', () => {
     })
   })
   describe('render', () => {
-    describe('Background Color', () => {
-      describe('When no color given in recommendation', () => {
+    describe('background Color', () => {
+      describe('when no color given in recommendation', () => {
         it('should render black by default', () => {
           // given
           const props = {
@@ -38,11 +38,11 @@ describe('src | components | pages | discovery | RawCard', () => {
           const wrapper = shallow(<RawCard {...props} />)
 
           // then
-          expect(wrapper.props().style.backgroundColor).toEqual('black')
+          expect(wrapper.props().style.backgroundColor).toStrictEqual('black')
         })
       })
 
-      describe('With a color given in recommendation', () => {
+      describe('with a color given in recommendation', () => {
         it('should render associate color', () => {
           // given
           const props = {
@@ -59,7 +59,7 @@ describe('src | components | pages | discovery | RawCard', () => {
           const wrapper = shallow(<RawCard {...props} />)
 
           // then
-          expect(wrapper.props().style.backgroundColor).toEqual(
+          expect(wrapper.props().style.backgroundColor).toStrictEqual(
             'hsl(324, 100%, 7.5%)'
           )
         })

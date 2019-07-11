@@ -134,7 +134,7 @@ describe('selectRecommendation', () => {
 
       // when
       const result = selectRecommendation(state, recommendationId)
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
   })
 })

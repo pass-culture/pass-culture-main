@@ -50,8 +50,8 @@ describe('src | components | pages | discovery | deck | Deck', () => {
         }
 
         // then
-        expect(wrapper.state()).toEqual(expected)
-        expect(wrapper.instance().currentReadRecommendationId).toEqual(null)
+        expect(wrapper.state()).toStrictEqual(expected)
+        expect(wrapper.instance().currentReadRecommendationId).toStrictEqual(null)
       })
     })
 
@@ -142,7 +142,7 @@ describe('src | components | pages | discovery | deck | Deck', () => {
         expect(spy).not.toHaveBeenCalled()
       })
 
-      describe('When there is recommendations', () => {
+      describe('when there is recommendations', () => {
         it('should not refresh the key of draggable component', () => {
           // given
           const props = {
@@ -178,11 +178,11 @@ describe('src | components | pages | discovery | deck | Deck', () => {
           const wrapper = shallow(<Deck {...props} />)
 
           // then
-          expect(wrapper.state()).toEqual({ refreshKey: 0 })
+          expect(wrapper.state()).toStrictEqual({ refreshKey: 0 })
         })
       })
 
-      describe('When there is no recommendations or currentRecommendation available', () => {
+      describe('when there is no recommendations or currentRecommendation available', () => {
         it('should call handleRefreshedDraggableKey', () => {
           // given
           const props = {
@@ -216,7 +216,7 @@ describe('src | components | pages | discovery | deck | Deck', () => {
           wrapper.setProps(props)
 
           // then
-          expect(wrapper.state()).toEqual({ refreshKey: 1 })
+          expect(wrapper.state()).toStrictEqual({ refreshKey: 1 })
         })
       })
     })
@@ -228,7 +228,7 @@ describe('src | components | pages | discovery | deck | Deck', () => {
         wrapper.unmount()
 
         // then
-        expect(dispatchMock.mock.calls.length).toBe(1)
+        expect(dispatchMock.mock.calls).toHaveLength(1)
         expect(dispatchMock).toHaveBeenCalledWith({
           type: 'CLOSE_DETAILS_VIEW',
         })

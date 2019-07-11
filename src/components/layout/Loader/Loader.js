@@ -74,23 +74,31 @@ class Loader extends React.PureComponent {
     const shouldHide =
       !(isLoading && (atDecksEnd || isFirstLoad)) && !isEmpty && !hasError
     return (
-      <Transition in={!shouldHide} out={shouldHide} timeout={duration}>
+      <Transition
+        in={!shouldHide}
+        out={shouldHide}
+        timeout={duration}
+      >
         {status => (
           <div
-            id="application-loader"
             className="flex-rows"
+            id="application-loader"
             style={{ ...defaultStyle, ...transitionStyles[status] }}
           >
             <div className="flex-1 flex-rows flex-center">
               {isLoading && (
-                <Icon draggable={false} svg="ico-loading-card" alt="" />
+                <Icon
+                  alt=""
+                  draggable={false}
+                  svg="ico-loading-card"
+                />
               )}
               <h2 className="fs20">{this.renderMessage()}</h2>
             </div>
             {showFooter && (
               <NavigationFooter
-                theme="transparent"
                 className="dotted-top-white"
+                theme="transparent"
               />
             )}
           </div>
