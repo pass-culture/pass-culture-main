@@ -1,9 +1,9 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
-import { withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
-import Icon from 'components/layout/Icon'
-import Main from 'components/layout/Main'
+import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
+import Icon from '../../layout/Icon'
+import Main from '../../layout/Main'
 
 const Card = ({ svg, title, text, navLink }) => {
   return (
