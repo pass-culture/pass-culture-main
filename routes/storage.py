@@ -1,9 +1,11 @@
 """ storage """
 import os.path
+
 from flask import current_app as app, jsonify, request, send_file
-from flask_login import current_user, login_required
+from flask_login import login_required
 
 import models
+from connectors.thumb import save_thumb
 from models import RightsType
 from utils.human_ids import dehumanize
 from utils.inflect_engine import inflect_engine
@@ -17,10 +19,11 @@ GENERIC_STORAGE_MODEL_NAMES = [
     'User',
 ]
 
+
 @app.route('/storage/<bucketId>/<path:objectId>')
 def send_storage_file(bucketId, objectId):
     path = local_path(bucketId, objectId)
-    type_path = str(path)+".type"
+    type_path = str(path) + ".type"
     if os.path.isfile(type_path):
         mimetype = open(type_path).read()
     else:
@@ -43,5 +46,5 @@ def post_storage_file(collectionName, id, index):
         offerer_id = entity.offer.venue.managingOffererId
         ensure_current_user_has_rights(RightsType.editor, offerer_id)
 
-    entity.save_thumb(request.files['file'].read(), int(index))
+    save_thumb(entity, request.files['file'].read(), int(index))
     return jsonify(entity.as_dict()), 200

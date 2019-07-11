@@ -12,6 +12,7 @@ from sqlalchemy import text
 from sqlalchemy.sql import select
 
 import models
+from connectors.thumb import save_thumb
 from models.db import db
 from models.has_thumb_mixin import HasThumbMixin
 from models.local_provider_event import LocalProviderEvent, LocalProviderEventType
@@ -156,7 +157,7 @@ class LocalProvider(Iterator):
     def save_thumb_from_thumb_count_to_index(self, index: int, obj: PcObject, thumb: BytesIO):
         counter = obj.thumbCount
         while obj.thumbCount <= index:
-            obj.save_thumb(thumb, counter, need_save=False)
+            save_thumb(obj, thumb, counter, need_save=False)
             counter += 1
 
     def existingObjectOrNone(self, providable_info):

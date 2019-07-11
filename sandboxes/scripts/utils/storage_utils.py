@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 
+from connectors.thumb import save_thumb
 from models.pc_object import PcObject
 from utils.human_ids import humanize
 from utils.object_storage import store_public_object
@@ -22,7 +23,8 @@ def store_public_object_from_sandbox_assets(folder, obj, thumb_id, index=0):
 
     with open(thumb_path, mode='rb') as thumb_file:
         if folder == "thumbs":
-            obj.save_thumb(
+            save_thumb(
+                obj,
                 thumb_file.read(),
                 index,
                 dominant_color=b'\x00\x00\x00',

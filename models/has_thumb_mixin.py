@@ -2,16 +2,11 @@
 
 from sqlalchemy import Binary, CheckConstraint, Column, Integer
 
-from connectors.thumb import fetch_image
-from domain.mediations import DO_NOT_CROP, standardize_image, compute_dominant_color
-from models import ApiErrors
-from models.pc_object import PcObject
 from utils.human_ids import humanize
 from utils.inflect_engine import inflect_engine
-from utils.logger import logger
 from utils.object_storage import delete_public_object, \
     get_public_object_date, \
-    store_public_object, get_storage_base_url
+    get_storage_base_url
 from utils.string_processing import get_model_plural_name
 
 
@@ -35,49 +30,6 @@ class HasThumbMixin(object):
                + "/" \
                + humanize(self.id) \
                + (('_' + str(index)) if index > 0 else '')
-
-    def save_thumb(
-            self,
-            thumb,
-            image_index,
-            image_type=None,
-            dominant_color=None,
-            convert=True,
-            crop=None,
-            symlink_path=None,
-            need_save=True
-    ):
-        new_thumb = thumb
-
-        if isinstance(thumb, str):
-            try:
-                new_thumb = fetch_image(thumb, str(self))
-            except ValueError as e:
-                logger.error(e)
-                raise ApiErrors({'thumbUrl': ["L'adresse saisie n'est pas valide"]})
-
-        if convert:
-            crop_params = crop if crop is not None else DO_NOT_CROP
-            new_thumb = standardize_image(new_thumb, crop_params)
-
-        if image_index == 0:
-            if dominant_color:
-                self.firstThumbDominantColor = dominant_color
-            else:
-                self.firstThumbDominantColor = compute_dominant_color(new_thumb)
-
-        store_public_object(
-            'thumbs',
-            self.get_thumb_storage_id(image_index),
-            new_thumb,
-            'image/' + (image_type or 'jpeg'),
-            symlink_path=symlink_path
-        )
-
-        self.thumbCount = self.thumbCount + 1
-
-        if need_save:
-            PcObject.save(self)
 
     @property
     def thumbUrl(self):

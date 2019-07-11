@@ -13,6 +13,7 @@ from sqlalchemy import Column, \
     String
 from sqlalchemy.orm import relationship
 
+from connectors.thumb import save_thumb
 from models import DeactivableMixin
 from models.db import Model
 from models.has_thumb_mixin import HasThumbMixin
@@ -25,7 +26,6 @@ class Mediation(PcObject,
                 HasThumbMixin,
                 ProvidableMixin,
                 DeactivableMixin):
-
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
@@ -72,30 +72,34 @@ Mediation.__table_args__ = (
                     name='check_mediation_has_offer_xor_tutoIndex'),
 )
 
-
-TUTOS_PATH = Path(os.path.dirname(os.path.realpath(__file__))) / '..'\
-                 / 'static' / 'tuto_mediations'
+TUTOS_PATH = Path(os.path.dirname(os.path.realpath(__file__))) / '..' \
+             / 'static' / 'tuto_mediations'
 
 
 def upsertTutoMediation(index, has_back=False):
-    existing_mediation = Mediation.query.filter_by(tutoIndex=index)\
-                                        .first()
+    existing_mediation = Mediation.query.filter_by(tutoIndex=index) \
+        .first()
     mediation = existing_mediation or Mediation()
     mediation.tutoIndex = index
     PcObject.save(mediation)
 
     with open(TUTOS_PATH / (str(index) + '.png'), "rb") as f:
-        mediation.save_thumb(f.read(),
-                             0,
-                             convert=False,
-                             image_type='png')
+        save_thumb(
+            mediation,
+            f.read(),
+            0,
+            convert=False,
+            image_type='png'
+        )
 
     if has_back:
         with open(TUTOS_PATH / (str(index) + '_verso.png'), "rb") as f:
-            mediation.save_thumb(f.read(),
-                                 1,
-                                 convert=False,
-                                 image_type='png')
+            save_thumb(
+                mediation, f.read(),
+                1,
+                convert=False,
+                image_type='png'
+            )
 
     PcObject.save(mediation)
 

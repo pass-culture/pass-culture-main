@@ -3,6 +3,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
+from connectors.thumb import save_thumb
 from domain.discard_pc_objects import invalidate_recommendations_if_deactivating_object
 from models.mediation import Mediation
 from models.pc_object import PcObject
@@ -28,7 +29,7 @@ def create_mediation():
     PcObject.save(new_mediation)
 
     thumb = read_thumb(files=request.files, form=request.form)
-    new_mediation.save_thumb(thumb, 0, crop=_get_crop(request.form))
+    save_thumb(new_mediation, thumb, 0, crop=_get_crop(request.form))
     return jsonify(new_mediation.as_dict()), 201
 
 
