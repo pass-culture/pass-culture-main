@@ -20,7 +20,7 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
         </NavLink>
       </li>
     ) : (
-      <li>0 offre</li>
+      <li>{"0 offre"}</li>
     )
 
   const canCreateOnlyVirtualOffer = venues.length === 1 && venues[0].isVirtual
@@ -44,7 +44,7 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
       className="is-italic"
       key={0}
     >
-      Créez un lieu pour pouvoir y associer des offres.
+      {"Créez un lieu pour pouvoir y associer des offres."}
     </li>
   )
 
@@ -60,7 +60,7 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
           className="has-text-primary"
           to={`/structures/${id}/lieux/creation`}
         >
-          <Icon svg="ico-venue-r" /> Nouveau lieu
+          <Icon svg="ico-venue-r" />{"Nouveau lieu"}
         </NavLink>
       </li>
     </Fragment>
@@ -77,7 +77,7 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
             className="is-italic mb12"
             id="offerer-item-validation"
           >
-            Structure en cours de validation par l&apos;équipe Pass Culture.
+            {"Structure en cours de validation par l'équipe Pass Culture."}
           </p>
         )}
         <ul className="actions">
@@ -95,13 +95,13 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
 }
 
 OffererItem.defaultProps = {
-  venues: [],
   physicalVenues: [],
+  venues: [],
 }
 
 OffererItem.propTypes = {
-  physicalVenues: PropTypes.array,
-  venues: PropTypes.array,
+  physicalVenues: PropTypes.arrayOf,
+  venues: PropTypes.arrayOf,
 }
 
 export default OffererItem

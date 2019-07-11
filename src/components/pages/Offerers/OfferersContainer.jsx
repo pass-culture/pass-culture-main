@@ -4,7 +4,7 @@ import { compose } from 'redux'
 import {
   withFrenchQueryRouter,
   withRedirectToSigninWhenNotAuthenticated,
-} from 'components/hocs'
+} from '../../hocs'
 import Offerers from './Offerers'
 
 export const mapStateToProps = (state) => {
