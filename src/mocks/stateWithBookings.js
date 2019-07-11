@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 const stateWithBookings = {
   data: {
     bookings: [
