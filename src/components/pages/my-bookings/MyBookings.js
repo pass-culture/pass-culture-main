@@ -68,14 +68,14 @@ class MyBookings extends Component {
 
           {soonBookings.length > 0 && (
             <section className="mb-section">
-              <header className="mb-header">C&apos;est bientôt !</header>
+              <header className="mb-header">{'C’est bientôt !'}</header>
               {build(soonBookings)}
             </section>
           )}
 
           {myBookings.length > 0 && (
             <section className="mb-section">
-              <header className="mb-header">Réservations</header>
+              <header className="mb-header">{'Réservations'}</header>
               {build(myBookings)}
             </section>
           )}

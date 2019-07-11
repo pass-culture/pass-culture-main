@@ -7,12 +7,12 @@ const NoBookings = () => (
       className="mb-link-offers"
       to="/decouverte"
     >
-      Lancez-vous
+      {'Lancez-vous'}
     </Link>
     <p className="mb-text">
-      Dès que vous aurez réservé une offre,
+      {'Dès que vous aurez réservé une offre,'}
       <br />
-      vous la retrouverez ici.
+      {'vous la retrouverez ici.'}
     </p>
   </Fragment>
 )
