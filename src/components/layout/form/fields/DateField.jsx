@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import classnames from 'classnames'
 import moment from 'moment'
 import PropTypes from 'prop-types'
@@ -8,17 +6,25 @@ import DatePicker from 'react-datepicker'
 import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
 
-import Icon from 'components/layout/Icon'
-import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
+import Icon from '../../Icon'
+import getRequiredValidate from '../../form/utils/getRequiredValidate'
 
-const renderReadOnlyDateInput = ({ formattedSelectedDatetime, name }) => (
-  <input
-    className="field-input field-date"
-    name={name}
-    readOnly
-    value={formattedSelectedDatetime}
-  />
-)
+const renderReadOnlyDateInput = ({ formattedSelectedDatetime, name }) => ({
+  propTypes: {
+    formattedSelectedDatetime: PropTypes.string,
+    name: PropTypes.string
+  },
+  render() {
+    return (
+      <input
+        className="field-input field-date"
+        name={name}
+        readOnly
+        value={formattedSelectedDatetime}
+      />
+    )
+  }
+})
 
 const renderDateInput = dateInputProps => (
   <div className="flex-columns items-center field-input field-date">
@@ -67,23 +73,18 @@ export class DateField extends PureComponent {
 
   render() {
     const {
-      autoComplete,
       className,
       clearable,
       dateFormat,
-      datePickerClassName,
-      disabled,
       id,
       label,
       locale,
       name,
       placeholder,
       readOnly,
-      renderInner,
       renderValue,
       required,
       timezone,
-      type,
       validate,
       // see github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
       ...DatePickerProps
@@ -95,7 +96,7 @@ export class DateField extends PureComponent {
     return (
       <Field
         name={name}
-        render={({ input, meta }) => {
+        render={({ input }) => {
           let formattedSelectedDatetime = null
           let selectedDatetime = null
 

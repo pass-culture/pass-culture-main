@@ -26,7 +26,7 @@ describe('src | components | layout | form | TimeField', () => {
               onClick={handleSubmit}
               type="submit"
             >
-              Submit
+              {"Submit"}
             </button>
           </form>
         )}
@@ -55,7 +55,7 @@ describe('src | components | layout | form | TimeField', () => {
               onClick={handleSubmit}
               type="submit"
             >
-              Submit
+              {"Submit"}
             </button>
           </form>
         )}

@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
-import FieldErrors from 'components/layout/form/FieldErrors'
+import FieldErrors from '../FieldErrors'
 
 const noOperation = () => {}
 

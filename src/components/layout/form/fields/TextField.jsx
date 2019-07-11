@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import classnames from 'classnames'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
@@ -9,8 +7,8 @@ import {
   createParseNumberValue,
 } from 'react-final-form-utils'
 
-import FieldErrors from 'components/layout/form/FieldErrors'
-import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
+import FieldErrors from '../FieldErrors'
+import getRequiredValidate from '../utils/getRequiredValidate'
 
 function getInputValue(inputType, value) {
   const isStringifiedNumber =
@@ -29,6 +27,12 @@ export class TextField extends Component {
     }
   }
 
+  componentWillUnmount() {
+    if (this.keypressListener) {
+      this.inputElement.removeEventListener(this.keypressListener)
+    }
+  }
+
   handlePreventEPlusMinusKeypresses = () => {
     this.keypressListener = this.inputElement.addEventListener(
       'keypress',
@@ -42,13 +46,6 @@ export class TextField extends Component {
       }
     )
   }
-
-  componentWillUnmount() {
-    if (this.keypressListener) {
-      this.inputElement.removeEventListener(this.keypressListener)
-    }
-  }
-
   render() {
     const {
       className,
