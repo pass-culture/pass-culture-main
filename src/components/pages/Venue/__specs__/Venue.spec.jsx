@@ -265,9 +265,7 @@ describe('src | components | pages | Venue', () => {
           wrapper.instance().handleFormSuccess(jest.fn())(state, action)
 
           // then
-          expect(props.query.changeToReadOnly).toHaveBeenCalledWith(null, {
-            id: 'CM',
-          })
+          expect(props.query.changeToReadOnly).toHaveBeenCalledWith(null)
         })
 
         it('should dispatch a success message with valid message when venue is modified', () => {
