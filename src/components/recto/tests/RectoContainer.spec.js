@@ -40,7 +40,7 @@ describe('src | components | recto | RectoContainer', () => {
       expect(result).toStrictEqual(expected)
     })
 
-    it('return currentRecommendationSelector', () => {
+    it('return previousRecommendationSelector', () => {
       // given
       const value = 'previous'
 
@@ -52,7 +52,7 @@ describe('src | components | recto | RectoContainer', () => {
       expect(result).toStrictEqual(expected)
     })
 
-    it('return currentRecommendationSelector', () => {
+    it('return nextRecommendationSelector', () => {
       // given
       const value = 'next'
 

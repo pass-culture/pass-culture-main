@@ -24,14 +24,14 @@ const Recto = ({ areDetailsVisible, extraClassName, recommendation }) => {
       {IS_DEV && (
         <div className="debug debug-recto">
           <div>
-            {id} 
+            {id}
             {' '}
-            {offer && offer.id} 
+            {offer && offer.id}
             {' '}
             {index}
           </div>
-          {dateRead && <div> déjà lue </div>}
-          {isClicked && <div> déjà retournée </div>}
+          {dateRead && <div> {'déjà lue'} </div>}
+          {isClicked && <div> {'déjà retournée'} </div>}
         </div>
       )}
     </div>
@@ -46,7 +46,7 @@ Recto.defaultProps = {
 Recto.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
   extraClassName: PropTypes.string,
-  recommendation: PropTypes.object,
+  recommendation: PropTypes.shape(),
 }
 
 export default Recto
