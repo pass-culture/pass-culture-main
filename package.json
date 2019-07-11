@@ -130,7 +130,7 @@
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
     "precommit": "pretty-quick --staged --pattern '**/*.*(js|jsx)'",
     "prettier": "$(yarn bin)/prettier --write 'src/**/*.js'",
-    "test:cafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 'chrome:headless' testcafe",
+    "test:cafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'chrome:headless' testcafe",
     "test:unit": "jest --env=jsdom",
     "symlink-shared": "if [ -d \"../shared\" ]; then cd node_modules && rm -rf pass-culture-shared && ln -sf ../../shared pass-culture-shared && cd ../../shared && yarn run compile; fi",
     "start": "node scripts/start.js"

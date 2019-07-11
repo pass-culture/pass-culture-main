@@ -68,6 +68,8 @@ jobs:
             cd ~/pass-culture-main/pro
             dockerize -wait http://localhost/health -timeout 5m -wait-retry-interval 5s
             yarn test:cafe
+      - store_artifacts:
+         path: ~/pass-culture-main/pro/testcafe_screenshots
 
 workflows:
   version: 2
