@@ -12,14 +12,14 @@ import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
 
-import selectOfferById from 'selectors/selectOfferById'
-import selectOffererById from 'selectors/selectOffererById'
-import selectProductById from 'selectors/selectProductById'
-import selectStockById from 'selectors/selectStockById'
-import selectUserById from 'selectors/selectUserById'
-import selectVenueById from 'selectors/selectVenueById'
-import { bookingNormalizer } from 'utils/normalizers'
-import { getOfferTypeLabel } from 'utils/offerItem'
+import selectOfferById from '../../../selectors/selectOfferById'
+import selectOffererById from '../../../selectors/selectOffererById'
+import selectProductById from '../../../selectors/selectProductById'
+import selectStockById from '../../../selectors/selectStockById'
+import selectUserById from '../../../selectors/selectUserById'
+import selectVenueById from '../../../selectors/selectVenueById'
+import { bookingNormalizer } from '../../../utils/normalizers'
+import { getOfferTypeLabel } from '../../../utils/offerItem'
 
 const getBookingState = booking => {
   const { isCancelled, isUsed } = booking
@@ -77,14 +77,14 @@ class BookingItem extends Component {
     )
   }
 
-  onCancelClick = () => {
+  handleOnCancelClick = () => {
     const { booking, dispatch } = this.props
     const { id } = booking
 
     dispatch(
       showModal(
         <div>
-          Souhaitez-vous réellement annuler cette réservation ?
+          {"Souhaitez-vous réellement annuler cette réservation ?"}
           <div className="level">
             <button
               className="button is-primary level-item"
@@ -103,13 +103,13 @@ class BookingItem extends Component {
                 dispatch(closeModal())
               }}
             >
-              Oui
+              {"Oui"}
             </button>
             <button
               className="button is-primary level-item"
               onClick={() => dispatch(closeModal())}
             >
-              Non
+              {"Non"}
             </button>
           </div>
         </div>,
@@ -158,7 +158,7 @@ class BookingItem extends Component {
             className="title userName"
             colSpan="5"
           >
-            {token}: {userIdentifier}
+            {token}{":"} {userIdentifier}
           </td>
           <td rowSpan="2">
             {!isCancelled && !isUsed && (
@@ -167,7 +167,7 @@ class BookingItem extends Component {
                 <div className="navbar-dropdown is-right">
                   <a
                     className="navbar-item cancel"
-                    onClick={this.onCancelClick}
+                    onClick={this.handleOnCancelClick}
                   >
                     <Icon svg="ico-close-r" /> Annuler la réservation
                   </a>
@@ -190,7 +190,7 @@ class BookingItem extends Component {
             )}
           </td>
           <td>{moment(bookingLimitDatetime).format('D/MM/YY')}</td>
-          <td>5/10</td>
+          <td>{"5/10"}</td>
           <td>{amount}</td>
           <td>{reimbursed_amount}</td>
           <td>

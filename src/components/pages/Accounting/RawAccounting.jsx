@@ -9,10 +9,10 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import BookingItem from './BookingItem'
-import HeroSection from 'components/layout/HeroSection/HeroSection'
-import Main from 'components/layout/Main'
-import { bookingNormalizer, offererNormalizer } from 'utils/normalizers'
-import { mapApiToWindow } from 'utils/pagination'
+import HeroSection from '../../layout/HeroSection/HeroSection'
+import Main from '../../layout/Main'
+import { bookingNormalizer, offererNormalizer } from '../../../utils/normalizers'
+import { mapApiToWindow } from '../../../utils/pagination'
 
 const TableSortableTh = ({ field, label, sort, action, style }) => (
   <th style={style}>
@@ -38,7 +38,19 @@ TableSortableTh.propTypes = {
 }
 
 class RawAccouting extends Component {
-  onSubmit = event => {
+  componentDidUpdate(prevProps) {
+    const { offerers, pagination } = this.props
+    const offererId = get(pagination.windowQuery, mapApiToWindow.offererId)
+    if (
+      !offererId &&
+      offerers !== prevProps.offerers &&
+      get(offerers, 'length')
+    ) {
+      pagination.change({ [mapApiToWindow.offererId]: offerers[0].id })
+    }
+  }
+
+  handleOnSubmit = event => {
     const { pagination } = this.props
 
     event.preventDefault()
@@ -121,18 +133,6 @@ class RawAccouting extends Component {
     this.props.pagination.change({ orderBy: [field, dir].join('+') })
   }
 
-  componentDidUpdate(prevProps) {
-    const { offerers, pagination } = this.props
-    const offererId = get(pagination.windowQuery, mapApiToWindow.offererId)
-    if (
-      !offererId &&
-      offerers !== prevProps.offerers &&
-      get(offerers, 'length')
-    ) {
-      pagination.change({ [mapApiToWindow.offererId]: offerers[0].id })
-    }
-  }
-
   render() {
     const { bookings, offerer, offerers, pagination } = this.props
     const { windowQuery } = pagination
@@ -163,13 +163,13 @@ class RawAccouting extends Component {
         >
           <form
             className="section"
-            onSubmit={this.onSubmit}
+            onSubmit={this.handleOnSubmit}
           />
           <div className="section">
             <div className="list-header">
               {offerer && (
                 <div>
-                  Structure:
+                  {"Structure:"}
                   <span className="select is-rounded is-small">
                     <select
                       className=""
@@ -203,19 +203,19 @@ class RawAccouting extends Component {
                     className="first-row"
                     colSpan="5"
                   >
-                    OFFRE
+                    {"OFFRE"}
                   </th>
                   <th
                     className="first-row"
                     colSpan="2"
                   >
-                    RESERVATION
+                    {"RESERVATION"}
                   </th>
                   <th
                     className="first-row"
                     colSpan="4"
                   >
-                    REMBOURSEMENT
+                    {"REMBOURSEMENT"}
                   </th>
                 </tr>
                 <tr>
