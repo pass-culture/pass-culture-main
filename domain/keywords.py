@@ -54,8 +54,8 @@ def create_get_filter_matching_ts_query_in_any_model(*models):
                     ts_query,
                     postgresql_regconfig=LANGUAGE+'_unaccent'
                 )
-                for ts_vector in model.__ts_vectors__
                 for model in models
+                for ts_vector in model.__ts_vectors__
             ]
         )
     return get_filter_matching_ts_query_in_any_model
