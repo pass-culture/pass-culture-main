@@ -176,8 +176,9 @@ class Desk extends React.PureComponent {
   }
 
   renderChildComponent = () => {
+    const { status } = this.state
     const { booking, level, message } = this.getValuesFromStatus(
-      this.state.status
+      status
     )
     return (<DeskState
       booking={booking}
@@ -195,13 +196,13 @@ class Desk extends React.PureComponent {
   }
 
   render() {
+    const { code, status } = this.state
     return (
       <Main name="desk">
         <div className="section hero">
-          <h1 className="main-title">Guichet</h1>
+          <h1 className="main-title">{"Guichet"}</h1>
           <p className="subtitle">
-            Enregistrez les codes de réservations présentés par les porteurs du
-            Pass.
+            {"Enregistrez les codes de réservations présentés par les porteurs du Pass."}
           </p>
         </div>
 
@@ -217,16 +218,16 @@ class Desk extends React.PureComponent {
             onChange={this.handleCodeChange}
             ref={this.getRef()}
             type="text"
-            value={this.state.code}
+            value={code}
           />
 
           <button
             className="button"
-            disabled={this.state.status !== CODE_VERIFICATION_SUCCESS}
-            onClick={() => this.handleCodeRegistration(this.state.code)}
+            disabled={status !== CODE_VERIFICATION_SUCCESS}
+            onClick={() => this.handleCodeRegistration(code)}
             type="submit"
           >
-            Valider
+            {"Valider"}
           </button>
 
           {this.renderChildComponent()}
@@ -236,7 +237,7 @@ class Desk extends React.PureComponent {
             id="exitlink"
             to="/accueil"
           >
-            Terminer
+            {"Terminer"}
           </NavLink>
         </div>
       </Main>
