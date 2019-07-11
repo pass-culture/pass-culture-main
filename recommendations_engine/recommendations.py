@@ -29,15 +29,22 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
 
 
 def create_recommendations_for_discovery(limit=3, user=None, coords=None):
-    if user and user.is_authenticated:
-        recommendation_count = Recommendation.query.filter_by(user=user) \
-                                                   .count()
 
     recommendations = []
     tuto_mediations_by_index = {}
 
-    for to in Mediation.query.filter(Mediation.tutoIndex != None).all():
+    max_tuto_index = 0
+    for to in Mediation.query.filter(Mediation.tutoIndex != None) \
+                             .order_by(Mediation.tutoIndex) \
+                             .all():
         tuto_mediations_by_index[to.tutoIndex] = to
+        max_tuto_index = to.tutoIndex
+
+    recommendation_count = Recommendation.query.with_entities(1) \
+                                               .filter_by(user=user) \
+                                               .limit(max_tuto_index) \
+                                               .from_self() \
+                                               .count()
 
     inserted_tuto_mediations = 0
     offers = get_offers_for_recommendations_discovery(
