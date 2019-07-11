@@ -7,16 +7,16 @@ import { NavLink, withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import { withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
-import HeroSection from 'components/layout/HeroSection/HeroSection'
-import Main from 'components/layout/Main'
-import UploadThumb from 'components/layout/UploadThumb'
-import selectMediationById from 'selectors/selectMediationById'
-import selectOfferById from 'selectors/selectOfferById'
-import selectOffererById from 'selectors/selectOffererById'
-import selectVenueById from 'selectors/selectVenueById'
-import { mediationNormalizer, offerNormalizer } from 'utils/normalizers'
-import CanvasTools from 'utils/canvas'
+import { withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
+import HeroSection from '../../layout/HeroSection/HeroSection'
+import Main from '../../layout/Main'
+import UploadThumb from '../../layout/UploadThumb'
+import selectMediationById from '../../../selectors/selectMediationById'
+import selectOfferById from '../../../selectors/selectOfferById'
+import selectOffererById from '../../../selectors/selectOffererById'
+import selectVenueById from '../../../selectors/selectVenueById'
+import { mediationNormalizer, offerNormalizer } from '../../../utils/normalizers'
+import CanvasTools from '../../../utils/canvas'
 
 const IMAGE_UPLOAD_SIZE = 400
 const IMAGE_UPLOAD_BORDER = 25
@@ -107,7 +107,7 @@ class Mediation extends PureComponent {
     })
   }
 
-  onImageChange = (context, image, croppingRect) => {
+  handleOnImageChange = (context, image, croppingRect) => {
     this.setState({
       image,
       croppingRect,
@@ -190,7 +190,7 @@ class Mediation extends PureComponent {
     })
   }
 
-  onOkClick = e => {
+  handleOnOkClick = () => {
     this.state.inputUrl &&
       this.setState({
         image: null,
@@ -198,7 +198,7 @@ class Mediation extends PureComponent {
       })
   }
 
-  onSubmit = () => {
+  handleOnSubmit = () => {
     const { dispatch, match, mediation, offerer } = this.props
     const { croppingRect, image, credit, isNew } = this.state
 
@@ -234,11 +234,11 @@ class Mediation extends PureComponent {
     )
   }
 
-  onUrlChange = event => {
+  handleOnUrlChange = event => {
     this.setState({ inputUrl: event.target.value })
   }
 
-  onUploadClick = event => {
+  handleOnUploadClick = () => {
     this.setState({
       image: this.$uploadInput.files[0],
       imageUrl: null,
@@ -265,28 +265,25 @@ class Mediation extends PureComponent {
             </h2>
             <ul>
               <li className="mb12">
-                <span className="li-number">1</span>
+                <span className="li-number">{"1"}</span>
                 <span>
-                  Le visuel doit <b>remplir le cadre 1 violet</b>.
+                  {"Le visuel doit "}<b>{"remplir le cadre 1 violet"}</b>{"."}
                 </span>
               </li>
               <li className="mb12">
-                <span className="li-number">2</span>
+                <span className="li-number">{"2"}</span>
                 <span>
-                  <b>Les éléments importants</b> (p. ex. un visage, une zone
-                  d’intérêt…) doivent se situer <b>dans le cadre 2 vert.</b>
-                  <br /> C’est la première vision de l'offre qu'aura
-                  l'utilisateur.
+                  <b>{"Les éléments importants"}</b>{" (p. ex. un visage, une zone d’intérêt…) doivent se situer "}<b>{"dans le cadre 2 vert."}</b>
+                  <br />{" C’est la première vision de l'offre qu'aura l'utilisateur."}
                 </span>
               </li>
             </ul>
-            La zone en pointillés représente la partie visible de l'image dans
-            la fiche détail de l’offre.
+            {"La zone en pointillés représente la partie visible de l'image dans la fiche détail de l’offre."}
           </div>
           <div className="section">
             <div className="row">
               <div className="section">
-                <h6>Exemples :</h6>
+                <h6>{"Exemples :"}</h6>
                 <div className="columns crop-explain">
                   <div className="column">
                     <img
@@ -297,8 +294,8 @@ class Mediation extends PureComponent {
                   </div>
                   <div className="column explain-text explain-bad">
                     <p>
-                      <b>Mauvais cadrage</b>
-                      Les éléments importants sont hors-cadre.
+                      <b>{"Mauvais cadrage"}</b>
+                      {"Les éléments importants sont hors-cadre."}
                     </p>
                   </div>
                   <div className="column">
@@ -310,9 +307,8 @@ class Mediation extends PureComponent {
                   </div>
                   <div className="column explain-text explain-good">
                     <p>
-                      <b>Cadrage idéal</b>
-                      Les éléments importants sont visibles dans tous les
-                      cadres.
+                      <b>{"Cadrage idéal"}</b>
+                      {"Les éléments importants sont visibles dans tous les cadres."}
                     </p>
                   </div>
                 </div>
@@ -330,7 +326,7 @@ class Mediation extends PureComponent {
                 height={IMAGE_UPLOAD_SIZE}
                 image={image || imageUrl}
                 index={0}
-                onImageChange={this.onImageChange}
+                onImageChange={this.handleOnImageChange}
                 readOnly
                 required
                 storeKey="mediations"
@@ -343,11 +339,11 @@ class Mediation extends PureComponent {
         <div className="section">
           <div className="field-group">
             <div className="field">
-              <label className="label">Crédit photo</label>
+              <label className="label">{"Crédit photo"}</label>
               <input
                 className="input is-rounded"
                 id="mediation-credit"
-                onChange={e => this.setState({ credit: e.target.value })}
+                onChange={event => this.setState({ credit: event.target.value })}
                 type="text"
                 value={credit}
               />
@@ -373,7 +369,7 @@ class Mediation extends PureComponent {
                 'is-loading': isLoading,
               })}
               disabled={!image}
-              onClick={this.onSubmit}
+              onClick={this.handleOnSubmit}
             >
               Valider
             </button>
@@ -394,34 +390,32 @@ class Mediation extends PureComponent {
           </p>
           <p>
             <b>
-              L'accroche permet d'afficher votre offre "à la une" de l'app,{' '}
+              {"L'accroche permet d'afficher votre offre \"à la une\" de l'app,{' '}"}
             </b>
-            et la rend visuellement plus attrayante. C'est une image (et bientôt
-            une phrase ou une vidéo) intrigante, percutante, séduisante...
-            <br /> en un mot : accrocheuse.
+            {"et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante..."}
+            <br /> {"en un mot : accrocheuse."}
           </p>
           <p>
-            Les accroches font la spécificité du Pass Culture. Prenez le temps
-            de les choisir avec soin !
+            {"Les accroches font la spécificité du Pass Culture. Prenez le temps de les choisir avec soin !"}
           </p>
           <p>
-            Le fichier doit peser <b>100Ko minimum.</b>
+            {"Le fichier doit peser "}<b>{"100Ko minimum."}</b>
             <br />
-            Utilisateurs avancés : vous pouvez
+            {"Utilisateurs avancés : vous pouvez"}
             <a href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip">
               {' '}
-              télécharger ici les gabarits Illustrator et Photoshop.
+              {"télécharger ici les gabarits Illustrator et Photoshop."}
             </a>
           </p>
         </HeroSection>
 
         <div className="section">
-          <label className="label">Depuis une adresse Internet :</label>
+          <label className="label">{"Depuis une adresse Internet :"}</label>
           <div className="field is-grouped">
             <p className="control is-expanded">
               <input
                 className="input is-rounded"
-                onChange={this.onUrlChange}
+                onChange={this.handleOnUrlChange}
                 placeholder="URL du fichier"
                 type="url"
                 value={inputUrl}
@@ -430,7 +424,7 @@ class Mediation extends PureComponent {
             <p className="control">
               <button
                 className="button is-primary is-outlined is-medium"
-                onClick={this.onOkClick}
+                onClick={this.handleOnOkClick}
               >
                 OK
               </button>
@@ -439,12 +433,12 @@ class Mediation extends PureComponent {
         </div>
 
         <div className="section">
-          <label className="label">...ou depuis votre poste :</label>
+          <label className="label">{"...ou depuis votre poste :"}</label>
           <label className="button is-primary is-outlined">
-            Choisir un fichier{' '}
+            {"Choisir un fichier{' '}"}
             <input
               hidden
-              onChange={this.onUploadClick}
+              onChange={this.handleOnUploadClick}
               ref={$element => (this.$uploadInput = $element)}
               type="file"
             />
