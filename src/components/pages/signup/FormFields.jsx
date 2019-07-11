@@ -51,10 +51,10 @@ const FormFields = () => (
           href="http://passculture.beta.gouv.fr"
           style={{ textDecoration: 'underline' }}
         >
-          Pass Culture
+          {'pass Culture'}
         </a>
-        .
-        <span className="pc-final-form-asterisk">*</span>
+        {'.'}
+        <span className="pc-final-form-asterisk">{'*'}</span>
       </span>
     </CheckBoxField>
   </Fragment>

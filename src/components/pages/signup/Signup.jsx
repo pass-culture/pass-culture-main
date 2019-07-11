@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
@@ -34,7 +32,7 @@ class Signup extends PureComponent {
     })
   }
 
-  onFormSubmit = formValues => {
+  handleOnFormSubmit = formValues => {
     const { dispatch } = this.props
 
     const apiPath = '/users/signup/webapp'
@@ -44,20 +42,47 @@ class Signup extends PureComponent {
     // NOTE: we need to promise the request callbacks
     // in order to inject their payloads into the form
     const formSubmitPromise = new Promise(resolve => {
-      dispatch(requestData({
-        apiPath,
-        body: { ...formValues },
-        handleFail: this.handleRequestFail(resolve),
-        handleSuccess: this.handleRequestSuccess(resolve),
-        method,
-        resolve: userFromRequest => Object.assign({ isCurrent: true }, userFromRequest)
-      }))
+      dispatch(
+        requestData({
+          apiPath,
+          body: { ...formValues },
+          handleFail: this.handleRequestFail(resolve),
+          handleSuccess: this.handleRequestSuccess(resolve),
+          method,
+          resolve: userFromRequest => Object.assign({ isCurrent: true }, userFromRequest),
+        })
+      )
     })
     return formSubmitPromise
   }
 
-  render () {
+  SuccessRedirect = () => '/decouverte'
+
+  renderForm = formProps => {
     const { isFormLoading } = this.state
+    const { handleSubmit } = formProps
+    const canSubmit = getCanSubmit(formProps)
+    return (
+      <form
+        autoComplete="off"
+        className="pc-final-form flex-rows is-full-layout"
+        disabled={isFormLoading}
+        noValidate
+        onSubmit={handleSubmit}
+      >
+        <div className="flex-1 flex-rows flex-center padded-2x overflow-y">
+          <FormHeader />
+          <FormFields />
+        </div>
+        <FormFooter
+          canSubmit={canSubmit}
+          isLoading={isFormLoading}
+        />
+      </form>
+    )
+  }
+
+  render() {
     return (
       <main
         className="signup-page page with-footer"
@@ -65,30 +90,9 @@ class Signup extends PureComponent {
       >
         <div className="section pc-final-form">
           <Form
-            handleSuccessRedirect={() => '/decouverte'}
-            onSubmit={this.onFormSubmit}
-            render={formProps => {
-              const { handleSubmit } = formProps
-              const canSubmit = getCanSubmit(formProps)
-              return (
-                <form
-                  autoComplete="off"
-                  className="pc-final-form flex-rows is-full-layout"
-                  disabled={isFormLoading}
-                  noValidate
-                  onSubmit={handleSubmit}
-                >
-                  <div className="flex-1 flex-rows flex-center padded-2x overflow-y">
-                    <FormHeader />
-                    <FormFields />
-                  </div>
-                  <FormFooter
-                    canSubmit={canSubmit}
-                    isLoading={isFormLoading}
-                  />
-                </form>
-              )
-            }}
+            handleSuccessRedirect={this.SuccessRedirect}
+            onSubmit={this.handleOnFormSubmit}
+            render={this.renderForm}
           />
         </div>
       </main>
@@ -98,7 +102,7 @@ class Signup extends PureComponent {
 
 Signup.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
+  history: PropTypes.shape().isRequired,
 }
 
 export default Signup

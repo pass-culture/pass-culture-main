@@ -12,7 +12,7 @@ const FormFooter = ({ canSubmit, isLoading }) => (
       disabled={!canSubmit}
       type="submit"
     >
-      Créer
+      {'Créer'}
     </button>
     <NavLink
       className="button is-secondary"
