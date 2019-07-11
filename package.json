@@ -97,7 +97,7 @@
     "webpack-manifest-plugin": "1.3.2",
     "whatwg-fetch": "2.0.3",
     "with-query-router": "3.2.1",
-    "with-react-redux-login": "1.6.1"
+    "with-react-redux-login": "1.6.2"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.2",

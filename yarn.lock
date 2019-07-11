@@ -4613,10 +4613,17 @@ fetch-normalize-data@1.2.2:
     eslint "^5.8.0"
     lodash.uniqby "^4.7.0"
 
+<<<<<<< HEAD
 fetch-normalize-data@1.3.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.3.1.tgz#d576e7c7aede44124dfb1aa3c95be288edc6cf2d"
   integrity sha512-sgqJrfmi496Lpshqpr5KNtikdNw1eGYouM7mqoJDZI6FqCiwUu1Vexkp6ICZgBYgLpszSsYtGsbaKyYVKMamyw==
+=======
+fetch-normalize-data@1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.2.3.tgz#f006fc49de99b81babec5a14992dd23866a8c7be"
+  integrity sha512-RCOcidV4j4Uw7jD6Nw3EUnTcilE0vdpXUfnBkZ9F9zV1BpXL5Nqp3/iWq7c89wppjpk1DM1XheQE/65+b0J0TQ==
+>>>>>>> (pC-2025) updated libs
   dependencies:
     eslint "^5.8.0"
     lodash.uniqby "^4.7.0"
@@ -10590,10 +10597,10 @@ redux-persist@^5.10.0:
   resolved "https://registry.yarnpkg.com/redux-persist/-/redux-persist-5.10.0.tgz#5d8d802c5571e55924efc1c3a9b23575283be62b"
   integrity sha512-sSJAzNq7zka3qVHKce1hbvqf0Vf5DuTVm7dr4GtsqQVOexnrvbV47RWFiPxQ8fscnyiuWyD2O92DOxPl0tGCRg==
 
-redux-saga-data@2.5.2:
-  version "2.5.2"
-  resolved "https://registry.yarnpkg.com/redux-saga-data/-/redux-saga-data-2.5.2.tgz#209dcfb4e99a0e50ce7f7c942e45e58cdbbd01e1"
-  integrity sha512-CDRcV0tI8EiC/YqL2THOhULwwHv00zb5CE5snXsIrzPmw0fbnsYyURNrg0PKrJnPGyx/yEVXlQfFmsQ6qSWNPw==
+redux-saga-data@2.5.4:
+  version "2.5.4"
+  resolved "https://registry.yarnpkg.com/redux-saga-data/-/redux-saga-data-2.5.4.tgz#150bba25dbbd93f6bd7cbad4c2b53731b9b4e920"
+  integrity sha512-/XTwAnWAeP8WnCJm7/xGUwc+LYvcMD0E7jSkvJy+fWkVtwZIXp+eebHRt/hfI4f/9e5QhZtjZ6np+BAtOWVDZg==
   dependencies:
     eslint "^5.8.0"
     fetch-normalize-data "1.2.2"
@@ -13489,28 +13496,28 @@ with-query-router@3.2.1:
     redux "^4.0.0"
     reselect "^3.0.1"
 
-with-react-login@1.6.1:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/with-react-login/-/with-react-login-1.6.1.tgz#45b0a2d36736495d5f670cda96aba122b5456cda"
-  integrity sha512-vOUBaO3283VJ26l7ekElxzyik0KgVEx/fXLbgclejBVFnZQFYsUxJCmxje1OwXinUPFxWeiUC47wIiLAUC/bag==
+with-react-login@1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/with-react-login/-/with-react-login-1.6.2.tgz#b18d1df5f21fc6cccc2f09346131e65e705dce0d"
+  integrity sha512-dcI1ZDpXnVN7NGhkYKNtOS9E+9YTxbCjOMys8OIYEjpBZdmCzKcRdZmgwjl3OTGpoieSYvb2LPCT/E/5LvH4Qg==
   dependencies:
     classnames "2.2.5"
     eslint "^5.8.0"
-    fetch-normalize-data "1.2.2"
+    fetch-normalize-data "1.2.3"
     lodash.uniq "^4.5.0"
     prop-types "^15.6.2"
     react "^16.5.2"
     reselect "^3.0.1"
     uuid "^3.3.2"
 
-with-react-redux-login@1.6.1:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/with-react-redux-login/-/with-react-redux-login-1.6.1.tgz#4af1667c77e8e8d7f279e7f890f614ba01e799ff"
-  integrity sha512-auQvyEpWPDlB1ZUlq5NH/5prX1JKLavUXIrPsw/UHhYFsJA70Yda7QCzg3Pn7hM3loiYL4be2CWFCSrUH3C90A==
+with-react-redux-login@1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/with-react-redux-login/-/with-react-redux-login-1.6.2.tgz#930cb14d7ffdc8b01e18fc8ce0fd8be4227fb42f"
+  integrity sha512-HvjQ0ZtXCeW1u7ZIWH4jz3hdbPI8Ziyg3nYaL8oBgMTR0/j0j67odv/VmTVEcjP0D8ZUcaIFN7LKE58rpjq+Ow==
   dependencies:
     eslint "^5.8.0"
     react-redux "^5.0.3"
-    with-react-login "1.6.1"
+    with-react-login "1.6.2"
 
 wordwrap@0.0.2:
   version "0.0.2"
