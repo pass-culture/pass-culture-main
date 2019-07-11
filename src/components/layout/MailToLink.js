@@ -12,7 +12,7 @@ class MailToLink extends React.PureComponent {
   }
 
   renderLink = () => {
-    const { email, obfuscate, headers, children, ...others } = this.props
+    const { email, headers, children, ...others } = this.props
     return (
       <a
         href={createMailToLink(email, headers)}
@@ -24,7 +24,7 @@ class MailToLink extends React.PureComponent {
   }
 
   renderObfuscatedLink = () => {
-    const { email, obfuscate, headers, children, ...others } = this.props
+    const { children, ...others } = this.props
     return (
       <a
         href="mailto:obfuscated"
@@ -53,7 +53,7 @@ MailToLink.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
   email: PropTypes.string,
-  headers: PropTypes.object,
+  headers: PropTypes.shape(),
   obfuscate: PropTypes.bool,
 }
 

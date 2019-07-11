@@ -1,4 +1,3 @@
-// jest ./src/components/layout/tests/Price --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 

@@ -34,7 +34,7 @@ Thumb.defaultProps = {
 Thumb.propTypes = {
   src: PropTypes.string,
   translated: PropTypes.bool,
-  withMediation: PropTypes.object,
+  withMediation: PropTypes.shape(),
 }
 
 export default Thumb

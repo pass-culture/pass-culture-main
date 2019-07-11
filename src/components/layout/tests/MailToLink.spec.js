@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import { shallow } from 'enzyme'
 
@@ -7,7 +5,7 @@ import MailToLink from '../MailToLink'
 
 const children = (
   <header>
-    <h1>Fake children</h1>
+    <h1>{'Fake children'}</h1>
   </header>
 )
 

@@ -11,7 +11,7 @@ describe('src | components | layout | Finishable', () => {
   beforeEach(() => {
     props = {
       children: (
-        <div className="content">cette offre n&apos;est pas terminée</div>
+        <div className="content">{"cette offre n'est pas terminée"}</div>
       ),
       finished: true,
     }

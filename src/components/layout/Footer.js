@@ -63,7 +63,7 @@ Footer.propTypes = {
   borderTop: PropTypes.bool.isRequired,
   colored: PropTypes.bool,
   id: PropTypes.string,
-  location: PropTypes.object.isRequired,
+  location: PropTypes.shape().isRequired,
   onTop: PropTypes.bool,
 }
 

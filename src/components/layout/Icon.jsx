@@ -3,7 +3,7 @@ import React from 'react'
 
  import { ICONS_URL } from '../../utils/config'
 
- const Icon = ({ alt, name, src, svg, ...imgProps }) => (
+ const Icon = ({ alt, src, svg, ...imgProps }) => (
    <img
      {...imgProps}
      alt={alt || svg}
@@ -13,14 +13,12 @@ import React from 'react'
 
  Icon.defaultProps = {
   className: null,
-  name: null,
   src: null,
   svg: null
 }
 
  Icon.propTypes = {
   className: PropTypes.string,
-  name: PropTypes.string,
   src: PropTypes.string,
   svg: PropTypes.string
 }

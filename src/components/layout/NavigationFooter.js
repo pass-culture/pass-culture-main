@@ -32,7 +32,7 @@ NavigationFooter.defaultProps = {
 NavigationFooter.propTypes = {
   className: PropTypes.string,
   disabled: PropTypes.bool,
-  location: PropTypes.object.isRequired,
+  location: PropTypes.shape().isRequired,
   theme: PropTypes.string.isRequired,
 }
 
