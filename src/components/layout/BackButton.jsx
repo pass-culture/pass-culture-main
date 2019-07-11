@@ -3,7 +3,7 @@ import React from 'react'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import { Icon } from 'components/layout/Icon'
+import { Icon } from './Icon'
 
 const BackButton = ({
   history,

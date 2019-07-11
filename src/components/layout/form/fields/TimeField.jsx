@@ -58,7 +58,7 @@ export const TimeField = ({
                     initTime={input.value}
                     {...input}
                     {...ReactTimeInputProps}
-                    onTimeChange={time => input.onChange(time)}
+                    onTimeChange={time => input.handleOnChange(time)}
                   />
                 )}
               </div>

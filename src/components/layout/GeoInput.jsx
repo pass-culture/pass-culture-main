@@ -18,6 +18,22 @@ const customIcon = new L.Icon({
 })
 
 class GeoInput extends Component {
+  static defaultProps = {
+    debounceTimeout: 300,
+    defaultInitialPosition: {
+      // Displays France
+      latitude: 46.98025235521883,
+      longitude: 1.9335937500000002,
+      zoom: 5,
+    },
+    maxSuggestions: 5,
+    placeholder: "Sélectionnez l'adresse lorsqu'elle est proposée.",
+    withMap: false,
+    zoom: 15,
+  }
+
+  static extraFormPatch = ['latitude', 'longitude']
+
   constructor(props) {
     super(props)
     this.state = {
@@ -34,22 +50,6 @@ class GeoInput extends Component {
       props.debounceTimeout
     )
   }
-
-  static defaultProps = {
-    debounceTimeout: 300,
-    defaultInitialPosition: {
-      // Displays France
-      latitude: 46.98025235521883,
-      longitude: 1.9335937500000002,
-      zoom: 5,
-    },
-    maxSuggestions: 5,
-    placeholder: "Sélectionnez l'adresse lorsqu'elle est proposée.",
-    withMap: false,
-    zoom: 15,
-  }
-
-  static extraFormPatch = ['latitude', 'longitude']
 
   static getDerivedStateFromProps = (newProps, currentState) => {
     const latitude = sanitizeCoordinates(newProps.latitude)
@@ -84,7 +84,7 @@ class GeoInput extends Component {
     this.setState({ draggable: !this.state.draggable })
   }
 
-  updatePosition = () => {
+  handleUpdatePosition = () => {
     const { onMergeForm } = this.props
     const { lat, lng } = this.refmarker.current.leafletElement.getLatLng()
     this.setState({
@@ -99,7 +99,7 @@ class GeoInput extends Component {
     })
   }
 
-  onTextChange = event => {
+  handleOnTextChange = event => {
     const { name, onMergeForm } = this.props
     const value = event.target.value
     this.setState({ value })
@@ -118,15 +118,15 @@ class GeoInput extends Component {
     )
   }
 
-  onSelect = (value, item) => {
-    const { onMergeForm } = this.props
+  handleOnSelect = (value, item) => {
+    const { onMergeForm, zoom } = this.props
     if (item.placeholder) return
     this.setState({
       value,
       position: {
         latitude: item.latitude,
         longitude: item.longitude,
-        zoom: this.props.zoom,
+        zoom: zoom,
       },
       marker: {
         latitude: item.latitude,
@@ -137,6 +137,7 @@ class GeoInput extends Component {
   }
 
   fetchSuggestions = value => {
+    const { maxSuggestions, placeholder } = this.props
     const wordsCount = value.split(/\s/).filter(v => v).length
     if (wordsCount < 2)
       return this.setState({
@@ -147,13 +148,13 @@ class GeoInput extends Component {
 
     fetch(
       `https://api-adresse.data.gouv.fr/search/?limit=${
-        this.props.maxSuggestions
+        maxSuggestions
       }&q=${value}`
     )
       .then(response => response.json())
       .then(data => {
         const defaultSuggestion = {
-          label: this.props.placeholder,
+          label: placeholder,
           placeholder: true,
           id: 'placeholder',
         }
@@ -206,8 +207,8 @@ class GeoInput extends Component {
             required,
           }}
           items={suggestions}
-          onChange={this.onTextChange}
-          onSelect={this.onSelect}
+          onChange={this.handleOnTextChange}
+          onSelect={this.handleOnSelect}
           readOnly={readOnly}
           renderItem={({ id, label, placeholder }, highlighted) => (
             <div
@@ -259,7 +260,7 @@ class GeoInput extends Component {
               alt={[marker.latitude, marker.longitude].join('-')}
               draggable
               icon={customIcon}
-              onDragend={this.updatePosition}
+              onDragend={this.handleUpdatePosition}
               position={[marker.latitude, marker.longitude]}
               ref={this.refmarker}
             />

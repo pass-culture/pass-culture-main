@@ -115,7 +115,7 @@ class VenueProvidersManager extends Component {
     } else {
       this.resetFormState()
     }
-    input.onChange(valueFromSelectInput)
+    input.handleOnChange(valueFromSelectInput)
   }
 
   componentDidMount() {

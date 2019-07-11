@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Thumb = ({ src, translated }) => {
+const Thumb = ({ src }) => {
   const backgroundStyle = { backgroundImage: `url('${src}')` }
   return (
     <div className="thumb">

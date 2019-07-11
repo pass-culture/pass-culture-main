@@ -13,8 +13,8 @@ const Price = ({ value, free, Tag, className }) => {
 }
 
 Price.defaultProps = {
-  free: 'Gratuit',
   Tag: 'span',
+  free: 'Gratuit',
 }
 
 export default Price
