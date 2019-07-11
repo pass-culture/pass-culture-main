@@ -7,7 +7,7 @@ const SubmitButton = ({ disabled }) => (
     disabled={disabled}
     type="submit"
   >
-    OK
+    {'OK'}
   </button>
 )
 
