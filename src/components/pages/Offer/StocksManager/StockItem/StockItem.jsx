@@ -225,7 +225,7 @@ StockItem.propTypes = {
   query: PropTypes.shape().isRequired,
   showInfo: PropTypes.func.isRequired,
   stockPatch: PropTypes.shape().isRequired,
-  stocks: PropTypes.arrayOf(PropTypes.object),
+  stocks: PropTypes.arrayOf(PropTypes.shape()),
   timezone: PropTypes.string,
   venue: PropTypes.shape(),
 }
