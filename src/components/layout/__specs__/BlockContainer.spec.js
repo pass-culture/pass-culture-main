@@ -1,5 +1,4 @@
 import { mapDispatchToProps } from '../BlockContainer'
-import { closeModal } from 'pass-culture-shared'
 
 describe('src | components | layout | BlockContainer', () => {
   describe('mapDispatchToProps', () => {
@@ -22,7 +21,7 @@ describe('src | components | layout | BlockContainer', () => {
         mapDispatchToProps(dispatch, ownProps).onConfirmation()
 
         // then
-        expect(unblock).toHaveBeenCalled()
+        expect(unblock).toHaveBeenCalledWith()
       })
 
       it('should redirect to nextLocation', () => {

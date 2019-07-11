@@ -1,4 +1,4 @@
-import { computeNewZoom } from 'components/layout/UploadThumb'
+import { computeNewZoom } from '../UploadThumb'
 
 const defaultParams = {
   current: 0.3,
