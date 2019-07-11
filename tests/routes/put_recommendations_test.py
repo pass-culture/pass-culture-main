@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from models import PcObject
 from models.db import db
-from models.mediation import Mediation, upsertTutoMediations
+from models.mediation import Mediation, upsert_tuto_mediations
 from models.recommendation import Recommendation
 from models.stock import Stock
 from tests.conftest import clean_database, TestClient
@@ -741,7 +741,7 @@ class Put:
             stock3 = create_stock_from_offer(thing_offer1)
             stock4 = create_stock_from_offer(thing_offer2)
             PcObject.save(stock1, stock2, stock3, stock4, user)
-            upsertTutoMediations()
+            upsert_tuto_mediations()
 
             # when
             auth_request = TestClient(app.test_client()).with_auth(user.email)
@@ -769,7 +769,7 @@ class Put:
             stock3 = create_stock_from_offer(thing_offer1)
             stock4 = create_stock_from_offer(thing_offer2)
             PcObject.save(stock1, stock2, stock3, stock4, user)
-            upsertTutoMediations()
+            upsert_tuto_mediations()
             tuto_mediation0 = Mediation.query.filter_by(tutoIndex=0).one()
             tuto_mediation1 = Mediation.query.filter_by(tutoIndex=1).one()
             tuto_recommendation0 = create_recommendation(

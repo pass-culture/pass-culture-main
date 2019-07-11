@@ -10,7 +10,7 @@ from werkzeug.middleware.profiler import ProfilerMiddleware
 from admin.install import install_admin_views
 from models import Feature
 from repository.feature_queries import feature_request_profiling_enabled
-from models.mediation import upsertTutoMediations
+from models.mediation import upsert_tuto_mediations
 from local_providers.install import install_local_providers
 from models.db import db
 from models.install import install_models, install_features, install_database_extensions
@@ -71,7 +71,7 @@ with app.app_context():
     install_database_extensions()
     if IS_DEV:
         install_models()
-        upsertTutoMediations()
+        upsert_tuto_mediations()
         install_local_providers()
         Feature.query.delete()
         install_features()

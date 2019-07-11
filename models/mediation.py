@@ -76,7 +76,7 @@ TUTOS_PATH = Path(os.path.dirname(os.path.realpath(__file__))) / '..' \
              / 'static' / 'tuto_mediations'
 
 
-def upsertTutoMediation(index, has_back=False):
+def upsert_tuto_mediation(index, has_back=False):
     existing_mediation = Mediation.query.filter_by(tutoIndex=index) \
         .first()
     mediation = existing_mediation or Mediation()
@@ -104,6 +104,6 @@ def upsertTutoMediation(index, has_back=False):
     PcObject.save(mediation)
 
 
-def upsertTutoMediations():
-    upsertTutoMediation(0)
-    upsertTutoMediation(1, True)
+def upsert_tuto_mediations():
+    upsert_tuto_mediation(0)
+    upsert_tuto_mediation(1, True)
