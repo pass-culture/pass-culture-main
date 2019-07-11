@@ -20,7 +20,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     recommendation = None
 
     if mediation_id or offer_id:
-        recommendation = _find_recommendation(offer_id, mediation_id)
+        recommendation = _find_recommendation(offer_id, mediation_id, user.id)
         if recommendation is None:
             recommendation = _create_recommendation_from_ids(user, offer_id, mediation_id=mediation_id)
             logger.debug(lambda: 'Creating Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
@@ -81,9 +81,10 @@ def _no_mediation_or_mediation_does_not_match_offer(mediation, offer_id):
     return mediation is None or (offer_id and (mediation.offerId != offer_id))
 
 
-def _find_recommendation(offer_id, mediation_id):
+def _find_recommendation(offer_id, mediation_id, user_id):
     logger.debug(lambda: 'Requested Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
-    query = Recommendation.query.filter(Recommendation.validUntilDate > datetime.utcnow())
+    query = Recommendation.query.filter((Recommendation.validUntilDate > datetime.utcnow())
+                                        && (Recommendation.userId == user_id))
     if offer_id:
         query = query.join(Offer)
     mediation = Mediation.query.filter_by(id=mediation_id).first()

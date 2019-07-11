@@ -6,7 +6,8 @@ from freezegun import freeze_time
 from models import PcObject
 from models.db import db
 from recommendations_engine import create_recommendations_for_discovery, \
-    get_recommendation_search_params
+    get_recommendation_search_params, \
+    give_requested_recommendation_to_user
 from tests.conftest import clean_database
 from tests.test_utils import create_mediation, \
     create_offerer, \
@@ -43,6 +44,45 @@ def test_create_recommendations_for_discovery_does_not_put_mediation_ids_of_inac
     assert mediation3.id in mediations
     assert humanize(mediation2.id) not in mediations
     assert humanize(mediation1.id) not in mediations
+
+
+class GiveRequestedRecommendationToUser:
+    def test_when_recommendation_exists_returns_it(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer_ok = create_offer_with_thing_product(venue, thumb_count=0)
+        stock = create_stock_from_offer(offer_ok, price=0)
+        mediation = create_mediation(offer_ok, is_active=False)
+        reco_ok = create_recommendation(offer=offer_ok, user=user, mediation=mediation)
+        PcObject.save(reco_ok, stock)
+
+        # When
+        result_reco = give_requested_recommendation_to_user(user, offer.id, mediation.id)
+
+        # Then
+        assert result_reco.id == reco_ok.id
+
+    def test_when_recommendation_exists_for_other_user_returns_a_new_one_for_the_current_user(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer_ok = create_offer_with_thing_product(venue, thumb_count=0)
+        stock = create_stock_from_offer(offer_ok, price=0)
+        mediation = create_mediation(offer_ok, is_active=False)
+        reco_ko = create_recommendation(offer=offer_ok, user=user, mediation=mediation)
+        PcObject.save(reco_ko, stock)
+
+        # When
+        result_reco = give_requested_recommendation_to_user(user, offer_ok.id, mediation.id)
+
+        # Then
+        assert result_reco.id != reco_ko.id
+        assert result_reco.offerId == offer_ok.id
+        assert result_reco.mediationId == mediation.id
+        assert result_reco.userId == user.id
 
 
 @freeze_time('2019-01-31 12:00:00')
