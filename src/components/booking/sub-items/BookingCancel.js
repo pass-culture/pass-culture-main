@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
@@ -21,23 +19,19 @@ const BookingCancel = ({ isEvent, data }) => {
         >
           <Icon svg="picto-validation" />
         </span>
-        <span className="is-block fs22">Votre réservation est annulée.</span>
+        <span className="is-block fs22">{'Votre réservation est annulée.'}</span>
       </div>
 
       <p className="mt40">
-        <span className="is-block">
-          {formattedPrice} vont être recrédités sur votre pass.
-        </span>
-        <span className="is-block">
-          Vous allez recevoir un e-mail de confirmation.
-        </span>
+        <span className="is-block">{`${formattedPrice} vont être recrédités sur votre pass.`}</span>
+        <span className="is-block">{'Vous allez recevoir un e-mail de confirmation.'}</span>
       </p>
     </div>
   )
 }
 
 BookingCancel.propTypes = {
-  data: PropTypes.object.isRequired,
+  data: PropTypes.shape().isRequired,
   isEvent: PropTypes.bool.isRequired,
 }
 

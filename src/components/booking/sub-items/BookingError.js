@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import React from 'react'
 
@@ -41,7 +39,7 @@ const BookingError = ({ errors }) => {
         className="fs20"
         id="booking-error-reasons"
       >
-        <p className="mb36">Une erreur est survenue lors de la réservation</p>
+        <p className="mb36">{'Une erreur est survenue lors de la réservation'}</p>
         {entries && entries.map(renderErrorReason)}
       </div>
     </div>

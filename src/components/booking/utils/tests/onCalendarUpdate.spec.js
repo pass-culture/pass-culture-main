@@ -1,4 +1,3 @@
-// jest ./src/components/booking/utils/tests/onCalendarUpdates --watch
 import moment from 'moment'
 import onCalendarUpdates from '../onCalendarUpdates'
 
@@ -6,15 +5,15 @@ const resetObj = { price: null, stockId: null, time: null }
 
 describe('src | components | booking | utils | onCalendarUpdates', () => {
   it('should throw if no form values defined || not object', () => {
-    expect(() => onCalendarUpdates()).toThrow()
-    expect(() => onCalendarUpdates(null)).toThrow()
-    expect(() => onCalendarUpdates(null, null)).toThrow()
+    expect(() => onCalendarUpdates()).toThrow('error')
+    expect(() => onCalendarUpdates(null)).toThrow('error')
+    expect(() => onCalendarUpdates(null, null)).toThrow('error')
     let formValues = null
-    expect(() => onCalendarUpdates(null, null, formValues)).toThrow()
+    expect(() => onCalendarUpdates(null, null, formValues)).toThrow('error')
     formValues = undefined
-    expect(() => onCalendarUpdates(null, null, formValues)).toThrow()
+    expect(() => onCalendarUpdates(null, null, formValues)).toThrow('error')
     formValues = false
-    expect(() => onCalendarUpdates(null, null, formValues)).toThrow()
+    expect(() => onCalendarUpdates(null, null, formValues)).toThrow('error')
   })
   it('should not throw if form values is object', () => {
     const formValues = { price: null, stockId: null, time: null }

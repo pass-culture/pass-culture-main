@@ -1,4 +1,3 @@
-// jest ./src/components/booking/utils/tests/getCalendarProvider --watch
 import moment from 'moment'
 
 import getCalendarProvider from '../getCalendarProvider'

@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
@@ -25,7 +23,7 @@ BookingHeader.defaultProps = {
 }
 
 BookingHeader.propTypes = {
-  recommendation: PropTypes.object,
+  recommendation: PropTypes.shape(),
 }
 
 export default BookingHeader

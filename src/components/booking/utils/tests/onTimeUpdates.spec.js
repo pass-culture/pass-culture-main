@@ -1,4 +1,3 @@
-// jest ./src/components/booking/utils/tests/onTimeUpdates --watch
 import onTimeUpdates from '../onTimeUpdates'
 
 describe('src | components | booking | utils | onTimeUpdates', () => {

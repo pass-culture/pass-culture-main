@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
@@ -80,8 +78,7 @@ const BookingForm = ({
                 <Field
                   name="date"
                   render={({ input }) => {
-                    const selectedValue =
-                      (input.value && input.value.date) || null
+                    const selectedValue = (input.value && input.value.date) || null
                     const dateFormat = 'DD MMMM YYYY'
                     return (
                       <DatePickerField
@@ -124,10 +121,8 @@ const BookingForm = ({
             )}
             {stockId && (
               <p className="text-center fs22">
-                <span className="is-block">
-                  Vous êtes sur le point de réserver
-                </span>
-                <span className="is-block">cette offre pour {price}€</span>
+                <span className="is-block">{'Vous êtes sur le point de réserver'}</span>
+                <span className="is-block">{`cette offre pour ${price}€`}</span>
               </p>
             )}
           </form>
@@ -149,7 +144,7 @@ BookingForm.propTypes = {
   className: PropTypes.string,
   disabled: PropTypes.bool.isRequired,
   formId: PropTypes.string.isRequired,
-  initialValues: PropTypes.object,
+  initialValues: PropTypes.shape(),
   isEvent: PropTypes.bool,
   isReadOnly: PropTypes.bool,
   onMutation: PropTypes.func.isRequired,

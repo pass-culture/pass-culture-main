@@ -1,4 +1,3 @@
-// jest ./src/components/booking/utils/tests/parseHoursByStockId --watch
 import moment from 'moment-timezone'
 import { getDisplayPrice } from '../../../../helpers/getDisplayPrice'
 import parseHoursByStockId from '../parseHoursByStockId'

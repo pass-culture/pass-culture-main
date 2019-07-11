@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import { Icon } from 'antd'
 import get from 'lodash.get'
@@ -17,7 +15,6 @@ const BookingSuccess = ({ isEvent, data }) => {
   return (
     <div className={`booked text-center ${cssclass}`}>
       <h3 className="fs22">
-        {/* <!-- ICON --> */}
         <span
           className="is-block mb12"
           style={{ color: '#27AE60', fontSize: '4.5rem' }}
@@ -29,20 +26,19 @@ const BookingSuccess = ({ isEvent, data }) => {
           {!isEvent && (
             <React.Fragment>
               <span className="is-block">
-                Votre pouvez accéder à cette offre
+                {'Votre pouvez accéder à cette offre'}
               </span>
-              <span className="is-block">à tout moment.</span>
+              <span className="is-block">{'à tout moment.'}</span>
             </React.Fragment>
           )}
         </span>
       </h3>
       <p>
-        <span className="is-block">{price} ont été déduits de votre pass.</span>
+        <span className="is-block">{price} {'ont été déduits de votre pass.'}</span>
         {!onlineOfferUrl && (
-          <span className="is-block">Présentez le code suivant sur place:</span>
+          <span className="is-block">{'Présentez le code suivant sur place:'}</span>
         )}
       </p>
-      {/* <!-- CODE / LIEN --> */}
       <p className="my28">
         {!onlineOfferUrl && (
           <b
@@ -62,7 +58,7 @@ const BookingSuccess = ({ isEvent, data }) => {
             rel="noopener noreferrer"
             target="_blank"
           >
-            <b>Accéder à l&apos;offre en ligne</b>
+            <b>{"Accéder à l'offre en ligne"}</b>
           </a>
         )}
       </p>
@@ -70,29 +66,29 @@ const BookingSuccess = ({ isEvent, data }) => {
         {!onlineOfferUrl && (
           <React.Fragment>
             <span className="is-block">
-              Retrouvez ce code et les détails de l&apos;offre dans
+              {"Retrouvez ce code et les détails de l'offre dans"}
             </span>
             <span className="is-block">
-              la rubrique
+              {'la rubrique'}
               <Link to="/reservations">
-                <b className="is-primary-text"> Mes Réservations </b>
+                <b className="is-primary-text">{'Mes Réservations'}</b>
               </Link>
-              de votre compte
+              {'de votre compte'}
             </span>
           </React.Fragment>
         )}
         {onlineOfferUrl && (
           <React.Fragment>
             <span className="is-block">
-              Retrouvez l&apos;adresse Internet et les détails de
+              {"Retrouvez l'adresse Internet et les détails de"}
             </span>
             <span className="is-block">
-              l&apos;offre dans la rubrique
+              {"l'offre dans la rubrique"}
               <Link to="/reservations">
-                <b className="is-primary-text"> Mes Réservations </b>
+                <b className="is-primary-text">{'Mes Réservations'}</b>
               </Link>
             </span>
-            <span className="is-block">de votre compte</span>
+            <span className="is-block">{'de votre compte'}</span>
           </React.Fragment>
         )}
       </p>
@@ -101,7 +97,7 @@ const BookingSuccess = ({ isEvent, data }) => {
 }
 
 BookingSuccess.propTypes = {
-  data: PropTypes.object.isRequired,
+  data: PropTypes.shape().isRequired,
   isEvent: PropTypes.bool.isRequired,
 }
 
