@@ -6,11 +6,11 @@ import RawOffers from './RawOffers'
 import {
   withFrenchQueryRouter,
   withRedirectToSigninWhenNotAuthenticated,
-} from 'components/hocs'
-import selectOffererById from 'selectors/selectOffererById'
-import selectOffersByOffererIdAndVenueId from 'selectors/selectOffersByOffererIdAndVenueId'
-import selectVenueById from 'selectors/selectVenueById'
-import { translateQueryParamsToApiParams } from 'utils/translate'
+} from '../../hocs'
+import selectOffererById from '../../../selectors/selectOffererById'
+import selectOffersByOffererIdAndVenueId from '../../../selectors/selectOffersByOffererIdAndVenueId'
+import selectVenueById from '../../../selectors/selectVenueById'
+import { translateQueryParamsToApiParams } from '../../../utils/translate'
 
 export function mapStateToProps(state, ownProps) {
   const { query } = ownProps

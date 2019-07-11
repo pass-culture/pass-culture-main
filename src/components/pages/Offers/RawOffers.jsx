@@ -7,14 +7,14 @@ import { NavLink } from 'react-router-dom'
 import { assignData, requestData } from 'redux-saga-data'
 
 import OfferItem from './OfferItem/OfferItemContainer'
-import HeroSection from 'components/layout/HeroSection/HeroSection'
-import Spinner from 'components/layout/Spinner'
-import Main from 'components/layout/Main'
-import { offerNormalizer } from 'utils/normalizers'
+import HeroSection from '../../layout/HeroSection/HeroSection'
+import Spinner from '../../layout/Spinner'
+import Main from '../../layout/Main'
+import { offerNormalizer } from '../../../utils/normalizers'
 import {
   mapApiToBrowser,
   translateQueryParamsToApiParams,
-} from 'utils/translate'
+} from '../../../utils/translate'
 
 class RawOffers extends Component {
   constructor(props) {
@@ -24,7 +24,6 @@ class RawOffers extends Component {
     const queryParams = query.parse()
     this.state = {
       hasMore: false,
-      keywordsValue: queryParams[mapApiToBrowser.keywords],
       isLoading: false,
     }
     props.dispatch(assignData({ offers: [] }))
@@ -47,7 +46,7 @@ class RawOffers extends Component {
     }
   }
 
-  handleRequestData = (handleSuccess = () => {}, handleFail = () => {}) => {
+  handleRequestData = () => {
     const { comparedTo, dispatch, query, types } = this.props
 
     types.length === 0 && dispatch(requestData({ apiPath: '/types' }))
@@ -83,7 +82,7 @@ class RawOffers extends Component {
     })
   }
 
-  onSubmit = event => {
+  handleOnSubmit = event => {
     event.preventDefault()
     const { dispatch, query } = this.props
     const value = event.target.elements.search.value
@@ -134,15 +133,15 @@ class RawOffers extends Component {
               <span className="icon">
                 <Icon svg="ico-offres-w" />
               </span>
-              <span>Créer une offre</span>
+              <span>{"Créer une offre"}</span>
             </NavLink>
           )}
         </HeroSection>
         <form
           className="section"
-          onSubmit={this.onSubmit}
+          onSubmit={this.handleOnSubmit}
         >
-          <label className="label">Rechercher une offre :</label>
+          <label className="label">{"Rechercher une offre :"}</label>
           <div className="field is-grouped">
             <p className="control is-expanded">
               <input
@@ -159,7 +158,7 @@ class RawOffers extends Component {
                 id="search-button"
                 type="submit"
               >
-                OK
+                {"OK"}
               </button>{' '}
               <button
                 className="button is-secondary"
@@ -221,8 +220,8 @@ class RawOffers extends Component {
                     }}
                     value={orderName}
                   >
-                    <option value="sold">Offres écoulées</option>
-                    <option value="createdAt">Date de création</option>
+                    <option value="sold">{"Offres écoulées"}</option>
+                    <option value="createdAt">{"Date de création"}</option>
                   </select>
                 </span>
               </div>
@@ -267,8 +266,8 @@ class RawOffers extends Component {
 }
 
 RawOffers.propTypes = {
-  currentUser: PropTypes.object.isRequired,
-  offers: PropTypes.array,
+  currentUser: PropTypes.shape().isRequired,
+  offers: PropTypes.arrayOf.isRequired,
 }
 
 export default RawOffers

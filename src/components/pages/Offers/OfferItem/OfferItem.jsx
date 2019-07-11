@@ -101,11 +101,11 @@ class OfferItem extends Component {
           <ul className="infos">
             <li className="is-uppercase">{offerTypeLabel}</li>
             <li>
-              <span className="label">Structure : </span>
+              <span className="label">{"Structure : "}</span>
               {offerer && offerer.name}
             </li>
             <li>
-              <span className="label">Lieu : </span>
+              <span className="label">{"Lieu : "}</span>
               {(venue && venue.publicName) || venue.name}
             </li>
           </ul>
@@ -180,7 +180,7 @@ class OfferItem extends Component {
                 to={`/offres/${offer.id}`}
               >
                 <Icon svg="ico-pen-r" />
-                Modifier
+                {"Modifier"}
               </NavLink>
 
               <button
