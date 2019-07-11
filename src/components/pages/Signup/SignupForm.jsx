@@ -11,7 +11,7 @@ class SignupForm extends PureComponent {
     return (
       <section>
         <div className="hero-body">
-          <h1 className="title is-spaced is-1">Créez votre compte</h1>
+          <h1 className="title is-spaced is-1">{"Créez votre compte"}</h1>
           <h2 className="subtitle is-2">
             Nous vous invitons à prendre connaissance des{' '}
             <a
@@ -26,7 +26,7 @@ class SignupForm extends PureComponent {
           </h2>
           <span className="has-text-grey">
             {' '}
-            <span className="required-legend"> * </span> Champs obligatoires
+            <span className="required-legend">{" * "}</span>{" Champs obligatoires"}
           </span>
           <Form
             action="/users/signup/pro"
@@ -107,14 +107,14 @@ class SignupForm extends PureComponent {
                 className="cgu-field"
                 label={
                   <Fragment>
-                    J’ai lu et j’accepte les{' '}
+                    {"J’ai lu et j’accepte les "}
                     <a
                       href="https://pass-culture.gitbook.io/documents/textes-normatifs"
                       id="accept-cgu-link"
                       rel="noopener noreferrer"
                       target="_blank"
                     >
-                      Conditions Générales d’Utilisation
+                      {"Conditions Générales d’Utilisation"}
                     </a>
                   </Fragment>
                 }
@@ -129,7 +129,7 @@ class SignupForm extends PureComponent {
                 className="button is-secondary"
                 to="/connexion"
               >
-                J'ai déjà un compte
+                {"J'ai déjà un compte"}
               </NavLink>
               <SubmitButton className="button is-primary is-outlined">
                 Créer

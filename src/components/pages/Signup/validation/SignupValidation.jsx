@@ -4,6 +4,17 @@ import { showNotification } from 'pass-culture-shared'
 import { requestData } from 'redux-saga-data'
 
 class SignupValidation extends PureComponent {
+  componentDidMount() {
+    const {
+      dispatch,
+      match: {
+        params: { token },
+      },
+    } = this.props
+
+    dispatch(this.buildRequestData(token))
+  }
+
   buildRequestData = token => {
     return requestData({
       apiPath: `/validate/user/${token}`,
@@ -40,17 +51,6 @@ class SignupValidation extends PureComponent {
         })
       )
     }
-  }
-
-  componentDidMount() {
-    const {
-      dispatch,
-      match: {
-        params: { token },
-      },
-    } = this.props
-
-    dispatch(this.buildRequestData(token))
   }
 
   render() {
