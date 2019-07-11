@@ -2,7 +2,7 @@ import { currentUserUUID } from 'with-react-redux-login'
 
 import { mapStateToProps } from '../TypeFormContainer'
 
-describe('src | components |pages | typeform | TypeFormContainer', () => {
+describe('src | components |pages | typeform | TypeFormContainer', () => {
   it('should return empty object when current user is not defined', () => {
     // given
     const state = { data: { users: [] } }

@@ -40,15 +40,17 @@ class TypeForm extends PureComponent {
     flagUserHasFilledTypeform(this.uniqId)
   }
 
+  divRef = elt => {
+    this.typeformElementContainer = elt
+  }
+
   render() {
     const { needsToFillCulturalSurvey } = this.props
     if (!needsToFillCulturalSurvey) return <Redirect to="/decouverte" />
     return (
       <div
         className="is-overlay react-embed-typeform-container"
-        ref={elt => {
-          this.typeformElementContainer = elt
-        }}
+        ref={this.divRef}
       />
     )
   }
