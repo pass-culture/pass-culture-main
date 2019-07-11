@@ -6,9 +6,7 @@ import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandb
 
 const filterButton = Selector('#filter-button')
 const resetButton = Selector('#search-filter-reset-button')
-const toggleFilterButton = Selector('#search-filter-menu-toggle-button').find(
-  'img'
-)
+const toggleFilterButton = Selector('#search-filter-menu-toggle-button').find('img')
 const searchFilterMenu = Selector('#search-filter-menu')
 const filterByDatesDiv = Selector('#filter-by-dates')
 const filterByDatesTitle = filterByDatesDiv.find('h2')
@@ -44,9 +42,7 @@ fixture(
 })
 
 test("Le filtre de recherche existe et l'icône n'est pas activé", async t => {
-  await t
-    .expect(toggleFilterButton.getAttribute('src'))
-    .contains('ico-filter.svg')
+  await t.expect(toggleFilterButton.getAttribute('src')).contains('ico-filter.svg')
 })
 
 test("Je peux ouvrir et fermer le filtre en cliquant sur l'icône", async t => {
@@ -72,7 +68,7 @@ fixture('O5_03_02 Recherche par Filtres | Dates').beforeEach(async t => {
     .click(toggleFilterButton)
 })
 
-test('Je vois le titre de la section', async t => {
+test('Je vois le titre de la section (QUAND)', async t => {
   await t
     .expect(filterByDatesTitle.innerText)
     .eql('QUAND')
@@ -219,19 +215,17 @@ fixture('O5_03_03 Recherche par Filtres | Distance ').beforeEach(async t => {
     .click(toggleFilterButton)
 })
 
-test('Je vois le titre de la section', async t => {
+test('Je vois le titre de la section (OÙ)', async t => {
   await t.expect(filterByDistanceTitle.innerText).eql('OÙ')
 })
 
-fixture(
-  "O5_03_04 Recherche par Filtres | Par Type d'offres / Catégories"
-).beforeEach(async t => {
+fixture("O5_03_04 Recherche par Filtres | Par Type d'offres / Catégories").beforeEach(async t => {
   await t
     .useRole(userRole)
     .navigateTo(`${ROOT_PATH}recherche`)
     .click(toggleFilterButton)
 })
 
-test('Je vois le titre de la section', async t => {
+test('Je vois le titre de la section (QUOI)', async t => {
   await t.expect(filterByOfferTypesTitle.innerText).eql('QUOI')
 })

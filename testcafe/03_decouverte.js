@@ -1,4 +1,3 @@
-/* eslint no-await-in-loop: 0 */
 import { ClientFunction, Selector } from 'testcafe'
 import getPageUrl from './helpers/getPageUrl'
 import { ROOT_PATH } from '../src/utils/config'

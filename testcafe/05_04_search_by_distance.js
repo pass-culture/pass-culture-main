@@ -63,7 +63,7 @@ test('Je sélectionne toutes distances et je clique sur filtrer', async t => {
     .contains(`${ROOT_PATH}recherche/resultats`)
 })
 
-test('Je sélectionne toutes distances et je clique sur filtrer', async t => {
+test('Je sélectionne toutes distances et je clique sur filtrer (rééecrire)', async t => {
   await t
     .click(distanceInput)
     .click(distanceOption.withText(distanceOptions[1].label))
