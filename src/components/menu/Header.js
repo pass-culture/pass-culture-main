@@ -27,13 +27,13 @@ const Header = ({ currentUser }) => (
     </div>
     <div className="column-account flex-1 flex-rows flex-center px18">
       <div className="fs30">
-        <span>Mon pass</span>
+        <span>{'Mon pass'}</span>
       </div>
       <div id="main-menu-header-wallet-value">
         <span className="fs44 is-semi-bold wallet-value">
           {getWalletValue(currentUser)}
         </span>
-        <span className="fs30 currency">&nbsp;€</span>
+        <span className="fs30 currency">&nbsp;{'€'}</span>
       </div>
     </div>
   </div>

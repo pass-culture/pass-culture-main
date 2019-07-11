@@ -16,7 +16,7 @@ const SignoutButton = ({ onSignoutClick, ...props }) => (
         svg="ico-deconnect-w"
       />
     </span>
-    <span className="pt5">Déconnexion</span>
+    <span className="pt5">{'Déconnexion'}</span>
   </button>
 )
 

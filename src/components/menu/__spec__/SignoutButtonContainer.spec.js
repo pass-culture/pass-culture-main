@@ -1,5 +1,4 @@
 import { createBrowserHistory } from 'history'
-import { requestData } from 'redux-saga-data'
 
 import { mapDispatchToProps } from '../SignoutButtonContainer'
 import { configureStore } from '../../../utils/store'
@@ -11,10 +10,6 @@ jest.mock('redux-saga-data', () => ({
     return { type: 'REQUEST_DATA' }
   },
 }))
-
-// jest.mock('redux-saga-data', () => ({
-//   requestData: jest.fn(),
-// }))
 
 describe('src | components | menu | SignoutButtonContainer', () => {
   describe('mapDispatchToProps()', () => {
@@ -39,24 +34,6 @@ describe('src | components | menu | SignoutButtonContainer', () => {
         expect(menu).toBe(false)
         expect(data.readRecommendations).toHaveLength(0)
         expect(history.location.pathname).toBe('/connexion')
-      })
-
-      it.skip('should called handleRequestSignout()', () => {
-        // given
-        const { store } = configureStore({ menu: true })
-        const history = createBrowserHistory()
-        const readRecommendations = []
-        // const handleRequestSignout = jest.fn()
-
-        // when
-        mapDispatchToProps(store.dispatch).onSignoutClick({
-          history,
-          readRecommendations,
-        })()
-        // console.log(history)
-
-        // then
-        expect(requestData).toHaveBeenCalledWith({})
       })
     })
   })
