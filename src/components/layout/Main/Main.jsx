@@ -11,48 +11,19 @@ import React, { Component, Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
-import HeaderContainer from 'components/layout/Header/HeaderContainer'
+import HeaderContainer from '../Header/HeaderContainer'
 import NotificationContainer from "../Notification/NotificationContainer"
 
 class Main extends Component {
+  static defaultProps = {
+    Tag: 'main',
+  }
+
   constructor() {
     super()
     this.state = {
       loading: false,
     }
-  }
-
-  static defaultProps = {
-    Tag: 'main',
-  }
-
-  handleDataFail = (state, action) => {
-    const { dispatch, payload } = action
-    this.setState({ loading: false })
-
-    dispatch(
-      showNotification({
-        type: 'danger',
-        text: get(payload, 'errors.0.global') || 'Erreur de chargement',
-      })
-    )
-  }
-
-  handleDataRequest = () => {
-    if (this.props.handleDataRequest) {
-      // possibility of the handleDataRequest to return
-      // false in order to not trigger the loading
-      this.setState({
-        loading: true,
-      })
-      this.props.handleDataRequest(this.handleDataSuccess, this.handleDataFail)
-    }
-  }
-
-  handleDataSuccess = () => {
-    this.setState({
-      loading: false,
-    })
   }
 
   componentDidMount() {
@@ -75,7 +46,38 @@ class Main extends Component {
 
   componentWillUnmount() {
     this.unblock && this.unblock()
-    this.props.dispatch(resetForm())
+    const { dispatch } = this.props
+    dispatch(resetForm())
+  }
+
+  handleDataSuccess = () => {
+    this.setState({
+      loading: false,
+    })
+  }
+
+  handleDataRequest = () => {
+    const { handleDataRequest } = this.props
+    if (handleDataRequest) {
+      // possibility of the handleDataRequest to return
+      // false in order to not trigger the loading
+      this.setState({
+        loading: true,
+      })
+      handleDataRequest(this.handleDataSuccess, this.handleDataFail)
+    }
+  }
+
+  handleDataFail = (state, action) => {
+    const { dispatch, payload } = action
+    this.setState({ loading: false })
+
+    dispatch(
+      showNotification({
+        type: 'danger',
+        text: get(payload, 'errors.0.global') || 'Erreur de chargement',
+      })
+    )
   }
 
   render() {
