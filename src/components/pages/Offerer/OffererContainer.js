@@ -6,7 +6,7 @@ import mapStateToProps from './mapStateToProps'
 import {
   withFrenchQueryRouter,
   withRedirectToSigninWhenNotAuthenticated,
-} from 'components/hocs'
+} from '../../hocs'
 
 export default compose(
   withRedirectToSigninWhenNotAuthenticated,
