@@ -4,15 +4,15 @@ from sqlalchemy import Binary, CheckConstraint, Column, Integer
 
 from connectors.thumb import fetch_image
 from domain.mediations import DO_NOT_CROP, standardize_image, compute_dominant_color
+from models import ApiErrors
 from models.pc_object import PcObject
 from utils.human_ids import humanize
 from utils.inflect_engine import inflect_engine
+from utils.logger import logger
 from utils.object_storage import delete_public_object, \
     get_public_object_date, \
     store_public_object, get_storage_base_url
 from utils.string_processing import get_model_plural_name
-
-IDEAL_THUMB_WIDTH = 750
 
 
 class HasThumbMixin(object):
@@ -50,7 +50,11 @@ class HasThumbMixin(object):
         new_thumb = thumb
 
         if isinstance(thumb, str):
-            new_thumb = fetch_image(thumb, str(self))
+            try:
+                new_thumb = fetch_image(thumb, str(self))
+            except ValueError as e:
+                logger.error(e)
+                raise ApiErrors({'thumbUrl': ["L'adresse saisie n'est pas valide"]})
 
         if convert:
             crop_params = crop if crop is not None else DO_NOT_CROP

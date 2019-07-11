@@ -4,26 +4,19 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.discard_pc_objects import invalidate_recommendations_if_deactivating_object
-from models.api_errors import ApiErrors
 from models.mediation import Mediation
 from models.pc_object import PcObject
 from models.user_offerer import RightsType
 from utils.human_ids import dehumanize
-from utils.logger import logger
-from utils.rest import ensure_current_user_has_rights, load_or_404, expect_json_data
-from utils.thumb import has_thumb, get_crop, read_thumb
 from utils.includes import MEDIATION_INCLUDES
+from utils.rest import ensure_current_user_has_rights, load_or_404, expect_json_data
+from validation.mediations import check_thumb_in_request, read_thumb
 
 
 @app.route('/mediations', methods=['POST'])
 @login_required
 def create_mediation():
-    api_errors = ApiErrors()
-
-    if not has_thumb(files=request.files, form=request.form):
-        api_errors.addError('thumb', "Vous devez fournir une image d'accroche")
-        return jsonify(api_errors.errors), 400
-
+    check_thumb_in_request(files=request.files, form=request.form)
     offerer_id = dehumanize(request.form['offererId'])
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
 
@@ -32,20 +25,10 @@ def create_mediation():
     new_mediation.offerId = dehumanize(request.form['offerId'])
     new_mediation.credit = request.form.get('credit')
     new_mediation.offererId = offerer_id
-
-    # DO THE READ BEFORE SAVING IN CASE WHERE THE THUMB FILE IS WRONG !
-    thumb = read_thumb(files=request.files, form=request.form)
-
-    # SAVE
     PcObject.save(new_mediation)
 
-    try:
-        new_mediation.save_thumb(thumb, 0, crop=get_crop(request.form))
-    except ValueError as e:
-        logger.error(e)
-        api_errors.addError('thumbUrl', "L'adresse saisie n'est pas valide")
-        raise api_errors
-
+    thumb = read_thumb(files=request.files, form=request.form)
+    new_mediation.save_thumb(thumb, 0, crop=_get_crop(request.form))
     return jsonify(new_mediation.as_dict()), 201
 
 
@@ -68,3 +51,14 @@ def update_mediation(mediation_id):
     invalidate_recommendations_if_deactivating_object(data, mediation.recommendations)
     PcObject.save(mediation)
     return jsonify(mediation.as_dict(include=MEDIATION_INCLUDES)), 200
+
+
+def _get_crop(form):
+    if 'croppingRect[x]' in form \
+            and 'croppingRect[y]' in form \
+            and 'croppingRect[height]' in form:
+        return [
+            float(form['croppingRect[x]']),
+            float(form['croppingRect[y]']),
+            float(form['croppingRect[height]'])
+        ]

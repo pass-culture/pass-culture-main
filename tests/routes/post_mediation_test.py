@@ -90,3 +90,29 @@ class Post:
             # then
             assert response.status_code == 400
             assert response.json['thumbUrl'] == ["L'adresse saisie n'est pas valide"]
+
+        @clean_database
+        def when_mediation_is_created_with_file_upload_but_without_filename(self, app):
+            # given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue)
+            user_offerer = create_user_offerer(user, offerer)
+            PcObject.save(user, venue, user_offerer)
+
+            data = {
+                'offerId': humanize(offer.id),
+                'offererId': humanize(offerer.id),
+                'thumb': (BytesIO(ONE_PIXEL_PNG), '')
+
+            }
+
+            # when
+            response = TestClient(app.test_client()) \
+                .with_auth(email=user.email) \
+                .post('/mediations', form=data)
+
+            # then
+            assert response.status_code == 400
+            assert response.json['thumb'] == ["Vous devez fournir une image d'accroche"]
