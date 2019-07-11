@@ -52,7 +52,7 @@ class FilterByDates extends PureComponent {
     filterActions.add('jours', day, callback)
   }
 
-  onChangePickedDate = (date = null) => {
+  handleOnChangePickedDate = (date = null) => {
     const { filterActions } = this.props
     const formatedDate = (date && date.toISOString()) || null
 
@@ -107,7 +107,7 @@ class FilterByDates extends PureComponent {
               className="item fs19 py5 px7"
               minDate={new Date()}
               name="pick-by-date-filter"
-              onChange={this.onChangePickedDate}
+              onChange={this.handleOnChangePickedDate}
               popperRefContainer={this.datepickerPopper}
               selected={pickedDate}
             />

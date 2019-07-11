@@ -52,13 +52,8 @@ class SearchFilter extends Component {
     })
   }
 
-  onClickFilterButton = () => {
-    const {
-      resetSearchStore,
-      query,
-      onClickFilterButton,
-      isVisible,
-    } = this.props
+  handleOnClickFilterButton = () => {
+    const { resetSearchStore, query, onClickFilterButton, isVisible } = this.props
     const { filterParamsMatchingQueryParams, params } = this.state
 
     if (filterParamsMatchingQueryParams) {
@@ -73,7 +68,7 @@ class SearchFilter extends Component {
     onClickFilterButton(isVisible)
   }
 
-  onClickReset = () => {
+  handleOnClickReset = () => {
     const { query, resetSearchStore } = this.props
 
     resetSearchStore()
@@ -93,10 +88,7 @@ class SearchFilter extends Component {
     const { query } = this.props
     const { params } = this.state
     const nextFilterParams = { ...params, ...newValue }
-    const filterParamsMatchingQueryParams = getFirstChangingKey(
-      query.parse(),
-      newValue
-    )
+    const filterParamsMatchingQueryParams = getFirstChangingKey(query.parse(), newValue)
 
     this.setState(
       {
@@ -134,10 +126,7 @@ class SearchFilter extends Component {
         .filter(value => value !== encodedValue)
         .join()
 
-      this.handleQueryChange(
-        { [paramKey]: nextValue === '' ? null : nextValue },
-        callback
-      )
+      this.handleQueryChange({ [paramKey]: nextValue === '' ? null : nextValue }, callback)
     }
   }
 
@@ -182,18 +171,18 @@ class SearchFilter extends Component {
                 <button
                   className="no-background no-outline col-1of2 fs20 py12"
                   id="search-filter-reset-button"
-                  onClick={this.onClickReset}
+                  onClick={this.handleOnClickReset}
                   type="reset"
                 >
-                  Réinitialiser
+                  {'Réinitialiser'}
                 </button>
                 <button
                   className="no-background no-outline col-1of2 fs20 py12"
                   id="filter-button"
-                  onClick={this.onClickFilterButton}
+                  onClick={this.handleOnClickFilterButton}
                   type="submit"
                 >
-                  <span className="is-bold">Filtrer</span>
+                  <span className="is-bold">{'Filtrer'}</span>
                 </button>
               </div>
             </div>

@@ -6,7 +6,7 @@ import options, {
 } from '../../../helpers/search/distanceOptions'
 
 class FilterByDistance extends PureComponent {
-  onChangeDistance = event => {
+  handleOnChangeDistance = event => {
     const { filterActions, geolocation } = this.props
     const distance = event.target.value
     let { latitude, longitude } = geolocation
@@ -36,7 +36,7 @@ class FilterByDistance extends PureComponent {
             className="pc-selectbox pl24 py5 fs19"
             defaultValue={distanceValue}
             name="distance"
-            onChange={this.onChangeDistance}
+            onChange={this.handleOnChangeDistance}
           >
             {options.map(({ label, value }) => (
               <option

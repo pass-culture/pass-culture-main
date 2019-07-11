@@ -47,19 +47,13 @@ class SearchResults extends PureComponent {
 
     if (isLoading) return
 
-    this.setState({ isLoading: true }, () =>
-      query.change({ page }, { historyMethod: 'replace' })
-    )
+    this.setState({ isLoading: true }, () => query.change({ page }, { historyMethod: 'replace' }))
   }
 
+  getScrollParent = () => document.querySelector('.page-content')
+
   render() {
-    const {
-      cameFromOfferTypesPage,
-      items,
-      hasMore,
-      keywords,
-      query,
-    } = this.props
+    const { cameFromOfferTypesPage, items, hasMore, keywords, query } = this.props
     const { hasReceivedFirstSuccessData, isLoading } = this.state
     const queryParams = query.parse()
     const resultTitle = searchResultsTitle(
@@ -70,20 +64,15 @@ class SearchResults extends PureComponent {
     )
     const reachableThresholdThatTriggersLoadMore = -10
     const unreachableThreshold = -1000
-    const threshold = isLoading
-      ? unreachableThreshold
-      : reachableThresholdThatTriggersLoadMore
+    const threshold = isLoading ? unreachableThreshold : reachableThresholdThatTriggersLoadMore
 
     return (
       <div className="search-results">
         {resultTitle && (
           <h2
-            className={classnames(
-              'fs15 is-uppercase is-italic is-semi-bold mb12',
-              {
-                [`nav-result-title`]: cameFromOfferTypesPage,
-              }
-            )}
+            className={classnames('fs15 is-uppercase is-italic is-semi-bold mb12', {
+              [`nav-result-title`]: cameFromOfferTypesPage,
+            })}
             id="results-title"
           >
             {resultTitle}
@@ -92,7 +81,7 @@ class SearchResults extends PureComponent {
         {items && items.length > 0 && (
           <InfiniteScroll
             element="ul"
-            getScrollParent={() => document.querySelector('.page-content')}
+            getScrollParent={this.getScrollParent}
             hasMore={hasMore}
             loadMore={this.loadMore}
             loader={<Spinner key="loader" />}
@@ -122,7 +111,7 @@ SearchResults.defaultProps = {
 SearchResults.propTypes = {
   cameFromOfferTypesPage: PropTypes.bool.isRequired,
   hasMore: PropTypes.bool,
-  items: PropTypes.array,
+  items: PropTypes.arrayOf(),
   keywords: PropTypes.string,
   query: PropTypes.shape().isRequired,
 }

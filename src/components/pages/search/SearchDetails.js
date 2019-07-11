@@ -33,8 +33,7 @@ class SearchDetails extends PureComponent {
     const {
       params: { mediationIdOrView, offerId },
     } = match
-    const mediationId =
-      mediationIdOrView === 'booking' ? null : mediationIdOrView
+    const mediationId = mediationIdOrView === 'booking' ? null : mediationIdOrView
     let apiPath = `/recommendations/offers/${offerId}`
 
     if (mediationId) {
@@ -55,6 +54,11 @@ class SearchDetails extends PureComponent {
     this.setState({ forceDetailsVisible: true })
   }
 
+  renderSearchResultRoute = route => (<BookingContainer
+    extraClassName="with-header"
+    {...route}
+                                      />)
+
   render() {
     const { recommendation } = this.props
     const { forceDetailsVisible } = this.state
@@ -64,12 +68,7 @@ class SearchDetails extends PureComponent {
         {forceDetailsVisible && (
           <Route
             path="/recherche/resultats/:option?/item/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/(booking|cancelled)/:bookingId?"
-            render={route => (
-              <BookingContainer
-                extraClassName="with-header"
-                {...route}
-              />
-            )}
+            render={this.renderSearchResultRoute}
           />
         )}
         {recommendation && (
@@ -99,7 +98,7 @@ SearchDetails.defaultProps = {
 SearchDetails.propTypes = {
   dispatch: PropTypes.func.isRequired,
   match: PropTypes.shape().isRequired,
-  recommendation: PropTypes.object,
+  recommendation: PropTypes.shape(),
 }
 
 export default SearchDetails

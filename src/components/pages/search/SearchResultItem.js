@@ -17,7 +17,7 @@ class SearchResultItem extends Component {
     history.push(linkURL)
   }
 
-  markSearchRecommendationsAsClicked = () => {
+  handleMarkSearchRecommendationsAsClicked = () => {
     const { dispatch, recommendation } = this.props
     const config = {
       apiPath: `/recommendations/${recommendation.id}`,
@@ -37,8 +37,8 @@ class SearchResultItem extends Component {
       <li className="recommendation-list-item">
         <div
           className="to-details"
-          onClick={this.markSearchRecommendationsAsClicked}
-          onKeyPress={this.markSearchRecommendationsAsClicked}
+          onClick={this.handleMarkSearchRecommendationsAsClicked}
+          onKeyPress={this.handleMarkSearchRecommendationsAsClicked}
           role="button"
           tabIndex={0}
         >
