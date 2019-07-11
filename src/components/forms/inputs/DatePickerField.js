@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
@@ -127,8 +125,8 @@ DatePickerField.propTypes = {
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
-  popperRefContainer: PropTypes.object,
-  provider: PropTypes.array,
+  popperRefContainer: PropTypes.shape(),
+  provider: PropTypes.arrayOf(),
   readOnly: PropTypes.bool,
   required: PropTypes.bool,
   withPortal: PropTypes.bool,

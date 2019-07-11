@@ -1,10 +1,9 @@
-// jest --env=jsdom ./src/components/forms/tests/FormFooter --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 
 import { FormFooter } from '../FormFooter'
 
-describe('src | components | forms | FormFooter', () => {
+describe('src | components | forms | FormFooter', () => {
   describe('render', () => {
     const separatorSelector = 'hr.dotted-left-2x-white'
     it('hide separator when no submit and no cancel', () => {

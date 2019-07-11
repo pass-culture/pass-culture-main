@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
@@ -15,7 +13,7 @@ class PasswordField extends React.PureComponent {
     this.state = { hidden: true }
   }
 
-  onToggleVivisbility = () => {
+  handleOnToggleVivisbility = () => {
     this.setState(prev => ({ hidden: !prev.hidden }))
   }
 
@@ -72,7 +70,7 @@ class PasswordField extends React.PureComponent {
 
                 <button
                   className="no-border no-outline no-background mx12 flex-0 is-primary-text"
-                  onClick={this.onToggleVivisbility}
+                  onClick={this.handleOnToggleVivisbility}
                   type="button"
                 >
                   <span

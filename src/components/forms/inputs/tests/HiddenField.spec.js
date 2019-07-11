@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/components/forms/inputs/tests/HiddenField --watch
 import React from 'react'
 import { Form } from 'react-final-form'
 import { render, shallow } from 'enzyme'

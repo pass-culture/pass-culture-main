@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/components/forms/validators/tests/validateRequiredField --watch
 import { strings } from '../strings'
 import { validateRequiredField } from '../validateRequiredField'
 

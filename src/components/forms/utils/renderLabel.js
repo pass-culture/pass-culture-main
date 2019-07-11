@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 //
 //
 // NOTE ---------------------- DEPRECATED ----------------------

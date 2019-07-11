@@ -1,12 +1,10 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import PropTypes from 'prop-types'
 
 const InputLabel = ({ label, required, sublabel }) => (
   <span className="pc-final-form-label">
     <span>{label}</span>
-    {required && <span className="pc-final-form-asterisk">*</span>}
+    {required && <span className="pc-final-form-asterisk">{'*'}</span>}
     {sublabel && <span className="sublabel is-block">{sublabel}</span>}
   </span>
 )

@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/components/forms/validators/tests/validateMatchingFields --watch
 import { strings } from '../strings'
 import { validateMatchingFields } from '../validateMatchingFields'
 
@@ -25,7 +24,7 @@ describe('src | components | forms | validators | validateMatchingFields', () =>
     expect(result).toStrictEqual(expected)
   })
 
-  it('it expect to return default error - main value is a password, value is not valid', () => {
+  it('it expect to return default error - main value is a password, value is not valid (changer le titre du test)', () => {
     // given
     const mainvalue = '#1234Hello12'
     const value = '      '

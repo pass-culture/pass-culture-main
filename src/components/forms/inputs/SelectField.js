@@ -100,7 +100,7 @@ SelectField.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
-  provider: PropTypes.array.isRequired,
+  provider: PropTypes.arrayOf().isRequired,
   readOnly: PropTypes.bool,
 }
 
