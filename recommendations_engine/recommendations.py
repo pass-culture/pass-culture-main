@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 import dateutil.parser
 from sqlalchemy import func
+from sqlalchemy.sql.expression import literal
 
 from domain.types import get_event_or_thing_type_values_from_sublabels
 from models import ApiErrors, Recommendation, Offer, Mediation, PcObject
@@ -39,8 +40,8 @@ def create_recommendations_for_discovery(limit=3, user=None, coords=None):
         tuto_mediations_by_index[to.tutoIndex] = to
         max_tuto_index = to.tutoIndex
 
-    recommendation_count = Recommendation.query.with_entities(1) \
-                                               .filter_by(user=user) \
+    recommendation_count = Recommendation.query.filter_by(user=user) \
+                                               .with_entities(literal(1)) \
                                                .limit(max_tuto_index) \
                                                .from_self() \
                                                .count()
