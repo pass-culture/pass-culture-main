@@ -36,14 +36,14 @@ const ProfileUpdateSuccess = ({ config, match }) => {
           </span>
         </h2>
         <div className="mt12">
-          Pensez à l&apos;utiliser lors de votre prochaine connexion
+          {'Pensez à l’utiliser lors de votre prochaine connexion'}
         </div>
         <div className="mt24 is-bold fs16">
           <Link
             className="is-red-text"
             to="/profil"
           >
-            <span>Retour au profil</span>
+            <span>{'Retour au profil'}</span>
           </Link>
         </div>
       </main>
@@ -56,8 +56,8 @@ const ProfileUpdateSuccess = ({ config, match }) => {
 }
 
 ProfileUpdateSuccess.propTypes = {
-  config: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired,
+  config: PropTypes.shape().isRequired,
+  match: PropTypes.shape().isRequired,
 }
 
 export default ProfileUpdateSuccess

@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import { ROOT_PATH } from '../../../utils/config'
-
 import NavigationFooter from '../../layout/NavigationFooter'
 import PageHeader from '../../layout/Header/PageHeader'
 import MesInformations from './MesInformations'
@@ -27,7 +26,7 @@ const ProfileMainView = ({ config, currentUser }) => (
         <div id="profile-page-user-passculture">
           <h3 className="dotted-bottom-primary pb8 px12">
             <span className="is-italic is-uppercase is-primary-text">
-              MON PASS CULTURE
+              {'MON PASS CULTURE'}
             </span>
           </h3>
           <div className="mt12 px12">
@@ -48,7 +47,7 @@ const ProfileMainView = ({ config, currentUser }) => (
 )
 
 ProfileMainView.propTypes = {
-  config: PropTypes.array.isRequired,
+  config: PropTypes.arrayOf().isRequired,
   currentUser: PropTypes.oneOfType([PropTypes.bool, PropTypes.object])
     .isRequired,
 }

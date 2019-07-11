@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import PropTypes from 'prop-types'
 import { NavLink } from 'react-router-dom'
@@ -57,15 +55,12 @@ class MesInformations extends React.PureComponent {
   render() {
     const { fields } = this.props
     return (
-      // const dptCode = user.departementCode
-      // const departementName = getDepartementByCode(dptCode)
-      // const departement = `${dptCode} - ${departementName}`
       <div
         className="pb40 pt20"
         id="mes-informations"
       >
         <h3 className="dotted-bottom-primary is-primary-text is-uppercase pb6 px12 fs15">
-          <span className="is-italic">Mes Informations</span>
+          <span className="is-italic">{'Mes Informations'}</span>
         </h3>
         <div className="px12 pc-list">{fields.map(this.renderInformation)}</div>
       </div>
@@ -74,7 +69,7 @@ class MesInformations extends React.PureComponent {
 }
 
 MesInformations.propTypes = {
-  fields: PropTypes.array.isRequired,
+  fields: PropTypes.arrayOf().isRequired,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]).isRequired,
 }
 

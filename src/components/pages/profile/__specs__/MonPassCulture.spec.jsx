@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/components/pages/profile/tests/MonPassCulture --watch
 import React from 'react'
 import { shallow } from 'enzyme'
 
@@ -9,27 +8,26 @@ const digitalId = '#profile-digital-wallet-value'
 const physicalId = '#profile-physical-wallet-value'
 
 describe('src | components | MonPassCulture', () => {
-  describe('snapshot', () => {
-    it('should match snapshot with required props', () => {
-      // given
-      const props = {
-        currentUser: {
-          expenses: {
-            digital: { actual: 0, max: 200 },
-            physical: { actual: 0, max: 200 },
-          },
-          wallet_balance: 500,
+  it('should match snapshot with required props', () => {
+    // given
+    const props = {
+      currentUser: {
+        expenses: {
+          digital: { actual: 0, max: 200 },
+          physical: { actual: 0, max: 200 },
         },
-      }
+        wallet_balance: 500,
+      },
+    }
 
-      // when
-      const wrapper = shallow(<MonPassCulture {...props} />)
+    // when
+    const wrapper = shallow(<MonPassCulture {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toBeDefined()
+    expect(wrapper).toMatchSnapshot()
   })
+
   describe('render', () => {
     it('with wallet value set to 0', () => {
       // given
@@ -62,6 +60,7 @@ describe('src | components | MonPassCulture', () => {
       text = physicalElement.text()
       expect(physicalElement.text()).toStrictEqual(expected)
     })
+
     it('with wallet value set to 90', () => {
       // given
       const props = {
@@ -93,6 +92,7 @@ describe('src | components | MonPassCulture', () => {
       text = physicalElement.text()
       expect(physicalElement.text()).toStrictEqual(expected)
     })
+
     it('render with wallet value set to 200', () => {
       // given
       const props = {
@@ -124,6 +124,7 @@ describe('src | components | MonPassCulture', () => {
       text = physicalElement.text()
       expect(physicalElement.text()).toStrictEqual(expected)
     })
+
     it('render with invalid wallet balance', () => {
       // given
       const props = {

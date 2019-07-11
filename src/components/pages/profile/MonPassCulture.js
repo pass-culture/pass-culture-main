@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import React from 'react'
 
@@ -25,7 +23,7 @@ const MonPassCulture = ({ currentUser }) => {
         >
           {`Il reste ${allWallet} €`}
         </b>
-        <span className="is-block fs14">sur votre Pass Culture</span>
+        <span className="is-block fs14">{'sur votre pass Culture'}</span>
       </div>
       <div className="text-containers flex-0 mt12 py12 mr8">
         <div className="fs14">
@@ -33,7 +31,7 @@ const MonPassCulture = ({ currentUser }) => {
             className="is-block"
             id="profile-physical-wallet-value"
           >
-            Jusqu&apos;à <b>{physicalAvailable} €</b> pour les biens culturels
+            {'Jusqu’à'} <b>{physicalAvailable} {'€'}</b> {'pour les biens culturels'}
           </span>
         </div>
         <div className="fs14 mt12">
@@ -41,7 +39,7 @@ const MonPassCulture = ({ currentUser }) => {
             className="is-block"
             id="profile-digital-wallet-value"
           >
-            Jusqu&apos;à <b>{digitalAvailable} €</b> pour les offres numériques
+            {'Jusqu’à'} <b>{digitalAvailable} {'€'}</b> {'pour les offres numériques'}
           </span>
         </div>
       </div>
@@ -50,7 +48,7 @@ const MonPassCulture = ({ currentUser }) => {
 }
 
 MonPassCulture.propTypes = {
-  currentUser: PropTypes.object.isRequired,
+  currentUser: PropTypes.shape().isRequired,
 }
 
 export default MonPassCulture

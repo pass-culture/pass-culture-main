@@ -39,7 +39,7 @@ class ProfileForm extends React.PureComponent {
     })
   }
 
-  onFormSubmit = formValues => {
+  handleOnFormSubmit = formValues => {
     this.setState({ isLoading: true })
     const {
       config: { routePath, routeMethod, stateKey },
@@ -64,13 +64,57 @@ class ProfileForm extends React.PureComponent {
     })
   }
 
-  onFormReset = () => {
+  handleOnFormReset = () => {
     const { history } = this.props
     history.goBack()
   }
 
+  renderFinalForm = ({
+    dirtySinceLastSubmit,
+    error: preSubmitError,
+    handleSubmit,
+    hasSubmitErrors,
+    hasValidationErrors,
+    pristine,
+  }) => {
+    const { WrappedComponent, title } = this.props
+    const { isLoading } = this.state
+    const canSubmit =
+      (!pristine && !hasSubmitErrors && !hasValidationErrors && !isLoading) ||
+      (!hasValidationErrors && hasSubmitErrors && dirtySinceLastSubmit)
+    return (
+      <form
+        autoComplete="off"
+        className="pc-final-form flex-rows"
+        noValidate
+        onReset={this.handleOnFormReset}
+        onSubmit={handleSubmit}
+      >
+        <PageHeader
+          backTo="/profil"
+          closeTo={null}
+          isLoading={isLoading}
+          submitDisabled={canSubmit}
+          title={title}
+          useSubmit
+        />
+        <main
+          className="pc-main is-clipped is-relative flex-1"
+          role="main"
+          style={{ backgroundImage: BACKGROUND_IMAGE }}
+        >
+          <WrappedComponent
+            {...this.props}
+            formErrors={!pristine && preSubmitError}
+            isLoading={isLoading}
+          />
+        </main>
+      </form>
+    )
+  }
+
   render() {
-    const { WrappedComponent, initialValues, title, validator } = this.props
+    const { initialValues, validator } = this.props
     const { isLoading } = this.state
     return (
       <div
@@ -79,51 +123,8 @@ class ProfileForm extends React.PureComponent {
       >
         <FinalForm
           initialValues={initialValues}
-          onSubmit={this.onFormSubmit}
-          render={({
-            dirtySinceLastSubmit,
-            error: preSubmitError,
-            handleSubmit,
-            hasSubmitErrors,
-            hasValidationErrors,
-            pristine,
-          }) => {
-            const canSubmit =
-              (!pristine &&
-                !hasSubmitErrors &&
-                !hasValidationErrors &&
-                !isLoading) ||
-              (!hasValidationErrors && hasSubmitErrors && dirtySinceLastSubmit)
-            return (
-              <form
-                autoComplete="off"
-                className="pc-final-form flex-rows"
-                noValidate
-                onReset={this.onFormReset}
-                onSubmit={handleSubmit}
-              >
-                <PageHeader
-                  backTo="/profil"
-                  closeTo={null}
-                  isLoading={isLoading}
-                  submitDisabled={canSubmit}
-                  title={title}
-                  useSubmit
-                />
-                <main
-                  className="pc-main is-clipped is-relative flex-1"
-                  role="main"
-                  style={{ backgroundImage: BACKGROUND_IMAGE }}
-                >
-                  <WrappedComponent
-                    {...this.props}
-                    formErrors={!pristine && preSubmitError}
-                    isLoading={isLoading}
-                  />
-                </main>
-              </form>
-            )
-          }}
+          onSubmit={this.handleOnFormSubmit}
+          render={this.renderFinalForm}
           validate={validator}
         />
         <NavigationFooter
@@ -143,11 +144,11 @@ ProfileForm.defaultProps = {
 
 ProfileForm.propTypes = {
   WrappedComponent: PropTypes.elementType.isRequired,
-  config: PropTypes.object.isRequired,
+  config: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
-  initialValues: PropTypes.object.isRequired,
-  location: PropTypes.object.isRequired,
+  history: PropTypes.shape().isRequired,
+  initialValues: PropTypes.shape().isRequired,
+  location: PropTypes.shape().isRequired,
   title: PropTypes.string,
   validator: PropTypes.func,
 }

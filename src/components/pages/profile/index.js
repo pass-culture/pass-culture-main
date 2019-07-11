@@ -14,12 +14,47 @@ import LoaderContainer from '../../layout/Loader/LoaderContainer'
 
 const parseRoutesWithComponent = () => {
   const components = config.filter(o => o.component)
-  const routes = components.reduce(
-    (acc, o) => ({ ...acc, [o.routeName]: o }),
-    {}
-  )
+  const routes = components.reduce((acc, o) => ({ ...acc, [o.routeName]: o }), {})
   return routes
 }
+
+const renderProfileMainView = currentUser => () => (
+  <ProfileMainView
+    config={config}
+    currentUser={currentUser}
+  />
+)
+
+const renderProfileUpdateSuccess = routes => routeProps => (
+  <ProfileUpdateSuccess
+    {...routeProps}
+    config={routes}
+  />
+)
+
+const renderProfileEditForm = routes => routeProps => {
+  const { view } = routeProps.match.params
+  const Component = routes[view].component
+
+  if (!Component) return null
+
+  const { title } = routes[view]
+
+  return (
+    <Component
+      {...routeProps}
+      title={title}
+    />
+  )
+}
+
+const renderNoMatch = routeProps => (
+  <NotMatch
+    {...routeProps}
+    delay={3}
+    redirect="/profil"
+  />
+)
 
 const ProfilePage = ({ currentUser, location }) => {
   const routes = parseRoutesWithComponent()
@@ -36,48 +71,21 @@ const ProfilePage = ({ currentUser, location }) => {
             exact
             key="route-profile-main-view"
             path="/profil/:menu(menu)?"
-            render={() => (
-              <ProfileMainView
-                config={config}
-                currentUser={currentUser}
-              />
-            )}
+            render={renderProfileMainView(currentUser)}
           />
           <Route
             exact
             key="route-profile-update-success"
             path={`/profil/:view(${possibleRoutes})/success/:menu(menu)?`}
-            render={routeProps => (
-              <ProfileUpdateSuccess
-                {...routeProps}
-                config={routes}
-              />
-            )}
+            render={renderProfileUpdateSuccess(routes)}
           />
           <Route
             exact
             key="route-profile-edit-form"
             path={`/profil/:view(${possibleRoutes})/:menu(menu)?`}
-            render={routeProps => {
-              const { view } = routeProps.match.params
-              const Component = routes[view].component
-              if (!Component) return null
-              const { title } = routes[view]
-              return (<Component
-                {...routeProps}
-                title={title}
-                      />)
-            }}
+            render={renderProfileEditForm(routes)}
           />
-          <Route
-            component={routeProps => (
-              <NotMatch
-                {...routeProps}
-                delay={3}
-                redirect="/profil"
-              />
-            )}
-          />
+          <Route component={renderNoMatch} />
         </Switch>
       )}
       {!currentUser && <LoaderContainer isLoading />}
