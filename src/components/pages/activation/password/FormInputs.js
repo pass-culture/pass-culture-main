@@ -1,15 +1,16 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import PropTypes from 'prop-types'
 
 import { FormError } from '../../../forms'
 import { validateMatchingFields } from '../../../forms/validators'
-import {
-  CheckBoxField,
-  HiddenField,
-  PasswordField,
-} from '../../../forms/inputs'
+import { CheckBoxField, HiddenField, PasswordField } from '../../../forms/inputs'
+
+const Undefined = () => undefined
+
+const isRequired = (value, formvalues) => {
+  const mainvalue = formvalues.newPassword
+  return validateMatchingFields(value, mainvalue)
+}
 
 const FormInputs = ({ formValues, formErrors, isLoading }) => {
   const { email } = formValues
@@ -18,18 +19,16 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
       <div className="is-full-layout flex-rows flex-center">
         <div className="fs22">
           <h2 className="is-italic is-medium">
-            <span className="is-block">
-              Pour commencer, choisissez votre mot de passe.
-            </span>
+            <span className="is-block">{'Pour commencer, choisissez votre mot de passe.'}</span>
           </h2>
           <p className="is-block is-regular fs13 mt12">
-            <span>*</span>
-            &nbsp;Champs obligatoires
+            <span>{'*'}</span>
+            &nbsp;{'Champs obligatoires'}
           </p>
         </div>
         <div>
           <div className="mt36">
-            <span className="is-block is-normal fs19">Adresse e-mail</span>
+            <span className="is-block is-normal fs19">{'Adresse e-mail'}</span>
             <span
               className="is-block is-bold fs20"
               id="activation-email"
@@ -44,7 +43,7 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
             id="activation-newPassword"
             label="Nouveau mot de passe"
             name="newPassword"
-            required={() => undefined}
+            required={Undefined}
             theme="primary"
           />
           <PasswordField
@@ -53,10 +52,7 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
             id="activation-newPasswordConfirm"
             label="Confirmez le mot de passe"
             name="newPasswordConfirm"
-            required={(value, formvalues) => {
-              const mainvalue = formvalues.newPassword
-              return validateMatchingFields(value, mainvalue)
-            }}
+            required={isRequired}
             theme="primary"
           />
           <CheckBoxField
@@ -67,7 +63,7 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
             theme="primary"
           >
             <span>
-              J’ai lu et accepte les{' '}
+              {'J’ai lu et accepte les '}
               <a
                 className="fs16"
                 href="https://pass.culture.fr/assets/docs/cgu-j.html"
@@ -75,9 +71,9 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                Conditions générales d’utilisation
+                {'Conditions générales d’utilisation'}
               </a>{' '}
-              du pass Culture
+              {'du pass Culture'}
             </span>
           </CheckBoxField>
           <HiddenField
@@ -109,12 +105,8 @@ FormInputs.defaultProps = {
 }
 
 FormInputs.propTypes = {
-  formErrors: PropTypes.oneOfType([
-    PropTypes.array,
-    PropTypes.bool,
-    PropTypes.string,
-  ]),
-  formValues: PropTypes.object.isRequired,
+  formErrors: PropTypes.oneOfType([PropTypes.array, PropTypes.bool, PropTypes.string]),
+  formValues: PropTypes.shape().isRequired,
   isLoading: PropTypes.bool.isRequired,
 }
 

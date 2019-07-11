@@ -8,6 +8,7 @@ import { withNotRequiredLogin } from '../../../hocs'
 jest.mock('../../../hocs/with-login', () => ({
   withNotRequiredLogin: jest.fn(() => ''),
 }))
+
 describe('src | components | pages | activation | ActivationRoutesContainer', () => {
   it('should redirect to discovery page when user is already logged in', () => {
     // given
@@ -20,6 +21,6 @@ describe('src | components | pages | activation | ActivationRoutesContainer', ()
     shallow(<ActivationRoutesContainer />, { context: { store } })
 
     // then
-    expect(withNotRequiredLogin).toHaveBeenCalled()
+    expect(withNotRequiredLogin).toHaveBeenCalledWith()
   })
 })

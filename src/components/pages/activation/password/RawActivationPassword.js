@@ -52,7 +52,7 @@ class RawActivationPassword extends React.PureComponent {
     )
   }
 
-  onFormSubmit = formValues => {
+  handleOnFormSubmit = formValues => {
     this.setState({ isLoading: true })
     const { sendActivationPasswordForm } = this.props
     const promise = sendActivationPasswordForm(
@@ -63,14 +63,42 @@ class RawActivationPassword extends React.PureComponent {
     return promise
   }
 
-  render() {
+  renderForm = formProps => {
     const { isLoading } = this.state
-    const {
-      initialValues,
-      isValidUrl,
-      isValidToken,
-      hasTokenBeenChecked,
-    } = this.props
+    const formValues = formProps.values || {}
+    const canSubmit = !isLoading && canSubmitForm(formProps)
+    const formErrors = !formProps.pristine && formProps.error
+    return (
+      <form
+        autoComplete="off"
+        className="pc-final-form is-full-layout flex-rows"
+        disabled={isLoading}
+        noValidate
+        onSubmit={formProps.handleSubmit}
+      >
+        <main
+          className="pc-main padded-2x is-white-text"
+          role="main"
+        >
+          <FormInputs
+            formErrors={formErrors}
+            formValues={formValues}
+            isLoading={isLoading}
+          />
+        </main>
+        <FormFooter
+          submit={{
+            className: 'is-bold is-white-text',
+            disabled: !canSubmit,
+            label: 'Enregistrer',
+          }}
+        />
+      </form>
+    )
+  }
+
+  render() {
+    const { initialValues, isValidUrl, isValidToken, hasTokenBeenChecked } = this.props
 
     if (!isValidUrl) {
       return <Redirect to="/activation/error" />
@@ -87,39 +115,8 @@ class RawActivationPassword extends React.PureComponent {
       >
         <Form
           initialValues={initialValues}
-          onSubmit={this.onFormSubmit}
-          render={formProps => {
-            const formValues = formProps.values || {}
-            const canSubmit = !isLoading && canSubmitForm(formProps)
-            const formErrors = !formProps.pristine && formProps.error
-            return (
-              <form
-                autoComplete="off"
-                className="pc-final-form is-full-layout flex-rows"
-                disabled={isLoading}
-                noValidate
-                onSubmit={formProps.handleSubmit}
-              >
-                <main
-                  className="pc-main padded-2x is-white-text"
-                  role="main"
-                >
-                  <FormInputs
-                    formErrors={formErrors}
-                    formValues={formValues}
-                    isLoading={isLoading}
-                  />
-                </main>
-                <FormFooter
-                  submit={{
-                    className: 'is-bold is-white-text',
-                    disabled: !canSubmit,
-                    label: 'Enregistrer',
-                  }}
-                />
-              </form>
-            )
-          }}
+          onSubmit={this.handleOnFormSubmit}
+          render={this.renderForm}
         />
       </div>
     )
@@ -129,8 +126,8 @@ class RawActivationPassword extends React.PureComponent {
 RawActivationPassword.propTypes = {
   checkTokenIsValid: PropTypes.func.isRequired,
   hasTokenBeenChecked: PropTypes.bool.isRequired,
-  history: PropTypes.object.isRequired,
-  initialValues: PropTypes.object.isRequired,
+  history: PropTypes.shape().isRequired,
+  initialValues: PropTypes.shape().isRequired,
   isValidToken: PropTypes.bool.isRequired,
   isValidUrl: PropTypes.bool.isRequired,
   loginUserAfterPasswordSaveSuccess: PropTypes.func.isRequired,

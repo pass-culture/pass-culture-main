@@ -16,7 +16,7 @@ const ActivationError = () => {
       role="main"
     >
       <div className="flex-center flex-row">
-        <p className="fs20">Il semblerait que le lien cliqué soit incorrect.</p>
+        <p className="fs20">{'Il semblerait que le lien cliqué soit incorrect.'}</p>
       </div>
 
       <div className="flex-center flex-row padded">
@@ -27,7 +27,7 @@ const ActivationError = () => {
           id="activation-error-contact-us"
           obfuscate
         >
-          <span>Contactez-nous</span>
+          <span>{'Contactez-nous'}</span>
         </MailToLink>
       </div>
     </main>

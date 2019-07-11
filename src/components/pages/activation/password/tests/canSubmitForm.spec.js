@@ -6,7 +6,7 @@ describe('src | components | pages | activation | canSubmitForm', () => {
     expect(() => {
       // when
       canSubmitForm()
-    }).toThrow()
+    }).toThrow('error')
   })
 
   it('should return true', () => {
@@ -24,7 +24,7 @@ describe('src | components | pages | activation | canSubmitForm', () => {
     expect(result).toStrictEqual(expected)
   })
 
-  it('should return true', () => {
+  it('should return true (changer titre)', () => {
     // given
     const value = {
       dirtySinceLastSubmit: true,
