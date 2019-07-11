@@ -1,4 +1,3 @@
-""" has thumb mixin """
 
 from sqlalchemy import Binary, CheckConstraint, Column, Integer
 

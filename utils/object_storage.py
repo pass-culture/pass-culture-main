@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 from pathlib import Path, PurePath
+
 import swiftclient
 
 from utils.config import IS_DEV
@@ -28,7 +29,7 @@ def swift_con():
                                   auth_version=auth_version)
 
 
-STORAGE_DIR = Path(os.path.dirname(os.path.realpath(__file__)))\
+STORAGE_DIR = Path(os.path.dirname(os.path.realpath(__file__))) \
               / '..' / 'static' / 'object_store_data'
 
 
@@ -45,30 +46,29 @@ def local_path(bucket, id):
 
 
 def store_public_object(bucket, id, blob, content_type, symlink_path=None):
+    if IS_DEV:
+        os.makedirs(local_dir(bucket, id), exist_ok=True)
 
-    os.makedirs(local_dir(bucket, id), exist_ok=True)
+        file_local_path = local_path(bucket, id)
 
-    file_local_path = local_path(bucket, id)
+        new_type_file = open(str(file_local_path) + ".type", "w")
+        new_type_file.write(content_type)
 
-    newTypeFile = open(str(file_local_path)+".type", "w")
-    newTypeFile.write(content_type)
+        if symlink_path and not os.path.isfile(file_local_path) and not os.path.islink(file_local_path):
+            os.symlink(symlink_path, file_local_path)
+            return
 
-    if symlink_path and not os.path.isfile(file_local_path) and not os.path.islink(file_local_path):
-        os.symlink(symlink_path, file_local_path)
-        return
-
-    newFile = open(file_local_path, "wb")
-    newFile.write(blob)
-
-    # TODO: once the migration is fully done to scalingo, we can remove the second part of the condition
-    if not IS_DEV and "OVH_BUCKET_NAME" in os.environ:
+        new_file = open(file_local_path, "wb")
+        new_file.write(blob)
+    else:
         container_name = os.environ.get('OVH_BUCKET_NAME')
-        # we want to store data with a special path
         storage_path = 'thumbs/' + id
-        swift_con().put_object(container_name,
-                               storage_path,
-                               contents=blob,
-                               content_type=content_type)
+        swift_con().put_object(
+            container_name,
+            storage_path,
+            contents=blob,
+            content_type=content_type
+        )
 
 
 def delete_public_object(bucket, id):
