@@ -1,4 +1,3 @@
-// yarn test:unit ./src/selectors/tests/selectBookables.spec.js  --watch
 import moment from 'moment'
 import 'moment-timezone'
 
@@ -143,7 +142,4 @@ describe('src | selectors| selectBookables', () => {
       expect(results[0].userHasAlreadyBookedThisDate).toBe(true)
     })
   })
-  describe.skip('markAsBooked', () => {})
-  describe.skip('sortByDate', () => {})
-  describe.skip('selectBookables', () => {})
 })

@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/selectors/tests/selectBookings --watch
 import moment from 'moment'
 
 import { allBookingsDataset, inExactTwoDays } from './data/selectBookings'
@@ -10,7 +9,7 @@ import {
 } from '../selectBookings'
 
 describe('src | selectors | selectBookings', () => {
-  describe(' selectBookingById', () => {
+  describe('selectBookingById', () => {
     it('should return booking matching id', () => {
       // given
       const state = {

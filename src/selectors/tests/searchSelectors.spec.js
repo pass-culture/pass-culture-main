@@ -1,4 +1,3 @@
-// $(yarn bin)/jest --env=jsdom ./src/selectors/tests/searchSelectors.spec.js --watch
 import { selectCurrentSearchRecommendation } from '../searchSelectors'
 
 describe('src | selectors | searchSelectors', () => {
