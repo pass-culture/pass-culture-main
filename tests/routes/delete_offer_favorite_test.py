@@ -8,7 +8,7 @@ from utils.human_ids import humanize
 class Delete:
     class Returns200:
         @clean_database
-        def when_venue_provider_exists(self, app):
+        def when_favorite_exists(self, app):
             # given
             user = create_user(email='test@email.com')
             offerer = create_offerer()
@@ -21,7 +21,10 @@ class Delete:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).delete(
-                f'{API_URL}/offers/favorites/' + humanize(favorite.id))
+                f'{API_URL}/offers/favorites/'
+                + humanize(offer.id)
+                + '/'
+                + humanize(mediation.id))
 
             # Then
             assert response.status_code == 200
@@ -29,6 +32,26 @@ class Delete:
             assert deleted_favorite is None
 
     class Returns404:
+        @clean_database
+        def when_expected_parameters_are_not_given(self, app):
+            # given
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
+            offer = create_offer_with_thing_product(venue, thumb_count=0)
+            mediation = create_mediation(offer, is_active=True)
+            recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
+            favorite = create_favorite(mediation, offer, user)
+            PcObject.save(recommendation, user, favorite)
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).delete(
+                f'{API_URL}/offers/favorites/'
+                + '1')
+
+            # Then
+            assert response.status_code == 404
+
         @clean_database
         def when_favorite_does_not_exist(self, app):
             # given
@@ -43,7 +66,10 @@ class Delete:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).delete(
-                f'{API_URL}/offers/favorites/' + 'ABCD')
+                f'{API_URL}/offers/favorites/'
+                + 'ABCD'
+                + '/'
+                + 'ABCD')
 
             # Then
             assert response.status_code == 404

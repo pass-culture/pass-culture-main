@@ -2,14 +2,14 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.admin_emails import send_offer_creation_notification_to_administration
+from domain.favorites import create_favorite
 from domain.offers import add_stock_alert_message_to_offer
 from domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
 from models import Offer, PcObject, Venue, RightsType, Mediation
 from models.api_errors import ResourceNotFound, ApiErrors
-from models.db import db
-from models.favorite import Favorite
 from models.feature import FeatureToggle
 from repository import venue_queries, offer_queries
+from repository.favorite_queries import find_favorite_for_offer_mediation_and_user
 from repository.offer_queries import find_activation_offers, \
     find_offers_with_filter_parameters
 from repository.recommendation_queries import invalidate_recommendations
@@ -137,21 +137,24 @@ def add_to_favorite():
     offer = load_or_404(Offer, humanized_offer_id)
     mediation = load_or_404(Mediation, humanized_mediation_id)
 
-    favorite = Favorite()
-    favorite.user = current_user
-    favorite.offer = offer
-    favorite.mediation = mediation
+    favorite = create_favorite(mediation, offer, current_user)
     PcObject.save(favorite)
 
     return jsonify(favorite.as_dict()), 201
 
 
-@app.route('/offers/favorites/<id>', methods=['DELETE'])
+@app.route('/offers/favorites/<offer_id>/<mediation_id>', methods=['DELETE'])
 @feature_required(FeatureToggle.FAVORITE_OFFER)
 @login_required
-def delete_favorite(id):
-    favorite = load_or_404(Favorite, id)
-    db.session.delete(favorite)
-    db.session.commit()
+def delete_favorite(offer_id, mediation_id):
+    dehumanized_offer_id = dehumanize(offer_id)
+    dehumanized_mediation_id = dehumanize(mediation_id)
+
+    favorite = find_favorite_for_offer_mediation_and_user(dehumanized_mediation_id,
+                                                          dehumanized_offer_id,
+                                                          current_user.id) \
+        .first_or_404()
+
+    PcObject.delete(favorite)
 
     return jsonify({}), 200
