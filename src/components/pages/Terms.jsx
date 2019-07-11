@@ -62,7 +62,7 @@ class TermsPage extends Component {
         noHeader
       >
         <header>
-          <h1>Mentions légales</h1>
+          <h1>{"Mentions légales"}</h1>
         </header>
         <div className="content">
           <ReactMarkdown source={mardownContent} />

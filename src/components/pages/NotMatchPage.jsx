@@ -45,7 +45,7 @@ class NoMatchPage extends React.PureComponent {
 }
 
 NoMatchPage.propTypes = {
-  location: PropTypes.object.isRequired,
+  location: PropTypes.shape().isRequired,
 }
 
 export default NoMatchPage
