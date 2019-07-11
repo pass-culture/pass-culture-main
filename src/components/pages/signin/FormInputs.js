@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { validateRequiredField } from '../../forms/validators'
@@ -33,7 +31,7 @@ const FormInputs = () => (
       className="is-white-text is-underline fs16"
       to="/mot-de-passe-perdu"
     >
-      <span>Mot de passe oublié&nbsp;?</span>
+      <span>{'Mot de passe oublié ?'}</span>
     </Link>
   </div>
 )

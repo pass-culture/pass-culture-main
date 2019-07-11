@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Form } from 'react-final-form'
@@ -40,14 +38,12 @@ class Signin extends React.PureComponent {
     const queryParams = query.parse()
     this.setState(nextstate, () => {
       formResolver()
-      const nextUrl = queryParams.from
-        ? decodeURIComponent(queryParams.from)
-        : '/decouverte'
+      const nextUrl = queryParams.from ? decodeURIComponent(queryParams.from) : '/decouverte'
       history.push(nextUrl)
     })
   }
 
-  onFormSubmit = formValues => {
+  handleOnFormSubmit = formValues => {
     const routeMethod = 'POST'
     const routePath = '/users/signin'
     const { dispatch } = this.props
@@ -68,47 +64,46 @@ class Signin extends React.PureComponent {
     return formSubmitPromise
   }
 
-  render() {
+  renderForm = ({
+    dirtySinceLastSubmit,
+    handleSubmit,
+    hasSubmitErrors,
+    hasValidationErrors,
+    pristine,
+  }) => {
     const { isloading } = this.state
+    const canSubmit =
+      (!pristine && !hasSubmitErrors && !hasValidationErrors && !isloading) ||
+      (!hasValidationErrors && hasSubmitErrors && dirtySinceLastSubmit)
+    return (
+      <form
+        autoComplete="off"
+        className="pc-final-form flex-rows is-full-layout"
+        disabled={isloading}
+        noValidate
+        onSubmit={handleSubmit}
+      >
+        <div className="flex-1 flex-rows flex-center is-white-text padded-2x overflow-y">
+          <FormHeader />
+          <FormInputs />
+        </div>
+        <FormFooter
+          cancel={false}
+          submit={{ ...submitButtonOptions, disabled: !canSubmit }}
+        />
+      </form>
+    )
+  }
+
+  render() {
     return (
       <div
         className="page pc-gradient is-relative"
         id="sign-in-page"
       >
         <Form
-          onSubmit={this.onFormSubmit}
-          render={({
-            dirtySinceLastSubmit,
-            handleSubmit,
-            hasSubmitErrors,
-            hasValidationErrors,
-            pristine,
-          }) => {
-            const canSubmit =
-              (!pristine &&
-                !hasSubmitErrors &&
-                !hasValidationErrors &&
-                !isloading) ||
-              (!hasValidationErrors && hasSubmitErrors && dirtySinceLastSubmit)
-            return (
-              <form
-                autoComplete="off"
-                className="pc-final-form flex-rows is-full-layout"
-                disabled={isloading}
-                noValidate
-                onSubmit={handleSubmit}
-              >
-                <div className="flex-1 flex-rows flex-center is-white-text padded-2x overflow-y">
-                  <FormHeader />
-                  <FormInputs />
-                </div>
-                <FormFooter
-                  cancel={false}
-                  submit={{ ...submitButtonOptions, disabled: !canSubmit }}
-                />
-              </form>
-            )
-          }}
+          onSubmit={this.handleOnFormSubmit}
+          render={this.renderForm}
         />
       </div>
     )
@@ -117,8 +112,8 @@ class Signin extends React.PureComponent {
 
 Signin.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
-  query: PropTypes.object.isRequired,
+  history: PropTypes.shape().isRequired,
+  query: PropTypes.shape().isRequired,
 }
 
 export default Signin
