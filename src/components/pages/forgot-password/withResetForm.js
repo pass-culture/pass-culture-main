@@ -1,6 +1,3 @@
-/* eslint
-    react/jsx-one-expression-per-line: 0 */
-// import { FORM_ERROR } from 'final-form'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Form as FinalForm } from 'react-final-form'
@@ -10,16 +7,10 @@ import { requestData } from 'redux-saga-data'
 
 const noop = () => {}
 
-const withPasswordForm = (
-  WrappedComponent,
-  validator,
-  routePath,
-  routeMethod
-) => {
+const withPasswordForm = (WrappedComponent, validator, routePath, routeMethod) => {
   const name = WrappedComponent.displayName || 'Component'
   withPasswordForm.displayName = `withPasswordForm(${name})`
 
-  // azertyazertyP1$
   class ResetPasswordForm extends React.PureComponent {
     constructor(props) {
       super(props)
@@ -49,7 +40,7 @@ const withPasswordForm = (
       })
     }
 
-    onFormSubmit = formValues => {
+    handleOnFormSubmit = formValues => {
       this.setState({ isloading: true })
       // NOTE: on retourne une promise au formulaire
       // pour pouvoir gérer les erreurs de l'API
@@ -67,44 +58,43 @@ const withPasswordForm = (
       return formSubmitPromise
     }
 
-    render() {
+    renderFinalForm = ({
+      // https://github.com/final-form/final-form#formstate
+      dirtySinceLastSubmit,
+      error: preSubmitError,
+      handleSubmit,
+      hasSubmitErrors,
+      hasValidationErrors,
+      pristine,
+    }) => {
       const { isloading } = this.state
+      const canSubmit =
+        (!pristine && !hasSubmitErrors && !hasValidationErrors && !isloading) ||
+        (!hasValidationErrors && hasSubmitErrors && dirtySinceLastSubmit)
+      return (
+        <form
+          autoComplete="off"
+          className="pc-final-form is-full-layout"
+          disabled={isloading}
+          noValidate
+          onSubmit={handleSubmit}
+        >
+          <WrappedComponent
+            {...this.props}
+            canSubmit={canSubmit}
+            formErrors={!pristine && preSubmitError}
+            isLoading={isloading}
+          />
+        </form>
+      )
+    }
+
+    render() {
       return (
         <FinalForm
           initialValues={this.initialValues || {}}
-          onSubmit={this.onFormSubmit}
-          render={({
-            // https://github.com/final-form/final-form#formstate
-            dirtySinceLastSubmit,
-            error: preSubmitError,
-            handleSubmit,
-            hasSubmitErrors,
-            hasValidationErrors,
-            pristine,
-          }) => {
-            const canSubmit =
-              (!pristine &&
-                !hasSubmitErrors &&
-                !hasValidationErrors &&
-                !isloading) ||
-              (!hasValidationErrors && hasSubmitErrors && dirtySinceLastSubmit)
-            return (
-              <form
-                autoComplete="off"
-                className="pc-final-form is-full-layout"
-                disabled={isloading}
-                noValidate
-                onSubmit={handleSubmit}
-              >
-                <WrappedComponent
-                  {...this.props}
-                  canSubmit={canSubmit}
-                  formErrors={!pristine && preSubmitError}
-                  isLoading={isloading}
-                />
-              </form>
-            )
-          }}
+          onSubmit={this.handleOnFormSubmit}
+          render={this.renderFinalForm}
           validate={validator || noop}
         />
       )
@@ -119,9 +109,9 @@ const withPasswordForm = (
     dispatch: PropTypes.func.isRequired,
     // NOTE: history et location sont automatiquement
     // injectées par le render de la route du react-router-dom
-    history: PropTypes.object.isRequired,
-    initialValues: PropTypes.object,
-    location: PropTypes.object.isRequired,
+    history: PropTypes.shape().isRequired,
+    initialValues: PropTypes.shape(),
+    location: PropTypes.shape().isRequired,
   }
 
   return connect()(ResetPasswordForm)

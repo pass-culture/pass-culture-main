@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import React from 'react'
 
@@ -22,19 +20,17 @@ const submitOptions = {
 const renderRequestSuccessMessage = () => (
   <React.Fragment>
     <p className="is-medium">
-      Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+      {'Vous allez recevoir un e-mail avec les instructions de réinitialisation.'}
     </p>
     <p className="is-medium mt28">
-      Si vous n&apos;avez rien reçu d&apos;ici une heure, merci de vérifier
-      votre e-mail et de le saisir à nouveau.
+      {'Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.'}
     </p>
   </React.Fragment>
 )
 const renderResetSuccessMessage = () => (
   <React.Fragment>
     <p className="is-medium">
-      Votre mode de passe a bien été enregistré, vous pouvez l&apos;utiliser
-      pour vous connecter
+      {'Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter'}
     </p>
   </React.Fragment>
 )
