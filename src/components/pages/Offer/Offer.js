@@ -18,10 +18,10 @@ import { requestData } from 'redux-saga-data'
 
 import MediationsManager from './MediationsManager/MediationsManagerContainer'
 import StocksManagerContainer from './StocksManager/StocksManagerContainer'
-import HeroSection from 'components/layout/HeroSection/HeroSection'
-import Main from 'components/layout/Main'
-import { musicOptions, showOptions } from 'utils/edd'
-import { offerNormalizer } from 'utils/normalizers'
+import HeroSection from '../../layout/HeroSection/HeroSection'
+import Main from '../../layout/Main'
+import { musicOptions, showOptions } from '../../../utils/edd'
+import { offerNormalizer } from '../../../utils/normalizers'
 import getDurationInHours, { getDurationInMinutes } from './utils/duration'
 
 const DURATION_LIMIT_TIME = 100
@@ -56,6 +56,74 @@ const CONDITIONAL_FIELDS = {
 }
 
 class Offer extends Component {
+  componentWillMount() {
+    const { dispatch } = this.props
+    dispatch(resetForm())
+  }
+
+  componentDidMount() {
+    this.handleVenueRedirect()
+    this.handleShowStocksManager()
+    this.setDefaultBookingEmailIfNew()
+  }
+
+  componentDidUpdate(prevProps) {
+    const {
+      dispatch,
+      formInitialValues,
+      formOffererId,
+      formVenueId,
+      location,
+      offerer,
+      offerTypeError,
+      selectedOfferType,
+      venue,
+    } = this.props
+    const { search } = location
+
+    if (prevProps.location.search !== search) {
+      this.handleShowStocksManager()
+      return
+    }
+
+    if (
+      !formOffererId &&
+      ((!offerer && prevProps.offerer) ||
+        (!selectedOfferType && prevProps.selectedOfferType))
+    ) {
+      dispatch(
+        mergeForm('offer', {
+          offererId: null,
+          venueId: null,
+        })
+      )
+    }
+
+    if (!formVenueId && (!venue && prevProps.venue)) {
+      dispatch(
+        mergeForm('offer', {
+          venueId: null,
+        })
+      )
+    }
+
+    this.setDefaultBookingEmailIfNew(prevProps)
+
+    if (
+      get(formInitialValues, 'type') &&
+      !selectedOfferType &&
+      !offerTypeError
+    ) {
+      dispatch(
+        mergeErrors('offer', {
+          type: [
+            'Il y a eu un problème avec la création de cette offre: son type est incompatible avec le lieu enregistré.',
+          ],
+        })
+      )
+    }
+  }
+
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
       history,
@@ -101,8 +169,7 @@ class Offer extends Component {
               dispatch(
                 showModal(
                   <div>
-                    Vous devez avoir déjà enregistré un lieu dans une de vos
-                    structures pour ajouter des offres
+                    {"Vous devez avoir déjà enregistré un lieu dans une de vos structures pour ajouter des offres"}
                   </div>,
                   {
                     onCloseClick: () => history.push('/structures'),
@@ -188,81 +255,15 @@ class Offer extends Component {
     }
   }
 
-  componentDidMount() {
-    this.handleVenueRedirect()
-    this.handleShowStocksManager()
-    this.setDefaultBookingEmailIfNew()
-  }
-
-  componentDidUpdate(prevProps) {
-    const {
-      dispatch,
-      formInitialValues,
-      formOffererId,
-      formVenueId,
-      location,
-      offerer,
-      offerTypeError,
-      selectedOfferType,
-      venue,
-    } = this.props
-    const { search } = location
-
-    if (prevProps.location.search !== search) {
-      this.handleShowStocksManager()
-      return
-    }
-
-    if (
-      !formOffererId &&
-      ((!offerer && prevProps.offerer) ||
-        (!selectedOfferType && prevProps.selectedOfferType))
-    ) {
-      dispatch(
-        mergeForm('offer', {
-          offererId: null,
-          venueId: null,
-        })
-      )
-    }
-
-    if (!formVenueId && (!venue && prevProps.venue)) {
-      dispatch(
-        mergeForm('offer', {
-          venueId: null,
-        })
-      )
-    }
-
-    this.setDefaultBookingEmailIfNew(prevProps)
-
-    if (
-      get(formInitialValues, 'type') &&
-      !selectedOfferType &&
-      !offerTypeError
-    ) {
-      dispatch(
-        mergeErrors('offer', {
-          type: [
-            'Il y a eu un problème avec la création de cette offre: son type est incompatible avec le lieu enregistré.',
-          ],
-        })
-      )
-    }
-  }
-
-  componentWillMount() {
-    this.props.dispatch(resetForm())
-  }
-
   hasConditionalField(fieldName) {
-    if (!this.props.selectedOfferType) {
+    const { selectedOfferType } = this.props
+    if (!selectedOfferType) {
       return false
     }
 
     return (
       CONDITIONAL_FIELDS[fieldName].indexOf(
-        this.props.selectedOfferType.value
+        selectedOfferType.value
       ) > -1
     )
   }
@@ -356,13 +357,13 @@ class Offer extends Component {
           </p>
 
           <Form
+            Tag={null}
             action={formApiPath}
             handleSuccess={this.handleFormSuccess}
             method={method}
             name="offer"
             patch={formInitialValues}
-            readOnly={readOnly}
-            Tag={null}>
+            readOnly={readOnly}>
             <div className="field-group">
               <Field
                 isExpanded
@@ -392,8 +393,8 @@ class Offer extends Component {
                     label="Genre musical"
                     name="musicType"
                     optionLabel="label"
-                    options={musicOptions}
                     optionValue="code"
+                    options={musicOptions}
                     setKey="extraData"
                     type="select"
                   />
@@ -403,8 +404,8 @@ class Offer extends Component {
                       label="Sous genre"
                       name="musicSubType"
                       optionLabel="label"
-                      options={musicSubOptions}
                       optionValue="code"
+                      options={musicSubOptions}
                       setKey="extraData"
                       type="select"
                     />
@@ -418,8 +419,8 @@ class Offer extends Component {
                     label="Type de spectacle"
                     name="showType"
                     optionLabel="label"
-                    options={showOptions}
                     optionValue="code"
+                    options={showOptions}
                     setKey="extraData"
                     type="select"
                   />
@@ -429,8 +430,8 @@ class Offer extends Component {
                       label="Sous type"
                       name="showSubType"
                       optionLabel="label"
-                      options={showSubOptions}
                       optionValue="code"
+                      options={showSubOptions}
                       setKey="extraData"
                       type="select"
                     />
@@ -487,7 +488,7 @@ class Offer extends Component {
             {!isCreatedEntity && offer && <MediationsManager />}
             {showAllForm && (
               <div>
-                <h2 className="main-list-title">Infos pratiques</h2>
+                <h2 className="main-list-title">{"Infos pratiques"}</h2>
                 <div className="field-group">
                   <Field
                     debug
@@ -563,7 +564,7 @@ class Offer extends Component {
                     type="email"
                   />
                 </div>
-                <h2 className="main-list-title">Infos artistiques</h2>
+                <h2 className="main-list-title">{"Infos artistiques"}</h2>
                 <div className="field-group">
                   <Field
                     displayMaxLength
@@ -647,7 +648,7 @@ class Offer extends Component {
                     className="button is-secondary is-medium"
                     onClick={() => query.changeToModification()}
                   >
-                    Modifier l'offre
+                    {"Modifier l'offre"}
                   </button>
                 ) : (
                   <button
@@ -692,12 +693,12 @@ Offer.defaultProps = {
 }
 
 Offer.propTypes = {
-  currentUser: PropTypes.object.isRequired,
+  currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
-  location: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired,
-  query: PropTypes.object.isRequired,
-  venues: PropTypes.array,
+  location: PropTypes.shape().isRequired,
+  match: PropTypes.shape().isRequired,
+  query: PropTypes.shape().isRequired,
+  venues: PropTypes.arrayOf,
 }
 
 export default Offer
