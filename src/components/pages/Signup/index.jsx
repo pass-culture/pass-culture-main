@@ -10,7 +10,7 @@ import { withRedirectToOffersWhenAlreadyAuthenticated } from '../../hocs'
 import Logo from '../../layout/Logo'
 import Main from '../../layout/Main'
 
-const SignupPage = ({ errors, location }) => {
+const SignupPage = ({ location }) => {
   return (
     <Main
       fullscreen
