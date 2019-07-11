@@ -123,17 +123,17 @@ class ReimbursementDetails:
         "Statut du remboursement"
     ]
 
-    def _get_reimbursement_current_status_in_details(self, current_status: str, current_status_details: str):
-        TRANSACTION_STATUSES_DETAILS = {
-            TransactionStatus.PENDING: 'Remboursement initié',
-            TransactionStatus.NOT_PROCESSABLE: 'Remboursement impossible',
-            TransactionStatus.SENT: 'Remboursement envoyé',
-            TransactionStatus.ERROR: 'Erreur d\'envoi du remboursement',
-            TransactionStatus.RETRY: 'Remboursement à renvoyer',
-            TransactionStatus.BANNED: 'Remboursement rejeté'
-        }
+    TRANSACTION_STATUSES_DETAILS = {
+        TransactionStatus.PENDING: 'Remboursement initié',
+        TransactionStatus.NOT_PROCESSABLE: 'Remboursement impossible',
+        TransactionStatus.SENT: 'Remboursement envoyé',
+        TransactionStatus.ERROR: 'Erreur d\'envoi du remboursement',
+        TransactionStatus.RETRY: 'Remboursement à renvoyer',
+        TransactionStatus.BANNED: 'Remboursement rejeté'
+    }
 
-        human_friendly_status = TRANSACTION_STATUSES_DETAILS.get(current_status)
+    def _get_reimbursement_current_status_in_details(self, current_status: str, current_status_details: str):
+        human_friendly_status = ReimbursementDetails.TRANSACTION_STATUSES_DETAILS.get(current_status)
 
         if current_status_details is None:
             return human_friendly_status
