@@ -39,8 +39,8 @@ const SelectSourceField = ({ handleChange, providers, venueProviders }) => ({
 
 SelectSourceField.propTypes = {
   handleChange: PropTypes.func.isRequired,
-  providers: PropTypes.array.isRequired,
-  venueProviders: PropTypes.array.isRequired,
+  providers: PropTypes.arrayOf().isRequired,
+  venueProviders: PropTypes.arrayOf().isRequired,
 }
 
 export default SelectSourceField

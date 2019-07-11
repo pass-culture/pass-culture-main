@@ -262,9 +262,9 @@ Venue.propTypes = {
   handleSubmitRequest: PropTypes.func.isRequired,
   handleSubmitRequestFail: PropTypes.func.isRequired,
   handleSubmitRequestSuccess: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired,
-  query: PropTypes.object.isRequired,
+  history: PropTypes.shape().isRequired,
+  match: PropTypes.shape().isRequired,
+  query: PropTypes.shape().isRequired,
 }
 
 export default Venue

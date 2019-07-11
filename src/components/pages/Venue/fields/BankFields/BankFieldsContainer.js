@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import BankFields from './BankFields'
-import { withFrenchQueryRouter } from 'components/hocs'
+import { withFrenchQueryRouter } from '../../../../hocs'
 import { selectCurrentUser } from 'with-login'
 import { selectUserOffererByOffererIdAndUserIdAndRightsType } from '../../../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
 

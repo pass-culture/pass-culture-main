@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import AddressField from './AddressField'
-import { HiddenField, NumberField, TextField, } from 'components/layout/form/fields'
+import { HiddenField, NumberField, TextField, } from '../../../../layout/form/fields'
 
 const LocationFields = ({
   fieldReadOnlyBecauseFrozenFormSiret,
@@ -16,7 +16,7 @@ const LocationFields = ({
 
   return (
     <div className="section">
-      <h2 className="main-list-title">ADRESSE</h2>
+      <h2 className="main-list-title">{"ADRESSE"}</h2>
       <div className="field-group">
         <HiddenField name="isLocationFrozen" />
         <AddressField
@@ -73,7 +73,7 @@ LocationFields.defaultProps = {
 
 LocationFields.propTypes = {
   fieldReadOnlyBecauseFrozenFormSiret: PropTypes.bool,
-  form: PropTypes.object.isRequired,
+  form: PropTypes.shape().isRequired,
   formIsLocationFrozen: PropTypes.bool,
   formLatitude: PropTypes.number,
   formLongitude: PropTypes.number,

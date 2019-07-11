@@ -85,7 +85,7 @@ class LocationViewer extends Component {
     this.setState({ draggable: !this.state.draggable })
   }
 
-  onMarkerDragend = () => {
+  handleOnMarkerDragend = () => {
     const { readOnly, onMarkerDragend } = this.props
     if (readOnly) {
       return
@@ -141,7 +141,7 @@ class LocationViewer extends Component {
     })
   }
 
-  onTextChange = event => {
+  handleOnTextChange = event => {
     const { onTextChange: onTextChangeFromProps } = this.props
     const address = event.target.value
     this.setState({
@@ -161,7 +161,7 @@ class LocationViewer extends Component {
     this.onDebouncedFetchSuggestions(address)
   }
 
-  onSuggestionSelect = (address, location) => {
+  handleOnSuggestionSelect = (address, location) => {
     const { onSuggestionSelect: onSuggestionSelectFromProps, zoom } = this.props
     const { latitude, longitude, placeholder } = location
     if (placeholder) return
@@ -274,8 +274,8 @@ class LocationViewer extends Component {
             required,
           }}
           items={suggestions}
-          onChange={this.onTextChange}
-          onSelect={this.onSuggestionSelect}
+          onChange={this.handleOnTextChange}
+          onSelect={this.handleOnSuggestionSelect}
           readOnly={readOnly}
           renderItem={this.renderSuggestion}
           renderMenu={this.renderSuggestionsMenu}
@@ -312,7 +312,7 @@ class LocationViewer extends Component {
               alt={[marker.latitude, marker.longitude].join('-')}
               draggable={!readOnly}
               icon={markerIcon}
-              onDragend={this.onMarkerDragend}
+              onDragend={this.handleOnMarkerDragend}
               position={[marker.latitude, marker.longitude]}
               ref={this.refmarker}
             />
