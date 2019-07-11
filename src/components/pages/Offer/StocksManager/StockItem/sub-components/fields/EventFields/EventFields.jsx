@@ -1,6 +1,6 @@
 import moment from 'moment'
 import PropTypes from 'prop-types'
-import React, { Component, Fragment } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 
 import {
   DateField,
@@ -8,7 +8,7 @@ import {
   TimeField,
 } from 'components/layout/form/fields'
 
-export class EventFields extends Component {
+export class EventFields extends PureComponent {
   render() {
     const { beginningMinDate, readOnly, stocks, timezone } = this.props
     const highlightDates = (stocks || []).map(stock => stock.beginningDatetime)
@@ -53,15 +53,15 @@ export class EventFields extends Component {
 EventFields.defaultProps = {
   beginningMinDate: null,
   readOnly: true,
-  timezone: null,
   stocks: null,
+  timezone: null,
 }
 
 EventFields.propTypes = {
   beginningMinDate: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
   readOnly: PropTypes.bool,
-  stocks: PropTypes.array,
+  stocks: PropTypes.arrayOf,
   timezone: PropTypes.string,
 }
 

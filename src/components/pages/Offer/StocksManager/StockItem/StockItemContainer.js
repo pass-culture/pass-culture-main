@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import StockItem from './StockItem'
-import { withFrenchQueryRouter } from 'components/hocs'
+import { withFrenchQueryRouter } from '../../../../hocs'
 import selectFormInitialValuesByStockAndOfferIdAndOffererIdAndTimezone
   from './selectors/selectFormInitialValuesByStockAndOfferIdAndOffererId'
 import { translateQueryParamsToApiParams } from '../../../../../utils/translate'

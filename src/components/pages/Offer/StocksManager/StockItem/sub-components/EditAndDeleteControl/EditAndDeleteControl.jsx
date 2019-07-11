@@ -4,8 +4,8 @@ import { Portal } from 'react-portal'
 import { requestData } from 'redux-saga-data'
 
 import DeleteDialog from '../DeleteDialog/DeleteDialog'
-import { withFrenchQueryRouter } from 'components/hocs'
-import Icon from 'components/layout/Icon'
+import { withFrenchQueryRouter } from '../../../../../../hocs'
+import Icon from '../../../../../../layout/Icon'
 import { errorKeyToFrenchKey } from '../../utils'
 
 class EditAndDeleteControl extends Component {
@@ -16,15 +16,15 @@ class EditAndDeleteControl extends Component {
     }
   }
 
-  onDeleteClick = () => {
+  handleOnDeleteClick = () => {
     this.setState({ isDeleting: true })
   }
 
-  onCancelDeleteClick = () => {
+  handleOnCancelDeleteClick = () => {
     this.setState({ isDeleting: false })
   }
 
-  handleRequestFail = formResolver => (state, action) => {
+  handleRequestFail = () => (state, action) => {
     const { handleSetErrors } = this.props
     const {
       payload: { errors },
@@ -43,7 +43,7 @@ class EditAndDeleteControl extends Component {
     this.setState(nextState, () => handleSetErrors(frenchErrors))
   }
 
-  onConfirmDeleteClick = () => {
+  handleOnConfirmDeleteClick = () => {
     const { dispatch, formInitialValues } = this.props
 
     const formSubmitPromise = new Promise(resolve => {
@@ -59,7 +59,7 @@ class EditAndDeleteControl extends Component {
   }
 
   render() {
-    const { isEvent, query, stock } = this.props
+    const { isEvent, query, stock, tbody } = this.props
     const { id: stockId } = stock
     const { isDeleting } = this.state
 
@@ -71,11 +71,11 @@ class EditAndDeleteControl extends Component {
     if (isDeleting) {
       return (
         <td colSpan="2">
-          <Portal node={this.props.tbody}>
+          <Portal node={tbody}>
             <DeleteDialog
               isEvent={isEvent}
-              onCancelDeleteClick={this.onCancelDeleteClick}
-              onConfirmDeleteClick={this.onConfirmDeleteClick}
+              onCancelDeleteClick={this.handleOnCancelDeleteClick}
+              onConfirmDeleteClick={this.handleOnConfirmDeleteClick}
             />
           </Portal>
         </td>
@@ -100,7 +100,7 @@ class EditAndDeleteControl extends Component {
           {!isDeleting && (
             <button
               className="button is-small is-secondary delete-stock"
-              onClick={this.onDeleteClick}
+              onClick={this.handleOnDeleteClick}
               style={{ width: '100%' }}
             >
               <span className="icon">
@@ -116,11 +116,11 @@ class EditAndDeleteControl extends Component {
 
 EditAndDeleteControl.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  formInitialValues: PropTypes.object.isRequired,
+  formInitialValues: PropTypes.shape().isRequired,
   handleSetErrors: PropTypes.func.isRequired,
   isEvent: PropTypes.bool.isRequired,
-  query: PropTypes.object.isRequired,
-  stock: PropTypes.object.isRequired,
+  query: PropTypes.shape().isRequired,
+  stock: PropTypes.shape().isRequired,
 }
 
 export default withFrenchQueryRouter(EditAndDeleteControl)

@@ -45,10 +45,10 @@ SubmitAndCancelControl.defaultProps = {
 
 SubmitAndCancelControl.propTypes = {
   canSubmit: PropTypes.bool,
-  form: PropTypes.object.isRequired,
+  form: PropTypes.shape().isRequired,
   handleSubmit: PropTypes.func.isRequired,
   isRequestPending: PropTypes.bool.isRequired,
-  query: PropTypes.object.isRequired,
+  query: PropTypes.shape().isRequired,
   stockId: PropTypes.string,
 }
 

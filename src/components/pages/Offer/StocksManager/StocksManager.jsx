@@ -5,7 +5,7 @@ import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 
 import StockItemContainer from './StockItem/StockItemContainer'
-import HeroSection from 'components/layout/HeroSection/HeroSection'
+import HeroSection from '../../../layout/HeroSection/HeroSection'
 
 class StocksManager extends Component {
   constructor() {
@@ -104,7 +104,7 @@ class StocksManager extends Component {
     this.setState({ info })
   }
 
-  onCloseClick = e => {
+  handleOnCloseClick = () => {
     const { dispatch, query } = this.props
     dispatch(closeModal())
     query.change({ gestion: null })
@@ -125,31 +125,31 @@ class StocksManager extends Component {
         <tr>
           {isEvent && (
             <Fragment>
-              <td>Date</td>
+              <td>{"Date"}</td>
               <td>
-                Heure de
+                {"Heure de"}
                 <br />
-                début
+                {"début"}
               </td>
               <td>
-                Heure de
+                {"Heure de"}
                 <br />
-                fin
+                {"fin"}
               </td>
             </Fragment>
           )}
-          <td>Prix</td>
-          <td>Date Limite de Réservation</td>
+          <td>{"Prix"}</td>
+          <td>{"Date Limite de Réservation"}</td>
           <td>{isEvent ? 'Places affectées' : 'Stock affecté'}</td>
           <td>{isEvent ? 'Places restantes' : 'Stock restant'}</td>
-          <td>Modifier</td>
-          <td>Supprimer</td>
+          <td>{"Modifier"}</td>
+          <td>{"Supprimer"}</td>
         </tr>
       </thead>
     )
   }
 
-  onClickCreateStockItem = () => {
+  handleOnClickCreateStockItem = () => {
     const { query } = this.props
 
     query.changeToCreation(null, {
@@ -209,8 +209,8 @@ class StocksManager extends Component {
                 <tr>
                   <td colSpan="10">
                     <i>
-                      Il n'est pas possible d'ajouter ni de supprimer d'horaires
-                      pour cet événement {provider.name}
+                      {"Il n'est pas possible d'ajouter ni de supprimer d'horaires"}
+                      {"pour cet événement"} {provider.name}
                     </i>
                   </td>
                 </tr>
@@ -227,7 +227,7 @@ class StocksManager extends Component {
                       className="button is-secondary"
                       disabled={!readOnly}
                       id="add-stock"
-                      onClick={this.onClickCreateStockItem}
+                      onClick={this.handleOnClickCreateStockItem}
                       type="button"
                     >
                       {this.getStocksManagerButtonTitle(isEvent, stocks)}
@@ -266,7 +266,7 @@ class StocksManager extends Component {
         <button
           className="button is-secondary is-pulled-right"
           id="close-manager"
-          onClick={this.onCloseClick}
+          onClick={this.handleOnCloseClick}
         >
           Fermer
         </button>
@@ -276,15 +276,14 @@ class StocksManager extends Component {
 }
 
 StocksManager.defaultProps = {
-  creationOfSecondStockIsPrevented: false,
   stocks: [],
 }
 
 StocksManager.propTypes = {
-  isEvent: PropTypes.bool,
-  query: PropTypes.object.isRequired,
-  shouldPreventCreationOfSecondStock: PropTypes.bool,
-  stocks: PropTypes.array,
+  isEvent: PropTypes.bool.isRequired,
+  query: PropTypes.shape().isRequired,
+  shouldPreventCreationOfSecondStock: PropTypes.bool.isRequired,
+  stocks: PropTypes.arrayOf(),
 }
 
 export default StocksManager

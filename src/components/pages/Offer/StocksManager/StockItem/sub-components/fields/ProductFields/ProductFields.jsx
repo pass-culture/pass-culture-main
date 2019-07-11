@@ -15,7 +15,7 @@ import {
   HiddenField,
   NumberField,
 } from 'components/layout/form/fields'
-import Icon from 'components/layout/Icon'
+import Icon from './../../../../../../../layout/Icon'
 import { PriceField } from '../../../../../../../layout/form/fields/PriceField'
 
 export class ProductFields extends Component {
@@ -31,10 +31,11 @@ export class ProductFields extends Component {
   }
 
   componentWillUnmount() {
-    this.props.closeInfo()
+    const { closeInfo } = this.props
+    closeInfo()
   }
 
-  onPriceBlur = event => {
+  handleOnPriceBlur = event => {
     if (this.isPriceInputDeactivate) {
       return
     }
@@ -55,10 +56,10 @@ export class ProductFields extends Component {
     showInfo(
       <Fragment>
         <div className="mb24 has-text-left">
-          Vous avez saisi une offre payante. Pensez à demander à
-          l'administrateur financier nommé pour votre structure de renseigner
-          son IBAN. Sans IBAN, les réservations de vos offres éligibles ne vous
-          seront pas remboursées.
+          {"Vous avez saisi une offre payante. Pensez à demander à"}
+          {"l'administrateur financier nommé pour votre structure de renseigner"}
+          {"son IBAN. Sans IBAN, les réservations de vos offres éligibles ne vous"}
+          {"seront pas remboursées."}
         </div>
         <div className="has-text-right">
           <button
@@ -69,7 +70,7 @@ export class ProductFields extends Component {
               this.isPriceInputDeactivate = false
             }}
           >
-            J'ai compris
+            {"J'ai compris"}
           </button>
         </div>
       </Fragment>
@@ -105,7 +106,7 @@ export class ProductFields extends Component {
           <PriceField
             format={formatPrice(readOnly)}
             name="price"
-            onBlur={this.onPriceBlur}
+            onBlur={this.handleOnPriceBlur}
             placeholder="Gratuit"
             readOnly={readOnly}
             title="Prix"
@@ -183,9 +184,9 @@ export class ProductFields extends Component {
 
 ProductFields.defaultProps = {
   beginningDatetime: null,
-  readOnly: true,
   isEvent: true,
   offer: null,
+  readOnly: true,
   stock: null,
   timezone: null,
 }
@@ -194,6 +195,7 @@ ProductFields.propTypes = {
   beginningDatetime: PropTypes.string,
   closeInfo: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
+  hasIban: PropTypes.bool.isRequired,
   isEvent: PropTypes.bool,
   offer: PropTypes.shape(),
   parseFormChild: PropTypes.func,
@@ -201,7 +203,7 @@ ProductFields.propTypes = {
   showInfo: PropTypes.func.isRequired,
   stock: PropTypes.shape(),
   timezone: PropTypes.string,
-  venue: PropTypes.shape(),
+  venue: PropTypes.shape().isRequired,
 }
 
 export default ProductFields

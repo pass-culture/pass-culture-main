@@ -3,11 +3,11 @@ import { compose } from 'redux'
 import get from 'lodash.get'
 
 import StocksManager from './StocksManager'
-import { withFrenchQueryRouter } from 'components/hocs'
-import selectOfferById from 'selectors/selectOfferById'
-import selectProductById from 'selectors/selectProductById'
-import selectProviderById from 'selectors/selectProviderById'
-import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
+import { withFrenchQueryRouter } from '../../../hocs'
+import selectOfferById from '../../../../selectors/selectOfferById'
+import selectProductById from '../../../../selectors/selectProductById'
+import selectProviderById from '../../../../selectors/selectProviderById'
+import selectStocksByOfferId from '../../../../selectors/selectStocksByOfferId'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
