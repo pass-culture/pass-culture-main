@@ -198,9 +198,9 @@ VenueProvidersManager.propTypes = {
     params: PropTypes.shape(),
   }).isRequired,
   notify: PropTypes.func.isRequired,
-  providers: PropTypes.array.isRequired,
+  providers: PropTypes.arrayOf().isRequired,
   venue: PropTypes.shape().isRequired,
-  venueProviders: PropTypes.array.isRequired,
+  venueProviders: PropTypes.arrayOf().isRequired,
 }
 
 export default VenueProvidersManager

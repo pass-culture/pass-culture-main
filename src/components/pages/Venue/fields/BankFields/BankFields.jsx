@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { TextField } from 'components/layout/form/fields'
+import { TextField } from '../../../../layout/form/fields'
 
 const BankFields = ({
   adminUserOfferer,
@@ -12,7 +12,7 @@ const BankFields = ({
   return (
     <div className="section">
       <h2 className="main-list-title">
-        INFORMATIONS BANCAIRES
+        {"INFORMATIONS BANCAIRES"}
         <span className="is-pulled-right is-size-7 has-text-grey">
           {!adminUserOfferer &&
             "Vous avez besoin d'être administrateur de la structure pour éditer ces informations."}

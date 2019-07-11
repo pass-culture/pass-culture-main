@@ -5,8 +5,8 @@ import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
 
 import LocationViewer from './LocationViewer'
-import FieldErrors from 'components/layout/form/FieldErrors'
-import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
+import FieldErrors from '../../../../layout/form/FieldErrors'
+import getRequiredValidate from '../../../../layout/form/utils/getRequiredValidate'
 
 const updateLocationFields = (form, {isLocationFrozen}) => location => {
   form.batch(() => {
@@ -124,14 +124,13 @@ AddressField.defaultProps = {
   placeholder: '',
   readOnly: false,
   required: false,
-  type: 'text',
   validate: null,
 }
 
 AddressField.propTypes = {
   className: PropTypes.string,
   disabled: PropTypes.bool,
-  form: PropTypes.object.isRequired,
+  form: PropTypes.shape().isRequired,
   format: PropTypes.func,
   id: PropTypes.string,
   innerClassName: PropTypes.string,

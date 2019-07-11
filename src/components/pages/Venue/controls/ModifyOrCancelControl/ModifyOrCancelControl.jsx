@@ -17,7 +17,7 @@ const ModifyOrCancelControl = ({
         id="modify-venue"
         to={`/structures/${offererId}/lieux/${venueId}?modification`}
       >
-        Modifier le lieu
+        {"Modifier le lieu"}
       </NavLink>
     ) : (
       <button
@@ -31,7 +31,7 @@ const ModifyOrCancelControl = ({
         }}
         type="reset"
       >
-        Annuler
+        {"Annuler"}
       </button>
     )}
   </div>
@@ -42,8 +42,8 @@ ModifyOrCancelControl.defaultProps = {
 }
 
 ModifyOrCancelControl.propTypes = {
-  form: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired,
+  form: PropTypes.shape().isRequired,
+  history: PropTypes.shape().isRequired,
   isCreatedEntity: PropTypes.bool.isRequired,
   offererId: PropTypes.string.isRequired,
   readOnly: PropTypes.bool.isRequired,

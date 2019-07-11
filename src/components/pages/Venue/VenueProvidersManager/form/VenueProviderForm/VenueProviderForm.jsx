@@ -88,9 +88,9 @@ VenueProviderForm.propTypes = {
   isCreationMode: PropTypes.bool.isRequired,
   isLoadingMode: PropTypes.bool.isRequired,
   isProviderSelected: PropTypes.bool.isRequired,
-  providers: PropTypes.array.isRequired,
+  providers: PropTypes.arrayOf().isRequired,
   venueIdAtOfferProviderIsRequired: PropTypes.bool.isRequired,
-  venueProviders: PropTypes.array.isRequired,
+  venueProviders: PropTypes.arrayOf().isRequired,
 }
 
 export default VenueProviderForm
