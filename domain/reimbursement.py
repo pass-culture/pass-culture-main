@@ -54,7 +54,7 @@ class DigitalThingsReimbursement(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking, **kwargs):
+    def is_relevant(self, booking: Booking, **kwargs):
         product = booking.stock.resolvedOffer.product
         book_offer = product.type == str(ThingType.LIVRE_EDITION)
         return booking.stock.resolvedOffer.product.isDigital and not book_offer
@@ -66,7 +66,7 @@ class PhysicalOffersReimbursement(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking, **kwargs):
+    def is_relevant(self, booking: Booking, **kwargs):
         product = booking.stock.resolvedOffer.product
         book_offer = product.type == str(ThingType.LIVRE_EDITION)
         return book_offer or not product.isDigital
@@ -78,7 +78,7 @@ class MaxReimbursementByOfferer(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking, **kwargs):
+    def is_relevant(self, booking: Booking, **kwargs):
         if booking.stock.resolvedOffer.product.isDigital:
             return False
         else:
@@ -203,7 +203,7 @@ class ReimbursementDetails:
         ]
 
 
-def find_all_booking_reimbursements(bookings):
+def find_all_booking_reimbursements(bookings: List[Booking]):
     reimbursements = []
     cumulative_bookings_value = 0
 
@@ -218,7 +218,7 @@ def find_all_booking_reimbursements(bookings):
     return reimbursements
 
 
-def _find_potential_rules(booking, cumulative_bookings_value):
+def _find_potential_rules(booking: Booking, cumulative_bookings_value: int):
     relevant_rules = []
     for rule in ReimbursementRules:
         if rule.value.is_active and rule.value.is_relevant(booking, cumulative_value=cumulative_bookings_value):

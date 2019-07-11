@@ -33,44 +33,27 @@ class ReimbursementDetailsCSVTest:
         user = create_user(email='user+plus@email.fr')
         deposit = create_deposit(user, datetime.utcnow(), amount=500, source='public')
         offerer1 = create_offerer()
-        offerer2 = create_offerer(siren='123456788')
         user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
-        user_offerer2 = create_user_offerer(user, offerer2, validation_token=None)
         venue1 = create_venue(offerer1)
-        venue2 = create_venue(offerer1, siret='12345678912346')
-        venue3 = create_venue(offerer2, siret='12345678912347')
         bank_information1 = create_bank_information(id_at_providers='79387501900056', venue=venue1)
-        bank_information2 = create_bank_information(id_at_providers='79387501900057', venue=venue2)
         stock1 = create_stock_with_thing_offer(offerer=offerer1, venue=venue1, price=10)
-        stock2 = create_stock_with_thing_offer(offerer=offerer1, venue=venue2, price=11)
-        stock3 = create_stock_with_thing_offer(offerer=offerer2, venue=venue3, price=12)
-        stock4 = create_stock_with_thing_offer(offerer=offerer2, venue=venue3, price=13)
         booking1 = create_booking(user, stock1, venue=venue1, token='ABCDEF', is_used=True)
         booking2 = create_booking(user, stock1, venue=venue1, token='ABCDEG')
-        booking3 = create_booking(user, stock2, venue=venue2, token='ABCDEH', is_used=True)
-        booking4 = create_booking(user, stock3, venue=venue3, token='ABCDEI', is_used=True)
-        booking5 = create_booking(user, stock4, venue=venue3, token='ABCDEJ', is_used=True)
-        booking6 = create_booking(user, stock4, venue=venue3, token='ABCDEK', is_used=True)
-        PcObject.save(deposit, booking1, booking2, booking3,
-                      booking4, booking5, booking6, user_offerer1,
-                      user_offerer2, bank_information1, bank_information2)
+
+        PcObject.save(deposit, booking1, booking2, user_offerer1, bank_information1)
 
         generate_new_payments()
 
-        offerers = Offerer.query.all()
+        reimbursement_details = find_all_offerer_reimbursement_details(offerer1.id)
 
-        reimbursement_details = chain(*[
-            find_all_offerer_reimbursement_details(offerer.id)
-            for offerer in offerers
-        ])
 
         # when
         csv = generate_reimbursement_details_csv(reimbursement_details)
 
         # then
-        assert _count_non_empty_lines(csv) == 6
+        assert _count_non_empty_lines(csv) == 2
         assert _get_header(csv,
-                           1) == "2019;Juillet : remboursement 1ère quinzaine;La petite librairie;12345678912346;123 rue de Paris;FR7630006000011234567890189;La petite librairie;Test Book;Doe;John;ABCDEH;;11.00;Remboursement initié"
+                           1) == "2019;Juillet : remboursement 1ère quinzaine;La petite librairie;12345678912345;123 rue de Paris;FR7630006000011234567890189;La petite librairie;Test Book;Doe;John;ABCDEF;;10.00;Remboursement initié"
 
 
 class AsCsvRowTest:
