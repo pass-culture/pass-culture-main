@@ -43,7 +43,7 @@ class Signin extends Component {
               <section className="has-text-grey">
                 <div className="hero-body">
                   <h1 className="title is-spaced is-1">
-                    <span className="has-text-weight-bold ">Bienvenue</span>{' '}
+                    <span className="has-text-weight-bold ">{"Bienvenue"}</span>{' '}
                     <span className="has-text-weight-semibold">
                       dans la version bêta
                     </span>
@@ -52,13 +52,11 @@ class Signin extends Component {
                     </span>
                   </h1>
                   <h2 className="subtitle is-2">
-                    Et merci de votre participation pour nous aider à
-                    l'améliorer !
+                    {"Et merci de votre participation pour nous aider à l'améliorer !"}
                   </h2>
                   <span className="has-text-grey">
                     {' '}
-                    <span className="required-legend"> * </span> Champs
-                    obligatoires
+                    <span className="required-legend">{"*"} </span> {"Champs obligatoires"}
                   </span>
                   <Form
                     action="/users/signin"
@@ -105,7 +103,7 @@ class Signin extends Component {
                         className="button is-primary is-outlined"
                         id="signin-submit-button"
                       >
-                        Se connecter
+                        {"Se connecter"}
                       </SubmitButton>
                     </div>
                   </Form>
@@ -120,7 +118,7 @@ class Signin extends Component {
 }
 
 Signin.propTypes = {
-  query: PropTypes.object.isRequired,
+  query: PropTypes.shapeOf().isRequired,
 }
 
 export default Signin
