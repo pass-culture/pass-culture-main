@@ -101,9 +101,9 @@ Notification.defaultProps = {
 Notification.propTypes = {
   dispatch: PropTypes.func.isRequired,
   isFullscreen: PropTypes.bool,
-  notification: PropTypes.object,
+  notification: PropTypes.shape(),
   text: PropTypes.string,
-  tooltip: PropTypes.object,
+  tooltip: PropTypes.shape(),
   type: PropTypes.string,
   url: PropTypes.string,
   urlLabel: PropTypes.string,

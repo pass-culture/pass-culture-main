@@ -206,7 +206,7 @@ class BookingItem extends Component {
 }
 
 BookingItem.propTypes = {
-  booking: PropTypes.object.isRequired,
+  booking: PropTypes.shape().isRequired,
 }
 
 function mapStateToProps(state, ownProps) {

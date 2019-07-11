@@ -33,8 +33,8 @@ TableSortableTh.propTypes = {
   action: PropTypes.func.isRequired,
   field: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
-  sort: PropTypes.object.isRequired,
-  style: PropTypes.object,
+  sort: PropTypes.shape().isRequired,
+  style: PropTypes.shape(),
 }
 
 class RawAccouting extends Component {

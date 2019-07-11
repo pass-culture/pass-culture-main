@@ -68,7 +68,7 @@ FieldErrors.propTypes = {
   // par le formulaire via la propriété `meta`
   // Exemple: https://codesandbox.io/s/9y9om95lyp
   // Documentation: https://github.com/final-form/react-final-form
-  meta: PropTypes.object,
+  meta: PropTypes.shape(),
 }
 
 export default FieldErrors

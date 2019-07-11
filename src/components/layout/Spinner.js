@@ -66,7 +66,7 @@ Spinner.propTypes = {
   className: PropTypes.string,
   dotFrequency: PropTypes.number,
   label: PropTypes.string,
-  style: PropTypes.object,
+  style: PropTypes.shape(),
 }
 
 export default Spinner

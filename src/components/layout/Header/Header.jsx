@@ -169,7 +169,7 @@ class Header extends Component {
 Header.propTypes = {
   name: PropTypes.string,
   whiteHeader: PropTypes.string,
-  offerers: PropTypes.array,
+  offerers: PropTypes.arrayOf(),
 }
 
 export default
