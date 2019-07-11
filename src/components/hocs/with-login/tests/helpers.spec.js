@@ -4,7 +4,7 @@ import {
 } from '../helpers'
 
 describe('src | hocs | with-login | helpers', () => {
-  describe('getRedirectToCurrentLocationOrDiscovery', () => {
+  describe('getRedirectToCurrentLocationOrTypeform', () => {
     it('should return current location when user has filled the Typeform', () => {
       // given
       const props = {
