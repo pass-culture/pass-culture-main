@@ -12,7 +12,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
-from domain.keywords import create_tsvector
+from domain.keywords import create_ts_vector_and_table_args
 from models.db import Model
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
@@ -191,17 +191,10 @@ def create_digital_venue(offerer):
     return digital_venue
 
 
-Venue.__ts_vectors__ = list(map(create_tsvector,
-                                [Venue.name,
-                                 Venue.publicName,
-                                 Venue.address,
-                                 Venue.siret]))
+ts_indexes = [('idx_venue_fts_name', Venue.name),
+              ('idx_venue_fts_publicName', Venue.publicName,),
+              ('idx_venue_fts_address', Venue.address),
+              ('idx_venue_fts_siret', Venue.siret)]
 
 
-Venue.__table_args__ = (
-    Index(
-        'idx_venue_fts',
-        *Venue.__ts_vectors__,
-        postgresql_using='gin'
-    ),
-)
+(Venue.__ts_vectors__, Venue.__table_args__) = create_ts_vector_and_table_args(ts_indexes)

@@ -14,7 +14,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast, false
 from sqlalchemy.sql.functions import coalesce
 
-from domain.keywords import create_tsvector
+from domain.keywords import create_ts_vector_and_table_args
 from models.db import Model
 from models.extra_data_mixin import ExtraDataMixin
 from models.has_thumb_mixin import HasThumbMixin
@@ -102,17 +102,10 @@ class Product(PcObject,
         return api_errors
 
 
-Product.__ts_vectors__ = list(map(create_tsvector,
-                                  [Product.name,
-                                   Product.description,
-                                   Product.extraData['author'].cast(TEXT),
-                                   Product.extraData['byArtist'].cast(TEXT)]))
+ts_indexes = [('idx_product_fts_name', Product.name),
+              ('idx_product_fts_description', Product.description),
+              ('idx_product_fts_author', Product.extraData['author'].cast(TEXT)),
+              ('idx_product_fts_byArtist', Product.extraData['byArtist'].cast(TEXT))]
 
 
-Product.__table_args__ = (
-    Index(
-        'idx_product_fts',
-        *Product.__ts_vectors__,
-        postgresql_using='gin'
-    ),
-)
+(Product.__ts_vectors__, Product.__table_args__) = create_ts_vector_and_table_args(ts_indexes)

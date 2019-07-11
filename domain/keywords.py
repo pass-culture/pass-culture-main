@@ -1,5 +1,5 @@
 from nltk.corpus import stopwords
-from sqlalchemy import and_, func, TEXT
+from sqlalchemy import and_, func, Index, TEXT
 from sqlalchemy.sql.expression import cast, or_
 from sqlalchemy.sql.functions import coalesce
 
@@ -10,11 +10,30 @@ LANGUAGE = 'french'
 STOP_WORDS = set(stopwords.words(LANGUAGE))
 
 
+def create_fts_index(name, ts_vector):
+    return Index(name,
+                 ts_vector,
+                 postgresql_using='gin')
+
+
+def create_ts_vector_and_table_args(ts_indexes):
+    ts_vectors = []
+    table_args = []
+
+    for ts_index in ts_indexes:
+        ts_vector = create_tsvector(ts_index[1])
+        ts_vectors.append(ts_vector)
+        table_args.append(create_fts_index(ts_index[0], ts_vector))
+
+    return ts_vectors, tuple(table_args)
+
+
 def create_tsvector(*args):
     exp = args[0]
     for e in args[1:]:
         exp += ' ' + e
     return func.to_tsvector(LANGUAGE+'_unaccent', exp)
+
 
 def get_ts_queries_from_keywords_string(keywords_string):
     keywords = tokenize_for_search(keywords_string)

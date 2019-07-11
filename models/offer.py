@@ -1,11 +1,11 @@
 from datetime import datetime
 
 from sqlalchemy import BigInteger, Column, DateTime, desc, ForeignKey, String
-from sqlalchemy import Text, Integer, ARRAY, Boolean, false, cast, TEXT, Index
+from sqlalchemy import Text, Integer, ARRAY, Boolean, false, cast, TEXT
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.functions import coalesce
 
-from domain.keywords import create_tsvector
+from domain.keywords import create_ts_vector_and_table_args
 from models import ExtraDataMixin
 from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
@@ -175,17 +175,10 @@ class Offer(PcObject,
         return matching_type_thing.value['proLabel']
 
 
-Offer.__ts_vectors__ = list(map(create_tsvector,
-                                [Offer.name,
-                                 Offer.extraData['author'].cast(TEXT),
-                                 Offer.extraData['byArtist'].cast(TEXT),
-                                 Offer.description]))
+ts_indexes = [('idx_offer_fts_name', Offer.name),
+              ('idx_offer_fts_author', Offer.extraData['author'].cast(TEXT)),
+              ('idx_offer_fts_byArtist', Offer.extraData['byArtist'].cast(TEXT)),
+              ('idx_offer_fts_description', Offer.description)]
 
 
-Offer.__table_args__ = (
-    Index(
-        'idx_offer_fts',
-        *Offer.__ts_vectors__,
-        postgresql_using='gin'
-    ),
-)
+(Offer.__ts_vectors__, Offer.__table_args__) = create_ts_vector_and_table_args(ts_indexes)

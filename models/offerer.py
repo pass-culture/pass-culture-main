@@ -11,7 +11,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.sql.functions import coalesce
 
-from domain.keywords import create_tsvector
+from domain.keywords import create_ts_vector_and_table_args
 from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.has_address_mixin import HasAddressMixin
@@ -79,16 +79,9 @@ class Offerer(PcObject,
         return n_offers
 
 
-Offerer.__ts_vectors__ = list(map(create_tsvector,
-                                  [Offerer.name,
-                                   Offerer.address,
-                                   Offerer.siren]))
+ts_indexes = [('idx_offerer_fts_name', Offerer.name),
+              ('idx_offerer_fts_address', Offerer.address),
+              ('idx_offerer_fts_siret', Offerer.siren)]
 
 
-Offerer.__table_args__ = (
-    Index(
-        'idx_offerer_fts',
-        *Offerer.__ts_vectors__,
-        postgresql_using='gin'
-    ),
-)
+(Offerer.__ts_vectors__, Offerer.__table_args__) = create_ts_vector_and_table_args(ts_indexes)
