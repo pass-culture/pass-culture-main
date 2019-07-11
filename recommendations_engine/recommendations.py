@@ -9,7 +9,6 @@ from models import ApiErrors, Recommendation, Offer, Mediation, PcObject
 from recommendations_engine import get_offers_for_recommendations_discovery
 from repository import offer_queries
 from repository.offer_queries import get_offers_for_recommendations_search, find_searchable_offer
-from repository.recommendation_queries import find_recommendations_for_user_matching_offers_and_search
 from utils.logger import logger
 
 class OfferNotFoundException(Exception):
@@ -164,28 +163,16 @@ def get_search(kwargs):
 
 def create_recommendations_for_search(user, **kwargs):
     offers = get_offers_for_recommendations_search(**kwargs)
-    offer_ids = [offer.id for offer in offers]
     search = get_search(kwargs)
 
-    existing_recommendations = find_recommendations_for_user_matching_offers_and_search(user.id, offer_ids, search)
-    offer_ids_with_already_created_recommendations = [reco.offerId for reco in existing_recommendations]
     recommendations = []
-    recommendations_to_save = []
 
     for offer in offers:
-        if offer.id in offer_ids_with_already_created_recommendations:
-            recommendation_index = offer_ids_with_already_created_recommendations.index(offer.id)
-            recommendation = existing_recommendations[recommendation_index]
-        else:
-            recommendation = _create_recommendation(user, offer)
-            recommendation.search = search
-            recommendations_to_save.append(recommendation)
-
+        recommendation = _create_recommendation(user, offer)
+        recommendation.search = search
         recommendations.append(recommendation)
 
-    if recommendations_to_save:
-        PcObject.save(*recommendations_to_save)
-
+    PcObject.save(*recommendations)
     return recommendations
 
 
