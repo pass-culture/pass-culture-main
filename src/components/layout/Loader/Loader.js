@@ -117,7 +117,7 @@ Loader.propTypes = {
   hasError: PropTypes.bool,
   isEmpty: PropTypes.bool,
   isLoading: PropTypes.bool.isRequired,
-  match: PropTypes.object.isRequired,
+  match: PropTypes.shape().isRequired,
 }
 
 export default Loader
