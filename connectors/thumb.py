@@ -1,3 +1,5 @@
+from typing import Callable
+
 import requests
 
 " has thumb mixin """
@@ -34,7 +36,8 @@ def save_thumb(
         convert=True,
         crop=None,
         symlink_path=None,
-        need_save=True
+        need_save=True,
+        store_thumb: Callable = store_public_object
 ):
     new_thumb = thumb
 
@@ -55,7 +58,7 @@ def save_thumb(
         else:
             model_with_thumb.firstThumbDominantColor = compute_dominant_color(new_thumb)
 
-    store_public_object(
+    store_thumb(
         'thumbs',
         model_with_thumb.get_thumb_storage_id(image_index),
         new_thumb,
