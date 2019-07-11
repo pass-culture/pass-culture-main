@@ -1,5 +1,3 @@
-// NOTE -> DEMO -> https://codesandbox.io/s/nwrz8pw424
-//
 const each = (args, ...functions) =>
   functions.filter(v => v).map(fn => fn(...args))
 

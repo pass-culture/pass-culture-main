@@ -4,8 +4,6 @@ import { hasMinLength } from './hasMinLength'
 import { hasUppercase } from './hasUppercase'
 import { hasLowercase } from './hasLowercase'
 
-// const hasSpecialChars = value => /[_&?~#|^@=+.$,<>%*!:;-]+/.test(value)
-
 export const isPassword = (value, count = 12) =>
   value &&
   isString(value) &&

@@ -43,10 +43,8 @@ describe('src | utils | arrayOfObjects | sortAlphabeticallyArrayOfObjectsByPrope
     // then
     expect(result).toStrictEqual(expected)
   })
-})
 
-describe('src | utils | arrayOfObjects | sortAlphabeticallyArrayOfObjectsByProperty', () => {
-  it('should return the array sorted by property', () => {
+  it('should return the array sorted by property (réécrire)', () => {
     // given
     const typesArray = [
       {
@@ -100,37 +98,6 @@ describe('src | utils | arrayOfObjects | sortAlphabeticallyArrayOfObjectsByPrope
     // then
     expect(result).toStrictEqual(expected)
   })
-
-  //   it.skip("should return the array sorted by property even if it contains special chars", () => {
-  //     // given
-  //     const typesArray = [
-  //       {
-  //         "description": "Fake description",
-  //         "sublabel": "\u00c9couter"
-  //       },
-  //       {
-  //         "description": "Another Fake description",
-  //         "sublabel": "Pratiquer"
-  //       }
-  //     ]
-  //     const expected = [
-  //       {
-  //         "description": "Another Fake description",
-  //         "sublabel": "Pratiquer"
-  //       },
-  //       {
-  //         "description": "Fake description",
-  //         "sublabel": "\u00c9couter"
-  //       }
-  //     ]
-  //
-  //     // when
-  //     const result = typesArray.sort(arrayOfObjects('sublabel'))
-  //
-  //     // then
-  //     expect(result).toEqual(expected)
-  //   })
-  // })
 
   it.skip("should return typesArray if property passed doesn't match any object key", () => {
     // given

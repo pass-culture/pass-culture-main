@@ -1,4 +1,3 @@
-/* eslint no-console: 0, max-nested-callbacks: 0 */
 import { hasNumber } from './hasNumber'
 
 describe('src | utils | strings | hasNumber', () => {
@@ -35,6 +34,7 @@ describe('src | utils | strings | hasNumber', () => {
     received = hasNumber(value)
     expect(received).toStrictEqual(expected)
   })
+
   it('return true', () => {
     const expected = true
     let value = '1'

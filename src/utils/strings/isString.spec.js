@@ -1,4 +1,3 @@
-/* eslint no-console: 0, max-nested-callbacks: 0 */
 import { isString } from './isString'
 
 describe('src | utils | strings | isString', () => {
@@ -29,6 +28,7 @@ describe('src | utils | strings | isString', () => {
     received = isString(value)
     expect(received).toStrictEqual(expected)
   })
+
   it('return true', () => {
     const expected = true
     let value = ''

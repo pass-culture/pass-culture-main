@@ -1,4 +1,3 @@
-/* eslint no-console: 0, max-nested-callbacks: 0 */
 import { hasLowercase } from './hasLowercase'
 
 describe('src | utils | strings | hasLowercase', () => {
@@ -35,6 +34,7 @@ describe('src | utils | strings | hasLowercase', () => {
     received = hasLowercase(value)
     expect(received).toStrictEqual(expected)
   })
+
   it('return true', () => {
     const expected = true
     let value = 'a'

@@ -1,4 +1,3 @@
-/* eslint no-console: 0, max-nested-callbacks: 0 */
 import { isEmpty } from './isEmpty'
 
 describe('src | utils | strings | isEmpty', () => {
@@ -29,6 +28,7 @@ describe('src | utils | strings | isEmpty', () => {
     received = isEmpty(value)
     expect(received).toStrictEqual(expected)
   })
+
   it('return true', () => {
     const expected = true
     let value = '     '

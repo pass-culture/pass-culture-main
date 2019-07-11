@@ -11,7 +11,8 @@ describe('getHeaderColor', () => {
     // then
     expect(result).toStrictEqual('black')
   })
-  it('should render the corresponding color', () => {
+
+  it('should render the corresponding color (réécrire)', () => {
     // given
     const recommendationColor = [56, 45, 78]
 
@@ -21,6 +22,7 @@ describe('getHeaderColor', () => {
     // then
     expect(result).toStrictEqual('hsl(260, 100%, 7.5%)')
   })
+
   it('should return black by default when array given', () => {
     // when
     const result = getHeaderColor([])
@@ -28,6 +30,7 @@ describe('getHeaderColor', () => {
     // then
     expect(result).toStrictEqual('black')
   })
+
   it('should return black by default when string given', () => {
     // given
     const recommendationColor = 'pink'

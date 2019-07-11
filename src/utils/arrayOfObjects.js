@@ -1,4 +1,3 @@
-/* eslint-disable */
 const sortAlphabeticallyArrayOfObjectsByProperty = property => {
   return function(object, nextObject) {
     return object[property].localeCompare(nextObject[property])

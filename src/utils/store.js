@@ -1,6 +1,3 @@
-/* eslint
-  no-underscore-dangle: 0
-*/
 import createSagaMiddleware from 'redux-saga'
 import { persistStore } from 'redux-persist'
 import { compose, createStore, applyMiddleware } from 'redux'

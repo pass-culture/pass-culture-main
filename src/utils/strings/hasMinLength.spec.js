@@ -1,4 +1,3 @@
-/* eslint no-console: 0, max-nested-callbacks: 0 */
 import { hasMinLength } from './hasMinLength'
 
 describe('src | utils | strings | hasMinLength', () => {
@@ -29,6 +28,7 @@ describe('src | utils | strings | hasMinLength', () => {
     received = hasMinLength(value)
     expect(received).toStrictEqual(expected)
   })
+
   it('return true', () => {
     const expected = true
     let value = ''
@@ -41,6 +41,7 @@ describe('src | utils | strings | hasMinLength', () => {
     received = hasMinLength(value, 6)
     expect(received).toStrictEqual(expected)
   })
+
   it('return false because has no minimum defined', () => {
     const expected = false
     let value = ''

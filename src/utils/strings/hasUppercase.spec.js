@@ -1,4 +1,3 @@
-/* eslint no-console: 0, max-nested-callbacks: 0 */
 import { hasUppercase } from './hasUppercase'
 
 describe('src | utils | strings | hasUppercase', () => {
@@ -35,6 +34,7 @@ describe('src | utils | strings | hasUppercase', () => {
     received = hasUppercase(value)
     expect(received).toStrictEqual(expected)
   })
+
   it('return true', () => {
     const expected = true
     let value = 'A'
