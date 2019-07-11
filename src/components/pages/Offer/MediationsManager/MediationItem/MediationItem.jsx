@@ -5,12 +5,12 @@ const MediationItem = ({ mediation }) => {
   const { id, isActive, thumbUrl } = mediation || {}
   return (
     <Form
+      Tag="li"
       action={`/mediations/${id}`}
       handleSuccessNotification={null}
       isAutoSubmit
       name={`mediation-${id}`}
-      patch={mediation}
-      Tag="li">
+      patch={mediation}>
       <img
         alt={`accroche-${id}`}
         disabled={!isActive}
