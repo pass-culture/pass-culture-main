@@ -16,7 +16,7 @@ def generate_and_send_payments(payment_message_id: str = None):
     PAYMENTS_DETAILS_RECIPIENTS = parse_email_addresses(os.environ.get('PAYMENTS_DETAILS_RECIPIENTS', None))
     WALLET_BALANCES_RECIPIENTS = parse_email_addresses(os.environ.get('WALLET_BALANCES_RECIPIENTS', None))
 
-    not_processable_payments, payments_to_send = check_if_a_payement_already_exists(payment_message_id)
+    not_processable_payments, payments_to_send = generate_or_collect_payments(payment_message_id)
 
     try:
         logger.info('[BATCH][PAYMENTS] STEP 3 : send transactions')
@@ -45,7 +45,7 @@ def generate_and_send_payments(payment_message_id: str = None):
         logger.error('[BATCH][PAYMENTS] STEP 6', e)
 
 
-def check_if_a_payement_already_exists(payment_message_id):
+def generate_or_collect_payments(payment_message_id: str = None):
     if payment_message_id is None:
         logger.info('[BATCH][PAYMENTS] STEP 1 : generate payments')
         pending_payments, not_processable_payments = generate_new_payments()
