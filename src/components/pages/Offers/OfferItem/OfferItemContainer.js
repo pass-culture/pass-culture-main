@@ -3,14 +3,14 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import OfferItem from './OfferItem'
-import selectAggregatedStockByOfferId from 'selectors/selectAggregatedStockByOfferId'
-import selectMaxDateByOfferId from 'selectors/selectMaxDateByOfferId'
-import selectMediationsByOfferId from 'selectors/selectMediationsByOfferId'
-import selectProductById from 'selectors/selectProductById'
-import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
-import selectVenueById from 'selectors/selectVenueById'
-import offererSelector from 'selectors/selectOffererById'
-import { getOfferTypeLabel } from 'utils/offerItem'
+import selectAggregatedStockByOfferId from '../../../../selectors/selectAggregatedStockByOfferId'
+import selectMaxDateByOfferId from '../../../../selectors/selectMaxDateByOfferId'
+import selectMediationsByOfferId from '../../../../selectors/selectMediationsByOfferId'
+import selectProductById from '../../../../selectors/selectProductById'
+import selectStocksByOfferId from '../../../../selectors/selectStocksByOfferId'
+import selectVenueById from '../../../../selectors/selectVenueById'
+import offererSelector from '../../../../selectors/selectOffererById'
+import { getOfferTypeLabel } from '../../../../utils/offerItem'
 
 function mapStateToProps(state, ownProps) {
   const { offer } = ownProps
