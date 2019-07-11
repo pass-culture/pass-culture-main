@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/components/pages/tests/BetaPage --watch
 import React from 'react'
 import { render } from 'enzyme'
 import { MemoryRouter } from 'react-router-dom'

@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import PropTypes from 'prop-types'
 import queryString from 'query-string'
 import React from 'react'
@@ -63,7 +61,7 @@ const ForgotPasswordPage = ({ location }) => {
 }
 
 ForgotPasswordPage.propTypes = {
-  location: PropTypes.object.isRequired,
+  location: PropTypes.shape().isRequired,
 }
 
 export default ForgotPasswordPage
