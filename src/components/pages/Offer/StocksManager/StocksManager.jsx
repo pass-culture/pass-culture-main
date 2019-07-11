@@ -171,7 +171,10 @@ class StocksManager extends Component {
     const { isCreatedEntity, readOnly } = query.context({ key: 'stock' })
 
     return (
-      <div className="stocks-manager" ref={elem => (this.elem = elem)}>
+      <div
+        className="stocks-manager"
+        ref={elem => (this.elem = elem)}
+      >
         <div className={classnames('info', { 'is-invisible': !info })}>
           <div className="content">
             <div>{info}</div>
@@ -190,15 +193,16 @@ class StocksManager extends Component {
         )}
         <div className="stocks-table-wrapper">
           <HeroSection
+            subtitle={get(product, 'name')}
             title={
               isEvent ? 'Dates, horaires et prix' : get(product, 'id') && 'Prix'
             }
-            subtitle={get(product, 'name')}
           />
           <table
             className={classnames('table is-hoverable stocks-table', {
               small: !isEvent,
-            })}>
+            })}
+          >
             {this.renderTableHead()}
             {provider ? (
               <tbody>
@@ -216,14 +220,16 @@ class StocksManager extends Component {
                 <tr
                   className={classnames({
                     inactive: shouldPreventCreationOfSecondStock,
-                  })}>
+                  })}
+                >
                   <td colSpan="10">
                     <button
                       className="button is-secondary"
                       disabled={!readOnly}
                       id="add-stock"
                       onClick={this.onClickCreateStockItem}
-                      type="button">
+                      type="button"
+                    >
                       {this.getStocksManagerButtonTitle(isEvent, stocks)}
                     </button>
                   </td>
@@ -235,8 +241,8 @@ class StocksManager extends Component {
               <StockItemContainer
                 closeInfo={this.closeInfo}
                 handleSetErrors={this.handleSetErrors}
-                isFullyEditable={!provider}
                 isEvent={isEvent}
+                isFullyEditable={!provider}
                 showInfo={this.showInfo}
               />
             )}
@@ -244,10 +250,10 @@ class StocksManager extends Component {
             {stocks.map(stock => (
               <StockItemContainer
                 closeInfo={this.closeInfo}
-                key={stock.id}
                 handleSetErrors={this.handleSetErrors}
-                isFullyEditable={!provider}
                 isEvent={isEvent}
+                isFullyEditable={!provider}
+                key={stock.id}
                 showInfo={this.showInfo}
                 stock={stock}
                 stocks={stocks}
@@ -260,7 +266,8 @@ class StocksManager extends Component {
         <button
           className="button is-secondary is-pulled-right"
           id="close-manager"
-          onClick={this.onCloseClick}>
+          onClick={this.onCloseClick}
+        >
           Fermer
         </button>
       </div>
@@ -274,10 +281,10 @@ StocksManager.defaultProps = {
 }
 
 StocksManager.propTypes = {
+  isEvent: PropTypes.bool,
+  query: PropTypes.object.isRequired,
   shouldPreventCreationOfSecondStock: PropTypes.bool,
   stocks: PropTypes.array,
-  query: PropTypes.object.isRequired,
-  isEvent: PropTypes.bool,
 }
 
 export default StocksManager

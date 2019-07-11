@@ -121,10 +121,16 @@ class RawOffers extends Component {
     const [orderName, orderDirection] = (orderBy || '').split('+')
 
     return (
-      <Main handleRequestData={this.handleRequestData} name="offers">
+      <Main
+        handleRequestData={this.handleRequestData}
+        name="offers"
+      >
         <HeroSection title="Vos offres">
           {!isAdmin && (
-            <NavLink to={createOfferTo} className="cta button is-primary">
+            <NavLink
+              className="cta button is-primary"
+              to={createOfferTo}
+            >
               <span className="icon">
                 <Icon svg="ico-offres-w" />
               </span>
@@ -132,26 +138,33 @@ class RawOffers extends Component {
             </NavLink>
           )}
         </HeroSection>
-        <form className="section" onSubmit={this.onSubmit}>
+        <form
+          className="section"
+          onSubmit={this.onSubmit}
+        >
           <label className="label">Rechercher une offre :</label>
           <div className="field is-grouped">
             <p className="control is-expanded">
               <input
-                id="search"
                 className="input"
+                defaultValue={keywords}
+                id="search"
                 placeholder="Saisissez un ou plusieurs mots complets"
                 type="text"
-                defaultValue={keywords}
               />
             </p>
             <p className="control">
               <button
-                type="submit"
                 className="button is-primary is-outlined"
-                id="search-button">
+                id="search-button"
+                type="submit"
+              >
                 OK
               </button>{' '}
-              <button className="button is-secondary" disabled>
+              <button
+                className="button is-secondary"
+                disabled
+              >
                 &nbsp;
                 <Icon svg="ico-filter" />
                 &nbsp;
@@ -171,8 +184,7 @@ class RawOffers extends Component {
                   query.change({
                     [mapApiToBrowser.offererId]: null,
                     page: null,
-                  })
-                }
+                  })}
               />
             </li>
           ) : (
@@ -186,8 +198,7 @@ class RawOffers extends Component {
                     query.change({
                       [mapApiToBrowser.venueId]: null,
                       page: null,
-                    })
-                  }
+                    })}
                 />
               </li>
             )
@@ -208,7 +219,8 @@ class RawOffers extends Component {
                       // TODO pagination.orderBy
                       // query.change({})
                     }}
-                    value={orderName}>
+                    value={orderName}
+                  >
                     <option value="sold">Offres écoulées</option>
                     <option value="createdAt">Date de création</option>
                   </select>
@@ -216,11 +228,12 @@ class RawOffers extends Component {
               </div>
               <div>
                 <button
+                  className="button is-secondary"
                   onClick={() => {
                     // TODO
                     // query.change({ })
                   }}
-                  className="button is-secondary">
+                >
                   <Icon
                     svg={
                       orderDirection === 'asc'
@@ -238,9 +251,13 @@ class RawOffers extends Component {
             hasMore={hasMore}
             isLoading={isLoading}
             loader={<Spinner key="spinner" />}
-            useWindow>
+            useWindow
+          >
             {offers.map(offer => (
-              <OfferItem key={offer.id} offer={offer} />
+              <OfferItem
+                key={offer.id}
+                offer={offer}
+              />
             ))}
           </LoadingInfiniteScroll>
         </div>

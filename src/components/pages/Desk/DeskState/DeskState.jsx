@@ -48,8 +48,8 @@ DeskState.propTypes = {
     userName: PropTypes.string,
     venueDepartementCode: PropTypes.string,
   }),
-  message: PropTypes.string.isRequired,
   level: PropTypes.string.isRequired,
+  message: PropTypes.string.isRequired,
 }
 
 export default DeskState

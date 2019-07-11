@@ -42,8 +42,13 @@ const VenueProviderItem = ({ venueProvider }) => {
           (nOffers ? (
             <NavLink
               className="has-text-primary"
-              to={`/offres?lieu=${venueId}`}>
-              <Icon svg="ico-offres-r" width="22px" height="22px" />
+              to={`/offres?lieu=${venueId}`}
+            >
+              <Icon
+                height="22px"
+                svg="ico-offres-r"
+                width="22px"
+              />
               <div className="number-of-offers-label">
                 {pluralize(nOffers, 'offres')}
               </div>

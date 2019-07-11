@@ -18,7 +18,8 @@ class SignupForm extends PureComponent {
               className="is-secondary"
               href="https://pass.culture.fr/ressources"
               rel="noopener noreferrer"
-              target="_blank">
+              target="_blank"
+            >
               modalités de fonctionnement en cliquant ici
             </a>{' '}
             avant de renseigner les champs suivants.
@@ -30,14 +31,14 @@ class SignupForm extends PureComponent {
           <Form
             action="/users/signup/pro"
             BlockComponent={null}
-            handleSuccessNotification={null}
-            handleSuccessRedirect={() => '/inscription/confirmation'}
             formatPatch={patch =>
               Object.assign({ publicName: patch.firstName }, patch)
             }
+            handleSuccessNotification={null}
+            handleSuccessRedirect={() => '/inscription/confirmation'}
             layout="vertical"
-            patch={patch}
-            name="user">
+            name="user"
+            patch={patch}>
             <div className="field-group">
               <Field
                 label="Adresse e-mail"
@@ -60,8 +61,8 @@ class SignupForm extends PureComponent {
                     </ul>
                   </div>
                   `}
-                name="password"
                 label="Mot de passe"
+                name="password"
                 placeholder="Mon mot de passe"
                 required
                 sublabel="pour se connecter"
@@ -99,8 +100,8 @@ class SignupForm extends PureComponent {
               <Field
                 label="J'accepte d'être contacté par mail pour donner mon avis sur le Pass Culture."
                 name="contact_ok"
-                type="checkbox"
                 required
+                type="checkbox"
               />
               <Field
                 className="cgu-field"
@@ -110,20 +111,24 @@ class SignupForm extends PureComponent {
                     <a
                       href="https://pass-culture.gitbook.io/documents/textes-normatifs"
                       id="accept-cgu-link"
+                      rel="noopener noreferrer"
                       target="_blank"
-                      rel="noopener noreferrer">
+                    >
                       Conditions Générales d’Utilisation
                     </a>
                   </Fragment>
                 }
                 name="cgu_ok"
-                type="checkbox"
                 required
+                type="checkbox"
               />
               <div className="errors">{errors}</div>
             </div>
             <div className="buttons-field">
-              <NavLink to="/connexion" className="button is-secondary">
+              <NavLink
+                className="button is-secondary"
+                to="/connexion"
+              >
                 J'ai déjà un compte
               </NavLink>
               <SubmitButton className="button is-primary is-outlined">

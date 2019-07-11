@@ -33,7 +33,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToOffersWhe
         const result = redirectToUrl(data)
 
         // then
-        expect(result).toEqual("/structures")
+        expect(result).toStrictEqual("/structures")
       })
     })
 
@@ -50,7 +50,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToOffersWhe
         const result = redirectToUrl(data)
 
         // then
-        expect(result).toEqual("/structures")
+        expect(result).toStrictEqual("/structures")
       })
     })
 
@@ -67,7 +67,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToOffersWhe
         const result = redirectToUrl(data)
 
         // then
-        expect(result).toEqual("/offres")
+        expect(result).toStrictEqual("/offres")
       })
     })
 
@@ -84,7 +84,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToOffersWhe
         const result = redirectToUrl(data)
 
         // then
-        expect(result).toEqual("/offres")
+        expect(result).toStrictEqual("/offres")
       })
     })
   })

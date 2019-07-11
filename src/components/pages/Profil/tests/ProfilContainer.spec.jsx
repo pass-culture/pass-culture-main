@@ -16,7 +16,7 @@ describe('src | components | pages | Profil | ProfilContainer', () => {
       const result = mapStateToProps(state)
 
       // then
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         currentUser: {
           currentUserUUID: 'ABC',
           id: '1',

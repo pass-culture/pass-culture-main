@@ -21,7 +21,10 @@ describe('src | components | layout | form | DateField', () => {
         render={({ handleSubmit }) => (
           <form>
             <DateField name="myDate" />
-            <button onClick={handleSubmit} type="submit">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -34,7 +37,7 @@ describe('src | components | layout | form | DateField', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  it('should submit a form with a date', done => {
+  it('should submit a form with a date', () => {return new Promise(done => {
     // given
     const initialValues = {
       myDate: '2019-04-27T20:00:00Z',
@@ -46,7 +49,10 @@ describe('src | components | layout | form | DateField', () => {
         render={({ handleSubmit }) => (
           <form>
             <DateField name="myDate" />
-            <button onClick={handleSubmit} type="submit">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -67,10 +73,10 @@ describe('src | components | layout | form | DateField', () => {
 
     // then
     function onSubmit(formValues) {
-      expect(formValues.myDate).toEqual('2019-04-28T20:00:00.000Z')
+      expect(formValues.myDate).toStrictEqual('2019-04-28T20:00:00.000Z')
       done()
     }
-  })
+  })})
 
   it('should display the date taking into account the timezone', () => {
     // given
@@ -85,8 +91,15 @@ describe('src | components | layout | form | DateField', () => {
         onSubmit={() => null}
         render={({ handleSubmit }) => (
           <form>
-            <DateField name="myDate" readOnly timezone="America/Cayenne" />
-            <button onClick={handleSubmit} type="submit">
+            <DateField
+              name="myDate"
+              readOnly
+              timezone="America/Cayenne"
+            />
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -100,10 +113,10 @@ describe('src | components | layout | form | DateField', () => {
         .find(DateField)
         .find('input[name="myDate"]')
         .props().value
-    ).toEqual('26/04/2019')
+    ).toStrictEqual('26/04/2019')
   })
 
-  it('should delete date when delete is pressed', done => {
+  it('should delete date when delete is pressed', () => {return new Promise(done => {
     // given
     const initialValues = {
       myDate: '2019-04-27T20:00:00Z',
@@ -115,7 +128,10 @@ describe('src | components | layout | form | DateField', () => {
         render={({ handleSubmit }) => (
           <form>
             <DateField name="myDate" />
-            <button onClick={handleSubmit} type="submit">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -136,5 +152,5 @@ describe('src | components | layout | form | DateField', () => {
       expect(formValues.myDate).toBeNull()
       done()
     }
-  })
+  })})
 })

@@ -84,13 +84,18 @@ class OfferItem extends Component {
         className={classnames('offer-item', {
           active: offer.isActive,
           product,
-        })}>
-        <Thumb alt="offre" src={thumbUrl} />
+        })}
+      >
+        <Thumb
+          alt="offre"
+          src={thumbUrl}
+        />
         <div className="list-content">
           <NavLink
             className="name"
+            title={name}
             to={`/offres/${offer.id}${search}`}
-            title={name}>
+          >
             <Dotdotdot clamp={1}>{name}</Dotdotdot>
           </NavLink>
           <ul className="infos">
@@ -114,7 +119,8 @@ class OfferItem extends Component {
               title={this.buildNumberOfParticipantsTitle(
                 groupSizeMin,
                 groupSizeMax
-              )}>
+              )}
+            >
               {groupSizeMin === 1 && <Icon svg="picto-user" />}
               {groupSizeMin > 1 && (
                 <div>
@@ -131,7 +137,8 @@ class OfferItem extends Component {
             <li>
               <NavLink
                 className="has-text-primary"
-                to={`/offres/${offer.id}?gestion`}>
+                to={`/offres/${offer.id}?gestion`}
+              >
                 {this.buildProductNavLinkLabel(offer, remainingStockQuantity)}
               </NavLink>
             </li>
@@ -150,12 +157,13 @@ class OfferItem extends Component {
           <ul className="actions">
             <li>
               <NavLink
+                className={`button addMediations is-small ${
+                  numberOfMediations ? 'is-secondary' : 'is-primary is-outlined'
+                }`}
                 to={`/offres/${offer.id}${
                   numberOfMediations ? '' : `/accroches/nouveau${search}`
                 }`}
-                className={`button addMediations is-small ${
-                  numberOfMediations ? 'is-secondary' : 'is-primary is-outlined'
-                }`}>
+              >
                 <span className="icon">
                   <Icon svg="ico-stars" />
                 </span>
@@ -168,15 +176,17 @@ class OfferItem extends Component {
             </li>
             <li>
               <NavLink
+                className="button is-secondary is-small edit-link"
                 to={`/offres/${offer.id}`}
-                className="button is-secondary is-small edit-link">
+              >
                 <Icon svg="ico-pen-r" />
                 Modifier
               </NavLink>
 
               <button
                 className="button is-secondary is-small activ-switch"
-                onClick={this.onDeactivateClick}>
+                onClick={this.onDeactivateClick}
+              >
                 {offer.isActive ? (
                   <span>
                     <Icon svg="ico-close-r" />

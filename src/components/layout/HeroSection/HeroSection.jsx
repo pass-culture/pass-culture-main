@@ -5,7 +5,7 @@ const HeroSection = ({ children, subtitle, title }) => {
   return (
     <div className="section hero-section">
       <div className="section-icon-mask">
-        <div className="section-icon"/>
+        <div className="section-icon" />
       </div>
 
       <h1>{title}</h1>
@@ -25,9 +25,9 @@ HeroSection.defaultProps = {
 }
 
 HeroSection.propTypes = {
+  children: PropTypes.node,
   subtitle: PropTypes.string,
-  title: PropTypes.string.isRequired,
-  children: PropTypes.node
+  title: PropTypes.string.isRequired
 }
 
 export default HeroSection

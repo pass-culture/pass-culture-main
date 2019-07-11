@@ -33,7 +33,6 @@ export const TextareaField = ({
 }) => (
   <Field
     name={name}
-    validate={composeValidators(validate, getRequiredValidate(required))}
     render={({ input, meta }) => {
       const value = formatInputValueWhenTooLong(input.value, maxLength)
       return (
@@ -41,10 +40,12 @@ export const TextareaField = ({
           className={classnames('field textarea-field', className, {
             'is-label-aligned': label,
             'is-read-only': readOnly,
-          })}>
+          })}
+        >
           <label
+            className={classnames('field-label', { empty: !label })}
             htmlFor={name}
-            className={classnames('field-label', { empty: !label })}>
+          >
             {label && (
               <span>
                 <span>{label}</span>
@@ -85,6 +86,7 @@ export const TextareaField = ({
         </div>
       )
     }}
+    validate={composeValidators(validate, getRequiredValidate(required))}
   />
 )
 

@@ -63,8 +63,9 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         <p>
           Lieu créé. Vous pouvez maintenant y{' '}
           <NavLink
+            onClick={() => dispatch(closeNotification())}
             to={createOfferPathname}
-            onClick={() => dispatch(closeNotification())}>
+          >
             créer une offre
           </NavLink>
           , ou en importer automatiquement.

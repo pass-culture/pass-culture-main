@@ -15,14 +15,21 @@ const Root = () => {
   return (
     <StrictMode>
       <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
+        <PersistGate
+          loading={null}
+          persistor={persistor}
+        >
           <BrowserRouter>
             <App>
               <Switch>
                 {routes.map(route => {
                   const isExact = typeof route.exact !== 'undefined' ? route.exact : true
                   // first props, last overrides
-                  return <Route {...route} key={route.path} exact={isExact} />
+                  return (<Route
+                    {...route}
+                    exact={isExact}
+                    key={route.path}
+                          />)
                 })}
                 <Route component={NotMatchPage} />
               </Switch>

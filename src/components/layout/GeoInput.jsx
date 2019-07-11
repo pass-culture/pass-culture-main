@@ -216,13 +216,15 @@ class GeoInput extends Component {
                 highlighted,
                 placeholder,
               })}
-              key={id}>
+              key={id}
+            >
               {label}
             </div>
           )}
           renderMenu={children => (
             <div
-              className={classnames('menu', { empty: children.length === 0 })}>
+              className={classnames('menu', { empty: children.length === 0 })}
+            >
               {children}
             </div>
           )}
@@ -243,19 +245,23 @@ class GeoInput extends Component {
     return (
       <div className="geo-input">
         {$input}
-        <Map center={[latitude, longitude]} zoom={zoom} className="map">
+        <Map
+          center={[latitude, longitude]}
+          className="map"
+          zoom={zoom}
+        >
           <TileLayer
             // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
           />
           {marker && (
             <Marker
+              alt={[marker.latitude, marker.longitude].join('-')}
               draggable
+              icon={customIcon}
               onDragend={this.updatePosition}
               position={[marker.latitude, marker.longitude]}
-              icon={customIcon}
               ref={this.refmarker}
-              alt={[marker.latitude, marker.longitude].join('-')}
             />
           )}
         </Map>

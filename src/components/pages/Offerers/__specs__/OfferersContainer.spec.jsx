@@ -53,7 +53,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
         }],
         "pendingOfferers": []
       }
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
   })
 })

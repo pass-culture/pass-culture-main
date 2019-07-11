@@ -16,7 +16,7 @@ describe('selectTypeByIsVenueVirtualAndOfferTypeValue', () => {
       )
 
       // then
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         appLabel: 'Supports physiques ou en ligne',
         conditionalFields: ['author', 'musicType', 'performer'],
         description:

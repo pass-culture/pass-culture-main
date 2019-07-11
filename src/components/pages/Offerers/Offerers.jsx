@@ -173,20 +173,23 @@ class Offerers extends Component {
         <HeroSection title={sectionTitle}>
           <p className="subtitle">
             Pour présenter vos offres, vous devez d'abord <a href={url}>créer un{' '}
-            nouveau lieu </a> lié à une structure.
+            nouveau lieu 
+            </a> lié à une structure.
             <br />
             Sans lieu, vous pouvez uniquement <a href="/offres/creation">ajouter des offres numériques.</a>
           </p>
           <div className="title-action-links">
             <NavLink
+              className="cta button is-primary is-outlined"
               to="/structures/creation"
-              className="cta button is-primary is-outlined">
+            >
               + Ajouter une structure
               <span
                 className="tip-icon"
                 data-place="bottom"
                 data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par example, un réseau de grande distribution ou de franchisés).</p>"
-                data-type="info">
+                data-type="info"
+              >
                 <Icon svg="picto-tip" />
               </span>
             </NavLink>
@@ -207,10 +210,14 @@ class Offerers extends Component {
                   <Fragment>
                     <button
                       className="button is-primary is-outlined search-ok ml12"
-                      type="submit">
+                      type="submit"
+                    >
                       OK
                     </button>
-                    <button className="button is-secondary" disabled>
+                    <button
+                      className="button is-secondary"
+                      disabled
+                    >
                       &nbsp;
                       <Icon svg="ico-filter" />
                       &nbsp;
@@ -225,9 +232,15 @@ class Offerers extends Component {
         <br />
 
         {pendingOfferers.length > 0 && (
-          <ul id="pending-offerer-list" className="main-list offerers-list">
+          <ul
+            className="main-list offerers-list"
+            id="pending-offerer-list"
+          >
             {pendingOfferers.map(o => (
-              <PendingOffererItem key={o.siren} offerer={o} />
+              <PendingOffererItem
+                key={o.siren}
+                offerer={o}
+              />
             ))}
           </ul>
         )}
@@ -236,11 +249,15 @@ class Offerers extends Component {
           className="main-list offerers-list"
           element="ul"
           hasMore={hasMore}
-          loader={<Spinner key="spinner" />}
           isLoading={isLoading}
-          useWindow>
+          loader={<Spinner key="spinner" />}
+          useWindow
+        >
           {offerers.map(offerer => (
-            <OffererItemContainer key={offerer.id} offerer={offerer} />
+            <OffererItemContainer
+              key={offerer.id}
+              offerer={offerer}
+            />
           ))}
         </LoadingInfiniteScroll>
       </Main>

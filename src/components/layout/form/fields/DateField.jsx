@@ -24,7 +24,10 @@ const renderDateInput = dateInputProps => (
   <div className="flex-columns items-center field-input field-date">
     <DatePicker {...dateInputProps} />
     <div className="flex-auto" />
-    <Icon alt="Horaires" svg="ico-calendar" />
+    <Icon
+      alt="Horaires"
+      svg="ico-calendar"
+    />
   </div>
 )
 
@@ -92,7 +95,6 @@ export class DateField extends PureComponent {
     return (
       <Field
         name={name}
-        validate={composeValidators(validate, getRequiredValidate(required))}
         render={({ input, meta }) => {
           let formattedSelectedDatetime = null
           let selectedDatetime = null
@@ -127,10 +129,12 @@ export class DateField extends PureComponent {
               className={classnames('field date-field', className, {
                 'is-read-only': readOnly,
               })}
-              id={id}>
+              id={id}
+            >
               <label
+                className={classnames('field-label', { empty: !label })}
                 htmlFor={name}
-                className={classnames('field-label', { empty: !label })}>
+              >
                 {label && (
                   <span>
                     <span>{label}</span>
@@ -156,6 +160,7 @@ export class DateField extends PureComponent {
             </div>
           )
         }}
+        validate={composeValidators(validate, getRequiredValidate(required))}
       />
     )
   }

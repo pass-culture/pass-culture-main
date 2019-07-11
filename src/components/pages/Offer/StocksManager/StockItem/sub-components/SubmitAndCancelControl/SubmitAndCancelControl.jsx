@@ -18,7 +18,8 @@ const SubmitAndCancelControl = ({
         })}
         disabled={!canSubmit}
         onClick={handleSubmit}
-        type="submit">
+        type="submit"
+      >
         Valider
       </button>
     </td>
@@ -29,7 +30,8 @@ const SubmitAndCancelControl = ({
           form.reset()
           query.changeToReadOnly(null, { id: stockId, key: 'stock' })
         }}
-        type="reset">
+        type="reset"
+      >
         Annuler
       </button>
     </td>

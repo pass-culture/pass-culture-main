@@ -19,7 +19,7 @@ describe('src | components | pages | Venue | fields | BankFieldsContainer', () =
       const result = mapStateToProps(state, props)
 
       // then
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         adminUserOfferer: {
           offererId: 'FE',
           rights: 'RightsType.admin',

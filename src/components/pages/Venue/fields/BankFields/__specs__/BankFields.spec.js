@@ -16,7 +16,7 @@ describe('src | components | pages | Venue | fields | BankFields', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // when
-      const wrapper = shallow(<BankFields {...props}/>)
+      const wrapper = shallow(<BankFields {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -30,7 +30,7 @@ describe('src | components | pages | Venue | fields | BankFields', () => {
       props.adminUserOfferer = false
 
       // when
-      const wrapper = shallow(<BankFields {...props}/>)
+      const wrapper = shallow(<BankFields {...props} />)
 
       // then
       const title = wrapper.find('h2 > span')
@@ -42,7 +42,7 @@ describe('src | components | pages | Venue | fields | BankFields', () => {
       props.adminUserOfferer = true
 
       // when
-      const wrapper = shallow(<BankFields {...props}/>)
+      const wrapper = shallow(<BankFields {...props} />)
 
       // then
       const title = wrapper.find('h2 > span')
@@ -51,7 +51,7 @@ describe('src | components | pages | Venue | fields | BankFields', () => {
 
     it('should display two TextField components with the right props', () => {
       // when
-      const wrapper = shallow(<BankFields {...props}/>)
+      const wrapper = shallow(<BankFields {...props} />)
 
       // then
       const textFields = wrapper.find(TextField)

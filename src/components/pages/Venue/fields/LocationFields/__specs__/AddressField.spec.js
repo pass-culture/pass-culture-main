@@ -25,7 +25,7 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
     })
   })
 
-  describe('AddressFieldRender', () => {
+  describe('addressFieldRender', () => {
     let props
     let input
     let meta
@@ -50,7 +50,7 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
 
     it('should match snapshot', () => {
       // when
-      const wrapper = shallow(<AddressFieldRender {...props}/>)
+      const wrapper = shallow(<AddressFieldRender {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -98,9 +98,9 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
       expect(locationViewer.prop('className')).toBe('field-input field-address')
       expect(locationViewer.prop('disabled')).toBe(true)
       expect(locationViewer.prop('name')).toBe('fake name')
-      expect(locationViewer.prop('onMarkerDragend')).toEqual(expect.any(Function))
-      expect(locationViewer.prop('onSuggestionSelect')).toEqual(expect.any(Function))
-      expect(locationViewer.prop('onTextChange')).toEqual(expect.any(Function))
+      expect(locationViewer.prop('onMarkerDragend')).toStrictEqual(expect.any(Function))
+      expect(locationViewer.prop('onSuggestionSelect')).toStrictEqual(expect.any(Function))
+      expect(locationViewer.prop('onTextChange')).toStrictEqual(expect.any(Function))
       expect(locationViewer.prop('placeholder')).toBe('')
       expect(locationViewer.prop('readOnly')).toBe(true)
       expect(locationViewer.prop('required')).toBe(true)
@@ -121,9 +121,9 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
       expect(locationViewer.prop('className')).toBe('field-input field-address')
       expect(locationViewer.prop('disabled')).toBe(false)
       expect(locationViewer.prop('name')).toBe('fake name')
-      expect(locationViewer.prop('onMarkerDragend')).toEqual(expect.any(Function))
-      expect(locationViewer.prop('onSuggestionSelect')).toEqual(expect.any(Function))
-      expect(locationViewer.prop('onTextChange')).toEqual(expect.any(Function))
+      expect(locationViewer.prop('onMarkerDragend')).toStrictEqual(expect.any(Function))
+      expect(locationViewer.prop('onSuggestionSelect')).toStrictEqual(expect.any(Function))
+      expect(locationViewer.prop('onTextChange')).toStrictEqual(expect.any(Function))
       expect(locationViewer.prop('placeholder')).toBe('fake placeholder')
       expect(locationViewer.prop('readOnly')).toBe(false)
       expect(locationViewer.prop('required')).toBe(false)
@@ -136,7 +136,7 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
       // then
       const fieldErrors = wrapper.find(FieldErrors)
       expect(fieldErrors).toBeDefined()
-      expect(fieldErrors.prop('meta')).toEqual({})
+      expect(fieldErrors.prop('meta')).toStrictEqual({})
     })
   })
 })

@@ -33,7 +33,7 @@ describe('src | components | pages | hocs | with-login | withRedirectToSigninWhe
   })
 
   describe('functions', () => {
-    it('should redirect to signin when not authenticated', done => {
+    it('should redirect to signin when not authenticated', () => {return new Promise(done => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
@@ -55,6 +55,6 @@ describe('src | components | pages | hocs | with-login | withRedirectToSigninWhe
           </Router>
         </Provider>
       )
-    })
+    })})
   })
 })

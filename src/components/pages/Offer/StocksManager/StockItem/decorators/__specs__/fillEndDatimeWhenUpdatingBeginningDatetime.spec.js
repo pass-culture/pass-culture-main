@@ -42,7 +42,10 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
               name="endTime"
               render={({ input }) => <input {...input} />}
             />
-            <button onClick={handleSubmit} type="submit">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -59,8 +62,8 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
 
     // then
     function onSubmit(formValues) {
-      expect(formValues.beginningDateTime).toEqual(dateModified)
-      expect(formValues.endDateTime).toEqual('2022-08-28T12:02:00.000Z')
+      expect(formValues.beginningDateTime).toStrictEqual(dateModified)
+      expect(formValues.endDateTime).toStrictEqual('2022-08-28T12:02:00.000Z')
     }
   })
 
@@ -100,7 +103,10 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
               name="endTime"
               render={({ input }) => <input {...input} />}
             />
-            <button onClick={handleSubmit} type="submit">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -159,7 +165,10 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
               name="endTime"
               render={({ input }) => <input {...input} />}
             />
-            <button onClick={handleSubmit} type="submit">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -184,8 +193,8 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
 
     // then
     function onSubmit(formValues) {
-      expect(formValues.beginningDateTime).toEqual(dateModified)
-      expect(formValues.endDateTime).toEqual(dateModified)
+      expect(formValues.beginningDateTime).toStrictEqual(dateModified)
+      expect(formValues.endDateTime).toStrictEqual(dateModified)
     }
   })
 })

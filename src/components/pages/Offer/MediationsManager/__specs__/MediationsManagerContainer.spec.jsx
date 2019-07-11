@@ -18,7 +18,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManan
       const result = mapStateToProps(state, props)
 
       // then
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         mediations: [
           {
             authorId: null,

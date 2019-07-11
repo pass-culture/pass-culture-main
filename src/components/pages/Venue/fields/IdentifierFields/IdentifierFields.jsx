@@ -33,8 +33,11 @@ const IdentifierFields = ({
     <div className="field-group">
       {isCreatedEntity && <HiddenField name="managingOffererId" />}
       <div className="field text-field is-label-aligned">
-        <label htmlFor="siret" className="field-label">
-        { (isCreatedEntity)
+        <label
+          className="field-label"
+          htmlFor="siret"
+        >
+          { (isCreatedEntity)
           ? (
             <Fragment>
               SIRET
@@ -46,15 +49,14 @@ const IdentifierFields = ({
               </span>
             </Fragment>
           )
-        : 'SIRET : '
-        }
-      </label>
+        : 'SIRET : '}
+        </label>
         <TextField
-        format={formatSirenOrSiret}
-        innerClassName="col-50"
-        name="siret"
-        readOnly={readOnly || initialSiret !== null}
-        renderValue={() => {
+          format={formatSirenOrSiret}
+          innerClassName="col-50"
+          name="siret"
+          readOnly={readOnly || initialSiret !== null}
+          renderValue={() => {
           if (readOnly) {
             return null
           }
@@ -64,7 +66,8 @@ const IdentifierFields = ({
                 className="button"
                 data-place="bottom"
                 data-tip="<p>Il n'est pas possible de modifier le nom, l'addresse et la géolocalisation du lieu quand un siret est renseigné.</p>"
-                data-type="info">
+                data-type="info"
+              >
                 <Icon svg="picto-info" />
               </span>
             )
@@ -75,14 +78,15 @@ const IdentifierFields = ({
               data-place="bottom"
               data-tip="<div><p>Saisissez ici le SIRET du lieu lié à votre structure pour retrouver ses informations automatiquement.</p>
 <p>Si les informations ne correspondent pas au SIRET saisi, <a href='mailto:pass@culture.gouv.fr?subject=Question%20SIRET'> contactez notre équipe</a>.</p></div>"
-              data-type="info">
+              data-type="info"
+            >
               <Icon svg="picto-info" />
             </span>
           )
         }}
-        type="siret"
-        {...(initialSiret ? {} : { validate: siretValidate })}
-      />
+          type="siret"
+          {...(initialSiret ? {} : { validate: siretValidate })}
+        />
       </div>
       <TextField
         label="Nom : "
@@ -90,13 +94,16 @@ const IdentifierFields = ({
         readOnly={readOnly || fieldReadOnlyBecauseFrozenFormSiret}
         required
       />
-      <TextField label="Nom d'usage : " name="publicName" readOnly={readOnly} />
+      <TextField
+        label="Nom d'usage : "
+        name="publicName"
+        readOnly={readOnly}
+      />
       <TextField
         innerClassName="col-75"
         label="E-mail : "
         name="bookingEmail"
         readOnly={readOnly}
-        required
         renderValue={() => {
           if (readOnly) {
             return null
@@ -104,13 +111,15 @@ const IdentifierFields = ({
           return (
             <span
               className="button"
-              data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une adresse différente est saisie lors de la création d'une offre)</p>"
               data-place="bottom"
-              data-type="info">
+              data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une adresse différente est saisie lors de la création d'une offre)</p>"
+              data-type="info"
+            >
               <Icon svg="picto-info" />
             </span>
           )
         }}
+        required
         type="email"
       />
       <TextareaField

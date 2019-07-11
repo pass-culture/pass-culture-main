@@ -1,7 +1,7 @@
 import { selectMediationsByOfferId } from '../selectMediationsByOfferId'
 
 describe('selectMediationsByOfferId', () => {
-  describe('When there is no mediations in state and no offerId provided', () => {
+  describe('when there is no mediations in state and no offerId provided', () => {
     it('should return an empty array', () => {
       // Given
       const state = {
@@ -14,11 +14,11 @@ describe('selectMediationsByOfferId', () => {
       const mediations = selectMediationsByOfferId(state)
 
       // Then
-      expect(mediations).toEqual([])
+      expect(mediations).toStrictEqual([])
     })
   })
 
-  describe('When there is no mediations in state and offerId', () => {
+  describe('when there is no mediations in state and offerId', () => {
     it('should return an empty array', () => {
       // Given
       const state = {
@@ -31,11 +31,11 @@ describe('selectMediationsByOfferId', () => {
       const mediations = selectMediationsByOfferId(state, 'MY')
 
       // Then
-      expect(mediations).toEqual([])
+      expect(mediations).toStrictEqual([])
     })
   })
 
-  describe('When there are mediations in state and offerI is not matching', () => {
+  describe('when there are mediations in state and offerI is not matching', () => {
     it('should return an empty array', () => {
       // Given
       const state = {
@@ -65,11 +65,11 @@ describe('selectMediationsByOfferId', () => {
       const mediations = selectMediationsByOfferId(state, 'MY')
 
       // Then
-      expect(mediations).toEqual([])
+      expect(mediations).toStrictEqual([])
     })
   })
 
-  describe('When there are mediations in state and offerId matching', () => {
+  describe('when there are mediations in state and offerId matching', () => {
     it('should return the mediations matching with offerId', () => {
       // Given
       const state = {
@@ -117,7 +117,7 @@ describe('selectMediationsByOfferId', () => {
       ]
 
       // Then
-      expect(mediations).toEqual(expected)
+      expect(mediations).toStrictEqual(expected)
     })
   })
 })

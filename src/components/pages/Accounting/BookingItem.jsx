@@ -101,12 +101,14 @@ class BookingItem extends Component {
                   })
                 )
                 dispatch(closeModal())
-              }}>
+              }}
+            >
               Oui
             </button>
             <button
               className="button is-primary level-item"
-              onClick={() => dispatch(closeModal())}>
+              onClick={() => dispatch(closeModal())}
+            >
               Non
             </button>
           </div>
@@ -146,10 +148,16 @@ class BookingItem extends Component {
     return (
       <Fragment>
         <tr className="offer-item">
-          <td colSpan="5" className="title">
+          <td
+            className="title"
+            colSpan="5"
+          >
             {name}
           </td>
-          <td colSpan="5" className="title userName">
+          <td
+            className="title userName"
+            colSpan="5"
+          >
             {token}: {userIdentifier}
           </td>
           <td rowSpan="2">
@@ -159,7 +167,8 @@ class BookingItem extends Component {
                 <div className="navbar-dropdown is-right">
                   <a
                     className="navbar-item cancel"
-                    onClick={this.onCancelClick}>
+                    onClick={this.onCancelClick}
+                  >
                     <Icon svg="ico-close-r" /> Annuler la réservation
                   </a>
                 </div>
@@ -185,7 +194,10 @@ class BookingItem extends Component {
           <td>{amount}</td>
           <td>{reimbursed_amount}</td>
           <td>
-            <Icon svg={picto} className="picto tiny" /> {message}
+            <Icon
+              className="picto tiny"
+              svg={picto}
+            /> {message}
           </td>
         </tr>
       </Fragment>

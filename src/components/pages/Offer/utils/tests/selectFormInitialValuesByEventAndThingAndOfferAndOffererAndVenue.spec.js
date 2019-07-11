@@ -52,7 +52,7 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
       url: undefined,
       venueId: 'CE',
     }
-    expect(value).toEqual(expectedValue)
+    expect(value).toStrictEqual(expectedValue)
   })
 
   it('should build an object taking info from product when creating new offer', () => {
@@ -75,7 +75,7 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
     )
 
     // then
-    expect(value.description).toEqual(product.description)
+    expect(value.description).toStrictEqual(product.description)
   })
 
   it('should build an offer taking info from offer when updating offer', () => {
@@ -101,6 +101,6 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
     )
 
     // then
-    expect(value.description).toEqual(offer.description)
+    expect(value.description).toStrictEqual(offer.description)
   })
 })

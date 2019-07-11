@@ -59,12 +59,12 @@ describe('src | components | pages | Offers | RawOffers', () => {
         const wrapper = shallow(<RawOffers {...initialProps} />)
 
         // then
-        expect(wrapper.state()).toEqual(expected)
+        expect(wrapper.state()).toStrictEqual(expected)
         dispatchMock.mockClear()
         queryChangeMock.mockClear()
       })
     })
-    describe('OfferItem', () => {
+    describe('offerItem', () => {
       it('should render items corresponding to offers', () => {
         // given
         initialProps.offers = mockedOffers
@@ -77,9 +77,9 @@ describe('src | components | pages | Offers | RawOffers', () => {
         expect(offerItem).toHaveLength(mockedOffers.length)
       })
     })
-    describe('When offers shown for an offerer or a venue', () => {
-      describe('NavLink to create offer', () => {
-        describe('When user isAdmin', () => {
+    describe('when offers shown for an offerer or a venue', () => {
+      describe('navLink to create offer', () => {
+        describe('when user isAdmin', () => {
           it('should display NavLink', () => {
             // given
             initialProps.currentUser = {
@@ -94,7 +94,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
             expect(navLink).toHaveLength(0)
           })
         })
-        describe('When structure (or offererId)', () => {
+        describe('when structure (or offererId)', () => {
           it('should render link properly', () => {
             // given
             initialProps.currentUser = {
@@ -110,12 +110,12 @@ describe('src | components | pages | Offers | RawOffers', () => {
 
             // then
             expect(navLink).toHaveLength(1)
-            expect(navLink.props().to).toEqual(
+            expect(navLink.props().to).toStrictEqual(
               '/offres/creation?structure=TEST'
             )
           })
         })
-        describe('When lieu or (VenueId)', () => {
+        describe('when lieu or (VenueId)', () => {
           it('should render link properly', () => {
             // given
             initialProps.currentUser = {
@@ -131,7 +131,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
 
             // then
             expect(navLink).toHaveLength(1)
-            expect(navLink.props().to).toEqual('/offres/creation?lieu=LIEU')
+            expect(navLink.props().to).toStrictEqual('/offres/creation?lieu=LIEU')
           })
         })
       })
@@ -151,7 +151,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
         }
 
         // then
-        expect(dispatchMock.mock.calls[0][0]).toEqual(expectedAssignData)
+        expect(dispatchMock.mock.calls[0][0]).toStrictEqual(expectedAssignData)
         dispatchMock.mockClear()
         queryChangeMock.mockClear()
       })
@@ -171,7 +171,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
           wrapper.instance().componentDidMount()
 
           // then
-          expect(queryChangeMock.mock.call).toEqual({ page: null })
+          expect(queryChangeMock.mock.call).toStrictEqual({ page: null })
           queryChangeMock.mockClear()
         })
       })
@@ -197,7 +197,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
           }
 
           // then
-          expect(dispatchMock.mock.calls[1][0]).toEqual(expected)
+          expect(dispatchMock.mock.calls[1][0]).toStrictEqual(expected)
           dispatchMock.mockClear()
         })
       })
@@ -227,7 +227,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
           }
 
           // the
-          expect(dispatchMock.mock.calls[1][0]).toEqual(expectedAssignData)
+          expect(dispatchMock.mock.calls[1][0]).toStrictEqual(expectedAssignData)
 
           dispatchMock.mockClear()
         })
@@ -259,7 +259,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
           }
 
           // then
-          expect(wrapper.state()).toEqual(expected)
+          expect(wrapper.state()).toStrictEqual(expected)
         })
 
         it('should dispatch assignData with good params', () => {
@@ -274,7 +274,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
           }
 
           // then
-          expect(dispatchMock.mock.calls[0][0]).toEqual(expected)
+          expect(dispatchMock.mock.calls[0][0]).toStrictEqual(expected)
           dispatchMock.mockClear()
         })
 
@@ -287,7 +287,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
           }
 
           // then
-          expect(queryChangeMock.mock.calls[0][0]).toEqual(expected)
+          expect(queryChangeMock.mock.calls[0][0]).toStrictEqual(expected)
           queryChangeMock.mockClear()
         })
       })
@@ -314,7 +314,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
           }
 
           // then
-          expect(queryChangeMock.mock.calls[0][0]).toEqual(expected)
+          expect(queryChangeMock.mock.calls[0][0]).toStrictEqual(expected)
           queryChangeMock.mockClear()
         })
       })

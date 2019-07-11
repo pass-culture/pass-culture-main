@@ -6,9 +6,13 @@ const CreationControl = ({ parseFormChild }) =>
   recursiveMap(
     <div
       className="field is-grouped is-grouped-centered"
-      style={{ justifyContent: 'space-between' }}>
+      style={{ justifyContent: 'space-between' }}
+    >
       <div className="control">
-        <NavLink className="button is-secondary is-medium" to="/structures">
+        <NavLink
+          className="button is-secondary is-medium"
+          to="/structures"
+        >
           Retour
         </NavLink>
       </div>

@@ -42,7 +42,7 @@ class SirenInput extends Component {
         {$input}
         {fetchedName
           ? withFetchedName && (
-              <span className="display-name">{fetchedName}</span>
+          <span className="display-name">{fetchedName}</span>
             )
           : value &&
             !errors &&

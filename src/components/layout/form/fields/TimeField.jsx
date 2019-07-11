@@ -29,17 +29,18 @@ export const TimeField = ({
 }) => (
   <Field
     name={name}
-    validate={composeValidators(validate, getRequiredValidate(required))}
     render={({ input, meta }) => {
       return (
         <div
           className={classnames('field time-field', className, {
             'is-read-only': readOnly,
           })}
-          id={id}>
+          id={id}
+        >
           <label
+            className={classnames('field-label', { empty: !label })}
             htmlFor={name}
-            className={classnames('field-label', { empty: !label })}>
+          >
             {label && (
               <span>
                 <span>{label}</span>
@@ -75,6 +76,7 @@ export const TimeField = ({
         </div>
       )
     }}
+    validate={composeValidators(validate, getRequiredValidate(required))}
   />
 )
 

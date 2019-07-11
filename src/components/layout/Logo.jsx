@@ -23,8 +23,12 @@ const Logo = ({ className, noLink, whiteHeader, signPage }) => {
       className={classnames('logo', className, { 'no-link': noLink })}
       isActive={() => false}
       to="/accueil"
-      {...extraProps}>
-      <img src={src} alt="Logo" />
+      {...extraProps}
+    >
+      <img
+        alt="Logo"
+        src={src}
+      />
     </NavLink>
   )
 }

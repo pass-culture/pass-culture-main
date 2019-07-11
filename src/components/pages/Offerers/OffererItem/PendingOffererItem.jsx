@@ -8,7 +8,10 @@ const PendingOffererItem = ({ offerer }) => (
         <span className="name">{offerer.name}</span> (SIREN:{' '}
         {formatSirenOrSiret(offerer.siren)})
       </p>
-      <p className="is-italic mb12" id="offerer-item-validation">
+      <p
+        className="is-italic mb12"
+        id="offerer-item-validation"
+      >
         Rattachement en cours de validation
       </p>
     </div>

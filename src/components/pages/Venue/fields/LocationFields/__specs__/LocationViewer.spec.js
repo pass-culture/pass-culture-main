@@ -6,7 +6,7 @@ describe('src | components | pages | Venue | fields | LocationViewer', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // when
-      const wrapper = shallow(<LocationViewer/>)
+      const wrapper = shallow(<LocationViewer />)
 
       // then
       expect(wrapper).toBeDefined()

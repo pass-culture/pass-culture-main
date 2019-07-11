@@ -142,7 +142,8 @@ export class StockItem extends Component {
       <tbody
         ref={_element => {
           this.tbodyElement = _element
-        }}>
+        }}
+      >
         <Form
           decorators={decorators}
           initialValues={stockPatch}
@@ -172,8 +173,8 @@ export class StockItem extends Component {
                   dispatch={dispatch}
                   hasIban={hasIban}
                   isEvent={isEvent}
-                  readOnly={readOnly}
                   offer={offer}
+                  readOnly={readOnly}
                   showInfo={showInfo}
                   stock={stock}
                   timezone={timezone}
@@ -183,12 +184,12 @@ export class StockItem extends Component {
                   <EditAndDeleteControl
                     dispatch={dispatch}
                     formInitialValues={stockPatch}
+                    handleSetErrors={handleSetErrors}
                     history={history}
                     isEvent={isEvent}
                     offer={offer}
                     stock={stock}
                     tbody={tbodyElement}
-                    handleSetErrors={handleSetErrors}
                   />
                 ) : (
                   <SubmitAndCancelControlContainer
@@ -227,9 +228,9 @@ StockItem.propTypes = {
   isEvent: PropTypes.bool.isRequired,
   offer: PropTypes.shape(),
   query: PropTypes.shape().isRequired,
+  showInfo: PropTypes.func.isRequired,
   stockPatch: PropTypes.shape().isRequired,
   stocks: PropTypes.arrayOf(PropTypes.object),
-  showInfo: PropTypes.func.isRequired,
   timezone: PropTypes.string,
   venue: PropTypes.shape(),
 }

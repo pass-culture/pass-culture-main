@@ -23,8 +23,8 @@ class SignupConfirmation extends PureComponent {
           </div>
           <div className="information-text flex-left">
             <img
-              src={`${ROOT_PATH}/icons/picto-info-grey.svg`}
               alt="picto info"
+              src={`${ROOT_PATH}/icons/picto-info-grey.svg`}
             />
             <p>
               Si vous ne recevez pas d'e-mail de notre part d'ici 5 minutes,

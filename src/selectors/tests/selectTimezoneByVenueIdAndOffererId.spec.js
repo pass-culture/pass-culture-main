@@ -35,7 +35,7 @@ describe('selectTimezoneByVenueIdAndOffererId', () => {
     const result = selectTimezoneByVenueIdAndOffererId(state, venueId)
 
     // then
-    expect(result).toEqual(undefined)
+    expect(result).toStrictEqual(undefined)
   })
 
   it('should return undefined when virtual venue and no offerer', () => {
@@ -51,7 +51,7 @@ describe('selectTimezoneByVenueIdAndOffererId', () => {
     )
 
     // then
-    expect(result).toEqual(undefined)
+    expect(result).toStrictEqual(undefined)
   })
 
   it('should return the timezone of the venue when physical', () => {
@@ -62,7 +62,7 @@ describe('selectTimezoneByVenueIdAndOffererId', () => {
     const result = selectTimezoneByVenueIdAndOffererId(state, venueId)
 
     // then
-    expect(result).toEqual('America/Cayenne')
+    expect(result).toStrictEqual('America/Cayenne')
   })
 
   it('should return the timezone of the offerer when virtual', () => {
@@ -78,6 +78,6 @@ describe('selectTimezoneByVenueIdAndOffererId', () => {
     )
 
     // then
-    expect(result).toEqual('Europe/Paris')
+    expect(result).toStrictEqual('Europe/Paris')
   })
 })

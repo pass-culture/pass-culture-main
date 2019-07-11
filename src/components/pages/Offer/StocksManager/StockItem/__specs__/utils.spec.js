@@ -130,7 +130,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
       userId: 'FSDA',
     },
   ]
-  describe('When there is available stock', () => {
+  describe('when there is available stock', () => {
     it('should compute remaining stock', () => {
       // given
       const available = 56
@@ -139,11 +139,11 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
       const result = getRemainingStocksCount(available, bookings)
 
       // then
-      expect(result).toEqual(54)
+      expect(result).toStrictEqual(54)
     })
   })
 
-  describe('When stock is unlimited', () => {
+  describe('when stock is unlimited', () => {
     it('should compute remaining illimited stock', () => {
       // given
       const available = null
@@ -153,7 +153,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
       const result = getRemainingStocksCount(available, bookings)
 
       // then
-      expect(result).toEqual('Illimité')
+      expect(result).toStrictEqual('Illimité')
     })
   })
 
@@ -166,7 +166,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
       const nextDatetime = getDatetimeOneDayAfter(datetime)
 
       // then
-      expect(nextDatetime).toEqual('2019-04-28T19:00:00.000Z')
+      expect(nextDatetime).toStrictEqual('2019-04-28T19:00:00.000Z')
     })
     it('should getDatetimeOneHourAfter', () => {
       // given
@@ -176,7 +176,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
       const nextDatetime = getDatetimeOneHourAfter(datetime)
 
       // then
-      expect(nextDatetime).toEqual('2019-04-27T20:00:00.000Z')
+      expect(nextDatetime).toStrictEqual('2019-04-27T20:00:00.000Z')
     })
     it('should getDatetimeAtSpecificHoursAndMinutes', () => {
       // given
@@ -190,12 +190,12 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
       )
 
       // then
-      expect(nextDatetime).toEqual('2019-04-27T21:59:00.000Z')
+      expect(nextDatetime).toStrictEqual('2019-04-27T21:59:00.000Z')
     })
   })
 
   describe('formatPrice', () => {
-    describe('Gratuit label', () => {
+    describe('gratuit label', () => {
       it('should return "Gratuit" label when isReadOnly is true and value is null', () => {
         // given
         const readOnly = true
@@ -243,7 +243,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
         const result = formatPrice(readOnly)(value)
 
         // then
-        expect(result).toEqual("1.1")
+        expect(result).toStrictEqual("1.1")
       })
 
       it('should return a not formatted value when value contain a dot', () => {
@@ -255,7 +255,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
         const result = formatPrice(readOnly)(value)
 
         // then
-        expect(result).toEqual("1.1")
+        expect(result).toStrictEqual("1.1")
       })
     })
   })

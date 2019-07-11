@@ -20,21 +20,28 @@ const VenueItem = ({ venue }) => {
       </div>
       <div className="list-content">
         <p className="name">
-          <NavLink id={`a-${buildLinkIdFromVenue(venue)}`} to={showPath}>
+          <NavLink
+            id={`a-${buildLinkIdFromVenue(venue)}`}
+            to={showPath}
+          >
             {publicName || name}
           </NavLink>
         </p>
         <ul className="actions">
           <li>
             <NavLink
+              className="has-text-primary"
               to={`/offres/creation?lieu=${id}`}
-              className="has-text-primary">
+            >
               <Icon svg="ico-offres-r" /> Créer une offre
             </NavLink>
           </li>
           {venue.nOffers > 0 ? (
             <li>
-              <NavLink to={`/offres?lieu=${id}`} className="has-text-primary">
+              <NavLink
+                className="has-text-primary"
+                to={`/offres?lieu=${id}`}
+              >
                 <Icon svg="ico-offres-r" />
                 {pluralize(venue.nOffers, 'offres')}
               </NavLink>
@@ -43,7 +50,10 @@ const VenueItem = ({ venue }) => {
             <li>0 offre</li>
           )}
           <li>
-            <Dotdotdot className="has-text-grey" clamp={2}>
+            <Dotdotdot
+              clamp={2}
+              className="has-text-grey"
+            >
               {address} {postalCode} {city}
             </Dotdotdot>
           </li>

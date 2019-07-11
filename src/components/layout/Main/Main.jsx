@@ -12,7 +12,7 @@ import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
 import HeaderContainer from 'components/layout/Header/HeaderContainer'
-import NotificationContainer from "../Notification/NotificationContainer";
+import NotificationContainer from "../Notification/NotificationContainer"
 
 class Main extends Component {
   constructor() {
@@ -99,7 +99,10 @@ class Main extends Component {
     return (
       <Fragment>
         {!fullscreen && (
-          <HeaderContainer whiteHeader={whiteHeader} {...header} />
+          <HeaderContainer
+            whiteHeader={whiteHeader}
+            {...header}
+          />
         )}
         <ReactTooltip
           className="flex-center items-center"
@@ -117,7 +120,8 @@ class Main extends Component {
             container: !fullscreen,
             fullscreen,
             loading,
-          })}>
+          })}
+        >
           {fullscreen ? (
             <Fragment>
               <NotificationContainer isFullscreen />
@@ -130,11 +134,13 @@ class Main extends Component {
                 <div
                   className={classnames('after-notification-content', {
                     'with-padding': backTo,
-                  })}>
+                  })}
+                >
                   {backTo && (
                     <NavLink
+                      className="back-button has-text-primary has-text-weight-semibold"
                       to={backTo.path}
-                      className="back-button has-text-primary has-text-weight-semibold">
+                    >
                       <Icon svg="ico-back" />
                       {` ${backTo.label}`}
                     </NavLink>

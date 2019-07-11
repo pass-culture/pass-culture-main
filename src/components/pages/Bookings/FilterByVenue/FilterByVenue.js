@@ -16,18 +16,28 @@ class FilterByVenue extends PureComponent {
     return (
       <Fragment>
         <div id="filter-by-venue">
-          <label htmlFor="venues" className={labelClassName}>
+          <label
+            className={labelClassName}
+            htmlFor="venues"
+          >
             {'Sélectionnez un lieu :'}
           </label>
           <select
-            id="venues"
             className="pc-selectbox pl24 py5 fs19"
+            disabled={isDigital}
+            id="venues"
             onChange={selectBookingsForVenues}
             value={venueId}
-            disabled={isDigital}>
-            <option disabled label=" "></option>
+          >
+            <option
+              disabled
+              label=" "
+            />
             {venuesOptions.map(({ name, id }) => (
-              <option key={id} value={id}>
+              <option
+                key={id}
+                value={id}
+              >
                 {name}
               </option>
             ))}
@@ -36,11 +46,11 @@ class FilterByVenue extends PureComponent {
         <div className="select-digital-offer mt16 mb12">
           <div>{'ou :'}</div>
           <input
-            id="isDigital"
             className="pc-checkbox input"
-            type="checkbox"
-            onClick={() => this.props.selectOnlyDigitalVenues(!isDigital)}
             defaultChecked={isDigital}
+            id="isDigital"
+            onClick={() => this.props.selectOnlyDigitalVenues(!isDigital)}
+            type="checkbox"
           />
           <label htmlFor="isDigital">
             {'Cochez cette case pour voir les offres numériques'}

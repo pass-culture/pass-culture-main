@@ -30,6 +30,6 @@ describe('selectOffererById', () => {
     const result = selectOffererById(state, offererId)
 
     // then
-    expect(result).toEqual(expected)
+    expect(result).toStrictEqual(expected)
   })
 })

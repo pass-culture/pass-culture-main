@@ -68,12 +68,12 @@ describe('src | components | pages | Offers | OfferItem', () => {
       disableButton.simulate('click')
 
       // then
-      expect(dispatch.mock.calls[0][0]).toEqual(expectedParams)
+      expect(dispatch.mock.calls[0][0]).toStrictEqual(expectedParams)
     })
   })
 
   describe('render offer item', () => {
-    describe('Thumb Component', () => {
+    describe('thumb Component', () => {
       it('should render a Thumb Component with the given url when offer has an active mediation', () => {
         // given
         props.offer.activeMediation = {'thumbUrl': 'https://url.to/thumb'}
@@ -148,8 +148,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       expect(infosSubItems.at(0).prop('className')).toBe('is-uppercase')
       expect(infosSubItems.at(0).text()).toBe('a thing')
-      expect(infosSubItems.at(1).text()).toEqual('Structure : UGC')
-      expect(infosSubItems.at(2).text()).toEqual('Lieu : Paris')
+      expect(infosSubItems.at(1).text()).toStrictEqual('Structure : UGC')
+      expect(infosSubItems.at(2).text()).toStrictEqual('Lieu : Paris')
     })
 
     it('should display informations of the type of offer, the offerer and the venue public name when is given', () => {

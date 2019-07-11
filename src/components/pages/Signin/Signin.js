@@ -27,9 +27,15 @@ class Signin extends Component {
     const { errors } = this.props
 
     return (
-      <Main name="sign-in" fullscreen>
+      <Main
+        fullscreen
+        name="sign-in"
+      >
         <div className="logo-side">
-          <Logo noLink signPage />
+          <Logo
+            noLink
+            signPage
+          />
         </div>
         <div className="container">
           <div className="columns">
@@ -57,10 +63,10 @@ class Signin extends Component {
                   <Form
                     action="/users/signin"
                     BlockComponent={null}
-                    layout="vertical"
-                    name="user"
                     handleSuccessNotification={null}
                     handleSuccessRedirect={this.handleSuccessRedirect}
+                    layout="vertical"
+                    name="user"
                     onEnterKey={event => event.form.onSubmit()}>
                     <div className="field-group">
                       <Field
@@ -79,7 +85,10 @@ class Signin extends Component {
                         type="password"
                       />
                       <span>
-                        <Link to="/mot-de-passe-perdu" id="lostPasswordLink">
+                        <Link
+                          id="lostPasswordLink"
+                          to="/mot-de-passe-perdu"
+                        >
                           Mot de passe égaré ?
                         </Link>
                       </span>
@@ -87,13 +96,15 @@ class Signin extends Component {
                     <div className="errors">{errors}</div>
                     <div className="field buttons-field">
                       <NavLink
+                        className="button is-secondary"
                         to="/inscription"
-                        className="button is-secondary">
+                      >
                         Créer un compte
                       </NavLink>
                       <SubmitButton
                         className="button is-primary is-outlined"
-                        id="signin-submit-button">
+                        id="signin-submit-button"
+                      >
                         Se connecter
                       </SubmitButton>
                     </div>

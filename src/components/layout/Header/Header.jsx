@@ -21,14 +21,17 @@ class Header extends Component {
       <header className={classnames('navbar', { 'is-primary': !whiteHeader })}>
         <div className="container">
           <div className="navbar-brand">
-            <Logo className="navbar-item" whiteHeader={whiteHeader} />
+            <Logo
+              className="navbar-item"
+              whiteHeader={whiteHeader}
+            />
             <span
               className="navbar-burger"
               onClick={e =>
                 this.setState({
                   showMobileMenu: !showMobileMenu,
-                })
-              }>
+                })}
+            >
               <span />
               <span />
               <span />
@@ -37,16 +40,23 @@ class Header extends Component {
           <div
             className={classnames('navbar-menu', {
               'is-active': showMobileMenu,
-            })}>
+            })}
+          >
             <div className="navbar-end">
-              <NavLink className="navbar-item" to="/guichet">
+              <NavLink
+                className="navbar-item"
+                to="/guichet"
+              >
                 <span className="icon">
                   <Icon svg="ico-guichet-w" />
                 </span>
                 <span>Guichet</span>
               </NavLink>
               {!whiteHeader && (
-                <NavLink className="navbar-item" to="/offres">
+                <NavLink
+                  className="navbar-item"
+                  to="/offres"
+                >
                   <span className="icon">
                     <Icon svg="ico-offres-w" />
                   </span>
@@ -57,27 +67,37 @@ class Header extends Component {
                 className="navbar-item"
                 href="https://docs.passculture.app/structures-culturelles"
                 rel="noopener noreferrer"
-                target="_blank">
+                target="_blank"
+              >
                 <span className="icon">
                   <Icon svg="ico-help-w" />
                 </span>
                 <span>Aide</span>
               </a>
               <div className="navbar-item has-dropdown is-hoverable">
-                <NavLink className="navbar-link" to="#">
+                <NavLink
+                  className="navbar-link"
+                  to="#"
+                >
                   <span className="icon">
                     <Icon svg={`ico-user-circled${whiteHeader ? '' : '-w'}`} />
                   </span>
                   <span>{name}</span>
                 </NavLink>
                 <div className="navbar-dropdown is-right">
-                  <NavLink to="/profil" className="navbar-item">
+                  <NavLink
+                    className="navbar-item"
+                    to="/profil"
+                  >
                     <span className="icon">
                       <Icon svg="ico-user" />
                     </span>
                     <span>Profil</span>
                   </NavLink>
-                  <NavLink to="/structures" className="navbar-item">
+                  <NavLink
+                    className="navbar-item"
+                    to="/structures"
+                  >
                     <span className="icon">
                       <Icon svg="ico-structure-r" />
                     </span>
@@ -88,27 +108,39 @@ class Header extends Component {
                     </span>
                   </NavLink>
                   {false && (
-                    <NavLink to="/delegations" className="navbar-item">
+                    <NavLink
+                      className="navbar-item"
+                      to="/delegations"
+                    >
                       <span className="icon">
                         <Icon svg="ico-delegation-r" />
                       </span>
                       <span>Délégations</span>
                     </NavLink>
                   )}
-                  <NavLink to="/reservations" className="navbar-item">
+                  <NavLink
+                    className="navbar-item"
+                    to="/reservations"
+                  >
                     <span className="icon">
                       <Icon svg="ico-bookings" />
                     </span>
                     <span>Suivi des réservations</span>
                   </NavLink>
-                  <NavLink to="/remboursements" className="navbar-item">
+                  <NavLink
+                    className="navbar-item"
+                    to="/remboursements"
+                  >
                     <span className="icon">
                       <Icon svg="ico-compta" />
                     </span>
                     <span>Suivi des remboursements</span>
                   </NavLink>
                   {false && (
-                    <NavLink to="/comptabilite" className="navbar-item">
+                    <NavLink
+                      className="navbar-item"
+                      to="/comptabilite"
+                    >
                       <span className="icon">
                         <Icon svg="ico-compta" />
                       </span>

@@ -64,7 +64,7 @@ describe('src | components | pages | Offerers | Offerers', () => {
 
         // then
 
-        expect(heroSection.title).toEqual('Votre structure juridique')
+        expect(heroSection.title).toStrictEqual('Votre structure juridique')
       })
 
       it('should display Vos structures when many offerers', () => {
@@ -78,7 +78,7 @@ describe('src | components | pages | Offerers | Offerers', () => {
         const heroSection = wrapper.find('HeroSection').props()
 
         // then
-        expect(heroSection.title).toEqual('Vos structures juridiques')
+        expect(heroSection.title).toStrictEqual('Vos structures juridiques')
       })
     })
 
@@ -106,7 +106,7 @@ describe('src | components | pages | Offerers | Offerers', () => {
           	"type": "SHOW_NOTIFICATION"
           }
         ]
-        expect(dispatch.mock.calls[2]).toEqual(expected)
+        expect(dispatch.mock.calls[2]).toStrictEqual(expected)
       })
 
       it("should display a notification when current user has only digital offers", () => {
@@ -132,7 +132,7 @@ describe('src | components | pages | Offerers | Offerers', () => {
           	"type": "SHOW_NOTIFICATION"
           }
         ]
-        expect(dispatch.mock.calls[2]).toEqual(expected)
+        expect(dispatch.mock.calls[2]).toStrictEqual(expected)
       })
     })
 
@@ -162,7 +162,7 @@ describe('src | components | pages | Offerers | Offerers', () => {
                 "type": "REQUEST_DATA_GET_PENDINGOFFERERS"
           }
         ]
-        expect(dispatch.mock.calls[2]).toEqual(expected)
+        expect(dispatch.mock.calls[2]).toStrictEqual(expected)
       })
 
       it("should not display a notification when current user has no offers but physical venues", () => {
@@ -190,7 +190,7 @@ describe('src | components | pages | Offerers | Offerers', () => {
                 "type": "REQUEST_DATA_GET_PENDINGOFFERERS"
           }
         ]
-        expect(dispatch.mock.calls[2]).toEqual(expected)
+        expect(dispatch.mock.calls[2]).toStrictEqual(expected)
       })
     })
 

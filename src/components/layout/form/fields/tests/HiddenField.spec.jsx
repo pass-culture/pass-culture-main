@@ -23,7 +23,10 @@ describe('src | components | layout | form | HiddenField', () => {
           <form>
             <TextField name="title" />
             <HiddenField name="subtitle" />
-            <button onClick={handleSubmit} type="submit">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -36,7 +39,7 @@ describe('src | components | layout | form | HiddenField', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  it('should submit a form with a title text field', done => {
+  it('should submit a form with a title text field', () => {return new Promise(done => {
     // given
     const initialValues = {
       subtitle: 'Mais jamais sans mon cadis.',
@@ -50,7 +53,10 @@ describe('src | components | layout | form | HiddenField', () => {
           <form>
             <TextField name="title" />
             <HiddenField name="subtitle" />
-            <button onClick={handleSubmit} type="submit">
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
               Submit
             </button>
           </form>
@@ -68,9 +74,9 @@ describe('src | components | layout | form | HiddenField', () => {
 
     // then
     function onSubmit(formValues) {
-      expect(formValues.title).toEqual("J'irai droit au But")
-      expect(formValues.subtitle).toEqual(initialValues.subtitle)
+      expect(formValues.title).toStrictEqual("J'irai droit au But")
+      expect(formValues.subtitle).toStrictEqual(initialValues.subtitle)
       done()
     }
-  })
+  })})
 })

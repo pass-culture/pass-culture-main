@@ -30,10 +30,10 @@ const TableSortableTh = ({ field, label, sort, action, style }) => (
 )
 
 TableSortableTh.propTypes = {
-  sort: PropTypes.object.isRequired,
+  action: PropTypes.func.isRequired,
   field: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
-  action: PropTypes.func.isRequired,
+  sort: PropTypes.object.isRequired,
   style: PropTypes.object,
 }
 
@@ -143,23 +143,28 @@ class RawAccouting extends Component {
     // Inject sort and action once for all
     const Th = ({ field, label, style }) => (
       <TableSortableTh
+        action={this.handleSortChange}
         field={field}
         label={label}
         sort={{ field: orderName, dir: orderDirection }}
-        action={this.handleSortChange}
         style={style}
       />
     )
 
     return (
       <Main
-        name="accounting"
+        backTo={{ path: '/accueil', label: 'Accueil' }}
         handleDataRequest={this.handleDataRequest}
-        backTo={{ path: '/accueil', label: 'Accueil' }}>
+        name="accounting"
+      >
         <HeroSection
           subtitle="Suivez vos réservations et vos remboursements."
-          title="Comptabilité">
-          <form className="section" onSubmit={this.onSubmit} />
+          title="Comptabilité"
+        >
+          <form
+            className="section"
+            onSubmit={this.onSubmit}
+          />
           <div className="section">
             <div className="list-header">
               {offerer && (
@@ -167,15 +172,18 @@ class RawAccouting extends Component {
                   Structure:
                   <span className="select is-rounded is-small">
                     <select
+                      className=""
                       onChange={event =>
                         pagination.change({
                           [mapApiToWindow.offererId]: event.target.value,
-                        })
-                      }
-                      className=""
-                      value={offerer.id}>
+                        })}
+                      value={offerer.id}
+                    >
                       {offerers.map(item => (
-                        <option key={item.id} value={item.id}>
+                        <option
+                          key={item.id}
+                          value={item.id}
+                        >
                           {item.name}
                         </option>
                       ))}
@@ -185,50 +193,78 @@ class RawAccouting extends Component {
               )}
             </div>
 
-            <table className="accounting" style={{ width: '100%' }}>
+            <table
+              className="accounting"
+              style={{ width: '100%' }}
+            >
               <thead>
                 <tr>
-                  <th className="first-row" colSpan="5">
+                  <th
+                    className="first-row"
+                    colSpan="5"
+                  >
                     OFFRE
                   </th>
-                  <th className="first-row" colSpan="2">
+                  <th
+                    className="first-row"
+                    colSpan="2"
+                  >
                     RESERVATION
                   </th>
-                  <th className="first-row" colSpan="4">
+                  <th
+                    className="first-row"
+                    colSpan="4"
+                  >
                     REMBOURSEMENT
                   </th>
                 </tr>
                 <tr>
                   {/* @TODO: Fix fake key attributes !*/}
-                  <Th label="Date" field="booking.%22dataModified%22" />
-                  <Th label="Catégorie" field="category" />
-                  <Th label="Structure" field="structure" />
-                  <Th label="Lieu" field="place" />
-                  <Th style={{ width: '60px' }} label="Type" field="type" />
                   <Th
-                    style={{ width: '100px' }}
-                    label="Date limite d'annulation"
-                    field="cancelDate"
+                    field="booking.%22dataModified%22"
+                    label="Date"
                   />
                   <Th
-                    style={{ width: '85px' }}
-                    label="Taux écoulé"
-                    field="rate"
+                    field="category"
+                    label="Catégorie"
                   />
                   <Th
+                    field="structure"
+                    label="Structure"
+                  />
+                  <Th
+                    field="place"
+                    label="Lieu"
+                  />
+                  <Th
+                    field="type"
+                    label="Type"
                     style={{ width: '60px' }}
-                    label="Prix pass"
+                  />
+                  <Th
+                    field="cancelDate"
+                    label="Date limite d'annulation"
+                    style={{ width: '100px' }}
+                  />
+                  <Th
+                    field="rate"
+                    label="Taux écoulé"
+                    style={{ width: '85px' }}
+                  />
+                  <Th
                     field="passPrice"
+                    label="Prix pass"
+                    style={{ width: '60px' }}
                   />
                   <Th
-                    style={{ width: '80px' }}
-                    label="Montant rbt."
                     field="ammount"
+                    label="Montant rbt."
+                    style={{ width: '80px' }}
                   />
                   <Th
-                    style={{ width: '120px' }}
-                    label="État du paiement"
                     field="state"
+                    label="État du paiement"
+                    style={{ width: '120px' }}
                   />
                   <th style={{ width: '25px' }} />
                 </tr>
@@ -245,9 +281,13 @@ class RawAccouting extends Component {
                       style={{ justifyContent: 'center' }}
                     />
                   </tr>
-                )}>
+                )}
+              >
                 {bookings.map(booking => (
-                  <BookingItem key={booking.id} booking={booking} />
+                  <BookingItem
+                    booking={booking}
+                    key={booking.id}
+                  />
                 ))}
               </InfiniteScroller>
             </table>

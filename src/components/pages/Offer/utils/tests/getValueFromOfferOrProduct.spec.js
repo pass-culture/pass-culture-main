@@ -12,7 +12,7 @@ describe('src | components | pages | Offer | utils | getValueFromOfferOrProduct'
     const value = getValueFromOfferOrProduct('description', offer, product)
 
     // then
-    expect(value).toEqual(product.description)
+    expect(value).toStrictEqual(product.description)
   })
 
   it('should take information from offer when updating an offer', () => {
@@ -29,6 +29,6 @@ describe('src | components | pages | Offer | utils | getValueFromOfferOrProduct'
     const value = getValueFromOfferOrProduct('description', offer, product)
 
     // then
-    expect(value).toEqual(offer.description)
+    expect(value).toStrictEqual(offer.description)
   })
 })

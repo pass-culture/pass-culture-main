@@ -56,7 +56,11 @@ class TermsPage extends Component {
   render() {
     const { lastDeployedCommit } = this.props
     return (
-      <Main name="terms" noHeader backButton>
+      <Main
+        backButton
+        name="terms"
+        noHeader
+      >
         <header>
           <h1>Mentions légales</h1>
         </header>
