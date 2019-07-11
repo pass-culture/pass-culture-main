@@ -7,9 +7,14 @@ class FilterByVenue extends PureComponent {
     loadVenues()
   }
 
+  handleOnClick = () => {
+    const { isDigital, selectOnlyDigitalVenues } = this.props
+    selectOnlyDigitalVenues(!isDigital)
+  }
+
   render() {
     const { venuesOptions, isDigital, selectBookingsForVenues, venueId } = this.props
-    const labelClassName = this.props.isDigital
+    const labelClassName = isDigital
       ? 'has-text-grey'
       : 'has-text-black'
 
@@ -49,7 +54,7 @@ class FilterByVenue extends PureComponent {
             className="pc-checkbox input"
             defaultChecked={isDigital}
             id="isDigital"
-            onClick={() => this.props.selectOnlyDigitalVenues(!isDigital)}
+            onClick={this.handleOnClick()}
             type="checkbox"
           />
           <label htmlFor="isDigital">
@@ -68,8 +73,10 @@ FilterByVenue.defaultProps = {
 FilterByVenue.propTypes = {
   isDigital: PropTypes.bool.isRequired,
   loadVenues: PropTypes.func.isRequired,
+  selectBookingsForVenues: PropTypes.func.isRequired,
+  selectOnlyDigitalVenues: PropTypes.func.isRequired,
   venueId: PropTypes.string,
-  venuesOptions: PropTypes.array.isRequired,
+  venuesOptions: PropTypes.arrayOf.isRequired,
 }
 
 export default FilterByVenue

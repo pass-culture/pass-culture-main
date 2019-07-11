@@ -5,7 +5,7 @@ import Bookings from './Bookings'
 import {
   withFrenchQueryRouter,
   withRedirectToSigninWhenNotAuthenticated,
-} from 'components/hocs'
+} from '../../hocs'
 import { API_URL } from '../../../utils/config'
 
 const buildPathToReservationFile = (isFilterByDigitalVenues, selectedVenue) => {
