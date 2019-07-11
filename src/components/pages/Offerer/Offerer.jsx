@@ -10,10 +10,10 @@ import {
   OFFERER_CREATION_PATCH_KEYS,
   OFFERER_MODIFICATION_PATCH_KEYS,
 } from './utils'
-import HeroSection from 'components/layout/HeroSection/HeroSection'
-import Main from 'components/layout/Main'
-import { offererNormalizer } from 'utils/normalizers'
-import { formatPatch } from 'utils/formatPatch'
+import HeroSection from '../../layout/HeroSection/HeroSection'
+import Main from '../../layout/Main'
+import { offererNormalizer } from '../../../utils/normalizers'
+import { formatPatch } from '../../../utils/formatPatch'
 
 class Offerer extends Component {
   handleDataRequest = (handleSuccess, handleFail) => {

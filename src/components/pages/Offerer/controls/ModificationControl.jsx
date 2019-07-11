@@ -49,7 +49,7 @@ const ModificationControl = ({
       </div>
       <br />
       <div className="section">
-        <h2 className="main-list-title">LIEUX</h2>
+        <h2 className="main-list-title">{"LIEUX"}</h2>
         <ul className="main-list venues-list">
           {venues.map(v => (
             <VenueItem
