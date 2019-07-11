@@ -5,7 +5,6 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <FeaturedRoute
     component={[Function]}
-    isFeatureDisabled={true}
     features={
       Array [
         Object {
@@ -13,6 +12,7 @@ ShallowWrapper {
         },
       ]
     }
+    isFeatureDisabled={true}
     requestGetFeatures={[MockFunction]}
   />,
   Symbol(enzyme.__renderer__): Object {

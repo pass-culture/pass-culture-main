@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react'
 import { Transition } from 'react-transition-group'
 
 import Header from './Header'
-import menuRoutes from './menuRoutes'
+import menuItems from './menuItems'
 import NavLink from './NavLink'
 import SignoutButtonContainer from './SignoutButtonContainer'
 import SimpleLink from './SimpleLink'
@@ -47,18 +47,10 @@ class Menu extends PureComponent {
                 />
                 {currentUser && <Header currentUser={currentUser} />}
                 <nav className="flex-rows pb0" id="main-menu-navigation">
-                  {menuRoutes.map(route =>
-                    route.href ? (
-                      <SimpleLink
-                        item={route}
-                        key={route.href}
-                      />
-                    ) : (
-                      <NavLink
-                        item={route}
-                        key={route.path}
-                      />
-                    )
+                  {menuItems.map(menuItem =>
+                    menuItem.href
+                      ? <SimpleLink item={menuItem} key={menuItem.href} />
+                      : <NavLink item={menuItem} key={menuItem.path} />
                   )}
                   <SignoutButtonContainer
                     history={history}

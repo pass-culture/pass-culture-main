@@ -30,7 +30,6 @@ describe('src | components | menu | Menu', () => {
         },
       },
       readRecommendations: [],
-      routes,
       toggleOverlay: jest.fn(),
     }
   })

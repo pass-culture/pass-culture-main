@@ -1,6 +1,6 @@
+import getBrowserRoutes from './getBrowserRoutes'
 import routes from './routes'
-import { getBrowserRoutes } from './utils'
 
-const browserRoutes = getBrowserRoutes(routes)
+export const browserRoutes = getBrowserRoutes(routes)
 
 export default browserRoutes

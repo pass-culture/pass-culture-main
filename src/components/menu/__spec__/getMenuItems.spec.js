@@ -1,14 +1,14 @@
+import getMenuItems from '../getMenuItems'
 import DiscoveryPage from '../../pages/discovery'
 import FavoritesPage from '../../pages/FavoritesPage'
-import MyBookingsContainer from '../../pages/my-bookings'
+import MyBookingsContainer from '../../pages/my-bookings/MyBookingsContainer'
 import ProfilePage from '../../pages/profile'
 import SearchContainer from '../../pages/search/SearchContainer'
-import { getMenuRoutes } from '../utils'
 import routes from '../../router/routes'
 
-describe('getMenuRoutes', () => {
+describe('getMenuItems', () => {
   it('should filter routes for menu from mock', () => {
-    const values = [
+    const testRoutes = [
       { path: '/' },
       { path: '/toto' },
       { icon: 'toto', path: '/toto/:vars?' },
@@ -18,19 +18,19 @@ describe('getMenuRoutes', () => {
       { href: 'mailto:mail.cool' },
       { href: 'mailto:mail.cool', icon: 'toto' },
     ]
-    const result = getMenuRoutes(values)
+    const items = getMenuItems(testRoutes)
     const expected = [
       { icon: 'toto', path: '/toto' },
       { href: '/toto/:vars?', icon: 'toto' },
       { icon: 'toto', path: '/toto' },
       { href: 'mailto:mail.cool', icon: 'toto' },
     ]
-    expect(result).toStrictEqual(expected)
+    expect(items).toStrictEqual(expected)
   })
 
   it('should filter routes for menu from featured routes', () => {
     // when
-    const result = getMenuRoutes(routes)
+    const items = getMenuItems(routes)
     const expected = [
       {
         component: DiscoveryPage,
@@ -85,6 +85,6 @@ describe('getMenuRoutes', () => {
     ]
 
     // then
-    expect(result).toStrictEqual(expected)
+    expect(items).toStrictEqual(expected)
   })
 })

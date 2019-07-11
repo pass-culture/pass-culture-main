@@ -1,4 +1,4 @@
-export const getMenuRoutes = routes =>
+const getMenuItems = routes =>
   routes.reduce((accumulator, currentRoute) => {
     if (currentRoute.icon) {
       if (currentRoute.href) {
@@ -15,3 +15,5 @@ export const getMenuRoutes = routes =>
 
     return accumulator
   }, [])
+
+export default getMenuItems
