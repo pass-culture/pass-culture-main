@@ -72,7 +72,7 @@ class Venue extends Component {
       if (isCreatedEntity) {
         history.push(`/structures/${offererId}`)
       } else {
-        query.changeToReadOnly(null, { id: venueId })
+        query.changeToReadOnly(null)
       }
 
       formResolver()
