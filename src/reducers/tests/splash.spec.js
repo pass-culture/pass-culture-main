@@ -58,9 +58,8 @@ describe('src | reducers | action | showSplash', () => {
     // then
     expect(action).toMatchObject(expected)
   })
-})
-describe('src | reducers | action | showSplash', () => {
-  it('should return correct action type', () => {
+
+  it('should return correct action type (réécrire)', () => {
     // when
     const action = showSplash()
     const expected = {
