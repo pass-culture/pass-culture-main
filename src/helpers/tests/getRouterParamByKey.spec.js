@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/helpers/tests/getRouterParamByKey --watch
 import getRouterParamByKey from '../getRouterParamByKey'
 
 describe('src | helpers | getRouterParamByKey', () => {
@@ -44,7 +43,7 @@ describe('src | helpers | getRouterParamByKey', () => {
       // when
       const value = null
       getRouterParamByKey(value)
-    }).toThrow()
+    }).toThrow('error')
   })
 
   it('returns token equal null if match is not defined', () => {
@@ -53,6 +52,6 @@ describe('src | helpers | getRouterParamByKey', () => {
       const key = null
       const value = { location: { params: { token: 'AAAA' } } }
       getRouterParamByKey(value, key)
-    }).toThrow()
+    }).toThrow('error')
   })
 })

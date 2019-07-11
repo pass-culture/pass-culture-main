@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/helpers/tests/getRouterQueryByKey --watch
 import getRouterQueryByKey from '../getRouterQueryByKey'
 
 describe('src | helpers | getRouterQueryByKey', () => {
@@ -6,14 +5,14 @@ describe('src | helpers | getRouterQueryByKey', () => {
     expect(() => {
       // when
       getRouterQueryByKey({})
-    }).toThrow()
+    }).toThrow('error')
   })
 
   it('should thrown if missing email param', () => {
     expect(() => {
       // when
       getRouterQueryByKey({ search: `?email=user@mail.com}` })
-    }).toThrow()
+    }).toThrow('error')
   })
 
   it('returns null if match falsey', () => {

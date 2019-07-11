@@ -1,4 +1,3 @@
-// jest ./src/helpers/tests/isSameDayInEachTimezone --watch
 import moment from 'moment-timezone'
 
 import isSameDayInEachTimezone from '../isSameDayInEachTimezone'
@@ -32,6 +31,7 @@ describe('src | helpers | isSameDayInEachTimezone', () => {
     result = isSameDayInEachTimezone(datea, dateb)
     expect(result).toStrictEqual(expected)
   })
+
   it('return true, dates are same day in same timezone', () => {
     const expected = true
     let date = new Date('2018-12-25 1:00:00')
@@ -41,6 +41,7 @@ describe('src | helpers | isSameDayInEachTimezone', () => {
     const result = isSameDayInEachTimezone(datea, dateb)
     expect(result).toStrictEqual(expected)
   })
+
   it.skip('return false, dates are not the same day', () => {
     const expected = false
     let date = new Date('2018-12-25 1:00:00')

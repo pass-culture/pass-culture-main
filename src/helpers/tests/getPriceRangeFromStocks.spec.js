@@ -1,4 +1,3 @@
-// $(yarn bin)/jest --env=jsdom ./src/helpers/tests/getPriceRangeFromStocks --watch
 import getPriceRangeFromStocks from '../getPriceRangeFromStocks'
 
 describe('src | helpers | getPriceRangeFromStocks', () => {
@@ -27,6 +26,7 @@ describe('src | helpers | getPriceRangeFromStocks', () => {
       result = getPriceRangeFromStocks(stocks)
       expect(result).toStrictEqual(expected)
     })
+
     describe('when stocks exists', () => {
       it('returns an array of prices with uniques values', () => {
         const stocks = [
@@ -45,6 +45,7 @@ describe('src | helpers | getPriceRangeFromStocks', () => {
       })
     })
   })
+
   describe('when stocks contains no price', () => {
     it('should not', () => {
       const stocks = [{}, { available: null }, { available: 0 }]
@@ -52,6 +53,7 @@ describe('src | helpers | getPriceRangeFromStocks', () => {
       expect(result).toStrictEqual([])
     })
   })
+
   describe('when stocks contains price O and unlimited stock or no stock ', () => {
     it('should return an array with the price', () => {
       // given
@@ -70,6 +72,7 @@ describe('src | helpers | getPriceRangeFromStocks', () => {
       expect(result).toStrictEqual(expected)
     })
   })
+
   describe('when stocks contains price O and unlimited stock', () => {
     it('should return an array with the price', () => {
       // given
@@ -88,6 +91,7 @@ describe('src | helpers | getPriceRangeFromStocks', () => {
       expect(result).toStrictEqual(expected)
     })
   })
+
   describe('when stocks contains price O and no stock ', () => {
     it('should return an array with the price', () => {
       // given
@@ -106,6 +110,7 @@ describe('src | helpers | getPriceRangeFromStocks', () => {
       expect(result).toStrictEqual(expected)
     })
   })
+
   describe('when stocks contains prices with decimals and no stock ', () => {
     it('should not return the price of the offer without stock', () => {
       // given

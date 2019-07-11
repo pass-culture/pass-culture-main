@@ -1,5 +1,4 @@
 export const INFINITE_DISTANCE = 20000
-// hope that pass culture is just still playing on earth
 
 const options = [
   {

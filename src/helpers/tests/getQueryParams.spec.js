@@ -1,9 +1,6 @@
-/* eslint no-console: 0, max-nested-callbacks: 0 */
 import { getQueryParams, getQueryURL } from '../getQueryParams'
 
 describe('getQueryParams', () => {
-  beforeEach(() => {})
-  afterEach(() => {})
   describe('les parametres ne sont pas valides', () => {
     it('retoune une chaine vide', () => {
       const expected = ''
@@ -39,6 +36,7 @@ describe('getQueryParams', () => {
       expect(expected).toStrictEqual(result)
     })
   })
+
   describe('uniquement offerId est défini', () => {
     it('retoune une chaine avec offerId uniquement', () => {
       const expected = 'offerId=1234'
@@ -49,6 +47,7 @@ describe('getQueryParams', () => {
       result = getQueryParams(value)
       expect(expected).toStrictEqual(result)
     })
+
     it('retoune une chaine vide si offerId est egal a tuto', () => {
       const expected = ''
       let value = { offerId: 'tuto' }
@@ -58,6 +57,7 @@ describe('getQueryParams', () => {
       result = getQueryParams(value)
       expect(expected).toStrictEqual(result)
     })
+
     it('retoune une chaine vide si offerId est null ou non-string', () => {
       const expected = ''
       let value = { offerId: null }
@@ -71,6 +71,7 @@ describe('getQueryParams', () => {
       expect(expected).toStrictEqual(result)
     })
   })
+
   describe('uniquement mediationId est défini', () => {
     it('retoune une chaine avec mediationId uniquement', () => {
       const expected = 'mediationId=1234'
@@ -81,6 +82,7 @@ describe('getQueryParams', () => {
       result = getQueryParams(value)
       expect(expected).toStrictEqual(result)
     })
+
     it('retoune une chaine vide si mediationId est null ou non-string', () => {
       const expected = ''
       let value = { mediationId: null }
@@ -94,6 +96,7 @@ describe('getQueryParams', () => {
       expect(expected).toStrictEqual(result)
     })
   })
+
   describe('mediationId et offerId sont définis', () => {
     it('retoune une chaine avec offerId & mediationId', () => {
       let expected = 'offerId=1234&mediationId=5678'
@@ -113,6 +116,7 @@ describe('getQueryParams', () => {
       expect(expected).toStrictEqual(result)
     })
   })
+
   describe('mediationId et offerId sont définis et offerId === tuto', () => {
     it('retoune uniquement mediationId', () => {
       const expected = 'mediationId=5678'
@@ -121,6 +125,7 @@ describe('getQueryParams', () => {
       expect(expected).toStrictEqual(result)
     })
   })
+
   describe('mediationId et offerId sont définis et mediationId === vue', () => {
     it('retoune uniquement offerId', () => {
       let expected = 'offerId=1234'

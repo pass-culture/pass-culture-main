@@ -1,4 +1,3 @@
-// jest --env=jsdom ./src/helpers/tests/createMailToLink --watch
 import createMailToLink from '../createMailToLink'
 
 describe('src | helpers | createMailToLink ', () => {
@@ -18,6 +17,7 @@ describe('src | helpers | createMailToLink ', () => {
       'mailto:email@fake.url?body=http%3A%2F%2Flocalhost%3A3000%2Fdecouverte%2FAE%2F%3Fshared_by%3DAE&subject=Fake%20Title'
     )
   })
+
   it('should create an empty link for window location href', () => {
     // given
     const email = null
@@ -34,6 +34,7 @@ describe('src | helpers | createMailToLink ', () => {
       'mailto:?body=http%3A%2F%2Flocalhost%3A3000%2Fdecouverte%2FAE%2F%3Fshared_by%3DAE&subject=Fake%20Title'
     )
   })
+
   it('should create an empty link without headers', () => {
     // given
     const email = null

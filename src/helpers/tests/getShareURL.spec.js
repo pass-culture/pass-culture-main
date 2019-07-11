@@ -1,6 +1,3 @@
-/* eslint no-console: 0, max-nested-callbacks: 0 */
-// TEST COMMAND
-// ./node_modules/.bin/jest --env=jsdom ./src/helpers/getShareURL.spec.js --watch
 import { getShareURL } from '../getShareURL'
 
 describe('src | helpers | getShareURL', () => {
