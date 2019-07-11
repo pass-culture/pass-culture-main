@@ -20,15 +20,15 @@ const DeskState = ({ message, level, booking }) => (
     <table className="booking-summary">
       <tbody>
         <tr>
-          <th>Utilisateur :</th>
+          <th>{"Utilisateur :"}</th>
           <td>{booking && booking.userName}</td>
         </tr>
         <tr>
-          <th>Offre :</th>
+          <th>{"Offre :"}</th>
           <td>{booking && booking.offerName}</td>
         </tr>
         <tr>
-          <th>Date de l'offre :</th>
+          <th>{"Date de l'offre :"}</th>
           <td>{displayBookingDate(booking)}</td>
         </tr>
       </tbody>
@@ -40,6 +40,15 @@ const DeskState = ({ message, level, booking }) => (
     </div>
   </div>
 )
+
+DeskState.defaultProps = {
+  booking: {
+    date:'',
+    offerName:'',
+    userName:'',
+    venueDepartementCode:'',
+  },
+}
 
 DeskState.propTypes = {
   booking: PropTypes.shape({
