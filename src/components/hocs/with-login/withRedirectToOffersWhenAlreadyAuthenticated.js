@@ -1,6 +1,6 @@
 import withLogin from 'with-login'
 
-export const redirectToUrl = (data) => {
+export const redirectToUrl = data => {
   const { currentUser } = data
   const { hasOffers, hasPhysicalVenues } = currentUser || false
   const hasOffersWithPhysicalVenues = hasOffers && hasPhysicalVenues
@@ -9,5 +9,5 @@ export const redirectToUrl = (data) => {
 
 export const withRedirectToOffersWhenAlreadyAuthenticated = withLogin({
   isRequired: false,
-  successRedirect: redirectToUrl
+  successRedirect: redirectToUrl,
 })

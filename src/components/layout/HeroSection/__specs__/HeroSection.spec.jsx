@@ -9,6 +9,7 @@ describe('src | components | layout | HeroSection', () => {
       // given
       const props = {
         subtitle: 'Fake subtitle',
+        title: 'Fake title',
       }
 
       // when
@@ -26,7 +27,7 @@ describe('src | components | layout | HeroSection', () => {
         // given
         const props = {
           subtitle: 'Fake subtitle',
-          title: 'Fake title'
+          title: 'Fake title',
         }
 
         // when

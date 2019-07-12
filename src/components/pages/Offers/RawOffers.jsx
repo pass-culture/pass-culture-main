@@ -6,7 +6,7 @@ import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { NavLink } from 'react-router-dom'
 import { assignData, requestData } from 'redux-saga-data'
 
-import OfferItem from './OfferItem/OfferItemContainer'
+import OfferItemContainer from './OfferItem/OfferItemContainer'
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import Spinner from '../../layout/Spinner'
 import Main from '../../layout/Main'
@@ -93,17 +93,19 @@ class RawOffers extends Component {
     }
   }
 
-  handleOnVenueClick = query =>
+  handleOnVenueClick = query => () => {
     query.change({
       [mapApiToBrowser.venueId]: null,
       page: null,
     })
+  }
 
-  handleOnOffererClick = query =>
+  handleOnOffererClick = query => () => {
     query.change({
       [mapApiToBrowser.offererId]: null,
       page: null,
     })
+  }
 
   handleOnClick = () => {
     // TODO
@@ -174,15 +176,15 @@ class RawOffers extends Component {
                 type="submit"
               >
                 {'OK'}
-              </button>{' '}
+              </button>
               <button
                 className="button is-secondary"
                 disabled
                 type="button"
               >
                 &nbsp;
-                <Icon svg="ico-filter" />
                 &nbsp;
+                <Icon svg="ico-filter" />
               </button>
             </p>
           </div>
@@ -191,8 +193,8 @@ class RawOffers extends Component {
         <ul className="section">
           {offerer ? (
             <li className="tag is-rounded is-medium">
-              {'Structure : '}
-              <span className="has-text-weight-semibold"> {offerer.name} </span>
+              {'Structure :'}
+              <span className="has-text-weight-semibold">&nbsp;{offerer.name}</span>
               <button
                 className="delete is-small"
                 onClick={this.handleOnOffererClick(query)}
@@ -224,7 +226,7 @@ class RawOffers extends Component {
                 {'Trier par: '}
                 <span className="select is-rounded is-small">
                   <select
-                    onBlur={this.handleOnChange()}
+                    onBlur={this.handleOnChange}
                     value={orderName}
                   >
                     <option value="sold">{'Offres écoulées'}</option>
@@ -235,7 +237,7 @@ class RawOffers extends Component {
               <div>
                 <button
                   className="button is-secondary"
-                  onClick={this.handleOnClick()}
+                  onClick={this.handleOnClick}
                   type="button"
                 >
                   <Icon
@@ -254,7 +256,7 @@ class RawOffers extends Component {
             useWindow
           >
             {offers.map(offer => (
-              <OfferItem
+              <OfferItemContainer
                 key={offer.id}
                 offer={offer}
               />

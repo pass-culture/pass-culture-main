@@ -9,9 +9,9 @@ describe('src | components | pages | Venue | fields | BankFieldsContainer', () =
       const props = {
         match: {
           params: {
-            offererId: 'FE'
-          }
-        }
+            offererId: 'FE',
+          },
+        },
       }
       selectCurrentUser.currentUserUUID = '22a18e44-710c-45cd-b442-34d8ff417fac'
 
@@ -23,8 +23,8 @@ describe('src | components | pages | Venue | fields | BankFieldsContainer', () =
         adminUserOfferer: {
           offererId: 'FE',
           rights: 'RightsType.admin',
-          userId: 'FE'
-        }
+          userId: 'FE',
+        },
       })
     })
   })

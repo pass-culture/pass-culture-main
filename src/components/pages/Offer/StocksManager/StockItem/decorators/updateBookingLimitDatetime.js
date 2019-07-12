@@ -1,10 +1,7 @@
 import moment from 'moment'
 import 'moment-timezone'
 
-import {
-  BOOKING_LIMIT_DATETIME_HOURS,
-  BOOKING_LIMIT_DATETIME_MINUTES,
-} from '../utils'
+import { BOOKING_LIMIT_DATETIME_HOURS, BOOKING_LIMIT_DATETIME_MINUTES } from '../utils'
 
 const updateBookingLimitDatetime = ({
   beginningDatetime,
@@ -15,10 +12,7 @@ const updateBookingLimitDatetime = ({
   timezone,
 }) => {
   const bookingLimitDatetimeMoment = moment(bookingLimitDatetime)
-  if (
-    !isEvent ||
-    bookingLimitDatetimeMoment.isBefore(beginningDatetime, 'day')
-  ) {
+  if (!isEvent || bookingLimitDatetimeMoment.isBefore(beginningDatetime, 'day')) {
     let nextBookingLimitDatetimeMoment = bookingLimitDatetimeMoment
     if (timezone) {
       nextBookingLimitDatetimeMoment = bookingLimitDatetimeMoment.tz(timezone)
@@ -34,15 +28,8 @@ const updateBookingLimitDatetime = ({
     if (!previousBookingLimitDatetime || !previousBookingLimitDatetime) {
       return {}
     }
-    const previousBookingLimitDatetimeMoment = moment(
-      previousBookingLimitDatetime
-    )
-    if (
-      previousBookingLimitDatetimeMoment.isBefore(
-        previousBeginningDatetime,
-        'day'
-      )
-    ) {
+    const previousBookingLimitDatetimeMoment = moment(previousBookingLimitDatetime)
+    if (previousBookingLimitDatetimeMoment.isBefore(previousBeginningDatetime, 'day')) {
       return { bookingLimitDatetime: beginningDatetime }
     }
     return {}

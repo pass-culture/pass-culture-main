@@ -3,21 +3,11 @@ import moment from 'moment'
 import 'moment-timezone'
 import createCachedSelector from 're-reselect'
 
-function mapArgsToCacheKey({
-  triggerDateName,
-  targetDateName,
-  targetTimeName,
-  timezone,
-}) {
-  return `${triggerDateName || ''}${targetDateName || ''}${targetTimeName ||
-    ''}${timezone || ''}`
+function mapArgsToCacheKey({ triggerDateName, targetDateName, targetTimeName, timezone }) {
+  return `${triggerDateName || ''}${targetDateName || ''}${targetTimeName || ''}${timezone || ''}`
 }
 
-function getNewTargetDateThatPreserveOldHourAndMinutes(
-  newDate,
-  oldDate,
-  timezone
-) {
+function getNewTargetDateThatPreserveOldHourAndMinutes(newDate, oldDate, timezone) {
   const targetMoment = moment(newDate).utc()
   const targetDateHourMinutes = targetMoment.format('HH:mm')
 
@@ -35,7 +25,7 @@ function getNewTargetDateThatPreserveOldHourAndMinutes(
     .toISOString()
 }
 
-export const fillEndDatimeWhenUpdatingBeginningDatetime = createCachedSelector(
+const fillEndDatimeWhenUpdatingBeginningDatetime = createCachedSelector(
   ({ triggerDateName }) => triggerDateName,
   ({ targetDateName }) => targetDateName,
   ({ targetTimeName }) => targetTimeName,
@@ -46,8 +36,7 @@ export const fillEndDatimeWhenUpdatingBeginningDatetime = createCachedSelector(
       updates: (triggerDate, doublonTriggerDateName, allValues, prevValues) => {
         const targetDate = allValues[targetDateName]
         const targetTime = allValues[targetTimeName]
-        const shouldNotFillEndDateTimeAtMount =
-          Object.keys(prevValues).length === 0
+        const shouldNotFillEndDateTimeAtMount = Object.keys(prevValues).length === 0
 
         if (shouldNotFillEndDateTimeAtMount) {
           return {}

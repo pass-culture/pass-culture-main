@@ -4,10 +4,10 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Route, Router, Switch } from 'react-router-dom'
 import { assignData } from 'redux-saga-data'
-import { venueNormalizer } from '../../../../utils/normalizers'
-import { configureStore } from '../../../../utils/store'
-import VenueContainer, { mapDispatchToProps, mapStateToProps } from '../VenueContainer'
 
+import { venueNormalizer } from '../../../../utils/normalizers'
+import configureStore from '../../../../utils/store'
+import VenueContainer, { mapDispatchToProps, mapStateToProps } from '../VenueContainer'
 
 window.scroll = () => {}
 
@@ -24,9 +24,9 @@ jest.mock('redux-saga-data', () => {
 })
 
 const BOOKING_EMAIL = 'foo@mama.com'
-const ADDRESS = "5 cite de l'enfer"
+const ADDRESS = '5 cite de l’enfer'
 const CITY = 'Cayenne'
-const COMMENT = "C'est un lieu sans siret"
+const COMMENT = 'C’est un lieu sans siret'
 const LATITUDE = 4.56
 const LONGITUDE = -52.19
 const MANAGING_OFFERER_ID = 'AE'

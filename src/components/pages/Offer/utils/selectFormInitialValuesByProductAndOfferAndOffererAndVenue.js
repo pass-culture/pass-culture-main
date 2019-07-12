@@ -21,7 +21,7 @@ const productKeys = [
   'url',
 ]
 
-export const selectFormInitialValuesByProductAndOfferAndOffererAndVenue = createCachedSelector(
+const selectFormInitialValuesByProductAndOfferAndOffererAndVenue = createCachedSelector(
   (state, product) => product,
   (state, product, offer) => offer,
   (state, product, offer, offerer) => offerer,

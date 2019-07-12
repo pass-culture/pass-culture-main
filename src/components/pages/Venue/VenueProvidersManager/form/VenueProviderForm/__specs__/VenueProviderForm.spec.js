@@ -1,9 +1,10 @@
 import { shallow } from 'enzyme'
 import { Field } from 'react-final-form'
+
 import VenueProviderForm from '../VenueProviderForm'
 import HiddenField from '../../../../../../layout/form/fields/HiddenField'
 import TextField from '../../../../../../layout/form/fields/TextField'
-import { Icon } from '../../../../../../layout/Icon'
+import Icon from '../../../../../../layout/Icon'
 
 describe('src | components | pages | Venue | VenueProvidersManager | form | VenueProviderForm', () => {
   let props
@@ -87,9 +88,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Venu
     // then
     const textField = wrapper.find(TextField)
     expect(textField).toHaveLength(1)
-    expect(textField.prop('className')).toBe(
-      'field-text fs12 field-is-read-only'
-    )
+    expect(textField.prop('className')).toBe('field-text fs12 field-is-read-only')
     expect(textField.prop('label')).toBe('Compte : ')
     expect(textField.prop('name')).toBe('venueIdAtOfferProvider')
     expect(textField.prop('readOnly')).toBe(true)
@@ -108,9 +107,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Venu
     // then
     const textField = wrapper.find(TextField)
     expect(textField).toHaveLength(1)
-    expect(textField.prop('className')).toBe(
-      'field-text fs12 field-is-read-only'
-    )
+    expect(textField.prop('className')).toBe('field-text fs12 field-is-read-only')
     expect(textField.prop('label')).toBe('Compte : ')
     expect(textField.prop('name')).toBe('venueIdAtOfferProvider')
     expect(textField.prop('readOnly')).toBe(true)
@@ -135,7 +132,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Venu
     const icon = tooltip.find(Icon)
     expect(icon).toHaveLength(1)
     expect(icon.prop('svg')).toBe('picto-info')
-    expect(icon.prop('alt')).toBe("image d'aide à l'information")
+    expect(icon.prop('alt')).toBe('image d’aide à l’information')
   })
 
   it('should not display a tooltip and an Icon component when provider is selected, not in loading mode and provider identifier is not required', () => {
@@ -162,15 +159,11 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Venu
     const wrapper = shallow(VenueProviderForm({ ...props })(handleSubmit))
 
     // then
-    const importButtonContainer = wrapper.find(
-      '.provider-import-button-container'
-    )
+    const importButtonContainer = wrapper.find('.provider-import-button-container')
     expect(importButtonContainer).toHaveLength(1)
     const importButton = importButtonContainer.find('button')
     expect(importButton).toHaveLength(1)
-    expect(importButton.prop('className')).toBe(
-      'button is-intermediate provider-import-button'
-    )
+    expect(importButton.prop('className')).toBe('button is-intermediate provider-import-button')
     expect(importButton.prop('type')).toBe('submit')
     expect(importButton.text()).toBe('Importer')
   })
@@ -185,9 +178,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Venu
     const wrapper = shallow(VenueProviderForm({ ...props })(handleSubmit))
 
     // then
-    const importButtonContainer = wrapper.find(
-      '.provider-import-button-container'
-    )
+    const importButtonContainer = wrapper.find('.provider-import-button-container')
     expect(importButtonContainer).toHaveLength(0)
   })
 })

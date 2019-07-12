@@ -9,7 +9,7 @@ describe('src | components | pages | Venue | fields | BankFields', () => {
   beforeEach(() => {
     props = {
       adminUserOfferer: true,
-      readOnly: true
+      readOnly: true,
     }
   })
 
@@ -34,7 +34,9 @@ describe('src | components | pages | Venue | fields | BankFields', () => {
 
       // then
       const title = wrapper.find('h2 > span')
-      expect(title.text()).toBe('Vous avez besoin d\'être administrateur de la structure pour éditer ces informations.')
+      expect(title.text()).toBe(
+        "Vous avez besoin d'être administrateur de la structure pour éditer ces informations."
+      )
     })
 
     it('should not display information label when user is admin of the offerer', () => {

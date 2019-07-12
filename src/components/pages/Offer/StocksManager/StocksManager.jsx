@@ -50,7 +50,7 @@ class StocksManager extends Component {
     const { query } = this.props
     const { readOnly } = query.context({ key: 'stock' })
     if (readOnly) {
-      this.onCloseClick()
+      this.handleOnCloseClick()
     } else {
       const cancelButton = document.getElementsByClassName('cancel-step')[0]
       cancelButton.click()
@@ -185,10 +185,7 @@ class StocksManager extends Component {
           <div className="notification is-danger">
             {Object.keys(errors).map(key => (
               <p key={key}>
-                {' '}
-                {key}
-                {' : '}
-                {errors[key]}
+                {`${key} : ${errors[key]}`}
               </p>
             ))}
           </div>
@@ -209,7 +206,7 @@ class StocksManager extends Component {
                 <tr>
                   <td colSpan="10">
                     <i>
-                      {"Il n'est pas possible d'ajouter ni de supprimer d'horaires"}
+                      {'Il n’est pas possible d’ajouter ni de supprimer d’horaires'}
                       {'pour cet événement'} {provider.name}
                     </i>
                   </td>
@@ -285,7 +282,7 @@ StocksManager.propTypes = {
   isEvent: PropTypes.bool.isRequired,
   query: PropTypes.shape().isRequired,
   shouldPreventCreationOfSecondStock: PropTypes.bool.isRequired,
-  stocks: PropTypes.arrayOf(),
+  stocks: PropTypes.arrayOf(PropTypes.shape()),
 }
 
 export default StocksManager

@@ -1,4 +1,4 @@
-import { selectOfferById } from '../selectOfferById'
+import selectOfferById from '../selectOfferById'
 
 const mockState = {
   data: {
@@ -12,7 +12,7 @@ const mockState = {
         conditions: null,
         dateModifiedAtLastProvider: '2018-11-13T09:38:55.047968Z',
         description:
-          "Venez vivre l'expérience de la culture du vin dans l'Antiquité !\n\nTous les jeudi à 15h00.\nChaussures adaptées, se présenter à la billetterie un quart d'heure avant.",
+          "Venez vivre l’expérience de la culture du vin dans l’Antiquité !\n\nTous les jeudi à 15h00.\nChaussures adaptées, se présenter à la billetterie un quart d'heure avant.",
         durationMinutes: 60,
         extraData: null,
         firstThumbDominantColor: null,
@@ -126,7 +126,7 @@ const mockState = {
           'Courez visiter !\nEn compagnie d’un « running » guide, vous découvrirez le patrimoine au gré de votre course. Le parcours a été conçu afin de permettre la course en ville, et les points d’arrêts choisis auprès de sites remarquables qui vous seront présentés.\nC’est aussi un regard inédit que vous porterez sur votre environnement familier ou non. Ce parcours reste une balade découverte accessible à toutes et à tous, même aux débutants !\n\nParcours Street-Art sur le canal Saint-Denis et au Parc de la Villette (5 à 6 kilomètres)\n\nUne collation de fin de course vous sera offerte\n\nhttps://lavillette.com/programmation/running-visites_e227',
         durationMinutes: 60,
         extraData: {
-          speaker: "Sébastien d'Anjou",
+          speaker: 'Sébastien d’Anjou',
         },
         firstThumbDominantColor: null,
         idAtProviders: null,
@@ -719,7 +719,7 @@ const mockState = {
       },
       {
         id: 'AG6A',
-        address: "RTE DE L'AERODROME",
+        address: 'RTE DE L’AERODROME',
         bic: null,
         city: 'MARIPASOULA',
         dateCreated: '2018-09-06T17:41:15.352418Z',
@@ -806,7 +806,7 @@ const mockState = {
       {
         id: 'AE',
         identifierDescription:
-          "Identifiant de l'agenda (ex: 80942872). Il se trouve à la fin de l'adresse web de votre agenda.",
+          'Identifiant de l’agenda (ex: 80942872). Il se trouve à la fin de l’adresse web de votre agenda.',
         identifierRegexp: '^\\d+$',
         isActive: true,
         localClass: 'OpenAgendaEvents',
@@ -1093,7 +1093,7 @@ const mockState = {
         id: 'VU',
         dateModifiedAtLastProvider: '2018-11-09T14:48:17.207153Z',
         description:
-          "Partez à la découverte du cinéma indépendant canadien grâce à l'offre exclusive de Festival Scope. \n\nRegardez 9 documentaires en compétition du festival RIDM en ligne et gratuitement. \n\nCette reprise en ligne est disponible seulement du 17 novembre au 1 décembre.",
+          'Partez à la découverte du cinéma indépendant canadien grâce à l’offre exclusive de Festival Scope. \n\nRegardez 9 documentaires en compétition du festival RIDM en ligne et gratuitement. \n\nCette reprise en ligne est disponible seulement du 17 novembre au 1 décembre.',
         extraData: null,
         firstThumbDominantColor: null,
         idAtProviders: null,
@@ -1171,8 +1171,7 @@ const mockState = {
         id: 4,
         description:
           'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
-        label:
-          'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
+        label: 'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
         offlineOnly: true,
         onlineOnly: false,
         sublabel: 'Regarder',
@@ -1326,7 +1325,7 @@ const mockState = {
     venues: [
       {
         id: 'AYJA',
-        address: "Route de l'Oppidum",
+        address: 'Route de l’Oppidum',
         bic: null,
         bookingEmail: 'geza.frey@monuments-nationaux.fr',
         city: 'Nissan-lez-Enserune',
@@ -1343,7 +1342,7 @@ const mockState = {
         longitude: 3.11591,
         managingOffererId: 'ALJQ',
         modelName: 'Venue',
-        name: "Site archéologique et musée d'Ensérune",
+        name: 'Site archéologique et musée d’Ensérune',
         postalCode: '34440',
         siret: null,
         thumbCount: 0,
@@ -1368,7 +1367,7 @@ const mockState = {
         longitude: -3.74586,
         managingOffererId: 'AJDQ',
         modelName: 'Venue',
-        name: "méandres — lieu d'art contemporain",
+        name: 'méandres — lieu d’art contemporain',
         postalCode: '29690',
         siret: null,
         thumbCount: 0,
@@ -1737,7 +1736,7 @@ const mockState = {
       },
       {
         id: 'AFHA',
-        address: "RTE DE L'AERODROME",
+        address: 'RTE DE L’AERODROME',
         bic: null,
         bookingEmail: 'afiikanlutu@gmail.com',
         city: 'MARIPASOULA',
@@ -1827,7 +1826,7 @@ const mockState = {
         managingOffererId: 'AHNQ',
         modelName: 'Venue',
         nOffers: 2,
-        name: "L'Albatros",
+        name: 'L’Albatros',
         postalCode: '93100',
         siret: null,
         thumbCount: 0,
@@ -1975,8 +1974,7 @@ const mockState = {
     types: '2018-11-14T09:02:28.407Z',
     'offers?order_by=createdAt+desc&page=1': '2018-09-25T12:49:04.073Z',
     providers: '2018-11-14T09:02:37.094Z',
-    'offers?order_by=createdAt+desc&venueId=ANXQ&page=1':
-      '2018-09-18T14:23:44.475Z',
+    'offers?order_by=createdAt+desc&venueId=ANXQ&page=1': '2018-09-18T14:23:44.475Z',
     offerers: '2018-10-11T09:05:38.662Z',
     'offerers/AJWA': '2018-09-20T08:25:52.712Z',
     'venueProviders?venueId=A89A': '2018-09-20T08:25:55.358Z',
@@ -1987,41 +1985,30 @@ const mockState = {
     'offers?order_by=createdAt+desc&page=3': '2018-09-25T12:49:10.298Z',
     'offerers?order_by=createdAt+desc&page=1': '2018-09-25T12:50:58.314Z',
     'offers?page=1&orderBy=offer.id+desc': '2018-11-14T09:02:28.760Z',
-    'offers?page=1&search=gadzby&orderBy=offer.id+desc':
-      '2018-10-04T15:20:00.418Z',
-    'offers?page=1&search=GADZBY&orderBy=offer.id+desc':
-      '2018-10-04T15:20:19.165Z',
+    'offers?page=1&search=gadzby&orderBy=offer.id+desc': '2018-10-04T15:20:00.418Z',
+    'offers?page=1&search=GADZBY&orderBy=offer.id+desc': '2018-10-04T15:20:19.165Z',
     'offerers?page=1&': '2018-11-14T09:02:34.924Z',
     'offerers?page=1&search=ACP': '2018-10-04T15:20:32.975Z',
     'offerers/AHEQ': '2018-10-04T15:20:39.165Z',
-    'offers?page=1&venueId=AFLA&orderBy=offer.id+desc':
-      '2018-10-04T15:20:42.001Z',
-    'offers?page=2&venueId=AFLA&orderBy=offer.id+desc':
-      '2018-10-04T15:20:44.338Z',
-    'offers?page=3&venueId=AFLA&orderBy=offer.id+desc':
-      '2018-10-04T15:20:45.734Z',
+    'offers?page=1&venueId=AFLA&orderBy=offer.id+desc': '2018-10-04T15:20:42.001Z',
+    'offers?page=2&venueId=AFLA&orderBy=offer.id+desc': '2018-10-04T15:20:44.338Z',
+    'offers?page=3&venueId=AFLA&orderBy=offer.id+desc': '2018-10-04T15:20:45.734Z',
     'offers/AJYA': '2018-10-04T15:21:11.965Z',
     'offers?page=2&orderBy=offer.id+desc': '2018-10-11T09:05:43.484Z',
     'offers?page=3&orderBy=offer.id+desc': '2018-10-09T09:12:01.175Z',
     'offers?page=4&orderBy=offer.id+desc': '2018-10-09T09:12:02.624Z',
     'offers?page=5&orderBy=offer.id+desc': '2018-10-09T09:12:14.085Z',
-    'offers?page=1&keywords=test&orderBy=offer.id+desc':
-      '2018-10-09T09:12:33.690Z',
-    'offers?page=2&keywords=test&orderBy=offer.id+desc':
-      '2018-10-09T09:15:55.705Z',
+    'offers?page=1&keywords=test&orderBy=offer.id+desc': '2018-10-09T09:12:33.690Z',
+    'offers?page=2&keywords=test&orderBy=offer.id+desc': '2018-10-09T09:15:55.705Z',
     'offers/ARHA': '2018-10-09T09:16:02.955Z',
-    'offers?page=1&venueId=AEKQ&orderBy=offer.id+desc':
-      '2018-10-09T09:16:17.154Z',
-    'offers?page=2&venueId=AEKQ&orderBy=offer.id+desc':
-      '2018-10-09T09:16:17.926Z',
+    'offers?page=1&venueId=AEKQ&orderBy=offer.id+desc': '2018-10-09T09:16:17.154Z',
+    'offers?page=2&venueId=AEKQ&orderBy=offer.id+desc': '2018-10-09T09:16:17.926Z',
     'offers/ARGQ': '2018-10-09T09:16:40.279Z',
     'offers/AR9Q': '2018-10-11T08:59:39.433Z',
     'offerers/AFRQ': '2018-10-11T09:06:04.961Z',
     'offers/ARJQ': '2018-10-11T09:05:46.832Z',
-    'offers?page=1&keywords=titre&orderBy=offer.id+desc':
-      '2018-10-11T09:05:22.099Z',
-    'offerers/AFRQ/bookings?offererId=AFRQ&orderBy=booking.id+desc':
-      '2018-10-11T09:05:38.877Z',
+    'offers?page=1&keywords=titre&orderBy=offer.id+desc': '2018-10-11T09:05:22.099Z',
+    'offerers/AFRQ/bookings?offererId=AFRQ&orderBy=booking.id+desc': '2018-10-11T09:05:38.877Z',
     'offers/ARKA': '2018-10-11T09:06:29.773Z',
     'offerers/UQ': '2018-10-11T09:06:40.358Z',
     'offers/ARKQ': '2018-10-11T09:07:08.861Z',
@@ -2068,14 +2055,14 @@ const mockState = {
 
 describe('selectOfferById', () => {
   it('should select an offer given an id', () => {
-    // Given
+    // given
     const state = mockState
     const offerId = 'AXBQ'
 
-    // When
+    // when
     const offer = selectOfferById(state, offerId)
 
-    // Then
+    // then
     expect(offer.id).toStrictEqual(offerId)
   })
 })

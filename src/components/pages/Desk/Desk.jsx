@@ -35,9 +35,7 @@ class Desk extends React.PureComponent {
     this.input.focus()
   }
 
-  getRef() {
-    return element => (this.input = element)
-  }
+  getRef = () => element => (this.input = element)
 
   handleOnClick = code => () => this.handleCodeRegistration(code)
 
@@ -78,14 +76,14 @@ class Desk extends React.PureComponent {
     dispatch(
       requestData({
         apiPath: `/bookings/token/${code}`,
-        handleFail: this.handleFailWhenValidateBooking(),
-        handleSuccess: this.handleSuccessWhenValidateBooking(),
+        handleFail: this.handleFailWhenValidateBooking,
+        handleSuccess: this.handleSuccessWhenValidateBooking,
         method: 'PATCH',
       })
     )
   }
 
-  handleSuccessWhenValidateBooking = () => () => {
+  handleSuccessWhenValidateBooking = () => {
     this.setState({ status: CODE_REGISTERING_SUCCESS })
   }
 
@@ -154,7 +152,7 @@ class Desk extends React.PureComponent {
         level = 'error'
         break
       case CODE_VERIFICATION_SUCCESS:
-        message = 'Coupon vérifié, cliquez sur OK pour enregistrer'
+        message = 'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
         level = 'pending'
         break
       case CODE_REGISTERING_IN_PROGRESS:
@@ -162,7 +160,7 @@ class Desk extends React.PureComponent {
         level = 'pending'
         break
       case CODE_REGISTERING_SUCCESS:
-        message = 'Enregistrement réussi!'
+        message = 'Enregistrement réussi !'
         level = 'success'
         break
       case CODE_VERIFICATION_FAILED:

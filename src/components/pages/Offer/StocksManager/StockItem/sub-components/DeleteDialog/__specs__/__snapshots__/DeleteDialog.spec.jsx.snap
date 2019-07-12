@@ -25,7 +25,8 @@ ShallowWrapper {
           className="is-size-7"
           colSpan="6"
         >
-          En confirmant l'annulation de
+          En confirmant l’annulation de
+
           ce stock
           , vous supprimerez aussi toutes les réservations associées.
 
@@ -57,7 +58,8 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            "En confirmant l'annulation de ",
+            "En confirmant l’annulation de",
+            " ",
             "ce stock",
             ", vous supprimerez aussi toutes les réservations associées.",
             " ",
@@ -69,7 +71,8 @@ ShallowWrapper {
         },
         "ref": null,
         "rendered": Array [
-          "En confirmant l'annulation de ",
+          "En confirmant l’annulation de",
+          " ",
           "ce stock",
           ", vous supprimerez aussi toutes les réservations associées.",
           " ",
@@ -150,7 +153,8 @@ ShallowWrapper {
             className="is-size-7"
             colSpan="6"
           >
-            En confirmant l'annulation de
+            En confirmant l’annulation de
+
             ce stock
             , vous supprimerez aussi toutes les réservations associées.
 
@@ -182,7 +186,8 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              "En confirmant l'annulation de ",
+              "En confirmant l’annulation de",
+              " ",
               "ce stock",
               ", vous supprimerez aussi toutes les réservations associées.",
               " ",
@@ -194,7 +199,8 @@ ShallowWrapper {
           },
           "ref": null,
           "rendered": Array [
-            "En confirmant l'annulation de ",
+            "En confirmant l’annulation de",
+            " ",
             "ce stock",
             ", vous supprimerez aussi toutes les réservations associées.",
             " ",
@@ -318,7 +324,8 @@ ShallowWrapper {
           className="is-size-7"
           colSpan="6"
         >
-          En confirmant l'annulation de
+          En confirmant l’annulation de
+
           cette date
           , vous supprimerez aussi toutes les réservations associées.
 
@@ -351,7 +358,8 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            "En confirmant l'annulation de ",
+            "En confirmant l’annulation de",
+            " ",
             "cette date",
             ", vous supprimerez aussi toutes les réservations associées.",
             " ",
@@ -363,7 +371,8 @@ ShallowWrapper {
         },
         "ref": null,
         "rendered": Array [
-          "En confirmant l'annulation de ",
+          "En confirmant l’annulation de",
+          " ",
           "cette date",
           ", vous supprimerez aussi toutes les réservations associées.",
           " ",
@@ -452,7 +461,8 @@ ShallowWrapper {
             className="is-size-7"
             colSpan="6"
           >
-            En confirmant l'annulation de
+            En confirmant l’annulation de
+
             cette date
             , vous supprimerez aussi toutes les réservations associées.
 
@@ -485,7 +495,8 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              "En confirmant l'annulation de ",
+              "En confirmant l’annulation de",
+              " ",
               "cette date",
               ", vous supprimerez aussi toutes les réservations associées.",
               " ",
@@ -497,7 +508,8 @@ ShallowWrapper {
           },
           "ref": null,
           "rendered": Array [
-            "En confirmant l'annulation de ",
+            "En confirmant l’annulation de",
+            " ",
             "cette date",
             ", vous supprimerez aussi toutes les réservations associées.",
             " ",
@@ -600,13 +612,6 @@ ShallowWrapper {
       },
     },
   },
-<<<<<<< HEAD
-  Symbol(enzyme.__childContext__): null,
-||||||| merged common ancestors
   Symbol(enzyme.__providerValues__): Map {},
-  Symbol(enzyme.__childContext__): null,
-=======
-  Symbol(enzyme.__providerValues__): Map {},
->>>>>>> (PC-1958) fix tests with new eslint rules
 }
 `;

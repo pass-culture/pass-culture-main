@@ -28,10 +28,10 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": <form>
-        <UNDEFINED
+        <NumberField
           name="foo"
         />
-        <UNDEFINED
+        <NumberField
           name="bar"
         />
         <button
@@ -68,10 +68,10 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
-          <UNDEFINED
+          <NumberField
             name="foo"
           />,
-          <UNDEFINED
+          <NumberField
             name="bar"
           />,
           <button
@@ -93,7 +93,7 @@ ShallowWrapper {
           },
           "ref": null,
           "rendered": null,
-          "type": undefined,
+          "type": [Function],
         },
         Object {
           "instance": null,
@@ -104,7 +104,7 @@ ShallowWrapper {
           },
           "ref": null,
           "rendered": null,
-          "type": undefined,
+          "type": [Function],
         },
         Object {
           "instance": null,
@@ -148,10 +148,10 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": <form>
-          <UNDEFINED
+          <NumberField
             name="foo"
           />
-          <UNDEFINED
+          <NumberField
             name="bar"
           />
           <button
@@ -188,10 +188,10 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <UNDEFINED
+            <NumberField
               name="foo"
             />,
-            <UNDEFINED
+            <NumberField
               name="bar"
             />,
             <button
@@ -213,7 +213,7 @@ ShallowWrapper {
             },
             "ref": null,
             "rendered": null,
-            "type": undefined,
+            "type": [Function],
           },
           Object {
             "instance": null,
@@ -224,7 +224,7 @@ ShallowWrapper {
             },
             "ref": null,
             "rendered": null,
-            "type": undefined,
+            "type": [Function],
           },
           Object {
             "instance": null,

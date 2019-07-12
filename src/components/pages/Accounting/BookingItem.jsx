@@ -63,19 +63,19 @@ class BookingItem extends Component {
   handleOnClick = (dispatch, id) => () => {
     dispatch(
       requestData({
-      apiPath: `/bookings/${id}`,
-      body: {
-        isCancelled: true,
-      },
-      handleFail: this.cancelError,
-      method: 'PATCH',
-      normalizer: bookingNormalizer,
+        apiPath: `/bookings/${id}`,
+        body: {
+          isCancelled: true,
+        },
+        handleFail: this.cancelError,
+        method: 'PATCH',
+        normalizer: bookingNormalizer,
       })
     )
     dispatch(closeModal())
   }
 
-  handleOnNoClick = (dispatch) => dispatch(closeModal())
+  handleOnNoClick = dispatch => () => dispatch(closeModal())
 
   handleOnCancelClick = () => {
     const { booking, dispatch } = this.props
@@ -84,21 +84,21 @@ class BookingItem extends Component {
     dispatch(
       showModal(
         <div>
-          {"Souhaitez-vous réellement annuler cette réservation ?"}
+          {'Souhaitez-vous réellement annuler cette réservation ?'}
           <div className="level">
             <button
               className="button is-primary level-item"
               onClick={this.handleOnClick(dispatch, id)}
               type="button"
             >
-              {"Oui"}
+              {'Oui'}
             </button>
             <button
               className="button is-primary level-item"
               onClick={this.handleOnNoClick(dispatch)}
               type="button"
             >
-              {"Non"}
+              {'Non'}
             </button>
           </div>
         </div>,
@@ -108,27 +108,11 @@ class BookingItem extends Component {
   }
 
   render() {
-    const {
-      booking,
-      offerer,
-      stock,
-      product,
-      venue,
-      user,
-      offerTypeLabel,
-    } = this.props
-    const {
-      amount,
-      dateCreated,
-      isCancelled,
-      isUsed,
-      reimbursed_amount,
-      token,
-    } = booking
+    const { booking, offerer, stock, product, venue, user, offerTypeLabel } = this.props
+    const { amount, dateCreated, isCancelled, isUsed, reimbursed_amount, token } = booking
     const { bookingLimitDatetime, groupSize } = stock || {}
     const { email, firstName, lastName } = user || {}
-    const userIdentifier =
-      firstName && lastName ? `${firstName} ${lastName}` : email
+    const userIdentifier = firstName && lastName ? `${firstName} ${lastName}` : email
     const { name } = product || {}
     const offererName = get(offerer, 'name')
     const venueName = get(venue, 'name')
@@ -147,7 +131,8 @@ class BookingItem extends Component {
             className="title userName"
             colSpan="5"
           >
-            {token}{":"} {userIdentifier}
+            {token}
+            {':'} {userIdentifier}
           </td>
           <td rowSpan="2">
             {!isCancelled && !isUsed && (
@@ -158,7 +143,8 @@ class BookingItem extends Component {
                     className="navbar-item cancel"
                     onClick={this.handleOnCancelClick}
                   >
-                    <Icon svg="ico-close-r" />{' Annuler la réservation'}
+                    <Icon svg="ico-close-r" />
+                    {' Annuler la réservation'}
                   </a>
                 </div>
               </div>
@@ -179,7 +165,7 @@ class BookingItem extends Component {
             )}
           </td>
           <td>{moment(bookingLimitDatetime).format('D/MM/YY')}</td>
-          <td>{"5/10"}</td>
+          <td>{'5/10'}</td>
           <td>{amount}</td>
           <td>{reimbursed_amount}</td>
           <td>

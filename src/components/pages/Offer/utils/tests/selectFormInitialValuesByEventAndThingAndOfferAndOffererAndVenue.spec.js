@@ -1,4 +1,4 @@
-import { selectFormInitialValuesByProductAndOfferAndOffererAndVenue } from '../selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
+import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from '../selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
 
 describe('src | components | pages | Offer | utils | selectFormInitialValuesByProductAndOfferAndOffererAndVenue', () => {
   it('should build an object using initial values from offer or product (given POST or PATCH context), venue and offerer', () => {
@@ -8,7 +8,7 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
       ageMax: null,
       ageMin: null,
       condition: null,
-      description: "PNL n'est plus ce qu'il.elle était",
+      description: 'PNL n’est plus ce qu’il.elle était',
       durationMinutes: 60,
       extraData: { author: 'Jean-Michel' },
       id: 'FE',
@@ -41,7 +41,7 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
       ageMin: null,
       bookingEmail: undefined,
       condition: null,
-      description: "PNL n'est plus ce qu'il.elle était",
+      description: 'PNL n’est plus ce qu’il.elle était',
       durationMinutes: 60,
       extraData: { author: 'Jean-Michel' },
       isNational: true,
@@ -59,7 +59,7 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
     // given
     const state = {}
     const product = {
-      description: "PNL n'est plus ce qu'il.elle était",
+      description: 'PNL n’est plus ce qu’il.elle était',
     }
     const offer = {}
     const offerer = {}
@@ -82,7 +82,7 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
     // given
     const state = {}
     const product = {
-      description: "PNL n'est plus ce qu'il.elle était",
+      description: 'PNL n’est plus ce qu’il.elle était',
     }
     const offer = {
       description: '',

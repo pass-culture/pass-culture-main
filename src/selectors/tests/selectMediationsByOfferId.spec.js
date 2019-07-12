@@ -1,43 +1,43 @@
-import { selectMediationsByOfferId } from '../selectMediationsByOfferId'
+import selectMediationsByOfferId from '../selectMediationsByOfferId'
 
 describe('selectMediationsByOfferId', () => {
   describe('when there is no mediations in state and no offerId provided', () => {
     it('should return an empty array', () => {
-      // Given
+      // given
       const state = {
         data: {
           mediations: [],
         },
       }
 
-      // When
+      // when
       const mediations = selectMediationsByOfferId(state)
 
-      // Then
+      // then
       expect(mediations).toStrictEqual([])
     })
   })
 
   describe('when there is no mediations in state and offerId', () => {
     it('should return an empty array', () => {
-      // Given
+      // given
       const state = {
         data: {
           mediations: [],
         },
       }
 
-      // When
+      // when
       const mediations = selectMediationsByOfferId(state, 'MY')
 
-      // Then
+      // then
       expect(mediations).toStrictEqual([])
     })
   })
 
   describe('when there are mediations in state and offerI is not matching', () => {
     it('should return an empty array', () => {
-      // Given
+      // given
       const state = {
         data: {
           mediations: [
@@ -61,17 +61,17 @@ describe('selectMediationsByOfferId', () => {
         },
       }
 
-      // When
+      // when
       const mediations = selectMediationsByOfferId(state, 'MY')
 
-      // Then
+      // then
       expect(mediations).toStrictEqual([])
     })
   })
 
   describe('when there are mediations in state and offerId matching', () => {
     it('should return the mediations matching with offerId', () => {
-      // Given
+      // given
       const state = {
         data: {
           mediations: [
@@ -95,7 +95,7 @@ describe('selectMediationsByOfferId', () => {
         },
       }
 
-      // When
+      // when
       const mediations = selectMediationsByOfferId(state, 'NE')
       const expected = [
         {
@@ -116,7 +116,7 @@ describe('selectMediationsByOfferId', () => {
         },
       ]
 
-      // Then
+      // then
       expect(mediations).toStrictEqual(expected)
     })
   })

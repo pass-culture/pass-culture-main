@@ -14,29 +14,21 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
     props = {
       dispatch,
       mediations: [],
-      notification: null,
-      offer: null,
+      notification: {},
+      offer: {},
     }
   })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const props = {
-        dispatch: dispatch,
-        mediations: [],
-      }
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<MediationsManager {...props} />)
 
-      // when
-      const wrapper = shallow(<MediationsManager {...props} />)
-
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toBeDefined()
+    expect(wrapper).toMatchSnapshot()
   })
 
-  describe('render', () => {
+  describe('render()', () => {
     it('should display a notification when no mediation', () => {
       // when
       shallow(<MediationsManager {...props} />)
@@ -50,7 +42,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
             children: <span>{' Pourquoi ? '}</span>,
             place: 'bottom',
             tip:
-              "<div><p>Pour que votre offre s'affiche dans l’application du Pass Culture, vous devez:</p><p>- ajouter une ou plusieurs accroches.</p></div>",
+              '<div><p>Pour que votre offre s’affiche dans l’application du pass Culture, vous devez :</p><p>- Ajouter une ou plusieurs accroches</p></div>',
             type: 'info',
           },
           type: 'warning',

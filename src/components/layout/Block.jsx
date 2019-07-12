@@ -3,13 +3,7 @@ import React from 'react'
 
 import { ROOT_PATH } from '../../utils/config'
 
-export const Block = ({
-  cancelText,
-  confirmText,
-  text,
-  onConfirmation,
-  onCancel,
-}) => {
+const Block = ({ cancelText, confirmText, text, onConfirmation, onCancel }) => {
   return (
     <div className="confirm-change">
       <ul>
@@ -47,8 +41,8 @@ Block.defaultProps = {
   confirmText: 'Oui',
   text: (
     <div className="m12">
-      { "Êtes-vous sûr de vouloir quitter cette page ?" } <br />
-      { "Les modifications ne seront pas enregistrées."}
+      {'Êtes-vous sûr de vouloir quitter cette page ?'} <br />
+      {'Les modifications ne seront pas enregistrées.'}
     </div>
   ),
 }

@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { mapStateToProps } from '../OfferContainer'
 import state from '../../../utils/mocks/state'
 
@@ -10,12 +8,12 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
     props = {
       match: {
         params: {
-          offerId: 'UU'
-        }
+          offerId: 'UU',
+        },
       },
       query: {
-        translate: jest.fn()
-      }
+        translate: jest.fn(),
+      },
     }
   })
 
@@ -39,15 +37,11 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
           isEvent: false,
           isThing: true,
           lastProviderId: null,
-          mediationsIds: [
-            'H4'
-          ],
+          mediationsIds: ['H4'],
           modelName: 'Offer',
           productId: 'LY',
-          stocksIds: [
-            'MU'
-          ],
-          venueId: 'DA'
+          stocksIds: ['MU'],
+          venueId: 'DA',
         },
         offerer: expect.any(Object),
         offerers: expect.any(Object),
@@ -58,7 +52,7 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
         types: expect.any(Object),
         url: 'https://ilestencoretemps.fr/',
         venue: expect.any(Object),
-        venues: expect.any(Object)
+        venues: expect.any(Object),
       })
     })
   })

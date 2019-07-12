@@ -3,7 +3,7 @@ import { compose } from 'redux'
 import get from 'lodash.get'
 
 import StocksManager from './StocksManager'
-import { withFrenchQueryRouter } from '../../../hocs'
+import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'
 import selectOfferById from '../../../../selectors/selectOfferById'
 import selectProductById from '../../../../selectors/selectProductById'
 import selectProviderById from '../../../../selectors/selectProviderById'

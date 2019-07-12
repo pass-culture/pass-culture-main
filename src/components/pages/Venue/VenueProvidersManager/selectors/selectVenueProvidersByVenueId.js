@@ -9,9 +9,7 @@ export const selectVenueProvidersByVenueId = createCachedSelector(
   (state, optionalVenueId) => optionalVenueId,
   (venueProviders, optionalVenueId) => {
     if (optionalVenueId)
-      venueProviders = venueProviders.filter(
-        vp => vp.venueId === optionalVenueId
-      )
+      venueProviders = venueProviders.filter(vp => vp.venueId === optionalVenueId)
     return venueProviders
   }
 )(mapArgsToCacheKey)

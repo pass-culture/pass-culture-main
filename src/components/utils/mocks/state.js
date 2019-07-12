@@ -441,7 +441,7 @@ const state = {
       {
         id: 'L9',
         dateModifiedAtLastProvider: '2019-03-07T10:40:03.850903Z',
-        description: "T'ont-ils chargé pour nous de leur salut lointain ?",
+        description: 'T’ont-ils chargé pour nous de leur salut lointain ?',
         extraData: {
           author: 'Max et Compagnie',
         },
@@ -451,7 +451,7 @@ const state = {
         lastProviderId: null,
         mediaUrls: ['test/urls'],
         modelName: 'Product',
-        name: "Autant tu t'en vas",
+        name: 'Autant tu t’en vas',
         offerType: {
           description:
             'S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?',
@@ -479,7 +479,7 @@ const state = {
         lastProviderId: null,
         mediaUrls: ['test/urls'],
         modelName: 'Product',
-        name: "Dansons jusqu'en 2030",
+        name: 'Dansons jusqu’en 2030',
         offerType: {
           description:
             'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?',
@@ -497,7 +497,7 @@ const state = {
         id: 'KA',
         dateModifiedAtLastProvider: '2019-03-07T10:40:03.793350Z',
         description:
-          "Sur ta route, aussi loin que ton regard atteint, N'as-tu vu comme ici que douleurs et misères ? Dans ces mondes épars, dis ! avons-nous des frères ?",
+          'Sur ta route, aussi loin que ton regard atteint, N’as-tu vu comme ici que douleurs et misères ? Dans ces mondes épars, dis ! avons-nous des frères ?',
         extraData: {
           author: 'Usule et Franck',
         },
@@ -525,7 +525,7 @@ const state = {
         id: 'J9',
         dateModifiedAtLastProvider: '2019-03-07T10:40:03.757550Z',
         description:
-          "Un baiser, mais à tout prendre, qu'est-ce ? Un serment fait d'un peu plus près, une promesse plus précise, un aveu qui veut se confirmer, Un point rose qu'on met sur l'i du verbe aimer ; C'est un secret qui prend la bouche pour oreille, Un instant d'infini qui fait un bruit d'abeille, Une communion ayant un goût de fleur, Une façon d'un peu se respirer le cœur, Et d'un peu se goûter, au bord des lèvres, l'âme !",
+          'Un baiser, mais à tout prendre, qu’est-ce ? Un serment fait d’un peu plus près, une promesse plus précise, un aveu qui veut se confirmer, Un point rose qu’on met sur l’i du verbe aimer ; C’est un secret qui prend la bouche pour oreille, Un instant d’infini qui fait un bruit d’abeille, Une communion ayant un goût de fleur, Une façon d’un peu se respirer le cœur, Et d’un peu se goûter, au bord des lèvres, l’âme !',
         extraData: {
           author: 'Nicolas Duplot',
         },
@@ -553,7 +553,7 @@ const state = {
         id: '9Y',
         dateModifiedAtLastProvider: '2019-03-07T10:40:03.727260Z',
         description:
-          "Bel astre voyageur, hôte qui nous arrives, Des profondeurs du ciel et qu'on n'attendait pas, Où vas-tu ? Quel dessein pousse vers nous tes pas ? Toi qui vogues au large en cette mer sans rives",
+          'Bel astre voyageur, hôte qui nous arrives, Des profondeurs du ciel et qu’on n’attendait pas, Où vas-tu ? Quel dessein pousse vers nous tes pas ? Toi qui vogues au large en cette mer sans rives',
         extraData: {
           author: 'Gerard Stadt',
         },
@@ -581,7 +581,7 @@ const state = {
         id: '9Q',
         dateModifiedAtLastProvider: '2019-03-07T10:40:03.713847Z',
         description:
-          "Vous?... Au contraire! J'ignorais la douceur féminine. Ma mère Ne m'a pas trouvé beau. Je n'ai pas eu de soeur. Plus tard, j'ai redouté l'amante à l'oeil moqueur. Je vous dois d'avoir eu, tout au moins, une amie. Grâce à vous une robe a passé dans ma vie.",
+          'Vous?... Au contraire! J’ignorais la douceur féminine. Ma mère Ne m’a pas trouvé beau. Je n’ai pas eu de soeur. Plus tard, j’ai redouté l’amante à l’oeil moqueur. Je vous dois d’avoir eu, tout au moins, une amie. Grâce à vous une robe a passé dans ma vie.',
         extraData: {
           author: 'Jeanne Plomb',
         },
@@ -619,7 +619,7 @@ const state = {
         lastProviderId: null,
         mediaUrls: ['test/urls'],
         modelName: 'Product',
-        name: "Dansons jusqu'en 2030",
+        name: 'Dansons jusqu’en 2030',
         offerType: {
           description:
             'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
@@ -637,7 +637,7 @@ const state = {
         id: '9A',
         dateModifiedAtLastProvider: '2019-03-07T10:40:03.682044Z',
         description:
-          "Les tout jeunes gens, lorsqu'ils goûtent pour la première fois aux échanges d'arguments, en font un usage pervers, comme d'un jeu, s'en servant toujours pour contredire, et qu'en imitant ceux qui réfutent, eux-mêmes en réfutent d'autres, prenant plaisir, comme de jeunes chiens, à tirer et à déchiqueter par la parole quiconque se trouve près d'eux.",
+          'Les tout jeunes gens, lorsqu’ils goûtent pour la première fois aux échanges d’arguments, en font un usage pervers, comme d’un jeu, s’en servant toujours pour contredire, et qu’en imitant ceux qui réfutent, eux-mêmes en réfutent d’autres, prenant plaisir, comme de jeunes chiens, à tirer et à déchiqueter par la parole quiconque se trouve près d’eux.',
         extraData: {
           author: 'Denis Chat',
         },
@@ -665,7 +665,7 @@ const state = {
         id: 'HY',
         dateModifiedAtLastProvider: '2019-03-07T10:40:03.673159Z',
         description:
-          "Mais quels seront enfin les objets de ces Spectacles ? Qu'y montrera-t-on ? Rien, si l'on veut. Avec la liberté, partout où règne l'affluence, le bien-être y règne aussi. Plantez au milieu d'une place un piquet couronnée de fleurs, rassemblez-y le Peuple, et vous aurez une fête. Faites mieux encore : donnez les spectateurs en spectacle ; rendez-les acteurs eux-mêmes ; faites que chacun se voye et s'aime dans les autres, afin que tous en soient mieux unis.",
+          'Mais quels seront enfin les objets de ces Spectacles ? Qu’y montrera-t-on ? Rien, si l’on veut. Avec la liberté, partout où règne l’affluence, le bien-être y règne aussi. Plantez au milieu d’une place un piquet couronnée de fleurs, rassemblez-y le Peuple, et vous aurez une fête. Faites mieux encore : donnez les spectateurs en spectacle ; rendez-les acteurs eux-mêmes ; faites que chacun se voye et s’aime dans les autres, afin que tous en soient mieux unis.',
         extraData: {
           author: 'Camille Forêt',
         },
@@ -692,12 +692,12 @@ const state = {
     ],
     types: [
       {
-        appLabel: 'Pass Culture : activation évènementielle',
+        appLabel: 'pass Culture : activation évènementielle',
         id: 0,
         description: 'Activez votre pass Culture grâce à cette offre',
         offlineOnly: true,
         onlineOnly: false,
-        proLabel: 'Pass Culture : activation évènementielle',
+        proLabel: 'pass Culture : activation évènementielle',
         sublabel: 'Activation',
         type: 'Event',
         value: 'EventType.ACTIVATION',
@@ -750,13 +750,11 @@ const state = {
         value: 'EventType.MUSIQUE',
       },
       {
-        appLabel:
-          'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
+        appLabel: 'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
         id: 5,
         description:
           'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
-        proLabel:
-          'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
+        proLabel: 'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
         offlineOnly: true,
         onlineOnly: false,
         sublabel: 'Regarder',
@@ -788,10 +786,10 @@ const state = {
         value: 'EventType.SPECTACLE_VIVANT',
       },
       {
-        appLabel: 'Pass Culture : activation en ligne',
+        appLabel: 'pass Culture : activation en ligne',
         id: 8,
         description: 'Activez votre pass Culture grâce à cette offre',
-        proLabel: 'Pass Culture : activation en ligne',
+        proLabel: 'pass Culture : activation en ligne',
         offlineOnly: false,
         onlineOnly: true,
         sublabel: 'Activation',
@@ -919,9 +917,11 @@ const state = {
         value: 'ThingType.PRESSE_ABO',
       },
     ],
-    things: [{
-      lastProviderId: 123
-    }],
+    things: [
+      {
+        lastProviderId: 123,
+      },
+    ],
     users: [
       {
         currentUserUUID: '22a18e44-710c-45cd-b442-34d8ff417fac',
@@ -962,8 +962,8 @@ const state = {
       {
         offererId: 'FE',
         userId: 'FE',
-        rights: 'RightsType.admin'
-      }
+        rights: 'RightsType.admin',
+      },
     ],
     venues: [
       {

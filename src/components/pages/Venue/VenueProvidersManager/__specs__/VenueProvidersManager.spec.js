@@ -123,9 +123,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       addOfferBtn.simulate('click')
 
       // then
-      expect(history.push).toHaveBeenCalledWith(
-        '/structures/CC/lieux/AB/fournisseurs/nouveau'
-      )
+      expect(history.push).toHaveBeenCalledWith('/structures/CC/lieux/AB/fournisseurs/nouveau')
     })
 
     it('should display an import button when at least one provider is given', () => {
@@ -170,11 +168,11 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
 
       // then
       expect(wrapper.state('isLoadingMode')).toBe(true)
-      expect(createVenueProvider).toHaveBeenCalledWith(
-        expect.any(Function),
-        expect.any(Function),
-        { providerId: 'CC', venueId: 'AA', venueIdAtOfferProvider: 'BB' }
-      )
+      expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
+        providerId: 'CC',
+        venueId: 'AA',
+        venueIdAtOfferProvider: 'BB',
+      })
     })
   })
 

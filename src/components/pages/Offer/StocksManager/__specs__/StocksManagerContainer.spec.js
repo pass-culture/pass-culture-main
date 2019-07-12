@@ -7,10 +7,10 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
   beforeEach(() => {
     state = {
       data: {
-        offers: [{id: 'A1', isEvent: true, isThing: false, productId: 'B1'}],
+        offers: [{ id: 'A1', isEvent: true, isThing: false, productId: 'B1' }],
         providers: [],
-        products: [{id: 'B1', lastProviderId: 'C1'}],
-        stocks: [{offerId: 'A1'}],
+        products: [{ id: 'B1', lastProviderId: 'C1' }],
+        stocks: [{ offerId: 'A1' }],
       },
     }
     props = {
@@ -76,10 +76,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
         const result = mapStateToProps(state, props)
 
         // then
-        expect(result).toHaveProperty(
-          'creationOfSecondStockIsPrevented',
-          false
-        )
+        expect(result).toHaveProperty('creationOfSecondStockIsPrevented', false)
       })
 
       it('should be false when stocks are equal to zero', () => {
@@ -95,10 +92,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
         const result = mapStateToProps(state, props)
 
         // then
-        expect(result).toHaveProperty(
-          'creationOfSecondStockIsPrevented',
-          false
-        )
+        expect(result).toHaveProperty('creationOfSecondStockIsPrevented', false)
       })
 
       it('should be true when offer is a thing and stocks is superior to zero', () => {
@@ -113,10 +107,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
         const result = mapStateToProps(state, props)
 
         // then
-        expect(result).toHaveProperty(
-          'creationOfSecondStockIsPrevented',
-          true
-        )
+        expect(result).toHaveProperty('creationOfSecondStockIsPrevented', true)
       })
     })
   })

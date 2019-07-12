@@ -8,7 +8,7 @@ describe('src | components | pages | Offerers | OffererItem | PendingOffererItem
 
   beforeEach(() => {
     props = {
-      offerer: {}
+      offerer: {},
     }
   })
 

@@ -6,7 +6,6 @@ import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
 
 class Notification extends Component {
-
   componentDidUpdate() {
     const { notification } = this.props
     if (get(notification, 'tooltip')) {
@@ -43,13 +42,13 @@ class Notification extends Component {
     return (
       <div
         className={classnames(`notification is-${type || 'info'}`, {
-        fullscreen: isFullscreen
-      })}
+          fullscreen: isFullscreen,
+        })}
       >
         <div
           className={classnames('is-flex fullscreen', {
-          'small-padding': !isFullscreen,
-        })}
+            'small-padding': !isFullscreen,
+          })}
         >
           <div className="notification-description">
             <Icon svg={svg} />
@@ -60,14 +59,15 @@ class Notification extends Component {
               <a
                 className="close pl12"
                 href={url}
-              >{urlLabel}
+              >
+                {urlLabel}
               </a>
             )}
             {tooltip ? (
               <span
                 className={classnames({
-                'has-text-weight-semibold tooltip small-padding is-2': !isFullscreen,
-              })}
+                  'has-text-weight-semibold tooltip small-padding is-2': !isFullscreen,
+                })}
                 data-place={tooltip.place}
                 data-tip={tooltip.tip}
                 data-type={tooltip.type}
@@ -92,7 +92,7 @@ class Notification extends Component {
 
 Notification.defaultProps = {
   isFullscreen: false,
-  notification: null
+  notification: null,
 }
 
 Notification.propTypes = {

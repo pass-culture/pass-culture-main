@@ -1,15 +1,7 @@
 import { RequestMock } from 'testcafe'
 
 export const getSirenRequestMockAs = offerer => {
-  const {
-    address,
-    city,
-    latitude,
-    longitude,
-    name,
-    postalCode,
-    siren,
-  } = offerer
+  const { address, city, latitude, longitude, name, postalCode, siren } = offerer
   return RequestMock()
     .onRequestTo(`https://sirene.entreprise.api.gouv.fr/v1/siren/${siren}`)
     .respond(

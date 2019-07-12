@@ -1,11 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offerers | OffererItem snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Offerers | OffererItem should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <OffererItem
-    physicalVenues={Array []}
-    venues={Array []}
+    physicalVenues={
+      Array [
+        Object {},
+      ]
+    }
+    venues={
+      Array [
+        Object {},
+      ]
+    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -38,22 +46,36 @@ ShallowWrapper {
             className="is-italic mb12"
             id="offerer-item-validation"
           >
-            Structure en cours de validation par l'équipe Pass Culture.
+            Structure en cours de validation par l’équipe pass Culture.
           </p>
           <ul
             className="actions"
           >
-            <li
-              className="is-italic"
-            >
-              Créez un lieu pour pouvoir y associer des offres.
-            </li>
+            <React.Fragment>
+              <li>
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="has-text-primary"
+                  to="/offres/creation?structure=undefined"
+                >
+                  <Icon
+                    svg="ico-offres-r"
+                  />
+                  Nouvelle offre
+                   
+                </NavLink>
+              </li>
+              <li>
+                0 offre
+              </li>
+            </React.Fragment>
             <React.Fragment>
               <li>
                 <Icon
                   svg="ico-venue"
                 />
-                0 lieu
+                1 lieu
               </li>
               <li>
                 <NavLink
@@ -108,22 +130,36 @@ ShallowWrapper {
               className="is-italic mb12"
               id="offerer-item-validation"
             >
-              Structure en cours de validation par l'équipe Pass Culture.
+              Structure en cours de validation par l’équipe pass Culture.
             </p>,
             <ul
               className="actions"
             >
-              <li
-                className="is-italic"
-              >
-                Créez un lieu pour pouvoir y associer des offres.
-              </li>
+              <React.Fragment>
+                <li>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/offres/creation?structure=undefined"
+                  >
+                    <Icon
+                      svg="ico-offres-r"
+                    />
+                    Nouvelle offre
+                     
+                  </NavLink>
+                </li>
+                <li>
+                  0 offre
+                </li>
+              </React.Fragment>
               <React.Fragment>
                 <li>
                   <Icon
                     svg="ico-venue"
                   />
-                  0 lieu
+                  1 lieu
                 </li>
                 <li>
                   <NavLink
@@ -179,12 +215,12 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Structure en cours de validation par l'équipe Pass Culture.",
+              "children": "Structure en cours de validation par l’équipe pass Culture.",
               "className": "is-italic mb12",
               "id": "offerer-item-validation",
             },
             "ref": null,
-            "rendered": "Structure en cours de validation par l'équipe Pass Culture.",
+            "rendered": "Structure en cours de validation par l’équipe pass Culture.",
             "type": "p",
           },
           Object {
@@ -193,17 +229,31 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <li
-                  className="is-italic"
-                >
-                  Créez un lieu pour pouvoir y associer des offres.
-                </li>,
+                <React.Fragment>
+                  <li>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="has-text-primary"
+                      to="/offres/creation?structure=undefined"
+                    >
+                      <Icon
+                        svg="ico-offres-r"
+                      />
+                      Nouvelle offre
+                       
+                    </NavLink>
+                  </li>
+                  <li>
+                    0 offre
+                  </li>
+                </React.Fragment>,
                 <React.Fragment>
                   <li>
                     <Icon
                       svg="ico-venue"
                     />
-                    0 lieu
+                    1 lieu
                   </li>
                   <li>
                     <NavLink
@@ -226,15 +276,102 @@ ShallowWrapper {
             "rendered": Array [
               Object {
                 "instance": null,
-                "key": "0",
-                "nodeType": "host",
+                "key": undefined,
+                "nodeType": "function",
                 "props": Object {
-                  "children": "Créez un lieu pour pouvoir y associer des offres.",
-                  "className": "is-italic",
+                  "children": Array [
+                    <li>
+                      <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="has-text-primary"
+                        to="/offres/creation?structure=undefined"
+                      >
+                        <Icon
+                          svg="ico-offres-r"
+                        />
+                        Nouvelle offre
+                         
+                      </NavLink>
+                    </li>,
+                    <li>
+                      0 offre
+                    </li>,
+                  ],
                 },
                 "ref": null,
-                "rendered": "Créez un lieu pour pouvoir y associer des offres.",
-                "type": "li",
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="has-text-primary"
+                        to="/offres/creation?structure=undefined"
+                      >
+                        <Icon
+                          svg="ico-offres-r"
+                        />
+                        Nouvelle offre
+                         
+                      </NavLink>,
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "activeClassName": "active",
+                        "aria-current": "page",
+                        "children": Array [
+                          <Icon
+                            svg="ico-offres-r"
+                          />,
+                          "Nouvelle offre",
+                          " ",
+                          undefined,
+                        ],
+                        "className": "has-text-primary",
+                        "to": "/offres/creation?structure=undefined",
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "svg": "ico-offres-r",
+                          },
+                          "ref": null,
+                          "rendered": null,
+                          "type": [Function],
+                        },
+                        "Nouvelle offre",
+                        " ",
+                        undefined,
+                      ],
+                      "type": [Function],
+                    },
+                    "type": "li",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "0 offre",
+                    },
+                    "ref": null,
+                    "rendered": "0 offre",
+                    "type": "li",
+                  },
+                ],
+                "type": Symbol(react.fragment),
               },
               Object {
                 "instance": null,
@@ -246,7 +383,7 @@ ShallowWrapper {
                       <Icon
                         svg="ico-venue"
                       />
-                      0 lieu
+                      1 lieu
                     </li>,
                     <li>
                       <NavLink
@@ -274,7 +411,7 @@ ShallowWrapper {
                         <Icon
                           svg="ico-venue"
                         />,
-                        "0 lieu",
+                        "1 lieu",
                       ],
                     },
                     "ref": null,
@@ -290,7 +427,7 @@ ShallowWrapper {
                         "rendered": null,
                         "type": [Function],
                       },
-                      "0 lieu",
+                      "1 lieu",
                     ],
                     "type": "li",
                   },
@@ -427,22 +564,36 @@ ShallowWrapper {
               className="is-italic mb12"
               id="offerer-item-validation"
             >
-              Structure en cours de validation par l'équipe Pass Culture.
+              Structure en cours de validation par l’équipe pass Culture.
             </p>
             <ul
               className="actions"
             >
-              <li
-                className="is-italic"
-              >
-                Créez un lieu pour pouvoir y associer des offres.
-              </li>
+              <React.Fragment>
+                <li>
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/offres/creation?structure=undefined"
+                  >
+                    <Icon
+                      svg="ico-offres-r"
+                    />
+                    Nouvelle offre
+                     
+                  </NavLink>
+                </li>
+                <li>
+                  0 offre
+                </li>
+              </React.Fragment>
               <React.Fragment>
                 <li>
                   <Icon
                     svg="ico-venue"
                   />
-                  0 lieu
+                  1 lieu
                 </li>
                 <li>
                   <NavLink
@@ -497,22 +648,36 @@ ShallowWrapper {
                 className="is-italic mb12"
                 id="offerer-item-validation"
               >
-                Structure en cours de validation par l'équipe Pass Culture.
+                Structure en cours de validation par l’équipe pass Culture.
               </p>,
               <ul
                 className="actions"
               >
-                <li
-                  className="is-italic"
-                >
-                  Créez un lieu pour pouvoir y associer des offres.
-                </li>
+                <React.Fragment>
+                  <li>
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="has-text-primary"
+                      to="/offres/creation?structure=undefined"
+                    >
+                      <Icon
+                        svg="ico-offres-r"
+                      />
+                      Nouvelle offre
+                       
+                    </NavLink>
+                  </li>
+                  <li>
+                    0 offre
+                  </li>
+                </React.Fragment>
                 <React.Fragment>
                   <li>
                     <Icon
                       svg="ico-venue"
                     />
-                    0 lieu
+                    1 lieu
                   </li>
                   <li>
                     <NavLink
@@ -568,12 +733,12 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Structure en cours de validation par l'équipe Pass Culture.",
+                "children": "Structure en cours de validation par l’équipe pass Culture.",
                 "className": "is-italic mb12",
                 "id": "offerer-item-validation",
               },
               "ref": null,
-              "rendered": "Structure en cours de validation par l'équipe Pass Culture.",
+              "rendered": "Structure en cours de validation par l’équipe pass Culture.",
               "type": "p",
             },
             Object {
@@ -582,17 +747,31 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <li
-                    className="is-italic"
-                  >
-                    Créez un lieu pour pouvoir y associer des offres.
-                  </li>,
+                  <React.Fragment>
+                    <li>
+                      <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="has-text-primary"
+                        to="/offres/creation?structure=undefined"
+                      >
+                        <Icon
+                          svg="ico-offres-r"
+                        />
+                        Nouvelle offre
+                         
+                      </NavLink>
+                    </li>
+                    <li>
+                      0 offre
+                    </li>
+                  </React.Fragment>,
                   <React.Fragment>
                     <li>
                       <Icon
                         svg="ico-venue"
                       />
-                      0 lieu
+                      1 lieu
                     </li>
                     <li>
                       <NavLink
@@ -615,15 +794,102 @@ ShallowWrapper {
               "rendered": Array [
                 Object {
                   "instance": null,
-                  "key": "0",
-                  "nodeType": "host",
+                  "key": undefined,
+                  "nodeType": "function",
                   "props": Object {
-                    "children": "Créez un lieu pour pouvoir y associer des offres.",
-                    "className": "is-italic",
+                    "children": Array [
+                      <li>
+                        <NavLink
+                          activeClassName="active"
+                          aria-current="page"
+                          className="has-text-primary"
+                          to="/offres/creation?structure=undefined"
+                        >
+                          <Icon
+                            svg="ico-offres-r"
+                          />
+                          Nouvelle offre
+                           
+                        </NavLink>
+                      </li>,
+                      <li>
+                        0 offre
+                      </li>,
+                    ],
                   },
                   "ref": null,
-                  "rendered": "Créez un lieu pour pouvoir y associer des offres.",
-                  "type": "li",
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": <NavLink
+                          activeClassName="active"
+                          aria-current="page"
+                          className="has-text-primary"
+                          to="/offres/creation?structure=undefined"
+                        >
+                          <Icon
+                            svg="ico-offres-r"
+                          />
+                          Nouvelle offre
+                           
+                        </NavLink>,
+                      },
+                      "ref": null,
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "activeClassName": "active",
+                          "aria-current": "page",
+                          "children": Array [
+                            <Icon
+                              svg="ico-offres-r"
+                            />,
+                            "Nouvelle offre",
+                            " ",
+                            undefined,
+                          ],
+                          "className": "has-text-primary",
+                          "to": "/offres/creation?structure=undefined",
+                        },
+                        "ref": null,
+                        "rendered": Array [
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "function",
+                            "props": Object {
+                              "svg": "ico-offres-r",
+                            },
+                            "ref": null,
+                            "rendered": null,
+                            "type": [Function],
+                          },
+                          "Nouvelle offre",
+                          " ",
+                          undefined,
+                        ],
+                        "type": [Function],
+                      },
+                      "type": "li",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "0 offre",
+                      },
+                      "ref": null,
+                      "rendered": "0 offre",
+                      "type": "li",
+                    },
+                  ],
+                  "type": Symbol(react.fragment),
                 },
                 Object {
                   "instance": null,
@@ -635,7 +901,7 @@ ShallowWrapper {
                         <Icon
                           svg="ico-venue"
                         />
-                        0 lieu
+                        1 lieu
                       </li>,
                       <li>
                         <NavLink
@@ -663,7 +929,7 @@ ShallowWrapper {
                           <Icon
                             svg="ico-venue"
                           />,
-                          "0 lieu",
+                          "1 lieu",
                         ],
                       },
                       "ref": null,
@@ -679,7 +945,7 @@ ShallowWrapper {
                           "rendered": null,
                           "type": [Function],
                         },
-                        "0 lieu",
+                        "1 lieu",
                       ],
                       "type": "li",
                     },

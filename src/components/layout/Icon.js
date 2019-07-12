@@ -3,7 +3,7 @@ import React from 'react'
 
 import { ROOT_PATH } from '../../utils/config'
 
-export const Icon = ({ svg, ...imgProps }) => (
+const Icon = ({ svg, ...imgProps }) => (
   <img
     alt={svg}
     src={`${ROOT_PATH}/icons/${svg}.svg`}

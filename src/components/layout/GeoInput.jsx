@@ -253,7 +253,7 @@ GeoInput.defaultProps = {
     zoom: 5,
   },
   maxSuggestions: 5,
-  placeholder: "Sélectionnez l'adresse lorsqu'elle est proposée.",
+  placeholder: 'Sélectionnez l’adresse lorsqu’elle est proposée.',
   withMap: false,
   zoom: 15,
 }

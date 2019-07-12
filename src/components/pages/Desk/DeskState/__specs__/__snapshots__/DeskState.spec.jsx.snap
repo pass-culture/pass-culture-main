@@ -51,7 +51,7 @@ ShallowWrapper {
             </tr>
             <tr>
               <th>
-                Date de l'offre :
+                Date de l’offre :
               </th>
               <td>
                 Permanent
@@ -95,7 +95,7 @@ ShallowWrapper {
             </tr>
             <tr>
               <th>
-                Date de l'offre :
+                Date de l’offre :
               </th>
               <td>
                 Permanent
@@ -129,7 +129,7 @@ ShallowWrapper {
               </tr>,
               <tr>
                 <th>
-                  Date de l'offre :
+                  Date de l’offre :
                 </th>
                 <td>
                   Permanent
@@ -228,7 +228,7 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   <th>
-                    Date de l'offre :
+                    Date de l’offre :
                   </th>,
                   <td>
                     Permanent
@@ -242,10 +242,10 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": "Date de l'offre :",
+                    "children": "Date de l’offre :",
                   },
                   "ref": null,
-                  "rendered": "Date de l'offre :",
+                  "rendered": "Date de l’offre :",
                   "type": "th",
                 },
                 Object {
@@ -331,7 +331,7 @@ ShallowWrapper {
               </tr>
               <tr>
                 <th>
-                  Date de l'offre :
+                  Date de l’offre :
                 </th>
                 <td>
                   Permanent
@@ -375,7 +375,7 @@ ShallowWrapper {
               </tr>
               <tr>
                 <th>
-                  Date de l'offre :
+                  Date de l’offre :
                 </th>
                 <td>
                   Permanent
@@ -409,7 +409,7 @@ ShallowWrapper {
                 </tr>,
                 <tr>
                   <th>
-                    Date de l'offre :
+                    Date de l’offre :
                   </th>
                   <td>
                     Permanent
@@ -508,7 +508,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": Array [
                     <th>
-                      Date de l'offre :
+                      Date de l’offre :
                     </th>,
                     <td>
                       Permanent
@@ -522,10 +522,10 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": "Date de l'offre :",
+                      "children": "Date de l’offre :",
                     },
                     "ref": null,
-                    "rendered": "Date de l'offre :",
+                    "rendered": "Date de l’offre :",
                     "type": "th",
                   },
                   Object {

@@ -61,7 +61,7 @@ const TermsPage = ({ lastDeployedCommit }) => (
     <div className="content">
       <ReactMarkdown source={mardownContent} />
       <div className="mt16">
-        <p className="text-right">{`Pass Culture - ${lastDeployedCommit}`}</p>
+        <p className="text-right">{`pass Culture - ${lastDeployedCommit}`}</p>
       </div>
     </div>
   </Main>

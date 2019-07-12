@@ -18,8 +18,8 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            'pathToCsvFile':'http://localhost/bookings/csv?venueId=F51',
-            'showDownloadButton': true
+            pathToCsvFile: 'http://localhost/bookings/csv?venueId=F51',
+            showDownloadButton: true,
           })
         })
 
@@ -28,7 +28,7 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
           const state = {
             bookingSummary: {
               selectedVenue: 'all',
-              isFilterByDigitalVenues: false
+              isFilterByDigitalVenues: false,
             },
           }
 
@@ -37,8 +37,8 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            'pathToCsvFile': 'http://localhost/bookings/csv',
-            'showDownloadButton': true
+            pathToCsvFile: 'http://localhost/bookings/csv',
+            showDownloadButton: true,
           })
         })
       })
@@ -58,71 +58,70 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            'pathToCsvFile': 'http://localhost/bookings/csv?onlyDigitalVenues=true',
-            'showDownloadButton': true
+            pathToCsvFile: 'http://localhost/bookings/csv?onlyDigitalVenues=true',
+            showDownloadButton: true,
           })
         })
       })
 
-    describe('showDownloadButton', () => {
-      it('should be displayed when downloading digital venues', () => {
-        // given
-        const state = {
-          bookingSummary: {
-            isFilterByDigitalVenues: true,
-            selectedVenue: '',
-          },
-        }
+      describe('showDownloadButton', () => {
+        it('should be displayed when downloading digital venues', () => {
+          // given
+          const state = {
+            bookingSummary: {
+              isFilterByDigitalVenues: true,
+              selectedVenue: '',
+            },
+          }
 
-        // when
-        const props = mapStateToProps(state)
+          // when
+          const props = mapStateToProps(state)
 
-        // then
-        expect(props).toStrictEqual({
-          'pathToCsvFile': 'http://localhost/bookings/csv?onlyDigitalVenues=true',
-          'showDownloadButton': true
+          // then
+          expect(props).toStrictEqual({
+            pathToCsvFile: 'http://localhost/bookings/csv?onlyDigitalVenues=true',
+            showDownloadButton: true,
+          })
+        })
+
+        it('should be displayed when a venue is selected', () => {
+          // given
+          const state = {
+            bookingSummary: {
+              isFilterByDigitalVenues: false,
+              selectedVenue: 'G2YU',
+            },
+          }
+
+          // when
+          const props = mapStateToProps(state)
+
+          // then
+          expect(props).toStrictEqual({
+            pathToCsvFile: 'http://localhost/bookings/csv?venueId=G2YU',
+            showDownloadButton: true,
+          })
+        })
+
+        it('should be displayed when the `all venues` option is selected', () => {
+          // given
+          const state = {
+            bookingSummary: {
+              isFilterByDigitalVenues: false,
+              selectedVenue: 'all',
+            },
+          }
+
+          // when
+          const props = mapStateToProps(state)
+
+          // then
+          expect(props).toStrictEqual({
+            pathToCsvFile: 'http://localhost/bookings/csv',
+            showDownloadButton: true,
+          })
         })
       })
-
-      it('should be displayed when a venue is selected', () => {
-        // given
-        const state = {
-          bookingSummary: {
-            isFilterByDigitalVenues: false,
-            selectedVenue: 'G2YU',
-          },
-        }
-
-        // when
-        const props = mapStateToProps(state)
-
-        // then
-        expect(props).toStrictEqual({
-          'pathToCsvFile': 'http://localhost/bookings/csv?venueId=G2YU',
-          'showDownloadButton': true
-        })
-      })
-
-      it('should be displayed when the `all venues` option is selected', () => {
-        // given
-        const state = {
-          bookingSummary: {
-            isFilterByDigitalVenues: false,
-            selectedVenue: 'all',
-          },
-        }
-
-        // when
-        const props = mapStateToProps(state)
-
-        // then
-        expect(props).toStrictEqual({
-            'pathToCsvFile': 'http://localhost/bookings/csv',
-            'showDownloadButton': true
-        })
-      })
-    })
-
     })
   })
 })

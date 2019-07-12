@@ -136,17 +136,17 @@ ShallowWrapper {
           <p
             className="subtitle"
           >
-            Pour présenter vos offres, vous devez d'abord 
+            Pour présenter vos offres, vous devez d’abord
             <a
               href="/structures/AE/lieux/creation"
             >
               créer un
-               
-              nouveau lieu 
+
+              nouveau lieu
             </a>
              lié à une structure.
             <br />
-            Sans lieu, vous pouvez uniquement 
+            Sans lieu, vous pouvez uniquement
             <a
               href="/offres/creation"
             >
@@ -225,17 +225,17 @@ ShallowWrapper {
             <p
               className="subtitle"
             >
-              Pour présenter vos offres, vous devez d'abord 
+              Pour présenter vos offres, vous devez d’abord
               <a
                 href="/structures/AE/lieux/creation"
               >
                 créer un
-                 
-                nouveau lieu 
+
+                nouveau lieu
               </a>
                lié à une structure.
               <br />
-              Sans lieu, vous pouvez uniquement 
+              Sans lieu, vous pouvez uniquement
               <a
                 href="/offres/creation"
               >
@@ -276,13 +276,13 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                "Pour présenter vos offres, vous devez d'abord ",
+                "Pour présenter vos offres, vous devez d’abord ",
                 <a
                   href="/structures/AE/lieux/creation"
                 >
                   créer un
-                   
-                  nouveau lieu 
+
+                  nouveau lieu
                 </a>,
                 " lié à une structure.",
                 <br />,
@@ -297,7 +297,7 @@ ShallowWrapper {
             },
             "ref": null,
             "rendered": Array [
-              "Pour présenter vos offres, vous devez d'abord ",
+              "Pour présenter vos offres, vous devez d’abord ",
               Object {
                 "instance": null,
                 "key": undefined,
@@ -518,17 +518,17 @@ ShallowWrapper {
             <p
               className="subtitle"
             >
-              Pour présenter vos offres, vous devez d'abord 
+              Pour présenter vos offres, vous devez d’abord
               <a
                 href="/structures/AE/lieux/creation"
               >
                 créer un
-                 
-                nouveau lieu 
+
+                nouveau lieu
               </a>
                lié à une structure.
               <br />
-              Sans lieu, vous pouvez uniquement 
+              Sans lieu, vous pouvez uniquement
               <a
                 href="/offres/creation"
               >
@@ -607,17 +607,17 @@ ShallowWrapper {
               <p
                 className="subtitle"
               >
-                Pour présenter vos offres, vous devez d'abord 
+                Pour présenter vos offres, vous devez d’abord
                 <a
                   href="/structures/AE/lieux/creation"
                 >
                   créer un
-                   
-                  nouveau lieu 
+
+                  nouveau lieu
                 </a>
                  lié à une structure.
                 <br />
-                Sans lieu, vous pouvez uniquement 
+                Sans lieu, vous pouvez uniquement
                 <a
                   href="/offres/creation"
                 >
@@ -658,13 +658,13 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  "Pour présenter vos offres, vous devez d'abord ",
+                  "Pour présenter vos offres, vous devez d’abord ",
                   <a
                     href="/structures/AE/lieux/creation"
                   >
                     créer un
-                     
-                    nouveau lieu 
+
+                    nouveau lieu
                   </a>,
                   " lié à une structure.",
                   <br />,
@@ -679,7 +679,7 @@ ShallowWrapper {
               },
               "ref": null,
               "rendered": Array [
-                "Pour présenter vos offres, vous devez d'abord ",
+                "Pour présenter vos offres, vous devez d’abord ",
                 Object {
                   "instance": null,
                   "key": undefined,

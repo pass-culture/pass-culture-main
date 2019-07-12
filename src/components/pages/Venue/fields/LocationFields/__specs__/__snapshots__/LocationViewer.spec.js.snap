@@ -17,7 +17,7 @@ ShallowWrapper {
     onMarkerDragend={[Function]}
     onSuggestionSelect={[Function]}
     onTextChange={[Function]}
-    placeholder="Sélectionnez l'adresse lorsqu'elle est proposée."
+    placeholder="Sélectionnez l’adresse lorsqu’elle est proposée."
     readOnly={true}
     withMap={false}
     zoom={15}

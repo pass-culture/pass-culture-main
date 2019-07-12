@@ -34,13 +34,14 @@ const Logo = ({ className, noLink, whiteHeader, signPage }) => {
 }
 
 Logo.defaultProps = {
+  className: '',
   noLink: false,
   signPage: false,
   whiteHeader: false,
 }
 
 Logo.propTypes = {
-  className: PropTypes.string.isRequired,
+  className: PropTypes.string,
   noLink: PropTypes.bool,
   signPage: PropTypes.bool,
   whiteHeader: PropTypes.bool,

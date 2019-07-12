@@ -1,18 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offer | StockItem | ProductFields snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Offer | StocksManager | StockItem | sub-components | fields | ProductFields should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <ProductFields
     beginningDatetime={null}
     closeInfo={[MockFunction]}
     dispatch={[MockFunction]}
+    hasIban={false}
     isEvent={true}
     parseFormChild={[MockFunction]}
     readOnly={true}
     showInfo={[MockFunction]}
     stock={null}
     timezone={null}
+    venue={Object {}}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -69,7 +71,7 @@ ShallowWrapper {
             name="bookingLimitDatetime"
             placeholder="Laissez vide si pas de limite"
             readOnly={true}
-            renderValue={null}
+            renderValue={[Function]}
             required={false}
             timezone={null}
             validate={null}
@@ -83,7 +85,7 @@ ShallowWrapper {
             name="available"
             placeholder="Illimité"
             readOnly={true}
-            renderValue={null}
+            renderValue={[Function]}
             title="Stock[ou] Places affecté[es]"
           />
         </td>,
@@ -190,7 +192,7 @@ ShallowWrapper {
             name="bookingLimitDatetime"
             placeholder="Laissez vide si pas de limite"
             readOnly={true}
-            renderValue={null}
+            renderValue={[Function]}
             required={false}
             timezone={null}
             validate={null}
@@ -217,7 +219,7 @@ ShallowWrapper {
             "name": "bookingLimitDatetime",
             "placeholder": "Laissez vide si pas de limite",
             "readOnly": true,
-            "renderValue": null,
+            "renderValue": [Function],
             "required": false,
             "timezone": null,
             "validate": null,
@@ -238,7 +240,7 @@ ShallowWrapper {
             name="available"
             placeholder="Illimité"
             readOnly={true}
-            renderValue={null}
+            renderValue={[Function]}
             title="Stock[ou] Places affecté[es]"
           />,
           "className": "tooltiped",
@@ -253,7 +255,7 @@ ShallowWrapper {
             "name": "available",
             "placeholder": "Illimité",
             "readOnly": true,
-            "renderValue": null,
+            "renderValue": [Function],
             "title": "Stock[ou] Places affecté[es]",
           },
           "ref": null,
@@ -325,7 +327,7 @@ ShallowWrapper {
               name="bookingLimitDatetime"
               placeholder="Laissez vide si pas de limite"
               readOnly={true}
-              renderValue={null}
+              renderValue={[Function]}
               required={false}
               timezone={null}
               validate={null}
@@ -339,7 +341,7 @@ ShallowWrapper {
               name="available"
               placeholder="Illimité"
               readOnly={true}
-              renderValue={null}
+              renderValue={[Function]}
               title="Stock[ou] Places affecté[es]"
             />
           </td>,
@@ -446,7 +448,7 @@ ShallowWrapper {
               name="bookingLimitDatetime"
               placeholder="Laissez vide si pas de limite"
               readOnly={true}
-              renderValue={null}
+              renderValue={[Function]}
               required={false}
               timezone={null}
               validate={null}
@@ -473,7 +475,7 @@ ShallowWrapper {
               "name": "bookingLimitDatetime",
               "placeholder": "Laissez vide si pas de limite",
               "readOnly": true,
-              "renderValue": null,
+              "renderValue": [Function],
               "required": false,
               "timezone": null,
               "validate": null,
@@ -494,7 +496,7 @@ ShallowWrapper {
               name="available"
               placeholder="Illimité"
               readOnly={true}
-              renderValue={null}
+              renderValue={[Function]}
               title="Stock[ou] Places affecté[es]"
             />,
             "className": "tooltiped",
@@ -509,7 +511,7 @@ ShallowWrapper {
               "name": "available",
               "placeholder": "Illimité",
               "readOnly": true,
-              "renderValue": null,
+              "renderValue": [Function],
               "title": "Stock[ou] Places affecté[es]",
             },
             "ref": null,

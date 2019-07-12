@@ -12,7 +12,7 @@ import ProductFields from './sub-components/fields/ProductFields/ProductFields'
 import SubmitAndCancelControlContainer from './sub-components/SubmitAndCancelControl/SubmitAndCancelControlContainer'
 import { errorKeyToFrenchKey } from './utils'
 
-export class StockItem extends Component {
+class StockItem extends Component {
   constructor() {
     super()
     this.state = {
@@ -157,11 +157,7 @@ export class StockItem extends Component {
   }
 
   render() {
-    const {
-      isEvent,
-      stockPatch,
-      timezone,
-    } = this.props
+    const { isEvent, stockPatch, timezone } = this.props
 
     let decorators = [
       adaptBookingLimitDatetimeGivenBeginningDatetime({

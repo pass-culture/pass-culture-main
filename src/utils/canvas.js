@@ -9,9 +9,7 @@ function getScaledCoordinates(coordinates) {
 }
 
 function getScaledFont(params) {
-  return `${params.fontWeight} ${window.devicePixelRatio * params.fontSize}px ${
-    params.fontFamily
-  }`
+  return `${params.fontWeight} ${window.devicePixelRatio * params.fontSize}px ${params.fontFamily}`
 }
 
 function getScaledTextCoordinates(coordinates) {

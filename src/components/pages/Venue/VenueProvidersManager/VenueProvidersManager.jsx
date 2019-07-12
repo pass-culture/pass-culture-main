@@ -50,9 +50,7 @@ class VenueProvidersManager extends Component {
     this.setState({
       isCreationMode: true,
     })
-    history.push(
-      `/structures/${offererId}/lieux/${venueId}/fournisseurs/nouveau`
-    )
+    history.push(`/structures/${offererId}/lieux/${venueId}/fournisseurs/nouveau`)
   }
 
   resetFormState = () => {
@@ -120,7 +118,7 @@ class VenueProvidersManager extends Component {
     } else {
       this.resetFormState()
     }
-    input.handleOnChange(valueFromSelectInput)
+    input.onChange(valueFromSelectInput)
   }
 
   render() {
@@ -137,7 +135,7 @@ class VenueProvidersManager extends Component {
     return (
       <div className="venue-providers-manager section">
         <h2 className="main-list-title">
-          IMPORTATIONS D'OFFRES
+          {'IMPORTATIONS D’OFFRES'}
           <span className="is-pulled-right is-size-7 has-text-grey">
             {'Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.'}
           </span>
@@ -180,7 +178,7 @@ class VenueProvidersManager extends Component {
               onClick={this.addVenueProvider}
               type="button"
             >
-              {"+ Importer des offres"}
+              {'+ Importer des offres'}
             </button>
           </div>
         )}
@@ -197,9 +195,9 @@ VenueProvidersManager.propTypes = {
     params: PropTypes.shape(),
   }).isRequired,
   notify: PropTypes.func.isRequired,
-  providers: PropTypes.arrayOf().isRequired,
+  providers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   venue: PropTypes.shape().isRequired,
-  venueProviders: PropTypes.arrayOf().isRequired,
+  venueProviders: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default VenueProvidersManager

@@ -1,11 +1,7 @@
 import { Selector } from 'testcafe'
 
 import { fetchSandbox } from './helpers/sandboxes'
-import {
-  navigateToNewOfferAs,
-  navigateToOfferAs,
-  navigateToVenueAs,
-} from './helpers/navigations'
+import { navigateToNewOfferAs, navigateToOfferAs, navigateToVenueAs } from './helpers/navigations'
 import { createUserRole } from './helpers/roles'
 
 const closeInput = Selector('button').withText('Fermer')
@@ -19,9 +15,7 @@ const venueOption = Selector('#offer-venueId option')
 const typeOption = Selector('#offer-type option')
 const durationMinutesInput = Selector('input.field-duration')
 const descriptionInput = Selector('#offer-description')
-const submitButton = Selector('button.button.is-primary').withText(
-  'Enregistrer'
-)
+const submitButton = Selector('button.button.is-primary').withText('Enregistrer')
 
 fixture('Initialisation')
 
@@ -69,7 +63,7 @@ test('Création des données', async () => {
 
 fixture('Offer A | Naviguer vers "Créer une offre" et revenir au précédent')
 
-test("Lorsque je clique sur le bouton 'créer une offre' sur la page des offres, j'accède au formulaire de création d'offre", async t => {
+test('Lorsque je clique sur le bouton "créer une offre" sur la page des offres, j’accède au formulaire de création d’offre', async t => {
   // given
   const { user } = dataFromSandboxOne
   await navigateToNewOfferAs(user, null, null, userRoleOne)(t)
@@ -79,7 +73,7 @@ test("Lorsque je clique sur le bouton 'créer une offre' sur la page des offres,
   await t.expect(location.pathname).eql('/offres/creation')
 })
 
-test("Lorsque je clique sur le bouton 'créer une offre' d'un item structure dans la page structures, j'accède au formulaire de création d'offre", async t => {
+test('Lorsque je clique sur le bouton "créer une offre" d’un item structure dans la page structures, j’accède au formulaire de création d’offre', async t => {
   // given
   const { offerer, user } = dataFromSandboxTwo
   await navigateToNewOfferAs(user, offerer, null, userRoleTwo)(t)
@@ -89,7 +83,7 @@ test("Lorsque je clique sur le bouton 'créer une offre' d'un item structure dan
   await t.expect(location.pathname).eql('/offres/creation')
 })
 
-test("Lorsque je clique sur le bouton 'créer une offre' d'un item lieu dans la page d'une structure, j'accède au formulaire de création d'offre", async t => {
+test('Lorsque je clique sur le bouton "créer une offre" d’un item lieu dans la page d’une structure, j’accède au formulaire de création d’offre', async t => {
   // when
   const { offerer, user, venue } = dataFromSandboxTwo
   await navigateToNewOfferAs(user, offerer, venue, userRoleTwo)(t)
@@ -99,7 +93,7 @@ test("Lorsque je clique sur le bouton 'créer une offre' d'un item lieu dans la 
   await t.expect(location.pathname).eql('/offres/creation')
 })
 
-test("Lorsque je clique sur le bouton 'créer une offre' sur la page d'un lieu, j'accède au formulaire de création d'offre", async t => {
+test('Lorsque je clique sur le bouton "créer une offre" sur la page d’un lieu, j’accède au formulaire de création d’offre', async t => {
   // given
   const { offerer, user, venue } = dataFromSandboxTwo
   const newOfferAnchor = Selector("a[href^='/offres/creation?lieu=']")
@@ -113,7 +107,7 @@ test("Lorsque je clique sur le bouton 'créer une offre' sur la page d'un lieu, 
   await t.expect(location.pathname).eql('/offres/creation')
 })
 
-test("Lorsque je clique sur le bouton 'annuler' de la page 'créer une offre' sur la page des offres, je reviens au mode read-only de l'offre", async t => {
+test("Lorsque je clique sur le bouton 'annuler' de la page 'créer une offre' sur la page des offres, je reviens au mode read-only de l’offre", async t => {
   // given
   const { user } = dataFromSandboxOne
   const cancelButton = Selector('#cancel-button').withText('Annuler')
@@ -140,8 +134,8 @@ test('Je peux créer une offre événement', async t => {
     'Avec d’autres travailleurs socioculturels, ',
     'lassés des euphémismes et des mensonges du langage du pouvoir, ',
     'Franck Lepage s’est lancé dans cette bataille très politique : celle des mots. ',
-    "Atelier d'initiation pour reconnaître tout ce qui est du pipotron dans vos lectures de tous les jours. ",
-    "Suivi d'une séance de dédicaces.",
+    'Atelier d’initiation pour reconnaître tout ce qui est du pipotron dans vos lectures de tous les jours. ',
+    'Suivi d’une séance de dédicaces.',
   ].join('')
   const eventDurationMinutes = '02:00'
   const eventName = 'Rencontre avec Franck Lepage'
@@ -199,8 +193,7 @@ test('Je peux créer des offres avec des sous-types', async t => {
   const musicTypeOption = Selector('#offer-musicType option')
   const musicSubTypeInput = Selector('#offer-musicSubType')
   const musicSubTypeOption = Selector('#offer-musicSubType option')
-  const eventDescription =
-    'Venez re découvrir PNL en accoustique, sans auto-tune'
+  const eventDescription = 'Venez re découvrir PNL en accoustique, sans auto-tune'
   const eventDurationMinutes = '01:30'
   const eventName = 'Concert de PNL Unplugged'
   const eventType = 'Musique — concerts, festivals'
@@ -214,9 +207,7 @@ test('Je peux créer des offres avec des sous-types', async t => {
   await t.typeText(nameInput, eventName)
   await t.click(typeInput).click(typeOption.withText(eventType))
   await t.click(musicTypeInput).click(musicTypeOption.withText(eventMusicType))
-  await t
-    .click(musicSubTypeInput)
-    .click(musicSubTypeOption.withText(eventMusicSubType))
+  await t.click(musicSubTypeInput).click(musicSubTypeOption.withText(eventMusicSubType))
   await t.click(offererInput).click(offererOption.withText(offererName))
   await t.click(venueInput).click(venueOption.withText(venueName))
   await t.typeText(durationMinutesInput, eventDurationMinutes)

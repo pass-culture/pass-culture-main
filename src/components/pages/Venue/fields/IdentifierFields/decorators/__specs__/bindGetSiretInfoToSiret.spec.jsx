@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import { mount } from 'enzyme'
 import React from 'react'
 import { Field, Form } from 'react-final-form'
@@ -11,7 +10,7 @@ const mockSuccessSiretInfo = {
   etablissement: {
     code_postal: '75010',
     l1_normalisee: NAME,
-    l4_normalisee: "5 cité de l'enfer",
+    l4_normalisee: '5 cité de l’enfer',
     libelle_commune: 'Paboude',
     latitude: 48.3,
     longitude: 1.2,
@@ -52,7 +51,7 @@ describe('src | components | pages | Venue | IdentifierFields | bindGetSiretInfo
               onClick={handleSubmit}
               type="submit"
             >
-              Submit
+              {'Submit'}
             </button>
           </form>
         )}

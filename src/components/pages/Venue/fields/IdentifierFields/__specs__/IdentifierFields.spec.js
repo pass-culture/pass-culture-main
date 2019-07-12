@@ -57,7 +57,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       expect(textFields.at(1).prop('name')).toBe('name')
       expect(textFields.at(1).prop('required')).toBe(true)
 
-      expect(textFields.at(2).prop('label')).toBe("Nom d'usage : ")
+      expect(textFields.at(2).prop('label')).toBe('Nom d’usage : ')
       expect(textFields.at(2).prop('name')).toBe('publicName')
       expect(textFields.at(2).prop('required')).toBe(false)
 
@@ -110,7 +110,10 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         const wrapper = shallow(<IdentifierFields {...props} />)
 
         // then
-        const label = wrapper.find('label').at(0).text()
+        const label = wrapper
+          .find('label')
+          .at(0)
+          .text()
         expect(label).toBe('SIRET du lieu qui accueille vos offres (si applicable) : ')
       })
 
@@ -125,7 +128,10 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         const wrapper = shallow(<IdentifierFields {...props} />)
 
         // then
-        const label = wrapper.find('label').at(0).text()
+        const label = wrapper
+          .find('label')
+          .at(0)
+          .text()
         expect(label).toBe('SIRET : ')
       })
     })

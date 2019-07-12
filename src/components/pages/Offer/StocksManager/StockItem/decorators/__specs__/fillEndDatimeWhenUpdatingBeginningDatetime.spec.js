@@ -46,7 +46,7 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
               onClick={handleSubmit}
               type="submit"
             >
-              Submit
+              {'Submit'}
             </button>
           </form>
         )}
@@ -107,7 +107,7 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
               onClick={handleSubmit}
               type="submit"
             >
-              Submit
+              {'Submit'}
             </button>
           </form>
         )}
@@ -169,7 +169,7 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
               onClick={handleSubmit}
               type="submit"
             >
-              Submit
+              {'Submit'}
             </button>
           </form>
         )}

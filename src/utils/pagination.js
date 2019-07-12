@@ -11,5 +11,4 @@ export const mapWindowToApi = {
 
 export const mapApiToWindow = invert(mapWindowToApi)
 
-export const windowToApiQuery = windowQuery =>
-  getObjectWithMappedKeys(windowQuery, mapWindowToApi)
+export const windowToApiQuery = windowQuery => getObjectWithMappedKeys(windowQuery, mapWindowToApi)

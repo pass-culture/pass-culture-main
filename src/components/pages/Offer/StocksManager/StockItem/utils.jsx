@@ -5,9 +5,7 @@ export const getRemainingStocksCount = (available, bookings) => {
     return 'Illimité'
   }
 
-  const validBookings = bookings.filter(
-    booking => booking.isCancelled === false
-  )
+  const validBookings = bookings.filter(booking => booking.isCancelled === false)
 
   return available - validBookings.length
 }
@@ -29,12 +27,7 @@ export function getDatetimeOneHourAfter(datetime) {
     .toISOString()
 }
 
-export function getDatetimeAtSpecificHoursAndMinutes(
-  datetime,
-  hours,
-  minutes,
-  timezone
-) {
+export function getDatetimeAtSpecificHoursAndMinutes(datetime, hours, minutes, timezone) {
   let datetimeMoment = moment(datetime)
   if (timezone) {
     datetimeMoment = datetimeMoment.tz(timezone)

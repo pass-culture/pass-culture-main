@@ -78,7 +78,7 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
             className="is-italic mb12"
             id="offerer-item-validation"
           >
-            {"Structure en cours de validation par l'équipe Pass Culture."}
+            {'Structure en cours de validation par l’équipe pass Culture.'}
           </p>
         )}
         <ul className="actions">
@@ -101,8 +101,8 @@ OffererItem.defaultProps = {
 }
 
 OffererItem.propTypes = {
-  physicalVenues: PropTypes.arrayOf,
-  venues: PropTypes.arrayOf,
+  physicalVenues: PropTypes.arrayOf(PropTypes.shape()),
+  venues: PropTypes.arrayOf(PropTypes.shape()),
 }
 
 export default OffererItem

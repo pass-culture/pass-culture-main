@@ -16,7 +16,7 @@ fixture('Offers A | Lister les offres').beforeEach(async t => {
   }
 })
 
-test("Lorsque je clique sur `Mes offres`, j'accède à la liste des offres", async t => {
+test('Lorsque je clique sur `Mes offres`, j’accède à la liste des offres', async t => {
   // given
   await t.useRole(userRole)
   await navigateToOffersAs(dataFromSandbox.user)(t)

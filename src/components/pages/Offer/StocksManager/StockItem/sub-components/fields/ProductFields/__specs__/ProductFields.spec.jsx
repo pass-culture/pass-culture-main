@@ -14,56 +14,54 @@ const dispatchMock = jest.fn()
 const closeInfoMock = jest.fn()
 const showInfoMock = jest.fn()
 
-describe('src | components | pages | Offer | StockItem | ProductFields', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
+describe('src | components | pages | Offer | StocksManager | StockItem | sub-components | fields | ProductFields', () => {
+  it('should match the snapshot', () => {
+    // given
+    const initialProps = {
+      closeInfo: jest.fn(),
+      dispatch: jest.fn(),
+      hasIban: false,
+      parseFormChild: jest.fn(),
+      showInfo: jest.fn(),
+      venue: {},
+    }
+
+    // when
+    const wrapper = shallow(<ProductFields {...initialProps} />)
+
+    // then
+    expect(wrapper).toBeDefined()
+    expect(wrapper).toMatchSnapshot()
+  })
+
+  describe.skip('handleOfferSuccessData', () => {
+    it('should push correct url to history to permit to patch form', () => {
       // given
+      const initialState = {}
+
+      const historyMock = { push: jest.fn() }
       const initialProps = {
-        closeInfo: jest.fn(),
-        dispatch: jest.fn(),
+        closeInfo: closeInfoMock,
+        dispatch: dispatchMock,
+        history: historyMock,
+        offer: {
+          id: 'TY',
+        },
         parseFormChild: jest.fn(),
-        showInfo: jest.fn(),
+        showInfo: showInfoMock,
+        formInitialValues: {
+          id: 'DG',
+        },
+        store: mockStore(initialState),
       }
 
       // when
       const wrapper = shallow(<ProductFields {...initialProps} />)
+      const expected = '/offres/TY?gestion&date=K9&stock=DG'
 
       // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
-  })
-
-  describe('functions', () => {
-    describe.skip('handleOfferSuccessData', () => {
-      it('should push correct url to history to permit to patch form', () => {
-        // given
-        const initialState = {}
-
-        const historyMock = { push: jest.fn() }
-        const initialProps = {
-          closeInfo: closeInfoMock,
-          dispatch: dispatchMock,
-          history: historyMock,
-          offer: {
-            id: 'TY',
-          },
-          parseFormChild: jest.fn(),
-          showInfo: showInfoMock,
-          formInitialValues: {
-            id: 'DG',
-          },
-          store: mockStore(initialState),
-        }
-
-        // when
-        const wrapper = shallow(<ProductFields {...initialProps} />)
-        const expected = '/offres/TY?gestion&date=K9&stock=DG'
-
-        // then
-        expect(wrapper.state()).toStrictEqual('expected')
-        expect(historyMock.push).toHaveBeenCalledWith(expected)
-      })
+      expect(wrapper.state()).toStrictEqual('expected')
+      expect(historyMock.push).toHaveBeenCalledWith(expected)
     })
   })
 

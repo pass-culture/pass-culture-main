@@ -69,7 +69,7 @@ class Offerer extends Component {
     )
   }
 
-  handleDisabling = offererName => !offererName
+  handleDisabling = offererName => () => !offererName
 
   formatPatch = patchConfig => patch =>
     formatPatch(patch, patchConfig, OFFERER_CREATION_PATCH_KEYS, OFFERER_MODIFICATION_PATCH_KEYS)

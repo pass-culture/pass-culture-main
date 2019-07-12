@@ -6,14 +6,14 @@ import Main from '../../layout/Main'
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import FilterByVenueContainer from './FilterByVenue/FilterByVenueContainer'
 
-const Bookings = ({pathToCsvFile, showDownloadButton}) => (
+const Bookings = ({ pathToCsvFile, showDownloadButton }) => (
   <Main name="bookings">
     <HeroSection title="Suivi des réservations">
       <p className="subtitle">
-        {"Téléchargez le récapitulatif des réservations de vos offres."}
+        {'Téléchargez le récapitulatif des réservations de vos offres.'}
         <br />
         <br />
-        {"Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte."}
+        {'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'}
       </p>
     </HeroSection>
     <hr />
@@ -25,7 +25,7 @@ const Bookings = ({pathToCsvFile, showDownloadButton}) => (
           href={pathToCsvFile}
           mimeType="text/csv"
         >
-          {"Télécharger la liste des réservations"}
+          {'Télécharger la liste des réservations'}
         </DownloadButtonContainer>
       )}
     </div>

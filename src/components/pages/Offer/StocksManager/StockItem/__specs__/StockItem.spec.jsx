@@ -19,8 +19,9 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       },
       query: {
         changeToReadOnly: jest.fn(),
-        context: () => ({ method: 'POST' })
+        context: () => ({ method: 'POST' }),
       },
+      showInfo: jest.fn(),
       stockPatch: {
         id: 'DG',
       },
@@ -77,13 +78,13 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           apiPath: '/stocks/DG',
           body: {
             available: null,
-            price: 0
+            price: 0,
           },
           handleFail: expect.any(Function),
           handleSuccess: expect.any(Function),
-          method: 'POST'
+          method: 'POST',
         },
-        type: 'REQUEST_DATA_POST_/STOCKS/DG'
+        type: 'REQUEST_DATA_POST_/STOCKS/DG',
       }
       expect(props.dispatch).toHaveBeenCalledWith(result)
     })
@@ -98,13 +99,10 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       wrapper.instance().handleRequestSuccess(jest.fn())()
 
       // then
-      expect(props.query.changeToReadOnly).toHaveBeenCalledWith(
-        null,
-        {
-          id: 'DG',
-          key: 'stock',
-        }
-      )
+      expect(props.query.changeToReadOnly).toHaveBeenCalledWith(null, {
+        id: 'DG',
+        key: 'stock',
+      })
     })
   })
 })

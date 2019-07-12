@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 
-import { siretValidate } from './validators'
-import { Icon } from '../../../../layout/Icon'
+import siretValidate from './validators/siretValidate'
+import Icon from '../../../../layout/Icon'
 import HiddenField from '../../../../layout/form/fields/HiddenField'
 import TextareaField from '../../../../layout/form/fields/TextareaField'
 import TextField from '../../../../layout/form/fields/TextField'
@@ -20,7 +20,7 @@ class IdentifierFields extends Component {
         <span
           className="button"
           data-place="bottom"
-          data-tip="<p>Il n'est pas possible de modifier le nom, l'addresse et la géolocalisation du lieu quand un siret est renseigné.</p>"
+          data-tip="<p>Il n’est pas possible de modifier le nom, l’addresse et la géolocalisation du lieu quand un siret est renseigné.</p>"
           data-type="info"
         >
           <Icon svg="picto-info" />
@@ -48,7 +48,7 @@ class IdentifierFields extends Component {
       <span
         className="button"
         data-place="bottom"
-        data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une adresse différente est saisie lors de la création d'une offre)</p>"
+        data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une adresse différente est saisie lors de la création d’une offre)</p>"
         data-type="info"
       >
         <Icon svg="picto-info" />
@@ -70,7 +70,7 @@ class IdentifierFields extends Component {
           {'IDENTIFIANTS'}
           {!readOnly && (
             <span className="is-pulled-right is-size-7 has-text-grey">
-              {"Les champs marqués d'un"} <span className="required-legend">{' * '}</span>
+              {'Les champs marqués d’un'} <span className="required-legend">{' * '}</span>
               {' sont obligatoires'}
             </span>
           )}
@@ -111,7 +111,7 @@ class IdentifierFields extends Component {
             required
           />
           <TextField
-            label="Nom d'usage : "
+            label="Nom d’usage : "
             name="publicName"
             readOnly={readOnly}
           />

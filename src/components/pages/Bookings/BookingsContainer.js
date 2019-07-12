@@ -2,10 +2,8 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import Bookings from './Bookings'
-import {
-  withFrenchQueryRouter,
-  withRedirectToSigninWhenNotAuthenticated,
-} from '../../hocs'
+import withFrenchQueryRouter from '../../hocs/withFrenchQueryRouter'
+import withRedirectToSigninWhenNotAuthenticated from '../../hocs/with-login/withRedirectToSigninWhenNotAuthenticated'
 import { API_URL } from '../../../utils/config'
 
 const buildPathToReservationFile = (isFilterByDigitalVenues, selectedVenue) => {
@@ -31,10 +29,7 @@ export const mapStateToProps = state => {
   const { bookingSummary = {} } = state
   const { selectedVenue, isFilterByDigitalVenues } = bookingSummary
 
-  const pathToCsvFile = buildPathToReservationFile(
-    isFilterByDigitalVenues,
-    selectedVenue,
-  )
+  const pathToCsvFile = buildPathToReservationFile(isFilterByDigitalVenues, selectedVenue)
 
   const showDownloadButton = !!(isFilterByDigitalVenues || selectedVenue)
 

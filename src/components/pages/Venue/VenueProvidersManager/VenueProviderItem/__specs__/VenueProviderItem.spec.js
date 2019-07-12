@@ -102,9 +102,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       const wrapper = shallow(<VenueProviderItem {...props} />)
 
       // then
-      const numberOfOffersLabel = wrapper.find(
-        '.offers-container .number-of-offers-label'
-      )
+      const numberOfOffersLabel = wrapper.find('.offers-container .number-of-offers-label')
       expect(numberOfOffersLabel).toHaveLength(1)
       expect(numberOfOffersLabel.text()).toBe('0 offre')
     })

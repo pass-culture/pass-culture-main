@@ -63,7 +63,7 @@ describe('src | reducers | bookingSummary', () => {
       }
       const action = {
         payload: true,
-          type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE',
+        type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE',
       }
 
       // when

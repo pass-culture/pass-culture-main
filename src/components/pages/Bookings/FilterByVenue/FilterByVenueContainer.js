@@ -1,7 +1,7 @@
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 import { connect } from 'react-redux'
-import { withFrenchQueryRouter } from '../../../hocs'
+import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'
 
 import FilterByVenue from './FilterByVenue'
 import selectNonVirtualVenues from '../selectors/selectNonVirtualVenues'

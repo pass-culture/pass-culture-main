@@ -29,18 +29,17 @@ class SignupForm extends PureComponent {
               target="_blank"
             >
               {'modalités de fonctionnement en cliquant ici '}
-            </a>{' '}
+            </a>
             {'avant de renseigner les champs suivants.'}
           </h2>
           <span className="has-text-grey">
-            {' '}
             <span className="required-legend">{'*'}</span>
             {' Champs obligatoires'}
           </span>
           <Form
             action="/users/signup/pro"
             blockComponent={null}
-            formatPatch={this.handleformatPatch()}
+            formatPatch={this.handleformatPatch}
             handleSuccessNotification={null}
             handleSuccessRedirect={this.onHandleSuccessRedirect}
             layout="vertical"
@@ -53,7 +52,7 @@ class SignupForm extends PureComponent {
                 name="email"
                 placeholder="nom@exemple.fr"
                 required
-                sublabel="pour se connecter et récupérer son mot de passe en cas d'oubli"
+                sublabel="pour se connecter et récupérer son mot de passe en cas d’oubli"
                 type="email"
               />
               <Field
@@ -101,12 +100,12 @@ class SignupForm extends PureComponent {
                 withFetchedName
               />
               <Field
-                label="Je souhaite recevoir les actualités du Pass Culture."
+                label="Je souhaite recevoir les actualités du pass Culture"
                 name="newsletter_ok"
                 type="checkbox"
               />
               <Field
-                label="J'accepte d'être contacté par mail pour donner mon avis sur le Pass Culture."
+                label="J’accepte d'être contacté par e-mail pour donner mon avis sur le pass Culture"
                 name="contact_ok"
                 required
                 type="checkbox"

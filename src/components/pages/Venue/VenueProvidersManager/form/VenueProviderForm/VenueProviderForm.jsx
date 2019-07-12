@@ -1,11 +1,12 @@
+import classNames from 'classnames'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
+
 import HiddenField from '../../../../../layout/form/fields/HiddenField'
 import TextField from '../../../../../layout/form/fields/TextField'
 import Icon from '../../../../../layout/Icon'
 import SelectSourceField from '../SelectSourceField/SelectSourceField'
-import classNames from 'classnames'
 
 const VenueProviderForm = ({
   handleChange,
@@ -61,7 +62,7 @@ const VenueProviderForm = ({
               data-tip={`<p>Veuillez saisir un compte.</p>`}
             >
               <Icon
-                alt="image d'aide à l'information"
+                alt="image d’aide à l’information"
                 svg="picto-info"
               />
             </span>
@@ -88,9 +89,9 @@ VenueProviderForm.propTypes = {
   isCreationMode: PropTypes.bool.isRequired,
   isLoadingMode: PropTypes.bool.isRequired,
   isProviderSelected: PropTypes.bool.isRequired,
-  providers: PropTypes.arrayOf().isRequired,
+  providers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   venueIdAtOfferProviderIsRequired: PropTypes.bool.isRequired,
-  venueProviders: PropTypes.arrayOf().isRequired,
+  venueProviders: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default VenueProviderForm

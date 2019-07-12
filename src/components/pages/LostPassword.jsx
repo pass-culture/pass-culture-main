@@ -57,7 +57,7 @@ class LostPasswordPage extends Component {
                       }
                     </h2>
 
-                    <Link to="/accueil">{"Revenir à l'accueil"}</Link>
+                    <Link to="/accueil">{'Revenir à l’accueil'}</Link>
                   </div>
                 </section>
               )}
@@ -71,7 +71,6 @@ class LostPasswordPage extends Component {
                     </h1>
                     <h2 className="subtitle is-2">{'Saisissez le nouveau mot de passe'}</h2>
                     <span className="has-text-grey">
-                      {' '}
                       <span className="required-legend">{'*'}</span>
                       {' Champs obligatoires'}
                     </span>
@@ -128,7 +127,6 @@ class LostPasswordPage extends Component {
                       }
                     </h2>
                     <span className="has-text-grey">
-                      {' '}
                       <span className="required-legend">{'*'}</span> {'Champs obligatoires'}
                     </span>
                     <Form
@@ -142,7 +140,7 @@ class LostPasswordPage extends Component {
                       <Field
                         label="Adresse e-mail"
                         name="email"
-                        placeholder="Identifiant (email)"
+                        placeholder="Identifiant (e-mail)"
                         required
                         type="email"
                       />

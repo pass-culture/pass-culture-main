@@ -29,6 +29,8 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
       context: () => ({}),
     }
     props = {
+      dispatch: jest.fn(),
+      isEvent: true,
       location: {
         pathname: '/offres/AWHA',
         search: '?gestion',
@@ -37,6 +39,7 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
         key: '4c2v7m',
       },
       query,
+      shouldPreventCreationOfSecondStock: false,
       stocks: [stock],
     }
   })
@@ -61,7 +64,7 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
 
       // then
       expect(query.changeToCreation).toHaveBeenCalledWith(null, {
-        key: 'stock'
+        key: 'stock',
       })
     })
   })
@@ -69,13 +72,11 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
   describe('render()', () => {
     it('should return a error message', () => {
       // given
-      const props = {
-        query: { context: () => ({}) },
-      }
+      props.query = { context: () => ({}) }
       const wrapper = shallow(<StocksManager {...props} />)
       wrapper.setState({
         errors: {
-          global: ["Mon message d'erreur custom"],
+          global: ['Mon message d’erreur custom'],
         },
       })
 
@@ -83,7 +84,7 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
       const errorMessage = wrapper.find('.is-danger').text()
 
       // then
-      expect(errorMessage).toBe(" global : Mon message d'erreur custom")
+      expect(errorMessage).toBe('global : Mon message d’erreur custom')
     })
   })
 })

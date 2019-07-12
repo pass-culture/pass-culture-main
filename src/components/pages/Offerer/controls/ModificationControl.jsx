@@ -5,13 +5,7 @@ import { NavLink } from 'react-router-dom'
 
 import VenueItem from './VenueItem'
 
-const ModificationControl = ({
-  adminUserOfferer,
-  parseFormChild,
-  offerer,
-  query,
-  venues,
-}) => {
+const ModificationControl = ({ adminUserOfferer, parseFormChild, offerer, query, venues }) => {
   const { readOnly } = query.context()
   const { id } = offerer || {}
   return recursiveMap(
@@ -23,7 +17,7 @@ const ModificationControl = ({
               className="button is-secondary is-medium"
               to={`/structures/${id}?modifie`}
             >
-              {"Modifier les informations"}
+              {'Modifier les informations'}
             </NavLink>
           )
         ) : (
@@ -36,20 +30,18 @@ const ModificationControl = ({
                 className="button is-secondary is-medium"
                 to={`/structures/${id}`}
               >
-                {"Annuler"}
+                {'Annuler'}
               </CancelButton>
             </div>
             <div className="control">
-              <SubmitButton className="button is-primary is-medium">
-                {"Valider"}
-              </SubmitButton>
+              <SubmitButton className="button is-primary is-medium">{'Valider'}</SubmitButton>
             </div>
           </div>
         )}
       </div>
       <br />
       <div className="section">
-        <h2 className="main-list-title">{"LIEUX"}</h2>
+        <h2 className="main-list-title">{'LIEUX'}</h2>
         <ul className="main-list venues-list">
           {venues.map(v => (
             <VenueItem
