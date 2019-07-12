@@ -43,6 +43,8 @@ class EditAndDeleteControl extends Component {
     this.setState(nextState, () => handleSetErrors(frenchErrors))
   }
 
+  handleOnClick = (query, stockId) => query.changeToModification(null, { id: stockId, key: 'stock' })
+
   handleOnConfirmDeleteClick = () => {
     const { dispatch, formInitialValues } = this.props
 
@@ -88,8 +90,8 @@ class EditAndDeleteControl extends Component {
           <button
             className="button is-small is-secondary edit-stock"
             id={`edit-stock-${stockId}-button`}
-            onClick={() =>
-              query.changeToModification(null, { id: stockId, key: 'stock' })}
+            onClick={this.handleOnClick(query, stockId)}
+            type="button"
           >
             <span className="icon">
               <Icon svg="ico-pen-r" />
@@ -102,6 +104,7 @@ class EditAndDeleteControl extends Component {
               className="button is-small is-secondary delete-stock"
               onClick={this.handleOnDeleteClick}
               style={{ width: '100%' }}
+              type="button"
             >
               <span className="icon">
                 <Icon svg="ico-close-r" />

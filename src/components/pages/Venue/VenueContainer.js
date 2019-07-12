@@ -68,7 +68,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
           >
             {"créer une offre"}
           </NavLink>
-          , ou en importer automatiquement.
+          {", ou en importer automatiquement. "}
         </p>
       )
     }

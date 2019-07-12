@@ -64,11 +64,8 @@ export class ProductFields extends Component {
         <div className="has-text-right">
           <button
             className="button is-primary"
-            onClick={() => {
-              dispatch(assignModalConfig({ extraClassName: null }))
-              closeInfo()
-              this.isPriceInputDeactivate = false
-            }}
+            onClick={this.handleOnClick(dispatch, closeInfo)}
+            type="button"
           >
             {"J'ai compris"}
           </button>
@@ -77,6 +74,11 @@ export class ProductFields extends Component {
     )
   }
 
+  handleOnClick = (dispatch, closeInfo) => {
+    dispatch(assignModalConfig({ extraClassName: null }))
+    closeInfo()
+    this.isPriceInputDeactivate = false
+  }
   render() {
     const {
       beginningDatetime,
@@ -185,7 +187,6 @@ export class ProductFields extends Component {
 ProductFields.defaultProps = {
   beginningDatetime: null,
   isEvent: true,
-  offer: null,
   readOnly: true,
   stock: null,
   timezone: null,
@@ -197,8 +198,6 @@ ProductFields.propTypes = {
   dispatch: PropTypes.func.isRequired,
   hasIban: PropTypes.bool.isRequired,
   isEvent: PropTypes.bool,
-  offer: PropTypes.shape(),
-  parseFormChild: PropTypes.func,
   readOnly: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   showInfo: PropTypes.func.isRequired,
   stock: PropTypes.shape(),

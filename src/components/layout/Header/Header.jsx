@@ -1,5 +1,6 @@
 import classnames from 'classnames'
 import { SignoutButton } from 'pass-culture-shared'
+import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 
@@ -14,6 +15,13 @@ class Header extends Component {
     }
   }
 
+  handleSuccessRedirect = () => '/connexion'
+
+  handleOnClick = showMobileMenu =>
+    this.setState({
+      showMobileMenu: !showMobileMenu,
+    })
+
   render() {
     const { name, whiteHeader, offerers } = this.props
     const { showMobileMenu } = this.state
@@ -27,10 +35,7 @@ class Header extends Component {
             />
             <span
               className="navbar-burger"
-              onClick={() =>
-                this.setState({
-                  showMobileMenu: !showMobileMenu,
-                })}
+              onClick={this.handleOnClick(showMobileMenu)}
             >
               <span />
               <span />
@@ -50,7 +55,7 @@ class Header extends Component {
                 <span className="icon">
                   <Icon svg="ico-guichet-w" />
                 </span>
-                <span>{"Guichet"}</span>
+                <span>{'Guichet'}</span>
               </NavLink>
               {!whiteHeader && (
                 <NavLink
@@ -60,7 +65,7 @@ class Header extends Component {
                   <span className="icon">
                     <Icon svg="ico-offres-w" />
                   </span>
-                  <span>{"Vos offres"}</span>
+                  <span>{'Vos offres'}</span>
                 </NavLink>
               )}
               <a
@@ -72,7 +77,7 @@ class Header extends Component {
                 <span className="icon">
                   <Icon svg="ico-help-w" />
                 </span>
-                <span>{"Aide"}</span>
+                <span>{'Aide'}</span>
               </a>
               <div className="navbar-item has-dropdown is-hoverable">
                 <NavLink
@@ -92,7 +97,7 @@ class Header extends Component {
                     <span className="icon">
                       <Icon svg="ico-user" />
                     </span>
-                    <span>{"Profil"}</span>
+                    <span>{'Profil'}</span>
                   </NavLink>
                   <NavLink
                     className="navbar-item"
@@ -115,7 +120,7 @@ class Header extends Component {
                       <span className="icon">
                         <Icon svg="ico-delegation-r" />
                       </span>
-                      <span>{"Délégations"}</span>
+                      <span>{'Délégations'}</span>
                     </NavLink>
                   )}
                   <NavLink
@@ -125,7 +130,7 @@ class Header extends Component {
                     <span className="icon">
                       <Icon svg="ico-bookings" />
                     </span>
-                    <span>{"Suivi des réservations"}</span>
+                    <span>{'Suivi des réservations'}</span>
                   </NavLink>
                   <NavLink
                     className="navbar-item"
@@ -134,7 +139,7 @@ class Header extends Component {
                     <span className="icon">
                       <Icon svg="ico-compta" />
                     </span>
-                    <span>{"Suivi des remboursements"}</span>
+                    <span>{'Suivi des remboursements'}</span>
                   </NavLink>
                   {false && (
                     <NavLink
@@ -144,17 +149,18 @@ class Header extends Component {
                       <span className="icon">
                         <Icon svg="ico-compta" />
                       </span>
-                      <span>{"Comptabilité"}</span>
+                      <span>{'Comptabilité'}</span>
                     </NavLink>
                   )}
                   <SignoutButton
+                    Tag="a"
                     className="navbar-item"
-                    handleSuccessRedirect={() => '/connexion'}
-                    Tag="a">
+                    handleSuccessRedirect={this.handleSuccessRedirect}
+                  >
                     <span className="icon">
                       <Icon svg="ico-deconnect" />
                     </span>
-                    <span>{"Déconnexion"}</span>
+                    <span>{'Déconnexion'}</span>
                   </SignoutButton>
                 </div>
               </div>
@@ -167,9 +173,9 @@ class Header extends Component {
 }
 
 Header.propTypes = {
-  name: PropTypes.string,
-  whiteHeader: PropTypes.string,
-  offerers: PropTypes.arrayOf(),
+  name: PropTypes.string.isRequired,
+  offerers: PropTypes.arrayOf().isRequired,
+  whiteHeader: PropTypes.string.isRequired,
 }
 
-export default
+export default Header

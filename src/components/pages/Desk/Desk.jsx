@@ -30,6 +30,16 @@ class Desk extends React.PureComponent {
     }
   }
 
+  componentDidMount() {
+    this.input.focus()
+  }
+
+  getRef() {
+    return element => (this.input = element)
+  }
+
+  handleOnClick = (code) => this.handleCodeRegistration(code)
+
   getBookingFromCode = code => {
     const { dispatch } = this.props
     dispatch(
@@ -187,14 +197,6 @@ class Desk extends React.PureComponent {
             />)
   }
 
-  componentDidMount() {
-    this.input.focus()
-  }
-
-  getRef() {
-    return element => (this.input = element)
-  }
-
   render() {
     const { code, status } = this.state
     return (
@@ -224,7 +226,7 @@ class Desk extends React.PureComponent {
           <button
             className="button"
             disabled={status !== CODE_VERIFICATION_SUCCESS}
-            onClick={() => this.handleCodeRegistration(code)}
+            onClick={this.handleOnClick(code)}
             type="submit"
           >
             {"Valider"}
