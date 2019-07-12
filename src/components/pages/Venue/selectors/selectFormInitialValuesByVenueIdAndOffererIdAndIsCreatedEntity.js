@@ -1,6 +1,6 @@
 import createCachedSelector from 're-reselect'
 
-import selectVenueById from 'selectors/selectVenueById'
+import selectVenueById from '../../../../selectors/selectVenueById'
 
 function mapArgsToCacheKey(state, venueId, offererId, isCreatedEntity) {
   return `${venueId || ''}/${offererId || ''}/${isCreatedEntity || ''}`

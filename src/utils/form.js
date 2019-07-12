@@ -13,7 +13,7 @@ Object.assign(Form.inputsByType, {
 })
 
 Object.assign(Form.defaultProps, {
-  BlockComponent: BlockContainer,
+  blockComponent: BlockContainer,
   handleFailNotification: (state, action) => {
     const {
       payload: { errors },

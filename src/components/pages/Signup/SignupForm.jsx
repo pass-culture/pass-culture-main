@@ -32,8 +32,8 @@ class SignupForm extends PureComponent {
             <span className="required-legend">{"*"}</span>{" Champs obligatoires"}
           </span>
           <Form
-            BlockComponent={null}
             action="/users/signup/pro"
+            blockComponent={null}
             formatPatch={this.handleformatPatch()}
             handleSuccessNotification={null}
             handleSuccessRedirect={this.handleSuccessRedirect}

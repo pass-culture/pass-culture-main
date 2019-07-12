@@ -46,8 +46,7 @@ const VenueProviderForm = ({
         <div className="venue-id-at-offer-provider-container">
           <TextField
             className={classNames('field-text fs12', {
-              'field-is-read-only':
-                !venueIdAtOfferProviderIsRequired || isLoadingMode,
+              'field-is-read-only': !venueIdAtOfferProviderIsRequired || isLoadingMode,
             })}
             label="Compte : "
             name="venueIdAtOfferProvider"
@@ -76,7 +75,7 @@ const VenueProviderForm = ({
             className="button is-intermediate provider-import-button"
             type="submit"
           >
-            {"Importer"}
+            {'Importer'}
           </button>
         </div>
       )}

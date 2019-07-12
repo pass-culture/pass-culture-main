@@ -30,8 +30,7 @@ const VenueProviderItem = ({ venueProvider }) => {
           </strong>
           {!lastSyncDate && (
             <div className="fs14 import-label-container">
-              Importation en cours. Cette étape peut durer plusieurs dizaines de
-              minutes.
+              {'Importation en cours. Cette étape peut durer plusieurs dizaines de minutes.'}
             </div>
           )}
         </div>
@@ -54,7 +53,7 @@ const VenueProviderItem = ({ venueProvider }) => {
               </div>
             </NavLink>
           ) : (
-            <div className="number-of-offers-label">0 offre</div>
+            <div className="number-of-offers-label">{'0 offre'}</div>
           ))}
       </div>
     </li>

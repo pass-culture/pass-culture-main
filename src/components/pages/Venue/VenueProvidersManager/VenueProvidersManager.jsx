@@ -139,8 +139,7 @@ class VenueProvidersManager extends Component {
         <h2 className="main-list-title">
           {"IMPORTATIONS D'OFFRES"}
           <span className="is-pulled-right is-size-7 has-text-grey">
-            Si vous avez plusieurs comptes auprès de la même source, ajoutez-les
-            successivement.
+            {'Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.'}
           </span>
         </h2>
 

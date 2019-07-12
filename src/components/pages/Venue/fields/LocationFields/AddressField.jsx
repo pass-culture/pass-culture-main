@@ -8,9 +8,9 @@ import LocationViewer from './LocationViewer'
 import FieldErrors from '../../../../layout/form/FieldErrors'
 import getRequiredValidate from '../../../../layout/form/utils/getRequiredValidate'
 
-const updateLocationFields = (form, {isLocationFrozen}) => location => {
+const updateLocationFields = (form, { isLocationFrozen }) => location => {
   form.batch(() => {
-    const {address, city, latitude, longitude, postalCode} = location
+    const { address, city, latitude, longitude, postalCode } = location
     form.change('address', address)
     form.change('city', city)
     form.change('isLocationFrozen', isLocationFrozen)
@@ -20,7 +20,19 @@ const updateLocationFields = (form, {isLocationFrozen}) => location => {
   })
 }
 
-export const AddressFieldRender = ({className, disabled, form, id, innerClassName, label, name, placeholder, readOnly, required, addressProps}) => ({input, meta}) => (
+export const AddressFieldRender = ({
+  className,
+  disabled,
+  form,
+  id,
+  innerClassName,
+  label,
+  name,
+  placeholder,
+  readOnly,
+  required,
+  addressProps,
+}) => ({ input, meta }) => (
   <div
     className={classnames('field text-field', className, {
       'is-label-aligned': label,
@@ -29,26 +41,19 @@ export const AddressFieldRender = ({className, disabled, form, id, innerClassNam
     id={id}
   >
     <label
-      className={classnames('field-label', {empty: !label})}
+      className={classnames('field-label', { empty: !label })}
       htmlFor={name}
     >
       {label && (
         <span>
           <span>{label}</span>
-          {required && !readOnly && (
-            <span className="field-asterisk">*</span>
-          )}
+          {required && !readOnly && <span className="field-asterisk">*</span>}
         </span>
       )}
     </label>
     <div className="field-control">
       <div className="field-value flex-columns items-center">
-        <div
-          className={classnames(
-            'field-inner flex-columns items-center',
-            innerClassName
-          )}
-        >
+        <div className={classnames('field-inner flex-columns items-center', innerClassName)}>
           <LocationViewer
             {...input}
             {...addressProps}
@@ -77,27 +82,24 @@ export const AddressFieldRender = ({className, disabled, form, id, innerClassNam
 )
 
 export const AddressField = ({
-                               className,
-                               disabled,
-                               form,
-                               format,
-                               id,
-                               innerClassName,
-                               label,
-                               name,
-                               parse,
-                               placeholder,
-                               readOnly,
-                               renderInner,
-                               renderValue,
-                               required,
-                               validate,
-                               ...addressProps
-                             }) => (
-                               <Field
-                                 format={format}
-                                 name={name}
-                                 render={AddressFieldRender({
+  className,
+  disabled,
+  form,
+  format,
+  id,
+  innerClassName,
+  label,
+  name,
+  placeholder,
+  readOnly,
+  required,
+  validate,
+  ...addressProps
+}) => (
+  <Field
+    format={format}
+    name={name}
+    render={AddressFieldRender({
       className,
       disabled,
       form,
@@ -108,10 +110,10 @@ export const AddressField = ({
       placeholder,
       readOnly,
       required,
-      addressProps
+      addressProps,
     })}
-                                 validate={composeValidators(validate, getRequiredValidate(required))}
-                               />
+    validate={composeValidators(validate, getRequiredValidate(required))}
+  />
 )
 
 AddressField.defaultProps = {

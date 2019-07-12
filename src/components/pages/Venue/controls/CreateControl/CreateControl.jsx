@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
@@ -12,11 +13,15 @@ const CreateControl = ({ venueId }) => (
           className="button is-secondary is-medium"
           to={`/offres/creation?lieu=${venueId}`}
         >
-          Créer une offre dans ce lieu
+          {'Créer une offre dans ce lieu'}
         </NavLink>
       </div>
     </div>
   </div>
 )
+
+CreateControl.propTypes = {
+  venueId: PropTypes.string.isRequired,
+}
 
 export default CreateControl

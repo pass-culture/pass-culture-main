@@ -1,13 +1,10 @@
-import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
-import PropTypes from 'prop-types'
-
 import Main from '../layout/Main'
-
 import { LAST_DEPLOYED_COMMIT } from '../../utils/config'
 
-// TODO: import this from other file
 const mardownContent = `
 # Titre section
 
@@ -52,32 +49,28 @@ Nam et consectetur nisl. Proin eget gravida ex. Pellentesque a leo enim. Aliquam
 feugiat orci ut diam ullamcorper consequat.
 `
 
-class TermsPage extends Component {
-  render() {
-    const { lastDeployedCommit } = this.props
-    return (
-      <Main
-        backButton
-        name="terms"
-        noHeader
-      >
-        <header>
-          <h1>{"Mentions légales"}</h1>
-        </header>
-        <div className="content">
-          <ReactMarkdown source={mardownContent} />
-          <div className="mt16">
-            <p className="text-right">{`Pass Culture - ${lastDeployedCommit}`}</p>
-          </div>
-        </div>
-      </Main>
-    )
-  }
-}
+const TermsPage = ({ lastDeployedCommit }) => (
+  <Main
+    backButton
+    name="terms"
+    noHeader
+  >
+    <header>
+      <h1>{'Mentions légales'}</h1>
+    </header>
+    <div className="content">
+      <ReactMarkdown source={mardownContent} />
+      <div className="mt16">
+        <p className="text-right">{`Pass Culture - ${lastDeployedCommit}`}</p>
+      </div>
+    </div>
+  </Main>
+)
 
 TermsPage.defaultProps = {
   lastDeployedCommit: LAST_DEPLOYED_COMMIT,
 }
+
 TermsPage.propTypes = {
   // NOTE -> `lastDeployedCommit`
   // `lastDeployedCommit` est rempli au build par le script PC

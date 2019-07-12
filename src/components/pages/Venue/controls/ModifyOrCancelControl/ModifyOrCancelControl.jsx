@@ -1,41 +1,44 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 
-const ModifyOrCancelControl = ({
-  isCreatedEntity,
-  form,
-  history,
-  offererId,
-  venueId,
-  readOnly,
-}) => (
-  <div className="control">
-    {readOnly ? (
-      <NavLink
-        className="button is-secondary is-medium"
-        id="modify-venue"
-        to={`/structures/${offererId}/lieux/${venueId}?modification`}
-      >
-        {"Modifier le lieu"}
-      </NavLink>
-    ) : (
-      <button
-        className="button is-secondary is-medium"
-        onClick={() => {
-          form.reset()
-          const next = isCreatedEntity
-            ? `/structures/${offererId}`
-            : `/structures/${offererId}/lieux/${venueId}`
-          history.push(next)
-        }}
-        type="reset"
-      >
-        {"Annuler"}
-      </button>
-    )}
-  </div>
-)
+class ModifyOrCancelControl extends Component {
+  handleOnCLick = () => {
+    const { isCreatedEntity, form, history, offererId, venueId } = this.props
+
+    form.reset()
+    const next = isCreatedEntity
+      ? `/structures/${offererId}`
+      : `/structures/${offererId}/lieux/${venueId}`
+    history.push(next)
+  }
+
+  render() {
+    const { offererId, venueId, readOnly } = this.props
+
+    return (
+      <div className="control">
+        {readOnly ? (
+          <NavLink
+            className="button is-secondary is-medium"
+            id="modify-venue"
+            to={`/structures/${offererId}/lieux/${venueId}?modification`}
+          >
+            {'Modifier le lieu'}
+          </NavLink>
+        ) : (
+          <button
+            className="button is-secondary is-medium"
+            onClick={this.handleOnCLick}
+            type="reset"
+          >
+            {'Annuler'}
+          </button>
+        )}
+      </div>
+    )
+  }
+}
 
 ModifyOrCancelControl.defaultProps = {
   venueId: null,
