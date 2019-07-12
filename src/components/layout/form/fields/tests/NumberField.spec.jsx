@@ -46,7 +46,7 @@ describe('src | components | layout | form | NumberField', () => {
     const wrapper = mount(
       <Form
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={handleOnSubmit}
         render={({ handleSubmit }) => (
           <form>
             <NumberField name="bar" />
@@ -71,7 +71,7 @@ describe('src | components | layout | form | NumberField', () => {
     wrapper.find('button[type="submit"]').simulate('click')
 
     // then
-    function onSubmit(formValues) {
+    function handleOnSubmit(formValues) {
       expect(formValues.bar).toStrictEqual(6)
       expect(formValues.foo).toStrictEqual(initialValues.foo)
       done()
@@ -87,7 +87,7 @@ describe('src | components | layout | form | NumberField', () => {
     const wrapper = mount(
       <Form
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={handleOnSubmit}
         render={({ handleSubmit }) => (
           <form>
             <NumberField name="bar" />
@@ -112,7 +112,7 @@ describe('src | components | layout | form | NumberField', () => {
     wrapper.find('button[type="submit"]').simulate('click')
 
     // then
-    function onSubmit(formValues) {
+    function handleOnSubmit(formValues) {
       expect(formValues.bar).toStrictEqual(6)
       expect(formValues.foo).toStrictEqual(initialValues.foo)
       done()

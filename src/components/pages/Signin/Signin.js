@@ -43,12 +43,12 @@ class Signin extends Component {
               <section className="has-text-grey">
                 <div className="hero-body">
                   <h1 className="title is-spaced is-1">
-                    <span className="has-text-weight-bold ">{"Bienvenue"}</span>{' '}
+                    <span className="has-text-weight-bold ">{"Bienvenue "}</span>
                     <span className="has-text-weight-semibold">
-                      dans la version bêta
+                      {"dans la version bêta "}
                     </span>
                     <span className="has-text-weight-normal">
-                      du Pass Culture pro.
+                      {"du Pass Culture pro."}
                     </span>
                   </h1>
                   <h2 className="subtitle is-2">
@@ -65,7 +65,7 @@ class Signin extends Component {
                     handleSuccessRedirect={this.handleSuccessRedirect}
                     layout="vertical"
                     name="user"
-                    onEnterKey={event => event.form.onSubmit()}>
+                    onEnterKey={event => event.form.handleOnSubmit()}>
                     <div className="field-group">
                       <Field
                         label="Adresse e-mail"
@@ -118,7 +118,7 @@ class Signin extends Component {
 }
 
 Signin.propTypes = {
-  query: PropTypes.shapeOf().isRequired,
+  query: PropTypes.shape(),
 }
 
 export default Signin

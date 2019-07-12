@@ -13,20 +13,20 @@ class SignupForm extends PureComponent {
         <div className="hero-body">
           <h1 className="title is-spaced is-1">{"Créez votre compte"}</h1>
           <h2 className="subtitle is-2">
-            Nous vous invitons à prendre connaissance des{' '}
+            {"Nous vous invitons à prendre connaissance des "}
             <a
               className="is-secondary"
               href="https://pass.culture.fr/ressources"
               rel="noopener noreferrer"
               target="_blank"
             >
-              modalités de fonctionnement en cliquant ici
+              {"modalités de fonctionnement en cliquant ici "}
             </a>{' '}
-            avant de renseigner les champs suivants.
+            {"avant de renseigner les champs suivants."}
           </h2>
           <span className="has-text-grey">
             {' '}
-            <span className="required-legend">{" * "}</span>{" Champs obligatoires"}
+            <span className="required-legend">{"*"}</span>{" Champs obligatoires"}
           </span>
           <Form
             action="/users/signup/pro"

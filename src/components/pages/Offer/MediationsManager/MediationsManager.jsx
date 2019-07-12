@@ -15,7 +15,7 @@ class MediationsManager extends Component {
           tag: 'mediations-manager',
           text: "Cette offre n'apparaîtra pas dans l'app pass Culture.",
           tooltip: {
-            children: <a> {"Pourquoi ? "}</a>,
+            children: <a>{" Pourquoi ? "}</a>,
             place: 'bottom',
             tip:
               "<div><p>Pour que votre offre s'affiche dans l'application du Pass Culture, vous devez:</p><p>- ajouter une ou plusieurs accroches.</p></div>",

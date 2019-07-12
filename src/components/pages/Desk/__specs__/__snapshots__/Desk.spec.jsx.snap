@@ -513,6 +513,8 @@ ShallowWrapper {
       },
     },
     "disableLifecycleMethods": true,
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
 }
 `;

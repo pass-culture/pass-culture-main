@@ -363,7 +363,8 @@ class Offer extends Component {
             method={method}
             name="offer"
             patch={formInitialValues}
-            readOnly={readOnly}>
+            readOnly={readOnly}
+          >
             <div className="field-group">
               <Field
                 isExpanded

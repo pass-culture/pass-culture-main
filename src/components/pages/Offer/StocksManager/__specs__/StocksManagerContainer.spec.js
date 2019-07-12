@@ -55,6 +55,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
           lastProviderId: 'C1',
         },
         creationOfSecondStockIsPrevented: false,
+        provider: undefined,
         stocks: [
           {
             offerId: 'A1',

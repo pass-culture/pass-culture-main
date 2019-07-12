@@ -10,7 +10,8 @@ const MediationItem = ({ mediation }) => {
       handleSuccessNotification={null}
       isAutoSubmit
       name={`mediation-${id}`}
-      patch={mediation}>
+      patch={mediation}
+    >
       <img
         alt={`accroche-${id}`}
         disabled={!isActive}

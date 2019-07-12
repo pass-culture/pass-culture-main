@@ -35,7 +35,7 @@ class VenueProvidersManager extends Component {
     }
   }
 
-  addVenueProvider = () => {
+  handleAddVenueProvider = () => {
     const {
       history,
       match: {
@@ -137,7 +137,7 @@ class VenueProvidersManager extends Component {
     return (
       <div className="venue-providers-manager section">
         <h2 className="main-list-title">
-          IMPORTATIONS D'OFFRES
+          {"IMPORTATIONS D'OFFRES"}
           <span className="is-pulled-right is-size-7 has-text-grey">
             Si vous avez plusieurs comptes auprès de la même source, ajoutez-les
             successivement.
@@ -178,7 +178,7 @@ class VenueProvidersManager extends Component {
               className="button is-secondary"
               disabled={isCreationMode}
               id="add-venue-provider-btn"
-              onClick={this.addVenueProvider}
+              onClick={this.handleAddVenueProvider}
               type="button"
             >
               + Importer des offres

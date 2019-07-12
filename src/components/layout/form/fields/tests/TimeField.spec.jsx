@@ -46,7 +46,7 @@ describe('src | components | layout | form | TimeField', () => {
     const wrapper = mount(
       <Form
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={handleOnSubmit}
         render={({ handleSubmit }) => (
           <form>
             <DateField name="myDate" />
@@ -70,7 +70,7 @@ describe('src | components | layout | form | TimeField', () => {
     wrapper.find('button[type="submit"]').simulate('click')
 
     // then
-    function onSubmit(formValues) {
+    function handleOnSubmit(formValues) {
       expect(formValues.myDate).toStrictEqual('2019-04-27T20:00:00Z')
       expect(formValues.myTime).toStrictEqual('03:45')
       done()

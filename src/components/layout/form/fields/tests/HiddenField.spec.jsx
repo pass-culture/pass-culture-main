@@ -48,7 +48,7 @@ describe('src | components | layout | form | HiddenField', () => {
     const wrapper = mount(
       <Form
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={handleOnSubmit}
         render={({ handleSubmit }) => (
           <form>
             <TextField name="title" />
@@ -73,7 +73,7 @@ describe('src | components | layout | form | HiddenField', () => {
     wrapper.find('button[type="submit"]').simulate('click')
 
     // then
-    function onSubmit(formValues) {
+    function handleOnSubmit(formValues) {
       expect(formValues.title).toStrictEqual("J'irai droit au But")
       expect(formValues.subtitle).toStrictEqual(initialValues.subtitle)
       done()

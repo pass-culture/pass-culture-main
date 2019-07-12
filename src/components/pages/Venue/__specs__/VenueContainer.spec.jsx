@@ -780,5 +780,3 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
     })
   })
 })
-
-

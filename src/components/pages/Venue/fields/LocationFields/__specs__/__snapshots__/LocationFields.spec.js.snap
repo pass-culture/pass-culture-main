@@ -52,7 +52,6 @@ ShallowWrapper {
             placeholder=""
             readOnly={true}
             required={false}
-            type="text"
             validate={null}
             withMap={true}
           />
@@ -148,7 +147,6 @@ ShallowWrapper {
               placeholder=""
               readOnly={true}
               required={false}
-              type="text"
               validate={null}
               withMap={true}
             />,
@@ -237,7 +235,6 @@ ShallowWrapper {
               "placeholder": "",
               "readOnly": true,
               "required": false,
-              "type": "text",
               "validate": null,
               "withMap": true,
             },
@@ -366,7 +363,6 @@ ShallowWrapper {
               placeholder=""
               readOnly={true}
               required={false}
-              type="text"
               validate={null}
               withMap={true}
             />
@@ -462,7 +458,6 @@ ShallowWrapper {
                 placeholder=""
                 readOnly={true}
                 required={false}
-                type="text"
                 validate={null}
                 withMap={true}
               />,
@@ -551,7 +546,6 @@ ShallowWrapper {
                 "placeholder": "",
                 "readOnly": true,
                 "required": false,
-                "type": "text",
                 "validate": null,
                 "withMap": true,
               },
@@ -671,6 +665,8 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
 }
 `;

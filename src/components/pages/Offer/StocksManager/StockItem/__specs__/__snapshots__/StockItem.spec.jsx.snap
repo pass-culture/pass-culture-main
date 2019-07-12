@@ -6,9 +6,6 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <StockItem
     closeInfo={[MockFunction]}
     dispatch={[MockFunction]}
-    formBeginningDatetime={null}
-    formBookingLimitDatetime={null}
-    formEndDatetime={null}
     handleSetErrors={[MockFunction]}
     hasIban={false}
     history={
@@ -28,7 +25,6 @@ ShallowWrapper {
         "context": [Function],
       }
     }
-    showInfo={[Function]}
     stockPatch={
       Object {
         "id": "DG",
@@ -153,7 +149,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;

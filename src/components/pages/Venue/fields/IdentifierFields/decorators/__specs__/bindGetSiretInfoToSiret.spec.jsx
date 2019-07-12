@@ -37,7 +37,7 @@ describe('src | components | pages | Venue | IdentifierFields | bindGetSiretInfo
       <Form
         decorators={[bindGetSiretInfoToSiret]}
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={handleOnSubmit}
         render={({ handleSubmit }) => (
           <form>
             <Field
@@ -68,7 +68,7 @@ describe('src | components | pages | Venue | IdentifierFields | bindGetSiretInfo
     setTimeout(() => wrapper.find('button[type="submit"]').simulate('click'))
 
     // then
-    function onSubmit(formValues) {
+    function handleOnSubmit(formValues) {
       const expectedFormValues = {
         name: NAME,
         siret: SIRET,

@@ -60,7 +60,7 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
       )
 
       // when
-      wrapper.instance().onConfirmDeleteClick()
+      wrapper.instance().handleOnConfirmDeleteClick()
 
       // then
       const requestDataArguments = requestData.mock.calls[0][0]

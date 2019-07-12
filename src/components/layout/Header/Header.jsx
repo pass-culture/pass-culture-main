@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { SignoutButton } from 'pass-culture-shared'
 import React, { Component } from 'react'
@@ -168,8 +169,8 @@ class Header extends Component {
 
 Header.propTypes = {
   name: PropTypes.string,
-  whiteHeader: PropTypes.string,
   offerers: PropTypes.arrayOf(),
+  whiteHeader: PropTypes.string,
 }
 
-export default
+export default Header

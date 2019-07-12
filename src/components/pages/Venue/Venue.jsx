@@ -14,9 +14,9 @@ import { bindGetSiretInfoToSiret } from './fields/IdentifierFields/decorators'
 import ModifyOrCancelControl from './controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from './controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
 import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
-import HeroSection from 'components/layout/HeroSection/HeroSection'
-import Icon from 'components/layout/Icon'
-import Main from 'components/layout/Main'
+import HeroSection from '../../layout/HeroSection/HeroSection'
+import Icon from '../../layout/Icon'
+import Main from '../../layout/Main'
 
 const noop = () => {
 }
@@ -148,7 +148,7 @@ class Venue extends Component {
               <span className="icon">
                 <Icon svg="ico-offres-w" />
               </span>
-              <span>Créer une offre</span>
+              <span>{"Créer une offre"}</span>
             </NavLink>
           )}
         </HeroSection>

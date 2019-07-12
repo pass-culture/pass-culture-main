@@ -47,14 +47,13 @@ export const TextareaField = ({
               <span>
                 <span>{label}</span>
                 {required && !readOnly && (
-                  <span className="field-asterisk">*</span>
+                  <span className="field-asterisk">{"*"}</span>
                 )}
                 {!readOnly && (
                   <Fragment>
                     <br />
                     <span className="fs12">
-                      {' '}
-                      ({input.value.length} / {maxLength}){' '}
+                      {' '} ({input.value.length} / {maxLength}){' '}
                     </span>
                   </Fragment>
                 )}

@@ -36,9 +36,7 @@ describe('createOfferersSelector', () => {
     )
     const expected = {
       available: 22,
-      beginningDatetime: undefined,
       bookingLimitDatetime: '2019-03-13T23:00:00Z',
-      endDatetime: undefined,
       id: 'MU',
       offerId: 'UU',
       offererId: 'BA',

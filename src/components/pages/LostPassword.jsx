@@ -64,7 +64,7 @@ const LostPasswordPage = ({ change, envoye, errors, token }) => {
                   </h2>
                   <span className="has-text-grey">
                     {' '}
-                    <span className="required-legend">{" * "}</span>{" Champs obligatoires"}
+                    <span className="required-legend">{"*"}</span>{" Champs obligatoires"}
                   </span>
                   <Form
                     BlockComponent={null}
@@ -73,7 +73,8 @@ const LostPasswordPage = ({ change, envoye, errors, token }) => {
                     handleSuccessRedirect={() => '/mot-de-passe-perdu?change=1'}
                     layout="vertical"
                     name="user"
-                    patch={{ token }}>
+                    patch={{ token }}
+                  >
                     <Field
                       name="token"
                       storeValue={() => token}
@@ -118,7 +119,7 @@ const LostPasswordPage = ({ change, envoye, errors, token }) => {
                   </h2>
                   <span className="has-text-grey">
                     {' '}
-                    <span className="required-legend">{" * "}</span> {"Champs obligatoires"}
+                    <span className="required-legend">{"*"}</span> {"Champs obligatoires"}
                   </span>
                   <Form
                     action="/users/reset-password"

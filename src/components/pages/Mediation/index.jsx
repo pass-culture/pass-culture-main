@@ -390,18 +390,18 @@ class Mediation extends PureComponent {
           </p>
           <p>
             <b>
-              {"L'accroche permet d'afficher votre offre \"à la une\" de l'app,{' '}"}
+              {"L'accroche permet d'afficher votre offre \"à la une\" de l'app, "}
             </b>
             {"et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante..."}
-            <br /> {"en un mot : accrocheuse."}
+            <br /> {" en un mot : accrocheuse. "}
           </p>
           <p>
-            {"Les accroches font la spécificité du Pass Culture. Prenez le temps de les choisir avec soin !"}
+            {"Les accroches font la spécificité du Pass Culture. Prenez le temps de les choisir avec soin ! "}
           </p>
           <p>
-            {"Le fichier doit peser "}<b>{"100Ko minimum."}</b>
+            {"Le fichier doit peser "}<b>{"100Ko minimum. "}</b>
             <br />
-            {"Utilisateurs avancés : vous pouvez"}
+            {"Utilisateurs avancés : vous pouvez "}
             <a href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip">
               {' '}
               {"télécharger ici les gabarits Illustrator et Photoshop."}
@@ -433,9 +433,9 @@ class Mediation extends PureComponent {
         </div>
 
         <div className="section">
-          <label className="label">{"...ou depuis votre poste :"}</label>
+          <label className="label">{"...ou depuis votre poste : "}</label>
           <label className="button is-primary is-outlined">
-            {"Choisir un fichier{' '}"}
+            {"Choisir un fichier "}
             <input
               hidden
               onChange={this.handleOnUploadClick}

@@ -45,7 +45,7 @@ describe('src | components | layout | form | DateField', () => {
     const wrapper = mount(
       <Form
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={handleOnSubmit}
         render={({ handleSubmit }) => (
           <form>
             <DateField name="myDate" />
@@ -72,7 +72,7 @@ describe('src | components | layout | form | DateField', () => {
     wrapper.find('button[type="submit"]').simulate('click')
 
     // then
-    function onSubmit(formValues) {
+    function handleOnSubmit(formValues) {
       expect(formValues.myDate).toStrictEqual('2019-04-28T20:00:00.000Z')
       done()
     }
@@ -124,7 +124,7 @@ describe('src | components | layout | form | DateField', () => {
     const wrapper = mount(
       <Form
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={handleOnSubmit}
         render={({ handleSubmit }) => (
           <form>
             <DateField name="myDate" />
@@ -148,7 +148,7 @@ describe('src | components | layout | form | DateField', () => {
     wrapper.find('button[type="submit"]').simulate('click')
 
     // then
-    function onSubmit(formValues) {
+    function handleOnSubmit(formValues) {
       expect(formValues.myDate).toBeNull()
       done()
     }

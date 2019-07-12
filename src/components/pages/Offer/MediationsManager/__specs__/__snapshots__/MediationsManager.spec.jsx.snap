@@ -58,14 +58,19 @@ ShallowWrapper {
             <b>
               L'accroche permet d'afficher votre offre "à la une" de l'app
             </b>
-            , et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
+            ,
+            et la rend visuellement plus attrayante. C'est une image (et bientôt
+            une phrase ou une vidéo) intrigante, percutante, séduisante... en un
+            mot : accrocheuse.
           </p>
           <p>
             Les accroches font la 
             <b>
-              spécificité du Pass Culture
+              s
+              pécificité du Pass Culture
             </b>
-            . Prenez le temps de les choisir avec soin !
+            . Prenez le
+            temps de les choisir avec soin !
           </p>
         </div>,
         <ul
@@ -87,14 +92,19 @@ ShallowWrapper {
               <b>
                 L'accroche permet d'afficher votre offre "à la une" de l'app
               </b>
-              , et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
+              ,
+              et la rend visuellement plus attrayante. C'est une image (et bientôt
+              une phrase ou une vidéo) intrigante, percutante, séduisante... en un
+              mot : accrocheuse.
             </p>,
             <p>
               Les accroches font la 
               <b>
-                spécificité du Pass Culture
+                s
+                pécificité du Pass Culture
               </b>
-              . Prenez le temps de les choisir avec soin !
+              . Prenez le
+              temps de les choisir avec soin !
             </p>,
           ],
           "className": "section small-text align-left",
@@ -110,7 +120,10 @@ ShallowWrapper {
                 <b>
                   L'accroche permet d'afficher votre offre "à la une" de l'app
                 </b>,
-                ", et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.",
+                ",",
+                "et la rend visuellement plus attrayante. C'est une image (et bientôt",
+                "une phrase ou une vidéo) intrigante, percutante, séduisante... en un",
+                "mot : accrocheuse.",
               ],
             },
             "ref": null,
@@ -126,7 +139,10 @@ ShallowWrapper {
                 "rendered": "L'accroche permet d'afficher votre offre \\"à la une\\" de l'app",
                 "type": "b",
               },
-              ", et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.",
+              ",",
+              "et la rend visuellement plus attrayante. C'est une image (et bientôt",
+              "une phrase ou une vidéo) intrigante, percutante, séduisante... en un",
+              "mot : accrocheuse.",
             ],
             "type": "p",
           },
@@ -138,9 +154,11 @@ ShallowWrapper {
               "children": Array [
                 "Les accroches font la ",
                 <b>
-                  spécificité du Pass Culture
+                  s
+                  pécificité du Pass Culture
                 </b>,
-                ". Prenez le temps de les choisir avec soin !",
+                ". Prenez le",
+                "temps de les choisir avec soin !",
               ],
             },
             "ref": null,
@@ -151,13 +169,20 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "spécificité du Pass Culture",
+                  "children": Array [
+                    "s",
+                    "pécificité du Pass Culture",
+                  ],
                 },
                 "ref": null,
-                "rendered": "spécificité du Pass Culture",
+                "rendered": Array [
+                  "s",
+                  "pécificité du Pass Culture",
+                ],
                 "type": "b",
               },
-              ". Prenez le temps de les choisir avec soin !",
+              ". Prenez le",
+              "temps de les choisir avec soin !",
             ],
             "type": "p",
           },
@@ -204,14 +229,19 @@ ShallowWrapper {
               <b>
                 L'accroche permet d'afficher votre offre "à la une" de l'app
               </b>
-              , et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
+              ,
+              et la rend visuellement plus attrayante. C'est une image (et bientôt
+              une phrase ou une vidéo) intrigante, percutante, séduisante... en un
+              mot : accrocheuse.
             </p>
             <p>
               Les accroches font la 
               <b>
-                spécificité du Pass Culture
+                s
+                pécificité du Pass Culture
               </b>
-              . Prenez le temps de les choisir avec soin !
+              . Prenez le
+              temps de les choisir avec soin !
             </p>
           </div>,
           <ul
@@ -233,14 +263,19 @@ ShallowWrapper {
                 <b>
                   L'accroche permet d'afficher votre offre "à la une" de l'app
                 </b>
-                , et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
+                ,
+                et la rend visuellement plus attrayante. C'est une image (et bientôt
+                une phrase ou une vidéo) intrigante, percutante, séduisante... en un
+                mot : accrocheuse.
               </p>,
               <p>
                 Les accroches font la 
                 <b>
-                  spécificité du Pass Culture
+                  s
+                  pécificité du Pass Culture
                 </b>
-                . Prenez le temps de les choisir avec soin !
+                . Prenez le
+                temps de les choisir avec soin !
               </p>,
             ],
             "className": "section small-text align-left",
@@ -256,7 +291,10 @@ ShallowWrapper {
                   <b>
                     L'accroche permet d'afficher votre offre "à la une" de l'app
                   </b>,
-                  ", et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.",
+                  ",",
+                  "et la rend visuellement plus attrayante. C'est une image (et bientôt",
+                  "une phrase ou une vidéo) intrigante, percutante, séduisante... en un",
+                  "mot : accrocheuse.",
                 ],
               },
               "ref": null,
@@ -272,7 +310,10 @@ ShallowWrapper {
                   "rendered": "L'accroche permet d'afficher votre offre \\"à la une\\" de l'app",
                   "type": "b",
                 },
-                ", et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.",
+                ",",
+                "et la rend visuellement plus attrayante. C'est une image (et bientôt",
+                "une phrase ou une vidéo) intrigante, percutante, séduisante... en un",
+                "mot : accrocheuse.",
               ],
               "type": "p",
             },
@@ -284,9 +325,11 @@ ShallowWrapper {
                 "children": Array [
                   "Les accroches font la ",
                   <b>
-                    spécificité du Pass Culture
+                    s
+                    pécificité du Pass Culture
                   </b>,
-                  ". Prenez le temps de les choisir avec soin !",
+                  ". Prenez le",
+                  "temps de les choisir avec soin !",
                 ],
               },
               "ref": null,
@@ -297,13 +340,20 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": "spécificité du Pass Culture",
+                    "children": Array [
+                      "s",
+                      "pécificité du Pass Culture",
+                    ],
                   },
                   "ref": null,
-                  "rendered": "spécificité du Pass Culture",
+                  "rendered": Array [
+                    "s",
+                    "pécificité du Pass Culture",
+                  ],
                   "type": "b",
                 },
-                ". Prenez le temps de les choisir avec soin !",
+                ". Prenez le",
+                "temps de les choisir avec soin !",
               ],
               "type": "p",
             },
@@ -360,7 +410,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;
