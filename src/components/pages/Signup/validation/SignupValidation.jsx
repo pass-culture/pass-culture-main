@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Redirect } from 'react-router-dom'
 import { showNotification } from 'pass-culture-shared'
@@ -43,6 +44,7 @@ class SignupValidation extends PureComponent {
   notifySuccess = () => {
     return () => {
       const { dispatch } = this.props
+
       dispatch(
         showNotification({
           text:
@@ -56,6 +58,11 @@ class SignupValidation extends PureComponent {
   render() {
     return <Redirect to="/connexion" />
   }
+}
+
+SignupValidation.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  match: PropTypes.shape().isRequired,
 }
 
 export default SignupValidation
