@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
@@ -7,7 +7,7 @@ import InputHelp from '../InputHelp'
 import InputLabel from '../InputLabel'
 import { validatePasswordField } from '../validators'
 
-class PasswordField extends React.PureComponent {
+class PasswordField extends PureComponent {
   constructor(props) {
     super(props)
     this.state = { hidden: true }
@@ -17,7 +17,7 @@ class PasswordField extends React.PureComponent {
     this.setState(prev => ({ hidden: !prev.hidden }))
   }
 
-  render() {
+  renderField = ({ input, meta }) => {
     const {
       autoComplete,
       className,
@@ -33,6 +33,54 @@ class PasswordField extends React.PureComponent {
     const { hidden } = this.state
     const status = hidden ? '' : '-close'
     const inputType = hidden ? 'password' : 'text'
+
+    return (
+      <p className={`${className}`}>
+        <label
+          className="pc-final-form-password"
+          htmlFor={id || name}
+        >
+          {label &&
+            <InputLabel
+              label={label}
+              required={required}
+              sublabel={sublabel}
+            />}
+          {help && <InputHelp label={help} />}
+          <span className="pc-final-form-inner">
+            <input
+              {...input}
+              autoComplete={autoComplete ? 'on' : 'off'}
+              className="pc-final-form-input"
+              disabled={disabled}
+              id={id || name} // cast to boolean
+              placeholder={placeholder}
+              required={!!required}
+              type={inputType}
+            />
+            <button
+              className="no-border no-outline no-background mx12 flex-0 is-primary-text"
+              onClick={this.handleOnToggleVivisbility}
+              type="button"
+            >
+              <span
+                aria-hidden
+                className={`icon-legacy-eye${status} fs22`}
+                title="Afficher/Masquer le mot de passe"
+              />
+            </button>
+          </span>
+          <FormError
+            id={`${id || name}-error`}
+            meta={meta}
+          />
+        </label>
+      </p>
+    )
+  }
+
+  render() {
+    const { name, required } = this.props
     const validateFunc =
       required && typeof required === 'function'
         ? required
@@ -42,51 +90,7 @@ class PasswordField extends React.PureComponent {
         name={name}
         // fallback to form validator
         // si le champs n'est pas marqué comme requis
-        render={({ input, meta }) => (
-          <p className={`${className}`}>
-            <label
-              className="pc-final-form-password"
-              htmlFor={id || name}
-            >
-              {label && (
-                <InputLabel
-                  label={label}
-                  required={required}
-                  sublabel={sublabel}
-                />
-              )}
-              {help && <InputHelp label={help} />}
-              <span className="pc-final-form-inner">
-                <input
-                  {...input}
-                  autoComplete={autoComplete ? 'on' : 'off'}
-                  className="pc-final-form-input"
-                  disabled={disabled}
-                  id={id || name} // cast to boolean
-                  placeholder={placeholder}
-                  required={!!required}
-                  type={inputType}
-                />
-
-                <button
-                  className="no-border no-outline no-background mx12 flex-0 is-primary-text"
-                  onClick={this.handleOnToggleVivisbility}
-                  type="button"
-                >
-                  <span
-                    aria-hidden
-                    className={`icon-legacy-eye${status} fs22`}
-                    title="Afficher/Masquer le mot de passe"
-                  />
-                </button>
-              </span>
-              <FormError
-                id={`${id || name}-error`}
-                meta={meta}
-              />
-            </label>
-          </p>
-        )}
+        render={this.renderField}
         validate={validateFunc || undefined}
       />
     )

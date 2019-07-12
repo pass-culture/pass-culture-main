@@ -1,11 +1,6 @@
 import React, { Fragment } from 'react'
 
-import {
-  CheckBoxField,
-  EmailField,
-  InputField,
-  PasswordField
-} from '../../forms/inputs'
+import { CheckBoxField, EmailField, InputField, PasswordField } from '../../forms/inputs'
 
 const FormFields = () => (
   <Fragment>
@@ -43,10 +38,7 @@ const FormFields = () => (
     >
       <span className="subtitle">
         {' '}
-        {
-          "J'accepte d'être contacté par mail pour donner mon avis sur le"
-        }
-        {' '}
+        {"J'accepte d'être contacté par mail pour donner mon avis sur le"}{' '}
         <a
           href="http://passculture.beta.gouv.fr"
           style={{ textDecoration: 'underline' }}

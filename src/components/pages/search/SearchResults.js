@@ -111,7 +111,7 @@ SearchResults.defaultProps = {
 SearchResults.propTypes = {
   cameFromOfferTypesPage: PropTypes.bool.isRequired,
   hasMore: PropTypes.bool,
-  items: PropTypes.arrayOf(),
+  items: PropTypes.arrayOf(PropTypes.shape()),
   keywords: PropTypes.string,
   query: PropTypes.shape().isRequired,
 }

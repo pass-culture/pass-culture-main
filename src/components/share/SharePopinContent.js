@@ -63,7 +63,6 @@ class SharePopinContent extends React.PureComponent {
                   id="share-popin-fixed-container"
                 >
                   <div className="ml24 mr48 mt20 mb32">
-                    {/* <!-- Popin event text --> */}
                     <h3>
                       <span className="is-bold">{title}</span>
                     </h3>
@@ -72,7 +71,6 @@ class SharePopinContent extends React.PureComponent {
                     </p>
                   </div>
                   <div className="dotted-top-white flex-columns flex-around">
-                    {/* <!-- Popin buttons --> */}
                     {buttons}
                   </div>
                 </div>
@@ -87,7 +85,7 @@ class SharePopinContent extends React.PureComponent {
 
 SharePopinContent.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  options: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]).isRequired,
+  options: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
   visible: PropTypes.bool.isRequired,
 }
 

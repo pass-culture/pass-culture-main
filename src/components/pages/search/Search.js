@@ -160,7 +160,7 @@ class Search extends PureComponent {
     )
   }
 
-  handleOnClickToggleFilterButton = isFilterVisible => {
+  handleOnClickToggleFilterButton = isFilterVisible => () => {
     this.setState({ isFilterVisible: !isFilterVisible })
   }
 
@@ -189,7 +189,14 @@ class Search extends PureComponent {
 
   renderSearchDetailsContainer = route => <SearchDetailsContainer {...route} />
 
-  renderSearchResult = () => {
+  renderNavByOfferTypeContainer = typeSublabels => () => (
+    <NavByOfferTypeContainer
+      categories={typeSublabels}
+      title="EXPLORER LES CATÉGORIES"
+    />
+  )
+
+  renderResults = () => {
     const {
       location,
       query,
@@ -198,9 +205,54 @@ class Search extends PureComponent {
       typeSublabelsAndDescription,
     } = this.props
     const queryParams = query.parse()
-
-    const { hasMore, keywordsKey, keywordsValue, isFilterVisible } = this.state
+    const { hasMore } = this.state
     const keywords = queryParams[`mots-cles`]
+    let description
+    const category = decodeURIComponent(queryParams.categories)
+    if (location.pathname.includes('/resultats/')) {
+      description = getDescriptionFromCategory(category, typeSublabelsAndDescription)
+    }
+
+    return (
+      <Fragment>
+        <NavResultsHeader
+          category={category}
+          description={description}
+        />
+        <SearchResultsContainer
+          cameFromOfferTypesPage
+          hasMore={hasMore}
+          items={recommendations}
+          keywords={keywords}
+          loadMoreHandler={this.loadMoreHandler}
+          typeSublabels={typeSublabels}
+        />
+      </Fragment>
+    )
+  }
+
+  renderSearchResultsContainer = () => {
+    const { query, recommendations, typeSublabels } = this.props
+    const { hasMore } = this.state
+    const queryParams = query.parse()
+    const keywords = queryParams[`mots-cles`]
+
+    return (
+      <SearchResultsContainer
+        cameFromOfferTypesPage={false}
+        hasMore={hasMore}
+        items={recommendations}
+        keywords={keywords}
+        typeSublabels={typeSublabels}
+      />
+    )
+  }
+
+  renderSearchResult = () => {
+    const { location, query, typeSublabels } = this.props
+    const queryParams = query.parse()
+
+    const { keywordsKey, keywordsValue, isFilterVisible } = this.state
 
     const whithoutFilters = isInitialQueryWithoutFilters(INITIAL_FILTER_PARAMS, queryParams)
 
@@ -209,12 +261,6 @@ class Search extends PureComponent {
     const filtersToggleButtonClass = (isFilterVisible && 'filters-are-opened') || ''
 
     const isOneCharInKeywords = keywordsValue && keywordsValue.length > 0
-
-    let description
-    const category = decodeURIComponent(queryParams.categories)
-    if (location.pathname.includes('/resultats/')) {
-      description = getDescriptionFromCategory(category, typeSublabelsAndDescription)
-    }
 
     return (
       <Fragment>
@@ -278,7 +324,7 @@ class Search extends PureComponent {
               >
                 <button
                   className="no-border no-background no-outline"
-                  onClick={() => this.handleOnClickToggleFilterButton(isFilterVisible)}
+                  onClick={this.handleOnClickToggleFilterButton(isFilterVisible)}
                   type="button"
                 >
                   <Icon svg={`ico-${isFilterVisible ? 'chevron-up' : iconFilterName}`} />
@@ -295,44 +341,16 @@ class Search extends PureComponent {
             <Route
               exact
               path="/recherche/:menu(menu)?"
-              render={() => (
-                <NavByOfferTypeContainer
-                  categories={typeSublabels}
-                  title="EXPLORER LES CATÉGORIES"
-                />
-              )}
+              render={this.renderNavByOfferTypeContainer(typeSublabels)}
             />
             <Route
               path="/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?"
-              render={() => (
-                <Fragment>
-                  <NavResultsHeader
-                    category={category}
-                    description={description}
-                  />
-                  <SearchResultsContainer
-                    cameFromOfferTypesPage
-                    hasMore={hasMore}
-                    items={recommendations}
-                    keywords={keywords}
-                    loadMoreHandler={this.loadMoreHandler}
-                    typeSublabels={typeSublabels}
-                  />
-                </Fragment>
-              )}
+              render={this.renderResults}
               sensitive
             />
             <Route
               path="/recherche/resultats/:menu(menu)?"
-              render={() => (
-                <SearchResultsContainer
-                  cameFromOfferTypesPage={false}
-                  hasMore={hasMore}
-                  items={recommendations}
-                  keywords={keywords}
-                  typeSublabels={typeSublabels}
-                />
-              )}
+              render={this.renderSearchResultsContainer}
             />
           </Switch>
         </div>
@@ -342,9 +360,7 @@ class Search extends PureComponent {
   }
 
   render() {
-    const {
-      location,
-    } = this.props
+    const { location } = this.props
 
     let headerTitle = 'Recherche'
     if (location.pathname.includes('/resultats')) {

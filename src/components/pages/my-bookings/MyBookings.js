@@ -7,17 +7,6 @@ import NavigationFooter from '../../layout/NavigationFooter'
 import NoBookings from './NoBookings'
 import PageHeader from '../../layout/Header/PageHeader'
 
-const build = myBookings => (
-  <ul>
-    {myBookings.map(myBooking => (
-      <MyBookingContainer
-        booking={myBooking}
-        key={myBooking.id}
-      />
-    ))}
-  </ul>
-)
-
 class MyBookings extends Component {
   constructor(props) {
     super(props)
@@ -34,6 +23,17 @@ class MyBookings extends Component {
 
     getMyBookings(this.handleFail, this.handleSuccess)
   }
+
+  build = myBookings => (
+    <ul>
+      {myBookings.map(myBooking => (
+        <MyBookingContainer
+          booking={myBooking}
+          key={myBooking.id}
+        />
+      ))}
+    </ul>
+  )
 
   handleFail = () => {
     this.setState({
@@ -69,14 +69,14 @@ class MyBookings extends Component {
           {soonBookings.length > 0 && (
             <section className="mb-section">
               <header className="mb-header">{'C’est bientôt !'}</header>
-              {build(soonBookings)}
+              {this.build(soonBookings)}
             </section>
           )}
 
           {myBookings.length > 0 && (
             <section className="mb-section">
               <header className="mb-header">{'Réservations'}</header>
-              {build(myBookings)}
+              {this.build(myBookings)}
             </section>
           )}
         </main>

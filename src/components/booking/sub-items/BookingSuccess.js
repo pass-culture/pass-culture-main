@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { Icon } from 'antd'
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
@@ -24,17 +24,17 @@ const BookingSuccess = ({ isEvent, data }) => {
         <span className="is-block mb36">
           {isEvent && 'Votre réservation est validée.'}
           {!isEvent && (
-            <React.Fragment>
-              <span className="is-block">
-                {'Votre pouvez accéder à cette offre'}
-              </span>
+            <Fragment>
+              <span className="is-block">{'Votre pouvez accéder à cette offre'}</span>
               <span className="is-block">{'à tout moment.'}</span>
-            </React.Fragment>
+            </Fragment>
           )}
         </span>
       </h3>
       <p>
-        <span className="is-block">{price} {'ont été déduits de votre pass.'}</span>
+        <span className="is-block">
+          {price} {'ont été déduits de votre pass.'}
+        </span>
         {!onlineOfferUrl && (
           <span className="is-block">{'Présentez le code suivant sur place:'}</span>
         )}
@@ -64,10 +64,8 @@ const BookingSuccess = ({ isEvent, data }) => {
       </p>
       <p>
         {!onlineOfferUrl && (
-          <React.Fragment>
-            <span className="is-block">
-              {"Retrouvez ce code et les détails de l'offre dans"}
-            </span>
+          <Fragment>
+            <span className="is-block">{"Retrouvez ce code et les détails de l'offre dans"}</span>
             <span className="is-block">
               {'la rubrique'}
               <Link to="/reservations">
@@ -75,13 +73,11 @@ const BookingSuccess = ({ isEvent, data }) => {
               </Link>
               {'de votre compte'}
             </span>
-          </React.Fragment>
+          </Fragment>
         )}
         {onlineOfferUrl && (
-          <React.Fragment>
-            <span className="is-block">
-              {"Retrouvez l'adresse Internet et les détails de"}
-            </span>
+          <Fragment>
+            <span className="is-block">{"Retrouvez l'adresse Internet et les détails de"}</span>
             <span className="is-block">
               {"l'offre dans la rubrique"}
               <Link to="/reservations">
@@ -89,7 +85,7 @@ const BookingSuccess = ({ isEvent, data }) => {
               </Link>
             </span>
             <span className="is-block">{'de votre compte'}</span>
-          </React.Fragment>
+          </Fragment>
         )}
       </p>
     </div>

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent, Fragment } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import { Route } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 

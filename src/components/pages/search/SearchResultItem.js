@@ -59,15 +59,12 @@ class SearchResultItem extends Component {
                   >
                     {recommendation.offer.name}
                   </h5>
-                  <div className="fs13">
-                    {recommendation.offer.product.offerType.appLabel}
-                  </div>
+                  <div className="fs13">{recommendation.offer.product.offerType.appLabel}</div>
                   <div
                     className="fs13"
                     id="recommendation-date"
                   >
-                    {recommendation.offer &&
-                      getRecommendationDateString(recommendation.offer)}
+                    {recommendation.offer && getRecommendationDateString(recommendation.offer)}
                   </div>
                 </Fragment>
               )}

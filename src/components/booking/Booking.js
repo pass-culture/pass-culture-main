@@ -288,7 +288,7 @@ Booking.defaultProps = {
 }
 
 Booking.propTypes = {
-  bookables: PropTypes.arrayOf(),
+  bookables: PropTypes.arrayOf(PropTypes.shape()),
   booking: PropTypes.shape(),
   dispatch: PropTypes.func.isRequired,
   extraClassName: PropTypes.string,

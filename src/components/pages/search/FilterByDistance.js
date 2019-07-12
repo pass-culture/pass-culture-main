@@ -1,9 +1,7 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 
-import options, {
-  INFINITE_DISTANCE,
-} from '../../../helpers/search/distanceOptions'
+import options, { INFINITE_DISTANCE } from '../../../helpers/search/distanceOptions'
 
 class FilterByDistance extends PureComponent {
   handleOnChangeDistance = event => {
@@ -24,19 +22,17 @@ class FilterByDistance extends PureComponent {
     const distanceValue = filterState.params.distance || INFINITE_DISTANCE
 
     return (
-      <React.Fragment>
+      <Fragment>
         <div
           className="pt18 text-center mb20"
           id="filter-by-distance"
         >
-          <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
-            {'Où'}
-          </h2>
+          <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">{'Où'}</h2>
           <select
             className="pc-selectbox pl24 py5 fs19"
             defaultValue={distanceValue}
             name="distance"
-            onChange={this.handleOnChangeDistance}
+            onBlur={this.handleOnChangeDistance}
           >
             {options.map(({ label, value }) => (
               <option
@@ -49,7 +45,7 @@ class FilterByDistance extends PureComponent {
           </select>
         </div>
         <hr className="dotted-bottom-primary" />
-      </React.Fragment>
+      </Fragment>
     )
   }
 }

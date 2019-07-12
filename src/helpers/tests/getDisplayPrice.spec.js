@@ -305,7 +305,8 @@ describe('getDisplayPrice', () => {
         const expected = '5 €'
         expect(result).toStrictEqual(expected)
       })
-      it('it should return floats with coma', () => {
+
+      it('it should return floats with coma if its free', () => {
         // given
         const value = [12.42]
 
@@ -329,6 +330,7 @@ describe('getDisplayPrice', () => {
         // then
         expect(result).toStrictEqual('5 €')
       })
+
       it('should return value free value', () => {
         // given
         const value = [0]

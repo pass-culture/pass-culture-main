@@ -28,7 +28,7 @@ describe('src | components | forms | inputs | HiddenField', () => {
     const wrapper = render(
       <Form
         onSubmit={jest.fn()}
-        render={() => <HiddenField {...props} />}
+        render={<HiddenField {...props} />}
       />
     )
     const inputElement = wrapper.find('#the-input-id')

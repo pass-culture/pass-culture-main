@@ -20,8 +20,7 @@ const appRoutes = getReactRoutes(routes)
 const getPageTitle = obj => `${obj && obj.title ? `${obj.title} - ` : ''}`
 
 const getCurrentRouteObjectByPath = (entries, locpathname) =>
-  (entries && entries.filter(obj => obj && matchPath(locpathname, obj))[0]) ||
-  null
+  (entries && entries.filter(obj => obj && matchPath(locpathname, obj))[0]) || null
 
 const getBodyClass = obj => {
   const path = (obj && obj.path.split('/').filter(v => v)[0]) || ''
@@ -29,19 +28,14 @@ const getBodyClass = obj => {
 }
 
 const App = ({ location, children, history }) => {
-  const currentRouteObj = getCurrentRouteObjectByPath(
-    appRoutes,
-    location.pathname
-  )
+  const currentRouteObj = getCurrentRouteObjectByPath(appRoutes, location.pathname)
   const bodyClass = getBodyClass(currentRouteObj)
   const pageTitle = getPageTitle(currentRouteObj)
   return (
     <Fragment>
       <Helmet>
         <body className={`web ${bodyClass}`} />
-        <title>
-          {`${pageTitle}${PROJECT_NAME}${(IS_DEV && ' | DEV') || ''}`}
-        </title>
+        <title>{`${pageTitle}${PROJECT_NAME}${(IS_DEV && ' | DEV') || ''}`}</title>
       </Helmet>
       <DebugContainer className="app is-relative">
         <ErrorCatcherContainer>

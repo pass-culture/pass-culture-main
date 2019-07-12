@@ -3,7 +3,7 @@ import React from 'react'
 
 import SearchPicture from '../SearchPicture'
 
-const update = (category, resetSearchStore, updateSearchQuery) => {
+const update = (category, resetSearchStore, updateSearchQuery) => () => {
   resetSearchStore()
   updateSearchQuery(category)
 }
@@ -27,7 +27,7 @@ const NavByOfferType = ({ title, categories, resetSearchStore, updateSearchQuery
 )
 
 NavByOfferType.propTypes = {
-  categories: PropTypes.arrayOf().isRequired,
+  categories: PropTypes.arrayOf(PropTypes.string).isRequired,
   resetSearchStore: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   updateSearchQuery: PropTypes.func.isRequired,

@@ -27,11 +27,7 @@ class MesInformations extends React.PureComponent {
             <span className="pc-label pb3 is-block is-grey-text is-uppercase fs13 is-medium">
               {label}
             </span>
-            {value && (
-              <span className="is-block is-black-text fs18 is-bold">
-                {value}
-              </span>
-            )}
+            {value && <span className="is-block is-black-text fs18 is-bold">{value}</span>}
             {!value && (
               <span className="is-block is-grey-text fs18">
                 {mainPlaceholder || EMPTY_FIELD_PLACEHOLDER}
@@ -69,8 +65,8 @@ class MesInformations extends React.PureComponent {
 }
 
 MesInformations.propTypes = {
-  fields: PropTypes.arrayOf().isRequired,
-  user: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]).isRequired,
+  fields: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  user: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
 }
 
 export default MesInformations

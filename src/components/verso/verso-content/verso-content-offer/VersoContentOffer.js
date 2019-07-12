@@ -1,6 +1,6 @@
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Fragment } from 'react'
 import { capitalize } from 'react-final-form-utils'
 
 import VersoActionsBar from '../VersoActionsBar'
@@ -32,13 +32,7 @@ class VersoContentOffer extends React.PureComponent {
   }
 
   renderOfferWhat() {
-    const {
-      musicSubType,
-      musicType,
-      recommendation,
-      showSubType,
-      showType,
-    } = this.props
+    const { musicSubType, musicType, recommendation, showSubType, showType } = this.props
     const offer = get(recommendation, 'offer')
 
     const product = get(offer, 'product')
@@ -64,18 +58,43 @@ class VersoContentOffer extends React.PureComponent {
           >
             {appLabel}
           </span>
-          {durationMinutes && <span>{' - Durée'} {duration}</span>}
+          {durationMinutes && (
+            <span>
+              {' - Durée'} {duration}
+            </span>
+          )}
         </div>
         {type && (
           <div>
-            {'Genre : '}{type}
+            {'Genre : '}
+            {type}
             {subType && `/ ${subType}`}
           </div>
         )}
-        {author && <div>{'Auteur : '}{author}</div>}
-        {performer && <div>{'Interprète : '}{performer}</div>}
-        {speaker && <div>{'Intervenant : '}{speaker}</div>}
-        {stageDirector && <div>{'Metteur en scène : '}{stageDirector}</div>}
+        {author && (
+          <div>
+            {'Auteur : '}
+            {author}
+          </div>
+        )}
+        {performer && (
+          <div>
+            {'Interprète : '}
+            {performer}
+          </div>
+        )}
+        {speaker && (
+          <div>
+            {'Intervenant : '}
+            {speaker}
+          </div>
+        )}
+        {stageDirector && (
+          <div>
+            {'Metteur en scène : '}
+            {stageDirector}
+          </div>
+        )}
       </div>
     )
   }
@@ -86,17 +105,15 @@ class VersoContentOffer extends React.PureComponent {
     const hasMoreBookables = bookables.length > maxShownDates
 
     return (
-      <React.Fragment>
+      <Fragment>
         {sliced.map(obj => (
           <li key={obj.id}>
             {capitalize(obj.humanBeginningDate)}
-            {(!obj.userHasCancelledThisDate && obj.userHasAlreadyBookedThisDate) && ' (réservé)'}
+            {!obj.userHasCancelledThisDate && obj.userHasAlreadyBookedThisDate && ' (réservé)'}
           </li>
         ))}
-        {hasMoreBookables && (
-          <li>{'Cliquez sur "j\'y vais" pour voir plus de dates.'}</li>
-        )}
-      </React.Fragment>
+        {hasMoreBookables && <li>{'Cliquez sur "j\'y vais" pour voir plus de dates.'}</li>}
+      </Fragment>
     )
   }
 
@@ -104,12 +121,12 @@ class VersoContentOffer extends React.PureComponent {
     const { bookables } = this.props
     const limitDatetime = get(bookables, '[0].bookinglimitDatetime')
     return (
-      <React.Fragment>
+      <Fragment>
         <li>
           {'Dès maintenant'}
           {limitDatetime && ` et jusqu’au ${limitDatetime}`}{' '}
         </li>
-      </React.Fragment>
+      </Fragment>
     )
   }
 
@@ -126,11 +143,7 @@ class VersoContentOffer extends React.PureComponent {
       <div>
         <h3>{'Quand ?'}</h3>
         <ul className="dates-info">
-          {isFinished ? (
-            <li>{'L’offre n’est plus disponible.'}</li>
-          ) : (
-            offerDateInfos
-          )}
+          {isFinished ? <li>{'L’offre n’est plus disponible.'}</li> : offerDateInfos}
         </ul>
       </div>
     )
@@ -140,8 +153,7 @@ class VersoContentOffer extends React.PureComponent {
     const { recommendation } = this.props
     const venue = get(recommendation, 'offer.venue')
     const distance = get(recommendation, 'distance')
-    const { address, city, latitude, longitude, name, postalCode, publicName } =
-      venue || {}
+    const { address, city, latitude, longitude, name, postalCode, publicName } = venue || {}
 
     return (
       <div>
@@ -197,7 +209,7 @@ VersoContentOffer.defaultProps = {
 }
 
 VersoContentOffer.propTypes = {
-  bookables: PropTypes.arrayOf,
+  bookables: PropTypes.arrayOf(PropTypes.shape()),
   handleRequestMusicAndShowTypes: PropTypes.func.isRequired,
   isFinished: PropTypes.bool,
   maxShownDates: PropTypes.number,

@@ -5,41 +5,42 @@ import CopyToClipboardButton from './CopyToClipboardButton'
 import MailToLink from '../layout/MailToLink'
 import { openSharePopin, closeSharePopin } from '../../reducers/share'
 
-export const getCopyToClipboardButton = (url, onClick) => (
-  <CopyToClipboardButton
-    className="py12 is-bold fs14"
-    key="CopyToClipboard"
-    onClick={onClick}
-    value={url}
-  />
-)
-export const getMailToLinkButton = (email, headers) => (
-  <MailToLink
-    className="no-underline is-block is-white-text py12 is-bold fs14"
-    email={email}
-    headers={headers}
-    key="MailToLink"
-  >
-    <span>{'Envoyer par e-mail'}</span>
-  </MailToLink>
-)
-
-export const getCloseButton = onClose => (
-  <button
-    className="no-border no-background no-outline is-block py12 is-bold fs14"
-    key="closeButton"
-    onClick={onClose}
-    type="button"
-  >
-    <span>{'Fermer'}</span>
-  </button>
-)
-
 class ShareButtonContent extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = { iscopied: false }
   }
+
+  getCopyToClipboardButton = (url, onClick) => (
+    <CopyToClipboardButton
+      className="py12 is-bold fs14"
+      key="CopyToClipboard"
+      onClick={onClick}
+      value={url}
+    />
+  )
+
+  getMailToLinkButton = (email, headers) => (
+    <MailToLink
+      className="no-underline is-block is-white-text py12 is-bold fs14"
+      email={email}
+      headers={headers}
+      key="MailToLink"
+    >
+      <span>{'Envoyer par e-mail'}</span>
+    </MailToLink>
+  )
+
+  getCloseButton = onClose => (
+    <button
+      className="no-border no-background no-outline is-block py12 is-bold fs14"
+      key="closeButton"
+      onClick={onClose}
+      type="button"
+    >
+      <span>{'Fermer'}</span>
+    </button>
+  )
 
   onCopyHandler = status => {
     this.setState({ iscopied: status }, () => {
@@ -69,8 +70,8 @@ class ShareButtonContent extends React.PureComponent {
       }
       const popinOptions = {
         buttons: [
-          getCopyToClipboardButton(url, this.onCopyHandler),
-          getMailToLinkButton(email, headers),
+          this.getCopyToClipboardButton(url, this.onCopyHandler),
+          this.getMailToLinkButton(email, headers),
         ],
         text: 'Comment souhaitez-vous partager cette offre ?',
         title: offerName,
@@ -80,7 +81,7 @@ class ShareButtonContent extends React.PureComponent {
 
       if (iscopied) {
         popinOptions.text = 'Le lien a bien été copié'
-        popinOptions.buttons = [getCloseButton(this.onCloseHandler)]
+        popinOptions.buttons = [this.getCloseButton(this.onCloseHandler)]
       }
 
       return dispatch(openSharePopin(popinOptions))

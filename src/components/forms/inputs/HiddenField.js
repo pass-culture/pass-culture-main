@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
@@ -6,10 +6,11 @@ import FormError from '../FormError'
 
 const noop = () => {}
 
-const HiddenField = ({ name, validator, ...inputProps }) => (
-  <Field
-    name={name}
-    render={({ input, meta }) => (
+class HiddenField extends Component {
+  renderField = ({ input, meta }) => {
+    const { ...inputProps } = this.props
+
+    return (
       <div>
         <input
           type="hidden"
@@ -18,10 +19,21 @@ const HiddenField = ({ name, validator, ...inputProps }) => (
         />
         <FormError meta={meta} />
       </div>
-    )}
-    validate={validator}
-  />
-)
+    )
+  }
+
+  render() {
+    const { name, validator } = this.props
+
+    return (
+      <Field
+        name={name}
+        render={this.renderField}
+        validate={validator}
+      />
+    )
+  }
+}
 
 HiddenField.defaultProps = {
   validator: noop,

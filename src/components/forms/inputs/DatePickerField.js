@@ -126,7 +126,7 @@ DatePickerField.propTypes = {
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
   popperRefContainer: PropTypes.shape(),
-  provider: PropTypes.arrayOf(),
+  provider: PropTypes.arrayOf(PropTypes.shape()),
   readOnly: PropTypes.bool,
   required: PropTypes.bool,
   withPortal: PropTypes.bool,

@@ -20,22 +20,40 @@ class SelectField extends React.PureComponent {
     this.popupContainer = ref
   }
 
+  renderField = ({ input }) => {
+    const { canSearch, disabled, placeholder, provider, readOnly } = this.props
+
+    const isdisabled = readOnly || disabled || !provider.length || provider.length === 1
+    const moreprops = { disabled: isdisabled }
+
+    return (
+      <Select
+        {...moreprops}
+        filterOption={filterOption}
+        getPopupContainer={this.popupContainer}
+        onChange={input.onChange}
+        optionFilterProp="children"
+        placeholder={placeholder}
+        showSearch={canSearch}
+        size="large"
+        value={input.value || undefined}
+      >
+        {provider &&
+          provider.map(obj => (
+            <Select.Option
+              key={obj.id}
+              value={obj.id}
+            >
+              {obj.label}
+            </Select.Option>
+          ))}
+      </Select>
+    )
+  }
+
   render() {
-    const {
-      label,
-      help,
-      id,
-      name,
-      disabled,
-      provider,
-      className,
-      canSearch,
-      placeholder,
-      readOnly,
-      ...rest
-    } = this.props
-    const isdisabled =
-      readOnly || disabled || !provider.length || provider.length === 1
+    const { label, help, id, name, disabled, provider, className, readOnly, ...rest } = this.props
+    const isdisabled = readOnly || disabled || !provider.length || provider.length === 1
 
     const moreprops = { disabled: isdisabled }
     if (id) moreprops.id = id
@@ -47,29 +65,7 @@ class SelectField extends React.PureComponent {
       >
         <Field
           name={name}
-          render={({ input }) => (
-            <Select
-              {...moreprops}
-              filterOption={filterOption}
-              getPopupContainer={() => this.popupContainer}
-              onChange={input.onChange}
-              optionFilterProp="children"
-              placeholder={placeholder}
-              showSearch={canSearch}
-              size="large"
-              value={input.value || undefined}
-            >
-              {provider &&
-                provider.map(obj => (
-                  <Select.Option
-                    key={obj.id}
-                    value={obj.id}
-                  >
-                    {obj.label}
-                  </Select.Option>
-                ))}
-            </Select>
-          )}
+          render={this.renderField}
         />
         <div
           className="select-field-popup-container is-relative"
@@ -100,7 +96,7 @@ SelectField.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
-  provider: PropTypes.arrayOf().isRequired,
+  provider: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   readOnly: PropTypes.bool,
 }
 
