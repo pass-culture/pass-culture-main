@@ -2,7 +2,9 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import AddressField from './AddressField'
-import { HiddenField, NumberField, TextField, } from '../../../../layout/form/fields'
+import HiddenField from '../../../../layout/form/fields/HiddenField'
+import NumberField from '../../../../layout/form/fields/NumberField'
+import TextField from '../../../../layout/form/fields/TextField'
 
 const LocationFields = ({
   fieldReadOnlyBecauseFrozenFormSiret,

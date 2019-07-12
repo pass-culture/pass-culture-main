@@ -1,7 +1,8 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 import IdentifierFields from '../IdentifierFields'
-import { TextareaField, TextField } from '../../../../../layout/form/fields'
+import TextareaField from '../../../../../layout/form/fields/TextareaField'
+import TextField from '../../../../../layout/form/fields/TextField'
 
 describe('src | components | pages | Venue | fields | IdentifierFields', () => {
   let props
