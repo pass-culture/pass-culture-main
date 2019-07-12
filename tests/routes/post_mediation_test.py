@@ -158,3 +158,31 @@ class Post:
                 "L'image doit faire 100 ko minimum",
                 "L'image doit faire 400 * 400 px minimum"
             ]
+
+        @clean_database
+        @patch('routes.mediations.PcObject')
+        def expect_mediation_not_to_be_saved(self, PcObject, app):
+            # given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue)
+            user_offerer = create_user_offerer(user, offerer)
+            PcObject.save(user, venue, user_offerer)
+            with open(MODULE_PATH / '..' / 'files/mouette_small.jpg', 'rb') as f:
+                thumb = f.read()
+            data = {
+                'offerId': humanize(offer.id),
+                'offererId': humanize(offerer.id),
+                'thumb': (BytesIO(thumb), 'image.png')
+
+            }
+            PcObject.reset_mock()
+
+            # when
+            TestClient(app.test_client()) \
+                .with_auth(email=user.email) \
+                .post('/mediations', form=data)
+
+            # then
+            PcObject.save.assert_not_called()

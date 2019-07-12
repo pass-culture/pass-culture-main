@@ -22,9 +22,9 @@ def create_mediation():
     credit = request.form.get('credit')
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
     mediation = create_new_mediation(offer_id, offerer_id, current_user, credit)
-    PcObject.save(mediation)
     thumb = read_thumb(files=request.files, form=request.form)
     check_thumb_quality(thumb)
+    PcObject.save(mediation)
     save_thumb(mediation, thumb, 0, crop=_get_crop(request.form))
     return jsonify(mediation.as_dict()), 201
 
