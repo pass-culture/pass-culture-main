@@ -110,6 +110,16 @@ class RawOffers extends Component {
       page: null,
     })
 
+  handleOnClick = () => {
+    // TODO
+    // query.change({ })}
+  }
+
+  handleOnChange = () => {
+  // TODO pagination.orderBy
+  // query.change({})
+}
+
   render() {
     const { currentUser, offers, offerer, query, venue } = this.props
     const { isAdmin } = currentUser || {}
@@ -215,16 +225,13 @@ class RawOffers extends Component {
             <div className="list-header">
               <div>
                 <div className="recently-added" />
-                Ajouté récemment
+                {"Ajouté récemment"}
               </div>
               <div>
-                Trier par:
+                {"Trier par: "}
                 <span className="select is-rounded is-small">
                   <select
-                    onChange={() => {
-                      // TODO pagination.orderBy
-                      // query.change({})
-                    }}
+                    onChange={this.handleOnChange()}
                     value={orderName}
                   >
                     <option value="sold">{"Offres écoulées"}</option>
@@ -235,10 +242,7 @@ class RawOffers extends Component {
               <div>
                 <button
                   className="button is-secondary"
-                  onClick={() => {
-                    // TODO
-                    // query.change({ })
-                  }}
+                  onClick={this.handleOnClick()}
                   type="button"
                 >
                   <Icon
