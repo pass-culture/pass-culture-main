@@ -15,10 +15,7 @@ import Main from '../../layout/Main'
 import Spinner from '../../layout/Spinner'
 import TextField from '../../layout/form/fields/TextField'
 import { offererNormalizer } from '../../../utils/normalizers'
-import {
-  mapApiToBrowser,
-  translateQueryParamsToApiParams,
-} from '../../../utils/translate'
+import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
 
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 
@@ -46,15 +43,16 @@ class Offerers extends Component {
     }
   }
 
-  showNotification = (url) => {
+  showNotification = url => {
     const { dispatch } = this.props
     dispatch(
       showNotification({
         tag: 'offerers',
-        text: 'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
+        text:
+          'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
         type: 'info',
         url: url,
-        urlLabel: 'Nouveau lieu'
+        urlLabel: 'Nouveau lieu',
       })
     )
   }
@@ -109,10 +107,11 @@ class Offerers extends Component {
     const offerersHaveNotOffers = !currentUser.hasOffers && !currentUser.hasPhysicalVenues
     const offerersHaveOnlyDigitalOffers = currentUser.hasOffers && !currentUser.hasPhysicalVenues
 
-    const userHasNoOffersInAPhysicalVenueYet = offerersHaveNotOffers || offerersHaveOnlyDigitalOffers
+    const userHasNoOffersInAPhysicalVenueYet =
+      offerersHaveNotOffers || offerersHaveOnlyDigitalOffers
 
     if (userHasNoOffersInAPhysicalVenueYet) {
-       this.showNotification(url)
+      this.showNotification(url)
     }
 
     if (!isAdmin) {
@@ -122,9 +121,7 @@ class Offerers extends Component {
         },
         apiParams
       )
-      const notValidatedUserOfferersSearch = stringify(
-        notValidatedUserOfferersParams
-      )
+      const notValidatedUserOfferersSearch = stringify(notValidatedUserOfferersParams)
       const notValidatedUserOfferersPath = `/offerers?${notValidatedUserOfferersSearch}`
       dispatch(
         requestData({
@@ -152,15 +149,45 @@ class Offerers extends Component {
     })
   }
 
+  renderTextField = () => (
+    <Fragment>
+      <button
+        className="button is-primary is-outlined search-ok ml12"
+        type="submit"
+      >
+        {'OK'}
+      </button>
+      <button
+        className="button is-secondary"
+        disabled
+        type="button"
+      >
+        &nbsp;
+        <Icon svg="ico-filter" />
+        &nbsp;
+      </button>
+    </Fragment>
+  )
+
+  renderForm = ({ handleSubmit }) => (
+    <form onSubmit={handleSubmit}>
+      {'Rechercher une structure :'}
+      <TextField
+        id="search"
+        name="keywords"
+        placeholder="Saisissez un ou plusieurs mots complets"
+        renderValue={this.renderTextField}
+      />
+    </form>
+  )
+
   render() {
     const { pendingOfferers, offerers, query } = this.props
     const queryParams = query.parse()
     const { hasMore, isLoading } = this.state
 
     const sectionTitle =
-      offerers.length > 1
-        ? 'Vos structures juridiques'
-        : 'Votre structure juridique'
+      offerers.length > 1 ? 'Vos structures juridiques' : 'Votre structure juridique'
 
     const initialValues = {
       keywords: queryParams[mapApiToBrowser.keywords],
@@ -172,16 +199,18 @@ class Offerers extends Component {
       <Main name="offerers">
         <HeroSection title={sectionTitle}>
           <p className="subtitle">
-            {"Pour présenter vos offres, vous devez d'abord "} <a href={url}> {"créer un nouveau lieu "} </a> {" lié à une structure."}
+            {"Pour présenter vos offres, vous devez d'abord "}{' '}
+            <a href={url}> {'créer un nouveau lieu '} </a> {' lié à une structure.'}
             <br />
-            {"Sans lieu, vous pouvez uniquement "} <a href="/offres/creation"> {"ajouter des offres numériques."} </a>
+            {'Sans lieu, vous pouvez uniquement '}{' '}
+            <a href="/offres/creation"> {'ajouter des offres numériques.'} </a>
           </p>
           <div className="title-action-links">
             <NavLink
               className="cta button is-primary is-outlined"
               to="/structures/creation"
             >
-              {"+ Ajouter une structure"}
+              {'+ Ajouter une structure'}
               <span
                 className="tip-icon"
                 data-place="bottom"
@@ -197,35 +226,7 @@ class Offerers extends Component {
         <Form
           initialValues={initialValues}
           onSubmit={this.handleOnKeywordsSubmit}
-          render={({ handleSubmit }) => (
-            <form onSubmit={handleSubmit}>
-              Rechercher une structure :
-              <TextField
-                id="search"
-                name="keywords"
-                placeholder="Saisissez un ou plusieurs mots complets"
-                renderValue={() => (
-                  <Fragment>
-                    <button
-                      className="button is-primary is-outlined search-ok ml12"
-                      type="submit"
-                    >
-                      {"OK"}
-                    </button>
-                    <button
-                      className="button is-secondary"
-                      disabled
-                      type="button"
-                    >
-                      &nbsp;
-                      <Icon svg="ico-filter" />
-                      &nbsp;
-                    </button>
-                  </Fragment>
-                )}
-              />
-            </form>
-          )}
+          render={this.renderForm}
         />
 
         <br />

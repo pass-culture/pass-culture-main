@@ -33,7 +33,7 @@ const VenueItem = ({ venue }) => {
               className="has-text-primary"
               to={`/offres/creation?lieu=${id}`}
             >
-              <Icon svg="ico-offres-r" /> Créer une offre
+              <Icon svg="ico-offres-r" />{' Créer une offre'}
             </NavLink>
           </li>
           {venue.nOffers > 0 ? (
@@ -47,7 +47,7 @@ const VenueItem = ({ venue }) => {
               </NavLink>
             </li>
           ) : (
-            <li>0 offre</li>
+            <li>{'0 offre'}</li>
           )}
           <li>
             <Dotdotdot

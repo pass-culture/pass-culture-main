@@ -57,6 +57,7 @@
     ],
     "react/jsx-props-no-spreading": false,
     "react/no-set-state": false,
+    "react/prop-types": false,
     "react/static-property-placement": false,
     "semi": [
       "error",

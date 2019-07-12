@@ -11,17 +11,12 @@ import HeroSection from '../../layout/HeroSection/HeroSection'
 import Spinner from '../../layout/Spinner'
 import Main from '../../layout/Main'
 import { offerNormalizer } from '../../../utils/normalizers'
-import {
-  mapApiToBrowser,
-  translateQueryParamsToApiParams,
-} from '../../../utils/translate'
+import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
 
 class RawOffers extends Component {
   constructor(props) {
     super(props)
 
-    const { query } = props
-    const queryParams = query.parse()
     this.state = {
       hasMore: false,
       isLoading: false,
@@ -35,18 +30,18 @@ class RawOffers extends Component {
     if (queryParams.page) {
       query.change({ page: null })
     } else {
-      this.handleRequestData()
+      this.onHandleRequestData()
     }
   }
 
   componentDidUpdate(prevProps) {
     const { location } = this.props
     if (location.search !== prevProps.location.search) {
-      this.handleRequestData()
+      this.onHandleRequestData()
     }
   }
 
-  handleRequestData = () => {
+  onHandleRequestData = () => {
     const { comparedTo, dispatch, query, types } = this.props
 
     types.length === 0 && dispatch(requestData({ apiPath: '/types' }))
@@ -98,13 +93,13 @@ class RawOffers extends Component {
     }
   }
 
-  handleOnVenueClick = (query) =>
+  handleOnVenueClick = query =>
     query.change({
       [mapApiToBrowser.venueId]: null,
       page: null,
     })
 
-  handleOnOffererClick = (query) =>
+  handleOnOffererClick = query =>
     query.change({
       [mapApiToBrowser.offererId]: null,
       page: null,
@@ -116,9 +111,9 @@ class RawOffers extends Component {
   }
 
   handleOnChange = () => {
-  // TODO pagination.orderBy
-  // query.change({})
-}
+    // TODO pagination.orderBy
+    // query.change({})
+  }
 
   render() {
     const { currentUser, offers, offerer, query, venue } = this.props
@@ -134,16 +129,14 @@ class RawOffers extends Component {
     if (venueId) {
       createOfferTo = `${createOfferTo}?${mapApiToBrowser.venueId}=${venueId}`
     } else if (offererId) {
-      createOfferTo = `${createOfferTo}?${
-        mapApiToBrowser.offererId
-      }=${offererId}`
+      createOfferTo = `${createOfferTo}?${mapApiToBrowser.offererId}=${offererId}`
     }
 
     const [orderName, orderDirection] = (orderBy || '').split('+')
 
     return (
       <Main
-        handleRequestData={this.handleRequestData}
+        handleRequestData={this.onHandleRequestData}
         name="offers"
       >
         <HeroSection title="Vos offres">
@@ -155,7 +148,7 @@ class RawOffers extends Component {
               <span className="icon">
                 <Icon svg="ico-offres-w" />
               </span>
-              <span>{"Créer une offre"}</span>
+              <span>{'Créer une offre'}</span>
             </NavLink>
           )}
         </HeroSection>
@@ -163,7 +156,7 @@ class RawOffers extends Component {
           className="section"
           onSubmit={this.handleOnSubmit}
         >
-          <label className="label">{"Rechercher une offre :"}</label>
+          <label className="label">{'Rechercher une offre :'}</label>
           <div className="field is-grouped">
             <p className="control is-expanded">
               <input
@@ -180,7 +173,7 @@ class RawOffers extends Component {
                 id="search-button"
                 type="submit"
               >
-                {"OK"}
+                {'OK'}
               </button>{' '}
               <button
                 className="button is-secondary"
@@ -198,7 +191,7 @@ class RawOffers extends Component {
         <ul className="section">
           {offerer ? (
             <li className="tag is-rounded is-medium">
-              {"Structure : "}
+              {'Structure : '}
               <span className="has-text-weight-semibold"> {offerer.name} </span>
               <button
                 className="delete is-small"
@@ -209,7 +202,7 @@ class RawOffers extends Component {
           ) : (
             venue && (
               <li className="tag is-rounded is-medium">
-                {"Lieu : "}
+                {'Lieu : '}
                 <span className="has-text-weight-semibold">{venue.name}</span>
                 <button
                   className="delete is-small"
@@ -225,17 +218,17 @@ class RawOffers extends Component {
             <div className="list-header">
               <div>
                 <div className="recently-added" />
-                {"Ajouté récemment"}
+                {'Ajouté récemment'}
               </div>
               <div>
-                {"Trier par: "}
+                {'Trier par: '}
                 <span className="select is-rounded is-small">
                   <select
-                    onChange={this.handleOnChange()}
+                    onBlur={this.handleOnChange()}
                     value={orderName}
                   >
-                    <option value="sold">{"Offres écoulées"}</option>
-                    <option value="createdAt">{"Date de création"}</option>
+                    <option value="sold">{'Offres écoulées'}</option>
+                    <option value="createdAt">{'Date de création'}</option>
                   </select>
                 </span>
               </div>
@@ -246,11 +239,7 @@ class RawOffers extends Component {
                   type="button"
                 >
                   <Icon
-                    svg={
-                      orderDirection === 'asc'
-                        ? 'ico-sort-ascending'
-                        : 'ico-sort-descending'
-                    }
+                    svg={orderDirection === 'asc' ? 'ico-sort-ascending' : 'ico-sort-descending'}
                   />
                 </button>
               </div>
