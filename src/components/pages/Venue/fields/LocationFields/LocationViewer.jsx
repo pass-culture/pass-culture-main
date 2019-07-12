@@ -82,7 +82,9 @@ class LocationViewer extends Component {
   }
 
   toggleDraggable = () => {
-    this.setState({ draggable: !this.state.draggable })
+    const { draggable } = this.state
+
+    this.setState({ draggable: !draggable })
   }
 
   handleOnMarkerDragend = () => {
@@ -329,14 +331,13 @@ class LocationViewer extends Component {
 LocationViewer.defaultProps = {
   debounceTimeout: 300,
   defaultInitialPosition: FRANCE_POSITION,
-  latitude: null,
-  longitude: null,
   maxSuggestions: 5,
   name: null,
   onMarkerDragend: () => {},
   onSuggestionSelect: () => {},
   onTextChange: () => {},
   placeholder: "Sélectionnez l'adresse lorsqu'elle est proposée.",
+  readOnly: true,
   withMap: false,
   zoom: 15,
 }
@@ -348,14 +349,13 @@ LocationViewer.propTypes = {
     longitude: PropTypes.number,
     zoom: PropTypes.number,
   }),
-  latitude: PropTypes.number,
-  longitude: PropTypes.number,
   maxSuggestions: PropTypes.number,
   name: PropTypes.string,
   onMarkerDragend: PropTypes.func,
   onSuggestionSelect: PropTypes.func,
   onTextChange: PropTypes.func,
   placeholder: PropTypes.string,
+  readOnly: PropTypes.bool,
   withMap: PropTypes.bool,
   zoom: PropTypes.number,
 }

@@ -61,8 +61,8 @@ class Signin extends Component {
                     <span className="required-legend">{"*"} </span> {"Champs obligatoires"}
                   </span>
                   <Form
-                    BlockComponent={null}
                     action="/users/signin"
+                    blockComponent={null}
                     handleSuccessNotification={null}
                     handleSuccessRedirect={this.handleSuccessRedirect}
                     layout="vertical"

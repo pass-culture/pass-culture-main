@@ -6,15 +6,16 @@ import { requestData } from 'redux-saga-data'
 import { closeNotification, showNotification } from 'pass-culture-shared'
 
 import Venue from './Venue'
-import selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity
-  from './selectors/selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity'
-import { withFrenchQueryRouter, withRedirectToSigninWhenNotAuthenticated, } from '../../hocs'
+import selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity from './selectors/selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity'
+import { withFrenchQueryRouter, withRedirectToSigninWhenNotAuthenticated } from '../../hocs'
 import { VENUE_CREATION_PATCH_KEYS, VENUE_MODIFICATION_PATCH_KEYS } from './utils/utils'
 import { selectUserOffererByOffererIdAndUserIdAndRightsType } from '../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
 import { selectOffererById } from '../../../selectors/selectOffererById'
 import { offererNormalizer, venueNormalizer } from '../../../utils/normalizers'
 import { formatPatch } from '../../../utils/formatPatch'
 import { CREATION } from '../../hocs'
+
+const handleOnClick = dispatch => () => dispatch(closeNotification())
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -57,18 +58,20 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 
   const buildNotificationMessage = (venueId, method) => {
     const isVenueCreated = method === 'POST'
+
     if (isVenueCreated) {
       const createOfferPathname = `/offres/${CREATION}?lieu=${venueId}`
+
       return (
         <p>
-          {"Lieu créé. Vous pouvez maintenant y "}
+          {'Lieu créé. Vous pouvez maintenant y '}
           <NavLink
-            onClick={() => dispatch(closeNotification())}
+            onClick={handleOnClick(dispatch)}
             to={createOfferPathname}
           >
-            {"créer une offre"}
+            {'créer une offre'}
           </NavLink>
-          {", ou en importer automatiquement. "}
+          {', ou en importer automatiquement. '}
         </p>
       )
     }

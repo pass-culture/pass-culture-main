@@ -110,7 +110,11 @@ class IdentifierFields extends Component {
             readOnly={readOnly || fieldReadOnlyBecauseFrozenFormSiret}
             required
           />
-          <TextField label="Nom d'usage : " name="publicName" readOnly={readOnly} />
+          <TextField
+            label="Nom d'usage : "
+            name="publicName"
+            readOnly={readOnly}
+          />
           <TextField
             innerClassName="col-75"
             label="E-mail : "
