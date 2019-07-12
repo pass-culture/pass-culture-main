@@ -8,7 +8,7 @@ function mapArgsToCacheKey(state, offererId, venueId) {
 
 export const selectOffersByOffererIdAndVenueId = createCachedSelector(
   state => state.data.offers,
-  (state, offererId, venueId) =>
+  (state, offererId) =>
     offererId && selectVenuesByOffererIdAndOfferType(state, offererId),
   (state, offererId, venueId) => venueId,
   (offers, venues, venueId) => {
