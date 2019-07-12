@@ -13,7 +13,7 @@ from repository.feature_queries import feature_request_profiling_enabled
 from models.mediation import upsertTutoMediations
 from local_providers.install import install_local_providers
 from models.db import db
-from models.install import install_models, install_features
+from models.install import install_models, install_features, install_database_extensions
 from routes import install_routes
 from utils.config import IS_DEV
 from utils.json_encoder import EnumJSONEncoder
@@ -68,6 +68,7 @@ cors = CORS(app,
 app.url_map.strict_slashes = False
 
 with app.app_context():
+    install_database_extensions()
     if IS_DEV:
         install_models()
         upsertTutoMediations()

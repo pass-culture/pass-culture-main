@@ -14,9 +14,8 @@ def create_text_search_configuration_if_not_exists():
         "SELECT * FROM pg_ts_config WHERE cfgname='french_unaccent';")
     if french_unaccent_configuration_query.fetchone() is None:
         db.engine.execute("CREATE TEXT SEARCH CONFIGURATION french_unaccent ( COPY = french );")
-
-    db.engine.execute(
-        "ALTER TEXT SEARCH CONFIGURATION french_unaccent ALTER MAPPING FOR hword, hword_part, word WITH unaccent, french_stem;")
+        db.engine.execute(
+            "ALTER TEXT SEARCH CONFIGURATION french_unaccent ALTER MAPPING FOR hword, hword_part, word WITH unaccent, french_stem;")
 
 
 def create_versionning_tables():
@@ -31,15 +30,16 @@ def create_versionning_tables():
         pass
 
 
-def install_models():
+def install_database_extensions():
     create_text_search_configuration_if_not_exists()
 
+
+def install_models():
     orm.configure_mappers()
 
     create_versionning_tables()
 
     db.create_all()
-
     db.session.commit()
 
 
