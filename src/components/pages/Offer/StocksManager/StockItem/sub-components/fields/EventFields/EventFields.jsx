@@ -57,7 +57,6 @@ EventFields.defaultProps = {
 
 EventFields.propTypes = {
   beginningMinDate: PropTypes.string,
-  dispatch: PropTypes.func.isRequired,
   readOnly: PropTypes.bool,
   stocks: PropTypes.arrayOf,
   timezone: PropTypes.string,
