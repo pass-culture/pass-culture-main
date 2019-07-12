@@ -76,6 +76,8 @@ class Offerer extends Component {
     this.setState({ isCreatedEntityProvider: true })
   }
 
+  handleDisabling= (offererName) => !offererName
+
   render() {
     const { adminUserOfferer, offerer, query, offererName } = this.props
     const { isCreatedEntity, isModifiedEntity, readOnly } = query.context()
@@ -95,8 +97,7 @@ class Offerer extends Component {
           title="Structure"
         >
           <p className="subtitle">
-            Détails de la structure rattachée, des lieux et des fournisseurs de
-            ses offres.
+            {"Détails de la structure rattachée, des lieux et des fournisseurs de ses offres."}
           </p>
         </HeroSection>
 
@@ -119,7 +120,7 @@ class Offerer extends Component {
           <div className="section">
             <div className="field-group">
               <Field
-                disabling={() => !offererName}
+                disabling={this.handleDisabling(offererName)}
                 label="SIREN"
                 name="siren"
                 readOnly={get(offerer, 'id')}
@@ -149,7 +150,7 @@ class Offerer extends Component {
           </div>
           <div className="section">
             <h2 className="main-list-title">
-              INFORMATIONS BANCAIRES
+              {"INFORMATIONS BANCAIRES"}
               <span className="is-pulled-right is-size-7 has-text-grey">
                 {readOnly &&
                   !adminUserOfferer &&
