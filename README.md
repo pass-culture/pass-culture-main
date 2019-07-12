@@ -18,10 +18,15 @@ Mais spécialement, en plus pour macosx:
 
 
 Enfin pour tout le monde:
+
+```bash
+./pc symlink
+```
+puis
+
 ```bash
 pc install
 ```
-Le script `pc` sera automatiquement lié dans votre dossier `/usr/local/bin`
 
 ### Init
 Pour verifier les tests:
@@ -452,10 +457,10 @@ pc build-pg
 
 ## Lancer les tests de performance
 
-### Environnement 
+### Environnement
 
 Les tests requièrent d'avoir un environnement spécifique sur Scalingo, ici `pass-culture-dev-perf`, comportant notamment une base utilisateur.
-Pour la remplir, il faut jouer les sandboxes `industrial` et `activation`. 
+Pour la remplir, il faut jouer les sandboxes `industrial` et `activation`.
 
 Execution des sandboxes sur le conteneur :
 ``` bash
@@ -478,7 +483,7 @@ Un exemple de csv utilisateur `user_list` :
 
 ### Lancement d'un scénario
 
-Pour lancer les tests de performance il faut installer le logiciel `artillery` : `npm install -g artillery` et son plugin `metrics-by-endpoint` : `npm install artillery-plugin-statsd`, puis se munir du fichier csv contenant 
+Pour lancer les tests de performance il faut installer le logiciel `artillery` : `npm install -g artillery` et son plugin `metrics-by-endpoint` : `npm install artillery-plugin-statsd`, puis se munir du fichier csv contenant
 les users valides.
 
 Puis se placer dans le dossier `artillery` et lancer la commande :
@@ -488,4 +493,3 @@ artillery run scenario.yml -o reports/report-$(date -u +"%Y-%m-%dT%H:%M:%SZ").js
 ```
 
 Un rapport des tests daté sera généré dans le sous-dossier `reports` (qui doit être crée).
-
