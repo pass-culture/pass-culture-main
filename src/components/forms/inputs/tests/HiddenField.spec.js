@@ -1,13 +1,14 @@
 import React from 'react'
-import { Form } from 'react-final-form'
-import { render, shallow } from 'enzyme'
+import { shallow } from 'enzyme'
 
 import HiddenField from '../HiddenField'
 
 describe('src | components | forms | inputs | HiddenField', () => {
-  it('should match snapshot with required props', () => {
+  it('should match snapshot', () => {
     // given
-    const props = { name: 'the-input-name' }
+    const props = {
+      name: 'the-input-name',
+    }
 
     // when
     const wrapper = shallow(<HiddenField {...props} />)
@@ -17,23 +18,19 @@ describe('src | components | forms | inputs | HiddenField', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  it('attributes should defined for a field of type hidden', () => {
+  it('should render an input of type hidden', () => {
     // given
     const props = {
-      'any-native-input-prop': 'a value',
-      id: 'the-input-id',
       name: 'the-input-name',
     }
 
     // when
-    const wrapper = render(<Form
-      onSubmit={jest.fn()}
-      render={<HiddenField {...props} />}
-                           />)
-    const inputElement = wrapper.find('#the-input-id')
+    const wrapper = shallow(<HiddenField {...props} />).dive()
+    const inputElement = wrapper.find('input')
 
     // then
     expect(inputElement).toHaveLength(1)
-    expect(inputElement.prop('any-native-input-prop')).toStrictEqual('a value')
+    expect(inputElement.prop('name')).toStrictEqual('the-input-name')
+    expect(inputElement.prop('validator')).toStrictEqual(expect.any(Function))
   })
 })

@@ -78,14 +78,10 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
       history.push('/test?categories=Sourire')
 
       // then
-      const params = wrapper.find('SearchFilter').state()
-      expect(params).toStrictEqual({
-        filterParamsMatchingQueryParams: false,
-        initialDateParams: true,
-        params: {
-          categories: 'Sourire',
-        },
-      })
+      const searchFilter = wrapper.find('SearchFilter')
+      expect(searchFilter.state('filterParamsMatchingQueryParams')).toBe(false)
+      expect(searchFilter.state('initialDateParams')).toBe(true)
+      expect(searchFilter.state('params')).toStrictEqual(expect.any(Object))
     })
   })
 
@@ -110,7 +106,7 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
       wrapper.instance().handleOnClickFilterButton()
 
       // then
-      expect(props.resetSearchStore).toHaveBeenCalled()
+      expect(props.resetSearchStore).toHaveBeenCalledWith()
     })
   })
 
@@ -128,7 +124,7 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
         initialDateParams: true,
         params: {},
       }
-      expect(props.resetSearchStore).toHaveBeenCalled()
+      expect(props.resetSearchStore).toHaveBeenCalledWith()
       expect(wrapper.state()).toStrictEqual(expected)
       expect(props.query.change).toHaveBeenCalledWith(INITIAL_FILTER_PARAMS, {
         pathname: '/recherche/resultats',
