@@ -1,4 +1,5 @@
 import { BasicInput, mergeErrors, removeWhitespaces } from 'pass-culture-shared'
+import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import { isValidBIC } from 'ibantools'
@@ -18,6 +19,7 @@ class BicInput extends PureComponent {
 
   render() {
     const { value } = this.props
+
     return (
       <BasicInput
         {...this.props}
@@ -27,6 +29,12 @@ class BicInput extends PureComponent {
       />
     )
   }
+}
+
+BicInput.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
+  value: PropTypes.string.isRequired,
 }
 
 export default connect()(BicInput)

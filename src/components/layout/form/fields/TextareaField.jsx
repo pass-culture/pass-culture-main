@@ -1,5 +1,5 @@
 import classnames from 'classnames'
-import React, { Fragment } from 'react'
+import React, { Component, Fragment } from 'react'
 import Textarea from 'react-autosize-textarea'
 import { Field } from 'react-final-form'
 import PropTypes from 'prop-types'
@@ -14,78 +14,89 @@ function formatInputValueWhenTooLong(value, maxLength) {
   return valueIsTooLong ? value.slice(0, maxLength - 1) : value
 }
 
-export const TextareaField = ({
-  autoComplete,
-  className,
-  disabled,
-  label,
-  maxLength,
-  name,
-  placeholder,
-  readOnly,
-  required,
-  validate,
-  // see https://github.com/buildo/react-autosize-textarea
-  ...ReactAutosizeProps
-}) => (
-  <Field
-    name={name}
-    render={({ input, meta }) => {
-      const value = formatInputValueWhenTooLong(input.value, maxLength)
-      return (
-        <div
-          className={classnames('field textarea-field', className, {
-            'is-label-aligned': label,
-            'is-read-only': readOnly,
-          })}
+class TextareaField extends Component {
+  renderField = ({ input, meta }) => {
+    const {
+      autoComplete,
+      className,
+      disabled,
+      label,
+      maxLength,
+      name,
+      placeholder,
+      readOnly,
+      required,
+      // see https://github.com/buildo/react-autosize-textarea
+      ...ReactAutosizeProps
+    } = this.props
+
+    const value = formatInputValueWhenTooLong(input.value, maxLength)
+
+    return (
+      <div
+        className={classnames('field textarea-field', className, {
+          'is-label-aligned': label,
+          'is-read-only': readOnly,
+        })}
+      >
+        <label
+          className={classnames('field-label', { empty: !label })}
+          htmlFor={name}
         >
-          <label
-            className={classnames('field-label', { empty: !label })}
-            htmlFor={name}
-          >
-            {label && (
-              <span>
-                <span>{label}</span>
-                {required && !readOnly && (
-                  <span className="field-asterisk">*</span>
-                )}
-                {!readOnly && (
-                  <Fragment>
-                    <br />
-                    <span className="fs12">
-                      {' '}
-                      ({input.value.length} / {maxLength}){' '}
-                    </span>
-                  </Fragment>
-                )}
-              </span>
-            )}
-          </label>
-          <div className="field-control">
-            <div className="field-value flex-columns items-center">
-              <span className="field-inner">
-                <Textarea
-                  {...input}
-                  autoComplete={autoComplete ? 'on' : 'off'}
-                  className="field-textarea"
-                  disabled={disabled || readOnly}
-                  id={name}
-                  placeholder={readOnly ? '' : placeholder}
-                  readOnly={readOnly}
-                  required={!!required}
-                  value={value}
-                  {...ReactAutosizeProps}
-                />
-              </span>
-            </div>
-            <FieldErrors meta={meta} />
+          {label && (
+            <span>
+              <span>{label}</span>
+              {required && !readOnly && <span className="field-asterisk">{'*'}</span>}
+              {!readOnly && (
+                <Fragment>
+                  <br />
+                  <span className="fs12">
+                    {` (${input.value.length} / ${maxLength}) `}
+                  </span>
+                </Fragment>
+              )}
+            </span>
+          )}
+        </label>
+        <div className="field-control">
+          <div className="field-value flex-columns items-center">
+            <span className="field-inner">
+              <Textarea
+                {...input}
+                autoComplete={autoComplete ? 'on' : 'off'}
+                className="field-textarea"
+                disabled={disabled || readOnly}
+                id={name}
+                placeholder={readOnly ? '' : placeholder}
+                readOnly={readOnly}
+                required={!!required}
+                value={value}
+                {...ReactAutosizeProps}
+              />
+            </span>
           </div>
+          <FieldErrors meta={meta} />
         </div>
-      )
-    }}
-    validate={composeValidators(validate, getRequiredValidate(required))}
-  />
-)
+      </div>
+    )
+  }
+
+  render() {
+    const {
+      name,
+      required,
+      validate,
+    } = this.props
+
+    return (
+      <Field
+        name={name}
+        render={this.renderField}
+        validate={composeValidators(validate, getRequiredValidate(required))}
+      />
+    )
+  }
+}
 
 TextareaField.defaultProps = {
   autoComplete: false,

@@ -15,9 +15,9 @@ class Header extends Component {
     }
   }
 
-  handleSuccessRedirect = () => '/connexion'
+  onHandleSuccessRedirect = () => '/connexion'
 
-  handleOnClick = (showMobileMenu) => () => {
+  handleOnClick = showMobileMenu => () => {
     this.setState({
       showMobileMenu: !showMobileMenu,
     })
@@ -156,7 +156,7 @@ class Header extends Component {
                   <SignoutButton
                     Tag="a"
                     className="navbar-item"
-                    handleSuccessRedirect={this.handleSuccessRedirect}
+                    handleSuccessRedirect={this.onHandleSuccessRedirect}
                   >
                     <span className="icon">
                       <Icon svg="ico-deconnect" />

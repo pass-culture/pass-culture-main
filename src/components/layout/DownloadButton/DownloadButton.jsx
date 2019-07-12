@@ -39,7 +39,7 @@ DownloadButton.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
-  ]),
+  ]).isRequired,
   downloadFileOrNotifyAnError: PropTypes.func.isRequired,
 }
 

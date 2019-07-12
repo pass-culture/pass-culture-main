@@ -1,17 +1,11 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 
-const Select = ({
-  className,
-  defaultLabel,
-  extraClass,
-  onOptionClick,
-  options,
-  value,
-}) => {
+const Select = ({ className, defaultLabel, onOptionClick, options, value }) => {
   return (
     <select
       className={className || 'select'}
-      onChange={onOptionClick}
+      onBlur={onOptionClick}
       value={value || defaultLabel}
     >
       <option
@@ -20,9 +14,9 @@ const Select = ({
       >
         {defaultLabel}
       </option>
-      {options.map(({ label, value }, index) => (
+      {options.map(({ label, value }) => (
         <option
-          key={index}
+          key={value}
           value={value}
         >
           {label}
@@ -30,6 +24,14 @@ const Select = ({
       ))}
     </select>
   )
+}
+
+Select.propTypes = {
+  className: PropTypes.string.isRequired,
+  defaultLabel: PropTypes.string.isRequired,
+  onOptionClick: PropTypes.func.isRequired,
+  options: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  value: PropTypes.string.isRequired,
 }
 
 export default Select

@@ -2,26 +2,25 @@ import classnames from 'classnames'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
-import {
-  composeValidators,
-  createParseNumberValue,
-} from 'react-final-form-utils'
+import { composeValidators, createParseNumberValue } from 'react-final-form-utils'
 
 import FieldErrors from '../FieldErrors'
 import getRequiredValidate from '../utils/getRequiredValidate'
 
 function getInputValue(inputType, value) {
-  const isStringifiedNumber =
-    inputType === 'number' && typeof value === 'string'
+  const isStringifiedNumber = inputType === 'number' && typeof value === 'string'
+
   if (!value || isStringifiedNumber) {
     return ''
   }
+
   return value
 }
 
-export class TextField extends Component {
+class TextField extends Component {
   componentDidMount() {
     const { type } = this.props
+
     if (type === 'number') {
       this.handlePreventEPlusMinusKeypresses()
     }
@@ -34,99 +33,100 @@ export class TextField extends Component {
   }
 
   handlePreventEPlusMinusKeypresses = () => {
-    this.keypressListener = this.inputElement.addEventListener(
-      'keypress',
-      event => {
-        const hasPressedEKeys = event.which === 69 || event.which === 101
-        const hasPressedPlusOrMinusAfterNumbers =
-          this.inputElement.value && (event.which === 45 || event.which === 43)
+    this.keypressListener = this.inputElement.addEventListener('keypress', event => {
+      const hasPressedEKeys = event.which === 69 || event.which === 101
+      const hasPressedPlusOrMinusAfterNumbers =
+        this.inputElement.value && (event.which === 45 || event.which === 43)
+
         if (hasPressedEKeys || hasPressedPlusOrMinusAfterNumbers) {
-          event.preventDefault()
-        }
+        event.preventDefault()
       }
-    )
+    })
   }
-  render() {
+
+  renderField = ({ input, meta }) => {
     const {
       className,
       disabled,
-      format,
       id,
       innerClassName,
       label,
       name,
-      parse,
       placeholder,
       readOnly,
       renderInner,
       renderValue,
       required,
       type,
-      validate,
       ...inputProps
     } = this.props
+    const inputType = readOnly ? 'text' : type
+    const inputValue = getInputValue(inputType, input.value)
+
+    return (
+      <div
+        className={classnames('field text-field', className, {
+          'is-label-aligned': label,
+          'is-read-only': readOnly,
+        })}
+        id={id}
+      >
+        <label
+          className={classnames('field-label', { empty: !label })}
+          htmlFor={name}
+        >
+          {label && (
+            <span>
+              <span>{label}</span>
+              {required && !readOnly && <span className="field-asterisk">{'*'}</span>}
+            </span>
+          )}
+        </label>
+        <div className="field-control">
+          <div className="field-value flex-columns items-center">
+            <div className={classnames('field-inner flex-columns items-center', innerClassName)}>
+              <input
+                id={name}
+                {...input}
+                {...inputProps}
+                className={`field-input field-${type}`}
+                disabled={disabled || readOnly}
+                placeholder={readOnly ? '' : placeholder}
+                readOnly={readOnly}
+                ref={_e => {
+                  this.inputElement = _e
+                }}
+                required={!!required}
+                type={inputType}
+                value={inputValue}
+              />
+              {renderInner()}
+            </div>
+            {renderValue()}
+          </div>
+          <FieldErrors meta={meta} />
+        </div>
+        <div />
+      </div>
+    )
+  }
+
+  render() {
+    const {
+      format,
+      name,
+      parse,
+      required,
+      type,
+      validate,
+    } = this.props
+
     return (
       <Field
         format={format}
         name={name}
         parse={parse || createParseNumberValue(type)}
-        render={({ input, meta }) => {
-          const inputType = readOnly ? 'text' : type
-          const inputValue = getInputValue(inputType, input.value)
-          return (
-            <div
-              className={classnames('field text-field', className, {
-                'is-label-aligned': label,
-                'is-read-only': readOnly,
-              })}
-              id={id}
-            >
-              <label
-                className={classnames('field-label', { empty: !label })}
-                htmlFor={name}
-              >
-                {label && (
-                  <span>
-                    <span>{label}</span>
-                    {required && !readOnly && (
-                      <span className="field-asterisk">*</span>
-                    )}
-                  </span>
-                )}
-              </label>
-              <div className="field-control">
-                <div className="field-value flex-columns items-center">
-                  <div
-                    className={classnames(
-                      'field-inner flex-columns items-center',
-                      innerClassName
-                    )}
-                  >
-                    <input
-                      id={name}
-                      {...input}
-                      {...inputProps}
-                      className={`field-input field-${type}`}
-                      disabled={disabled || readOnly}
-                      placeholder={readOnly ? '' : placeholder}
-                      readOnly={readOnly}
-                      ref={_e => {
-                        this.inputElement = _e
-                      }}
-                      required={!!required}
-                      type={inputType}
-                      value={inputValue}
-                    />
-                    {renderInner()}
-                  </div>
-                  {renderValue()}
-                </div>
-                <FieldErrors meta={meta} />
-              </div>
-              <div />
-            </div>
-          )
-        }}
+        render={this.renderField}
         validate={composeValidators(validate, getRequiredValidate(required))}
       />
     )

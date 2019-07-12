@@ -2,12 +2,13 @@ import classnames from 'classnames'
 import L from 'leaflet'
 import debounce from 'lodash.debounce'
 import { BasicInput } from 'pass-culture-shared'
+import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import Autocomplete from 'react-autocomplete'
 import { Map, Marker, TileLayer } from 'react-leaflet'
 
 import { ROOT_PATH } from '../../utils/config'
-import { sanitizeCoordinates } from '../../utils/input'
+import sanitizeCoordinates from '../pages/Venue/fields/LocationFields/utils/sanitizeCoordinates'
 
 const customIcon = new L.Icon({
   iconUrl: `${ROOT_PATH}/icons/ico-geoloc-solid2.svg`,
@@ -18,20 +19,6 @@ const customIcon = new L.Icon({
 })
 
 class GeoInput extends Component {
-  static defaultProps = {
-    debounceTimeout: 300,
-    defaultInitialPosition: {
-      // Displays France
-      latitude: 46.98025235521883,
-      longitude: 1.9335937500000002,
-      zoom: 5,
-    },
-    maxSuggestions: 5,
-    placeholder: "Sélectionnez l'adresse lorsqu'elle est proposée.",
-    withMap: false,
-    zoom: 15,
-  }
-
   static extraFormPatch = ['latitude', 'longitude']
 
   constructor(props) {
@@ -45,10 +32,7 @@ class GeoInput extends Component {
       suggestions: [],
     }
     this.refmarker = React.createRef()
-    this.onDebouncedFetchSuggestions = debounce(
-      this.fetchSuggestions,
-      props.debounceTimeout
-    )
+    this.onDebouncedFetchSuggestions = debounce(this.fetchSuggestions, props.debounceTimeout)
   }
 
   static getDerivedStateFromProps = (newProps, currentState) => {
@@ -62,10 +46,7 @@ class GeoInput extends Component {
         position: {
           latitude: latitude || newProps.defaultInitialPosition.latitude,
           longitude: longitude || newProps.defaultInitialPosition.longitude,
-          zoom:
-            latitude && longitude
-              ? newProps.zoom
-              : newProps.defaultInitialPosition.zoom,
+          zoom: latitude && longitude ? newProps.zoom : newProps.defaultInitialPosition.zoom,
         },
       },
       latitude && longitude
@@ -81,7 +62,9 @@ class GeoInput extends Component {
   }
 
   toggleDraggable = () => {
-    this.setState({ draggable: !this.state.draggable })
+    const { draggable } = this.state
+
+    this.setState({ draggable: !draggable })
   }
 
   handleUpdatePosition = () => {
@@ -146,11 +129,7 @@ class GeoInput extends Component {
 
     this.setState({ isLoading: true })
 
-    fetch(
-      `https://api-adresse.data.gouv.fr/search/?limit=${
-        maxSuggestions
-      }&q=${value}`
-    )
+    fetch(`https://api-adresse.data.gouv.fr/search/?limit=${maxSuggestions}&q=${value}`)
       .then(response => response.json())
       .then(data => {
         const defaultSuggestion = {
@@ -179,16 +158,27 @@ class GeoInput extends Component {
       })
   }
 
+  getItemValue = value => value.label
+
+  renderAutocomplete = ({ id, label, placeholder }, highlighted) => (
+    <div
+      className={classnames({
+        item: true,
+        highlighted,
+        placeholder,
+      })}
+      key={id}
+    >
+      {label}
+    </div>
+  )
+
+  renderAutocompleteMenu = children => (
+    <div className={classnames('menu', { empty: children.length === 0 })}>{children}</div>
+  )
+
   render() {
-    const {
-      className,
-      id,
-      placeholder,
-      readOnly,
-      required,
-      size,
-      withMap,
-    } = this.props
+    const { className, id, placeholder, readOnly, required, size, withMap } = this.props
 
     const { isLoading, marker, position, suggestions, value } = this.state
 
@@ -198,7 +188,7 @@ class GeoInput extends Component {
       <Fragment>
         <Autocomplete
           autocomplete="street-address"
-          getItemValue={value => value.label}
+          getItemValue={this.getItemValue}
           inputProps={{
             className: className || `input is-${size}`,
             id,
@@ -210,25 +200,8 @@ class GeoInput extends Component {
           onChange={this.handleOnTextChange}
           onSelect={this.handleOnSelect}
           readOnly={readOnly}
-          renderItem={({ id, label, placeholder }, highlighted) => (
-            <div
-              className={classnames({
-                item: true,
-                highlighted,
-                placeholder,
-              })}
-              key={id}
-            >
-              {label}
-            </div>
-          )}
-          renderMenu={children => (
-            <div
-              className={classnames('menu', { empty: children.length === 0 })}
-            >
-              {children}
-            </div>
-          )}
+          renderItem={this.renderAutocomplete}
+          renderMenu={this.renderAutocompleteMenu}
           value={this.props.value || value}
           wrapperProps={{ className: 'input-wrapper' }}
         />
@@ -270,6 +243,37 @@ class GeoInput extends Component {
       </div>
     )
   }
+}
+
+GeoInput.defaultProps = {
+  debounceTimeout: 300,
+  defaultInitialPosition: {
+    latitude: 46.98025235521883,
+    longitude: 1.9335937500000002,
+    zoom: 5,
+  },
+  maxSuggestions: 5,
+  placeholder: "Sélectionnez l'adresse lorsqu'elle est proposée.",
+  withMap: false,
+  zoom: 15,
+}
+
+GeoInput.propTypes = {
+  className: PropTypes.string.isRequired,
+  debounceTimeout: PropTypes.number,
+  defaultInitialPosition: PropTypes.shape(),
+  id: PropTypes.string.isRequired,
+  initialPosition: PropTypes.string.isRequired,
+  maxSuggestions: PropTypes.number,
+  name: PropTypes.string.isRequired,
+  onMergeForm: PropTypes.func.isRequired,
+  placeholder: PropTypes.string,
+  readOnly: PropTypes.string.isRequired,
+  required: PropTypes.string.isRequired,
+  size: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  withMap: PropTypes.bool,
+  zoom: PropTypes.number,
 }
 
 export default GeoInput
