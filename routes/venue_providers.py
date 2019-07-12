@@ -54,7 +54,7 @@ def create_venue_provider():
         errors = ApiErrors()
         errors.status_code = 401
         errors.addError('localClass', "Ce fournisseur n'est pas activé")
-        errors.maybeRaise()
+        errors.maybe_raise()
 
     is_existing_venue_provider = find_venue_provider(provider.id,
                                                   dehumanize(request.json['venueId']),
@@ -63,7 +63,7 @@ def create_venue_provider():
         errors = ApiErrors()
         errors.status_code = 401
         errors.addError('venueIdAtOfferProvider', "Il y a déjà un fournisseur pour votre identifiant")
-        errors.maybeRaise()
+        errors.maybe_raise()
 
     PcObject.save(new_venue_provider)
 

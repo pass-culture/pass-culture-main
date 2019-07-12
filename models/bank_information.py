@@ -37,6 +37,8 @@ class BankInformation(PcObject, Model, ProvidableMixin):
 
     def errors(self):
         api_errors = super(BankInformation, self).errors()
+        if api_errors.errors:
+            return api_errors
         try:
             IBAN(self.iban)
         except (ValueError, TypeError):

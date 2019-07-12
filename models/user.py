@@ -95,14 +95,14 @@ class User(PcObject,
         if self.id is None and user_count > 0:
             api_errors.addError('email', 'Un compte lié à cet email existe déjà')
         if self.publicName:
-            api_errors.checkMinLength('publicName', self.publicName, 3)
+            api_errors.check_min_length('publicName', self.publicName, 3)
         if self.email:
-            api_errors.checkEmail('email', self.email)
+            api_errors.check_email('email', self.email)
 
         if self.isAdmin and self.canBookFreeOffers:
             api_errors.addError('canBookFreeOffers', 'Admin ne peut pas booker')
         if self.clearTextPassword:
-            api_errors.checkMinLength('password', self.clearTextPassword, 8)
+            api_errors.check_min_length('password', self.clearTextPassword, 8)
 
         return api_errors
 

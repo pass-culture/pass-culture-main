@@ -48,7 +48,7 @@ def check_valid_signin(identifier: str, password: str):
     if password is None:
         errors.addError('password', 'Mot de passe manquant')
 
-    errors.maybeRaise()
+    errors.maybe_raise()
 
 
 def _contact_ok_is_not_checked(contact_ok):

@@ -71,16 +71,16 @@ def test_validate_bank_information_raises_an_error_if_iban_looks_correct_but_doe
 
 def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_11_but_is_unknown(app):
     # given
-    bank_information = create_bank_information(bic='CITCCWCUDSK', iban='FR7630006000011234567890189')
+    bank_information = create_bank_information(bic='ABCDEFGHIKL', iban='FR7630006000011234567890189')
 
     # when
     errors = bank_information.errors()
 
     # then
-    assert errors.errors['bic'] == ["Le BIC renseigné (\"CITCCWCUDSK\") est invalide"]
+    assert errors.errors['bic'] == ["Le BIC renseigné (\"ABCDEFGHIKL\") est invalide"]
 
 
-def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_11_but_is_unknown(app):
+def test_validate_bank_information_raises_an_error_if_bic_is_missing(app):
     # given
     bank_information = create_bank_information(bic=None, iban='FR7630006000011234567890189')
 
@@ -91,7 +91,7 @@ def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_
     assert errors.errors['bic'] == ["Cette information est obligatoire"]
 
 
-def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_11_but_is_unknown(app):
+def test_validate_bank_information_raises_an_error_if_iban_is_missing(app):
     # given
     bank_information = create_bank_information(bic='BDFEFR2LCCB', iban=None)
 

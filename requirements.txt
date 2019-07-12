@@ -26,6 +26,7 @@ numpy==1.15.4
 oauth2client==4.1.3
 pandas==0.23.4
 pgcli==2.1.0
+pillow==6.1.0
 pip-licenses==1.10.0
 PostgreSQL-Audit==0.10.0
 psycopg2-binary==2.7.6.1

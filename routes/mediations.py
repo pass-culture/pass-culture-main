@@ -10,7 +10,7 @@ from models.user_offerer import RightsType
 from utils.human_ids import dehumanize
 from utils.includes import MEDIATION_INCLUDES
 from utils.rest import ensure_current_user_has_rights, load_or_404, expect_json_data
-from validation.mediations import check_thumb_in_request
+from validation.mediations import check_thumb_in_request, check_thumb_quality
 
 
 @app.route('/mediations', methods=['POST'])
@@ -24,6 +24,7 @@ def create_mediation():
     mediation = create_new_mediation(offer_id, offerer_id, current_user, credit)
     PcObject.save(mediation)
     thumb = read_thumb(files=request.files, form=request.form)
+    check_thumb_quality(thumb)
     save_thumb(mediation, thumb, 0, crop=_get_crop(request.form))
     return jsonify(mediation.as_dict()), 201
 
