@@ -6,7 +6,7 @@ import Header from './Header'
 import menuItems from './menuItems'
 import NavLink from './NavLink'
 import SignoutButtonContainer from './SignoutButtonContainer'
-import SimpleLink from './SimpleLink'
+import SimpleLinkContainer from './SimpleLinkContainer'
 import CloseLink from '../layout/Header/CloseLink'
 
 class Menu extends PureComponent {
@@ -49,7 +49,7 @@ class Menu extends PureComponent {
                 <nav className="flex-rows pb0" id="main-menu-navigation">
                   {menuItems.map(menuItem =>
                     menuItem.href
-                      ? <SimpleLink item={menuItem} key={menuItem.href} />
+                      ? <SimpleLinkContainer item={menuItem} key={menuItem.href} />
                       : <NavLink item={menuItem} key={menuItem.path} />
                   )}
                   <SignoutButtonContainer

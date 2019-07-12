@@ -59,7 +59,6 @@ const routes = [
    ---------------------------------------------------  */
   {
     component: DiscoveryContainer,
-    disabled: false,
     icon: 'offres-w',
     // exemple d'URL optimale qui peut être partagée
     // par les sous composants
@@ -69,7 +68,6 @@ const routes = [
   },
   {
     component: SearchContainer,
-    disabled: false,
     icon: 'search-w',
     path:
       '/recherche/(resultats)?/:option?/:subOption?/:offerId?/:mediationIdOrView?/:view(booking)?/:bookingId?',
@@ -77,34 +75,30 @@ const routes = [
   },
   {
     component: MyBookingsContainer,
-    disabled: false,
     icon: 'calendar-w',
     path: '/reservations',
     title: 'Mes réservations',
   },
   {
     component: FavoritesPage,
-    disabled: isFeatureDisabled('FAVORITE_OFFER'),
+    disabledInMenuByFeatureName: 'FAVORITE_OFFER',
     icon: 'like-w',
     path: '/favoris',
     title: 'Mes préférés',
   },
   {
     component: ProfilePage,
-    disabled: false,
     icon: 'user-w',
     path: '/profil/:view?/:status?',
     title: 'Mon compte',
   },
   {
-    disabled: false,
     href: WEBAPP_CONTACT_EXTERNAL_PAGE,
     icon: 'help-w',
     target: '_blank',
     title: 'Aide',
   },
   {
-    disabled: false,
     href:
       'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture',
     icon: 'txt-w',

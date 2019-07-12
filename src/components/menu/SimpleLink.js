@@ -6,7 +6,7 @@ import Item from './Item'
 const SimpleLink = ({ item }) => (
   <a
     className="navlink mx12 flex-columns"
-    disabled={item.disabled}
+    disabled={item.disabledInMenu}
     href={item.href}
     key={item.href}
     rel={(item.target === '_blank' && 'noopener noreferer') || null}
