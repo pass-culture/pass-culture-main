@@ -188,27 +188,27 @@ class PcObject:
                     and not column.primary_key \
                     and column.default is None \
                     and value is None:
-                api_errors.addError(key, 'Cette information est obligatoire')
+                api_errors.add_error(key, 'Cette information est obligatoire')
             if value is None:
                 continue
             if (isinstance(column.type, String) or isinstance(column.type, CHAR)) \
                     and not isinstance(column.type, sqlalchemy.Enum) \
                     and not isinstance(value, str):
-                api_errors.addError(key, 'doit être une chaîne de caractères')
+                api_errors.add_error(key, 'doit être une chaîne de caractères')
             if (isinstance(column.type, String) or isinstance(column.type, CHAR)) \
                     and isinstance(value, str) \
                     and column.type.length \
                     and len(value) > column.type.length:
-                api_errors.addError(key,
+                api_errors.add_error(key,
                                     'Vous devez saisir moins de '
-                                    + str(column.type.length)
-                                    + ' caractères')
+                                     + str(column.type.length)
+                                     + ' caractères')
             if isinstance(column.type, Integer) \
                     and not isinstance(value, int):
-                api_errors.addError(key, 'doit être un entier')
+                api_errors.add_error(key, 'doit être un entier')
             if isinstance(column.type, Float) \
                     and not isinstance(value, float):
-                api_errors.addError(key, 'doit être un nombre')
+                api_errors.add_error(key, 'doit être un nombre')
         return api_errors
 
     def is_soft_deleted(self):
@@ -295,24 +295,24 @@ class PcObject:
         try:
             db.session.commit()
         except DataError as de:
-            api_errors.addError(*PcObject.restize_data_error(de))
+            api_errors.add_error(*PcObject.restize_data_error(de))
             db.session.rollback()
             raise api_errors
         except IntegrityError as ie:
-            api_errors.addError(*PcObject.restize_integrity_error(ie))
+            api_errors.add_error(*PcObject.restize_integrity_error(ie))
             db.session.rollback()
             raise api_errors
         except InternalError as ie:
             for obj in objects:
-                api_errors.addError(*obj.restize_internal_error(ie))
+                api_errors.add_error(*obj.restize_internal_error(ie))
             db.session.rollback()
             raise api_errors
         except TypeError as te:
-            api_errors.addError(*PcObject.restize_type_error(te))
+            api_errors.add_error(*PcObject.restize_type_error(te))
             db.session.rollback()
             raise api_errors
         except ValueError as ve:
-            api_errors.addError(*PcObject.restize_value_error(ve))
+            api_errors.add_error(*PcObject.restize_value_error(ve))
             db.session.rollback()
             raise api_errors
 
@@ -338,7 +338,7 @@ class PcObject:
             setattr(self, key, datetime_value)
         except TypeError:
             error = DateTimeCastError()
-            error.addError(col.name, "Invalid value for %s (datetime): %r" % (key, value))
+            error.add_error(col.name, "Invalid value for %s (datetime): %r" % (key, value))
             raise error
 
     def _try_to_set_attribute_with_uuid(self, col, key, value):
@@ -347,7 +347,7 @@ class PcObject:
             setattr(self, key, value)
         except ValueError:
             error = UuidCastError()
-            error.addError(col.name, "Invalid value for %s (uuid): %r" % (key, value))
+            error.add_error(col.name, "Invalid value for %s (uuid): %r" % (key, value))
             raise error
 
     def _try_to_set_attribute_with_decimal_value(self, col, key, value, expected_format):
@@ -355,7 +355,7 @@ class PcObject:
             setattr(self, key, Decimal(value))
         except InvalidOperation:
             error = DecimalCastError()
-            error.addError(col.name, "Invalid value for {} ({}): '{}'".format(key, expected_format, value))
+            error.add_error(col.name, "Invalid value for {} ({}): '{}'".format(key, expected_format, value))
             raise error
 
     def _check_not_soft_deleted(self):

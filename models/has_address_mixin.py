@@ -20,5 +20,5 @@ class HasAddressMixin(object):
         errors = ApiErrors()
         if self.postalCode is not None\
            and not re.match('^\d[AB0-9]\d{3,4}$', self.postalCode):
-            errors.addError('postalCode', 'Ce code postal est invalide')
+            errors.add_error('postalCode', 'Ce code postal est invalide')
         return errors

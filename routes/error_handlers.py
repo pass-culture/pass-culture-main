@@ -44,7 +44,7 @@ def restize_booking_not_found_error(e):
 @app.errorhandler(InvalidOriginHeader)
 def restize_invalid_header_exception(e):
     e = ApiErrors()
-    e.addError('global',
+    e.add_error('global',
                'Header non autorisé')
     return jsonify(e.errors), 400
 
@@ -56,16 +56,16 @@ def internal_error(error):
     app.logger.error('500 on %s %s — %s',
                      request.method, request.url, oneline_stack)
     e = ApiErrors()
-    e.addError('global',
+    e.add_error('global',
                "Il semble que nous ayons des problèmes techniques :("
-               + " On répare ça au plus vite.")
+                + " On répare ça au plus vite.")
     return jsonify(e.errors), 500
 
 
 @app.errorhandler(NonDehumanizableId)
 def invalid_id_for_dehumanize_error(error):
     api_errors = ApiErrors()
-    api_errors.addError('global', 'La page que vous recherchez n\'existe pas')
+    api_errors.add_error('global', 'La page que vous recherchez n\'existe pas')
     app.logger.error('404 %s' % str(error))
     return jsonify(api_errors.errors), 404
 
@@ -75,7 +75,7 @@ def decimal_cast_error(error):
     api_errors = ApiErrors()
     app.logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
-        api_errors.addError(field, 'Saisissez un nombre valide')
+        api_errors.add_error(field, 'Saisissez un nombre valide')
     return jsonify(api_errors.errors), 400
 
 
@@ -84,7 +84,7 @@ def date_time_cast_error(error):
     api_errors = ApiErrors()
     app.logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
-        api_errors.addError(field, 'Format de date invalide')
+        api_errors.add_error(field, 'Format de date invalide')
     return jsonify(api_errors.errors), 400
 
 

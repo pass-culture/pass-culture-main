@@ -11,7 +11,7 @@ def create_initial_deposit(user_to_activate: User) -> Deposit:
     existing_deposits = Deposit.query.filter_by(userId=user_to_activate.id).all()
     if existing_deposits:
         error = AlreadyActivatedException()
-        error.addError('user', 'Cet utilisateur a déjà crédité son pass Culture')
+        error.add_error('user', 'Cet utilisateur a déjà crédité son pass Culture')
         raise error
 
     else:

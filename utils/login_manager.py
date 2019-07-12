@@ -34,7 +34,7 @@ def get_user_with_request(request):
 @app.login_manager.unauthorized_handler
 def send_401():
     e = ApiErrors()
-    e.addError('global', 'Authentification nécessaire')
+    e.add_error('global', 'Authentification nécessaire')
     return jsonify(e.errors), 401
 
 

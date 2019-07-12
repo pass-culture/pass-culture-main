@@ -16,7 +16,7 @@ def check_allowed_changes_for_user(data):
     changes_not_allowed = changes_asked.difference(changes_allowed)
     if changes_not_allowed:
         for change in changes_not_allowed:
-            api_errors.addError(change, 'Vous ne pouvez pas changer cette information')
+            api_errors.add_error(change, 'Vous ne pouvez pas changer cette information')
         raise api_errors
 
 
@@ -26,16 +26,16 @@ def check_valid_signup(request):
     email = request.json.get('email')
     if email is None:
         errors = ApiErrors()
-        errors.addError('email', 'Vous devez renseigner un email.')
+        errors.add_error('email', 'Vous devez renseigner un email.')
         raise errors
     if not contact_ok or _contact_ok_is_not_checked(contact_ok):
         errors = ApiErrors()
-        errors.addError('contact_ok', 'Vous devez obligatoirement cocher cette case.')
+        errors.add_error('contact_ok', 'Vous devez obligatoirement cocher cette case.')
         raise errors
 
     if not password:
         errors = ApiErrors()
-        errors.addError('password', 'Vous devez renseigner un mot de passe.')
+        errors.add_error('password', 'Vous devez renseigner un mot de passe.')
         raise errors
 
 
@@ -44,9 +44,9 @@ def check_valid_signin(identifier: str, password: str):
     errors.status_code = 401
 
     if identifier is None:
-        errors.addError('identifier', 'Identifiant manquant')
+        errors.add_error('identifier', 'Identifiant manquant')
     if password is None:
-        errors.addError('password', 'Mot de passe manquant')
+        errors.add_error('password', 'Mot de passe manquant')
 
     errors.maybe_raise()
 
@@ -63,7 +63,7 @@ def check_user_can_validate_bookings(self, offerer_id):
             return True
         else:
             api_errors = ApiErrors()
-            api_errors.addError('global', 'Cette contremarque n\'a pas été trouvée')
+            api_errors.add_error('global', 'Cette contremarque n\'a pas été trouvée')
             raise api_errors
     else:
         return False

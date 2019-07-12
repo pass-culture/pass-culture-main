@@ -42,11 +42,11 @@ class BankInformation(PcObject, Model, ProvidableMixin):
         try:
             IBAN(self.iban)
         except (ValueError, TypeError):
-            api_errors.addError('iban', f"L'IBAN renseigné (\"{self.iban}\") est invalide")
+            api_errors.add_error('iban', f"L'IBAN renseigné (\"{self.iban}\") est invalide")
 
         try:
             BIC(self.bic)
         except (ValueError, TypeError):
-            api_errors.addError('bic', f"Le BIC renseigné (\"{self.bic}\") est invalide")
+            api_errors.add_error('bic', f"Le BIC renseigné (\"{self.bic}\") est invalide")
 
         return api_errors

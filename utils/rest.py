@@ -72,7 +72,7 @@ def query_with_order_by(query, order_by):
             field = re.search('column "?(.*?)"? does not exist', e._message, re.IGNORECASE)
             if field:
                 errors = ApiErrors()
-                errors.addError('order_by', 'order_by value references an unknown field : '+field.group(1))
+                errors.add_error('order_by', 'order_by value references an unknown field : ' + field.group(1))
                 raise errors
             else:
                 raise e
@@ -88,7 +88,7 @@ def check_single_order_by_string(order_by_string):
                     order_by_string,
                     re.IGNORECASE):
         api_errors = ApiErrors()
-        api_errors.addError('order_by',
+        api_errors.add_error('order_by',
                             'Invalid order_by field : "%s"' % order_by_string)
         raise api_errors
 
@@ -173,7 +173,7 @@ def ensure_provider_can_update(obj):
 def ensure_current_user_has_rights(rights, offerer_id, user=current_user):
     if not user.hasRights(rights, offerer_id):
         errors = ApiErrors()
-        errors.addError(
+        errors.add_error(
             'global',
             "Cette structure n'est pas enregistrée chez cet utilisateur."
         )
@@ -202,7 +202,7 @@ def load_or_raise_error(obj_class, human_id):
     data = obj_class.query.filter_by(id=dehumanize(human_id)).first()
     if data is None:
         errors = ApiErrors()
-        errors.addError(
+        errors.add_error(
             'global',
             'Aucun objet ne correspond à cet identifiant dans notre base de données'
         )

@@ -52,7 +52,7 @@ def get_bookings_csv():
         venue_id = dehumanize(request.args.get('venueId', None))
     except ValueError:
         errors = ApiErrors()
-        errors.addError(
+        errors.add_error(
             'global',
             'Les identifiants sont incorrects'
         )
@@ -153,7 +153,7 @@ def patch_booking(booking_id):
 
     if is_cancelled is not True:
         api_errors = ApiErrors()
-        api_errors.addError(
+        api_errors.add_error(
             'isCancelled',
             "Vous pouvez seulement changer l'état isCancelled à vrai"
         )

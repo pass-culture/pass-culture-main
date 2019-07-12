@@ -29,7 +29,7 @@ def validate():
 
     if model_names is None:
         e = ApiErrors()
-        e.addError('modelNames', 'Vous devez fournir des noms de classes')
+        e.add_error('modelNames', 'Vous devez fournir des noms de classes')
         return jsonify(e.errors), 400
 
     model_names = model_names.split(',')

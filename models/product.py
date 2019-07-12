@@ -97,7 +97,7 @@ class Product(PcObject,
     def errors(self):
         api_errors = super(Product, self).errors()
         if self.isDigital and self._type_can_only_be_offline():
-            api_errors.addError('url', 'Une offre de type {} ne peut pas être numérique'.format(
+            api_errors.add_error('url', 'Une offre de type {} ne peut pas être numérique'.format(
                 self._get_label_from_type_string()))
         return api_errors
 

@@ -18,14 +18,14 @@ def check_user_has_rights_for_query(offerer_id, venue, venue_id):
 def check_has_venue_id(venue_id):
     if venue_id is None:
         api_errors = ApiErrors()
-        api_errors.addError('venueId', 'Vous devez préciser un identifiant de lieu')
+        api_errors.add_error('venueId', 'Vous devez préciser un identifiant de lieu')
         raise api_errors
 
 
 def check_venue_exists_when_requested(venue, venue_id):
     if venue_id and venue is None:
         errors = ResourceNotFound()
-        errors.addError(
+        errors.add_error(
             'global',
             "Ce lieu n'a pas été trouvé"
         )
@@ -40,7 +40,7 @@ def check_valid_edition(payload: dict):
     if keys_in_error:
         errors = ApiErrors()
         for key in keys_in_error:
-            errors.addError(key, 'Vous ne pouvez pas modifier cette information')
+            errors.add_error(key, 'Vous ne pouvez pas modifier cette information')
         raise errors
 
 
@@ -48,6 +48,6 @@ def check_offer_type_is_valid(offer_type_name):
 
     if not ProductType.is_thing(offer_type_name) and not ProductType.is_event(offer_type_name):
         api_error = ApiErrors()
-        api_error.addError('type',
+        api_error.add_error('type',
                            'Le type de cette offre est inconnu')
         raise api_error

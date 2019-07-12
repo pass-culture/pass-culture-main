@@ -6,7 +6,7 @@ def check_valid_edition(data):
     if invalid_fields_for_patch:
         api_errors = ApiErrors()
         for key in invalid_fields_for_patch:
-            api_errors.addError(key, 'Vous ne pouvez pas modifier ce champ')
+            api_errors.add_error(key, 'Vous ne pouvez pas modifier ce champ')
         raise api_errors
 
 
@@ -19,7 +19,7 @@ def parse_boolean_param_validated(request):
             only_validated_offerers = validated.lower() == 'true'
         else:
             errors = ApiErrors()
-            errors.addError('validated', 'Le paramètre \'validated\' doit être \'true\' ou \'false\'')
+            errors.add_error('validated', 'Le paramètre \'validated\' doit être \'true\' ou \'false\'')
             raise errors
 
     return only_validated_offerers

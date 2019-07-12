@@ -138,7 +138,7 @@ def _get_departement_code_when_authorized_or_error(authorized_emails, departemen
                      + request.json['email'])
 
         e = ApiErrors()
-        e.addError('email', "Adresse non autorisée pour l'expérimentation")
+        e.add_error('email', "Adresse non autorisée pour l'expérimentation")
         raise e
     return departement_code
 
@@ -148,7 +148,7 @@ def _get_email_index_in_spreadsheet_or_error(authorized_emails):
         email_index = authorized_emails.index(request.json['email'])
     except ValueError:
         e = ApiErrors()
-        e.addError('email', "Adresse non autorisée pour l'expérimentation")
+        e.add_error('email', "Adresse non autorisée pour l'expérimentation")
         raise e
     return email_index
 

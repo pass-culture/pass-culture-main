@@ -43,7 +43,7 @@ def get_recommendation(offer_id):
         )
     except OfferNotFoundException:
         errors = ResourceNotFound()
-        errors.addError('global', "Offre ou médiation introuvable")
+        errors.add_error('global', "Offre ou médiation introuvable")
         raise errors
 
     return jsonify(_serialize_recommendation(recommendation)), 200

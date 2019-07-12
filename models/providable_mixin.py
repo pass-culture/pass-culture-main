@@ -41,7 +41,7 @@ class ProvidableMixin(VersionedMixin):
     def ensure_can_be_updated(self):
         if self.lastProvider:
             errors = ApiErrors()
-            errors.addError(
+            errors.add_error(
                 'global',
                 'not allowed because data come from provider ' + element.lastProvider.name
             )

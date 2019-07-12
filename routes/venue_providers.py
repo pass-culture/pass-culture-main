@@ -24,7 +24,7 @@ def list_venue_providers():
     venueId = request.args.get('venueId')
     if venueId is None:
         e = ApiErrors()
-        e.addError('venueId', 'Vous devez obligatoirement fournir le paramètre venueId')
+        e.add_error('venueId', 'Vous devez obligatoirement fournir le paramètre venueId')
         return jsonify(e.errors), 400
 
     vp_query = VenueProvider.query\
@@ -53,7 +53,7 @@ def create_venue_provider():
     if not is_provider_available_for_pro_usage:
         errors = ApiErrors()
         errors.status_code = 401
-        errors.addError('localClass', "Ce fournisseur n'est pas activé")
+        errors.add_error('localClass', "Ce fournisseur n'est pas activé")
         errors.maybe_raise()
 
     is_existing_venue_provider = find_venue_provider(provider.id,
@@ -62,7 +62,7 @@ def create_venue_provider():
     if is_existing_venue_provider:
         errors = ApiErrors()
         errors.status_code = 401
-        errors.addError('venueIdAtOfferProvider', "Il y a déjà un fournisseur pour votre identifiant")
+        errors.add_error('venueIdAtOfferProvider', "Il y a déjà un fournisseur pour votre identifiant")
         errors.maybe_raise()
 
     PcObject.save(new_venue_provider)

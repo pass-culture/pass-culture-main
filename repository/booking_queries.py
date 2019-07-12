@@ -128,7 +128,7 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
 
     if booking is None:
         errors = ResourceNotFound()
-        errors.addError(
+        errors.add_error(
             'global',
             "Cette contremarque n'a pas été trouvée"
         )

@@ -76,12 +76,12 @@ class Stock(PcObject,
     def errors(self):
         api_errors = super(Stock, self).errors()
         if self.available is not None and self.available < 0:
-            api_errors.addError('available', 'Le stock doit être positif')
+            api_errors.add_error('available', 'Le stock doit être positif')
 
         if self.endDatetime \
            and self.beginningDatetime \
            and self.endDatetime <= self.beginningDatetime:
-            api_errors.addError('endDatetime', 'La date de fin de l\'événement doit être postérieure à la date de début')
+            api_errors.add_error('endDatetime', 'La date de fin de l\'événement doit être postérieure à la date de début')
 
         return api_errors
 

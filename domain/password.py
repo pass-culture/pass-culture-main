@@ -17,11 +17,11 @@ def check_new_password_validity(user, old_password, new_password):
     errors = ApiErrors()
 
     if not user.checkPassword(old_password):
-        errors.addError('oldPassword', 'Votre ancien mot de passe est incorrect')
+        errors.add_error('oldPassword', 'Votre ancien mot de passe est incorrect')
         raise errors
 
     if user.checkPassword(new_password):
-        errors.addError('newPassword', 'Votre nouveau mot de passe est identique à l\'ancien')
+        errors.add_error('newPassword', 'Votre nouveau mot de passe est identique à l\'ancien')
         raise errors
 
 
@@ -29,11 +29,11 @@ def validate_change_password_request(json):
     errors = ApiErrors()
 
     if 'oldPassword' not in json:
-        errors.addError('oldPassword', 'Ancien mot de passe manquant')
+        errors.add_error('oldPassword', 'Ancien mot de passe manquant')
         raise errors
 
     if 'newPassword' not in json:
-        errors.addError('newPassword', 'Nouveau mot de passe manquant')
+        errors.add_error('newPassword', 'Nouveau mot de passe manquant')
         raise errors
 
 
@@ -46,31 +46,31 @@ def generate_reset_token(user, validity_duration_hours=24):
 def validate_reset_request(request):
     if 'email' not in request.get_json():
         errors = ApiErrors()
-        errors.addError('email', 'L\'email est manquant')
+        errors.add_error('email', 'L\'email est manquant')
         raise errors
 
     if not request.get_json()['email']:
         errors = ApiErrors()
-        errors.addError('email', 'L\'email renseigné est vide')
+        errors.add_error('email', 'L\'email renseigné est vide')
         raise errors
 
 
 def validate_new_password_request(request):
     if 'token' not in request.get_json():
         errors = ApiErrors()
-        errors.addError('token', 'Votre lien de changement de mot de passe est invalide.')
+        errors.add_error('token', 'Votre lien de changement de mot de passe est invalide.')
         raise errors
 
     if 'newPassword' not in request.get_json():
         errors = ApiErrors()
-        errors.addError('newPassword', 'Vous devez renseigner un nouveau mot de passe.')
+        errors.add_error('newPassword', 'Vous devez renseigner un nouveau mot de passe.')
         raise errors
 
 
 def check_reset_token_validity(user):
     if datetime.utcnow() > user.resetPasswordTokenValidityLimit:
         errors = ApiErrors()
-        errors.addError('token',
+        errors.add_error('token',
                         'Votre lien de changement de mot de passe est périmé. Veuillez effecture une nouvelle demande.')
         raise errors
 
@@ -92,7 +92,7 @@ def check_password_strength(field_name, field_value):
 
     if not re.match(regex, field_value):
         errors = ApiErrors()
-        errors.addError(
+        errors.add_error(
             field_name,
             'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
             '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'

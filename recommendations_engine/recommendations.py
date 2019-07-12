@@ -215,7 +215,7 @@ def get_recommendation_search_params(request_args: dict) -> dict:
 
     if 'distance' in request_args and request_args['distance']:
         if not request_args['distance'].isdigit():
-            api_errors.addError('distance', 'cela doit etre un nombre')
+            api_errors.add_error('distance', 'cela doit etre un nombre')
             raise api_errors
         search_params['max_distance'] = float(request_args['distance'])
 

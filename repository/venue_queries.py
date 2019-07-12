@@ -15,7 +15,7 @@ def save_venue(venue):
         PcObject.save(venue)
     except TooManyVirtualVenuesException:
         errors = ApiErrors()
-        errors.addError('isVirtual', 'Un lieu pour les offres numériques existe déjà pour cette structure')
+        errors.add_error('isVirtual', 'Un lieu pour les offres numériques existe déjà pour cette structure')
         raise errors
 
 

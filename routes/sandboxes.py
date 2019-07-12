@@ -7,7 +7,7 @@ def get_sandbox(module_name, getter_name):
 
     if not hasattr(getters, module_name):
         errors = ApiErrors()
-        errors.addError(
+        errors.add_error(
             'module',
             'Il n\'existe pas de tel \"{}\" module de getters pour la sandbox'.format(
                 module_name
@@ -19,7 +19,7 @@ def get_sandbox(module_name, getter_name):
 
     if not hasattr(testcafes_module, getter_name):
         errors = ApiErrors()
-        errors.addError(
+        errors.add_error(
             'getter',
             'Il n\'existe pas de tel \"{} {}\" getter pour la sandbox'.format(
                 module_name,
@@ -35,7 +35,7 @@ def get_sandbox(module_name, getter_name):
         return jsonify(obj)
     except:
         errors = ApiErrors()
-        errors.addError(
+        errors.add_error(
             'query',
             'Une erreur s\'est produite lors du calcul de \"{} {}\" pour la sandbox'.format(
                 module_name,

@@ -59,7 +59,7 @@ class Offerer(PcObject,
         if self.siren is not None \
                 and (not len(self.siren) == 9):
             # TODO: or not verify_luhn(self.siren)):
-            api_errors.addError('siren', 'Ce code SIREN est invalide')
+            api_errors.add_error('siren', 'Ce code SIREN est invalide')
 
         return api_errors
 

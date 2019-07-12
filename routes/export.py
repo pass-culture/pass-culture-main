@@ -41,17 +41,17 @@ def export_table(model_name):
     _check_token()
     ae = ApiErrors()
     if model_name not in models.__all__:
-        ae.addError('global', 'Classe inconnue : ' + model_name)
+        ae.add_error('global', 'Classe inconnue : ' + model_name)
         return jsonify(ae.errors), 400
 
     try:
         model = getattr(models, model_name)
     except KeyError:
-        ae.addError('global', 'Nom de classe incorrect : ' + model_name)
+        ae.add_error('global', 'Nom de classe incorrect : ' + model_name)
         return jsonify(ae.errors), 400
 
     if not _is_exportable(model_name):
-        ae.addError('global', 'Classe non exportable : ' + model_name)
+        ae.add_error('global', 'Classe non exportable : ' + model_name)
         return jsonify(ae.errors), 400
 
     objects = model.query.all()
@@ -222,9 +222,9 @@ def _check_token():
     token = request.args.get('token')
     api_errors = ApiErrors()
     if token is None:
-        api_errors.addError('token', 'Vous devez préciser un jeton dans l''adresse (token=XXX)')
+        api_errors.add_error('token', 'Vous devez préciser un jeton dans l''adresse (token=XXX)')
     if not token == EXPORT_TOKEN:
-        api_errors.addError('token', 'Le jeton est invalide')
+        api_errors.add_error('token', 'Le jeton est invalide')
     if api_errors.errors:
         raise api_errors
 

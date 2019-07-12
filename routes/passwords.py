@@ -58,7 +58,7 @@ def post_new_password():
 
     if not user:
         errors = ApiErrors()
-        errors.addError('token', 'Votre lien de changement de mot de passe est invalide.')
+        errors.add_error('token', 'Votre lien de changement de mot de passe est invalide.')
         raise errors
 
     check_reset_token_validity(user)

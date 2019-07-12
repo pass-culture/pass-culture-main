@@ -20,10 +20,10 @@ def check_thumb_quality(thumb: bytes):
     errors = ApiErrors()
 
     if len(thumb) < MINIMUM_FILE_SIZE:
-        errors.addError('thumb', "L'image doit faire 100 ko minimum")
+        errors.add_error('thumb', "L'image doit faire 100 ko minimum")
 
     image = Image.open(BytesIO(thumb))
     if image.width < 400 or image.height < 400:
-        errors.addError('thumb', "L'image doit faire 400 * 400 px minimum")
+        errors.add_error('thumb', "L'image doit faire 400 * 400 px minimum")
 
     errors.maybe_raise()

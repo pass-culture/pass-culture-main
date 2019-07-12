@@ -4,7 +4,7 @@ from models import ApiErrors
 def is_url_safe(url: str):
     if url and not _has_proper_prefix(url):
         errors = ApiErrors()
-        errors.addError('url', "L'URL doit commencer par \"http://\" ou \"https://\"")
+        errors.add_error('url', "L'URL doit commencer par \"http://\" ou \"https://\"")
         raise errors
 
 

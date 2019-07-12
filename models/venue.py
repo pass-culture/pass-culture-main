@@ -117,10 +117,10 @@ class Venue(PcObject,
 
         if self.siret is not None \
                 and not len(self.siret) == 14:
-            api_errors.addError('siret', 'Ce code SIRET est invalide : ' + self.siret)
+            api_errors.add_error('siret', 'Ce code SIRET est invalide : ' + self.siret)
         if self.postalCode is not None \
                 and len(self.postalCode) != 5:
-            api_errors.addError('postalCode', 'Ce code postal est invalide')
+            api_errors.add_error('postalCode', 'Ce code postal est invalide')
         if self.managingOffererId is not None:
             if self.managingOfferer is None:
                 managingOfferer = Offerer.query \
@@ -128,13 +128,13 @@ class Venue(PcObject,
             else:
                 managingOfferer = self.managingOfferer
             if managingOfferer.siren is None:
-                api_errors.addError('siren',
+                api_errors.add_error('siren',
                                     'Ce lieu ne peut enregistrer de SIRET car la structure associée n\'a pas de'
-                                    + 'SIREN renseigné')
+                                     + 'SIREN renseigné')
             if self.siret is not None \
                     and managingOfferer is not None \
                     and not self.siret.startswith(managingOfferer.siren):
-                api_errors.addError('siret', 'Le code SIRET doit correspondre à un établissement de votre structure')
+                api_errors.add_error('siret', 'Le code SIRET doit correspondre à un établissement de votre structure')
 
         return api_errors
 

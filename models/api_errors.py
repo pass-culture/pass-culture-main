@@ -7,7 +7,7 @@ class ApiErrors(Exception):
     def __init__(self, errors: dict = None):
         self.errors = errors if errors else {}
 
-    def addError(self, field, error):
+    def add_error(self, field, error):
         if field in self.errors:
             self.errors[field].append(error)
         else:
@@ -15,11 +15,11 @@ class ApiErrors(Exception):
 
     def check_min_length(self, field, value, length):
         if len(value) < length:
-            self.addError(field, 'Vous devez saisir au moins ' + str(length) + ' caractères.')
+            self.add_error(field, 'Vous devez saisir au moins ' + str(length) + ' caractères.')
 
     def check_email(self, field, value):
         if not "@" in value:
-            self.addError(field, 'L\'e-mail doit contenir un @.')
+            self.add_error(field, 'L\'e-mail doit contenir un @.')
 
     def maybe_raise(self):
         if len(self.errors) > 0:

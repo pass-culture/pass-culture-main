@@ -90,17 +90,17 @@ class User(PcObject,
             user_count = User.query.filter_by(email=self.email).count()
         except IntegrityError as ie:
             if self.id is None:
-                api_errors.addError('email', 'Un compte lié à cet email existe déjà')
+                api_errors.add_error('email', 'Un compte lié à cet email existe déjà')
 
         if self.id is None and user_count > 0:
-            api_errors.addError('email', 'Un compte lié à cet email existe déjà')
+            api_errors.add_error('email', 'Un compte lié à cet email existe déjà')
         if self.publicName:
             api_errors.check_min_length('publicName', self.publicName, 3)
         if self.email:
             api_errors.check_email('email', self.email)
 
         if self.isAdmin and self.canBookFreeOffers:
-            api_errors.addError('canBookFreeOffers', 'Admin ne peut pas booker')
+            api_errors.add_error('canBookFreeOffers', 'Admin ne peut pas booker')
         if self.clearTextPassword:
             api_errors.check_min_length('password', self.clearTextPassword, 8)
 
