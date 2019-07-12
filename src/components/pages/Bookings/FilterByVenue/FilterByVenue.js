@@ -31,7 +31,7 @@ class FilterByVenue extends PureComponent {
             className="pc-selectbox pl24 py5 fs19"
             disabled={isDigital}
             id="venues"
-            onChange={selectBookingsForVenues}
+            onBlur={selectBookingsForVenues}
             value={venueId}
           >
             <option
