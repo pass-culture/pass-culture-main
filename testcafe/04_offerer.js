@@ -14,111 +14,72 @@ const submitButton = Selector('button.button.is-primary')
 let user
 let userRole
 let dataFromSandbox
-fixture('Offerer A | Créer une nouvelle structure').beforeEach(async t => {
-  if (!userRole) {
-    dataFromSandbox = await fetchSandbox(
-      'pro_04_offerer',
-      'get_existing_pro_validated_user_with_first_offerer'
-    )
-    user = dataFromSandbox.user
-    userRole = createUserRole(user)
-  }
-  return navigateToNewOffererAs(user, userRole)(t)
-})
+fixture('En étant sur la page de création d\'une structure')
+  .beforeEach(async t => {
+    if (!userRole) {
+      dataFromSandbox = await fetchSandbox(
+        'pro_04_offerer',
+        'get_existing_pro_validated_user_with_first_offerer'
+      )
+      user = dataFromSandbox.user
+      userRole = createUserRole(user)
+    }
+    return navigateToNewOffererAs(user, userRole)(t)
+  })
 
-test('Je peux naviguer vers une nouvelle structure et revenir aux structures', async t => {
+test('Je peux créer une nouvelle structure avec un nouveau SIREN n\'existant pas en base de données, et je suis redirigé·e vers mes structures', async t => {
   // given
-  const backAnchor = Selector('.back-button')
-  const location = await t.eval(() => window.location)
-
-  // then
-  await t.expect(location.pathname).eql('/structures/creation')
+  const address = '10 PLACE JEAN JAURES'
+  const name = 'NOUVEAU THEATRE DE MONTREUIL'
+  const siren = '323339762'
 
   // when
-  await t.click(backAnchor)
+  await t
+    .typeText(sirenInput, siren)
+    .expect(nameInput.value).eql(name)
+    .expect(addressInput.value).eql(address)
+    .click(submitButton)
 
   // then
-  const newLocation = await t.eval(() => window.location)
-  await t.expect(newLocation.pathname).eql('/structures')
-})
-
-test('Je ne peux pas ajouter de nouvelle structure avec un siren faux', async t => {
-  // given
-  let location = await t.eval(() => window.location)
+  const location = await t.eval(() => window.location)
   await t
     .expect(location.pathname)
-    .eql('/structures/creation')
-    .typeText(sirenInput, '69256356275794356243264')
+    .eql('/structures')
+})
 
+test('Je ne peux pas créer une nouvelle structure avec un SIREN invalide', async t => {
   // when
-  await t.click(submitButton)
+  await t
+    .typeText(sirenInput, '69256356275794356243264')
+    .click(submitButton)
 
   // then
   await t.expect(sirenErrorInput.innerText).contains('Siren invalide')
 })
 
-test('Je peux créer un rattachement à une structure dont le siren existe déjà dans en base de données', async t => {
+test('Je peux créer une nouvelle structure avec un SIREN dont l\'adresse n\'est pas renvoyée par l\'API sirene, et je suis redirigé·e vers mes structures', async t => {
   // given
-  const { offerer } = dataFromSandbox
-  await t.addRequestHooks(getSirenRequestMockAs(offerer))
-  const { siren } = offerer
-  let location = await t.eval(() => window.location)
-  await t
-    .expect(location.pathname)
-    .eql('/structures/creation')
-    .typeText(sirenInput, siren)
-
-  // when
-  await t.click(submitButton)
-
-  // when
-  await t.expect(sirenErrorInput.innerText).contains('')
-})
-
-test('Je renseigne une nouvelle structure via son siren', async t => {
-  // given
-  const address = '10 PLACE JEAN JAURES'
-  const name = 'NOUVEAU THEATRE DE MONTREUIL'
-  const siren = '323339762'
-  let location = await t.eval(() => window.location)
-  await t
-    .expect(location.pathname)
-    .eql('/structures/creation')
-    .typeText(sirenInput, siren)
-  await t.expect(nameInput.value).eql(name)
-  await t.expect(addressInput.value).eql(address)
-
-  // when
-  await t.click(submitButton)
-
-  // then
-  location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/structures')
-})
-
-test('Je renseigne une structure dont l’adresse n’est pas renvoyée par l’API sirene et je peux valider', async t => {
-  // given
-  const futureOffererWithNoAddress = {
+  const offererWithoutAddress = {
     address: null,
-    city: 'Samoix Jsaispas',
+    city: 'Paris',
     latitude: '12.98723',
     longitude: '87.01821',
     name: 'Structure sans addresse',
     postalCode: '75000',
     siren: '216701375',
   }
-  const { siren } = futureOffererWithNoAddress
-  await t.addRequestHooks(getSirenRequestMockAs(futureOffererWithNoAddress))
-  let location
+  const {siren} = offererWithoutAddress
+  await t.addRequestHooks(getSirenRequestMockAs(offererWithoutAddress))
 
   // when
   await t
     .typeText(sirenInput, siren)
-    .expect(addressInput.value)
-    .eql('')
+    .expect(addressInput.value).eql('')
     .click(submitButton)
 
   // then
-  location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/structures')
+  const location = await t.eval(() => window.location)
+  await t
+    .expect(location.pathname)
+    .eql('/structures')
 })

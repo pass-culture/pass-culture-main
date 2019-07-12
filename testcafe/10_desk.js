@@ -13,9 +13,10 @@ const stateText = Selector('.form .state span')
 const exitlink = Selector('#exitlink')
 const registerButton = Selector('.form button[type="submit"]')
 
-fixture('Desk A | Saisir un code').page(`${ROOT_PATH}guichet`)
+fixture('En étant sur la page de validation des contremarques')
+  .page(`${ROOT_PATH}guichet`)
 
-test("L'état de départ de la page /guichet est conforme", async t => {
+test("Je peux valider une contremarque", async t => {
   // given
   const { booking, user } = await fetchSandbox(
     'pro_10_desk',
@@ -25,38 +26,19 @@ test("L'état de départ de la page /guichet est conforme", async t => {
   await t.useRole(createUserRole(user))
   await t.click(navbarAnchor).click(deskLink)
   await t.expect(pageTitleHeader.innerText).eql('Guichet')
-  await t.expect(codeInput.innerText).eql('')
-  await t.expect(stateText.innerText).eql('Saisissez un code')
-  await t.expect(state.classNames).contains('pending')
 
-  await t.typeText(codeInput, 'AZE')
-  await t.expect(stateText.innerText).eql('Caractères restants: 3/6')
+  // when
+  await t
+    .typeText(codeInput, token)
+    .expect(stateText.innerText)
+    .eql('Coupon vérifié, cliquez sur OK pour enregistrer')
+    .expect(state.classNames).contains('pending')
+    .expect(codeInput.innerText).eql('')
+    .click(registerButton)
+    .expect(state.classNames).contains('success')
+    .click(exitlink)
 
-  t.selectText(codeInput).pressKey('delete')
-
-  await t.typeText(codeInput, token)
-  await t.expect(stateText.innerText).eql('Coupon vérifié, cliquez sur "Valider" pour enregistrer')
-  await t.expect(state.classNames).contains('pending')
-  await t.expect(codeInput.innerText).eql('')
-
-  t.selectText(codeInput).pressKey('delete')
-
-  await t.click(registerButton)
-  await t.typeText(codeInput, 'AZE{}')
-  await t.expect(stateText.innerText).eql('Caractères valides : de A à Z et de 0 à 9')
-  await t.expect(state.classNames).contains('error')
-
-  t.selectText(codeInput).pressKey('delete')
-
-  await t.typeText(codeInput, token)
-  await t.click(registerButton)
-  await t.expect(state.classNames).contains('success')
-
-  await t.typeText(codeInput, 'ABC123')
-  await t.click(registerButton)
-  await t.expect(state.classNames).contains('error')
-
-  await t.click(exitlink)
+  // then
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/accueil')
 })
