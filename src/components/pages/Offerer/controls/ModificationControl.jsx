@@ -23,7 +23,7 @@ const ModificationControl = ({
               className="button is-secondary is-medium"
               to={`/structures/${id}?modifie`}
             >
-              Modifier les informations
+              {"Modifier les informations"}
             </NavLink>
           )
         ) : (
@@ -36,12 +36,12 @@ const ModificationControl = ({
                 className="button is-secondary is-medium"
                 to={`/structures/${id}`}
               >
-                Annuler
+                {"Annuler"}
               </CancelButton>
             </div>
             <div className="control">
               <SubmitButton className="button is-primary is-medium">
-                Valider
+                {"Valider"}
               </SubmitButton>
             </div>
           </div>

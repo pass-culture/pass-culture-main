@@ -131,8 +131,11 @@ class SignupForm extends PureComponent {
               >
                 {"J'ai déjà un compte"}
               </NavLink>
-              <SubmitButton className="button is-primary is-outlined">
-                Créer
+              <SubmitButton
+                className="button is-primary is-outlined"
+                type="submit"
+              >
+                {"Créer"}
               </SubmitButton>
             </div>
           </Form>

@@ -75,7 +75,7 @@ const VenueProviderForm = ({
             className="button is-intermediate provider-import-button"
             type="submit"
           >
-            Importer
+            {"Importer"}
           </button>
         </div>
       )}

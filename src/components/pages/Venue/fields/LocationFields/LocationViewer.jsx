@@ -10,7 +10,7 @@ import getSuggestionsFromAddressAndMaxSuggestions from './selectors/getSuggestio
 import getSuggestionsFromLatitudeAndLongitude from './selectors/getSuggestionsFromLatitudeAndLongitude'
 import sanitizeCoordinates from './utils/sanitizeCoordinates'
 import { FRANCE_POSITION } from './utils/positions'
-import { ROOT_PATH } from 'utils/config'
+import { ROOT_PATH } from '../../../../../utils/config'
 
 const markerIcon = new LeafletIcon({
   iconUrl: `${ROOT_PATH}/icons/ico-geoloc-solid2.svg`,
@@ -237,6 +237,8 @@ class LocationViewer extends Component {
     </div>
   )
 
+  handleGetItemValue = value => value.label
+
   renderInput() {
     const {
       className,
@@ -264,7 +266,7 @@ class LocationViewer extends Component {
       <Fragment>
         <Autocomplete
           autocomplete="street-address"
-          getItemValue={value => value.label}
+          getItemValue={this.handleGetItemValue(value)}
           inputProps={{
             className: className || `input`,
             id,
@@ -286,6 +288,7 @@ class LocationViewer extends Component {
           className={classnames('button is-loading', {
             'is-invisible': !isLoading,
           })}
+          type="button"
         />
       </Fragment>
     )
