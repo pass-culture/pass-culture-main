@@ -8,21 +8,28 @@ from models.pc_object import PcObject
 from utils.logger import logger
 from utils.object_storage import store_public_object
 
+ALLOWED_EXTENSIONS = {'jpg', 'png', 'jpeg', 'gif'}
+READABLE_EXTENSIONS = '(%s)' % ', '.join(map(lambda e: f'.{e}', reversed(sorted(ALLOWED_EXTENSIONS))))
 
-def fetch_image(thumb_url: str, target_object: str) -> bytes:
-    if not thumb_url[0:4] == 'http':
-        raise ValueError('Invalid thumb URL for object %s : %s' % (target_object, thumb_url))
 
-    response = requests.get(thumb_url)
-    content_type = response.headers['Content-type']
-    is_an_image = content_type.split('/')[0] == 'image'
+def read_thumb(files=None, form=None):
+    if 'thumb' in files:
+        thumb = files['thumb']
+        filename_parts = thumb.filename.rsplit('.', 1)
+        if len(filename_parts) < 2 \
+                or filename_parts[1].lower() not in ALLOWED_EXTENSIONS:
+            raise ApiErrors(
+                {'thumb': [
+                    f"Cette image manque d'une extension {READABLE_EXTENSIONS} ou son format n'est pas autorisé"]}
+            )
+        return thumb.read()
 
-    if response.status_code == 200 and is_an_image:
-        return response.content
-    else:
-        raise ValueError(
-            'Error downloading thumb for object %s from url %s (status_code : %s)'
-            % (target_object, thumb_url, str(response.status_code)))
+    if 'thumbUrl' in form:
+        try:
+            return _fetch_image(form['thumbUrl'])
+        except ValueError as e:
+            logger.error(e)
+            raise ApiErrors({'thumbUrl': ["L'adresse saisie n'est pas valide"]})
 
 
 def save_thumb(
@@ -39,16 +46,9 @@ def save_thumb(
 ):
     new_thumb = thumb
 
-    if isinstance(thumb, str):
-        try:
-            new_thumb = fetch_image(thumb, str(model_with_thumb))
-        except ValueError as e:
-            logger.error(e)
-            raise ApiErrors({'thumbUrl': ["L'adresse saisie n'est pas valide"]})
-
     if convert:
         crop_params = crop if crop is not None else DO_NOT_CROP
-        new_thumb = standardize_image(new_thumb, crop_params)
+        new_thumb = standardize_image(thumb, crop_params)
 
     if image_index == 0:
         if dominant_color:
@@ -68,3 +68,19 @@ def save_thumb(
 
     if need_save:
         PcObject.save(model_with_thumb)
+
+
+def _fetch_image(thumb_url: str) -> bytes:
+    if not thumb_url[0:4] == 'http':
+        raise ValueError('Invalid thumb URL : %s' % thumb_url)
+
+    response = requests.get(thumb_url)
+    content_type = response.headers['Content-type']
+    is_an_image = content_type.split('/')[0] == 'image'
+
+    if response.status_code == 200 and is_an_image:
+        return response.content
+    else:
+        raise ValueError(
+            'Error downloading thumb from url %s (status_code : %s)'
+            % (thumb_url, str(response.status_code)))

@@ -1,9 +1,7 @@
-""" mediations """
-
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
-from connectors.thumb_storage import save_thumb
+from connectors.thumb_storage import read_thumb, save_thumb
 from domain.discard_pc_objects import invalidate_recommendations_if_deactivating_object
 from models.mediation import Mediation
 from models.pc_object import PcObject
@@ -11,7 +9,7 @@ from models.user_offerer import RightsType
 from utils.human_ids import dehumanize
 from utils.includes import MEDIATION_INCLUDES
 from utils.rest import ensure_current_user_has_rights, load_or_404, expect_json_data
-from validation.mediations import check_thumb_in_request, read_thumb
+from validation.mediations import check_thumb_in_request
 
 
 @app.route('/mediations', methods=['POST'])

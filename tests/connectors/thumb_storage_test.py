@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 from werkzeug.datastructures import FileStorage
 
+from connectors.thumb_storage import read_thumb
 from models import ApiErrors, EventType
-from validation.mediations import read_thumb
 
 
 def test_read_thumb_returns_api_error_when_no_extension_in_filename():
@@ -26,5 +26,5 @@ def test_read_thumb_returns_api_error_when_no_extension_in_filename():
 
     # then
     assert api_errors.value.errors['thumb'] == [
-        "Cet image manque d'une extension (.png, .jpg, .jpeg, .gif) ou son format n'est pas autoris\u00e9"
+        "Cette image manque d'une extension (.png, .jpg, .jpeg, .gif) ou son format n'est pas autoris\u00e9"
     ]
