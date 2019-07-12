@@ -63,7 +63,7 @@ const ModificationControl = ({
             className="button is-secondary is-outlined"
             to={`/structures/${get(offerer, 'id')}/lieux/creation`}
           >
-            + Ajouter un lieu
+            {'+ Ajouter un lieu'}
           </NavLink>
         </div>
       </div>

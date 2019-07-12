@@ -124,7 +124,7 @@ class Offer extends Component {
     }
   }
 
-  handleDataRequest = (handleSuccess, handleFail) => {
+  onHandleDataRequest = (handleSuccess, handleFail) => {
     const {
       history,
       dispatch,
@@ -213,7 +213,7 @@ class Offer extends Component {
 
   handleChangeOnClick = (query) => () => query.changeToModification()
 
-  handleFormSuccess = (state, action) => {
+  onHandleFormSuccess = (state, action) => {
     const { offer, query } = this.props
     const previousOfferId = offer && offer.id
     const {
@@ -346,7 +346,7 @@ class Offer extends Component {
     return (
       <Main
         backTo={{ path: '/offres', label: 'Vos offres' }}
-        handleDataRequest={this.handleDataRequest}
+        handleDataRequest={this.onHandleDataRequest}
         name="offer"
       >
         <HeroSection
@@ -354,21 +354,17 @@ class Offer extends Component {
           title={title}
         >
           <p className="subtitle">
-            Renseignez les détails de cette offre, puis mettez-la en avant en
-            ajoutant une ou plusieurs accroches.
+            {'Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.'}
           </p>
 
           <p className="fs13 pb30">
-            Les offres payantes seront visibles dans l’application, toutefois
-            les utilisateurs ne pourront les réserver que s’ils ont activé leur
-            portefeuille numérique de 500 € sur Internet ou lors d’un des
-            événements d’activation.
+            {'Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.'}
           </p>
 
           <Form
             Tag={null}
             action={formApiPath}
-            handleSuccess={this.handleFormSuccess}
+            handleSuccess={this.onHandleFormSuccess}
             method={method}
             name="offer"
             patch={formInitialValues}

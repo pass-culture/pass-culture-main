@@ -60,9 +60,7 @@ class StocksManager extends Component {
   handleEnterKey() {
     const { location, query } = this.props
     const { search } = location
-    const allStocksReadOnly = !/stock([A-Z0-9]*)=(creation|modification)/.test(
-      search
-    )
+    const allStocksReadOnly = !/stock([A-Z0-9]*)=(creation|modification)/.test(search)
 
     // Dirty DOM selectors ? Could try to pass back a react dom ref
     // to this parent component otherwise, but code would be more
@@ -92,7 +90,7 @@ class StocksManager extends Component {
     }
   }
 
-  handleSetErrors = errors => {
+  onHandleSetErrors = errors => {
     this.setState({ errors })
   }
 
@@ -125,25 +123,25 @@ class StocksManager extends Component {
         <tr>
           {isEvent && (
             <Fragment>
-              <td>{"Date"}</td>
+              <td>{'Date'}</td>
               <td>
-                {"Heure de"}
+                {'Heure de'}
                 <br />
-                {"début"}
+                {'début'}
               </td>
               <td>
-                {"Heure de"}
+                {'Heure de'}
                 <br />
-                {"fin"}
+                {'fin'}
               </td>
             </Fragment>
           )}
-          <td>{"Prix"}</td>
-          <td>{"Date Limite de Réservation"}</td>
+          <td>{'Prix'}</td>
+          <td>{'Date Limite de Réservation'}</td>
           <td>{isEvent ? 'Places affectées' : 'Stock affecté'}</td>
           <td>{isEvent ? 'Places restantes' : 'Stock restant'}</td>
-          <td>{"Modifier"}</td>
-          <td>{"Supprimer"}</td>
+          <td>{'Modifier'}</td>
+          <td>{'Supprimer'}</td>
         </tr>
       </thead>
     )
@@ -153,9 +151,11 @@ class StocksManager extends Component {
     const { query } = this.props
 
     query.changeToCreation(null, {
-      key: 'stock'
+      key: 'stock',
     })
   }
+
+  getRef = elem => (this.elem = elem)
 
   render() {
     const {
@@ -173,7 +173,7 @@ class StocksManager extends Component {
     return (
       <div
         className="stocks-manager"
-        ref={elem => (this.elem = elem)}
+        ref={this.getRef}
       >
         <div className={classnames('info', { 'is-invisible': !info })}>
           <div className="content">
@@ -186,7 +186,9 @@ class StocksManager extends Component {
             {Object.keys(errors).map(key => (
               <p key={key}>
                 {' '}
-                {key} : {errors[key]}
+                {key}
+                {' : '}
+                {errors[key]}
               </p>
             ))}
           </div>
@@ -194,9 +196,7 @@ class StocksManager extends Component {
         <div className="stocks-table-wrapper">
           <HeroSection
             subtitle={get(product, 'name')}
-            title={
-              isEvent ? 'Dates, horaires et prix' : get(product, 'id') && 'Prix'
-            }
+            title={isEvent ? 'Dates, horaires et prix' : get(product, 'id') && 'Prix'}
           />
           <table
             className={classnames('table is-hoverable stocks-table', {
@@ -210,7 +210,7 @@ class StocksManager extends Component {
                   <td colSpan="10">
                     <i>
                       {"Il n'est pas possible d'ajouter ni de supprimer d'horaires"}
-                      {"pour cet événement"} {provider.name}
+                      {'pour cet événement'} {provider.name}
                     </i>
                   </td>
                 </tr>
@@ -240,7 +240,7 @@ class StocksManager extends Component {
             {isCreatedEntity && offer && (
               <StockItemContainer
                 closeInfo={this.closeInfo}
-                handleSetErrors={this.handleSetErrors}
+                handleSetErrors={this.onHandleSetErrors}
                 isEvent={isEvent}
                 isFullyEditable={!provider}
                 showInfo={this.showInfo}
@@ -250,7 +250,7 @@ class StocksManager extends Component {
             {stocks.map(stock => (
               <StockItemContainer
                 closeInfo={this.closeInfo}
-                handleSetErrors={this.handleSetErrors}
+                handleSetErrors={this.onHandleSetErrors}
                 isEvent={isEvent}
                 isFullyEditable={!provider}
                 key={stock.id}
@@ -269,7 +269,7 @@ class StocksManager extends Component {
           onClick={this.handleOnCloseClick}
           type="button"
         >
-          {"Fermer"}
+          {'Fermer'}
         </button>
       </div>
     )
