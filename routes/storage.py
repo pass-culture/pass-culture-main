@@ -5,7 +5,7 @@ from flask import current_app as app, jsonify, request, send_file
 from flask_login import login_required
 
 import models
-from connectors.thumb import save_thumb
+from connectors.thumb_storage import save_thumb
 from models import RightsType
 from utils.human_ids import dehumanize
 from utils.inflect_engine import inflect_engine

@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 
-from connectors.thumb import save_thumb
+from connectors.thumb_storage import save_thumb
 from models.pc_object import PcObject
 from utils.human_ids import humanize
 from utils.object_storage import store_public_object

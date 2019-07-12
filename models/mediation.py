@@ -13,7 +13,7 @@ from sqlalchemy import Column, \
     String
 from sqlalchemy.orm import relationship
 
-from connectors.thumb import save_thumb
+from connectors.thumb_storage import save_thumb
 from models import DeactivableMixin
 from models.db import Model
 from models.has_thumb_mixin import HasThumbMixin

@@ -12,7 +12,7 @@ from sqlalchemy import text
 from sqlalchemy.sql import select
 
 import models
-from connectors.thumb import save_thumb
+from connectors.thumb_storage import save_thumb
 from models.db import db
 from models.has_thumb_mixin import HasThumbMixin
 from models.local_provider_event import LocalProviderEvent, LocalProviderEventType

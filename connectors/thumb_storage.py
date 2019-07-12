@@ -2,8 +2,6 @@ from typing import Callable
 
 import requests
 
-" has thumb mixin """
-
 from domain.mediations import DO_NOT_CROP, standardize_image, compute_dominant_color
 from models import ApiErrors
 from models.pc_object import PcObject
