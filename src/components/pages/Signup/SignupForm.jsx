@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { NavLink, withRouter } from 'react-router-dom'
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
@@ -6,37 +7,42 @@ import { connect } from 'react-redux'
 import get from 'lodash.get'
 
 class SignupForm extends PureComponent {
-  handleSuccessRedirect=() => '/inscription/confirmation'
+  onHandleSuccessRedirect = () => '/inscription/confirmation'
+
   handleformatPatch = patch => Object.assign({ publicName: patch.firstName }, patch)
+
+  isFieldDisabling = offererName => () => !offererName
 
   render() {
     const { errors, patch, offererName } = this.props
+
     return (
       <section>
         <div className="hero-body">
-          <h1 className="title is-spaced is-1">{"Créez votre compte"}</h1>
+          <h1 className="title is-spaced is-1">{'Créez votre compte'}</h1>
           <h2 className="subtitle is-2">
-            {"Nous vous invitons à prendre connaissance des "}
+            {'Nous vous invitons à prendre connaissance des '}
             <a
               className="is-secondary"
               href="https://pass.culture.fr/ressources"
               rel="noopener noreferrer"
               target="_blank"
             >
-              {"modalités de fonctionnement en cliquant ici "}
+              {'modalités de fonctionnement en cliquant ici '}
             </a>{' '}
-            {"avant de renseigner les champs suivants."}
+            {'avant de renseigner les champs suivants.'}
           </h2>
           <span className="has-text-grey">
             {' '}
-            <span className="required-legend">{"*"}</span>{" Champs obligatoires"}
+            <span className="required-legend">{'*'}</span>
+            {' Champs obligatoires'}
           </span>
           <Form
             action="/users/signup/pro"
             blockComponent={null}
             formatPatch={this.handleformatPatch()}
             handleSuccessNotification={null}
-            handleSuccessRedirect={this.handleSuccessRedirect}
+            handleSuccessRedirect={this.onHandleSuccessRedirect}
             layout="vertical"
             name="user"
             patch={patch}
@@ -85,7 +91,7 @@ class SignupForm extends PureComponent {
                 required
               />
               <Field
-                disabling={() => !offererName}
+                disabling={this.isFieldDisabling(offererName)}
                 label="SIREN"
                 name="siren"
                 placeholder="123 456 789"
@@ -109,14 +115,14 @@ class SignupForm extends PureComponent {
                 className="cgu-field"
                 label={
                   <Fragment>
-                    {"J’ai lu et j’accepte les "}
+                    {'J’ai lu et j’accepte les '}
                     <a
                       href="https://pass-culture.gitbook.io/documents/textes-normatifs"
                       id="accept-cgu-link"
                       rel="noopener noreferrer"
                       target="_blank"
                     >
-                      {"Conditions Générales d’Utilisation"}
+                      {'Conditions Générales d’Utilisation'}
                     </a>
                   </Fragment>
                 }
@@ -131,13 +137,13 @@ class SignupForm extends PureComponent {
                 className="button is-secondary"
                 to="/connexion"
               >
-                {"J'ai déjà un compte"}
+                {'J’ai déjà un compte'}
               </NavLink>
               <SubmitButton
                 className="button is-primary is-outlined"
                 type="submit"
               >
-                {"Créer"}
+                {'Créer'}
               </SubmitButton>
             </div>
           </Form>
@@ -145,6 +151,12 @@ class SignupForm extends PureComponent {
       </section>
     )
   }
+}
+
+SignupForm.propTypes = {
+  errors: PropTypes.string.isRequired,
+  offererName: PropTypes.bool.isRequired,
+  patch: PropTypes.string.isRequired,
 }
 
 function mapStateToProps(state) {
