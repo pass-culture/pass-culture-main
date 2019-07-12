@@ -8,9 +8,9 @@ import Main from '../../layout/Main'
 import { mapApiToBrowser } from '../../../utils/translate'
 
 class Signin extends Component {
-  handleSuccessRedirect = (state, action) => {
-    const { hasOffers } = action.payload.datum || false
-    const { hasPhysicalVenues } = action.payload.datum || false
+  onHandleSuccessRedirect = (state, action) => {
+    const { hasOffers } = action.payload.datum || false
+    const { hasPhysicalVenues } = action.payload.datum || false
     const hasOffersWithPhysicalVenues = hasOffers && hasPhysicalVenues
     const { query } = this.props
     const queryParams = query.parse()
@@ -20,7 +20,7 @@ class Signin extends Component {
       return decodeURIComponent(fromUrl)
     }
 
-    return hasOffersWithPhysicalVenues || hasPhysicalVenues ? '/offres' : '/structures'
+    return hasOffersWithPhysicalVenues || hasPhysicalVenues ? '/offres' : '/structures'
   }
 
   handleOnEnterKey = event => () => event.form.handleOnSubmit()
@@ -45,26 +45,22 @@ class Signin extends Component {
               <section className="has-text-grey">
                 <div className="hero-body">
                   <h1 className="title is-spaced is-1">
-                    <span className="has-text-weight-bold ">{"Bienvenue"}</span>{' '}
-                    <span className="has-text-weight-semibold">
-                      dans la version bêta
-                    </span>
-                    <span className="has-text-weight-normal">
-                      du Pass Culture pro.
-                    </span>
+                    <span className="has-text-weight-bold ">{'Bienvenue '}</span>
+                    <span className="has-text-weight-semibold">{'dans la version bêta '}</span>
+                    <span className="has-text-weight-normal">{'du Pass Culture pro.'}</span>
                   </h1>
                   <h2 className="subtitle is-2">
                     {"Et merci de votre participation pour nous aider à l'améliorer !"}
                   </h2>
                   <span className="has-text-grey">
                     {' '}
-                    <span className="required-legend">{"*"} </span> {"Champs obligatoires"}
+                    <span className="required-legend">{'*'} </span> {'Champs obligatoires'}
                   </span>
                   <Form
                     action="/users/signin"
                     blockComponent={null}
                     handleSuccessNotification={null}
-                    handleSuccessRedirect={this.handleSuccessRedirect}
+                    handleSuccessRedirect={this.onHandleSuccessRedirect}
                     layout="vertical"
                     name="user"
                     onEnterKey={this.handleOnEnterKey(event)}
@@ -90,7 +86,7 @@ class Signin extends Component {
                           id="lostPasswordLink"
                           to="/mot-de-passe-perdu"
                         >
-                          Mot de passe égaré ?
+                          {'Mot de passe égaré ?'}
                         </Link>
                       </span>
                     </div>
@@ -100,13 +96,13 @@ class Signin extends Component {
                         className="button is-secondary"
                         to="/inscription"
                       >
-                        {"Créer un compte"}
+                        {'Créer un compte'}
                       </NavLink>
                       <SubmitButton
                         className="button is-primary is-outlined"
                         id="signin-submit-button"
                       >
-                        {"Se connecter"}
+                        {'Se connecter'}
                       </SubmitButton>
                     </div>
                   </Form>
@@ -122,10 +118,15 @@ class Signin extends Component {
 
 Signin.propTypes = {
 <<<<<<< HEAD
+<<<<<<< HEAD
   query: PropTypes.shapeOf().isRequired,
 ||||||| merged common ancestors
   query: PropTypes.shape(),
 =======
+||||||| merged common ancestors
+=======
+  errors: PropTypes.string.isRequired,
+>>>>>>> (PC-1958) fix Signin with new eslint rules
   query: PropTypes.shape().isRequired,
 >>>>>>> (PC-1958) amend Signin and Signup to apply new eslint rules
 }
