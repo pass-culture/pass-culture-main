@@ -3,10 +3,8 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import RawOffers from './RawOffers'
-import {
-  withFrenchQueryRouter,
-  withRedirectToSigninWhenNotAuthenticated,
-} from '../../hocs'
+import withFrenchQueryRouter from '../../hocs/withFrenchQueryRouter'
+import withRedirectToSigninWhenNotAuthenticated from '../../hocs/with-login/withRedirectToSigninWhenNotAuthenticated'
 import selectOffererById from '../../../selectors/selectOffererById'
 import selectOffersByOffererIdAndVenueId from '../../../selectors/selectOffersByOffererIdAndVenueId'
 import selectVenueById from '../../../selectors/selectVenueById'

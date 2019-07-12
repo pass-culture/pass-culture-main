@@ -32,61 +32,61 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl ',
   })
 
   describe('mount', () => {
-    it('should redirect to offerer page and reset form when click on cancel creation form', () => {return new Promise(done => {
-      // given
-      const props = {
-        isCreatedEntity: true,
-        offererId: 'AE',
-        readOnly: false,
-      }
+    it('should redirect to offerer page and reset form when click on cancel creation form', () => {
+      return new Promise(done => {
+        // given
+        const props = {
+          isCreatedEntity: true,
+          offererId: 'AE',
+          readOnly: false,
+        }
 
-      const wrapper = mount(
-        <Form
-          onSubmit={() => jest.fn()}
-          render={({ form, handleSubmit }) => (
-            <Fragment>
-              <Field
-                name="foo"
-                render={({ input }) => (<input
+        const wrapper = mount(
+          <Form
+            onSubmit={() => jest.fn()}
+            render={({ form, handleSubmit }) => (
+              <Fragment>
+                <Field
                   name="foo"
-                  {...input}
-                                        />)}
-              />
-              <ModifyOrCancelControl
-                form={form}
-                handleSubmit={handleSubmit}
-                history={history}
-                {...props}
-              />
-            </Fragment>
-          )}
-        />
-      )
-
-      // when
-      wrapper
-        .find("input[name='foo']")
-        .simulate('change', { target: { value: 'bar' } })
-
-      // when
-      setTimeout(() => {
-        // then
-        wrapper.update()
-        expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('bar')
+                  render={({ input }) => (<input
+                    name="foo"
+                    {...input}
+                                          />)}
+                />
+                <ModifyOrCancelControl
+                  form={form}
+                  handleSubmit={handleSubmit}
+                  history={history}
+                  {...props}
+                />
+              </Fragment>
+            )}
+          />
+        )
 
         // when
-        const cancelButton = wrapper.find('button[type="reset"]')
-        cancelButton.simulate('click')
+        wrapper.find("input[name='foo']").simulate('change', { target: { value: 'bar' } })
 
-        // then
-        const expectedPush = `/structures/${props.offererId}`
-        expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('')
-        expect(history.push).toHaveBeenCalledWith(expectedPush)
+        // when
+        setTimeout(() => {
+          // then
+          wrapper.update()
+          expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('bar')
 
-        // done
-        done()
+          // when
+          const cancelButton = wrapper.find('button[type="reset"]')
+          cancelButton.simulate('click')
+
+          // then
+          const expectedPush = `/structures/${props.offererId}`
+          expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('')
+          expect(history.push).toHaveBeenCalledWith(expectedPush)
+
+          // done
+          done()
+        })
       })
-    })})
+    })
 
     it('should redirect to venue page and reset form when click on cancel modified form', () => {
       // given
@@ -121,9 +121,7 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl ',
       )
 
       // when
-      wrapper
-        .find("input[name='foo']")
-        .simulate('change', { target: { value: 'bar' } })
+      wrapper.find("input[name='foo']").simulate('change', { target: { value: 'bar' } })
 
       // then
       expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('bar')
@@ -133,9 +131,7 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl ',
       cancelButton.simulate('click')
 
       // then
-      const expectedPush = `/structures/${props.offererId}/lieux/${
-        props.venueId
-      }`
+      const expectedPush = `/structures/${props.offererId}/lieux/${props.venueId}`
       expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('')
       expect(history.push).toHaveBeenCalledWith(expectedPush)
     })

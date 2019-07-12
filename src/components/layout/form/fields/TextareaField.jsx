@@ -50,9 +50,7 @@ class TextareaField extends Component {
               {!readOnly && (
                 <Fragment>
                   <br />
-                  <span className="fs12">
-                    {` (${input.value.length} / ${maxLength}) `}
-                  </span>
+                  <span className="fs12">{` (${input.value.length} / ${maxLength}) `}</span>
                 </Fragment>
               )}
             </span>
@@ -82,11 +80,7 @@ class TextareaField extends Component {
   }
 
   render() {
-    const {
-      name,
-      required,
-      validate,
-    } = this.props
+    const { name, required, validate } = this.props
 
     return (
       <Field

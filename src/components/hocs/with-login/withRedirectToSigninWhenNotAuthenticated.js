@@ -1,10 +1,8 @@
 import withLogin from 'with-login'
 
-export const withRedirectToSigninWhenNotAuthenticated = withLogin({
+const withRedirectToSigninWhenNotAuthenticated = withLogin({
   failRedirect: ({ location }) =>
-    `/connexion?de=${encodeURIComponent(
-      `${location.pathname}${location.search}`
-    )}`,
+    `/connexion?de=${encodeURIComponent(`${location.pathname}${location.search}`)}`,
   isRequired: true,
 })
 

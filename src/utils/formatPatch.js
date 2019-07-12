@@ -1,9 +1,4 @@
-export const formatPatch = (
-  patch,
-  config,
-  creationFormKeys,
-  modificationFormPermittedKeys
-) => {
+export const formatPatch = (patch, config, creationFormKeys, modificationFormPermittedKeys) => {
   const { isCreatedEntity } = config || {}
   const formPatch = {}
 

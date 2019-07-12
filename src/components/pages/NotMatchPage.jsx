@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, {PureComponent} from 'react'
+import React, { PureComponent } from 'react'
 import { Redirect } from 'react-router-dom'
 
 class NoMatchPage extends PureComponent {
@@ -24,9 +24,7 @@ class NoMatchPage extends PureComponent {
   renderRedirect = () => <Redirect to="/" />
   renderRedirecting = () => <span>{'Redirecting...'}</span>
 
-  renderTimer = timing => (
-    <span>{`You will be redirect in ${timing} seconds`}</span>
-  )
+  renderTimer = timing => <span>{`You will be redirect in ${timing} seconds`}</span>
 
   render() {
     const { timing } = this.state

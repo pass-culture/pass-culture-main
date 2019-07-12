@@ -27,7 +27,9 @@ describe('mount', () => {
     })
 
     const props = {
+      closeInfo: jest.fn(),
       isEvent: true,
+      showInfo: jest.fn(),
       stock,
     }
 
@@ -44,22 +46,16 @@ describe('mount', () => {
     )
 
     // when
-    wrapper
-      .find("input[name='beginningTime']")
-      .simulate('change', { target: { value: '12:13' } })
+    wrapper.find("input[name='beginningTime']").simulate('change', { target: { value: '12:13' } })
 
-    expect(wrapper.find("input[name='beginningTime']").props().value).toStrictEqual(
-      '12:13'
-    )
+    expect(wrapper.find("input[name='beginningTime']").props().value).toStrictEqual('12:13')
 
     // when
     const cancelButton = wrapper.find('button[type="reset"]')
     cancelButton.simulate('click')
 
     // then
-    expect(wrapper.find("input[name='beginningTime']").props().value).toStrictEqual(
-      ''
-    )
+    expect(wrapper.find("input[name='beginningTime']").props().value).toStrictEqual('')
   })
 
   describe('mapStateToProps', () => {

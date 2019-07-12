@@ -3,16 +3,13 @@ import React from 'react'
 
 import TextField from '../../../../layout/form/fields/TextField'
 
-const BankFields = ({
-  adminUserOfferer,
-  readOnly,
-}) => {
+const BankFields = ({ adminUserOfferer, readOnly }) => {
   const areBankInfosReadOnly = readOnly || !adminUserOfferer
 
   return (
     <div className="section">
       <h2 className="main-list-title">
-        {"INFORMATIONS BANCAIRES"}
+        {'INFORMATIONS BANCAIRES'}
         <span className="is-pulled-right is-size-7 has-text-grey">
           {!adminUserOfferer &&
             "Vous avez besoin d'être administrateur de la structure pour éditer ces informations."}

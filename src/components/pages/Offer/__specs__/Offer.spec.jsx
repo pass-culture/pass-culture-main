@@ -75,14 +75,14 @@ describe('src | components | pages | Offer | Offer ', () => {
           config: { method: 'PATCH' },
           payload: { datum: offer },
         }
-        wrapper.instance().handleFormSuccess({}, action)
+        wrapper.instance().onHandleFormSuccess({}, action)
 
         // then
         expect(queryChangeToReadOnly).toHaveBeenCalledWith(queryParams, offer)
       })
     })
 
-    describe('when the offer is successfully modified', () => {
+    describe('when the offer is successfully modified (réécrire)', () => {
       it('should redirect to gestion page', () => {
         // given
         const queryChangeToReadOnly = jest.fn()
@@ -114,7 +114,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         const queryParams = { gestion: '' }
         const offer = { id: 'SN' }
         const action = { config: { method: 'POST' }, payload: { datum: offer } }
-        wrapper.instance().handleFormSuccess({}, action)
+        wrapper.instance().onHandleFormSuccess({}, action)
 
         // then
         expect(queryChangeToReadOnly).toHaveBeenCalledWith(queryParams, offer)
@@ -357,14 +357,8 @@ describe('src | components | pages | Offer | Offer ', () => {
 
       it('should display venue name when venue publicName is not provided', () => {
         // given
-        props.venues = [
-          { name: 'quel beau théâtre' },
-          { name: 'quel beau musée' },
-        ]
-        const expectedOptions = [
-          { name: 'quel beau théâtre' },
-          { name: 'quel beau musée' },
-        ]
+        props.venues = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
+        const expectedOptions = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
 
         // when
         const wrapper = shallow(<Offer {...props} />)

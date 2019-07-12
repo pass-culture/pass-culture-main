@@ -55,18 +55,14 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
         type: '/stocks/ID',
       }
       requestData.mockReturnValue(expectedAction)
-      const wrapper = shallow(
-        <EditAndDeleteControl.WrappedComponent {...props} />
-      )
+      const wrapper = shallow(<EditAndDeleteControl.WrappedComponent {...props} />)
 
       // when
       wrapper.instance().handleOnConfirmDeleteClick()
 
       // then
       const requestDataArguments = requestData.mock.calls[0][0]
-      expect(requestDataArguments.apiPath).toBe(
-        `stocks/${props.formInitialValues.id}`
-      )
+      expect(requestDataArguments.apiPath).toBe(`stocks/${props.formInitialValues.id}`)
       expect(requestDataArguments.method).toBe('DELETE')
       expect(props.dispatch).toHaveBeenCalledWith(expectedAction)
     })

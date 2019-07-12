@@ -4,17 +4,12 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Route, Router, Switch } from 'react-router-dom'
 
-import {
-  configureTestStore,
-  configureFetchCurrentUserWithLoginFail,
-} from './configure'
-import { OnMountCaller } from './OnMountCaller'
-import { withRedirectToSigninWhenNotAuthenticated } from '../withRedirectToSigninWhenNotAuthenticated'
+import { configureTestStore, configureFetchCurrentUserWithLoginFail } from './configure'
+import OnMountCaller from './OnMountCaller'
+import withRedirectToSigninWhenNotAuthenticated from '../withRedirectToSigninWhenNotAuthenticated'
 
 const Test = () => null
-const RedirectToSigninWhenNotAuthenticatedTest = withRedirectToSigninWhenNotAuthenticated(
-  Test
-)
+const RedirectToSigninWhenNotAuthenticatedTest = withRedirectToSigninWhenNotAuthenticated(Test)
 
 describe('src | components | pages | hocs | with-login | withRedirectToSigninWhenNotAuthenticated', () => {
   describe('snapshot', () => {
@@ -35,28 +30,28 @@ describe('src | components | pages | hocs | with-login | withRedirectToSigninWhe
   describe('functions', () => {
     it('should redirect to signin when not authenticated', () => {
       return new Promise(done => {
-      // given
-      const history = createBrowserHistory()
-      history.push('/test')
-      const store = configureTestStore()
-      configureFetchCurrentUserWithLoginFail()
+        // given
+        const history = createBrowserHistory()
+        history.push('/test')
+        const store = configureTestStore()
+        configureFetchCurrentUserWithLoginFail()
 
-      // when
-      mount(
-        <Provider store={store}>
-          <Router history={history}>
-            <Switch>
-              <Route path="/test">
-                <RedirectToSigninWhenNotAuthenticatedTest />
-              </Route>
-              <Route path="/connexion">
-                <OnMountCaller onMountCallback={done} />
-              </Route>
-            </Switch>
-          </Router>
-        </Provider>
-      )
-    }
-    )})
+        // when
+        mount(
+          <Provider store={store}>
+            <Router history={history}>
+              <Switch>
+                <Route path="/test">
+                  <RedirectToSigninWhenNotAuthenticatedTest />
+                </Route>
+                <Route path="/connexion">
+                  <OnMountCaller onMountCallback={done} />
+                </Route>
+              </Switch>
+            </Router>
+          </Provider>
+        )
+      })
+    })
   })
 })

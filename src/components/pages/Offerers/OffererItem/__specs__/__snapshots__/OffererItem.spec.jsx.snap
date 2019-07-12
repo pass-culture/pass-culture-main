@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offerers | OffererItem snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Offerers | OffererItem should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <OffererItem
@@ -76,7 +76,7 @@ ShallowWrapper {
             className="is-italic mb12"
             id="offerer-item-validation"
           >
-            Structure en cours de validation par l'équipe Pass Culture.
+            Structure en cours de validation par l’équipe pass Culture.
           </p>
           <ul
             className="actions"
@@ -160,7 +160,7 @@ ShallowWrapper {
               className="is-italic mb12"
               id="offerer-item-validation"
             >
-              Structure en cours de validation par l'équipe Pass Culture.
+              Structure en cours de validation par l’équipe pass Culture.
             </p>,
             <ul
               className="actions"
@@ -245,12 +245,12 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Structure en cours de validation par l'équipe Pass Culture.",
+              "children": "Structure en cours de validation par l’équipe pass Culture.",
               "className": "is-italic mb12",
               "id": "offerer-item-validation",
             },
             "ref": null,
-            "rendered": "Structure en cours de validation par l'équipe Pass Culture.",
+            "rendered": "Structure en cours de validation par l’équipe pass Culture.",
             "type": "p",
           },
           Object {
@@ -594,7 +594,7 @@ ShallowWrapper {
               className="is-italic mb12"
               id="offerer-item-validation"
             >
-              Structure en cours de validation par l'équipe Pass Culture.
+              Structure en cours de validation par l’équipe pass Culture.
             </p>
             <ul
               className="actions"
@@ -678,7 +678,7 @@ ShallowWrapper {
                 className="is-italic mb12"
                 id="offerer-item-validation"
               >
-                Structure en cours de validation par l'équipe Pass Culture.
+                Structure en cours de validation par l’équipe pass Culture.
               </p>,
               <ul
                 className="actions"
@@ -763,12 +763,12 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Structure en cours de validation par l'équipe Pass Culture.",
+                "children": "Structure en cours de validation par l’équipe pass Culture.",
                 "className": "is-italic mb12",
                 "id": "offerer-item-validation",
               },
               "ref": null,
-              "rendered": "Structure en cours de validation par l'équipe Pass Culture.",
+              "rendered": "Structure en cours de validation par l’équipe pass Culture.",
               "type": "p",
             },
             Object {

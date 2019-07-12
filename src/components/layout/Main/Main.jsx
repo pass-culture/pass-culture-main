@@ -163,7 +163,7 @@ Main.defaultProps = {
 
 Main.propTypes = {
   Tag: PropTypes.string,
-  backTo: PropTypes.string,
+  backTo: PropTypes.shape(),
   children: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,

@@ -2,31 +2,30 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import Header from '../Header'
-import { Icon } from '../../Icon'
+import Icon from '../../Icon'
 
 describe('src | components | Layout | Header', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const props = {
-        name: 'Fake Name',
-        offerers: [{}],
-      }
+  it('should match the snapshot', () => {
+    // given
+    const props = {
+      name: 'Fake Name',
+      offerers: [{}],
+    }
 
-      // when
-      const wrapper = shallow(<Header {...props} />)
+    // when
+    const wrapper = shallow(<Header {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toBeDefined()
+    expect(wrapper).toMatchSnapshot()
   })
 
-  describe('render', () => {
+  describe('render()', () => {
     describe('should pluralize offerers menu link', () => {
       it('should display Votre structure when one offerer', () => {
         // given
         const props = {
+          name: 'Fake Name',
           offerers: [{}],
         }
 
@@ -47,6 +46,7 @@ describe('src | components | Layout | Header', () => {
       it('should display Vos structures when many offerers', () => {
         // given
         const props = {
+          name: 'Fake Name',
           offerers: [{}, {}],
         }
 
@@ -66,6 +66,7 @@ describe('src | components | Layout | Header', () => {
 
     describe('help link', () => {
       const props = {
+        name: 'Fake Name',
         offerers: [{}, {}],
       }
 
@@ -80,9 +81,7 @@ describe('src | components | Layout | Header', () => {
           .find('.navbar-item')
           .at(2)
         expect(helpLink).toBeDefined()
-        expect(helpLink.prop('href')).toBe(
-          'https://docs.passculture.app/structures-culturelles'
-        )
+        expect(helpLink.prop('href')).toBe('https://docs.passculture.app/structures-culturelles')
         expect(helpLink.prop('target')).toBe('_blank')
       })
 

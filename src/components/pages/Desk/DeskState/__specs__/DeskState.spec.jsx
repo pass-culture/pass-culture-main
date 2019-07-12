@@ -71,7 +71,7 @@ describe('src | components | pages | Desk | DeskState ', () => {
           .at(2)
           .find('th')
           .text()
-      ).toBe("Date de l'offre :")
+      ).toBe('Date de l’offre :')
       expect(
         lines
           .at(2)

@@ -71,9 +71,7 @@ describe('src | components | pages | Desk | Desk ', () => {
         // then
         const deskState = wrapper.find(DeskState)
         expect(deskState).toHaveLength(1)
-        expect(deskState.prop('message')).toBe(
-          'Caractères valides : de A à Z et de 0 à 9'
-        )
+        expect(deskState.prop('message')).toBe('Caractères valides : de A à Z et de 0 à 9')
         expect(deskState.prop('booking')).toBeNull()
         expect(deskState.prop('level')).toBe('error')
       })
@@ -113,7 +111,7 @@ describe('src | components | pages | Desk | Desk ', () => {
         const deskState = wrapper.find(DeskState)
         expect(deskState).toHaveLength(1)
         expect(deskState.prop('message')).toBe(
-          'Coupon vérifié, cliquez sur OK pour enregistrer'
+          'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
         )
         expect(deskState.prop('booking')).toStrictEqual({})
         expect(deskState.prop('level')).toBe('pending')
@@ -143,7 +141,7 @@ describe('src | components | pages | Desk | Desk ', () => {
         // then
         const deskState = wrapper.find(DeskState)
         expect(deskState).toHaveLength(1)
-        expect(deskState.prop('message')).toBe('Enregistrement réussi!')
+        expect(deskState.prop('message')).toBe('Enregistrement réussi !')
         expect(deskState.prop('booking')).toStrictEqual({})
         expect(deskState.prop('level')).toBe('success')
       })
@@ -326,7 +324,7 @@ describe('src | components | pages | Desk | Desk ', () => {
         const wrapper = shallow(<Desk {...props} />, options)
 
         // when
-        wrapper.instance().handleSuccessWhenValidateBooking()()
+        wrapper.instance().handleSuccessWhenValidateBooking()
 
         // then
         expect(wrapper.state('status')).toBe('CODE_REGISTERING_SUCCESS')

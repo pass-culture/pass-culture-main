@@ -9,19 +9,17 @@ describe('src | components | layout | Notification', () => {
   let dispatch
 
   beforeEach(() => {
-      dispatch = jest.fn()
-      props = {
-        dispatch,
-        notification: {}
-      }
+    dispatch = jest.fn()
+    props = {
+      dispatch,
+      notification: {},
+    }
   })
 
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // when
-      const wrapper = shallow(
-        <Notification {...props} />
-      )
+      const wrapper = shallow(<Notification {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -34,9 +32,9 @@ describe('src | components | layout | Notification', () => {
       it('should display correct info type with specific text and a link', () => {
         // given
         props.notification = {
-          tag: "offerers",
-          text: "Formulaire non validé",
-          type: "warning"
+          tag: 'offerers',
+          text: 'Formulaire non validé',
+          type: 'warning',
         }
 
         // when
@@ -58,13 +56,14 @@ describe('src | components | layout | Notification', () => {
     describe('info notification with url and urlLabel', () => {
       it('should display correct info type with specific text and a link', () => {
         // given
-          props.notification = {
-            tag: "offerers",
-            text: "Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)",
-            type: "info",
-            url: "/structures/AFPQ/lieux/creation",
-            urlLabel: "Nouveau lieu"
-          }
+        props.notification = {
+          tag: 'offerers',
+          text:
+            'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
+          type: 'info',
+          url: '/structures/AFPQ/lieux/creation',
+          urlLabel: 'Nouveau lieu',
+        }
 
         // when
         const wrapper = shallow(<Notification {...props} />)
@@ -83,18 +82,19 @@ describe('src | components | layout | Notification', () => {
       })
       it('should close notification popup when clicking on button', () => {
         // given
-          props.notification = {
-            tag: "offerers",
-            text: "Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)",
-            type: "info",
-            url: "/structures/AFPQ/lieux/creation",
-            urlLabel: "Nouveau lieu"
-          }
+        props.notification = {
+          tag: 'offerers',
+          text:
+            'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
+          type: 'info',
+          url: '/structures/AFPQ/lieux/creation',
+          urlLabel: 'Nouveau lieu',
+        }
 
         // when
         const wrapper = shallow(<Notification {...props} />)
         wrapper.find('button').simulate('click')
-        const expected = {"type": "CLOSE_NOTIFICATION"}
+        const expected = { type: 'CLOSE_NOTIFICATION' }
 
         // then
         expect(props.dispatch).toHaveBeenCalledWith(expected)
@@ -108,10 +108,11 @@ describe('src | components | layout | Notification', () => {
           type: 'tip',
           tooltip: {
             place: 'bottom',
-            tip: "<p>Il n'est pas possible de modifier le nom, l'addresse et la géolocalisation du lieu quand un siret est renseigné.</p>",
-            type: 'info'
-            }
-          }
+            tip:
+              '<p>Il n’est pas possible de modifier le nom, l’addresse et la géolocalisation du lieu quand un siret est renseigné.</p>',
+            type: 'info',
+          },
+        }
 
         // when
         const wrapper = shallow(<Notification {...props} />)

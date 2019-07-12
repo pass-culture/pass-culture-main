@@ -6,7 +6,7 @@ function mapArgsToCacheKey(state, offerId) {
   return offerId || ''
 }
 
-export const selectFirstStockByOfferId = createCachedSelector(
+const selectFirstStockByOfferId = createCachedSelector(
   selectStocksByOfferId,
   stocks => stocks && stocks[0]
 )(mapArgsToCacheKey)

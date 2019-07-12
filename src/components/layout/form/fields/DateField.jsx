@@ -7,59 +7,49 @@ import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
 
 import Icon from '../../Icon'
-import getRequiredValidate from '../../form/utils/getRequiredValidate'
+import getRequiredValidate from '../utils/getRequiredValidate'
 
-const renderReadOnlyDateInput = ({ formattedSelectedDatetime, name }) => ({
-  propTypes: {
-    formattedSelectedDatetime: PropTypes.string,
-    name: PropTypes.string,
-  },
-  render() {
-    return (
-      <input
-        className="field-input field-date"
-        name={name}
-        readOnly
-        value={formattedSelectedDatetime}
-      />
-    )
-  },
-})
-
-const renderDateInput = dateInputProps => (
-  <div className="flex-columns items-center field-input field-date">
-    <DatePicker {...dateInputProps} />
-    <div className="flex-auto" />
-    <Icon
-      alt="Horaires"
-      svg="ico-calendar"
-    />
-  </div>
-)
-
-function applyTimezoneToDatetime(inputValue, timezone) {
-  let selectedDatetime
-
-  selectedDatetime = moment(inputValue)
-  if (timezone) {
-    selectedDatetime = selectedDatetime.tz(timezone)
-  }
-  return selectedDatetime
-}
-
-function formatSelectedDatetime(inputValue, dateFormat) {
-  return moment(inputValue).format(dateFormat)
-}
-
-export class DateField extends PureComponent {
+class DateField extends PureComponent {
   constructor(props) {
     super(props)
     this.state = { hasPressedDelete: false }
   }
 
+  renderReadOnlyDateInput = ({ formattedSelectedDatetime, name }) => (
+    <input
+      className="field-input field-date"
+      name={name}
+      readOnly
+      value={formattedSelectedDatetime}
+    />
+  )
+
+  renderDateInput = dateInputProps => (
+    <div className="flex-columns items-center field-input field-date">
+      <DatePicker {...dateInputProps} />
+      <div className="flex-auto" />
+      <Icon
+        alt="Horaires"
+        svg="ico-calendar"
+      />
+    </div>
+  )
+
+  applyTimezoneToDatetime = (inputValue, timezone) => {
+    let selectedDatetime = moment(inputValue)
+
+    if (timezone) {
+      selectedDatetime = selectedDatetime.tz(timezone)
+    }
+
+    return selectedDatetime
+  }
+
+  formatSelectedDatetime = (inputValue, dateFormat) => moment(inputValue).format(dateFormat)
+
   onDateChange = input => date => {
     const changedValue = date ? date.toISOString() : null
-    input.handleOnChange(changedValue)
+    input.onChange(changedValue)
     this.setState({ hasPressedDelete: false })
   }
 
@@ -67,12 +57,13 @@ export class DateField extends PureComponent {
     const isDeleteKey = event.keyCode === 8
     if (!isDeleteKey) return
 
-    input.handleOnChange(null)
+    input.onChange(null)
     this.setState({ hasPressedDelete: true })
   }
 
   renderField = ({ input }) => {
     const {
+      autoComplete,
       className,
       clearable,
       dateFormat,
@@ -96,8 +87,8 @@ export class DateField extends PureComponent {
 
     const shouldFormatDatetime = !hasPressedDelete && input.value
     if (shouldFormatDatetime) {
-      selectedDatetime = applyTimezoneToDatetime(input.value, timezone)
-      formattedSelectedDatetime = formatSelectedDatetime(selectedDatetime, dateFormat)
+      selectedDatetime = this.applyTimezoneToDatetime(input.value, timezone)
+      formattedSelectedDatetime = this.formatSelectedDatetime(selectedDatetime, dateFormat)
     }
 
     const dateInputProps = {
@@ -138,11 +129,11 @@ export class DateField extends PureComponent {
           <div className="field-value flex-columns items-center">
             <div className="field-inner flex-columns items-center">
               {readOnly
-                ? renderReadOnlyDateInput({
+                ? this.renderReadOnlyDateInput({
                     formattedSelectedDatetime,
                     name,
                   })
-                : renderDateInput(dateInputProps)}
+                : this.renderDateInput(dateInputProps)}
             </div>
             {renderValue()}
           </div>
@@ -152,11 +143,7 @@ export class DateField extends PureComponent {
   }
 
   render() {
-    const {
-      name,
-      required,
-      validate,
-    } = this.props
+    const { name, required, validate } = this.props
 
     return (
       <Field

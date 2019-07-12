@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offer | MediationsManager | MediationsManager snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Offer | MediationsManager | MediationsManager should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <MediationsManager
@@ -17,7 +17,7 @@ ShallowWrapper {
                      Pourquoi ? 
                   </span>,
                   "place": "bottom",
-                  "tip": "<div><p>Pour que votre offre s'affiche dans l'application du Pass Culture, vous devez:</p><p>- ajouter une ou plusieurs accroches.</p></div>",
+                  "tip": "<div><p>Pour que votre offre s’affiche dans l’application du pass Culture, vous devez :</p><p>- Ajouter une ou plusieurs accroches</p></div>",
                   "type": "info",
                 },
                 "type": "warning",
@@ -35,6 +35,8 @@ ShallowWrapper {
       }
     }
     mediations={Array []}
+    notification={Object {}}
+    offer={Object {}}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -65,7 +67,7 @@ ShallowWrapper {
           <p>
             Les accroches font la 
             <b>
-              spécificité du Pass Culture
+              spécificité du pass Culture
             </b>
             . Prenez le
             temps de les choisir avec soin !
@@ -74,7 +76,25 @@ ShallowWrapper {
         <ul
           className="mediations-list"
         />,
-        <p />,
+        <p>
+          <NavLink
+            activeClassName="active"
+            aria-current="page"
+            className="button is-primary "
+            to="/offres/undefined/accroches/nouveau"
+          >
+            <span
+              className="icon"
+            >
+              <Icon
+                svg="ico-stars-w"
+              />
+            </span>
+            <span>
+              Ajouter une accroche
+            </span>
+          </NavLink>
+        </p>,
       ],
       "className": "box content has-text-centered",
     },
@@ -97,7 +117,7 @@ ShallowWrapper {
             <p>
               Les accroches font la 
               <b>
-                spécificité du Pass Culture
+                spécificité du pass Culture
               </b>
               . Prenez le
               temps de les choisir avec soin !
@@ -148,7 +168,7 @@ ShallowWrapper {
               "children": Array [
                 "Les accroches font la ",
                 <b>
-                  spécificité du Pass Culture
+                  spécificité du pass Culture
                 </b>,
                 ". Prenez le",
                 "temps de les choisir avec soin !",
@@ -162,10 +182,10 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "spécificité du Pass Culture",
+                  "children": "spécificité du pass Culture",
                 },
                 "ref": null,
-                "rendered": "spécificité du Pass Culture",
+                "rendered": "spécificité du pass Culture",
                 "type": "b",
               },
               ". Prenez le",
@@ -193,10 +213,87 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": undefined,
+          "children": <NavLink
+            activeClassName="active"
+            aria-current="page"
+            className="button is-primary "
+            to="/offres/undefined/accroches/nouveau"
+          >
+            <span
+              className="icon"
+            >
+              <Icon
+                svg="ico-stars-w"
+              />
+            </span>
+            <span>
+              Ajouter une accroche
+            </span>
+          </NavLink>,
         },
         "ref": null,
-        "rendered": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "activeClassName": "active",
+            "aria-current": "page",
+            "children": Array [
+              <span
+                className="icon"
+              >
+                <Icon
+                  svg="ico-stars-w"
+                />
+              </span>,
+              <span>
+                Ajouter une accroche
+              </span>,
+            ],
+            "className": "button is-primary ",
+            "to": "/offres/undefined/accroches/nouveau",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <Icon
+                  svg="ico-stars-w"
+                />,
+                "className": "icon",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "svg": "ico-stars-w",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              "type": "span",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Ajouter une accroche",
+              },
+              "ref": null,
+              "rendered": "Ajouter une accroche",
+              "type": "span",
+            },
+          ],
+          "type": [Function],
+        },
         "type": "p",
       },
     ],
@@ -223,7 +320,7 @@ ShallowWrapper {
             <p>
               Les accroches font la 
               <b>
-                spécificité du Pass Culture
+                spécificité du pass Culture
               </b>
               . Prenez le
               temps de les choisir avec soin !
@@ -232,7 +329,25 @@ ShallowWrapper {
           <ul
             className="mediations-list"
           />,
-          <p />,
+          <p>
+            <NavLink
+              activeClassName="active"
+              aria-current="page"
+              className="button is-primary "
+              to="/offres/undefined/accroches/nouveau"
+            >
+              <span
+                className="icon"
+              >
+                <Icon
+                  svg="ico-stars-w"
+                />
+              </span>
+              <span>
+                Ajouter une accroche
+              </span>
+            </NavLink>
+          </p>,
         ],
         "className": "box content has-text-centered",
       },
@@ -255,7 +370,7 @@ ShallowWrapper {
               <p>
                 Les accroches font la 
                 <b>
-                  spécificité du Pass Culture
+                  spécificité du pass Culture
                 </b>
                 . Prenez le
                 temps de les choisir avec soin !
@@ -306,7 +421,7 @@ ShallowWrapper {
                 "children": Array [
                   "Les accroches font la ",
                   <b>
-                    spécificité du Pass Culture
+                    spécificité du pass Culture
                   </b>,
                   ". Prenez le",
                   "temps de les choisir avec soin !",
@@ -320,10 +435,10 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": "spécificité du Pass Culture",
+                    "children": "spécificité du pass Culture",
                   },
                   "ref": null,
-                  "rendered": "spécificité du Pass Culture",
+                  "rendered": "spécificité du pass Culture",
                   "type": "b",
                 },
                 ". Prenez le",
@@ -351,10 +466,87 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": undefined,
+            "children": <NavLink
+              activeClassName="active"
+              aria-current="page"
+              className="button is-primary "
+              to="/offres/undefined/accroches/nouveau"
+            >
+              <span
+                className="icon"
+              >
+                <Icon
+                  svg="ico-stars-w"
+                />
+              </span>
+              <span>
+                Ajouter une accroche
+              </span>
+            </NavLink>,
           },
           "ref": null,
-          "rendered": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "activeClassName": "active",
+              "aria-current": "page",
+              "children": Array [
+                <span
+                  className="icon"
+                >
+                  <Icon
+                    svg="ico-stars-w"
+                  />
+                </span>,
+                <span>
+                  Ajouter une accroche
+                </span>,
+              ],
+              "className": "button is-primary ",
+              "to": "/offres/undefined/accroches/nouveau",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <Icon
+                    svg="ico-stars-w"
+                  />,
+                  "className": "icon",
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "svg": "ico-stars-w",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                "type": "span",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Ajouter une accroche",
+                },
+                "ref": null,
+                "rendered": "Ajouter une accroche",
+                "type": "span",
+              },
+            ],
+            "type": [Function],
+          },
           "type": "p",
         },
       ],

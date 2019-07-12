@@ -32,7 +32,7 @@ test('Je peux cliquer sur le lien "Créer un compte"', async t => {
   await t.expect(location.pathname).eql('/inscription')
 })
 
-test("Lorsque l'un des deux champs est manquant, le bouton connexion est désactivé", async t => {
+test('Lorsque l’un des deux champs est manquant, le bouton connexion est désactivé', async t => {
   // given
   const { user } = dataFromSandboxSigninA
   const { email } = user
@@ -44,7 +44,7 @@ test("Lorsque l'un des deux champs est manquant, le bouton connexion est désact
   await t.expect(signInButton.hasAttribute('disabled')).ok()
 })
 
-test("J'ai un compte valide, en cliquant sur 'se connecter' je suis redirigé·e vers la page /structures sans erreurs", async t => {
+test("J’ai un compte valide, en cliquant sur 'se connecter' je suis redirigé·e vers la page /structures sans erreurs", async t => {
   // given
   const { user } = dataFromSandboxSigninA
   const { email, password } = user
@@ -61,7 +61,7 @@ test("J'ai un compte valide, en cliquant sur 'se connecter' je suis redirigé·e
   await t.expect(pageTitle.innerText).eql('Votre structure juridique')
 })
 
-test("J'ai un compte valide, en appuyant sur la touche 'Entrée' je suis redirigé·e vers la page /structures sans erreurs", async t => {
+test("J’ai un compte valide, en appuyant sur la touche 'Entrée' je suis redirigé·e vers la page /structures sans erreurs", async t => {
   // given
   const { user } = dataFromSandboxSigninA
   const { email, password } = user
@@ -78,7 +78,7 @@ test("J'ai un compte valide, en appuyant sur la touche 'Entrée' je suis redirig
   await t.expect(pageTitle.innerText).eql('Votre structure juridique')
 })
 
-test("J'ai un compte valide, j'ai déjà des offres, en cliquant sur 'se connecter' je suis redirigé·e vers la page /offres sans erreurs", async t => {
+test("J’ai un compte valide, j’ai déjà des offres, en cliquant sur 'se connecter' je suis redirigé·e vers la page /offres sans erreurs", async t => {
   // given
   const { user } = await fetchSandbox(
     'pro_07_offer',
@@ -98,7 +98,7 @@ test("J'ai un compte valide, j'ai déjà des offres, en cliquant sur 'se connect
   await t.expect(pageTitle.innerText).eql('Vos offres')
 })
 
-test("J'ai un email incorrect, je vois un message d'erreur et je reste sur la page /connexion", async t => {
+test('J’ai un email incorrect, je vois un message d’erreur et je reste sur la page /connexion', async t => {
   // when
   await t
     .typeText(inputUsersIdentifier, 'email@email.test')
@@ -106,14 +106,12 @@ test("J'ai un email incorrect, je vois un message d'erreur et je reste sur la pa
     .click(signInButton)
 
   // then
-  await t
-    .expect(inputUsersIdentifierError.innerText)
-    .contains('Identifiant incorrect')
+  await t.expect(inputUsersIdentifierError.innerText).contains('Identifiant incorrect')
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/connexion')
 })
 
-test("J'ai un mot de passe incorrect, je vois un message d'erreur et je reste sur la page /connexion", async t => {
+test('J’ai un mot de passe incorrect, je vois un message d’erreur et je reste sur la page /connexion', async t => {
   // given
   const { user } = dataFromSandboxSigninA
   const { email } = user
@@ -125,9 +123,7 @@ test("J'ai un mot de passe incorrect, je vois un message d'erreur et je reste su
     .click(signInButton)
 
   // then
-  await t
-    .expect(inputUsersPasswordError.innerText)
-    .contains('Mot de passe incorrect')
+  await t.expect(inputUsersPasswordError.innerText).contains('Mot de passe incorrect')
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/connexion')
 })
@@ -144,7 +140,7 @@ fixture('Signin B | Je me connecte avec un compte pas encore validé')
     }
   })
 
-test("Je vois un message d'erreur et je reste sur la page /connexion", async t => {
+test('Je vois un message d’erreur et je reste sur la page /connexion', async t => {
   // given
   const { user } = dataFromSandboxSigninB
   const { email, password } = user
@@ -156,16 +152,12 @@ test("Je vois un message d'erreur et je reste sur la page /connexion", async t =
     .click(signInButton)
 
   // then
-  await t
-    .expect(inputUsersIdentifierError.innerText)
-    .contains("Ce compte n'est pas validé")
+  await t.expect(inputUsersIdentifierError.innerText).contains("Ce compte n\'est pas validé")
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/connexion')
 })
 
-fixture("Signin C | J'accède à une page sans être connecté·e").page(
-  `${ROOT_PATH + 'offres'}`
-)
+fixture('Signin C | J’accède à une page sans être connecté·e').page(`${ROOT_PATH + 'offres'}`)
 
 test('Je suis redirigé·e vers la page connexion', async t => {
   await t

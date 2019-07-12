@@ -4,7 +4,7 @@ function mapArgsToCacheKey(state, offererId, userId, right) {
   return `${offererId || ''}/${userId || ''}/${right || ''}`
 }
 
-export const selectUserOffererByOffererIdAndUserIdAndRightsType = createCachedSelector(
+const selectUserOffererByOffererIdAndUserIdAndRightsType = createCachedSelector(
   state => state.data.userOfferers,
   (state, offererId) => offererId,
   (state, offererId, userId) => userId,

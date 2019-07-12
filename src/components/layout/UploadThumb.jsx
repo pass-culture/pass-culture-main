@@ -64,7 +64,7 @@ class UploadThumb extends Component {
     })
   }
 
-  handleOnUploadClick = e => {
+  handleOnUploadClick = e => () => {
     const { collectionName, dispatch, entityId, index, storeKey } = this.props
     const { imageState, isUploadDisabled } = this.state
     this.setState({
@@ -91,8 +91,8 @@ class UploadThumb extends Component {
     window && window.URL.revokeObjectURL(imageState.preview)
   }
 
-  handleOnZoomChange = e => {
-    this.setState({ zoom: parseFloat(e.target.value) })
+  handleOnZoomChange = event => {
+    this.setState({ zoom: parseFloat(event.target.value) })
   }
 
   handleOnImageChange = ctx => {
@@ -125,14 +125,16 @@ class UploadThumb extends Component {
 
   handleOnChangeImageClick = () => this.setState({ isEdited: true })
 
-  handleOnRemoveImageClick = () =>
+  handleOnRemoveImageClick = () => {
     this.setState({
       imageState: null,
       dragging: false,
       isUploadDisabled: false,
     })
+  }
 
   handleIncrement = () => this.changeZoom(1)
+
   handleDecrement = () => this.changeZoom(-1)
 
   render() {
@@ -221,10 +223,10 @@ class UploadThumb extends Component {
                 {readOnly && (
                   <button
                     className="button is-primary"
-                    onClick={this.handleOnChangeImageClick()}
+                    onClick={this.handleOnChangeImageClick}
                     type="button"
                   >
-                    {"Modifier l'image"}
+                    {'Modifier l’image'}
                   </button>
                 )}
                 {!onImageChange && // upload is managed by child component
@@ -244,10 +246,10 @@ class UploadThumb extends Component {
                 <div className="control">
                   <button
                     className="button is-primary is-outlined"
-                    onClick={this.handleOnRemoveImageClick()}
+                    onClick={this.handleOnRemoveImageClick}
                     type="button"
                   >
-                    {"Retirer l'image"}
+                    {'Retirer l’image'}
                   </button>
                 </div>
               )}
@@ -255,7 +257,7 @@ class UploadThumb extends Component {
                 <div className="control">
                   <button
                     className="button is-primary is-outlined"
-                    onClick={this.handleOnCancelModificationClick()}
+                    onClick={this.handleOnCancelModificationClick}
                     type="button"
                   >
                     {'Annuler la modification'}

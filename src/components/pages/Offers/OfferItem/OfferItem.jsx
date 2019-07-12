@@ -10,7 +10,6 @@ import Price from '../../../layout/Price'
 import Thumb from '../../../layout/Thumb'
 import { offerNormalizer } from '../../../../utils/normalizers'
 
-
 class OfferItem extends Component {
   handleOnDeactivateClick = () => {
     const { dispatch, offer } = this.props
@@ -32,9 +31,7 @@ class OfferItem extends Component {
   }
 
   buildNumberOfParticipantsLabel = (groupSizeMin, groupSizeMax) => {
-    return groupSizeMin === groupSizeMax
-      ? `${groupSizeMin}`
-      : `${groupSizeMin} - ${groupSizeMax}`
+    return groupSizeMin === groupSizeMax ? `${groupSizeMin}` : `${groupSizeMin} - ${groupSizeMax}`
   }
 
   buildNumberOfParticipantsTitle = (groupSizeMin, groupSizeMax) => {
@@ -72,8 +69,7 @@ class OfferItem extends Component {
     } = this.props
 
     const { isNew } = offer || {}
-    const { groupSizeMin, groupSizeMax, priceMin, priceMax } =
-      aggregatedStock || {}
+    const { groupSizeMin, groupSizeMax, priceMin, priceMax } = aggregatedStock || {}
     const { name } = product || {}
     const thumbUrl = offer.activeMediation ? offer.activeMediation.thumbUrl : ''
     const numberOfMediations = get(mediations, 'length')
@@ -101,11 +97,11 @@ class OfferItem extends Component {
           <ul className="infos">
             <li className="is-uppercase">{offerTypeLabel}</li>
             <li>
-              <span className="label">{"Structure : "}</span>
+              <span className="label">{'Structure : '}</span>
               {offerer && offerer.name}
             </li>
             <li>
-              <span className="label">{"Lieu : "}</span>
+              <span className="label">{'Lieu : '}</span>
               {(venue && venue.publicName) || venue.name}
             </li>
           </ul>
@@ -115,22 +111,13 @@ class OfferItem extends Component {
                 <div className="recently-added" />
               </li>
             )}
-            <li
-              title={this.buildNumberOfParticipantsTitle(
-                groupSizeMin,
-                groupSizeMax
-              )}
-            >
+            <li title={this.buildNumberOfParticipantsTitle(groupSizeMin, groupSizeMax)}>
               {groupSizeMin === 1 && <Icon svg="picto-user" />}
               {groupSizeMin > 1 && (
                 <div>
-                  <Icon svg="picto-group" />{", "}
-                  <p>
-                    {this.buildNumberOfParticipantsLabel(
-                      groupSizeMin,
-                      groupSizeMax
-                    )}
-                  </p>
+                  <Icon svg="picto-group" />
+                  {', '}
+                  <p>{this.buildNumberOfParticipantsLabel(groupSizeMin, groupSizeMax)}</p>
                 </div>
               )}
             </li>
@@ -142,14 +129,16 @@ class OfferItem extends Component {
                 {this.buildProductNavLinkLabel(offer, remainingStockQuantity)}
               </NavLink>
             </li>
-            <li>{maxDate && `jusqu'au ${maxDate.format('DD/MM/YYYY')}`}</li>
+            <li>{maxDate && `jusqu’au ${maxDate.format('DD/MM/YYYY')}`}</li>
             {stockAlertMessage && <li>{stockAlertMessage}</li>}
             <li>
               {priceMin === priceMax ? (
                 <Price value={priceMin || 0} />
               ) : (
                 <span>
-                  <Price value={priceMin} />{" - "}<Price value={priceMax} />
+                  <Price value={priceMin} />
+                  {' - '}
+                  <Price value={priceMax} />
                 </span>
               )}
             </li>
@@ -160,18 +149,12 @@ class OfferItem extends Component {
                 className={`button addMediations is-small ${
                   numberOfMediations ? 'is-secondary' : 'is-primary is-outlined'
                 }`}
-                to={`/offres/${offer.id}${
-                  numberOfMediations ? '' : `/accroches/nouveau${search}`
-                }`}
+                to={`/offres/${offer.id}${numberOfMediations ? '' : `/accroches/nouveau${search}`}`}
               >
                 <span className="icon">
                   <Icon svg="ico-stars" />
                 </span>
-                <span>
-                  {get(mediations, 'length')
-                    ? 'Accroches'
-                    : 'Ajouter une Accroche'}
-                </span>
+                <span>{get(mediations, 'length') ? 'Accroches' : 'Ajouter une Accroche'}</span>
               </NavLink>
             </li>
             <li>
@@ -180,7 +163,7 @@ class OfferItem extends Component {
                 to={`/offres/${offer.id}`}
               >
                 <Icon svg="ico-pen-r" />
-                {"Modifier"}
+                {'Modifier'}
               </NavLink>
 
               <button
@@ -191,7 +174,7 @@ class OfferItem extends Component {
                 {offer.isActive ? (
                   <span>
                     <Icon svg="ico-close-r" />
-                    {"Désactiver"}
+                    {'Désactiver'}
                   </span>
                 ) : (
                   'Activer'

@@ -7,7 +7,7 @@ import {
   getDatetimeOneHourAfter,
   getDatetimeAtSpecificHoursAndMinutes,
   getRemainingStocksCount,
-  formatPrice
+  formatPrice,
 } from '../utils'
 
 describe('src | components | pages | Offer | StockItem | utils', () => {
@@ -183,11 +183,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
       const datetime = moment('2019-04-27T19:00:00Z').tz('Europe/Paris')
 
       // when
-      const nextDatetime = getDatetimeAtSpecificHoursAndMinutes(
-        datetime,
-        23,
-        59
-      )
+      const nextDatetime = getDatetimeAtSpecificHoursAndMinutes(datetime, 23, 59)
 
       // then
       expect(nextDatetime).toStrictEqual('2019-04-27T21:59:00.000Z')
@@ -243,7 +239,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
         const result = formatPrice(readOnly)(value)
 
         // then
-        expect(result).toStrictEqual("1.1")
+        expect(result).toStrictEqual('1.1')
       })
 
       it('should return a not formatted value when value contain a dot', () => {
@@ -255,7 +251,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
         const result = formatPrice(readOnly)(value)
 
         // then
-        expect(result).toStrictEqual("1.1")
+        expect(result).toStrictEqual('1.1')
       })
     })
   })

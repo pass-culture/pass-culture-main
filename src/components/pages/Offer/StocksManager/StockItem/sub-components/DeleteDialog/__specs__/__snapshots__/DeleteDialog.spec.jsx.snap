@@ -25,7 +25,7 @@ ShallowWrapper {
           className="is-size-7"
           colSpan="6"
         >
-          En confirmant l'annulation de
+          En confirmant l’annulation de
            
           ce stock
            
@@ -59,7 +59,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            "En confirmant l'annulation de",
+            "En confirmant l’annulation de",
             " ",
             "ce stock",
             " ",
@@ -73,7 +73,7 @@ ShallowWrapper {
         },
         "ref": null,
         "rendered": Array [
-          "En confirmant l'annulation de",
+          "En confirmant l’annulation de",
           " ",
           "ce stock",
           " ",
@@ -156,7 +156,7 @@ ShallowWrapper {
             className="is-size-7"
             colSpan="6"
           >
-            En confirmant l'annulation de
+            En confirmant l’annulation de
              
             ce stock
              
@@ -190,7 +190,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              "En confirmant l'annulation de",
+              "En confirmant l’annulation de",
               " ",
               "ce stock",
               " ",
@@ -204,7 +204,7 @@ ShallowWrapper {
           },
           "ref": null,
           "rendered": Array [
-            "En confirmant l'annulation de",
+            "En confirmant l’annulation de",
             " ",
             "ce stock",
             " ",
@@ -331,7 +331,7 @@ ShallowWrapper {
           className="is-size-7"
           colSpan="6"
         >
-          En confirmant l'annulation de
+          En confirmant l’annulation de
            
           cette date
            
@@ -366,7 +366,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            "En confirmant l'annulation de",
+            "En confirmant l’annulation de",
             " ",
             "cette date",
             " ",
@@ -380,7 +380,7 @@ ShallowWrapper {
         },
         "ref": null,
         "rendered": Array [
-          "En confirmant l'annulation de",
+          "En confirmant l’annulation de",
           " ",
           "cette date",
           " ",
@@ -471,7 +471,7 @@ ShallowWrapper {
             className="is-size-7"
             colSpan="6"
           >
-            En confirmant l'annulation de
+            En confirmant l’annulation de
              
             cette date
              
@@ -506,7 +506,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              "En confirmant l'annulation de",
+              "En confirmant l’annulation de",
               " ",
               "cette date",
               " ",
@@ -520,7 +520,7 @@ ShallowWrapper {
           },
           "ref": null,
           "rendered": Array [
-            "En confirmant l'annulation de",
+            "En confirmant l’annulation de",
             " ",
             "cette date",
             " ",

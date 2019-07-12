@@ -8,19 +8,17 @@ describe('src | components | pages | Offerers | OffererItem', () => {
 
   beforeEach(() => {
     props = {
-      venues: [],
-      physicalVenues: []
+      venues: [{}],
+      physicalVenues: [{}],
     }
   })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<OffererItem {...props} />)
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<OffererItem {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toBeDefined()
+    expect(wrapper).toMatchSnapshot()
   })
 })

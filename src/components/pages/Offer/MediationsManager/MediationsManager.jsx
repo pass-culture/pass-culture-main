@@ -18,7 +18,7 @@ class MediationsManager extends Component {
             children: <span>{' Pourquoi ? '}</span>,
             place: 'bottom',
             tip:
-              "<div><p>Pour que votre offre s'affiche dans l'application du Pass Culture, vous devez:</p><p>- ajouter une ou plusieurs accroches.</p></div>",
+              '<div><p>Pour que votre offre s’affiche dans l’application du pass Culture, vous devez :</p><p>- Ajouter une ou plusieurs accroches</p></div>',
             type: 'info',
           },
           type: 'warning',
@@ -49,7 +49,7 @@ class MediationsManager extends Component {
           </p>
           <p>
             {'Les accroches font la '}
-            <b>{'spécificité du Pass Culture'}</b>
+            <b>{'spécificité du pass Culture'}</b>
             {'. Prenez le'}
             {'temps de les choisir avec soin !'}
           </p>
@@ -82,7 +82,7 @@ class MediationsManager extends Component {
 
 MediationsManager.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  mediations: PropTypes.arrayOf.isRequired,
+  mediations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   notification: PropTypes.shape().isRequired,
   offer: PropTypes.shape({
     id: PropTypes.string,

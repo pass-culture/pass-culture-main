@@ -15,10 +15,7 @@ const TableSortableTh = ({ field, label, sort, action, style }) => (
       <span>{label}</span>
 
       <span className="sortPlaceHolder">
-        {sort.field === field && (
-          // @TODO: onclick sort action
-          <Icon svg={`ico-sort-${sort.dir}ending`} />
-        )}
+        {sort.field === field && <Icon svg={`ico-sort-${sort.dir}ending`} />}
       </span>
     </a>
   </th>
@@ -246,7 +243,7 @@ class RawAccouting extends Component {
                   />
                   <Th
                     field="cancelDate"
-                    label="Date limite d'annulation"
+                    label="Date limite d’annulation"
                     style={{ width: '100px' }}
                   />
                   <Th

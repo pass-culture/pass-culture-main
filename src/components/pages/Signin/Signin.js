@@ -47,13 +47,12 @@ class Signin extends Component {
                   <h1 className="title is-spaced is-1">
                     <span className="has-text-weight-bold ">{'Bienvenue '}</span>
                     <span className="has-text-weight-semibold">{'dans la version bêta '}</span>
-                    <span className="has-text-weight-normal">{'du Pass Culture pro.'}</span>
+                    <span className="has-text-weight-normal">{'du pass Culture pro.'}</span>
                   </h1>
                   <h2 className="subtitle is-2">
-                    {"Et merci de votre participation pour nous aider à l'améliorer !"}
+                    {'Et merci de votre participation pour nous aider à l’améliorer !'}
                   </h2>
                   <span className="has-text-grey">
-                    {' '}
                     <span className="required-legend">{'*'} </span> {'Champs obligatoires'}
                   </span>
                   <Form
@@ -69,7 +68,7 @@ class Signin extends Component {
                       <Field
                         label="Adresse e-mail"
                         name="identifier"
-                        placeholder="Identifiant (email)"
+                        placeholder="Identifiant (e-mail)"
                         required
                         type="email"
                       />

@@ -1,7 +1,4 @@
-import {
-  mapDispatchToProps,
-  mapStateToProps,
-} from '../VenueProvidersManagerContainer'
+import { mapDispatchToProps, mapStateToProps } from '../VenueProvidersManagerContainer'
 
 describe('src | components | pages | Venue | VenueProvidersManager', () => {
   describe('mapStateToProps', () => {
@@ -9,10 +6,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       // given
       const state = {
         data: {
-          providers: [
-            { id: 'AF', localClass: 'a' },
-            { id: 'AG', localClass: 'b' },
-          ],
+          providers: [{ id: 'AF', localClass: 'a' }, { id: 'AG', localClass: 'b' }],
           venueProviders: [{ id: 'AE', venueId: 'EE' }],
         },
       }
@@ -25,10 +19,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
 
       // then
       expect(result).toStrictEqual({
-        providers: [
-          { id: 'AF', localClass: 'a' },
-          { id: 'AG', localClass: 'b' },
-        ],
+        providers: [{ id: 'AF', localClass: 'a' }, { id: 'AG', localClass: 'b' }],
         venueProviders: [{ id: 'AE', venueId: 'EE' }],
       })
     })

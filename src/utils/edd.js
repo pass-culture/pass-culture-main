@@ -363,7 +363,7 @@ export const showOptions = [
       { code: 1205, label: 'Spectacle pédagogique' },
       { code: 1206, label: 'Marionettes' },
       { code: 1207, label: 'Comédie musicale jeunesse' },
-      { code: 1208, label: "Théâtre d'Ombres" },
+      { code: 1208, label: 'Théâtre d’Ombres' },
     ],
   },
   {
@@ -377,17 +377,14 @@ export const showOptions = [
       { code: 1305, label: 'Lecture' },
       { code: 1306, label: 'Spectacle Scénographique' },
       { code: 1307, label: 'Théâtre Experimental' },
-      { code: 1308, label: "Théâtre d'Objet" },
+      { code: 1308, label: 'Théâtre d’Objet' },
       { code: 1309, label: 'Tragédie' },
     ],
   },
   {
     code: 1400,
     label: 'Pluridisciplinaire',
-    children: [
-      { code: 1401, label: 'Performance' },
-      { code: 1402, label: 'Poésie' },
-    ],
+    children: [{ code: 1401, label: 'Performance' }, { code: 1402, label: 'Poésie' }],
   },
   {
     code: 1500,

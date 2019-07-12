@@ -7,7 +7,7 @@ import { compose } from 'redux'
 
 import SignupForm from './SignupForm'
 import SignupConfirmation from './SignupConfirmation'
-import { withRedirectToOffersWhenAlreadyAuthenticated } from '../../hocs'
+import { withRedirectToOffersWhenAlreadyAuthenticated } from '../../hocs/with-login/withRedirectToOffersWhenAlreadyAuthenticated'
 import Logo from '../../layout/Logo'
 import Main from '../../layout/Main'
 

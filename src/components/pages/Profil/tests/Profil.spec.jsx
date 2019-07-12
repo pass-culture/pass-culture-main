@@ -49,9 +49,7 @@ describe('src | components | pages | Profil', () => {
     expect(textFieldComponents).toHaveLength(2)
     expect(textFieldComponents.at(0).prop('name')).toBe('publicName')
     expect(textFieldComponents.at(0).prop('label')).toBe('Nom :')
-    expect(textFieldComponents.at(0).prop('placeholder')).toBe(
-      '3 caractères minimum'
-    )
+    expect(textFieldComponents.at(0).prop('placeholder')).toBe('3 caractères minimum')
     expect(textFieldComponents.at(0).prop('required')).toBe(true)
     expect(textFieldComponents.at(1).prop('name')).toBe('email')
     expect(textFieldComponents.at(1).prop('label')).toBe('E-mail :')

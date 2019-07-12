@@ -38,7 +38,7 @@ class TextField extends Component {
       const hasPressedPlusOrMinusAfterNumbers =
         this.inputElement.value && (event.which === 45 || event.which === 43)
 
-        if (hasPressedEKeys || hasPressedPlusOrMinusAfterNumbers) {
+      if (hasPressedEKeys || hasPressedPlusOrMinusAfterNumbers) {
         event.preventDefault()
       }
     })
@@ -112,14 +112,7 @@ class TextField extends Component {
   }
 
   render() {
-    const {
-      format,
-      name,
-      parse,
-      required,
-      type,
-      validate,
-    } = this.props
+    const { format, name, parse, required, type, validate } = this.props
 
     return (
       <Field

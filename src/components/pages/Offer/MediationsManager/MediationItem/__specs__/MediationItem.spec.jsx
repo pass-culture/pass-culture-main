@@ -13,7 +13,7 @@ describe('src | components | pages | Offer | MediationItem', () => {
         id: 'AE',
         isActive: true,
         thumbUrl: 'http://example.com/image.jpg',
-      }
+      },
     }
   })
 
@@ -40,7 +40,11 @@ describe('src | components | pages | Offer | MediationItem', () => {
       expect(form.prop('handleSuccessNotification')).toBeNull()
       expect(form.prop('isAutoSubmit')).toBe(true)
       expect(form.prop('name')).toBe('mediation-AE')
-      expect(form.prop('patch')).toStrictEqual({id: 'AE', isActive: true, thumbUrl: 'http://example.com/image.jpg'})
+      expect(form.prop('patch')).toStrictEqual({
+        id: 'AE',
+        isActive: true,
+        thumbUrl: 'http://example.com/image.jpg',
+      })
       expect(form.prop('Tag')).toBe('li')
     })
 

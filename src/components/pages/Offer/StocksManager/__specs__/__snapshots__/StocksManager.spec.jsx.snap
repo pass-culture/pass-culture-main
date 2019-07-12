@@ -4,6 +4,8 @@ exports[`src | components | pages | Offer | StocksManager | StocksManager should
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <StocksManager
+    dispatch={[MockFunction]}
+    isEvent={true}
     location={
       Object {
         "hash": "",
@@ -19,6 +21,7 @@ ShallowWrapper {
         "context": [Function],
       }
     }
+    shouldPreventCreationOfSecondStock={false}
     stocks={
       Array [
         Object {
@@ -70,12 +73,28 @@ ShallowWrapper {
         >
           <HeroSection
             subtitle={null}
+            title="Dates, horaires et prix"
           />
           <table
-            className="table is-hoverable stocks-table small"
+            className="table is-hoverable stocks-table"
           >
             <thead>
               <tr>
+                <React.Fragment>
+                  <td>
+                    Date
+                  </td>
+                  <td>
+                    Heure de
+                    <br />
+                    début
+                  </td>
+                  <td>
+                    Heure de
+                    <br />
+                    fin
+                  </td>
+                </React.Fragment>
                 <td>
                   Prix
                 </td>
@@ -83,10 +102,10 @@ ShallowWrapper {
                   Date Limite de Réservation
                 </td>
                 <td>
-                  Stock affecté
+                  Places affectées
                 </td>
                 <td>
-                  Stock restant
+                  Places restantes
                 </td>
                 <td>
                   Modifier
@@ -110,7 +129,7 @@ ShallowWrapper {
                     onClick={[Function]}
                     type="button"
                   >
-                    
+                    + Ajouter une date
                   </button>
                 </td>
               </tr>
@@ -118,6 +137,7 @@ ShallowWrapper {
             <withRouter(_withQueryRouter)
               closeInfo={[Function]}
               handleSetErrors={[Function]}
+              isEvent={true}
               isFullyEditable={true}
               showInfo={[Function]}
               stock={
@@ -220,12 +240,28 @@ ShallowWrapper {
           "children": Array [
             <HeroSection
               subtitle={null}
+              title="Dates, horaires et prix"
             />,
             <table
-              className="table is-hoverable stocks-table small"
+              className="table is-hoverable stocks-table"
             >
               <thead>
                 <tr>
+                  <React.Fragment>
+                    <td>
+                      Date
+                    </td>
+                    <td>
+                      Heure de
+                      <br />
+                      début
+                    </td>
+                    <td>
+                      Heure de
+                      <br />
+                      fin
+                    </td>
+                  </React.Fragment>
                   <td>
                     Prix
                   </td>
@@ -233,10 +269,10 @@ ShallowWrapper {
                     Date Limite de Réservation
                   </td>
                   <td>
-                    Stock affecté
+                    Places affectées
                   </td>
                   <td>
-                    Stock restant
+                    Places restantes
                   </td>
                   <td>
                     Modifier
@@ -260,7 +296,7 @@ ShallowWrapper {
                       onClick={[Function]}
                       type="button"
                     >
-                      
+                      + Ajouter une date
                     </button>
                   </td>
                 </tr>
@@ -268,6 +304,7 @@ ShallowWrapper {
               <withRouter(_withQueryRouter)
                 closeInfo={[Function]}
                 handleSetErrors={[Function]}
+                isEvent={true}
                 isFullyEditable={true}
                 showInfo={[Function]}
                 stock={
@@ -322,7 +359,7 @@ ShallowWrapper {
             "props": Object {
               "children": null,
               "subtitle": null,
-              "title": undefined,
+              "title": "Dates, horaires et prix",
             },
             "ref": null,
             "rendered": null,
@@ -336,6 +373,21 @@ ShallowWrapper {
               "children": Array [
                 <thead>
                   <tr>
+                    <React.Fragment>
+                      <td>
+                        Date
+                      </td>
+                      <td>
+                        Heure de
+                        <br />
+                        début
+                      </td>
+                      <td>
+                        Heure de
+                        <br />
+                        fin
+                      </td>
+                    </React.Fragment>
                     <td>
                       Prix
                     </td>
@@ -343,10 +395,10 @@ ShallowWrapper {
                       Date Limite de Réservation
                     </td>
                     <td>
-                      Stock affecté
+                      Places affectées
                     </td>
                     <td>
-                      Stock restant
+                      Places restantes
                     </td>
                     <td>
                       Modifier
@@ -370,7 +422,7 @@ ShallowWrapper {
                         onClick={[Function]}
                         type="button"
                       >
-                        
+                        + Ajouter une date
                       </button>
                     </td>
                   </tr>
@@ -380,6 +432,7 @@ ShallowWrapper {
                   <withRouter(_withQueryRouter)
                     closeInfo={[Function]}
                     handleSetErrors={[Function]}
+                    isEvent={true}
                     isFullyEditable={true}
                     showInfo={[Function]}
                     stock={
@@ -424,7 +477,7 @@ ShallowWrapper {
                 ],
                 false,
               ],
-              "className": "table is-hoverable stocks-table small",
+              "className": "table is-hoverable stocks-table",
             },
             "ref": null,
             "rendered": Array [
@@ -434,6 +487,21 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": <tr>
+                    <React.Fragment>
+                      <td>
+                        Date
+                      </td>
+                      <td>
+                        Heure de
+                        <br />
+                        début
+                      </td>
+                      <td>
+                        Heure de
+                        <br />
+                        fin
+                      </td>
+                    </React.Fragment>
                     <td>
                       Prix
                     </td>
@@ -441,10 +509,10 @@ ShallowWrapper {
                       Date Limite de Réservation
                     </td>
                     <td>
-                      Stock affecté
+                      Places affectées
                     </td>
                     <td>
-                      Stock restant
+                      Places restantes
                     </td>
                     <td>
                       Modifier
@@ -461,7 +529,21 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": Array [
-                      undefined,
+                      <React.Fragment>
+                        <td>
+                          Date
+                        </td>
+                        <td>
+                          Heure de
+                          <br />
+                          début
+                        </td>
+                        <td>
+                          Heure de
+                          <br />
+                          fin
+                        </td>
+                      </React.Fragment>,
                       <td>
                         Prix
                       </td>,
@@ -469,10 +551,10 @@ ShallowWrapper {
                         Date Limite de Réservation
                       </td>,
                       <td>
-                        Stock affecté
+                        Places affectées
                       </td>,
                       <td>
-                        Stock restant
+                        Places restantes
                       </td>,
                       <td>
                         Modifier
@@ -484,7 +566,97 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": Array [
-                    undefined,
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "children": Array [
+                          <td>
+                            Date
+                          </td>,
+                          <td>
+                            Heure de
+                            <br />
+                            début
+                          </td>,
+                          <td>
+                            Heure de
+                            <br />
+                            fin
+                          </td>,
+                        ],
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": "Date",
+                          },
+                          "ref": null,
+                          "rendered": "Date",
+                          "type": "td",
+                        },
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": Array [
+                              "Heure de",
+                              <br />,
+                              "début",
+                            ],
+                          },
+                          "ref": null,
+                          "rendered": Array [
+                            "Heure de",
+                            Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "host",
+                              "props": Object {},
+                              "ref": null,
+                              "rendered": null,
+                              "type": "br",
+                            },
+                            "début",
+                          ],
+                          "type": "td",
+                        },
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": Array [
+                              "Heure de",
+                              <br />,
+                              "fin",
+                            ],
+                          },
+                          "ref": null,
+                          "rendered": Array [
+                            "Heure de",
+                            Object {
+                              "instance": null,
+                              "key": undefined,
+                              "nodeType": "host",
+                              "props": Object {},
+                              "ref": null,
+                              "rendered": null,
+                              "type": "br",
+                            },
+                            "fin",
+                          ],
+                          "type": "td",
+                        },
+                      ],
+                      "type": Symbol(react.fragment),
+                    },
                     Object {
                       "instance": null,
                       "key": undefined,
@@ -512,10 +684,10 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": "Stock affecté",
+                        "children": "Places affectées",
                       },
                       "ref": null,
-                      "rendered": "Stock affecté",
+                      "rendered": "Places affectées",
                       "type": "td",
                     },
                     Object {
@@ -523,10 +695,10 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": "Stock restant",
+                        "children": "Places restantes",
                       },
                       "ref": null,
-                      "rendered": "Stock restant",
+                      "rendered": "Places restantes",
                       "type": "td",
                     },
                     Object {
@@ -574,7 +746,7 @@ ShallowWrapper {
                         onClick={[Function]}
                         type="button"
                       >
-                        
+                        + Ajouter une date
                       </button>
                     </td>
                   </tr>,
@@ -595,7 +767,7 @@ ShallowWrapper {
                         onClick={[Function]}
                         type="button"
                       >
-                        
+                        + Ajouter une date
                       </button>
                     </td>,
                     "className": "",
@@ -613,7 +785,7 @@ ShallowWrapper {
                         onClick={[Function]}
                         type="button"
                       >
-                        
+                        + Ajouter une date
                       </button>,
                       "colSpan": "10",
                     },
@@ -623,7 +795,7 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": "",
+                        "children": "+ Ajouter une date",
                         "className": "button is-secondary",
                         "disabled": true,
                         "id": "add-stock",
@@ -631,7 +803,7 @@ ShallowWrapper {
                         "type": "button",
                       },
                       "ref": null,
-                      "rendered": "",
+                      "rendered": "+ Ajouter une date",
                       "type": "button",
                     },
                     "type": "td",
@@ -648,7 +820,7 @@ ShallowWrapper {
                 "props": Object {
                   "closeInfo": [Function],
                   "handleSetErrors": [Function],
-                  "isEvent": undefined,
+                  "isEvent": true,
                   "isFullyEditable": true,
                   "showInfo": [Function],
                   "stock": Object {
@@ -737,12 +909,28 @@ ShallowWrapper {
           >
             <HeroSection
               subtitle={null}
+              title="Dates, horaires et prix"
             />
             <table
-              className="table is-hoverable stocks-table small"
+              className="table is-hoverable stocks-table"
             >
               <thead>
                 <tr>
+                  <React.Fragment>
+                    <td>
+                      Date
+                    </td>
+                    <td>
+                      Heure de
+                      <br />
+                      début
+                    </td>
+                    <td>
+                      Heure de
+                      <br />
+                      fin
+                    </td>
+                  </React.Fragment>
                   <td>
                     Prix
                   </td>
@@ -750,10 +938,10 @@ ShallowWrapper {
                     Date Limite de Réservation
                   </td>
                   <td>
-                    Stock affecté
+                    Places affectées
                   </td>
                   <td>
-                    Stock restant
+                    Places restantes
                   </td>
                   <td>
                     Modifier
@@ -777,7 +965,7 @@ ShallowWrapper {
                       onClick={[Function]}
                       type="button"
                     >
-                      
+                      + Ajouter une date
                     </button>
                   </td>
                 </tr>
@@ -785,6 +973,7 @@ ShallowWrapper {
               <withRouter(_withQueryRouter)
                 closeInfo={[Function]}
                 handleSetErrors={[Function]}
+                isEvent={true}
                 isFullyEditable={true}
                 showInfo={[Function]}
                 stock={
@@ -887,12 +1076,28 @@ ShallowWrapper {
             "children": Array [
               <HeroSection
                 subtitle={null}
+                title="Dates, horaires et prix"
               />,
               <table
-                className="table is-hoverable stocks-table small"
+                className="table is-hoverable stocks-table"
               >
                 <thead>
                   <tr>
+                    <React.Fragment>
+                      <td>
+                        Date
+                      </td>
+                      <td>
+                        Heure de
+                        <br />
+                        début
+                      </td>
+                      <td>
+                        Heure de
+                        <br />
+                        fin
+                      </td>
+                    </React.Fragment>
                     <td>
                       Prix
                     </td>
@@ -900,10 +1105,10 @@ ShallowWrapper {
                       Date Limite de Réservation
                     </td>
                     <td>
-                      Stock affecté
+                      Places affectées
                     </td>
                     <td>
-                      Stock restant
+                      Places restantes
                     </td>
                     <td>
                       Modifier
@@ -927,7 +1132,7 @@ ShallowWrapper {
                         onClick={[Function]}
                         type="button"
                       >
-                        
+                        + Ajouter une date
                       </button>
                     </td>
                   </tr>
@@ -935,6 +1140,7 @@ ShallowWrapper {
                 <withRouter(_withQueryRouter)
                   closeInfo={[Function]}
                   handleSetErrors={[Function]}
+                  isEvent={true}
                   isFullyEditable={true}
                   showInfo={[Function]}
                   stock={
@@ -989,7 +1195,7 @@ ShallowWrapper {
               "props": Object {
                 "children": null,
                 "subtitle": null,
-                "title": undefined,
+                "title": "Dates, horaires et prix",
               },
               "ref": null,
               "rendered": null,
@@ -1003,6 +1209,21 @@ ShallowWrapper {
                 "children": Array [
                   <thead>
                     <tr>
+                      <React.Fragment>
+                        <td>
+                          Date
+                        </td>
+                        <td>
+                          Heure de
+                          <br />
+                          début
+                        </td>
+                        <td>
+                          Heure de
+                          <br />
+                          fin
+                        </td>
+                      </React.Fragment>
                       <td>
                         Prix
                       </td>
@@ -1010,10 +1231,10 @@ ShallowWrapper {
                         Date Limite de Réservation
                       </td>
                       <td>
-                        Stock affecté
+                        Places affectées
                       </td>
                       <td>
-                        Stock restant
+                        Places restantes
                       </td>
                       <td>
                         Modifier
@@ -1037,7 +1258,7 @@ ShallowWrapper {
                           onClick={[Function]}
                           type="button"
                         >
-                          
+                          + Ajouter une date
                         </button>
                       </td>
                     </tr>
@@ -1047,6 +1268,7 @@ ShallowWrapper {
                     <withRouter(_withQueryRouter)
                       closeInfo={[Function]}
                       handleSetErrors={[Function]}
+                      isEvent={true}
                       isFullyEditable={true}
                       showInfo={[Function]}
                       stock={
@@ -1091,7 +1313,7 @@ ShallowWrapper {
                   ],
                   false,
                 ],
-                "className": "table is-hoverable stocks-table small",
+                "className": "table is-hoverable stocks-table",
               },
               "ref": null,
               "rendered": Array [
@@ -1101,6 +1323,21 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": <tr>
+                      <React.Fragment>
+                        <td>
+                          Date
+                        </td>
+                        <td>
+                          Heure de
+                          <br />
+                          début
+                        </td>
+                        <td>
+                          Heure de
+                          <br />
+                          fin
+                        </td>
+                      </React.Fragment>
                       <td>
                         Prix
                       </td>
@@ -1108,10 +1345,10 @@ ShallowWrapper {
                         Date Limite de Réservation
                       </td>
                       <td>
-                        Stock affecté
+                        Places affectées
                       </td>
                       <td>
-                        Stock restant
+                        Places restantes
                       </td>
                       <td>
                         Modifier
@@ -1128,7 +1365,21 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": Array [
-                        undefined,
+                        <React.Fragment>
+                          <td>
+                            Date
+                          </td>
+                          <td>
+                            Heure de
+                            <br />
+                            début
+                          </td>
+                          <td>
+                            Heure de
+                            <br />
+                            fin
+                          </td>
+                        </React.Fragment>,
                         <td>
                           Prix
                         </td>,
@@ -1136,10 +1387,10 @@ ShallowWrapper {
                           Date Limite de Réservation
                         </td>,
                         <td>
-                          Stock affecté
+                          Places affectées
                         </td>,
                         <td>
-                          Stock restant
+                          Places restantes
                         </td>,
                         <td>
                           Modifier
@@ -1151,7 +1402,97 @@ ShallowWrapper {
                     },
                     "ref": null,
                     "rendered": Array [
-                      undefined,
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "children": Array [
+                            <td>
+                              Date
+                            </td>,
+                            <td>
+                              Heure de
+                              <br />
+                              début
+                            </td>,
+                            <td>
+                              Heure de
+                              <br />
+                              fin
+                            </td>,
+                          ],
+                        },
+                        "ref": null,
+                        "rendered": Array [
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "host",
+                            "props": Object {
+                              "children": "Date",
+                            },
+                            "ref": null,
+                            "rendered": "Date",
+                            "type": "td",
+                          },
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "host",
+                            "props": Object {
+                              "children": Array [
+                                "Heure de",
+                                <br />,
+                                "début",
+                              ],
+                            },
+                            "ref": null,
+                            "rendered": Array [
+                              "Heure de",
+                              Object {
+                                "instance": null,
+                                "key": undefined,
+                                "nodeType": "host",
+                                "props": Object {},
+                                "ref": null,
+                                "rendered": null,
+                                "type": "br",
+                              },
+                              "début",
+                            ],
+                            "type": "td",
+                          },
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "host",
+                            "props": Object {
+                              "children": Array [
+                                "Heure de",
+                                <br />,
+                                "fin",
+                              ],
+                            },
+                            "ref": null,
+                            "rendered": Array [
+                              "Heure de",
+                              Object {
+                                "instance": null,
+                                "key": undefined,
+                                "nodeType": "host",
+                                "props": Object {},
+                                "ref": null,
+                                "rendered": null,
+                                "type": "br",
+                              },
+                              "fin",
+                            ],
+                            "type": "td",
+                          },
+                        ],
+                        "type": Symbol(react.fragment),
+                      },
                       Object {
                         "instance": null,
                         "key": undefined,
@@ -1179,10 +1520,10 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": "Stock affecté",
+                          "children": "Places affectées",
                         },
                         "ref": null,
-                        "rendered": "Stock affecté",
+                        "rendered": "Places affectées",
                         "type": "td",
                       },
                       Object {
@@ -1190,10 +1531,10 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": "Stock restant",
+                          "children": "Places restantes",
                         },
                         "ref": null,
-                        "rendered": "Stock restant",
+                        "rendered": "Places restantes",
                         "type": "td",
                       },
                       Object {
@@ -1241,7 +1582,7 @@ ShallowWrapper {
                           onClick={[Function]}
                           type="button"
                         >
-                          
+                          + Ajouter une date
                         </button>
                       </td>
                     </tr>,
@@ -1262,7 +1603,7 @@ ShallowWrapper {
                           onClick={[Function]}
                           type="button"
                         >
-                          
+                          + Ajouter une date
                         </button>
                       </td>,
                       "className": "",
@@ -1280,7 +1621,7 @@ ShallowWrapper {
                           onClick={[Function]}
                           type="button"
                         >
-                          
+                          + Ajouter une date
                         </button>,
                         "colSpan": "10",
                       },
@@ -1290,7 +1631,7 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": "",
+                          "children": "+ Ajouter une date",
                           "className": "button is-secondary",
                           "disabled": true,
                           "id": "add-stock",
@@ -1298,7 +1639,7 @@ ShallowWrapper {
                           "type": "button",
                         },
                         "ref": null,
-                        "rendered": "",
+                        "rendered": "+ Ajouter une date",
                         "type": "button",
                       },
                       "type": "td",
@@ -1315,7 +1656,7 @@ ShallowWrapper {
                   "props": Object {
                     "closeInfo": [Function],
                     "handleSetErrors": [Function],
-                    "isEvent": undefined,
+                    "isEvent": true,
                     "isFullyEditable": true,
                     "showInfo": [Function],
                     "stock": Object {

@@ -5,6 +5,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <HeroSection
     subtitle="Fake subtitle"
+    title="Fake title"
   >
      
   </HeroSection>,
@@ -30,7 +31,9 @@ ShallowWrapper {
             className="section-icon"
           />
         </div>,
-        <h1 />,
+        <h1>
+          Fake title
+        </h1>,
         <h2
           className="has-text-weight-bold is-paddingless"
         >
@@ -71,10 +74,10 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": undefined,
+          "children": "Fake title",
         },
         "ref": null,
-        "rendered": null,
+        "rendered": "Fake title",
         "type": "h1",
       },
       Object {
@@ -107,7 +110,9 @@ ShallowWrapper {
               className="section-icon"
             />
           </div>,
-          <h1 />,
+          <h1>
+            Fake title
+          </h1>,
           <h2
             className="has-text-weight-bold is-paddingless"
           >
@@ -148,10 +153,10 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": undefined,
+            "children": "Fake title",
           },
           "ref": null,
-          "rendered": null,
+          "rendered": "Fake title",
           "type": "h1",
         },
         Object {

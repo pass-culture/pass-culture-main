@@ -1,6 +1,9 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import { withRedirectToOffersWhenAlreadyAuthenticated, redirectToUrl} from '../withRedirectToOffersWhenAlreadyAuthenticated'
+import {
+  withRedirectToOffersWhenAlreadyAuthenticated,
+  redirectToUrl,
+} from '../withRedirectToOffersWhenAlreadyAuthenticated'
 
 const Test = () => null
 const RedirectToOffersWhenAlreadyAuthenticatedTest = withRedirectToOffersWhenAlreadyAuthenticated(
@@ -23,68 +26,72 @@ describe('src | components | pages | hocs | with-login | withRedirectToOffersWhe
     describe('when the user is signin for the first time and has no offer and only a virtual venue created by default', () => {
       it('should redirect to offerers page', () => {
         // given
-        const data = {currentUser: {
-          hasOffers: false,
-          hasPhysicalVenues: false
+        const data = {
+          currentUser: {
+            hasOffers: false,
+            hasPhysicalVenues: false,
+          },
         }
-      }
 
         // when
         const result = redirectToUrl(data)
 
         // then
-        expect(result).toStrictEqual("/structures")
+        expect(result).toStrictEqual('/structures')
       })
     })
 
     describe('when the user has a digital offer and only a virtual venue', () => {
       it('should redirect to offerers page', () => {
         // given
-        const data =  { currentUser: {
-          hasOffers: true,
-          hasPhysicalVenues: false
-          }
+        const data = {
+          currentUser: {
+            hasOffers: true,
+            hasPhysicalVenues: false,
+          },
         }
 
         // when
         const result = redirectToUrl(data)
 
         // then
-        expect(result).toStrictEqual("/structures")
+        expect(result).toStrictEqual('/structures')
       })
     })
 
     describe('when the user has no offers but a physical venue', () => {
       it('should redirect to offers page', () => {
         // given
-        const data = { currentUser: {
+        const data = {
+          currentUser: {
             hasOffers: false,
-              hasPhysicalVenues: true
-          }
+            hasPhysicalVenues: true,
+          },
         }
 
         // when
         const result = redirectToUrl(data)
 
         // then
-        expect(result).toStrictEqual("/offres")
+        expect(result).toStrictEqual('/offres')
       })
     })
 
     describe('when the user has offers in physical venues', () => {
       it('should redirect to offers page', () => {
         // given
-        const data = { currentUser: {
-          hasOffers: true,
-          hasPhysicalVenues: true
-          }
+        const data = {
+          currentUser: {
+            hasOffers: true,
+            hasPhysicalVenues: true,
+          },
         }
 
         // when
         const result = redirectToUrl(data)
 
         // then
-        expect(result).toStrictEqual("/offres")
+        expect(result).toStrictEqual('/offres')
       })
     })
   })

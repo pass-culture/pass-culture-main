@@ -3,10 +3,8 @@ import { compose } from 'redux'
 
 import Offerer from './Offerer'
 import mapStateToProps from './mapStateToProps'
-import {
-  withFrenchQueryRouter,
-  withRedirectToSigninWhenNotAuthenticated,
-} from '../../hocs'
+import withFrenchQueryRouter from '../../hocs/withFrenchQueryRouter'
+import withRedirectToSigninWhenNotAuthenticated from '../../hocs/with-login/withRedirectToSigninWhenNotAuthenticated'
 
 export default compose(
   withRedirectToSigninWhenNotAuthenticated,

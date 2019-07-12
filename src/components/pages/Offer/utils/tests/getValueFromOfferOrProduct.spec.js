@@ -5,7 +5,7 @@ describe('src | components | pages | Offer | utils | getValueFromOfferOrProduct'
     // given
     const offer = {}
     const product = {
-      description: "PNL n'est plus ce qu'iel était",
+      description: 'PNL n’est plus ce qu’iel était',
     }
 
     // when
@@ -22,7 +22,7 @@ describe('src | components | pages | Offer | utils | getValueFromOfferOrProduct'
       id: 'AE',
     }
     const product = {
-      description: "PNL n'est plus ce qu'il.elle était",
+      description: 'PNL n’est plus ce qu’il.elle était',
     }
 
     // when

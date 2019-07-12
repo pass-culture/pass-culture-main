@@ -4,7 +4,7 @@ import React from 'react'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import { Icon } from './Icon'
+import Icon from './Icon'
 
 const BackButton = ({ className, history, ...otherProps }) => {
   return (

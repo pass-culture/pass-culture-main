@@ -2,7 +2,7 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-import { Icon } from './Icon'
+import Icon from './Icon'
 
 class Spinner extends Component {
   constructor() {

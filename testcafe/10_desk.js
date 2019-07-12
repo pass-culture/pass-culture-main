@@ -6,9 +6,7 @@ import { ROOT_PATH } from '../src/utils/config'
 
 const pageTitleHeader = Selector('h1')
 const deskLink = Selector("a[href^='/guichet']")
-const navbarAnchor = Selector(
-  'a.navbar-link, span.navbar-burger'
-).filterVisible()
+const navbarAnchor = Selector('a.navbar-link, span.navbar-burger').filterVisible()
 const codeInput = Selector('.form input[type="text"]')
 const state = Selector('.form .state')
 const stateText = Selector('.form .state span')
@@ -37,9 +35,7 @@ test("L'état de départ de la page /guichet est conforme", async t => {
   t.selectText(codeInput).pressKey('delete')
 
   await t.typeText(codeInput, token)
-  await t
-    .expect(stateText.innerText)
-    .eql('Coupon vérifié, cliquez sur OK pour enregistrer')
+  await t.expect(stateText.innerText).eql('Coupon vérifié, cliquez sur "Valider" pour enregistrer')
   await t.expect(state.classNames).contains('pending')
   await t.expect(codeInput.innerText).eql('')
 
@@ -47,9 +43,7 @@ test("L'état de départ de la page /guichet est conforme", async t => {
 
   await t.click(registerButton)
   await t.typeText(codeInput, 'AZE{}')
-  await t
-    .expect(stateText.innerText)
-    .eql('Caractères valides : de A à Z et de 0 à 9')
+  await t.expect(stateText.innerText).eql('Caractères valides : de A à Z et de 0 à 9')
   await t.expect(state.classNames).contains('error')
 
   t.selectText(codeInput).pressKey('delete')

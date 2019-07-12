@@ -2,7 +2,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import Bookings from '../Bookings'
-import DownloadButtonContainer from "../../../layout/DownloadButton/DownloadButtonContainer"
+import DownloadButtonContainer from '../../../layout/DownloadButton/DownloadButtonContainer'
 
 describe('src | components | pages | Bookings', () => {
   describe('snapshot', () => {
@@ -18,8 +18,7 @@ describe('src | components | pages | Bookings', () => {
   describe('the download button', () => {
     it('should not be visible by default', () => {
       // given
-      const props = {
-      }
+      const props = {}
 
       // when
       const wrapper = shallow(<Bookings {...props} />)
@@ -33,7 +32,7 @@ describe('src | components | pages | Bookings', () => {
       // given
       const props = {
         showDownloadButton: true,
-        pathToCsvFile: '/path/to/csv/file?with=query'
+        pathToCsvFile: '/path/to/csv/file?with=query',
       }
 
       // when

@@ -6,7 +6,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 import App from './App'
 import NotMatchPage from './components/pages/NotMatchPage'
 import routes from './utils/routes'
-import { configureStore } from './utils/store'
+import configureStore from './utils/store'
 import MatomoPageTracker from './components/matomo/MatomoPageTracker'
 
 const { store, persistor } = configureStore()

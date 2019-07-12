@@ -26,13 +26,8 @@ describe('src | components | matomo | MatomoPageTracker', () => {
     )
 
     // then
-    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(1, [
-      'setCustomUrl',
-      '/router/path',
-    ])
-    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(3, [
-      'trackPageView',
-    ])
+    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(1, ['setCustomUrl', '/router/path'])
+    expect(fakeMatomoPageTracker.push).toHaveBeenNthCalledWith(3, ['trackPageView'])
   })
 
   it('should dispatch the page title', () => {

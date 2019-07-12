@@ -8,7 +8,7 @@ import { formatSirenOrSiret } from '../../utils/siren'
 
 class SirenInput extends Component {
   handleOnChange = event => {
-    const { onFieldChange, type } = this.props
+    const { onChange: onFieldChange, type } = this.props
 
     event.persist()
 

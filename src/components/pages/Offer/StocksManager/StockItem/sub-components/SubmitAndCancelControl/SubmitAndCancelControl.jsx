@@ -3,13 +3,14 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 
 class SubmitAndCancelControl extends Component {
-  handleOnClick = (form, query, stockId) => {
+  handleOnClick = (form, query, stockId) => () => {
     form.reset()
     query.changeToReadOnly(null, { id: stockId, key: 'stock' })
   }
 
   render() {
     const { canSubmit, form, handleSubmit, isRequestPending, query, stockId } = this.props
+
     return (
       <Fragment>
         <td>

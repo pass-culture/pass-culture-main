@@ -9,7 +9,7 @@ import selectMediationsByOfferId from '../../../../selectors/selectMediationsByO
 import selectProductById from '../../../../selectors/selectProductById'
 import selectStocksByOfferId from '../../../../selectors/selectStocksByOfferId'
 import selectVenueById from '../../../../selectors/selectVenueById'
-import offererSelector from '../../../../selectors/selectOffererById'
+import selectOffererById from '../../../../selectors/selectOffererById'
 import { getOfferTypeLabel } from '../../../../utils/offerItem'
 
 function mapStateToProps(state, ownProps) {
@@ -17,7 +17,7 @@ function mapStateToProps(state, ownProps) {
   const { id: offerId, productId, venueId } = offer
   const product = selectProductById(state, productId)
   const venue = selectVenueById(state, venueId)
-  const offerer = offererSelector(state, venue.managingOffererId)
+  const offerer = selectOffererById(state, venue.managingOffererId)
 
   const stockAlertMessage = offer.stockAlertMessage
 

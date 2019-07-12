@@ -1,5 +1,4 @@
 import { shallow } from 'enzyme'
-import React from 'react'
 import SelectSourceField from '../SelectSourceField'
 
 describe('src | components | pages | Venue | VenueProvidersManager | form | SelectSourceField', () => {
@@ -14,10 +13,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Sele
         { id: 'A', name: 'A', requireProviderIdentifier: false },
         { id: 'B', name: 'B', requireProviderIdentifier: true },
       ],
-      venueProviders: [
-        { id: 'C', providerId: 'A' },
-        { id: 'B', providerId: 'B' },
-      ],
+      venueProviders: [{ id: 'C', providerId: 'A' }, { id: 'B', providerId: 'B' }],
     }
   })
 

@@ -37,7 +37,7 @@ describe('src | pages | Offer | StocksManager | StockItem | decorators | adaptaB
               onClick={handleSubmit}
               type="submit"
             >
-              Submit
+              {'Submit'}
             </button>
           </form>
         )}

@@ -145,7 +145,7 @@ test('Je ne peux pas rentrer un nouveau stock pour un objet avec déjà un stock
 
 fixture('Offer Gestion B | Avertissement pour les offres sans iban')
 
-test("J'ai une info quand je rentre un prix non nul pour l'objet d'une structure et un lieu sans iban", async t => {
+test('J’ai une info quand je rentre un prix non nul pour l’objet d’une structure et un lieu sans iban', async t => {
   // given
   const { offer, user } = dataFromSandboxThree
   await navigateToOfferAs(user, offer, userRoleThree)(t)
@@ -167,7 +167,7 @@ test("J'ai une info quand je rentre un prix non nul pour l'objet d'une structure
   await t.expect(queryParams.gestion).eql(null)
 })
 
-test("J'ai une info quand je rentre un prix non nul pour l'évènement d'une structure et un lieu sans iban", async t => {
+test('J’ai une info quand je rentre un prix non nul pour l’évènement d’une structure et un lieu sans iban', async t => {
   // given
   const { offer, user } = dataFromSandboxFour
   await navigateToOfferAs(user, offer, userRoleFour)(t)

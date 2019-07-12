@@ -45,8 +45,19 @@ ShallowWrapper {
           timezone={null}
           validate={null}
         />
-        <UNDEFINED
+        <TimeField
+          autoComplete={false}
+          className=""
+          disabled={false}
+          id={null}
+          label=""
+          locale="fr"
           name="myTime"
+          placeholder="Please enter a value"
+          readOnly={false}
+          renderValue={[Function]}
+          required={false}
+          validate={null}
         />
         <button
           onClick={[Function]}
@@ -101,8 +112,19 @@ ShallowWrapper {
             timezone={null}
             validate={null}
           />,
-          <UNDEFINED
+          <TimeField
+            autoComplete={false}
+            className=""
+            disabled={false}
+            id={null}
+            label=""
+            locale="fr"
             name="myTime"
+            placeholder="Please enter a value"
+            readOnly={false}
+            renderValue={[Function]}
+            required={false}
+            validate={null}
           />,
           <button
             onClick={[Function]}
@@ -143,13 +165,24 @@ ShallowWrapper {
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "function",
+          "nodeType": "class",
           "props": Object {
+            "autoComplete": false,
+            "className": "",
+            "disabled": false,
+            "id": null,
+            "label": "",
+            "locale": "fr",
             "name": "myTime",
+            "placeholder": "Please enter a value",
+            "readOnly": false,
+            "renderValue": [Function],
+            "required": false,
+            "validate": null,
           },
           "ref": null,
           "rendered": null,
-          "type": undefined,
+          "type": [Function],
         },
         Object {
           "instance": null,
@@ -211,8 +244,19 @@ ShallowWrapper {
             timezone={null}
             validate={null}
           />
-          <UNDEFINED
+          <TimeField
+            autoComplete={false}
+            className=""
+            disabled={false}
+            id={null}
+            label=""
+            locale="fr"
             name="myTime"
+            placeholder="Please enter a value"
+            readOnly={false}
+            renderValue={[Function]}
+            required={false}
+            validate={null}
           />
           <button
             onClick={[Function]}
@@ -267,8 +311,19 @@ ShallowWrapper {
               timezone={null}
               validate={null}
             />,
-            <UNDEFINED
+            <TimeField
+              autoComplete={false}
+              className=""
+              disabled={false}
+              id={null}
+              label=""
+              locale="fr"
               name="myTime"
+              placeholder="Please enter a value"
+              readOnly={false}
+              renderValue={[Function]}
+              required={false}
+              validate={null}
             />,
             <button
               onClick={[Function]}
@@ -309,13 +364,24 @@ ShallowWrapper {
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "function",
+            "nodeType": "class",
             "props": Object {
+              "autoComplete": false,
+              "className": "",
+              "disabled": false,
+              "id": null,
+              "label": "",
+              "locale": "fr",
               "name": "myTime",
+              "placeholder": "Please enter a value",
+              "readOnly": false,
+              "renderValue": [Function],
+              "required": false,
+              "validate": null,
             },
             "ref": null,
             "rendered": null,
-            "type": undefined,
+            "type": [Function],
           },
           Object {
             "instance": null,

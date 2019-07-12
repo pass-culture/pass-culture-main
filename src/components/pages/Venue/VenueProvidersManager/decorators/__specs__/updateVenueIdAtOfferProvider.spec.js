@@ -10,11 +10,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | decorators'
     }
 
     // when
-    const result = handleUpdateOnProviderField(
-      inputValue,
-      inputName,
-      formValues
-    )
+    const result = handleUpdateOnProviderField(inputValue, inputName, formValues)
 
     // then
     expect(result).toStrictEqual({
@@ -31,11 +27,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | decorators'
     }
 
     // when
-    const result = handleUpdateOnProviderField(
-      inputValue,
-      inputName,
-      formValues
-    )
+    const result = handleUpdateOnProviderField(inputValue, inputName, formValues)
 
     // then
     expect(result).toStrictEqual({

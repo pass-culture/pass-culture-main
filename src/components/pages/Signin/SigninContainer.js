@@ -1,8 +1,8 @@
-import {compose} from "redux"
+import { compose } from 'redux'
 
 import Signin from './Signin'
-import {withFrenchQueryRouter} from "../../hocs"
-import {withRedirectToOffersWhenAlreadyAuthenticated} from "../../hocs/with-login"
+import withFrenchQueryRouter from '../../hocs/withFrenchQueryRouter'
+import { withRedirectToOffersWhenAlreadyAuthenticated } from '../../hocs/with-login/withRedirectToOffersWhenAlreadyAuthenticated'
 
 export default compose(
   withRedirectToOffersWhenAlreadyAuthenticated,

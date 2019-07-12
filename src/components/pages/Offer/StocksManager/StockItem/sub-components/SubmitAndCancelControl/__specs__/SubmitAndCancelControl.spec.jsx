@@ -56,9 +56,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | StockItem 
       )
 
       // when
-      wrapper
-        .find("input[name='foo']")
-        .simulate('change', { target: { value: 'bar' } })
+      wrapper.find("input[name='foo']").simulate('change', { target: { value: 'bar' } })
 
       // when
       expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('bar')

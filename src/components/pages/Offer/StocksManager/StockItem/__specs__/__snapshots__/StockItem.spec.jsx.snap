@@ -25,6 +25,7 @@ ShallowWrapper {
         "context": [Function],
       }
     }
+    showInfo={[MockFunction]}
     stockPatch={
       Object {
         "id": "DG",

@@ -17,7 +17,7 @@ const getSuggestionsFromAddressAndMaxSuggestions = createCachedSelector(
       const data = await fetchAddressData(addressUrl)
       return { data }
     } catch (e) {
-      const error = "Impossible de vérifier l'adresse saisie."
+      const error = 'Impossible de vérifier l’adresse saisie.'
       return { error }
     }
   }

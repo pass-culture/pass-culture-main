@@ -1,10 +1,6 @@
 import createDecorator from 'final-form-calculate'
 
-export const handleUpdateOnProviderField = (
-  inputValue,
-  inputName,
-  formValues
-) => {
+export const handleUpdateOnProviderField = (inputValue, inputName, formValues) => {
   const parsedValue = JSON.parse(inputValue)
   const siret = !parsedValue.requireProviderIdentifier ? formValues.siret : ''
 

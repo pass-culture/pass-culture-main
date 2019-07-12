@@ -3,9 +3,7 @@ import PropTypes from 'prop-types'
 import checkIfProviderShouldBeDisabled from '../../../VenueProvidersManager/utils/checkIfProviderShouldBeDisabled'
 import { DEFAULT_PROVIDER_OPTION } from '../../utils/utils'
 
-const SelectSourceField = ({ handleChange, providers, venueProviders }) => ({
-  input,
-}) => (
+const SelectSourceField = ({ handleChange, providers, venueProviders }) => ({ input }) => (
   <select
     {...input}
     className="field-select"
@@ -19,10 +17,7 @@ const SelectSourceField = ({ handleChange, providers, venueProviders }) => ({
       {DEFAULT_PROVIDER_OPTION.name}
     </option>
     {providers.map((provider, index) => {
-      const isProviderDisabled = checkIfProviderShouldBeDisabled(
-        venueProviders,
-        provider
-      )
+      const isProviderDisabled = checkIfProviderShouldBeDisabled(venueProviders, provider)
 
       return (
         <option
@@ -39,8 +34,8 @@ const SelectSourceField = ({ handleChange, providers, venueProviders }) => ({
 
 SelectSourceField.propTypes = {
   handleChange: PropTypes.func.isRequired,
-  providers: PropTypes.arrayOf().isRequired,
-  venueProviders: PropTypes.arrayOf().isRequired,
+  providers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  venueProviders: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default SelectSourceField

@@ -4,7 +4,7 @@ import { Portal } from 'react-portal'
 import { requestData } from 'redux-saga-data'
 
 import DeleteDialog from '../DeleteDialog/DeleteDialog'
-import { withFrenchQueryRouter } from '../../../../../../hocs'
+import withFrenchQueryRouter from '../../../../../../hocs/withFrenchQueryRouter'
 import Icon from '../../../../../../layout/Icon'
 import { errorKeyToFrenchKey } from '../../utils'
 
@@ -34,16 +34,14 @@ class EditAndDeleteControl extends Component {
       .filter(errorKeyToFrenchKey)
       .reduce(
         (result, errorKey) =>
-          Object.assign(
-            { [errorKeyToFrenchKey(errorKey)]: errors[errorKey] },
-            result
-          ),
+          Object.assign({ [errorKeyToFrenchKey(errorKey)]: errors[errorKey] }, result),
         null
       )
     this.setState(nextState, () => handleSetErrors(frenchErrors))
   }
 
-  handleOnClick = (query, stockId) => () => query.changeToModification(null, { id: stockId, key: 'stock' })
+  handleOnClick = (query, stockId) => () =>
+    query.changeToModification(null, { id: stockId, key: 'stock' })
 
   handleOnConfirmDeleteClick = () => {
     const { dispatch, formInitialValues } = this.props

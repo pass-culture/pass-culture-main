@@ -12,7 +12,7 @@ import NumberField from '../../../../../../../layout/form/fields/NumberField'
 import Icon from '../../../../../../../layout/Icon'
 import PriceField from '../../../../../../../layout/form/fields/PriceField'
 
-export class ProductFields extends Component {
+class ProductFields extends Component {
   static isParsedByForm = true
 
   constructor() {
@@ -50,9 +50,9 @@ export class ProductFields extends Component {
     showInfo(
       <Fragment>
         <div className="mb24 has-text-left">
-          {'Vous avez saisi une offre payante. Pensez à demander à'}
-          {"l'administrateur financier nommé pour votre structure de renseigner"}
-          {'son IBAN. Sans IBAN, les réservations de vos offres éligibles ne vous'}
+          {'Vous avez saisi une offre payante. Pensez à demander à '}
+          {'l’administrateur financier nommé pour votre structure de renseigner '}
+          {'son IBAN. Sans IBAN, les réservations de vos offres éligibles ne vous '}
           {'seront pas remboursées.'}
         </div>
         <div className="has-text-right">
@@ -61,7 +61,7 @@ export class ProductFields extends Component {
             onClick={this.handleOnClick(dispatch, closeInfo)}
             type="button"
           >
-            {"J'ai compris"}
+            {'J’ai compris'}
           </button>
         </div>
       </Fragment>
@@ -81,7 +81,7 @@ export class ProductFields extends Component {
 
     let tip = "L'heure limite de réservation de ce jour est 23h59 et ne peut pas être changée."
     if (venue && venue.isVirtual) {
-      tip = `${tip}<br /><br /> Vous êtes sur une offre numérique, la zone horaire de cette date correspond à celle de votre structure.`
+      tip = `${tip}<br /><br />Vous êtes sur une offre numérique, la zone horaire de cette date correspond à celle de votre structure.`
     }
 
     return (

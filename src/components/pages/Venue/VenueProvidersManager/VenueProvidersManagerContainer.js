@@ -4,12 +4,9 @@ import { compose } from 'redux'
 
 import VenueProvidersManager from './VenueProvidersManager'
 import selectVenueProvidersByVenueId from './selectors/selectVenueProvidersByVenueId'
-import { selectProviders } from '../../../../selectors/selectProviders'
+import selectProviders from '../../../../selectors/selectProviders'
 import { requestData } from 'redux-saga-data'
-import {
-  getRequestErrorStringFromErrors,
-  showNotification,
-} from 'pass-culture-shared'
+import { getRequestErrorStringFromErrors, showNotification } from 'pass-culture-shared'
 
 export const mapStateToProps = (state, ownProps) => {
   const { venue } = ownProps

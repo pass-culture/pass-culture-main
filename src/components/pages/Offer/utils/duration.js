@@ -1,4 +1,4 @@
-const getDurationInHours = durationInMinutes => {
+export const getDurationInHours = durationInMinutes => {
   if (!durationInMinutes || durationInMinutes === 0) return 'HH:MM'
 
   let hours = Math.floor(durationInMinutes / 60)
@@ -28,5 +28,3 @@ export const getDurationInMinutes = durationInHours => {
   }
   return hours * 60 + minutes
 }
-
-export default getDurationInHours

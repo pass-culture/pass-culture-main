@@ -1,4 +1,4 @@
-import SignupValidation from 'components/pages/Signup/validation/SignupValidation'
+import SignupValidation from '../../../../../components/pages/Signup/validation/SignupValidation'
 import { mount, shallow } from 'enzyme'
 import React from 'react'
 import { Redirect, Router } from 'react-router-dom'

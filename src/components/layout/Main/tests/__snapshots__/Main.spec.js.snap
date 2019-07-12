@@ -1,11 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | layout | Main snapshot should match snapshot 1`] = `
+exports[`src | components | layout | Main should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Main
     Tag="main"
     backTo={null}
+    currentUser={Object {}}
     dispatch={[MockFunction]}
     fullscreen={false}
     handleDataRequest={null}
@@ -17,9 +18,7 @@ ShallowWrapper {
     whiteHeader={null}
     withLoading={null}
   >
-    <div>
-      foo
-    </div>
+    Object {}
   </Main>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -65,9 +64,7 @@ ShallowWrapper {
                 <div
                   className="main-content"
                 >
-                  <div>
-                    foo
-                  </div>
+                  Object {}
                 </div>
               </div>
             </div>
@@ -126,9 +123,7 @@ ShallowWrapper {
                   <div
                     className="main-content"
                   >
-                    <div>
-                      foo
-                    </div>
+                    Object {}
                   </div>
                 </div>
               </div>
@@ -154,9 +149,7 @@ ShallowWrapper {
                   <div
                     className="main-content"
                   >
-                    <div>
-                      foo
-                    </div>
+                    Object {}
                   </div>
                 </div>
               </div>,
@@ -176,9 +169,7 @@ ShallowWrapper {
                     <div
                       className="main-content"
                     >
-                      <div>
-                        foo
-                      </div>
+                      Object {}
                     </div>
                   </div>,
                 ],
@@ -205,9 +196,7 @@ ShallowWrapper {
                       <div
                         className="main-content"
                       >
-                        <div>
-                          foo
-                        </div>
+                        Object {}
                       </div>,
                       null,
                     ],
@@ -222,25 +211,13 @@ ShallowWrapper {
                       "nodeType": "host",
                       "props": Object {
                         "children": Array [
-                          <div>
-                            foo
-                          </div>,
+                          Object {},
                         ],
                         "className": "main-content",
                       },
                       "ref": null,
                       "rendered": Array [
-                        Object {
-                          "instance": null,
-                          "key": undefined,
-                          "nodeType": "host",
-                          "props": Object {
-                            "children": "foo",
-                          },
-                          "ref": null,
-                          "rendered": "foo",
-                          "type": "div",
-                        },
+                        Object {},
                       ],
                       "type": "div",
                     },
@@ -305,9 +282,7 @@ ShallowWrapper {
                   <div
                     className="main-content"
                   >
-                    <div>
-                      foo
-                    </div>
+                    Object {}
                   </div>
                 </div>
               </div>
@@ -366,9 +341,7 @@ ShallowWrapper {
                     <div
                       className="main-content"
                     >
-                      <div>
-                        foo
-                      </div>
+                      Object {}
                     </div>
                   </div>
                 </div>
@@ -394,9 +367,7 @@ ShallowWrapper {
                     <div
                       className="main-content"
                     >
-                      <div>
-                        foo
-                      </div>
+                      Object {}
                     </div>
                   </div>
                 </div>,
@@ -416,9 +387,7 @@ ShallowWrapper {
                       <div
                         className="main-content"
                       >
-                        <div>
-                          foo
-                        </div>
+                        Object {}
                       </div>
                     </div>,
                   ],
@@ -445,9 +414,7 @@ ShallowWrapper {
                         <div
                           className="main-content"
                         >
-                          <div>
-                            foo
-                          </div>
+                          Object {}
                         </div>,
                         null,
                       ],
@@ -462,25 +429,13 @@ ShallowWrapper {
                         "nodeType": "host",
                         "props": Object {
                           "children": Array [
-                            <div>
-                              foo
-                            </div>,
+                            Object {},
                           ],
                           "className": "main-content",
                         },
                         "ref": null,
                         "rendered": Array [
-                          Object {
-                            "instance": null,
-                            "key": undefined,
-                            "nodeType": "host",
-                            "props": Object {
-                              "children": "foo",
-                            },
-                            "ref": null,
-                            "rendered": "foo",
-                            "type": "div",
-                          },
+                          Object {},
                         ],
                         "type": "div",
                       },

@@ -1,10 +1,7 @@
 const sanitizeCoordinates = input => {
   const stringNumberWithoutComa = String(input).replace(',', '.')
   const isNegativeNumber = parseFloat(stringNumberWithoutComa) < 0
-  const stringNumberWithoutTrailingNumbers = stringNumberWithoutComa.replace(
-    /[^0-9.]/g,
-    ''
-  )
+  const stringNumberWithoutTrailingNumbers = stringNumberWithoutComa.replace(/[^0-9.]/g, '')
 
   let result = parseFloat(stringNumberWithoutTrailingNumbers)
 

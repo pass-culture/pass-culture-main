@@ -8,7 +8,7 @@ const Price = ({ value, free, Tag, className }) => {
         ? ''
         : value === 0
         ? free
-        : value && value.toString().replace('.', ',') + '€'}
+        : value && value.toString().replace('.', ',') + ' €'}
     </Tag>
   )
 }

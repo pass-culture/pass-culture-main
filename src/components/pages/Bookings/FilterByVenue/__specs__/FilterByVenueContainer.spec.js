@@ -38,16 +38,10 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
       props.loadVenues()
 
       // then
-      expect(dispatch).toHaveBeenCalledWith(
-        {
-          "config":
-            {"apiPath": "/venues",
-              "method": "GET",
-              "stateKey": "venues",
-            },
-          "type": "REQUEST_DATA_GET_VENUES",
-        }
-    )
+      expect(dispatch).toHaveBeenCalledWith({
+        config: { apiPath: '/venues', method: 'GET', stateKey: 'venues' },
+        type: 'REQUEST_DATA_GET_VENUES',
+      })
     })
 
     it('preserve venue filter when select only digital venues', () => {
@@ -61,7 +55,7 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
       })
     })
 
-    it('preserve venue filter when select only digital venues', () => {
+    it('preserve venue filter when select only digital venues (réécrire)', () => {
       //when
       props.selectOnlyDigitalVenues(false)
 
@@ -73,14 +67,14 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
     })
 
     it('preserve selected venue', () => {
-        //when
-        props.selectBookingsForVenues({target:{value:'AVJA'}})
+      //when
+      props.selectBookingsForVenues({ target: { value: 'AVJA' } })
 
-        // then
-        expect(dispatch).toHaveBeenCalledWith({
-          payload: 'AVJA',
-          type: 'BOOKING_SUMMARY_SELECT_VENUE',
-        })
+      // then
+      expect(dispatch).toHaveBeenCalledWith({
+        payload: 'AVJA',
+        type: 'BOOKING_SUMMARY_SELECT_VENUE',
+      })
     })
   })
 })

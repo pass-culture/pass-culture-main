@@ -44,11 +44,7 @@ describe('selectTimezoneByVenueIdAndOffererId', () => {
     const venueId = virtualVenue.id
 
     // when
-    const result = selectTimezoneByVenueIdAndOffererId(
-      state,
-      venueId,
-      offererId
-    )
+    const result = selectTimezoneByVenueIdAndOffererId(state, venueId, offererId)
 
     // then
     expect(result).toStrictEqual(undefined)
@@ -71,11 +67,7 @@ describe('selectTimezoneByVenueIdAndOffererId', () => {
     const venueId = virtualVenue.id
 
     // when
-    const result = selectTimezoneByVenueIdAndOffererId(
-      state,
-      venueId,
-      offererId
-    )
+    const result = selectTimezoneByVenueIdAndOffererId(state, venueId, offererId)
 
     // then
     expect(result).toStrictEqual('Europe/Paris')

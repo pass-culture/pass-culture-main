@@ -5,7 +5,7 @@ import { Form } from 'react-final-form'
 import Venue from '../Venue'
 import { mapDispatchToProps } from '../VenueContainer'
 import VenueProvidersManagerContainer from '../VenueProvidersManager/VenueProvidersManagerContainer'
-import HeroSection from 'components/layout/HeroSection/HeroSection'
+import HeroSection from '../../../../components/layout/HeroSection/HeroSection'
 
 describe('src | components | pages | Venue', () => {
   let dispatch
@@ -118,9 +118,7 @@ describe('src | components | pages | Venue', () => {
         const heroSection = wrapper.find(HeroSection)
         expect(heroSection.find('p')).toBeDefined()
         expect(heroSection.find('p').prop('className')).toBe('subtitle')
-        expect(heroSection.find('p').text()).toBe(
-          'Ajoutez un lieu où accéder à vos offres.'
-        )
+        expect(heroSection.find('p').text()).toBe('Ajoutez un lieu où accéder à vos offres.')
       })
 
       it('should build the proper backTo link', () => {

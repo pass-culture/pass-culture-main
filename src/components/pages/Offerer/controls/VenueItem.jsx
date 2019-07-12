@@ -9,8 +9,7 @@ const buildLinkIdFromVenue = ({ publicName, name }) => {
 }
 
 const VenueItem = ({ venue }) => {
-  const { address, city, id, managingOffererId, name, postalCode, publicName } =
-    venue || {}
+  const { address, city, id, managingOffererId, name, postalCode, publicName } = venue || {}
 
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
   return (
@@ -33,7 +32,8 @@ const VenueItem = ({ venue }) => {
               className="has-text-primary"
               to={`/offres/creation?lieu=${id}`}
             >
-              <Icon svg="ico-offres-r" />{' Créer une offre'}
+              <Icon svg="ico-offres-r" />
+              {' Créer une offre'}
             </NavLink>
           </li>
           {venue.nOffers > 0 ? (

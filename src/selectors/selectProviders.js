@@ -13,7 +13,7 @@ const removedLocalClasses = [
   'TiteLiveBookDescriptions',
 ]
 
-export const selectProviders = createSelector(
+const selectProviders = createSelector(
   state => state.data.providers,
   providers =>
     providers

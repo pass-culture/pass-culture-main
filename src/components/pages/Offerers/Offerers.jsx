@@ -199,10 +199,10 @@ class Offerers extends Component {
       <Main name="offerers">
         <HeroSection title={sectionTitle}>
           <p className="subtitle">
-            {"Pour présenter vos offres, vous devez d'abord "}{' '}
+            {'Pour présenter vos offres, vous devez d’abord '}
             <a href={url}> {'créer un nouveau lieu '} </a> {' lié à une structure.'}
             <br />
-            {'Sans lieu, vous pouvez uniquement '}{' '}
+            {'Sans lieu, vous pouvez uniquement '}
             <a href="/offres/creation"> {'ajouter des offres numériques.'} </a>
           </p>
           <div className="title-action-links">
@@ -268,8 +268,8 @@ class Offerers extends Component {
 PropTypes.propTypes = {
   currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
-  offerers: PropTypes.arrayOf.isRequired,
-  pendingOfferers: PropTypes.arrayOf.isRequired,
+  offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  pendingOfferers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   query: PropTypes.shape().isRequired,
 }
 

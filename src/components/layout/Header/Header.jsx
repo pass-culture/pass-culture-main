@@ -4,7 +4,7 @@ import { SignoutButton } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 
-import { Icon } from '../Icon'
+import Icon from '../Icon'
 import Logo from '../Logo'
 
 class Header extends Component {
@@ -26,6 +26,7 @@ class Header extends Component {
   render() {
     const { name, whiteHeader, offerers } = this.props
     const { showMobileMenu } = this.state
+
     return (
       <header className={classnames('navbar', { 'is-primary': !whiteHeader })}>
         <div className="container">

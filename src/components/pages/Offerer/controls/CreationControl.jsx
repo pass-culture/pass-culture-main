@@ -13,13 +13,11 @@ const CreationControl = ({ parseFormChild }) =>
           className="button is-secondary is-medium"
           to="/structures"
         >
-          {"Retour"}
+          {'Retour'}
         </NavLink>
       </div>
       <div className="control">
-        <SubmitButton className="button is-primary is-medium">
-          {"Valider"}
-        </SubmitButton>
+        <SubmitButton className="button is-primary is-medium">{'Valider'}</SubmitButton>
       </div>
     </div>,
     parseFormChild

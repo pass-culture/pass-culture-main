@@ -4,7 +4,7 @@ function mapArgsToCacheKey(state, optionalOffererId, optionalOfferType) {
   return `${optionalOffererId || ''}/${optionalOfferType || ''}`
 }
 
-export const selectVenuesByOffererIdAndOfferType = createCachedSelector(
+const selectVenuesByOffererIdAndOfferType = createCachedSelector(
   state => state.data.venues,
   (state, optionalOffererId) => optionalOffererId,
   (state, optionalOffererId, optionalOfferType) => optionalOfferType,
@@ -12,13 +12,10 @@ export const selectVenuesByOffererIdAndOfferType = createCachedSelector(
     let filteredVenues = venues
 
     if (optionalOffererId)
-      filteredVenues = filteredVenues.filter(
-        v => v.managingOffererId === optionalOffererId
-      )
+      filteredVenues = filteredVenues.filter(v => v.managingOffererId === optionalOffererId)
 
     if (optionalOfferType) {
-      if (optionalOfferType.offlineOnly)
-        filteredVenues = filteredVenues.filter(v => !v.isVirtual)
+      if (optionalOfferType.offlineOnly) filteredVenues = filteredVenues.filter(v => !v.isVirtual)
       else if (optionalOfferType.onlineOnly)
         filteredVenues = filteredVenues.filter(v => v.isVirtual)
     }

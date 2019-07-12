@@ -3,8 +3,7 @@ import createCachedSelector from 're-reselect'
 
 import updateBookingLimitDatetime from './updateBookingLimitDatetime'
 
-const mapArgsToCacheKey = ({ isEvent, timezone }) =>
-  `${isEvent || ''} ${timezone || ''}`
+const mapArgsToCacheKey = ({ isEvent, timezone }) => `${isEvent || ''} ${timezone || ''}`
 
 const adaptBookingLimitDatetimeGivenBeginningDatetime = createCachedSelector(
   ({ isEvent }) => isEvent,
