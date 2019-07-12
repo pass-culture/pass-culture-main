@@ -4,8 +4,8 @@ from datetime import datetime
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.bank_account import format_raw_iban_or_bic
 from domain.demarches_simplifiees import get_all_application_ids_for_procedure
-from models import LocalProvider, BankInformation
-from models.local_provider import ProvidableInfo
+from models import BankInformation
+from local_providers.local_provider import ProvidableInfo, LocalProvider
 from repository import offerer_queries
 from repository.local_provider_event_queries import find_latest_sync_end_event
 from repository import venue_queries

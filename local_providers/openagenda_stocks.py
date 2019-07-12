@@ -3,7 +3,7 @@ import random
 from local_providers.openagenda_events import OpenAgendaEvents
 from models.db import db
 
-from models.local_provider import ProvidableInfo
+from local_providers.local_provider import ProvidableInfo
 from models.stock import Stock
 
 class OpenAgendaStocks(OpenAgendaEvents):

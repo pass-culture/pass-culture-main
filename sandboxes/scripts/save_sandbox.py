@@ -1,4 +1,4 @@
-from models.mediation import upsert_tuto_mediations
+from utils.tutorials import upsert_tuto_mediations
 from repository.clean_database import clean_all_database
 from sandboxes import scripts
 

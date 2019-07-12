@@ -1,4 +1,3 @@
-""" local provider """
 import traceback
 from abc import abstractmethod
 from collections import Iterator
@@ -17,7 +16,6 @@ from models.db import db
 from models.has_thumb_mixin import HasThumbMixin
 from models.local_provider_event import LocalProviderEvent, LocalProviderEventType
 from models.pc_object import PcObject
-from models.product import Product
 from models.providable_mixin import ProvidableMixin
 from repository.provider_queries import get_provider_by_local_class
 from utils.date import read_json_date

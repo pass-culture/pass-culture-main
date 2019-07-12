@@ -1,10 +1,8 @@
 from datetime import datetime, timedelta
 
 from models import PcObject
-from models.db import db
-from models.mediation import Mediation, upsert_tuto_mediations
+from models.mediation import Mediation
 from models.recommendation import Recommendation
-from models.stock import Stock
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_event_occurrence, \
     create_offer_with_event_product, \
@@ -18,6 +16,7 @@ from tests.test_utils import create_event_occurrence, \
     create_venue, \
     create_stock_with_thing_offer
 from utils.human_ids import humanize
+from utils.tutorials import upsert_tuto_mediations
 
 RECOMMENDATION_URL = '/recommendations'
 

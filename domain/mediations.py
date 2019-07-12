@@ -5,6 +5,7 @@ import PIL
 from PIL.Image import Image
 from colorthief import ColorThief
 
+from models import Mediation, User
 from utils.logger import logger
 
 MAX_THUMB_WIDTH = 750
@@ -31,6 +32,15 @@ def compute_dominant_color(thumb: bytes) -> bytes:
         return BLACK
     else:
         return dominant_color
+
+
+def create_new_mediation(offer_id: int, offerer_id: int, user: User, credit: str) -> Mediation:
+    new_mediation = Mediation()
+    new_mediation.author = user
+    new_mediation.offerId = offer_id
+    new_mediation.credit = credit
+    new_mediation.offererId = offerer_id
+    return new_mediation
 
 
 def _crop_image(crop_origin_x: int, crop_origin_y: int, crop_size: int, image: Image) -> Image:

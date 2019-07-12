@@ -3,6 +3,7 @@ from flask_login import current_user, login_required
 
 from connectors.thumb_storage import read_thumb, save_thumb
 from domain.discard_pc_objects import invalidate_recommendations_if_deactivating_object
+from domain.mediations import create_new_mediation
 from models.mediation import Mediation
 from models.pc_object import PcObject
 from models.user_offerer import RightsType
@@ -17,18 +18,14 @@ from validation.mediations import check_thumb_in_request
 def create_mediation():
     check_thumb_in_request(files=request.files, form=request.form)
     offerer_id = dehumanize(request.form['offererId'])
+    offer_id = dehumanize(request.form['offerId'])
+    credit = request.form.get('credit')
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
-
-    new_mediation = Mediation()
-    new_mediation.author = current_user
-    new_mediation.offerId = dehumanize(request.form['offerId'])
-    new_mediation.credit = request.form.get('credit')
-    new_mediation.offererId = offerer_id
-    PcObject.save(new_mediation)
-
+    mediation = create_new_mediation(offer_id, offerer_id, current_user, credit)
+    PcObject.save(mediation)
     thumb = read_thumb(files=request.files, form=request.form)
-    save_thumb(new_mediation, thumb, 0, crop=_get_crop(request.form))
-    return jsonify(new_mediation.as_dict()), 201
+    save_thumb(mediation, thumb, 0, crop=_get_crop(request.form))
+    return jsonify(mediation.as_dict()), 201
 
 
 @app.route('/mediations/<mediation_id>', methods=['GET'])

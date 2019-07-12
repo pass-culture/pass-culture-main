@@ -1,7 +1,4 @@
-""" mediation model """
-import os
 from datetime import datetime
-from pathlib import Path
 
 from sqlalchemy import Column, \
     BigInteger, \
@@ -13,7 +10,6 @@ from sqlalchemy import Column, \
     String
 from sqlalchemy.orm import relationship
 
-from connectors.thumb_storage import save_thumb
 from models import DeactivableMixin
 from models.db import Model
 from models.has_thumb_mixin import HasThumbMixin
@@ -71,39 +67,3 @@ Mediation.__table_args__ = (
                     + ' OR ("offerId" IS NULL AND "tutoIndex" IS NOT NULL)',
                     name='check_mediation_has_offer_xor_tutoIndex'),
 )
-
-TUTOS_PATH = Path(os.path.dirname(os.path.realpath(__file__))) / '..' \
-             / 'static' / 'tuto_mediations'
-
-
-def upsert_tuto_mediation(index, has_back=False):
-    existing_mediation = Mediation.query.filter_by(tutoIndex=index) \
-        .first()
-    mediation = existing_mediation or Mediation()
-    mediation.tutoIndex = index
-    PcObject.save(mediation)
-
-    with open(TUTOS_PATH / (str(index) + '.png'), "rb") as f:
-        save_thumb(
-            mediation,
-            f.read(),
-            0,
-            convert=False,
-            image_type='png'
-        )
-
-    if has_back:
-        with open(TUTOS_PATH / (str(index) + '_verso.png'), "rb") as f:
-            save_thumb(
-                mediation, f.read(),
-                1,
-                convert=False,
-                image_type='png'
-            )
-
-    PcObject.save(mediation)
-
-
-def upsert_tuto_mediations():
-    upsert_tuto_mediation(0)
-    upsert_tuto_mediation(1, True)

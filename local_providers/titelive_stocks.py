@@ -4,7 +4,7 @@ from datetime import datetime
 from domain.titelive import read_stock_datetime
 from models import Offer, VenueProvider, PcObject
 from models.db import db
-from models.local_provider import LocalProvider, ProvidableInfo
+from local_providers.local_provider import LocalProvider, ProvidableInfo
 from models.stock import Stock
 from repository import thing_queries, local_provider_event_queries, venue_queries
 

@@ -7,7 +7,7 @@ from zipfile import ZipFile
 from datetime import datetime
 
 from domain.titelive import get_date_from_filename
-from models.local_provider import LocalProvider, ProvidableInfo
+from local_providers.local_provider import LocalProvider, ProvidableInfo
 from models.product import Product
 from utils.logger import logger
 

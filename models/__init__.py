@@ -8,7 +8,6 @@ from models.extra_data_mixin import ExtraDataMixin
 from models.feature import Feature
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
-from models.local_provider import LocalProvider
 from models.local_provider_event import LocalProviderEvent
 from models.mediation import Mediation
 from models.needs_validation_mixin import NeedsValidationMixin
@@ -58,7 +57,6 @@ __all__ = (
     'Offerer',
     'VenueProvider',
     'LocalProviderEvent',
-    'LocalProvider',
     'Offer',
     'Payment',
     'PaymentStatus',

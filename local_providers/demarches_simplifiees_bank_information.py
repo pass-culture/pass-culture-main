@@ -6,7 +6,7 @@ from connectors.api_demarches_simplifiees import get_application_details
 from domain.bank_account import format_raw_iban_or_bic
 from domain.demarches_simplifiees import get_all_application_ids_for_procedure
 from models import BankInformation
-from models.local_provider import LocalProvider, ProvidableInfo
+from local_providers.local_provider import LocalProvider, ProvidableInfo
 from models.local_provider_event import LocalProviderEventType
 from repository import offerer_queries, venue_queries
 from repository.bank_information_queries import get_last_update_from_bank_information

@@ -10,7 +10,7 @@ from werkzeug.middleware.profiler import ProfilerMiddleware
 from admin.install import install_admin_views
 from models import Feature
 from repository.feature_queries import feature_request_profiling_enabled
-from models.mediation import upsert_tuto_mediations
+from utils.tutorials import upsert_tuto_mediations
 from local_providers.install import install_local_providers
 from models.db import db
 from models.install import install_models, install_features, install_database_extensions

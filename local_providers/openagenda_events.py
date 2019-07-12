@@ -10,7 +10,7 @@ import requests
 from models import VenueProvider, Product, Stock
 from models.db import db
 
-from models.local_provider import LocalProvider, ProvidableInfo
+from local_providers.local_provider import LocalProvider, ProvidableInfo
 from models.offer import Offer
 from models.venue import Venue
 
