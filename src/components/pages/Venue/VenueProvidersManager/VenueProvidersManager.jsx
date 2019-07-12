@@ -8,20 +8,6 @@ import { DEFAULT_PROVIDER_OPTION } from './utils/utils'
 import VenueProviderForm from './form/VenueProviderForm/VenueProviderForm'
 
 class VenueProvidersManager extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      isCreationMode: false,
-      isLoadingMode: false,
-      isProviderSelected: false,
-      venueIdAtOfferProviderIsRequired: true,
-    }
-  }
-
-  componentDidUpdate() {
-    ReactTooltip.rebuild()
-  }
-
   static getDerivedStateFromProps(nextProps) {
     const {
       match: {
@@ -33,6 +19,25 @@ class VenueProvidersManager extends Component {
     return {
       isCreationMode,
     }
+  }
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      isCreationMode: false,
+      isLoadingMode: false,
+      isProviderSelected: false,
+      venueIdAtOfferProviderIsRequired: true,
+    }
+  }
+
+  componentDidMount() {
+    const { loadProvidersAndVenueProviders } = this.props
+    loadProvidersAndVenueProviders()
+  }
+
+  componentDidUpdate() {
+    ReactTooltip.rebuild()
   }
 
   handleAddVenueProvider = () => {
@@ -116,11 +121,6 @@ class VenueProvidersManager extends Component {
       this.resetFormState()
     }
     input.handleOnChange(valueFromSelectInput)
-  }
-
-  componentDidMount() {
-    const { loadProvidersAndVenueProviders } = this.props
-    loadProvidersAndVenueProviders()
   }
 
   render() {

@@ -97,7 +97,7 @@ class Signin extends Component {
                         className="button is-secondary"
                         to="/inscription"
                       >
-                        Créer un compte
+                        {"Créer un compte"}
                       </NavLink>
                       <SubmitButton
                         className="button is-primary is-outlined"

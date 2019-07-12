@@ -98,8 +98,9 @@ const LostPasswordPage = ({ change, envoye, errors, token }) => {
                       <SubmitButton
                         className="button is-primary is-outlined"
                         id="changePassword"
+                        type="submit"
                       >
-                        Envoyer
+                        {"Envoyer"}
                       </SubmitButton>
                     </div>
                   </Form>
@@ -141,6 +142,7 @@ const LostPasswordPage = ({ change, envoye, errors, token }) => {
                       <SubmitButton
                         className="button is-primary is-outlined"
                         id="sendTokenByMail"
+                        type="submit"
                       >
                         {"Envoyer"}
                       </SubmitButton>

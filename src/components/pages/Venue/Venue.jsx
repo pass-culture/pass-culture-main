@@ -79,7 +79,7 @@ class Venue extends Component {
     })
   }
 
-  onFormSubmit = formValues => {
+  handleOnFormSubmit = formValues => {
     const {handleSubmitRequest} = this.props
 
     this.setState({isRequestPending: true})
@@ -91,6 +91,94 @@ class Venue extends Component {
         handleSuccess: this.handleFormSuccess(resolve),
       })
     })
+  }
+
+  handleRender = (formProps, isCreatedEntity) => {
+    const canSubmit = getCanSubmit(formProps)
+    const {form, handleSubmit, values} = formProps
+    const {
+      isLocationFrozen: formIsLocationFrozen,
+      latitude: formLatitude,
+      longitude: formLongitude,
+      siret: formSiret,
+    } = values
+
+    const siretValidOnReadOnly =
+      formSiret && removeWhitespaces(formSiret).length === 14
+
+    const siretValidOnCreation = siretValidOnReadOnly
+    const fieldReadOnlyBecauseFrozenFormSiretOnCreation =
+      isCreatedEntity && siretValidOnCreation
+
+    const siretValidOnModification =
+      typeof initialSiret !== 'undefined'
+    const fieldReadOnlyBecauseFrozenFormSiretOnModification =
+      isModifiedEntity && siretValidOnModification
+
+    const fieldReadOnlyBecauseFrozenFormSiret =
+      fieldReadOnlyBecauseFrozenFormSiretOnCreation ||
+      fieldReadOnlyBecauseFrozenFormSiretOnModification
+
+    return (
+      <form
+        name="venue"
+        onSubmit={handleSubmit}
+      >
+        <IdentifierFields
+          fieldReadOnlyBecauseFrozenFormSiret={
+            fieldReadOnlyBecauseFrozenFormSiret
+          }
+          formSiret={formSiret}
+          initialSiret={initialSiret}
+          isCreatedEntity={isCreatedEntity}
+          isModifiedEntity={isModifiedEntity}
+          readOnly={readOnly}
+        />
+        <BankFieldsContainer
+          readOnly={readOnly}
+        />
+        <LocationFields
+          fieldReadOnlyBecauseFrozenFormSiret={
+            fieldReadOnlyBecauseFrozenFormSiret
+          }
+          form={form}
+          formIsLocationFrozen={formIsLocationFrozen}
+          formLatitude={
+            formLatitude === ''
+              ? FRANCE_POSITION.latitude
+              : formLatitude
+          }
+          formLongitude={
+            formLongitude === ''
+              ? FRANCE_POSITION.longitude
+              : formLongitude
+          }
+          readOnly={readOnly}
+        />
+        <hr />
+        <div
+          className="field is-grouped is-grouped-centered"
+          style={{justifyContent: 'space-between'}}
+        >
+          <ModifyOrCancelControl
+            form={form}
+            history={history}
+            isCreatedEntity={isCreatedEntity}
+            offererId={offererId}
+            readOnly={readOnly}
+            venueId={venueId}
+          />
+          {readOnly && <CreateControl venueId={venueId} />}
+          <ReturnOrSubmitControl
+            canSubmit={canSubmit}
+            isCreatedEntity={isCreatedEntity}
+            isRequestPending={isRequestPending}
+            offererId={offererId}
+            readOnly={readOnly}
+          />
+        </div>
+      </form>
+    )
   }
 
   render() {
@@ -162,94 +250,8 @@ class Venue extends Component {
             decorators={decorators}
             initialValues={formInitialValues}
             name="venue"
-            onSubmit={this.onFormSubmit}
-            render={formProps => {
-              const canSubmit = getCanSubmit(formProps)
-              const {form, handleSubmit, values} = formProps
-              const {
-                isLocationFrozen: formIsLocationFrozen,
-                latitude: formLatitude,
-                longitude: formLongitude,
-                siret: formSiret,
-              } = values
-
-              const siretValidOnReadOnly =
-                formSiret && removeWhitespaces(formSiret).length === 14
-
-              const siretValidOnCreation = siretValidOnReadOnly
-              const fieldReadOnlyBecauseFrozenFormSiretOnCreation =
-                isCreatedEntity && siretValidOnCreation
-
-              const siretValidOnModification =
-                typeof initialSiret !== 'undefined'
-              const fieldReadOnlyBecauseFrozenFormSiretOnModification =
-                isModifiedEntity && siretValidOnModification
-
-              const fieldReadOnlyBecauseFrozenFormSiret =
-                fieldReadOnlyBecauseFrozenFormSiretOnCreation ||
-                fieldReadOnlyBecauseFrozenFormSiretOnModification
-
-              return (
-                <form
-                  name="venue"
-                  onSubmit={handleSubmit}
-                >
-                  <IdentifierFields
-                    fieldReadOnlyBecauseFrozenFormSiret={
-                      fieldReadOnlyBecauseFrozenFormSiret
-                    }
-                    formSiret={formSiret}
-                    initialSiret={initialSiret}
-                    isCreatedEntity={isCreatedEntity}
-                    isModifiedEntity={isModifiedEntity}
-                    readOnly={readOnly}
-                  />
-                  <BankFieldsContainer
-                    readOnly={readOnly}
-                  />
-                  <LocationFields
-                    fieldReadOnlyBecauseFrozenFormSiret={
-                      fieldReadOnlyBecauseFrozenFormSiret
-                    }
-                    form={form}
-                    formIsLocationFrozen={formIsLocationFrozen}
-                    formLatitude={
-                      formLatitude === ''
-                        ? FRANCE_POSITION.latitude
-                        : formLatitude
-                    }
-                    formLongitude={
-                      formLongitude === ''
-                        ? FRANCE_POSITION.longitude
-                        : formLongitude
-                    }
-                    readOnly={readOnly}
-                  />
-                  <hr />
-                  <div
-                    className="field is-grouped is-grouped-centered"
-                    style={{justifyContent: 'space-between'}}
-                  >
-                    <ModifyOrCancelControl
-                      form={form}
-                      history={history}
-                      isCreatedEntity={isCreatedEntity}
-                      offererId={offererId}
-                      readOnly={readOnly}
-                      venueId={venueId}
-                    />
-                    {readOnly && <CreateControl venueId={venueId} />}
-                    <ReturnOrSubmitControl
-                      canSubmit={canSubmit}
-                      isCreatedEntity={isCreatedEntity}
-                      isRequestPending={isRequestPending}
-                      offererId={offererId}
-                      readOnly={readOnly}
-                    />
-                  </div>
-                </form>
-              )
-            }}
+            onSubmit={this.handleOnFormSubmit}
+            render={this.handleRender(formProps, isCreatedEntity)}
           />
         )}
       </Main>
