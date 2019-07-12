@@ -204,14 +204,14 @@ class Offer extends Component {
     handleSuccess()
   }
 
-  handleOnClick = (event, query) => {
+  handleOnClick = (event, query) => () => {
     event.preventDefault()
     query.change({ gestion: '' })
   }
 
   handleCancelOnClick = (offerId, query) => query.changeToReadOnly({}, { id: offerId })
 
-  handleChangeOnClick = (query) => query.changeToModification()
+  handleChangeOnClick = (query) => () => query.changeToModification()
 
   handleFormSuccess = (state, action) => {
     const { offer, query } = this.props

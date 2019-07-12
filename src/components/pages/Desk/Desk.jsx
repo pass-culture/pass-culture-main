@@ -38,7 +38,7 @@ class Desk extends React.PureComponent {
     return element => (this.input = element)
   }
 
-  handleOnClick = (code) => this.handleCodeRegistration(code)
+  handleOnClick = (code) => () => this.handleCodeRegistration(code)
 
   getBookingFromCode = code => {
     const { dispatch } = this.props

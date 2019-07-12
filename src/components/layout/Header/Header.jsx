@@ -17,10 +17,11 @@ class Header extends Component {
 
   handleSuccessRedirect = () => '/connexion'
 
-  handleOnClick = showMobileMenu =>
+  handleOnClick = (showMobileMenu) => () => {
     this.setState({
       showMobileMenu: !showMobileMenu,
     })
+  }
 
   render() {
     const { name, whiteHeader, offerers } = this.props

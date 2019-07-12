@@ -7,7 +7,7 @@ class FilterByVenue extends PureComponent {
     loadVenues()
   }
 
-  handleOnClick = () => {
+  handleOnClick = () => () => {
     const { isDigital, selectOnlyDigitalVenues } = this.props
     selectOnlyDigitalVenues(!isDigital)
   }
