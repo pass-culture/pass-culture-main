@@ -281,6 +281,7 @@ StocksManager.defaultProps = {
 }
 
 StocksManager.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   isEvent: PropTypes.bool.isRequired,
   query: PropTypes.shape().isRequired,
   shouldPreventCreationOfSecondStock: PropTypes.bool.isRequired,
