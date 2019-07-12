@@ -10,13 +10,11 @@ import {
   formatPrice,
   getRemainingStocksCount,
 } from '../../../utils'
-import {
-  DateField,
-  HiddenField,
-  NumberField,
-} from 'components/layout/form/fields'
-import Icon from './../../../../../../../layout/Icon'
-import { PriceField } from '../../../../../../../layout/form/fields/PriceField'
+import DateField from '../../../../../../../layout/form/fields/DateField'
+import HiddenField from '../../../../../../../layout/form/fields/HiddenField'
+import NumberField from '../../../../../../../layout/form/fields/NumberField'
+import Icon from '../../../../../../../layout/Icon'
+import PriceField from '../../../../../../../layout/form/fields/PriceField'
 
 export class ProductFields extends Component {
   static isParsedByForm = true

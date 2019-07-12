@@ -2,11 +2,9 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { PureComponent, Fragment } from 'react'
 
-import {
-  DateField,
-  HiddenField,
-  TimeField,
-} from 'components/layout/form/fields'
+import DateField from '../../../../../../../layout/form/fields/DateField'
+import HiddenField from '../../../../../../../layout/form/fields/HiddenField'
+import TimeField from '../../../../../../../layout/form/fields/TimeField'
 
 export class EventFields extends PureComponent {
   render() {
