@@ -77,7 +77,7 @@ class BookingItem extends Component {
     )
   }
 
-  handleOnClick = (dispatch, id) => {
+  handleOnClick = (dispatch, id) => () => {
     dispatch(
       requestData({
       apiPath: `/bookings/${id}`,

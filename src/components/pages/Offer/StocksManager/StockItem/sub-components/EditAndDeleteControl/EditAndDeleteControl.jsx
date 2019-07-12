@@ -43,7 +43,7 @@ class EditAndDeleteControl extends Component {
     this.setState(nextState, () => handleSetErrors(frenchErrors))
   }
 
-  handleOnClick = (query, stockId) => query.changeToModification(null, { id: stockId, key: 'stock' })
+  handleOnClick = (query, stockId) => () => query.changeToModification(null, { id: stockId, key: 'stock' })
 
   handleOnConfirmDeleteClick = () => {
     const { dispatch, formInitialValues } = this.props

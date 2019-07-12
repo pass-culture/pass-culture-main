@@ -8,7 +8,7 @@ class DownloadButton extends PureComponent {
     this.state = { isLoading: false }
   }
 
-  handleOnClick = () => {
+  handleOnClick = () => () => {
     const { downloadFileOrNotifyAnError } = this.props
     this.setState({ isLoading: true }, async () => {
       await downloadFileOrNotifyAnError()

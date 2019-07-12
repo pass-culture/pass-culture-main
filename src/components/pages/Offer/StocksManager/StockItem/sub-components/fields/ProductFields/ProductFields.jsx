@@ -74,11 +74,12 @@ export class ProductFields extends Component {
     )
   }
 
-  handleOnClick = (dispatch, closeInfo) => {
+  handleOnClick = (dispatch, closeInfo) => () => {
     dispatch(assignModalConfig({ extraClassName: null }))
     closeInfo()
     this.isPriceInputDeactivate = false
   }
+
   render() {
     const {
       beginningDatetime,
