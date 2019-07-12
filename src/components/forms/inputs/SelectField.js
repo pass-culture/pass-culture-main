@@ -20,15 +20,9 @@ class SelectField extends React.PureComponent {
     this.popupContainer = ref
   }
 
-  renderField = ({ input }) => {
-    const { canSearch, disabled, placeholder, provider, readOnly } = this.props
-
-    const isdisabled = readOnly || disabled || !provider.length || provider.length === 1
-    const moreprops = { disabled: isdisabled }
-
-    return (
+  renderSelect = (placeholder, canSearch, moreProps, provider) => {
+    return ({input}) => (
       <Select
-        {...moreprops}
         filterOption={filterOption}
         getPopupContainer={this.getPopupContainer()}
         onChange={input.onChange}
@@ -37,30 +31,44 @@ class SelectField extends React.PureComponent {
         showSearch={canSearch}
         size="large"
         value={input.value || undefined}
+        {...moreProps}
       >
         {provider &&
-          provider.map(obj => (
-            <Select.Option
-              key={obj.id}
-              value={obj.id}
-            >
-              {obj.label}
-            </Select.Option>
-          ))}
+        provider.map(obj => (
+          <Select.Option
+            key={obj.id}
+            value={obj.id}
+          >
+            {obj.label}
+          </Select.Option>
+        ))}
       </Select>
     )
   }
 
-  getPopupContainer = () => (
-    this.popupContainer
-  )
+  getPopupContainer = () => {
+    return () => this.popupContainer
+  }
 
   render() {
-    const { label, help, id, name, disabled, provider, className, readOnly, ...rest } = this.props
-    const isdisabled = readOnly || disabled || !provider.length || provider.length === 1
+    const {
+      label,
+      help,
+      id,
+      name,
+      disabled,
+      provider,
+      className,
+      canSearch,
+      placeholder,
+      readOnly,
+      ...rest
+    } = this.props
+    const isDisabled = readOnly || disabled || !provider.length || provider.length === 1
+    const moreProps = {disabled: isDisabled}
 
-    const moreprops = { disabled: isdisabled }
-    if (id) moreprops.id = id
+    if (id) moreProps.id = id
+
     return (
       <Form.Item
         {...rest}
@@ -69,7 +77,7 @@ class SelectField extends React.PureComponent {
       >
         <Field
           name={name}
-          render={this.renderField}
+          render={this.renderSelect(placeholder, canSearch, moreProps, provider)}
         />
         <div
           className="select-field-popup-container is-relative"
@@ -100,7 +108,7 @@ SelectField.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
-  provider: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  provider: PropTypes.shape().isRequired,
   readOnly: PropTypes.bool,
 }
 
