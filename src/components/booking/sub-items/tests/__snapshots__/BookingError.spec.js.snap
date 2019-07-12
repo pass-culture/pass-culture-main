@@ -30,7 +30,6 @@ ShallowWrapper {
             <Icon
               alt="erreur"
               className={null}
-              name={null}
               src={null}
               svg="picto-echec"
             />
@@ -62,7 +61,6 @@ ShallowWrapper {
             <Icon
               alt="erreur"
               className={null}
-              name={null}
               src={null}
               svg="picto-echec"
             />
@@ -78,7 +76,6 @@ ShallowWrapper {
             "children": <Icon
               alt="erreur"
               className={null}
-              name={null}
               src={null}
               svg="picto-echec"
             />,
@@ -92,7 +89,6 @@ ShallowWrapper {
             "props": Object {
               "alt": "erreur",
               "className": null,
-              "name": null,
               "src": null,
               "svg": "picto-echec",
             },
@@ -156,7 +152,6 @@ ShallowWrapper {
               <Icon
                 alt="erreur"
                 className={null}
-                name={null}
                 src={null}
                 svg="picto-echec"
               />
@@ -188,7 +183,6 @@ ShallowWrapper {
               <Icon
                 alt="erreur"
                 className={null}
-                name={null}
                 src={null}
                 svg="picto-echec"
               />
@@ -204,7 +198,6 @@ ShallowWrapper {
               "children": <Icon
                 alt="erreur"
                 className={null}
-                name={null}
                 src={null}
                 svg="picto-echec"
               />,
@@ -218,7 +211,6 @@ ShallowWrapper {
               "props": Object {
                 "alt": "erreur",
                 "className": null,
-                "name": null,
                 "src": null,
                 "svg": "picto-echec",
               },
@@ -293,5 +285,6 @@ ShallowWrapper {
     Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
 }
 `;

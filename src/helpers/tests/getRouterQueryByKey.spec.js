@@ -5,14 +5,14 @@ describe('src | helpers | getRouterQueryByKey', () => {
     expect(() => {
       // when
       getRouterQueryByKey({})
-    }).toThrow('error')
+    }).toThrow('getRouterQueryByKey: Missing arguments')
   })
 
   it('should thrown if missing email param', () => {
     expect(() => {
       // when
       getRouterQueryByKey({ search: `?email=user@mail.com}` })
-    }).toThrow('error')
+    }).toThrow('getRouterQueryByKey: Missing arguments')
   })
 
   it('returns null if match falsey', () => {

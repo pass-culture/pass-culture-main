@@ -94,9 +94,7 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
     const wrapper = shallow(<VersoContentOffer {...props} />)
 
     // then
-    expect(wrapper.find('#verso-offer-label').text()).toBe(
-      'Presse — Abonnements'
-    )
+    expect(wrapper.find('#verso-offer-label').text()).toBe('Presse — Abonnements')
   })
 
   it('should render event offer infos when offer is event, not finished and booking is available', () => {
@@ -117,9 +115,7 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
 
     // then
     const liElements = wrapper.find('.dates-info').find('li')
-    expect(liElements.at(1).text()).toBe(
-      'Cliquez sur "j\'y vais" pour voir plus de dates.'
-    )
+    expect(liElements.at(1).text()).toBe('Cliquez sur "j\'y vais" pour voir plus de dates.')
   })
 
   it('should render thing offer infos when offer is thing, not finished and booking is available', () => {
@@ -140,9 +136,7 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
 
     // then
     const liElements = wrapper.find('.dates-info').find('li')
-    expect(liElements.at(0).text()).toBe(
-      'Dès maintenant et jusqu&apos;au 2019-04-01 '
-    )
+    expect(liElements.at(0).text()).toBe('Dès maintenant et jusqu’au 2019-04-01 ')
   })
 
   it('should render offer is unavailable when offer is finished', () => {
@@ -160,7 +154,7 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
 
     // then
     const liElements = wrapper.find('.dates-info').find('li')
-    expect(liElements.at(0).text()).toBe("L'offre n'est plus disponible.")
+    expect(liElements.at(0).text()).toBe('L’offre n’est plus disponible.')
   })
 
   it('should render informations of the venue and publicName when given', () => {
@@ -228,8 +222,6 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
     expect(venueDistance.find('span').text()).toBe(`1${nbsp}`)
     expect(iconComponent).toBeDefined()
     expect(iconComponent.prop('svg')).toBe('ico-geoloc-solid2')
-    expect(iconComponent.prop('alt')).toBe(
-      'Géolocalisation dans Open Street Map'
-    )
+    expect(iconComponent.prop('alt')).toBe('Géolocalisation dans Open Street Map')
   })
 })

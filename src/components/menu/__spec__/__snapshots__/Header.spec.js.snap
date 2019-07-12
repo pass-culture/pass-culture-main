@@ -70,7 +70,8 @@ ShallowWrapper {
             <span
               className="fs30 currency"
             >
-               €
+               
+              €
             </span>
           </div>
         </div>,
@@ -193,7 +194,8 @@ ShallowWrapper {
               <span
                 className="fs30 currency"
               >
-                 €
+                 
+                €
               </span>
             </div>,
           ],
@@ -239,7 +241,8 @@ ShallowWrapper {
                 <span
                   className="fs30 currency"
                 >
-                   €
+                   
+                  €
                 </span>,
               ],
               "id": "main-menu-header-wallet-value",
@@ -263,11 +266,17 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": " €",
+                  "children": Array [
+                    " ",
+                    "€",
+                  ],
                   "className": "fs30 currency",
                 },
                 "ref": null,
-                "rendered": " €",
+                "rendered": Array [
+                  " ",
+                  "€",
+                ],
                 "type": "span",
               },
             ],
@@ -330,7 +339,8 @@ ShallowWrapper {
               <span
                 className="fs30 currency"
               >
-                 €
+                 
+                €
               </span>
             </div>
           </div>,
@@ -453,7 +463,8 @@ ShallowWrapper {
                 <span
                   className="fs30 currency"
                 >
-                   €
+                   
+                  €
                 </span>
               </div>,
             ],
@@ -499,7 +510,8 @@ ShallowWrapper {
                   <span
                     className="fs30 currency"
                   >
-                     €
+                     
+                    €
                   </span>,
                 ],
                 "id": "main-menu-header-wallet-value",
@@ -523,11 +535,17 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": " €",
+                    "children": Array [
+                      " ",
+                      "€",
+                    ],
                     "className": "fs30 currency",
                   },
                   "ref": null,
-                  "rendered": " €",
+                  "rendered": Array [
+                    " ",
+                    "€",
+                  ],
                   "type": "span",
                 },
               ],

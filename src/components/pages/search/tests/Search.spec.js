@@ -352,7 +352,7 @@ describe('src | components | pages | Search', () => {
       })
     })
 
-    describe('onSubmit', () => {
+    describe('handleOnSubmit', () => {
       // when
       const wrapper = shallow(<Search {...baseInitialProps} />)
       const event = Object.assign(jest.fn(), {
@@ -370,7 +370,7 @@ describe('src | components | pages | Search', () => {
       describe('when keywords is not an empty string', () => {
         it('should update state with mots-clés set to value given', () => {
           // when
-          wrapperInstance.onSubmit(event)
+          wrapperInstance.handleOnSubmit(event)
 
           const expected = {
             hasMore: false,
@@ -384,7 +384,7 @@ describe('src | components | pages | Search', () => {
         })
         it('should change query', () => {
           // when
-          wrapperInstance.onSubmit(event)
+          wrapperInstance.handleOnSubmit(event)
 
           const argument1 = {
             'mots-cles': 'AnyWord',
@@ -415,7 +415,7 @@ describe('src | components | pages | Search', () => {
           })
 
           // when
-          wrapperInstance.onSubmit(eventEmptyWord)
+          wrapperInstance.handleOnSubmit(eventEmptyWord)
 
           // then
           const argument1 = {

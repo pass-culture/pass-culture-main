@@ -289,7 +289,6 @@ ShallowWrapper {
                 <Icon
                   alt="Plus d'infos"
                   className=" "
-                  name={null}
                   src={null}
                   svg="ico-slideup-w"
                 />
@@ -395,7 +394,6 @@ ShallowWrapper {
                   <Icon
                     alt="Plus d'infos"
                     className=" "
-                    name={null}
                     src={null}
                     svg="ico-slideup-w"
                   />
@@ -506,7 +504,6 @@ ShallowWrapper {
                   <Icon
                     alt="Plus d'infos"
                     className=" "
-                    name={null}
                     src={null}
                     svg="ico-slideup-w"
                   />
@@ -571,7 +568,6 @@ ShallowWrapper {
                   <Icon
                     alt="Plus d'infos"
                     className=" "
-                    name={null}
                     src={null}
                     svg="ico-slideup-w"
                   />
@@ -645,7 +641,6 @@ ShallowWrapper {
                     <Icon
                       alt="Plus d'infos"
                       className=" "
-                      name={null}
                       src={null}
                       svg="ico-slideup-w"
                     />
@@ -691,7 +686,6 @@ ShallowWrapper {
                     "children": <Icon
                       alt="Plus d'infos"
                       className=" "
-                      name={null}
                       src={null}
                       svg="ico-slideup-w"
                     />,
@@ -709,7 +703,6 @@ ShallowWrapper {
                     "props": Object {
                       "alt": "Plus d'infos",
                       "className": " ",
-                      "name": null,
                       "src": null,
                       "svg": "ico-slideup-w",
                     },
@@ -909,7 +902,6 @@ ShallowWrapper {
                   <Icon
                     alt="Plus d'infos"
                     className=" "
-                    name={null}
                     src={null}
                     svg="ico-slideup-w"
                   />
@@ -1015,7 +1007,6 @@ ShallowWrapper {
                     <Icon
                       alt="Plus d'infos"
                       className=" "
-                      name={null}
                       src={null}
                       svg="ico-slideup-w"
                     />
@@ -1126,7 +1117,6 @@ ShallowWrapper {
                     <Icon
                       alt="Plus d'infos"
                       className=" "
-                      name={null}
                       src={null}
                       svg="ico-slideup-w"
                     />
@@ -1191,7 +1181,6 @@ ShallowWrapper {
                     <Icon
                       alt="Plus d'infos"
                       className=" "
-                      name={null}
                       src={null}
                       svg="ico-slideup-w"
                     />
@@ -1265,7 +1254,6 @@ ShallowWrapper {
                       <Icon
                         alt="Plus d'infos"
                         className=" "
-                        name={null}
                         src={null}
                         svg="ico-slideup-w"
                       />
@@ -1311,7 +1299,6 @@ ShallowWrapper {
                       "children": <Icon
                         alt="Plus d'infos"
                         className=" "
-                        name={null}
                         src={null}
                         svg="ico-slideup-w"
                       />,
@@ -1329,7 +1316,6 @@ ShallowWrapper {
                       "props": Object {
                         "alt": "Plus d'infos",
                         "className": " ",
-                        "name": null,
                         "src": null,
                         "svg": "ico-slideup-w",
                       },

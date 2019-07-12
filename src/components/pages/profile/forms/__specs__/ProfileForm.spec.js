@@ -33,7 +33,7 @@ describe('src | components | pages | profile | forms | ProfileForm', () => {
     }
   })
 
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<ProfileForm {...props} />)
 
@@ -50,82 +50,80 @@ describe('src | components | pages | profile | forms | ProfileForm', () => {
     expect(wrapper.state('isLoading')).toBe(false)
   })
 
-  describe('functions', () => {
-    describe('onFormSubmit', () => {
-      it('should dispatch an action to update user informations', () => {
-        // given
-        const wrapper = shallow(<ProfileForm {...props} />)
+  describe('handleOnFormSubmit()', () => {
+    it('should dispatch an action to update user informations', () => {
+      // given
+      const wrapper = shallow(<ProfileForm {...props} />)
 
-        // when
-        wrapper.instance().onFormSubmit()
+      // when
+      wrapper.instance().handleOnFormSubmit()
 
-        // then
-        expect(wrapper.state('isLoading')).toBe(true)
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: 'fake url',
-            body: {},
-            handleFail: expect.any(Function),
-            handleSuccess: expect.any(Function),
-            key: 'fake state key',
-            method: 'fake method',
-            resolve: expect.any(Function),
-          },
-          type: 'REQUEST_DATA_FAKE METHOD_FAKE URL',
-        })
+      // then
+      expect(wrapper.state('isLoading')).toBe(true)
+      expect(dispatch).toHaveBeenCalledWith({
+        config: {
+          apiPath: 'fake url',
+          body: {},
+          handleFail: expect.any(Function),
+          handleSuccess: expect.any(Function),
+          key: 'fake state key',
+          method: 'fake method',
+          resolve: expect.any(Function),
+        },
+        type: 'REQUEST_DATA_FAKE METHOD_FAKE URL',
       })
     })
+  })
 
-    describe('onFormReset', () => {
-      it('should go back to previous page when resetting form', () => {
-        // given
-        const wrapper = shallow(<ProfileForm {...props} />)
+  describe('handleOnFormReset()', () => {
+    it('should go back to previous page when resetting form', () => {
+      // given
+      const wrapper = shallow(<ProfileForm {...props} />)
 
-        // when
-        wrapper.instance().onFormReset()
+      // when
+      wrapper.instance().handleOnFormReset()
 
-        // then
-        expect(goBack).toHaveBeenCalled()
-      })
+      // then
+      expect(goBack).toHaveBeenCalled()
     })
+  })
 
-    describe('handleRequestSuccess', () => {
-      it('should redirect to success page when updating username', () => {
-        // given
-        const wrapper = shallow(<ProfileForm {...props} />)
-        const formResolver = jest.fn()
+  describe('handleRequestSuccess()', () => {
+    it('should redirect to success page when updating username', () => {
+      // given
+      const wrapper = shallow(<ProfileForm {...props} />)
+      const formResolver = jest.fn()
 
-        // when
-        wrapper.instance().handleRequestSuccess(formResolver)()
+      // when
+      wrapper.instance().handleRequestSuccess(formResolver)()
 
-        // then
-        expect(wrapper.state('isLoading')).toBe(false)
-        expect(formResolver).toHaveBeenCalled()
-        expect(replace).toHaveBeenCalledWith('fake location/success')
-      })
+      // then
+      expect(wrapper.state('isLoading')).toBe(false)
+      expect(formResolver).toHaveBeenCalled()
+      expect(replace).toHaveBeenCalledWith('fake location/success')
     })
+  })
 
-    describe('handleRequestFail', () => {
-      it('should display errors in form', () => {
-        // given
-        const wrapper = shallow(<ProfileForm {...props} />)
-        const formResolver = jest.fn()
-        const state = {}
-        const action = {
-          payload: {
-            errors: ['error1', 'error2'],
-          },
-        }
+  describe('handleRequestFail()', () => {
+    it('should display errors in form', () => {
+      // given
+      const wrapper = shallow(<ProfileForm {...props} />)
+      const formResolver = jest.fn()
+      const state = {}
+      const action = {
+        payload: {
+          errors: ['error1', 'error2'],
+        },
+      }
 
-        // when
-        wrapper.instance().handleRequestFail(formResolver)(state, action)
+      // when
+      wrapper.instance().handleRequestFail(formResolver)(state, action)
 
-        // then
-        expect(wrapper.state('isLoading')).toBe(false)
-        expect(formResolver).toHaveBeenCalledWith({
-          0: 'error1',
-          1: 'error2',
-        })
+      // then
+      expect(wrapper.state('isLoading')).toBe(false)
+      expect(formResolver).toHaveBeenCalledWith({
+        0: 'error1',
+        1: 'error2',
       })
     })
   })

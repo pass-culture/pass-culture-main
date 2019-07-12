@@ -39,8 +39,8 @@ ShallowWrapper {
             }
           >
             <Icon
+              alt={null}
               className={null}
-              name={null}
               src={null}
               svg="picto-validation"
             />
@@ -57,8 +57,7 @@ ShallowWrapper {
           <span
             className="is-block"
           >
-            12 €
-             vont être recrédités sur votre pass.
+            12 € vont être recrédités sur votre pass.
           </span>
           <span
             className="is-block"
@@ -87,8 +86,8 @@ ShallowWrapper {
               }
             >
               <Icon
+                alt={null}
                 className={null}
-                name={null}
                 src={null}
                 svg="picto-validation"
               />
@@ -108,8 +107,8 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": <Icon
+                alt={null}
                 className={null}
-                name={null}
                 src={null}
                 svg="picto-validation"
               />,
@@ -125,8 +124,8 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "function",
               "props": Object {
+                "alt": null,
                 "className": null,
-                "name": null,
                 "src": null,
                 "svg": "picto-validation",
               },
@@ -160,8 +159,7 @@ ShallowWrapper {
             <span
               className="is-block"
             >
-              12 €
-               vont être recrédités sur votre pass.
+              12 € vont être recrédités sur votre pass.
             </span>,
             <span
               className="is-block"
@@ -178,17 +176,11 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": Array [
-                "12 €",
-                " vont être recrédités sur votre pass.",
-              ],
+              "children": "12 € vont être recrédités sur votre pass.",
               "className": "is-block",
             },
             "ref": null,
-            "rendered": Array [
-              "12 €",
-              " vont être recrédités sur votre pass.",
-            ],
+            "rendered": "12 € vont être recrédités sur votre pass.",
             "type": "span",
           },
           Object {
@@ -227,8 +219,8 @@ ShallowWrapper {
               }
             >
               <Icon
+                alt={null}
                 className={null}
-                name={null}
                 src={null}
                 svg="picto-validation"
               />
@@ -245,8 +237,7 @@ ShallowWrapper {
             <span
               className="is-block"
             >
-              12 €
-               vont être recrédités sur votre pass.
+              12 € vont être recrédités sur votre pass.
             </span>
             <span
               className="is-block"
@@ -275,8 +266,8 @@ ShallowWrapper {
                 }
               >
                 <Icon
+                  alt={null}
                   className={null}
-                  name={null}
                   src={null}
                   svg="picto-validation"
                 />
@@ -296,8 +287,8 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": <Icon
+                  alt={null}
                   className={null}
-                  name={null}
                   src={null}
                   svg="picto-validation"
                 />,
@@ -313,8 +304,8 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "function",
                 "props": Object {
+                  "alt": null,
                   "className": null,
-                  "name": null,
                   "src": null,
                   "svg": "picto-validation",
                 },
@@ -348,8 +339,7 @@ ShallowWrapper {
               <span
                 className="is-block"
               >
-                12 €
-                 vont être recrédités sur votre pass.
+                12 € vont être recrédités sur votre pass.
               </span>,
               <span
                 className="is-block"
@@ -366,17 +356,11 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": Array [
-                  "12 €",
-                  " vont être recrédités sur votre pass.",
-                ],
+                "children": "12 € vont être recrédités sur votre pass.",
                 "className": "is-block",
               },
               "ref": null,
-              "rendered": Array [
-                "12 €",
-                " vont être recrédités sur votre pass.",
-              ],
+              "rendered": "12 € vont être recrédités sur votre pass.",
               "type": "span",
             },
             Object {

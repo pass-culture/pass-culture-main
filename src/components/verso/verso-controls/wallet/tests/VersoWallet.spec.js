@@ -35,7 +35,7 @@ describe('src | components | verso | verso-controls | wallet | VersoWallet', () 
 
     // then
     expect(label).toHaveLength(1)
-    expect(label.text()).toStrictEqual('Mon Pass')
+    expect(label.text()).toStrictEqual('Mon pass')
   })
 
   it('wallet display should show a price', () => {

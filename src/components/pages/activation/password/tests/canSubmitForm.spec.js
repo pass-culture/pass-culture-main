@@ -6,7 +6,7 @@ describe('src | components | pages | activation | canSubmitForm', () => {
     expect(() => {
       // when
       canSubmitForm()
-    }).toThrow('error')
+    }).toThrow('canSubmitForm: Missing arguments')
   })
 
   it('should return true', () => {

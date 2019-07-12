@@ -34,7 +34,7 @@ describe('src | components | pages | signin | Signin', () => {
     })
   })
 
-  describe('onFormSubmit', () => {
+  describe('handleOnFormSubmit', () => {
     describe('with succes', () => {
       it('should call data reducer', () => {
         // given
@@ -45,7 +45,7 @@ describe('src | components | pages | signin | Signin', () => {
         const wrapper = shallow(<Signin {...props} />)
 
         // when
-        wrapper.instance().onFormSubmit(formValues)
+        wrapper.instance().handleOnFormSubmit(formValues)
         const data = {
           config: {
             apiPath: '/users/signin',

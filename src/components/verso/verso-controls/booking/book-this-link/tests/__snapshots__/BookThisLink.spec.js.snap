@@ -40,7 +40,7 @@ ShallowWrapper {
         <span
           className="pc-ticket-button-label"
         >
-          J'y vais!
+          J’y vais !
         </span>,
       ],
       "className": "flex-columns is-bold is-white-text fs18",
@@ -72,11 +72,11 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "J'y vais!",
+          "children": "J’y vais !",
           "className": "pc-ticket-button-label",
         },
         "ref": null,
-        "rendered": "J'y vais!",
+        "rendered": "J’y vais !",
         "type": "span",
       },
     ],
@@ -102,7 +102,7 @@ ShallowWrapper {
           <span
             className="pc-ticket-button-label"
           >
-            J'y vais!
+            J’y vais !
           </span>,
         ],
         "className": "flex-columns is-bold is-white-text fs18",
@@ -134,11 +134,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "J'y vais!",
+            "children": "J’y vais !",
             "className": "pc-ticket-button-label",
           },
           "ref": null,
-          "rendered": "J'y vais!",
+          "rendered": "J’y vais !",
           "type": "span",
         },
       ],
@@ -171,5 +171,6 @@ ShallowWrapper {
     Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
 }
 `;

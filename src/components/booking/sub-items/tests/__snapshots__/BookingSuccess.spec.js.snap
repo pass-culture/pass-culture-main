@@ -53,7 +53,8 @@ ShallowWrapper {
             className="is-block"
           >
             
-             ont été déduits de votre pass.
+             
+            ont été déduits de votre pass.
           </span>
           <span
             className="is-block"
@@ -90,7 +91,7 @@ ShallowWrapper {
                 <b
                   className="is-primary-text"
                 >
-                   Mes Réservations 
+                  Mes Réservations
                 </b>
               </Link>
               de votre compte
@@ -190,7 +191,8 @@ ShallowWrapper {
               className="is-block"
             >
               
-               ont été déduits de votre pass.
+               
+              ont été déduits de votre pass.
             </span>,
             <span
               className="is-block"
@@ -208,14 +210,16 @@ ShallowWrapper {
             "props": Object {
               "children": Array [
                 "",
-                " ont été déduits de votre pass.",
+                " ",
+                "ont été déduits de votre pass.",
               ],
               "className": "is-block",
             },
             "ref": null,
             "rendered": Array [
               "",
-              " ont été déduits de votre pass.",
+              " ",
+              "ont été déduits de votre pass.",
             ],
             "type": "span",
           },
@@ -294,7 +298,7 @@ ShallowWrapper {
                   <b
                     className="is-primary-text"
                   >
-                     Mes Réservations 
+                    Mes Réservations
                   </b>
                 </Link>
                 de votre compte
@@ -327,7 +331,7 @@ ShallowWrapper {
                     <b
                       className="is-primary-text"
                     >
-                       Mes Réservations 
+                      Mes Réservations
                     </b>
                   </Link>
                   de votre compte
@@ -362,7 +366,7 @@ ShallowWrapper {
                       <b
                         className="is-primary-text"
                       >
-                         Mes Réservations 
+                        Mes Réservations
                       </b>
                     </Link>,
                     "de votre compte",
@@ -380,7 +384,7 @@ ShallowWrapper {
                       "children": <b
                         className="is-primary-text"
                       >
-                         Mes Réservations 
+                        Mes Réservations
                       </b>,
                       "replace": false,
                       "to": "/reservations",
@@ -391,11 +395,11 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": " Mes Réservations ",
+                        "children": "Mes Réservations",
                         "className": "is-primary-text",
                       },
                       "ref": null,
-                      "rendered": " Mes Réservations ",
+                      "rendered": "Mes Réservations",
                       "type": "b",
                     },
                     "type": [Function],
@@ -448,7 +452,8 @@ ShallowWrapper {
               className="is-block"
             >
               
-               ont été déduits de votre pass.
+               
+              ont été déduits de votre pass.
             </span>
             <span
               className="is-block"
@@ -485,7 +490,7 @@ ShallowWrapper {
                   <b
                     className="is-primary-text"
                   >
-                     Mes Réservations 
+                    Mes Réservations
                   </b>
                 </Link>
                 de votre compte
@@ -585,7 +590,8 @@ ShallowWrapper {
                 className="is-block"
               >
                 
-                 ont été déduits de votre pass.
+                 
+                ont été déduits de votre pass.
               </span>,
               <span
                 className="is-block"
@@ -603,14 +609,16 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   "",
-                  " ont été déduits de votre pass.",
+                  " ",
+                  "ont été déduits de votre pass.",
                 ],
                 "className": "is-block",
               },
               "ref": null,
               "rendered": Array [
                 "",
-                " ont été déduits de votre pass.",
+                " ",
+                "ont été déduits de votre pass.",
               ],
               "type": "span",
             },
@@ -689,7 +697,7 @@ ShallowWrapper {
                     <b
                       className="is-primary-text"
                     >
-                       Mes Réservations 
+                      Mes Réservations
                     </b>
                   </Link>
                   de votre compte
@@ -722,7 +730,7 @@ ShallowWrapper {
                       <b
                         className="is-primary-text"
                       >
-                         Mes Réservations 
+                        Mes Réservations
                       </b>
                     </Link>
                     de votre compte
@@ -757,7 +765,7 @@ ShallowWrapper {
                         <b
                           className="is-primary-text"
                         >
-                           Mes Réservations 
+                          Mes Réservations
                         </b>
                       </Link>,
                       "de votre compte",
@@ -775,7 +783,7 @@ ShallowWrapper {
                         "children": <b
                           className="is-primary-text"
                         >
-                           Mes Réservations 
+                          Mes Réservations
                         </b>,
                         "replace": false,
                         "to": "/reservations",
@@ -786,11 +794,11 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": " Mes Réservations ",
+                          "children": "Mes Réservations",
                           "className": "is-primary-text",
                         },
                         "ref": null,
-                        "rendered": " Mes Réservations ",
+                        "rendered": "Mes Réservations",
                         "type": "b",
                       },
                       "type": [Function],

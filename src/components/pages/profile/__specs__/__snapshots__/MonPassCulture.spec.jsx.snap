@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | MonPassCulture snapshot should match snapshot with required props 1`] = `
+exports[`src | components | MonPassCulture should match snapshot with required props 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <MonPassCulture
@@ -47,7 +47,7 @@ ShallowWrapper {
           <span
             className="is-block fs14"
           >
-            sur votre Pass Culture
+            sur votre pass Culture
           </span>
         </div>,
         <div
@@ -60,12 +60,15 @@ ShallowWrapper {
               className="is-block"
               id="profile-physical-wallet-value"
             >
-              Jusqu'à 
+              Jusqu’à
+               
               <b>
                 200
-                 €
+                 
+                €
               </b>
-               pour les biens culturels
+               
+              pour les biens culturels
             </span>
           </div>
           <div
@@ -75,12 +78,15 @@ ShallowWrapper {
               className="is-block"
               id="profile-digital-wallet-value"
             >
-              Jusqu'à 
+              Jusqu’à
+               
               <b>
                 200
-                 €
+                 
+                €
               </b>
-               pour les offres numériques
+               
+              pour les offres numériques
             </span>
           </div>
         </div>,
@@ -105,7 +111,7 @@ ShallowWrapper {
             <span
               className="is-block fs14"
             >
-              sur votre Pass Culture
+              sur votre pass Culture
             </span>,
           ],
           "className": "text overall flex-1",
@@ -130,11 +136,11 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "sur votre Pass Culture",
+              "children": "sur votre pass Culture",
               "className": "is-block fs14",
             },
             "ref": null,
-            "rendered": "sur votre Pass Culture",
+            "rendered": "sur votre pass Culture",
             "type": "span",
           },
         ],
@@ -153,12 +159,15 @@ ShallowWrapper {
                 className="is-block"
                 id="profile-physical-wallet-value"
               >
-                Jusqu'à 
+                Jusqu’à
+                 
                 <b>
                   200
-                   €
+                   
+                  €
                 </b>
-                 pour les biens culturels
+                 
+                pour les biens culturels
               </span>
             </div>,
             <div
@@ -168,12 +177,15 @@ ShallowWrapper {
                 className="is-block"
                 id="profile-digital-wallet-value"
               >
-                Jusqu'à 
+                Jusqu’à
+                 
                 <b>
                   200
-                   €
+                   
+                  €
                 </b>
-                 pour les offres numériques
+                 
+                pour les offres numériques
               </span>
             </div>,
           ],
@@ -190,12 +202,15 @@ ShallowWrapper {
                 className="is-block"
                 id="profile-physical-wallet-value"
               >
-                Jusqu'à 
+                Jusqu’à
+                 
                 <b>
                   200
-                   €
+                   
+                  €
                 </b>
-                 pour les biens culturels
+                 
+                pour les biens culturels
               </span>,
               "className": "fs14",
             },
@@ -206,19 +221,23 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  "Jusqu'à ",
+                  "Jusqu’à",
+                  " ",
                   <b>
                     200
-                     €
+                     
+                    €
                   </b>,
-                  " pour les biens culturels",
+                  " ",
+                  "pour les biens culturels",
                 ],
                 "className": "is-block",
                 "id": "profile-physical-wallet-value",
               },
               "ref": null,
               "rendered": Array [
-                "Jusqu'à ",
+                "Jusqu’à",
+                " ",
                 Object {
                   "instance": null,
                   "key": undefined,
@@ -226,17 +245,20 @@ ShallowWrapper {
                   "props": Object {
                     "children": Array [
                       200,
-                      " €",
+                      " ",
+                      "€",
                     ],
                   },
                   "ref": null,
                   "rendered": Array [
                     200,
-                    " €",
+                    " ",
+                    "€",
                   ],
                   "type": "b",
                 },
-                " pour les biens culturels",
+                " ",
+                "pour les biens culturels",
               ],
               "type": "span",
             },
@@ -251,12 +273,15 @@ ShallowWrapper {
                 className="is-block"
                 id="profile-digital-wallet-value"
               >
-                Jusqu'à 
+                Jusqu’à
+                 
                 <b>
                   200
-                   €
+                   
+                  €
                 </b>
-                 pour les offres numériques
+                 
+                pour les offres numériques
               </span>,
               "className": "fs14 mt12",
             },
@@ -267,19 +292,23 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  "Jusqu'à ",
+                  "Jusqu’à",
+                  " ",
                   <b>
                     200
-                     €
+                     
+                    €
                   </b>,
-                  " pour les offres numériques",
+                  " ",
+                  "pour les offres numériques",
                 ],
                 "className": "is-block",
                 "id": "profile-digital-wallet-value",
               },
               "ref": null,
               "rendered": Array [
-                "Jusqu'à ",
+                "Jusqu’à",
+                " ",
                 Object {
                   "instance": null,
                   "key": undefined,
@@ -287,17 +316,20 @@ ShallowWrapper {
                   "props": Object {
                     "children": Array [
                       200,
-                      " €",
+                      " ",
+                      "€",
                     ],
                   },
                   "ref": null,
                   "rendered": Array [
                     200,
-                    " €",
+                    " ",
+                    "€",
                   ],
                   "type": "b",
                 },
-                " pour les offres numériques",
+                " ",
+                "pour les offres numériques",
               ],
               "type": "span",
             },
@@ -328,7 +360,7 @@ ShallowWrapper {
             <span
               className="is-block fs14"
             >
-              sur votre Pass Culture
+              sur votre pass Culture
             </span>
           </div>,
           <div
@@ -341,12 +373,15 @@ ShallowWrapper {
                 className="is-block"
                 id="profile-physical-wallet-value"
               >
-                Jusqu'à 
+                Jusqu’à
+                 
                 <b>
                   200
-                   €
+                   
+                  €
                 </b>
-                 pour les biens culturels
+                 
+                pour les biens culturels
               </span>
             </div>
             <div
@@ -356,12 +391,15 @@ ShallowWrapper {
                 className="is-block"
                 id="profile-digital-wallet-value"
               >
-                Jusqu'à 
+                Jusqu’à
+                 
                 <b>
                   200
-                   €
+                   
+                  €
                 </b>
-                 pour les offres numériques
+                 
+                pour les offres numériques
               </span>
             </div>
           </div>,
@@ -386,7 +424,7 @@ ShallowWrapper {
               <span
                 className="is-block fs14"
               >
-                sur votre Pass Culture
+                sur votre pass Culture
               </span>,
             ],
             "className": "text overall flex-1",
@@ -411,11 +449,11 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "sur votre Pass Culture",
+                "children": "sur votre pass Culture",
                 "className": "is-block fs14",
               },
               "ref": null,
-              "rendered": "sur votre Pass Culture",
+              "rendered": "sur votre pass Culture",
               "type": "span",
             },
           ],
@@ -434,12 +472,15 @@ ShallowWrapper {
                   className="is-block"
                   id="profile-physical-wallet-value"
                 >
-                  Jusqu'à 
+                  Jusqu’à
+                   
                   <b>
                     200
-                     €
+                     
+                    €
                   </b>
-                   pour les biens culturels
+                   
+                  pour les biens culturels
                 </span>
               </div>,
               <div
@@ -449,12 +490,15 @@ ShallowWrapper {
                   className="is-block"
                   id="profile-digital-wallet-value"
                 >
-                  Jusqu'à 
+                  Jusqu’à
+                   
                   <b>
                     200
-                     €
+                     
+                    €
                   </b>
-                   pour les offres numériques
+                   
+                  pour les offres numériques
                 </span>
               </div>,
             ],
@@ -471,12 +515,15 @@ ShallowWrapper {
                   className="is-block"
                   id="profile-physical-wallet-value"
                 >
-                  Jusqu'à 
+                  Jusqu’à
+                   
                   <b>
                     200
-                     €
+                     
+                    €
                   </b>
-                   pour les biens culturels
+                   
+                  pour les biens culturels
                 </span>,
                 "className": "fs14",
               },
@@ -487,19 +534,23 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": Array [
-                    "Jusqu'à ",
+                    "Jusqu’à",
+                    " ",
                     <b>
                       200
-                       €
+                       
+                      €
                     </b>,
-                    " pour les biens culturels",
+                    " ",
+                    "pour les biens culturels",
                   ],
                   "className": "is-block",
                   "id": "profile-physical-wallet-value",
                 },
                 "ref": null,
                 "rendered": Array [
-                  "Jusqu'à ",
+                  "Jusqu’à",
+                  " ",
                   Object {
                     "instance": null,
                     "key": undefined,
@@ -507,17 +558,20 @@ ShallowWrapper {
                     "props": Object {
                       "children": Array [
                         200,
-                        " €",
+                        " ",
+                        "€",
                       ],
                     },
                     "ref": null,
                     "rendered": Array [
                       200,
-                      " €",
+                      " ",
+                      "€",
                     ],
                     "type": "b",
                   },
-                  " pour les biens culturels",
+                  " ",
+                  "pour les biens culturels",
                 ],
                 "type": "span",
               },
@@ -532,12 +586,15 @@ ShallowWrapper {
                   className="is-block"
                   id="profile-digital-wallet-value"
                 >
-                  Jusqu'à 
+                  Jusqu’à
+                   
                   <b>
                     200
-                     €
+                     
+                    €
                   </b>
-                   pour les offres numériques
+                   
+                  pour les offres numériques
                 </span>,
                 "className": "fs14 mt12",
               },
@@ -548,19 +605,23 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": Array [
-                    "Jusqu'à ",
+                    "Jusqu’à",
+                    " ",
                     <b>
                       200
-                       €
+                       
+                      €
                     </b>,
-                    " pour les offres numériques",
+                    " ",
+                    "pour les offres numériques",
                   ],
                   "className": "is-block",
                   "id": "profile-digital-wallet-value",
                 },
                 "ref": null,
                 "rendered": Array [
-                  "Jusqu'à ",
+                  "Jusqu’à",
+                  " ",
                   Object {
                     "instance": null,
                     "key": undefined,
@@ -568,17 +629,20 @@ ShallowWrapper {
                     "props": Object {
                       "children": Array [
                         200,
-                        " €",
+                        " ",
+                        "€",
                       ],
                     },
                     "ref": null,
                     "rendered": Array [
                       200,
-                      " €",
+                      " ",
+                      "€",
                     ],
                     "type": "b",
                   },
-                  " pour les offres numériques",
+                  " ",
+                  "pour les offres numériques",
                 ],
                 "type": "span",
               },

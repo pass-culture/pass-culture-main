@@ -16,6 +16,7 @@ describe('src | components | forms | inputs | HiddenField', () => {
     expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
+
   it('attributes should defined for a field of type hidden', () => {
     // given
     const props = {

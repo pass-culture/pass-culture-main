@@ -50,15 +50,15 @@ describe('src | components | MonPassCulture', () => {
       // then
       let expected = `Il reste 0 €`
       let text = walletElement.text()
-      expect(text).toStrictEqual(expected)
+      expect(text).toBe(expected)
 
-      expected = `Jusqu'à 0 € pour les offres numériques`
+      expected = `Jusqu’à 0 € pour les offres numériques`
       text = digitalElement.text()
-      expect(digitalElement.text()).toStrictEqual(expected)
-      expected = `Jusqu'à 0 € pour les biens culturels`
+      expect(digitalElement.text()).toBe(expected)
+      expected = `Jusqu’à 0 € pour les biens culturels`
 
       text = physicalElement.text()
-      expect(physicalElement.text()).toStrictEqual(expected)
+      expect(physicalElement.text()).toBe(expected)
     })
 
     it('with wallet value set to 90', () => {
@@ -82,15 +82,15 @@ describe('src | components | MonPassCulture', () => {
       // then
       let expected = `Il reste 90 €`
       let text = walletElement.text()
-      expect(text).toStrictEqual(expected)
+      expect(text).toBe(expected)
 
-      expected = `Jusqu'à 90 € pour les offres numériques`
+      expected = `Jusqu’à 90 € pour les offres numériques`
       text = digitalElement.text()
-      expect(digitalElement.text()).toStrictEqual(expected)
-      expected = `Jusqu'à 90 € pour les biens culturels`
+      expect(digitalElement.text()).toBe(expected)
+      expected = `Jusqu’à 90 € pour les biens culturels`
 
       text = physicalElement.text()
-      expect(physicalElement.text()).toStrictEqual(expected)
+      expect(physicalElement.text()).toBe(expected)
     })
 
     it('render with wallet value set to 200', () => {
@@ -114,15 +114,15 @@ describe('src | components | MonPassCulture', () => {
       // then
       let expected = `Il reste 200 €`
       let text = walletElement.text()
-      expect(text).toStrictEqual(expected)
+      expect(text).toBe(expected)
 
-      expected = `Jusqu'à 80 € pour les offres numériques`
+      expected = `Jusqu’à 80 € pour les offres numériques`
       text = digitalElement.text()
-      expect(digitalElement.text()).toStrictEqual(expected)
+      expect(digitalElement.text()).toBe(expected)
 
-      expected = `Jusqu'à 60 € pour les biens culturels`
+      expected = `Jusqu’à 60 € pour les biens culturels`
       text = physicalElement.text()
-      expect(physicalElement.text()).toStrictEqual(expected)
+      expect(physicalElement.text()).toBe(expected)
     })
 
     it('render with invalid wallet balance', () => {
@@ -146,15 +146,15 @@ describe('src | components | MonPassCulture', () => {
       // then
       let expected = `Il reste -- €`
       let text = walletElement.text()
-      expect(text).toStrictEqual(expected)
+      expect(text).toBe(expected)
 
-      expected = `Jusqu'à -- € pour les offres numériques`
+      expected = `Jusqu’à -- € pour les offres numériques`
       text = digitalElement.text()
-      expect(text).toStrictEqual(expected)
+      expect(text).toBe(expected)
 
-      expected = `Jusqu'à -- € pour les biens culturels`
+      expected = `Jusqu’à -- € pour les biens culturels`
       text = physicalElement.text()
-      expect(text).toStrictEqual(expected)
+      expect(text).toBe(expected)
     })
   })
 })

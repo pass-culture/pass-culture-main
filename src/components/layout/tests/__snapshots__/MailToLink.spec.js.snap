@@ -38,6 +38,7 @@ ShallowWrapper {
       "className": "",
       "header": Object {},
       "href": "mailto:email@fake.com?",
+      "obfuscate": false,
     },
     "ref": null,
     "rendered": Object {
@@ -79,6 +80,7 @@ ShallowWrapper {
         "className": "",
         "header": Object {},
         "href": "mailto:email@fake.com?",
+        "obfuscate": false,
       },
       "ref": null,
       "rendered": Object {

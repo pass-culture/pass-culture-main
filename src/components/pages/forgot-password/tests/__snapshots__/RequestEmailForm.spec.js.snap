@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | forgot-password | RawRequestEmailForm snapshot should match snapshot 1`] = `
+exports[`src | components | pages | forgot-password | RawRequestEmailForm should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawRequestEmailForm
+  Symbol(enzyme.__unrendered__): <Unknown
     canSubmit={true}
     formErrors={false}
     isLoading={false}
@@ -47,7 +47,8 @@ ShallowWrapper {
                   <span>
                     *
                   </span>
-                   Champs obligatoires
+                   
+                  Champs obligatoires
                 </span>
               </h2>
               <div>
@@ -115,7 +116,8 @@ ShallowWrapper {
                   <span>
                     *
                   </span>
-                   Champs obligatoires
+                   
+                  Champs obligatoires
                 </span>
               </h2>
               <div>
@@ -159,7 +161,8 @@ ShallowWrapper {
                   <span>
                     *
                   </span>
-                   Champs obligatoires
+                   
+                  Champs obligatoires
                 </span>
               </h2>
               <div>
@@ -199,7 +202,8 @@ ShallowWrapper {
                     <span>
                       *
                     </span>
-                     Champs obligatoires
+                     
+                    Champs obligatoires
                   </span>
                 </h2>,
                 <div>
@@ -237,7 +241,8 @@ ShallowWrapper {
                       <span>
                         *
                       </span>
-                       Champs obligatoires
+                       
+                      Champs obligatoires
                     </span>,
                   ],
                   "className": "mb36",
@@ -265,7 +270,8 @@ ShallowWrapper {
                         <span>
                           *
                         </span>,
-                        " Champs obligatoires",
+                        " ",
+                        "Champs obligatoires",
                       ],
                       "className": "is-block is-regular fs13 mt18",
                     },
@@ -282,7 +288,8 @@ ShallowWrapper {
                         "rendered": "*",
                         "type": "span",
                       },
-                      " Champs obligatoires",
+                      " ",
+                      "Champs obligatoires",
                     ],
                     "type": "span",
                   },
@@ -314,7 +321,7 @@ ShallowWrapper {
                   Object {
                     "instance": null,
                     "key": undefined,
-                    "nodeType": "function",
+                    "nodeType": "class",
                     "props": Object {
                       "autoComplete": false,
                       "className": "",
@@ -397,7 +404,8 @@ ShallowWrapper {
                     <span>
                       *
                     </span>
-                     Champs obligatoires
+                     
+                    Champs obligatoires
                   </span>
                 </h2>
                 <div>
@@ -465,7 +473,8 @@ ShallowWrapper {
                     <span>
                       *
                     </span>
-                     Champs obligatoires
+                     
+                    Champs obligatoires
                   </span>
                 </h2>
                 <div>
@@ -509,7 +518,8 @@ ShallowWrapper {
                     <span>
                       *
                     </span>
-                     Champs obligatoires
+                     
+                    Champs obligatoires
                   </span>
                 </h2>
                 <div>
@@ -549,7 +559,8 @@ ShallowWrapper {
                       <span>
                         *
                       </span>
-                       Champs obligatoires
+                       
+                      Champs obligatoires
                     </span>
                   </h2>,
                   <div>
@@ -587,7 +598,8 @@ ShallowWrapper {
                         <span>
                           *
                         </span>
-                         Champs obligatoires
+                         
+                        Champs obligatoires
                       </span>,
                     ],
                     "className": "mb36",
@@ -615,7 +627,8 @@ ShallowWrapper {
                           <span>
                             *
                           </span>,
-                          " Champs obligatoires",
+                          " ",
+                          "Champs obligatoires",
                         ],
                         "className": "is-block is-regular fs13 mt18",
                       },
@@ -632,7 +645,8 @@ ShallowWrapper {
                           "rendered": "*",
                           "type": "span",
                         },
-                        " Champs obligatoires",
+                        " ",
+                        "Champs obligatoires",
                       ],
                       "type": "span",
                     },
@@ -664,7 +678,7 @@ ShallowWrapper {
                     Object {
                       "instance": null,
                       "key": undefined,
-                      "nodeType": "function",
+                      "nodeType": "class",
                       "props": Object {
                         "autoComplete": false,
                         "className": "",
@@ -743,6 +757,5 @@ ShallowWrapper {
     Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
-  Symbol(enzyme.__childContext__): null,
 }
 `;

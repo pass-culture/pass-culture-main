@@ -21,6 +21,6 @@ describe('src | components | pages | activation | ActivationRoutesContainer', ()
     shallow(<ActivationRoutesContainer />, { context: { store } })
 
     // then
-    expect(withNotRequiredLogin).toHaveBeenCalledWith()
+    expect(withNotRequiredLogin).toHaveBeenCalledWith(expect.any(Function))
   })
 })

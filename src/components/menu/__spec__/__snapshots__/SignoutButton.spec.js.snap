@@ -41,7 +41,6 @@ ShallowWrapper {
           <Icon
             alt=""
             className={null}
-            name={null}
             src={null}
             svg="ico-deconnect-w"
           />
@@ -67,7 +66,6 @@ ShallowWrapper {
           "children": <Icon
             alt=""
             className={null}
-            name={null}
             src={null}
             svg="ico-deconnect-w"
           />,
@@ -81,7 +79,6 @@ ShallowWrapper {
           "props": Object {
             "alt": "",
             "className": null,
-            "name": null,
             "src": null,
             "svg": "ico-deconnect-w",
           },
@@ -119,7 +116,6 @@ ShallowWrapper {
             <Icon
               alt=""
               className={null}
-              name={null}
               src={null}
               svg="ico-deconnect-w"
             />
@@ -145,7 +141,6 @@ ShallowWrapper {
             "children": <Icon
               alt=""
               className={null}
-              name={null}
               src={null}
               svg="ico-deconnect-w"
             />,
@@ -159,7 +154,6 @@ ShallowWrapper {
             "props": Object {
               "alt": "",
               "className": null,
-              "name": null,
               "src": null,
               "svg": "ico-deconnect-w",
             },

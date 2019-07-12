@@ -62,7 +62,7 @@ ShallowWrapper {
             className="pc-selectbox pl24 py5 fs19"
             defaultValue={20000}
             name="distance"
-            onChange={[Function]}
+            onBlur={[Function]}
           >
             <option
               value={20000}
@@ -108,7 +108,7 @@ ShallowWrapper {
               className="pc-selectbox pl24 py5 fs19"
               defaultValue={20000}
               name="distance"
-              onChange={[Function]}
+              onBlur={[Function]}
             >
               <option
                 value={20000}
@@ -179,7 +179,7 @@ ShallowWrapper {
               "className": "pc-selectbox pl24 py5 fs19",
               "defaultValue": 20000,
               "name": "distance",
-              "onChange": [Function],
+              "onBlur": [Function],
             },
             "ref": null,
             "rendered": Array [
@@ -271,7 +271,7 @@ ShallowWrapper {
               className="pc-selectbox pl24 py5 fs19"
               defaultValue={20000}
               name="distance"
-              onChange={[Function]}
+              onBlur={[Function]}
             >
               <option
                 value={20000}
@@ -317,7 +317,7 @@ ShallowWrapper {
                 className="pc-selectbox pl24 py5 fs19"
                 defaultValue={20000}
                 name="distance"
-                onChange={[Function]}
+                onBlur={[Function]}
               >
                 <option
                   value={20000}
@@ -388,7 +388,7 @@ ShallowWrapper {
                 "className": "pc-selectbox pl24 py5 fs19",
                 "defaultValue": 20000,
                 "name": "distance",
-                "onChange": [Function],
+                "onBlur": [Function],
               },
               "ref": null,
               "rendered": Array [

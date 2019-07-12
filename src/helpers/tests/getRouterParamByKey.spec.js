@@ -43,7 +43,7 @@ describe('src | helpers | getRouterParamByKey', () => {
       // when
       const value = null
       getRouterParamByKey(value)
-    }).toThrow('error')
+    }).toThrow('getRouterParamByKey: Missing arguments')
   })
 
   it('returns token equal null if match is not defined', () => {
@@ -52,6 +52,6 @@ describe('src | helpers | getRouterParamByKey', () => {
       const key = null
       const value = { location: { params: { token: 'AAAA' } } }
       getRouterParamByKey(value, key)
-    }).toThrow('error')
+    }).toThrow('getRouterParamByKey: Missing arguments')
   })
 })

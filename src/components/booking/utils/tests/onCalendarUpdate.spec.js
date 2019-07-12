@@ -5,20 +5,22 @@ const resetObj = { price: null, stockId: null, time: null }
 
 describe('src | components | booking | utils | onCalendarUpdates', () => {
   it('should throw if no form values defined || not object', () => {
-    expect(() => onCalendarUpdates()).toThrow('error')
-    expect(() => onCalendarUpdates(null)).toThrow('error')
-    expect(() => onCalendarUpdates(null, null)).toThrow('error')
+    expect(() => onCalendarUpdates()).toThrow('Missing arguments form values')
+    expect(() => onCalendarUpdates(null)).toThrow('Missing arguments form values')
+    expect(() => onCalendarUpdates(null, null)).toThrow('Missing arguments form values')
     let formValues = null
-    expect(() => onCalendarUpdates(null, null, formValues)).toThrow('error')
+    expect(() => onCalendarUpdates(null, null, formValues)).toThrow('Missing arguments form values')
     formValues = undefined
-    expect(() => onCalendarUpdates(null, null, formValues)).toThrow('error')
+    expect(() => onCalendarUpdates(null, null, formValues)).toThrow('Missing arguments form values')
     formValues = false
-    expect(() => onCalendarUpdates(null, null, formValues)).toThrow('error')
+    expect(() => onCalendarUpdates(null, null, formValues)).toThrow('Missing arguments form values')
   })
+
   it('should not throw if form values is object', () => {
     const formValues = { price: null, stockId: null, time: null }
     expect(() => onCalendarUpdates(null, null, formValues)).not.toThrow()
   })
+
   it('should returns form values if selection is falsey', () => {
     const formValues = {}
     let selection = null
@@ -34,6 +36,7 @@ describe('src | components | booking | utils | onCalendarUpdates', () => {
     result = onCalendarUpdates(selection, null, formValues)
     expect(result).toStrictEqual(formValues)
   })
+
   it('should returns default form values if no user selection', () => {
     const formValues = {}
     let selection = true
@@ -61,6 +64,7 @@ describe('src | components | booking | utils | onCalendarUpdates', () => {
     result = onCalendarUpdates(selection, null, formValues)
     expect(result).toStrictEqual(resetObj)
   })
+
   it('returns reset object if no bookables or not array or empty array', () => {
     const selection = { date: moment() }
     let formValues = {}
@@ -82,6 +86,7 @@ describe('src | components | booking | utils | onCalendarUpdates', () => {
     result = onCalendarUpdates(selection, null, formValues)
     expect(result).toStrictEqual(resetObj)
   })
+
   it('returns reset object if no matches between bookables and selection', () => {
     const mom2 = moment().add(2, 'days')
     const selection = { date: moment() }
@@ -91,6 +96,7 @@ describe('src | components | booking | utils | onCalendarUpdates', () => {
     const result = onCalendarUpdates(selection, null, formValues)
     expect(result).toStrictEqual(resetObj)
   })
+
   it('returns expected if matching', () => {
     const mom = moment()
     const selection = { date: mom }
@@ -102,6 +108,7 @@ describe('src | components | booking | utils | onCalendarUpdates', () => {
     const result = onCalendarUpdates(selection, null, formValues)
     expect(result).toStrictEqual(expected)
   })
+
   it('returns first expected value if multiple matching', () => {
     const mom = moment()
     const selection = { date: mom }

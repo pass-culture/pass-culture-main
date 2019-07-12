@@ -32,7 +32,7 @@ ShallowWrapper {
               <p
                 className="is-medium"
               >
-                Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter
+                Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
               </p>
             </React.Fragment>
           </div>
@@ -67,7 +67,7 @@ ShallowWrapper {
               <p
                 className="is-medium"
               >
-                Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter
+                Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
               </p>
             </React.Fragment>
           </div>,
@@ -84,7 +84,7 @@ ShallowWrapper {
               <p
                 className="is-medium"
               >
-                Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter
+                Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
               </p>
             </React.Fragment>,
             "className": "is-italic fs22 is-white-text",
@@ -98,7 +98,7 @@ ShallowWrapper {
               "children": <p
                 className="is-medium"
               >
-                Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter
+                Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
               </p>,
             },
             "ref": null,
@@ -107,11 +107,11 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter",
+                "children": "Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter",
                 "className": "is-medium",
               },
               "ref": null,
-              "rendered": "Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter",
+              "rendered": "Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter",
               "type": "p",
             },
             "type": Symbol(react.fragment),
@@ -159,7 +159,7 @@ ShallowWrapper {
                 <p
                   className="is-medium"
                 >
-                  Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter
+                  Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
                 </p>
               </React.Fragment>
             </div>
@@ -194,7 +194,7 @@ ShallowWrapper {
                 <p
                   className="is-medium"
                 >
-                  Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter
+                  Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
                 </p>
               </React.Fragment>
             </div>,
@@ -211,7 +211,7 @@ ShallowWrapper {
                 <p
                   className="is-medium"
                 >
-                  Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter
+                  Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
                 </p>
               </React.Fragment>,
               "className": "is-italic fs22 is-white-text",
@@ -225,7 +225,7 @@ ShallowWrapper {
                 "children": <p
                   className="is-medium"
                 >
-                  Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter
+                  Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
                 </p>,
               },
               "ref": null,
@@ -234,11 +234,11 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter",
+                  "children": "Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter",
                   "className": "is-medium",
                 },
                 "ref": null,
-                "rendered": "Votre mode de passe a bien été enregistré, vous pouvez l'utiliser pour vous connecter",
+                "rendered": "Votre mode de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter",
                 "type": "p",
               },
               "type": Symbol(react.fragment),
@@ -295,6 +295,7 @@ ShallowWrapper {
     Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
 }
 `;
 
@@ -335,7 +336,7 @@ ShallowWrapper {
               <p
                 className="is-medium mt28"
               >
-                Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
               </p>
             </React.Fragment>
           </div>
@@ -382,7 +383,7 @@ ShallowWrapper {
               <p
                 className="is-medium mt28"
               >
-                Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
               </p>
             </React.Fragment>
           </div>,
@@ -404,7 +405,7 @@ ShallowWrapper {
               <p
                 className="is-medium mt28"
               >
-                Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
               </p>
             </React.Fragment>,
             "className": "is-italic fs22 is-white-text",
@@ -424,7 +425,7 @@ ShallowWrapper {
                 <p
                   className="is-medium mt28"
                 >
-                  Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                  Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
                 </p>,
               ],
             },
@@ -447,11 +448,11 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
+                  "children": "Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
                   "className": "is-medium mt28",
                 },
                 "ref": null,
-                "rendered": "Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
+                "rendered": "Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
                 "type": "p",
               },
             ],
@@ -510,7 +511,7 @@ ShallowWrapper {
                 <p
                   className="is-medium mt28"
                 >
-                  Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                  Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
                 </p>
               </React.Fragment>
             </div>
@@ -557,7 +558,7 @@ ShallowWrapper {
                 <p
                   className="is-medium mt28"
                 >
-                  Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                  Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
                 </p>
               </React.Fragment>
             </div>,
@@ -579,7 +580,7 @@ ShallowWrapper {
                 <p
                   className="is-medium mt28"
                 >
-                  Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                  Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
                 </p>
               </React.Fragment>,
               "className": "is-italic fs22 is-white-text",
@@ -599,7 +600,7 @@ ShallowWrapper {
                   <p
                     className="is-medium mt28"
                   >
-                    Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                    Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
                   </p>,
                 ],
               },
@@ -622,11 +623,11 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": "Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
+                    "children": "Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
                     "className": "is-medium mt28",
                   },
                   "ref": null,
-                  "rendered": "Si vous n'avez rien reçu d'ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
+                  "rendered": "Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
                   "type": "p",
                 },
               ],
@@ -689,5 +690,6 @@ ShallowWrapper {
     Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
 }
 `;

@@ -57,13 +57,13 @@ describe('src | components | pages | search | SearchResultItem', () => {
     })
   })
 
-  describe('markSearchRecommendationsAsClicked()', () => {
+  describe('handleMarkSearchRecommendationsAsClicked()', () => {
     it('should dispatch the request data', () => {
       // given
       const wrapper = shallow(<SearchResultItem {...props} />)
 
       // when
-      wrapper.instance().markSearchRecommendationsAsClicked()
+      wrapper.instance().handleMarkSearchRecommendationsAsClicked()
 
       // then
       expect(props.dispatch).toHaveBeenCalledWith({

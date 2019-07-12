@@ -89,13 +89,13 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
     })
   })
 
-  describe('onClickFilterButton()', () => {
+  describe('handleOnClickFilterButton()', () => {
     it('should close the filters and change the URL by default', () => {
       // given
       const wrapper = shallow(<SearchFilter {...props} />)
 
       // when
-      wrapper.instance().onClickFilterButton()
+      wrapper.instance().handleOnClickFilterButton()
 
       // then
       expect(props.onClickFilterButton).toHaveBeenCalledWith(props.isVisible)
@@ -107,20 +107,20 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
       wrapper.setState({ filterParamsMatchingQueryParams: true })
 
       // when
-      wrapper.instance().onClickFilterButton()
+      wrapper.instance().handleOnClickFilterButton()
 
       // then
       expect(props.resetSearchStore).toHaveBeenCalled()
     })
   })
 
-  describe('onClickReset()', () => {
+  describe('handleOnClickReset()', () => {
     it('should initialize default filter params and reset the URL', () => {
       // given
       const wrapper = shallow(<SearchFilter {...props} />)
 
       // when
-      wrapper.instance().onClickReset()
+      wrapper.instance().handleOnClickReset()
 
       // then
       const expected = {

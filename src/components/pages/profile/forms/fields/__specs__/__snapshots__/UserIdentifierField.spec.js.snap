@@ -3,7 +3,7 @@
 exports[`src | components | pages | profile | forms | fields | UserIdentifierField should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <UserIdentifierField
+  Symbol(enzyme.__unrendered__): <Unknown
     isLoading={false}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -58,7 +58,7 @@ ShallowWrapper {
       "rendered": Object {
         "instance": null,
         "key": undefined,
-        "nodeType": "function",
+        "nodeType": "class",
         "props": Object {
           "autoComplete": false,
           "className": "",
@@ -121,7 +121,7 @@ ShallowWrapper {
         "rendered": Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "function",
+          "nodeType": "class",
           "props": Object {
             "autoComplete": false,
             "className": "",

@@ -45,14 +45,14 @@ describe('src | components | pages | search | FilterByDates', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('onChangePickedDate()', () => {
+  describe('handleOnChangePickedDate()', () => {
     it('should change the input date with the new date', () => {
       // given
       const pickedDate = new Date('12/12/2034')
       const wrapper = shallow(<FilterByDates {...props} />)
 
       // when
-      wrapper.instance().onChangePickedDate(pickedDate)
+      wrapper.instance().handleOnChangePickedDate(pickedDate)
 
       // then
       expect(props.filterActions.change).toHaveBeenCalledWith({
@@ -67,7 +67,7 @@ describe('src | components | pages | search | FilterByDates', () => {
       const wrapper = shallow(<FilterByDates {...props} />)
 
       // when
-      wrapper.instance().onChangePickedDate()
+      wrapper.instance().handleOnChangePickedDate()
 
       // then
       expect(props.filterActions.change).toHaveBeenCalledWith({

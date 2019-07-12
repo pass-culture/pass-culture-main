@@ -46,7 +46,7 @@ describe('src | components | pages | search | FilterByDistance', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('onChangeDistance()', () => {
+  describe('handleOnChangeDistance()', () => {
     describe('i am not geolocated', () => {
       it('should set the distance to 1 when I change the select field to 1', () => {
         // given
@@ -59,7 +59,7 @@ describe('src | components | pages | search | FilterByDistance', () => {
         const wrapper = shallow(<FilterByDistance {...props} />)
 
         // when
-        wrapper.instance().onChangeDistance(event)
+        wrapper.instance().handleOnChangeDistance(event)
 
         // then
         expect(props.filterActions.change).toHaveBeenCalledWith({
@@ -84,7 +84,7 @@ describe('src | components | pages | search | FilterByDistance', () => {
         const wrapper = shallow(<FilterByDistance {...props} />)
 
         // when
-        wrapper.instance().onChangeDistance(event)
+        wrapper.instance().handleOnChangeDistance(event)
 
         // then
         expect(props.filterActions.change).toHaveBeenCalledWith({
@@ -107,7 +107,7 @@ describe('src | components | pages | search | FilterByDistance', () => {
         const wrapper = shallow(<FilterByDistance {...props} />)
 
         // when
-        wrapper.instance().onChangeDistance(event)
+        wrapper.instance().handleOnChangeDistance(event)
 
         // then
         expect(props.filterActions.change).toHaveBeenCalledWith({

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | verso | verso-controls | wallet | VersoWallet should match snapshot 1`] = `
+exports[`src | components | verso | verso-controls | wallet | VersoWallet should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <VersoWallet
@@ -25,14 +25,15 @@ ShallowWrapper {
           className="is-block"
           id="verso-wallet-label"
         >
-          Mon Pass
+          Mon pass
         </small>,
         <span
           className="fs24 is-block"
           id="verso-wallet-value"
         >
           10
-           €
+           
+          €
         </span>,
       ],
       "id": "verso-wallet",
@@ -44,12 +45,12 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "Mon Pass",
+          "children": "Mon pass",
           "className": "is-block",
           "id": "verso-wallet-label",
         },
         "ref": null,
-        "rendered": "Mon Pass",
+        "rendered": "Mon pass",
         "type": "small",
       },
       Object {
@@ -59,7 +60,8 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             10,
-            " €",
+            " ",
+            "€",
           ],
           "className": "fs24 is-block",
           "id": "verso-wallet-value",
@@ -67,7 +69,8 @@ ShallowWrapper {
         "ref": null,
         "rendered": Array [
           10,
-          " €",
+          " ",
+          "€",
         ],
         "type": "span",
       },
@@ -85,14 +88,15 @@ ShallowWrapper {
             className="is-block"
             id="verso-wallet-label"
           >
-            Mon Pass
+            Mon pass
           </small>,
           <span
             className="fs24 is-block"
             id="verso-wallet-value"
           >
             10
-             €
+             
+            €
           </span>,
         ],
         "id": "verso-wallet",
@@ -104,12 +108,12 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Mon Pass",
+            "children": "Mon pass",
             "className": "is-block",
             "id": "verso-wallet-label",
           },
           "ref": null,
-          "rendered": "Mon Pass",
+          "rendered": "Mon pass",
           "type": "small",
         },
         Object {
@@ -119,7 +123,8 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               10,
-              " €",
+              " ",
+              "€",
             ],
             "className": "fs24 is-block",
             "id": "verso-wallet-value",
@@ -127,7 +132,8 @@ ShallowWrapper {
           "ref": null,
           "rendered": Array [
             10,
-            " €",
+            " ",
+            "€",
           ],
           "type": "span",
         },
