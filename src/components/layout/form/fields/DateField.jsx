@@ -12,7 +12,7 @@ import getRequiredValidate from '../../form/utils/getRequiredValidate'
 const renderReadOnlyDateInput = ({ formattedSelectedDatetime, name }) => ({
   propTypes: {
     formattedSelectedDatetime: PropTypes.string,
-    name: PropTypes.string
+    name: PropTypes.string,
   },
   render() {
     return (
@@ -23,7 +23,7 @@ const renderReadOnlyDateInput = ({ formattedSelectedDatetime, name }) => ({
         value={formattedSelectedDatetime}
       />
     )
-  }
+  },
 })
 
 const renderDateInput = dateInputProps => (
@@ -71,7 +71,7 @@ export class DateField extends PureComponent {
     this.setState({ hasPressedDelete: true })
   }
 
-  render() {
+  renderField = ({ input }) => {
     const {
       className,
       clearable,
@@ -85,82 +85,83 @@ export class DateField extends PureComponent {
       renderValue,
       required,
       timezone,
-      validate,
       // see github.com/Hacker0x01/react-datepicker/blob/master/docs/datepicker.md
       ...DatePickerProps
     } = this.props
     const inputName = id || name
     const isClearable = !readOnly && clearable
     const { hasPressedDelete } = this.state
+    let formattedSelectedDatetime = null
+    let selectedDatetime = null
+
+    const shouldFormatDatetime = !hasPressedDelete && input.value
+    if (shouldFormatDatetime) {
+      selectedDatetime = applyTimezoneToDatetime(input.value, timezone)
+      formattedSelectedDatetime = formatSelectedDatetime(selectedDatetime, dateFormat)
+    }
+
+    const dateInputProps = {
+      className: 'date',
+      dateFormat,
+      id: inputName,
+      isClearable,
+      locale,
+      placeholderText: placeholder,
+      selected: selectedDatetime,
+      shouldCloseOnSelect: true,
+      ...DatePickerProps,
+      ...input,
+      onChange: this.onDateChange(input),
+      onKeyDown: this.onKeyDown(input),
+      value: formattedSelectedDatetime,
+    }
+
+    return (
+      <div
+        className={classnames('field date-field', className, {
+          'is-read-only': readOnly,
+        })}
+        id={id}
+      >
+        <label
+          className={classnames('field-label', { empty: !label })}
+          htmlFor={name}
+        >
+          {label && (
+            <span>
+              <span>{label}</span>
+              {required && !readOnly && <span className="field-asterisk">{'*'}</span>}
+            </span>
+          )}
+        </label>
+        <div className="field-control">
+          <div className="field-value flex-columns items-center">
+            <div className="field-inner flex-columns items-center">
+              {readOnly
+                ? renderReadOnlyDateInput({
+                    formattedSelectedDatetime,
+                    name,
+                  })
+                : renderDateInput(dateInputProps)}
+            </div>
+            {renderValue()}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  render() {
+    const {
+      name,
+      required,
+      validate,
+    } = this.props
 
     return (
       <Field
         name={name}
-        render={({ input }) => {
-          let formattedSelectedDatetime = null
-          let selectedDatetime = null
-
-          const shouldFormatDatetime = !hasPressedDelete && input.value
-          if (shouldFormatDatetime) {
-            selectedDatetime = applyTimezoneToDatetime(input.value, timezone)
-            formattedSelectedDatetime = formatSelectedDatetime(
-              selectedDatetime,
-              dateFormat
-            )
-          }
-
-          const dateInputProps = {
-            className: 'date',
-            dateFormat,
-            id: inputName,
-            isClearable,
-            locale,
-            placeholderText: placeholder,
-            selected: selectedDatetime,
-            shouldCloseOnSelect: true,
-            ...DatePickerProps,
-            ...input,
-            onChange: this.onDateChange(input),
-            onKeyDown: this.onKeyDown(input),
-            value: formattedSelectedDatetime,
-          }
-
-          return (
-            <div
-              className={classnames('field date-field', className, {
-                'is-read-only': readOnly,
-              })}
-              id={id}
-            >
-              <label
-                className={classnames('field-label', { empty: !label })}
-                htmlFor={name}
-              >
-                {label && (
-                  <span>
-                    <span>{label}</span>
-                    {required && !readOnly && (
-                      <span className="field-asterisk">*</span>
-                    )}
-                  </span>
-                )}
-              </label>
-              <div className="field-control">
-                <div className="field-value flex-columns items-center">
-                  <div className="field-inner flex-columns items-center">
-                    {readOnly
-                      ? renderReadOnlyDateInput({
-                          formattedSelectedDatetime,
-                          name,
-                        })
-                      : renderDateInput(dateInputProps)}
-                  </div>
-                  {renderValue()}
-                </div>
-              </div>
-            </div>
-          )
-        }}
+        render={this.renderField}
         validate={composeValidators(validate, getRequiredValidate(required))}
       />
     )

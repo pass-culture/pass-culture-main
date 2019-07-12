@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 
 const Price = ({ value, free, Tag, className }) => {
@@ -6,8 +7,8 @@ const Price = ({ value, free, Tag, className }) => {
       {typeof value === 'undefined'
         ? ''
         : value === 0
-          ? free
-          : value && value.toString().replace('.', ',') + '€'}
+        ? free
+        : value && value.toString().replace('.', ',') + '€'}
     </Tag>
   )
 }
@@ -15,6 +16,13 @@ const Price = ({ value, free, Tag, className }) => {
 Price.defaultProps = {
   Tag: 'span',
   free: 'Gratuit',
+}
+
+Price.propTypes = {
+  Tag: PropTypes.string,
+  className: PropTypes.string.isRequired,
+  free: PropTypes.string,
+  value: PropTypes.string.isRequired,
 }
 
 export default Price

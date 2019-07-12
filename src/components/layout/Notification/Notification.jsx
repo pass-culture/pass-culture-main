@@ -78,6 +78,7 @@ class Notification extends Component {
               <button
                 className="close pl12"
                 onClick={this.handleDispatchCloseNotification}
+                type="button"
               >
                 {url ? 'Fermer' : 'OK'}
               </button>
@@ -91,22 +92,13 @@ class Notification extends Component {
 
 Notification.defaultProps = {
   isFullscreen: false,
-  notification: null,
-  tooltip: null,
-  type: null,
-  url: null,
-  urlLabel: null
+  notification: null
 }
 
 Notification.propTypes = {
   dispatch: PropTypes.func.isRequired,
   isFullscreen: PropTypes.bool,
   notification: PropTypes.shape(),
-  text: PropTypes.string,
-  tooltip: PropTypes.shape(),
-  type: PropTypes.string,
-  url: PropTypes.string,
-  urlLabel: PropTypes.string,
 }
 
 export default Notification

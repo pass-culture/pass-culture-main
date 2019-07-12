@@ -1,24 +1,15 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import {
-  Icon,
-  Modal,
-  resetForm,
-  showNotification,
-  Spinner,
-} from 'pass-culture-shared'
+import { Icon, Modal, resetForm, showNotification, Spinner } from 'pass-culture-shared'
+import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
 import HeaderContainer from '../Header/HeaderContainer'
-import NotificationContainer from "../Notification/NotificationContainer"
+import NotificationContainer from '../Notification/NotificationContainer'
 
 class Main extends Component {
-  static defaultProps = {
-    Tag: 'main',
-  }
-
   constructor() {
     super()
     this.state = {
@@ -100,12 +91,10 @@ class Main extends Component {
 
     return (
       <Fragment>
-        {!fullscreen && (
-          <HeaderContainer
-            whiteHeader={whiteHeader}
-            {...header}
-          />
-        )}
+        {!fullscreen && <HeaderContainer
+          whiteHeader={whiteHeader}
+          {...header}
+                        />}
         <ReactTooltip
           className="flex-center items-center"
           delayHide={500}
@@ -159,6 +148,26 @@ class Main extends Component {
       </Fragment>
     )
   }
+}
+
+Main.defaultProps = {
+  Tag: 'main',
+}
+
+Main.propTypes = {
+  Tag: PropTypes.string,
+  backTo: PropTypes.string.isRequired,
+  children: PropTypes.arrayOf().isRequired,
+  currentUser: PropTypes.shape().isRequired,
+  dispatch: PropTypes.func.isRequired,
+  fullscreen: PropTypes.bool.isRequired,
+  handleDataRequest: PropTypes.func.isRequired,
+  header: PropTypes.shape().isRequired,
+  location: PropTypes.shape().isRequired,
+  name: PropTypes.string.isRequired,
+  redBg: PropTypes.string.isRequired,
+  whiteHeader: PropTypes.string.isRequired,
+  withLoading: PropTypes.bool.isRequired,
 }
 
 export default Main

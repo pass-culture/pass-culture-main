@@ -15,9 +15,9 @@ class Header extends Component {
     }
   }
 
-  handleSuccessRedirect = () => '/connexion'
+  onHandleSuccessRedirect = () => '/connexion'
 
-  handleOnClick = (showMobileMenu) => () => {
+  handleOnClick = showMobileMenu => () => {
     this.setState({
       showMobileMenu: !showMobileMenu,
     })
@@ -56,7 +56,7 @@ class Header extends Component {
                 <span className="icon">
                   <Icon svg="ico-guichet-w" />
                 </span>
-                <span>{"Guichet"}</span>
+                <span>{'Guichet'}</span>
               </NavLink>
               {!whiteHeader && (
                 <NavLink
@@ -66,7 +66,7 @@ class Header extends Component {
                   <span className="icon">
                     <Icon svg="ico-offres-w" />
                   </span>
-                  <span>{"Vos offres"}</span>
+                  <span>{'Vos offres'}</span>
                 </NavLink>
               )}
               <a
@@ -78,7 +78,7 @@ class Header extends Component {
                 <span className="icon">
                   <Icon svg="ico-help-w" />
                 </span>
-                <span>{"Aide"}</span>
+                <span>{'Aide'}</span>
               </a>
               <div className="navbar-item has-dropdown is-hoverable">
                 <NavLink
@@ -98,7 +98,7 @@ class Header extends Component {
                     <span className="icon">
                       <Icon svg="ico-user" />
                     </span>
-                    <span>{"Profil"}</span>
+                    <span>{'Profil'}</span>
                   </NavLink>
                   <NavLink
                     className="navbar-item"
@@ -121,7 +121,7 @@ class Header extends Component {
                       <span className="icon">
                         <Icon svg="ico-delegation-r" />
                       </span>
-                      <span>{"Délégations"}</span>
+                      <span>{'Délégations'}</span>
                     </NavLink>
                   )}
                   <NavLink
@@ -131,7 +131,7 @@ class Header extends Component {
                     <span className="icon">
                       <Icon svg="ico-bookings" />
                     </span>
-                    <span>{"Suivi des réservations"}</span>
+                    <span>{'Suivi des réservations'}</span>
                   </NavLink>
                   <NavLink
                     className="navbar-item"
@@ -140,7 +140,7 @@ class Header extends Component {
                     <span className="icon">
                       <Icon svg="ico-compta" />
                     </span>
-                    <span>{"Suivi des remboursements"}</span>
+                    <span>{'Suivi des remboursements'}</span>
                   </NavLink>
                   {false && (
                     <NavLink
@@ -150,17 +150,18 @@ class Header extends Component {
                       <span className="icon">
                         <Icon svg="ico-compta" />
                       </span>
-                      <span>{"Comptabilité"}</span>
+                      <span>{'Comptabilité'}</span>
                     </NavLink>
                   )}
                   <SignoutButton
                     Tag="a"
                     className="navbar-item"
-                    handleSuccessRedirect={this.handleSuccessRedirect}>
+                    handleSuccessRedirect={this.onHandleSuccessRedirect}
+                  >
                     <span className="icon">
                       <Icon svg="ico-deconnect" />
                     </span>
-                    <span>{"Déconnexion"}</span>
+                    <span>{'Déconnexion'}</span>
                   </SignoutButton>
                 </div>
               </div>
