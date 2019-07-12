@@ -102,12 +102,14 @@ class BookingItem extends Component {
                 )
                 dispatch(closeModal())
               }}
+              type="button"
             >
               {"Oui"}
             </button>
             <button
               className="button is-primary level-item"
               onClick={() => dispatch(closeModal())}
+              type="button"
             >
               {"Non"}
             </button>

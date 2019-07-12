@@ -236,6 +236,7 @@ class GeoInput extends Component {
           className={classnames('button is-loading', {
             'is-invisible': !isLoading,
           })}
+          type="button"
         />
       </Fragment>
     )

@@ -267,8 +267,9 @@ class StocksManager extends Component {
           className="button is-secondary is-pulled-right"
           id="close-manager"
           onClick={this.handleOnCloseClick}
+          type="button"
         >
-          Fermer
+          {"Fermer"}
         </button>
       </div>
     )

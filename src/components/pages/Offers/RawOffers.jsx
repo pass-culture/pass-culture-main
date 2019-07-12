@@ -163,6 +163,7 @@ class RawOffers extends Component {
               <button
                 className="button is-secondary"
                 disabled
+                type="button"
               >
                 &nbsp;
                 <Icon svg="ico-filter" />
@@ -175,7 +176,7 @@ class RawOffers extends Component {
         <ul className="section">
           {offerer ? (
             <li className="tag is-rounded is-medium">
-              Structure :
+              {"Structure : "}
               <span className="has-text-weight-semibold"> {offerer.name} </span>
               <button
                 className="delete is-small"
@@ -184,12 +185,13 @@ class RawOffers extends Component {
                     [mapApiToBrowser.offererId]: null,
                     page: null,
                   })}
+                type="button"
               />
             </li>
           ) : (
             venue && (
               <li className="tag is-rounded is-medium">
-                Lieu :
+                {"Lieu : "}
                 <span className="has-text-weight-semibold">{venue.name}</span>
                 <button
                   className="delete is-small"
@@ -198,6 +200,7 @@ class RawOffers extends Component {
                       [mapApiToBrowser.venueId]: null,
                       page: null,
                     })}
+                  type="button"
                 />
               </li>
             )
@@ -232,6 +235,7 @@ class RawOffers extends Component {
                     // TODO
                     // query.change({ })
                   }}
+                  type="button"
                 >
                   <Icon
                     svg={

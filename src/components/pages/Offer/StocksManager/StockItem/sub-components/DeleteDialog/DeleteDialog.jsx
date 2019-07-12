@@ -20,16 +20,18 @@ class DeleteDialog extends PureComponent {
           <button
             className="button is-primary"
             onClick={onConfirmDeleteClick}
+            type="button"
           >
-            Oui
+            {"Oui"}
           </button>
         </td>
         <td>
           <button
             className="button is-primary"
             onClick={onCancelDeleteClick}
+            type="button"
           >
-            Non
+            {"Non"}
           </button>
         </td>
       </tr>
