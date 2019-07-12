@@ -101,7 +101,7 @@ class Profil extends React.Component {
                       })}
                       type="submit"
                     >
-                      Enregistrer
+                      {"Enregistrer"}
                     </button>
                   </div>
                 </div>
