@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { TextField } from '../../../../layout/form/fields'
+import TextField from '../../../../layout/form/fields/TextField'
 
 const BankFields = ({
   adminUserOfferer,

@@ -13,7 +13,7 @@ import HeroSection from '../../layout/HeroSection/HeroSection'
 import Icon from '../../layout/Icon'
 import Main from '../../layout/Main'
 import Spinner from '../../layout/Spinner'
-import { TextField } from '../../layout/form/fields'
+import TextField from '../../layout/form/fields/TextField'
 import { offererNormalizer } from '../../../utils/normalizers'
 import {
   mapApiToBrowser,

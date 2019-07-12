@@ -1,7 +1,9 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 import LocationFields from '../LocationFields'
-import { HiddenField, NumberField, TextField } from '../../../../../layout/form/fields'
+import HiddenField from '../../../../../layout/form/fields/HiddenField'
+import NumberField from '../../../../../layout/form/fields/NumberField'
+import TextField from '../../../../../layout/form/fields/TextField'
 import AddressField from '../AddressField'
 
 describe('src | components | pages | Venue | fields | LocationFields', () => {

@@ -1,8 +1,8 @@
-import React from 'react'
 import { shallow } from 'enzyme'
 import { Field } from 'react-final-form'
 import VenueProviderForm from '../VenueProviderForm'
-import { HiddenField, TextField } from '../../../../../../layout/form/fields'
+import HiddenField from '../../../../../../layout/form/fields/HiddenField'
+import TextField from '../../../../../../layout/form/fields/TextField'
 import { Icon } from '../../../../../../layout/Icon'
 
 describe('src | components | pages | Venue | VenueProvidersManager | form | VenueProviderForm', () => {

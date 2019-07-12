@@ -3,7 +3,9 @@ import React, { Component, Fragment } from 'react'
 
 import { siretValidate } from './validators'
 import { Icon } from '../../../../layout/Icon'
-import { HiddenField, TextareaField, TextField } from '../../../../layout/form/fields'
+import HiddenField from '../../../../layout/form/fields/HiddenField'
+import TextareaField from '../../../../layout/form/fields/TextareaField'
+import TextField from '../../../../layout/form/fields/TextField'
 import { formatSirenOrSiret } from '../../../../../utils/siren'
 
 const getIsCommentRequired = formSiret => !formSiret || formSiret.length !== 14
