@@ -1,10 +1,5 @@
 import get from 'lodash.get'
-import {
-  Icon,
-  InfiniteScroller,
-  requestData,
-  Spinner,
-} from 'pass-culture-shared'
+import { Icon, InfiniteScroller, requestData, Spinner } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
@@ -41,11 +36,7 @@ class RawAccouting extends Component {
   componentDidUpdate(prevProps) {
     const { offerers, pagination } = this.props
     const offererId = get(pagination.windowQuery, mapApiToWindow.offererId)
-    if (
-      !offererId &&
-      offerers !== prevProps.offerers &&
-      get(offerers, 'length')
-    ) {
+    if (!offererId && offerers !== prevProps.offerers && get(offerers, 'length')) {
       pagination.change({ [mapApiToWindow.offererId]: offerers[0].id })
     }
   }
@@ -110,12 +101,12 @@ class RawAccouting extends Component {
     )
   }
 
-  handleDataRequest = (handleSuccess, handleFail) => {
+  onHandleDataRequest = (handleSuccess, handleFail) => {
     this.fetchOfferers(handleSuccess, handleFail)
   }
 
-  handleLoadMore = (handleSuccess, handleFail) => {
-    this.handleDataRequest(handleSuccess, handleFail)
+  onHandleLoadMore = (handleSuccess, handleFail) => {
+    this.onHandleDataRequest(handleSuccess, handleFail)
     const { history, location, pagination } = this.props
     const { windowQueryString, page } = pagination
 
@@ -139,6 +130,16 @@ class RawAccouting extends Component {
     pagination.change({ orderBy: [field, dir].join('+') })
   }
 
+  renderLoading = () => (
+    <tr>
+      <Spinner
+        Tag="td"
+        colSpan="6"
+        style={{ justifyContent: 'center' }}
+      />
+    </tr>
+  )
+
   render() {
     const { bookings, offerer, offerers, pagination } = this.props
     const { windowQuery } = pagination
@@ -160,7 +161,7 @@ class RawAccouting extends Component {
     return (
       <Main
         backTo={{ path: '/accueil', label: 'Accueil' }}
-        handleDataRequest={this.handleDataRequest}
+        handleDataRequest={this.onHandleDataRequest}
         name="accounting"
       >
         <HeroSection
@@ -175,11 +176,11 @@ class RawAccouting extends Component {
             <div className="list-header">
               {offerer && (
                 <div>
-                  {"Structure:"}
+                  {'Structure:'}
                   <span className="select is-rounded is-small">
                     <select
                       className=""
-                      onChange={this.handleOnChange(event, pagination)}
+                      onBlur={this.handleOnChange(event, pagination)}
                       value={offerer.id}
                     >
                       {offerers.map(item => (
@@ -206,23 +207,22 @@ class RawAccouting extends Component {
                     className="first-row"
                     colSpan="5"
                   >
-                    {"OFFRE"}
+                    {'OFFRE'}
                   </th>
                   <th
                     className="first-row"
                     colSpan="2"
                   >
-                    {"RESERVATION"}
+                    {'RESERVATION'}
                   </th>
                   <th
                     className="first-row"
                     colSpan="4"
                   >
-                    {"REMBOURSEMENT"}
+                    {'REMBOURSEMENT'}
                   </th>
                 </tr>
                 <tr>
-                  {/* @TODO: Fix fake key attributes !*/}
                   <Th
                     field="booking.%22dataModified%22"
                     label="Date"
@@ -275,16 +275,8 @@ class RawAccouting extends Component {
               <InfiniteScroller
                 Tag="tbody"
                 className="offers-list main-list"
-                handleLoadMore={this.handleLoadMore}
-                renderLoading={() => (
-                  <tr>
-                    <Spinner
-                      Tag="td"
-                      colSpan="6"
-                      style={{ justifyContent: 'center' }}
-                    />
-                  </tr>
-                )}
+                handleLoadMore={this.onHandleLoadMore}
+                renderLoading={this.renderLoading}
               >
                 {bookings.map(booking => (
                   <BookingItem

@@ -24,15 +24,6 @@ import { getOfferTypeLabel } from '../../../utils/offerItem'
 const getBookingState = booking => {
   const { isCancelled, isUsed } = booking
 
-  // TODO
-  // if (isError) {
-  //  return {
-  //    picto: 'picto-warning',
-  //    message: 'Erreur',
-  //    text: '?'
-  //  }
-  //}
-
   if (isCancelled === true) {
     return {
       picto: 'picto-warning',
@@ -41,14 +32,6 @@ const getBookingState = booking => {
   }
 
   if (isUsed) {
-    // TODO
-    // if (isPayed) {
-    //  return {
-    //    picto: 'picto-validation',
-    //    message: 'Réglé',
-    //  }
-    // }
-
     return {
       picto: 'picto-encours-S',
       message: 'Validé',
@@ -175,7 +158,7 @@ class BookingItem extends Component {
                     className="navbar-item cancel"
                     onClick={this.handleOnCancelClick}
                   >
-                    <Icon svg="ico-close-r" /> Annuler la réservation
+                    <Icon svg="ico-close-r" />{' Annuler la réservation'}
                   </a>
                 </div>
               </div>
