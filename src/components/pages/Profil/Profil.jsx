@@ -58,9 +58,49 @@ class Profil extends React.Component {
     )
   }
 
+  renderForm = ({ handleSubmit }) => {
+    const { isLoading } = this.state
+
+    return (
+      <form onSubmit={handleSubmit}>
+        <div>
+          <div className="field-profil-input">
+            <TextField
+              label="Nom :"
+              name="publicName"
+              placeholder="3 caractères minimum"
+              required
+            />
+            <TextField
+              label="E-mail :"
+              name="email"
+              required
+              type="email"
+            />
+          </div>
+
+          <div
+            className="field is-grouped"
+            style={{ justifyContent: 'space-between' }}
+          >
+            <div className="control">
+              <button
+                className={classnames('button is-primary is-medium', {
+                  'is-loading': isLoading,
+                })}
+                type="submit"
+              >
+                {'Enregistrer'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    )
+  }
+
   render() {
     const { currentUser } = this.props
-    const { isLoading } = this.state
     const backTo = { path: '/accueil', label: 'Accueil' }
 
     return (
@@ -72,42 +112,7 @@ class Profil extends React.Component {
         <Form
           initialValues={currentUser}
           onSubmit={this.handleOnSubmit}
-          render={({ handleSubmit }) => (
-            <form onSubmit={handleSubmit}>
-              <div>
-                <div className="field-profil-input">
-                  <TextField
-                    label="Nom :"
-                    name="publicName"
-                    placeholder="3 caractères minimum"
-                    required
-                  />
-                  <TextField
-                    label="E-mail :"
-                    name="email"
-                    required
-                    type="email"
-                  />
-                </div>
-
-                <div
-                  className="field is-grouped"
-                  style={{ justifyContent: 'space-between' }}
-                >
-                  <div className="control">
-                    <button
-                      className={classnames('button is-primary is-medium', {
-                        'is-loading': isLoading,
-                      })}
-                      type="submit"
-                    >
-                      {"Enregistrer"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </form>
-          )}
+          render={this.renderForm}
         />
         <hr />
       </Main>
@@ -115,7 +120,7 @@ class Profil extends React.Component {
   }
 }
 
-PropTypes.propTypes = {
+Profil.propTypes = {
   currentUser: PropTypes.shape({
     email: PropTypes.string,
     publicName: PropTypes.string,
