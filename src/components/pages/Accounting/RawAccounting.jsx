@@ -34,7 +34,7 @@ TableSortableTh.propTypes = {
   field: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   sort: PropTypes.shape().isRequired,
-  style: PropTypes.shape(),
+  style: PropTypes.shape().isRequired,
 }
 
 class RawAccouting extends Component {
@@ -124,13 +124,19 @@ class RawAccouting extends Component {
     history.push(to)
   }
 
-  handleSortChange = (field, currentSort) => {
+  handleOnChange = (event, pagination) => () =>
+    pagination.change({
+      [mapApiToWindow.offererId]: event.target.value,
+    })
+
+  onSortChange = (field, currentSort) => {
     let dir = currentSort.dir || 'asc'
     if (currentSort.field === field) {
       dir = dir === 'asc' ? 'desc' : 'asc'
     }
 
-    this.props.pagination.change({ orderBy: [field, dir].join('+') })
+    const { pagination } = this.props
+    pagination.change({ orderBy: [field, dir].join('+') })
   }
 
   render() {
@@ -143,7 +149,7 @@ class RawAccouting extends Component {
     // Inject sort and action once for all
     const Th = ({ field, label, style }) => (
       <TableSortableTh
-        action={this.handleSortChange}
+        action={this.onSortChange}
         field={field}
         label={label}
         sort={{ field: orderName, dir: orderDirection }}
@@ -173,10 +179,7 @@ class RawAccouting extends Component {
                   <span className="select is-rounded is-small">
                     <select
                       className=""
-                      onChange={event =>
-                        pagination.change({
-                          [mapApiToWindow.offererId]: event.target.value,
-                        })}
+                      onChange={this.handleOnChange(event, pagination)}
                       value={offerer.id}
                     >
                       {offerers.map(item => (
@@ -296,6 +299,10 @@ class RawAccouting extends Component {
       </Main>
     )
   }
+}
+
+RawAccouting.propTypes = {
+  dispatch: PropTypes.func.isRequired,
 }
 
 export default RawAccouting
