@@ -38,6 +38,8 @@ class Mediation extends PureComponent {
     }
   }
 
+  handleOnChange = event => this.setState({ credit: event.target.value })
+
   handleDataRequest = (handleSuccess, handleFail) => {
     const {
       dispatch,
@@ -338,8 +340,7 @@ class Mediation extends PureComponent {
               <input
                 className="input is-rounded"
                 id="mediation-credit"
-                onChange={event => this.setState({ credit: event.target.value })}
-                onChange={e => this.setState({ credit: e.target.value })}
+                onChange={this.handleOnChange()}
                 type="text"
                 value={credit}
               />
@@ -382,7 +383,9 @@ class Mediation extends PureComponent {
         name="mediation"
       >
         <HeroSection title={`${isNew ? 'Créez' : 'Modifiez'} une accroche`}>
-          <p className="subtitle">Ajoutez un visuel marquant pour mettre en avant cette offre.</p>
+          <p className="subtitle">
+            {"Ajoutez un visuel marquant pour mettre en avant cette offre. "}
+          </p>
           <p>
             <b>{"L'accroche permet d'afficher votre offre \"à la une\" de l'app,{' '}"}</b>
             {
