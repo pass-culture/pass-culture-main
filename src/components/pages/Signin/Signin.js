@@ -23,7 +23,7 @@ class Signin extends Component {
     return hasOffersWithPhysicalVenues || hasPhysicalVenues ? '/offres' : '/structures'
   }
 
-  handleOnEnterKey = event => event.form.handleOnSubmit()
+  handleOnEnterKey = event => () => event.form.handleOnSubmit()
 
   render() {
     const { errors } = this.props
