@@ -66,7 +66,7 @@ test("L'utilisateur peut réserver l'Offre", async t => {
     .expect(bookOfferButton.exists)
     .ok()
     .expect(bookOfferButton.textContent)
-    .match(/([0-9]*\s€J'y vais!)/g)
+    .match(/([0-9]*\s€J’y vais !)/g)
 })
 
 test('Le titre et le nom du lieu sont affichés', async t => {

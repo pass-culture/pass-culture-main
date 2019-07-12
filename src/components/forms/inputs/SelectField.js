@@ -30,7 +30,7 @@ class SelectField extends React.PureComponent {
       <Select
         {...moreprops}
         filterOption={filterOption}
-        getPopupContainer={this.popupContainer}
+        getPopupContainer={this.getPopupContainer()}
         onChange={input.onChange}
         optionFilterProp="children"
         placeholder={placeholder}
@@ -50,6 +50,10 @@ class SelectField extends React.PureComponent {
       </Select>
     )
   }
+
+  getPopupContainer = () => (
+    this.popupContainer
+  )
 
   render() {
     const { label, help, id, name, disabled, provider, className, readOnly, ...rest } = this.props

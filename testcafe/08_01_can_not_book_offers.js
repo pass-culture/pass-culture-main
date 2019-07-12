@@ -37,7 +37,7 @@ test("Je n'ai plus d'argent", async t => {
     .expect(alreadyBookedOfferButton.exists)
     .notOk()
     .expect(bookOfferButton.textContent)
-    .match(/([0-9]*\s€J'y vais!)/g)
+    .match(/([0-9]*\s€J’y vais !)/g)
     .click(bookOfferButton)
     .expect(sendBookingButton.exists)
     .ok()

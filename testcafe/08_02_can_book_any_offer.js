@@ -54,7 +54,7 @@ test("Je peux réserver l'offre", async t => {
     .expect(alreadyBookedOfferButton.exists)
     .notOk()
     .expect(bookOfferButton.textContent)
-    .contains(`J'y vais!`)
+    .contains(`J’y vais !`)
     .click(bookOfferButton)
     .expect(getPageUrl())
     .eql(offerBookingPage)
