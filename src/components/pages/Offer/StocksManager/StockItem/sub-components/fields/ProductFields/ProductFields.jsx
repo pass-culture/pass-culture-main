@@ -5,11 +5,7 @@ import React, { Component, Fragment } from 'react'
 import { createParseNumberValue } from 'react-final-form-utils'
 import ReactTooltip from 'react-tooltip'
 
-import {
-  createFormatAvailable,
-  formatPrice,
-  getRemainingStocksCount,
-} from '../../../utils'
+import { createFormatAvailable, formatPrice, getRemainingStocksCount } from '../../../utils'
 import DateField from '../../../../../../../layout/form/fields/DateField'
 import HiddenField from '../../../../../../../layout/form/fields/HiddenField'
 import NumberField from '../../../../../../../layout/form/fields/NumberField'
@@ -54,10 +50,10 @@ export class ProductFields extends Component {
     showInfo(
       <Fragment>
         <div className="mb24 has-text-left">
-          {"Vous avez saisi une offre payante. Pensez à demander à"}
+          {'Vous avez saisi une offre payante. Pensez à demander à'}
           {"l'administrateur financier nommé pour votre structure de renseigner"}
-          {"son IBAN. Sans IBAN, les réservations de vos offres éligibles ne vous"}
-          {"seront pas remboursées."}
+          {'son IBAN. Sans IBAN, les réservations de vos offres éligibles ne vous'}
+          {'seront pas remboursées.'}
         </div>
         <div className="has-text-right">
           <button
@@ -78,20 +74,48 @@ export class ProductFields extends Component {
     this.isPriceInputDeactivate = false
   }
 
-  render() {
-    const {
-      beginningDatetime,
-      isEvent,
-      readOnly,
-      stock,
-      timezone,
-      venue,
-    } = this.props
-    const { available, bookings } = stock || {}
-    const remainingStocksCount = getRemainingStocksCount(
-      available,
-      bookings || []
+  handleRender = (readOnly, venue) => {
+    if (readOnly) {
+      return null
+    }
+
+    let tip = "L'heure limite de réservation de ce jour est 23h59 et ne peut pas être changée."
+    if (venue && venue.isVirtual) {
+      tip = `${tip}<br /><br /> Vous êtes sur une offre numérique, la zone horaire de cette date correspond à celle de votre structure.`
+    }
+
+    return (
+      <span
+        className="button tooltip tooltip-info"
+        data-place="bottom"
+        data-tip={`<p>${tip}</p>`}
+        data-type="info"
+      >
+        <Icon svg="picto-info" />
+      </span>
     )
+  }
+
+  handleRenderValue = readOnly => {
+    if (readOnly) {
+      return null
+    }
+    return (
+      <span
+        className="button tooltip tooltip-info"
+        data-place="bottom"
+        data-tip="<p>Laissez ce champ vide pour un nombre de places ou stock illimité.</p>"
+        data-type="info"
+      >
+        <Icon svg="picto-info" />
+      </span>
+    )
+  }
+
+  render() {
+    const { beginningDatetime, isEvent, readOnly, stock, timezone, venue } = this.props
+    const { available, bookings } = stock || {}
+    const remainingStocksCount = getRemainingStocksCount(available, bookings || [])
 
     return (
       <Fragment>
@@ -122,28 +146,7 @@ export class ProductFields extends Component {
             name="bookingLimitDatetime"
             placeholder="Laissez vide si pas de limite"
             readOnly={readOnly}
-            renderValue={() => {
-              if (readOnly) {
-                return null
-              }
-
-              let tip =
-                "L'heure limite de réservation de ce jour est 23h59 et ne peut pas être changée."
-              if (venue && venue.isVirtual) {
-                tip = `${tip}<br /><br /> Vous êtes sur une offre numérique, la zone horaire de cette date correspond à celle de votre structure.`
-              }
-
-              return (
-                <span
-                  className="button tooltip tooltip-info"
-                  data-place="bottom"
-                  data-tip={`<p>${tip}</p>`}
-                  data-type="info"
-                >
-                  <Icon svg="picto-info" />
-                </span>
-              )
-            }}
+            renderValue={this.handleRender(readOnly, venue)}
             timezone={timezone}
           />
         </td>
@@ -153,21 +156,7 @@ export class ProductFields extends Component {
             name="available"
             placeholder="Illimité"
             readOnly={readOnly}
-            renderValue={() => {
-              if (readOnly) {
-                return null
-              }
-              return (
-                <span
-                  className="button tooltip tooltip-info"
-                  data-place="bottom"
-                  data-tip="<p>Laissez ce champ vide pour un nombre de places ou stock illimité.</p>"
-                  data-type="info"
-                >
-                  <Icon svg="picto-info" />
-                </span>
-              )
-            }}
+            renderValue={this.handleRenderValue(readOnly)}
             title="Stock[ou] Places affecté[es]"
           />
         </td>
