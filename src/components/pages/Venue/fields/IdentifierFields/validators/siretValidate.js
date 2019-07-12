@@ -1,4 +1,4 @@
-import { getSirenOrSiretInfo, SIRET } from 'utils/siren'
+import { getSirenOrSiretInfo, SIRET } from '../../../../../../utils/siren'
 
 export const siretValidate = async siret => {
   const siretInfo = await getSirenOrSiretInfo(siret, SIRET)
