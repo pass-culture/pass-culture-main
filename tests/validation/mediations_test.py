@@ -21,8 +21,7 @@ class CheckThumbQualityTest:
 
         # then
         assert e.value.errors['thumb'] == [
-            "L'image doit faire 100 ko minimum",
-            "L'image doit faire 400 * 400 px minimum"
+            "L'image doit faire 100 ko minimum et 400 * 400 px minimum"
         ]
 
     def test_an_error_is_raised_if_the_thumb_is_too_light(self):
