@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 import DeskState from './DeskState/DeskState'
 import Main from '../../layout/Main'
+import PropTypes from "prop-types";
 
 const CODE_MAX_LENGTH = 6
 const CODE_REGEX_VALIDATION = /[^a-z0-9]/i
@@ -134,13 +135,13 @@ class Desk extends React.PureComponent {
   }
 
   getValuesFromStatus = status => {
-    let { booking, message } = this.state
+    let { booking, code, message } = this.state
     let level
 
     switch (status) {
       case CODE_TYPING:
         message = `Caractères restants: ${CODE_MAX_LENGTH -
-          this.state.code.length}/${CODE_MAX_LENGTH}`
+          code.length}/${CODE_MAX_LENGTH}`
         level = 'pending'
         break
       case CODE_SYNTAX_INVALID:
@@ -245,6 +246,10 @@ class Desk extends React.PureComponent {
       </Main>
     )
   }
+}
+
+Desk.propTypes = {
+  dispatch: PropTypes.func.isRequired,
 }
 
 export default Desk
