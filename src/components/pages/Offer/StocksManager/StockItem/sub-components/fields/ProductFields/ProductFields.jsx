@@ -74,7 +74,7 @@ export class ProductFields extends Component {
     this.isPriceInputDeactivate = false
   }
 
-  handleRender = (readOnly, venue) => {
+  handleRender = (readOnly, venue) => () => {
     if (readOnly) {
       return null
     }
@@ -96,7 +96,7 @@ export class ProductFields extends Component {
     )
   }
 
-  handleRenderValue = readOnly => {
+  handleRenderValue = readOnly => () => {
     if (readOnly) {
       return null
     }

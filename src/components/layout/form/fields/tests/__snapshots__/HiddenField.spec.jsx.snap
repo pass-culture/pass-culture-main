@@ -28,26 +28,11 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": <form>
-        <TextField
-          className=""
-          disabled={false}
-          format={null}
-          id={null}
-          innerClassName={null}
-          label=""
+        <UNDEFINED
           name="title"
-          parse={null}
-          placeholder=""
-          readOnly={false}
-          renderInner={[Function]}
-          renderValue={[Function]}
-          required={false}
-          type="text"
-          validate={null}
         />
-        <Unknown
+        <UNDEFINED
           name="subtitle"
-          validator={[Function]}
         />
         <button
           onClick={[Function]}
@@ -84,26 +69,11 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
-          <TextField
-            className=""
-            disabled={false}
-            format={null}
-            id={null}
-            innerClassName={null}
-            label=""
+          <UNDEFINED
             name="title"
-            parse={null}
-            placeholder=""
-            readOnly={false}
-            renderInner={[Function]}
-            renderValue={[Function]}
-            required={false}
-            type="text"
-            validate={null}
           />,
-          <Unknown
+          <UNDEFINED
             name="subtitle"
-            validator={[Function]}
           />,
           <button
             onClick={[Function]}
@@ -118,27 +88,13 @@ ShallowWrapper {
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "class",
+          "nodeType": "function",
           "props": Object {
-            "className": "",
-            "disabled": false,
-            "format": null,
-            "id": null,
-            "innerClassName": null,
-            "label": "",
             "name": "title",
-            "parse": null,
-            "placeholder": "",
-            "readOnly": false,
-            "renderInner": [Function],
-            "renderValue": [Function],
-            "required": false,
-            "type": "text",
-            "validate": null,
           },
           "ref": null,
           "rendered": null,
-          "type": [Function],
+          "type": undefined,
         },
         Object {
           "instance": null,
@@ -146,11 +102,10 @@ ShallowWrapper {
           "nodeType": "function",
           "props": Object {
             "name": "subtitle",
-            "validator": [Function],
           },
           "ref": null,
           "rendered": null,
-          "type": [Function],
+          "type": undefined,
         },
         Object {
           "instance": null,
@@ -194,26 +149,11 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": <form>
-          <TextField
-            className=""
-            disabled={false}
-            format={null}
-            id={null}
-            innerClassName={null}
-            label=""
+          <UNDEFINED
             name="title"
-            parse={null}
-            placeholder=""
-            readOnly={false}
-            renderInner={[Function]}
-            renderValue={[Function]}
-            required={false}
-            type="text"
-            validate={null}
           />
-          <Unknown
+          <UNDEFINED
             name="subtitle"
-            validator={[Function]}
           />
           <button
             onClick={[Function]}
@@ -250,26 +190,11 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <TextField
-              className=""
-              disabled={false}
-              format={null}
-              id={null}
-              innerClassName={null}
-              label=""
+            <UNDEFINED
               name="title"
-              parse={null}
-              placeholder=""
-              readOnly={false}
-              renderInner={[Function]}
-              renderValue={[Function]}
-              required={false}
-              type="text"
-              validate={null}
             />,
-            <Unknown
+            <UNDEFINED
               name="subtitle"
-              validator={[Function]}
             />,
             <button
               onClick={[Function]}
@@ -284,27 +209,13 @@ ShallowWrapper {
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "class",
+            "nodeType": "function",
             "props": Object {
-              "className": "",
-              "disabled": false,
-              "format": null,
-              "id": null,
-              "innerClassName": null,
-              "label": "",
               "name": "title",
-              "parse": null,
-              "placeholder": "",
-              "readOnly": false,
-              "renderInner": [Function],
-              "renderValue": [Function],
-              "required": false,
-              "type": "text",
-              "validate": null,
             },
             "ref": null,
             "rendered": null,
-            "type": [Function],
+            "type": undefined,
           },
           Object {
             "instance": null,
@@ -312,11 +223,10 @@ ShallowWrapper {
             "nodeType": "function",
             "props": Object {
               "name": "subtitle",
-              "validator": [Function],
             },
             "ref": null,
             "rendered": null,
-            "type": [Function],
+            "type": undefined,
           },
           Object {
             "instance": null,

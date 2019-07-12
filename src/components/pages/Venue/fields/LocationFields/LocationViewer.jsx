@@ -239,7 +239,7 @@ class LocationViewer extends Component {
     </div>
   )
 
-  handleGetItemValue = value => value.label
+  handleGetItemValue = value => () => value.label
 
   renderInput() {
     const {

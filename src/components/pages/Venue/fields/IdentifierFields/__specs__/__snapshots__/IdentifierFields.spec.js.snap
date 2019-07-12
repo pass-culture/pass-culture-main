@@ -34,7 +34,7 @@ ShallowWrapper {
         <div
           className="field-group"
         >
-          <Unknown
+          <HiddenField
             name="managingOffererId"
             validator={[Function]}
           />
@@ -71,7 +71,7 @@ ShallowWrapper {
               placeholder=""
               readOnly={true}
               renderInner={[Function]}
-              renderValue={[Function]}
+              renderValue={null}
               required={false}
               type="siret"
               validate={null}
@@ -123,7 +123,7 @@ ShallowWrapper {
             placeholder=""
             readOnly={true}
             renderInner={[Function]}
-            renderValue={[Function]}
+            renderValue={null}
             required={true}
             type="email"
             validate={null}
@@ -172,7 +172,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <Unknown
+            <HiddenField
               name="managingOffererId"
               validator={[Function]}
             />,
@@ -209,7 +209,7 @@ ShallowWrapper {
                 placeholder=""
                 readOnly={true}
                 renderInner={[Function]}
-                renderValue={[Function]}
+                renderValue={null}
                 required={false}
                 type="siret"
                 validate={null}
@@ -261,7 +261,7 @@ ShallowWrapper {
               placeholder=""
               readOnly={true}
               renderInner={[Function]}
-              renderValue={[Function]}
+              renderValue={null}
               required={true}
               type="email"
               validate={null}
@@ -288,7 +288,7 @@ ShallowWrapper {
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "function",
+            "nodeType": "class",
             "props": Object {
               "name": "managingOffererId",
               "validator": [Function],
@@ -333,7 +333,7 @@ ShallowWrapper {
                   placeholder=""
                   readOnly={true}
                   renderInner={[Function]}
-                  renderValue={[Function]}
+                  renderValue={null}
                   required={false}
                   type="siret"
                   validate={null}
@@ -441,7 +441,7 @@ ShallowWrapper {
                   "placeholder": "",
                   "readOnly": true,
                   "renderInner": [Function],
-                  "renderValue": [Function],
+                  "renderValue": null,
                   "required": false,
                   "type": "siret",
                   "validate": null,
@@ -519,7 +519,7 @@ ShallowWrapper {
               "placeholder": "",
               "readOnly": true,
               "renderInner": [Function],
-              "renderValue": [Function],
+              "renderValue": null,
               "required": true,
               "type": "email",
               "validate": null,
@@ -531,7 +531,7 @@ ShallowWrapper {
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "function",
+            "nodeType": "class",
             "props": Object {
               "autoComplete": false,
               "className": "",
@@ -571,7 +571,7 @@ ShallowWrapper {
           <div
             className="field-group"
           >
-            <Unknown
+            <HiddenField
               name="managingOffererId"
               validator={[Function]}
             />
@@ -608,7 +608,7 @@ ShallowWrapper {
                 placeholder=""
                 readOnly={true}
                 renderInner={[Function]}
-                renderValue={[Function]}
+                renderValue={null}
                 required={false}
                 type="siret"
                 validate={null}
@@ -660,7 +660,7 @@ ShallowWrapper {
               placeholder=""
               readOnly={true}
               renderInner={[Function]}
-              renderValue={[Function]}
+              renderValue={null}
               required={true}
               type="email"
               validate={null}
@@ -709,7 +709,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <Unknown
+              <HiddenField
                 name="managingOffererId"
                 validator={[Function]}
               />,
@@ -746,7 +746,7 @@ ShallowWrapper {
                   placeholder=""
                   readOnly={true}
                   renderInner={[Function]}
-                  renderValue={[Function]}
+                  renderValue={null}
                   required={false}
                   type="siret"
                   validate={null}
@@ -798,7 +798,7 @@ ShallowWrapper {
                 placeholder=""
                 readOnly={true}
                 renderInner={[Function]}
-                renderValue={[Function]}
+                renderValue={null}
                 required={true}
                 type="email"
                 validate={null}
@@ -825,7 +825,7 @@ ShallowWrapper {
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "function",
+              "nodeType": "class",
               "props": Object {
                 "name": "managingOffererId",
                 "validator": [Function],
@@ -870,7 +870,7 @@ ShallowWrapper {
                     placeholder=""
                     readOnly={true}
                     renderInner={[Function]}
-                    renderValue={[Function]}
+                    renderValue={null}
                     required={false}
                     type="siret"
                     validate={null}
@@ -978,7 +978,7 @@ ShallowWrapper {
                     "placeholder": "",
                     "readOnly": true,
                     "renderInner": [Function],
-                    "renderValue": [Function],
+                    "renderValue": null,
                     "required": false,
                     "type": "siret",
                     "validate": null,
@@ -1056,7 +1056,7 @@ ShallowWrapper {
                 "placeholder": "",
                 "readOnly": true,
                 "renderInner": [Function],
-                "renderValue": [Function],
+                "renderValue": null,
                 "required": true,
                 "type": "email",
                 "validate": null,
@@ -1068,7 +1068,7 @@ ShallowWrapper {
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "function",
+              "nodeType": "class",
               "props": Object {
                 "autoComplete": false,
                 "className": "",
@@ -1120,5 +1120,6 @@ ShallowWrapper {
     Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
 }
 `;

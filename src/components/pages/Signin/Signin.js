@@ -23,7 +23,7 @@ class Signin extends Component {
     return hasOffersWithPhysicalVenues || hasPhysicalVenues ? '/offres' : '/structures'
   }
 
-  handleOnEnterKey = event => () => event.form.handleOnSubmit()
+  handleOnEnterKey = event => event.form.onSubmit()
 
   render() {
     const { errors } = this.props
@@ -63,7 +63,7 @@ class Signin extends Component {
                     handleSuccessRedirect={this.onHandleSuccessRedirect}
                     layout="vertical"
                     name="user"
-                    onEnterKey={this.handleOnEnterKey(event)}
+                    onEnterKey={this.handleOnEnterKey}
                   >
                     <div className="field-group">
                       <Field

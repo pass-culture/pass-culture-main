@@ -36,6 +36,7 @@ ShallowWrapper {
         <td>
           <button
             className="button is-primary"
+            type="button"
           >
             Oui
           </button>
@@ -43,6 +44,7 @@ ShallowWrapper {
         <td>
           <button
             className="button is-primary"
+            type="button"
           >
             Non
           </button>
@@ -89,6 +91,7 @@ ShallowWrapper {
         "props": Object {
           "children": <button
             className="button is-primary"
+            type="button"
           >
             Oui
           </button>,
@@ -102,6 +105,7 @@ ShallowWrapper {
             "children": "Oui",
             "className": "button is-primary",
             "onClick": undefined,
+            "type": "button",
           },
           "ref": null,
           "rendered": "Oui",
@@ -116,6 +120,7 @@ ShallowWrapper {
         "props": Object {
           "children": <button
             className="button is-primary"
+            type="button"
           >
             Non
           </button>,
@@ -129,6 +134,7 @@ ShallowWrapper {
             "children": "Non",
             "className": "button is-primary",
             "onClick": undefined,
+            "type": "button",
           },
           "ref": null,
           "rendered": "Non",
@@ -161,6 +167,7 @@ ShallowWrapper {
           <td>
             <button
               className="button is-primary"
+              type="button"
             >
               Oui
             </button>
@@ -168,6 +175,7 @@ ShallowWrapper {
           <td>
             <button
               className="button is-primary"
+              type="button"
             >
               Non
             </button>
@@ -214,6 +222,7 @@ ShallowWrapper {
           "props": Object {
             "children": <button
               className="button is-primary"
+              type="button"
             >
               Oui
             </button>,
@@ -227,6 +236,7 @@ ShallowWrapper {
               "children": "Oui",
               "className": "button is-primary",
               "onClick": undefined,
+              "type": "button",
             },
             "ref": null,
             "rendered": "Oui",
@@ -241,6 +251,7 @@ ShallowWrapper {
           "props": Object {
             "children": <button
               className="button is-primary"
+              type="button"
             >
               Non
             </button>,
@@ -254,6 +265,7 @@ ShallowWrapper {
               "children": "Non",
               "className": "button is-primary",
               "onClick": undefined,
+              "type": "button",
             },
             "ref": null,
             "rendered": "Non",
@@ -291,7 +303,6 @@ ShallowWrapper {
     Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
-  Symbol(enzyme.__childContext__): null,
 }
 `;
 
@@ -332,6 +343,7 @@ ShallowWrapper {
         <td>
           <button
             className="button is-primary"
+            type="button"
           >
             Oui
           </button>
@@ -339,6 +351,7 @@ ShallowWrapper {
         <td>
           <button
             className="button is-primary"
+            type="button"
           >
             Non
           </button>
@@ -393,6 +406,7 @@ ShallowWrapper {
         "props": Object {
           "children": <button
             className="button is-primary"
+            type="button"
           >
             Oui
           </button>,
@@ -406,6 +420,7 @@ ShallowWrapper {
             "children": "Oui",
             "className": "button is-primary",
             "onClick": undefined,
+            "type": "button",
           },
           "ref": null,
           "rendered": "Oui",
@@ -420,6 +435,7 @@ ShallowWrapper {
         "props": Object {
           "children": <button
             className="button is-primary"
+            type="button"
           >
             Non
           </button>,
@@ -433,6 +449,7 @@ ShallowWrapper {
             "children": "Non",
             "className": "button is-primary",
             "onClick": undefined,
+            "type": "button",
           },
           "ref": null,
           "rendered": "Non",
@@ -466,6 +483,7 @@ ShallowWrapper {
           <td>
             <button
               className="button is-primary"
+              type="button"
             >
               Oui
             </button>
@@ -473,6 +491,7 @@ ShallowWrapper {
           <td>
             <button
               className="button is-primary"
+              type="button"
             >
               Non
             </button>
@@ -527,6 +546,7 @@ ShallowWrapper {
           "props": Object {
             "children": <button
               className="button is-primary"
+              type="button"
             >
               Oui
             </button>,
@@ -540,6 +560,7 @@ ShallowWrapper {
               "children": "Oui",
               "className": "button is-primary",
               "onClick": undefined,
+              "type": "button",
             },
             "ref": null,
             "rendered": "Oui",
@@ -554,6 +575,7 @@ ShallowWrapper {
           "props": Object {
             "children": <button
               className="button is-primary"
+              type="button"
             >
               Non
             </button>,
@@ -567,6 +589,7 @@ ShallowWrapper {
               "children": "Non",
               "className": "button is-primary",
               "onClick": undefined,
+              "type": "button",
             },
             "ref": null,
             "rendered": "Non",
@@ -604,6 +627,5 @@ ShallowWrapper {
     Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
-  Symbol(enzyme.__childContext__): null,
 }
 `;

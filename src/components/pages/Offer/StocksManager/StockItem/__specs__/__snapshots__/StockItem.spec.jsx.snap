@@ -32,6 +32,7 @@ ShallowWrapper {
     }
     stocks={Array []}
     timezone={null}
+    venue={Object {}}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

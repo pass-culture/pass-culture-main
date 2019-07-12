@@ -28,10 +28,10 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": <form>
-        <Unknown
+        <UNDEFINED
           name="foo"
         />
-        <Unknown
+        <UNDEFINED
           name="bar"
         />
         <button
@@ -69,10 +69,10 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
-          <Unknown
+          <UNDEFINED
             name="foo"
           />,
-          <Unknown
+          <UNDEFINED
             name="bar"
           />,
           <button
@@ -94,7 +94,7 @@ ShallowWrapper {
           },
           "ref": null,
           "rendered": null,
-          "type": [Function],
+          "type": undefined,
         },
         Object {
           "instance": null,
@@ -105,7 +105,7 @@ ShallowWrapper {
           },
           "ref": null,
           "rendered": null,
-          "type": [Function],
+          "type": undefined,
         },
         Object {
           "instance": null,
@@ -149,10 +149,10 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": <form>
-          <Unknown
+          <UNDEFINED
             name="foo"
           />
-          <Unknown
+          <UNDEFINED
             name="bar"
           />
           <button
@@ -190,10 +190,10 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <Unknown
+            <UNDEFINED
               name="foo"
             />,
-            <Unknown
+            <UNDEFINED
               name="bar"
             />,
             <button
@@ -215,7 +215,7 @@ ShallowWrapper {
             },
             "ref": null,
             "rendered": null,
-            "type": [Function],
+            "type": undefined,
           },
           Object {
             "instance": null,
@@ -226,7 +226,7 @@ ShallowWrapper {
             },
             "ref": null,
             "rendered": null,
-            "type": [Function],
+            "type": undefined,
           },
           Object {
             "instance": null,

@@ -4,10 +4,10 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Route, Router, Switch } from 'react-router-dom'
 import { assignData } from 'redux-saga-data'
-
+import { venueNormalizer } from '../../../../utils/normalizers'
+import { configureStore } from '../../../../utils/store'
 import VenueContainer, { mapDispatchToProps, mapStateToProps } from '../VenueContainer'
-import { venueNormalizer } from 'utils/normalizers'
-import { configureStore } from 'utils/store'
+
 
 window.scroll = () => {}
 
@@ -85,11 +85,7 @@ global.fetch = url => {
     const response = new Response(JSON.stringify(mockSuccessAddressInfo))
     return response
   }
-  if (
-    url.includes('api-adress') &&
-    url.includes(LATITUDE) &&
-    url.includes(LONGITUDE)
-  ) {
+  if (url.includes('api-adress') && url.includes(LATITUDE) && url.includes(LONGITUDE)) {
     const response = new Response(JSON.stringify(mockSuccessLonLatInfo))
     return response
   }
@@ -102,290 +98,382 @@ global.fetch = url => {
     return response
   }
   if (url.includes('users')) {
-    const response = new Response(
-      JSON.stringify({ id: 'AE', email: BOOKING_EMAIL })
-    )
+    const response = new Response(JSON.stringify({ id: 'AE', email: BOOKING_EMAIL }))
     return response
   }
   return new Response(JSON.stringify({}))
 }
 
 describe('src | components | pages | VenueContainer', () => {
-  it('resets the form when click on terminer', () => {return new Promise(done => {
-    // given
-    const { store } = configureStore()
-    store.dispatch(
-      assignData({
-        venues: [{ id: 'AE' }],
-      })
-    )
-    const history = createBrowserHistory()
-    history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/AE?modification`)
+  it('resets the form when click on terminer', () => {
+    return new Promise(done => {
+      // given
+      const { store } = configureStore()
+      store.dispatch(
+        assignData({
+          venues: [{ id: 'AE' }],
+        })
+      )
+      const history = createBrowserHistory()
+      history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/AE?modification`)
 
-    const wrapper = mount(
-      <Provider store={store}>
-        <Router history={history}>
-          <Switch>
-            <Route path="/structures/:offererId/lieux/:venueId">
-              <VenueContainer />
-            </Route>
-          </Switch>
-        </Router>
-      </Provider>
-    )
-
-    setTimeout(() => {
-      // then (offerer request is done, form is now available)
-      wrapper.update()
-
-      // when
-      wrapper
-        .find("input[name='bookingEmail']")
-        .simulate('change', { target: { value: 'foo@foo.com' } })
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <Switch>
+              <Route path="/structures/:offererId/lieux/:venueId">
+                <VenueContainer />
+              </Route>
+            </Switch>
+          </Router>
+        </Provider>
+      )
 
       setTimeout(() => {
-        // then
+        // then (offerer request is done, form is now available)
         wrapper.update()
-        expect(
-          wrapper.find("input[name='bookingEmail']").props().value
-        ).toStrictEqual('foo@foo.com')
 
         // when
-        const cancelButton = wrapper.find('button[type="reset"]')
-        cancelButton.simulate('click')
-
-        // then
-        expect(
-          wrapper.find("input[name='bookingEmail']").props().value
-        ).toStrictEqual('')
-
-        // done
-        done()
-      })
-    })
-  })})
-
-  it('fills the form with a valid siret', () => {return new Promise(done => {
-    // given
-    const { store } = configureStore()
-    const history = createBrowserHistory()
-    history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
-    const wrapper = mount(
-      <Provider store={store}>
-        <Router history={history}>
-          <Switch>
-            <Route path="/structures/:offererId/lieux/:venueId">
-              <VenueContainer />
-            </Route>
-          </Switch>
-        </Router>
-      </Provider>
-    )
-
-    setTimeout(() => {
-      // then (offerer request is done, form is now available)
-      wrapper.update()
-      expect(wrapper.find("textarea[name='comment']").props().required).toStrictEqual(
-        true
-      )
-
-      // when
-      wrapper
-        .find("input[name='bookingEmail']")
-        .simulate('change', { target: { value: BOOKING_EMAIL } })
-      wrapper
-        .find("input[name='siret']")
-        .simulate('change', { target: { value: SIRET } })
-
-      setTimeout(() => {
-        // then
-        expect(
-          wrapper.find("textarea[name='comment']").props().required
-        ).toStrictEqual(false)
-        expect(wrapper.find("input[name='address']").props().readOnly).toStrictEqual(
-          true
-        )
-        expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(
-          true
-        )
-        expect(
-          wrapper.find("input[name='postalCode']").props().readOnly
-        ).toStrictEqual(true)
-        // TODO: latitude et longitude should be readOnly
-        // but jest says it is not the case
-        // (but localhost test prooves it that it is true)
-        // expect(wrapper
-        //  .find("input[name='latitude']")
-        //  .props().readOnly).toEqual(true)
-        // expect(wrapper
-        //  .find("input[name='longitude']")
-        //  .props().readOnly).toEqual(true)
-
-        // when (siret has filled other inputs, submit button is not anymore disabled)
-        wrapper.update()
-        const submitButton = wrapper.find('button[type="submit"]')
-        expect(submitButton.props().disabled).toStrictEqual(false)
-        submitButton.simulate('submit')
-
-        // then
-        const body = {
-          address: ADDRESS,
-          bookingEmail: BOOKING_EMAIL,
-          city: CITY,
-          latitude: LATITUDE,
-          longitude: LONGITUDE,
-          managingOffererId: MANAGING_OFFERER_ID,
-          name: NAME,
-          postalCode: POSTAL_CODE,
-          siret: SIRET,
-        }
-        const expectedSubConfig = {
-          apiPath: '/venues/',
-          body,
-          method: 'POST',
-          normalizer: venueNormalizer,
-        }
-        const receivedConfig = mockRequestDataCatch.mock.calls.slice(-1)[0][0]
-        Object.keys(expectedSubConfig).forEach(key =>
-          expect(receivedConfig[key]).toStrictEqual(expectedSubConfig[key])
-        )
-
-        // done
-        done()
-      })
-    })
-  })})
-
-  it('reputs geo fields to not readonly mode when we delete the siret', () => {return new Promise(done => {
-    // given
-    const { store } = configureStore()
-    const history = createBrowserHistory()
-    history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
-    const wrapper = mount(
-      <Provider store={store}>
-        <Router history={history}>
-          <Switch>
-            <Route path="/structures/:offererId/lieux/:venueId">
-              <VenueContainer />
-            </Route>
-          </Switch>
-        </Router>
-      </Provider>
-    )
-
-    setTimeout(() => {
-      // then (offerer request is done, form is now available)
-      wrapper.update()
-      expect(wrapper.find("textarea[name='comment']").props().required).toStrictEqual(
-        true
-      )
-
-      // when
-      wrapper
-        .find("input[name='bookingEmail']")
-        .simulate('change', { target: { value: BOOKING_EMAIL } })
-      wrapper
-        .find("input[name='siret']")
-        .simulate('change', { target: { value: SIRET } })
-
-      setTimeout(() => {
-        // then
-        wrapper.update()
-        expect(
-          wrapper.find("textarea[name='comment']").props().required
-        ).toStrictEqual(false)
-        expect(wrapper.find("input[name='address']").props().readOnly).toStrictEqual(
-          true
-        )
-        expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(
-          true
-        )
-        expect(
-          wrapper.find("input[name='postalCode']").props().readOnly
-        ).toStrictEqual(true)
-        expect(wrapper.find('Marker').props().draggable).toStrictEqual(false)
-
-        // when (siret has filled other inputs, submit button is not anymore disabled)
         wrapper
-          .find("input[name='siret']")
-          .simulate('change', { target: { value: SIRET.slice(0, -1) } })
-
-        // then
-        wrapper.update()
-        expect(
-          wrapper.find("textarea[name='comment']").props().required
-        ).toStrictEqual(true)
-        expect(wrapper.find("input[name='address']").props().readOnly).toStrictEqual(
-          false
-        )
-        expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(
-          false
-        )
-        expect(
-          wrapper.find("input[name='postalCode']").props().readOnly
-        ).toStrictEqual(false)
-        expect(wrapper.find('Marker').props().draggable).toStrictEqual(true)
-
-        // done
-        done()
-      })
-    })
-  })})
-
-  it('fills the form with a valid address', () => {return new Promise(done => {
-    // given
-    const { store } = configureStore()
-    const history = createBrowserHistory()
-    history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
-    const wrapper = mount(
-      <Provider store={store}>
-        <Router history={history}>
-          <Switch>
-            <Route path="/structures/:offererId/lieux/:venueId">
-              <VenueContainer />
-            </Route>
-          </Switch>
-        </Router>
-      </Provider>
-    )
-
-    setTimeout(() => {
-      // when (offerer request is done, form is now available)
-      wrapper.update()
-      wrapper
-        .find("input[name='name']")
-        .simulate('change', { target: { value: NAME } })
-      wrapper
-        .find("textarea[name='comment']")
-        .simulate('change', { target: { value: COMMENT } })
-      wrapper
-        .find("input[name='bookingEmail']")
-        .simulate('change', { target: { value: BOOKING_EMAIL } })
-      wrapper
-        .find("input[name='address']")
-        .simulate('change', { target: { value: ADDRESS } })
-
-      setTimeout(() => {
-        wrapper.update()
-        const { items, onSelect, value } = wrapper.find('Autocomplete').props()
-        const item = items[0]
-        onSelect(value, item)
+          .find("input[name='bookingEmail']")
+          .simulate('change', { target: { value: 'foo@foo.com' } })
 
         setTimeout(() => {
-          // then (address has filled other inputs)
+          // then
           wrapper.update()
-          expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(
-            true
+          expect(wrapper.find("input[name='bookingEmail']").props().value).toStrictEqual(
+            'foo@foo.com'
           )
-          expect(
-            wrapper.find("input[name='postalCode']").props().readOnly
-          ).toStrictEqual(true)
-          expect(
-            wrapper.find("input[name='latitude']").props().readOnly
-          ).toStrictEqual(true)
-          expect(
-            wrapper.find("input[name='longitude']").props().readOnly
-          ).toStrictEqual(true)
+
+          // when
+          const cancelButton = wrapper.find('button[type="reset"]')
+          cancelButton.simulate('click')
+
+          // then
+          expect(wrapper.find("input[name='bookingEmail']").props().value).toStrictEqual('')
+
+          // done
+          done()
+        })
+      })
+    })
+  })
+
+  it('fills the form with a valid siret', () => {
+    return new Promise(done => {
+      // given
+      const { store } = configureStore()
+      const history = createBrowserHistory()
+      history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <Switch>
+              <Route path="/structures/:offererId/lieux/:venueId">
+                <VenueContainer />
+              </Route>
+            </Switch>
+          </Router>
+        </Provider>
+      )
+
+      setTimeout(() => {
+        // then (offerer request is done, form is now available)
+        wrapper.update()
+        expect(wrapper.find("textarea[name='comment']").props().required).toStrictEqual(true)
+
+        // when
+        wrapper
+          .find("input[name='bookingEmail']")
+          .simulate('change', { target: { value: BOOKING_EMAIL } })
+        wrapper.find("input[name='siret']").simulate('change', { target: { value: SIRET } })
+
+        setTimeout(() => {
+          // then
+          expect(wrapper.find("textarea[name='comment']").props().required).toStrictEqual(false)
+          expect(wrapper.find("input[name='address']").props().readOnly).toStrictEqual(true)
+          expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(true)
+          expect(wrapper.find("input[name='postalCode']").props().readOnly).toStrictEqual(true)
+          // TODO: latitude et longitude should be readOnly
+          // but jest says it is not the case
+          // (but localhost test prooves it that it is true)
+          // expect(wrapper
+          //  .find("input[name='latitude']")
+          //  .props().readOnly).toEqual(true)
+          // expect(wrapper
+          //  .find("input[name='longitude']")
+          //  .props().readOnly).toEqual(true)
+
+          // when (siret has filled other inputs, submit button is not anymore disabled)
+          wrapper.update()
+          const submitButton = wrapper.find('button[type="submit"]')
+          expect(submitButton.props().disabled).toStrictEqual(false)
+          submitButton.simulate('submit')
+
+          // then
+          const body = {
+            address: ADDRESS,
+            bookingEmail: BOOKING_EMAIL,
+            city: CITY,
+            latitude: LATITUDE,
+            longitude: LONGITUDE,
+            managingOffererId: MANAGING_OFFERER_ID,
+            name: NAME,
+            postalCode: POSTAL_CODE,
+            siret: SIRET,
+          }
+          const expectedSubConfig = {
+            apiPath: '/venues/',
+            body,
+            method: 'POST',
+            normalizer: venueNormalizer,
+          }
+          const receivedConfig = mockRequestDataCatch.mock.calls.slice(-1)[0][0]
+          Object.keys(expectedSubConfig).forEach(key =>
+            expect(receivedConfig[key]).toStrictEqual(expectedSubConfig[key])
+          )
+
+          // done
+          done()
+        })
+      })
+    })
+  })
+
+  it('reputs geo fields to not readonly mode when we delete the siret', () => {
+    return new Promise(done => {
+      // given
+      const { store } = configureStore()
+      const history = createBrowserHistory()
+      history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <Switch>
+              <Route path="/structures/:offererId/lieux/:venueId">
+                <VenueContainer />
+              </Route>
+            </Switch>
+          </Router>
+        </Provider>
+      )
+
+      setTimeout(() => {
+        // then (offerer request is done, form is now available)
+        wrapper.update()
+        expect(wrapper.find("textarea[name='comment']").props().required).toStrictEqual(true)
+
+        // when
+        wrapper
+          .find("input[name='bookingEmail']")
+          .simulate('change', { target: { value: BOOKING_EMAIL } })
+        wrapper.find("input[name='siret']").simulate('change', { target: { value: SIRET } })
+
+        setTimeout(() => {
+          // then
+          wrapper.update()
+          expect(wrapper.find("textarea[name='comment']").props().required).toStrictEqual(false)
+          expect(wrapper.find("input[name='address']").props().readOnly).toStrictEqual(true)
+          expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(true)
+          expect(wrapper.find("input[name='postalCode']").props().readOnly).toStrictEqual(true)
+          expect(wrapper.find('Marker').props().draggable).toStrictEqual(false)
+
+          // when (siret has filled other inputs, submit button is not anymore disabled)
+          wrapper
+            .find("input[name='siret']")
+            .simulate('change', { target: { value: SIRET.slice(0, -1) } })
+
+          // then
+          wrapper.update()
+          expect(wrapper.find("textarea[name='comment']").props().required).toStrictEqual(true)
+          expect(wrapper.find("input[name='address']").props().readOnly).toStrictEqual(false)
+          expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(false)
+          expect(wrapper.find("input[name='postalCode']").props().readOnly).toStrictEqual(false)
+          expect(wrapper.find('Marker').props().draggable).toStrictEqual(true)
+
+          // done
+          done()
+        })
+      })
+    })
+  })
+
+  it('fills the form with a valid address', () => {
+    return new Promise(done => {
+      // given
+      const { store } = configureStore()
+      const history = createBrowserHistory()
+      history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <Switch>
+              <Route path="/structures/:offererId/lieux/:venueId">
+                <VenueContainer />
+              </Route>
+            </Switch>
+          </Router>
+        </Provider>
+      )
+
+      setTimeout(() => {
+        // when (offerer request is done, form is now available)
+        wrapper.update()
+        wrapper.find("input[name='name']").simulate('change', { target: { value: NAME } })
+        wrapper.find("textarea[name='comment']").simulate('change', { target: { value: COMMENT } })
+        wrapper
+          .find("input[name='bookingEmail']")
+          .simulate('change', { target: { value: BOOKING_EMAIL } })
+        wrapper.find("input[name='address']").simulate('change', { target: { value: ADDRESS } })
+
+        setTimeout(() => {
+          wrapper.update()
+          const { items, onSelect, value } = wrapper.find('Autocomplete').props()
+          const item = items[0]
+          onSelect(value, item)
+
+          setTimeout(() => {
+            // then (address has filled other inputs)
+            wrapper.update()
+            expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(true)
+            expect(wrapper.find("input[name='postalCode']").props().readOnly).toStrictEqual(true)
+            expect(wrapper.find("input[name='latitude']").props().readOnly).toStrictEqual(true)
+            expect(wrapper.find("input[name='longitude']").props().readOnly).toStrictEqual(true)
+
+            // when
+            const submitButton = wrapper.find('button[type="submit"]')
+            expect(submitButton.props().disabled).toStrictEqual(false)
+            submitButton.simulate('submit')
+
+            // then
+            const body = {
+              address: ADDRESS,
+              bookingEmail: BOOKING_EMAIL,
+              city: CITY,
+              comment: COMMENT,
+              latitude: LATITUDE,
+              longitude: LONGITUDE,
+              managingOffererId: MANAGING_OFFERER_ID,
+              name: NAME,
+              postalCode: POSTAL_CODE,
+            }
+            const expectedSubConfig = {
+              apiPath: '/venues/',
+              body,
+              method: 'POST',
+              normalizer: venueNormalizer,
+            }
+            const receivedConfig = mockRequestDataCatch.mock.calls.slice(-1)[0][0]
+            Object.keys(expectedSubConfig).forEach(key =>
+              expect(receivedConfig[key]).toStrictEqual(expectedSubConfig[key])
+            )
+
+            // done
+            done()
+          })
+        }, 500)
+      })
+    })
+  })
+
+  it('reputs geo fields to not readonly mode when we delete the address', () => {
+    return new Promise(done => {
+      // given
+      const { store } = configureStore()
+      const history = createBrowserHistory()
+      history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <Switch>
+              <Route path="/structures/:offererId/lieux/:venueId">
+                <VenueContainer />
+              </Route>
+            </Switch>
+          </Router>
+        </Provider>
+      )
+
+      setTimeout(() => {
+        // when (offerer request is done, form is now available)
+        wrapper.update()
+        wrapper.find("input[name='name']").simulate('change', { target: { value: NAME } })
+        wrapper.find("textarea[name='comment']").simulate('change', { target: { value: COMMENT } })
+        wrapper
+          .find("input[name='bookingEmail']")
+          .simulate('change', { target: { value: BOOKING_EMAIL } })
+        wrapper.find("input[name='address']").simulate('change', { target: { value: ADDRESS } })
+
+        setTimeout(() => {
+          wrapper.update()
+          const { items, onSelect, value } = wrapper.find('Autocomplete').props()
+          const item = items[0]
+          onSelect(value, item)
+
+          setTimeout(() => {
+            // then (address has filled other inputs)
+            wrapper.update()
+            expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(true)
+            expect(wrapper.find("input[name='postalCode']").props().readOnly).toStrictEqual(true)
+            expect(wrapper.find("input[name='latitude']").props().readOnly).toStrictEqual(true)
+            expect(wrapper.find("input[name='longitude']").props().readOnly).toStrictEqual(true)
+
+            // when
+            wrapper
+              .find("input[name='address']")
+              .simulate('change', { target: { value: ADDRESS.slice(0, -1) } })
+
+            // then
+            expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(false)
+            expect(wrapper.find("input[name='postalCode']").props().readOnly).toStrictEqual(false)
+            expect(wrapper.find("input[name='latitude']").props().readOnly).toStrictEqual(false)
+            expect(wrapper.find("input[name='longitude']").props().readOnly).toStrictEqual(false)
+
+            // done
+            done()
+          })
+        }, 500)
+      })
+    })
+  })
+
+  it('fills the form with valid coordinates (even if they are negative)', () => {
+    return new Promise(done => {
+      // given
+      const { store } = configureStore()
+      const history = createBrowserHistory()
+      history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <Switch>
+              <Route path="/structures/:offererId/lieux/:venueId">
+                <VenueContainer />
+              </Route>
+            </Switch>
+          </Router>
+        </Provider>
+      )
+
+      setTimeout(() => {
+        // when (offerer request is done, form is now available)
+        wrapper.update()
+        wrapper.find("input[name='name']").simulate('change', { target: { value: NAME } })
+        wrapper.find("textarea[name='comment']").simulate('change', { target: { value: COMMENT } })
+        wrapper
+          .find("input[name='bookingEmail']")
+          .simulate('change', { target: { value: BOOKING_EMAIL } })
+        wrapper.find("input[name='latitude']").simulate('change', { target: { value: LATITUDE } })
+        wrapper.find("input[name='longitude']").simulate('change', { target: { value: LONGITUDE } })
+
+        setTimeout(() => {
+          // then (address has filled other inputs, submit button is not anymore disabled)
+          wrapper.update()
+          expect(wrapper.find("input[name='address']").props().readOnly).toStrictEqual(false)
+          expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(false)
+          expect(wrapper.find("input[name='postalCode']").props().readOnly).toStrictEqual(false)
+          expect(wrapper.find("input[name='latitude']").props().readOnly).toStrictEqual(false)
+          expect(wrapper.find("input[name='longitude']").props().readOnly).toStrictEqual(false)
 
           // when
           const submitButton = wrapper.find('button[type="submit"]')
@@ -418,268 +506,86 @@ describe('src | components | pages | VenueContainer', () => {
           // done
           done()
         })
-      }, 500)
+      })
     })
-  })})
+  })
 
-  it('reputs geo fields to not readonly mode when we delete the address', () => {return new Promise(done => {
-    // given
-    const { store } = configureStore()
-    const history = createBrowserHistory()
-    history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
-    const wrapper = mount(
-      <Provider store={store}>
-        <Router history={history}>
-          <Switch>
-            <Route path="/structures/:offererId/lieux/:venueId">
-              <VenueContainer />
-            </Route>
-          </Switch>
-        </Router>
-      </Provider>
-    )
-
-    setTimeout(() => {
-      // when (offerer request is done, form is now available)
-      wrapper.update()
-      wrapper
-        .find("input[name='name']")
-        .simulate('change', { target: { value: NAME } })
-      wrapper
-        .find("textarea[name='comment']")
-        .simulate('change', { target: { value: COMMENT } })
-      wrapper
-        .find("input[name='bookingEmail']")
-        .simulate('change', { target: { value: BOOKING_EMAIL } })
-      wrapper
-        .find("input[name='address']")
-        .simulate('change', { target: { value: ADDRESS } })
-
-      setTimeout(() => {
-        wrapper.update()
-        const { items, onSelect, value } = wrapper.find('Autocomplete').props()
-        const item = items[0]
-        onSelect(value, item)
-
-        setTimeout(() => {
-          // then (address has filled other inputs)
-          wrapper.update()
-          expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(
-            true
-          )
-          expect(
-            wrapper.find("input[name='postalCode']").props().readOnly
-          ).toStrictEqual(true)
-          expect(
-            wrapper.find("input[name='latitude']").props().readOnly
-          ).toStrictEqual(true)
-          expect(
-            wrapper.find("input[name='longitude']").props().readOnly
-          ).toStrictEqual(true)
-
-          // when
-          wrapper
-            .find("input[name='address']")
-            .simulate('change', { target: { value: ADDRESS.slice(0, -1) } })
-
-          // then
-          expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(
-            false
-          )
-          expect(
-            wrapper.find("input[name='postalCode']").props().readOnly
-          ).toStrictEqual(false)
-          expect(
-            wrapper.find("input[name='latitude']").props().readOnly
-          ).toStrictEqual(false)
-          expect(
-            wrapper.find("input[name='longitude']").props().readOnly
-          ).toStrictEqual(false)
-
-          // done
-          done()
-        })
-      }, 500)
-    })
-  })})
-
-  it('fills the form with valid coordinates (even if they are negative)', () => {return new Promise(done => {
-    // given
-    const { store } = configureStore()
-    const history = createBrowserHistory()
-    history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
-    const wrapper = mount(
-      <Provider store={store}>
-        <Router history={history}>
-          <Switch>
-            <Route path="/structures/:offererId/lieux/:venueId">
-              <VenueContainer />
-            </Route>
-          </Switch>
-        </Router>
-      </Provider>
-    )
-
-    setTimeout(() => {
-      // when (offerer request is done, form is now available)
-      wrapper.update()
-      wrapper
-        .find("input[name='name']")
-        .simulate('change', { target: { value: NAME } })
-      wrapper
-        .find("textarea[name='comment']")
-        .simulate('change', { target: { value: COMMENT } })
-      wrapper
-        .find("input[name='bookingEmail']")
-        .simulate('change', { target: { value: BOOKING_EMAIL } })
-      wrapper
-        .find("input[name='latitude']")
-        .simulate('change', { target: { value: LATITUDE } })
-      wrapper
-        .find("input[name='longitude']")
-        .simulate('change', { target: { value: LONGITUDE } })
+  it('fills the form with a dragging a marker', () => {
+    return new Promise(done => {
+      // given
+      const { store } = configureStore()
+      const history = createBrowserHistory()
+      history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <Switch>
+              <Route path="/structures/:offererId/lieux/:venueId">
+                <VenueContainer formInitialValues={{ latitude: 1, longitude: 45 }} />
+              </Route>
+            </Switch>
+          </Router>
+        </Provider>
+      )
 
       setTimeout(() => {
         // then (address has filled other inputs, submit button is not anymore disabled)
         wrapper.update()
-        expect(wrapper.find("input[name='address']").props().readOnly).toStrictEqual(
-          false
-        )
-        expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(
-          false
-        )
-        expect(
-          wrapper.find("input[name='postalCode']").props().readOnly
-        ).toStrictEqual(false)
-        expect(wrapper.find("input[name='latitude']").props().readOnly).toStrictEqual(
-          false
-        )
-        expect(
-          wrapper.find("input[name='longitude']").props().readOnly
-        ).toStrictEqual(false)
+        expect(wrapper.find("input[name='address']").props().readOnly).toStrictEqual(false)
+        expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(false)
+        expect(wrapper.find("input[name='postalCode']").props().readOnly).toStrictEqual(false)
+        expect(wrapper.find("input[name='latitude']").props().readOnly).toStrictEqual(false)
+        expect(wrapper.find("input[name='longitude']").props().readOnly).toStrictEqual(false)
 
         // when
-        const submitButton = wrapper.find('button[type="submit"]')
-        expect(submitButton.props().disabled).toStrictEqual(false)
-        submitButton.simulate('submit')
-
-        // then
-        const body = {
-          address: ADDRESS,
-          bookingEmail: BOOKING_EMAIL,
-          city: CITY,
-          comment: COMMENT,
-          latitude: LATITUDE,
-          longitude: LONGITUDE,
-          managingOffererId: MANAGING_OFFERER_ID,
-          name: NAME,
-          postalCode: POSTAL_CODE,
-        }
-        const expectedSubConfig = {
-          apiPath: '/venues/',
-          body,
-          method: 'POST',
-          normalizer: venueNormalizer,
-        }
-        const receivedConfig = mockRequestDataCatch.mock.calls.slice(-1)[0][0]
-        Object.keys(expectedSubConfig).forEach(key =>
-          expect(receivedConfig[key]).toStrictEqual(expectedSubConfig[key])
-        )
-
-        // done
-        done()
-      })
-    })
-  })})
-
-  it('fills the form with a dragging a marker', () => {return new Promise(done => {
-    // given
-    const { store } = configureStore()
-    const history = createBrowserHistory()
-    history.push(`/structures/${MANAGING_OFFERER_ID}/lieux/creation`)
-    const wrapper = mount(
-      <Provider store={store}>
-        <Router history={history}>
-          <Switch>
-            <Route path="/structures/:offererId/lieux/:venueId">
-              <VenueContainer
-                formInitialValues={{ latitude: 1, longitude: 45 }}
-              />
-            </Route>
-          </Switch>
-        </Router>
-      </Provider>
-    )
-
-    setTimeout(() => {
-      // then (address has filled other inputs, submit button is not anymore disabled)
-      wrapper.update()
-      expect(wrapper.find("input[name='address']").props().readOnly).toStrictEqual(
-        false
-      )
-      expect(wrapper.find("input[name='city']").props().readOnly).toStrictEqual(false)
-      expect(wrapper.find("input[name='postalCode']").props().readOnly).toStrictEqual(
-        false
-      )
-      expect(wrapper.find("input[name='latitude']").props().readOnly).toStrictEqual(
-        false
-      )
-      expect(wrapper.find("input[name='longitude']").props().readOnly).toStrictEqual(
-        false
-      )
-
-      // when
-      wrapper
-        .find("input[name='name']")
-        .simulate('change', { target: { value: NAME } })
-      wrapper
-        .find("textarea[name='comment']")
-        .simulate('change', { target: { value: COMMENT } })
-      wrapper
-        .find("input[name='bookingEmail']")
-        .simulate('change', { target: { value: BOOKING_EMAIL } })
-
-      setTimeout(() => {
-        wrapper.update()
-        const { onMarkerDragend } = wrapper.find('LocationViewer').props()
-        onMarkerDragend({ latitude: LATITUDE, longitude: LONGITUDE })
+        wrapper.find("input[name='name']").simulate('change', { target: { value: NAME } })
+        wrapper.find("textarea[name='comment']").simulate('change', { target: { value: COMMENT } })
+        wrapper
+          .find("input[name='bookingEmail']")
+          .simulate('change', { target: { value: BOOKING_EMAIL } })
 
         setTimeout(() => {
-          // when (address has filled other inputs, submit button is not anymore disabled)
           wrapper.update()
-          const submitButton = wrapper.find('button[type="submit"]')
-          expect(submitButton.props().disabled).toStrictEqual(false)
-          submitButton.simulate('submit')
+          const { onMarkerDragend } = wrapper.find('LocationViewer').props()
+          onMarkerDragend({ latitude: LATITUDE, longitude: LONGITUDE })
 
-          // then
-          const body = {
-            address: ADDRESS,
-            bookingEmail: BOOKING_EMAIL,
-            city: CITY,
-            comment: COMMENT,
-            latitude: LATITUDE,
-            longitude: LONGITUDE,
-            managingOffererId: MANAGING_OFFERER_ID,
-            name: NAME,
-            postalCode: POSTAL_CODE,
-          }
-          const expectedSubConfig = {
-            apiPath: '/venues/',
-            body,
-            method: 'POST',
-            normalizer: venueNormalizer,
-          }
-          const receivedConfig = mockRequestDataCatch.mock.calls.slice(-1)[0][0]
-          Object.keys(expectedSubConfig).forEach(key =>
-            expect(receivedConfig[key]).toStrictEqual(expectedSubConfig[key])
-          )
+          setTimeout(() => {
+            // when (address has filled other inputs, submit button is not anymore disabled)
+            wrapper.update()
+            const submitButton = wrapper.find('button[type="submit"]')
+            expect(submitButton.props().disabled).toStrictEqual(false)
+            submitButton.simulate('submit')
 
-          // done
-          done()
-        })
-      }, 500)
+            // then
+            const body = {
+              address: ADDRESS,
+              bookingEmail: BOOKING_EMAIL,
+              city: CITY,
+              comment: COMMENT,
+              latitude: LATITUDE,
+              longitude: LONGITUDE,
+              managingOffererId: MANAGING_OFFERER_ID,
+              name: NAME,
+              postalCode: POSTAL_CODE,
+            }
+            const expectedSubConfig = {
+              apiPath: '/venues/',
+              body,
+              method: 'POST',
+              normalizer: venueNormalizer,
+            }
+            const receivedConfig = mockRequestDataCatch.mock.calls.slice(-1)[0][0]
+            Object.keys(expectedSubConfig).forEach(key =>
+              expect(receivedConfig[key]).toStrictEqual(expectedSubConfig[key])
+            )
+
+            // done
+            done()
+          })
+        }, 500)
+      })
     })
-  })})
+  })
 })
 
 describe('src | components | pages | VenueContainer | mapStateToProps', () => {
@@ -689,9 +595,7 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
       const state = {
         data: {
           offerers: [{ id: 1 }],
-          userOfferers: [
-            { offererId: 1, rights: 'RightsType.admin', userId: 1 },
-          ],
+          userOfferers: [{ offererId: 1, rights: 'RightsType.admin', userId: 1 }],
           venues: [],
         },
         user: { email: 'john.doe@email.com' },
@@ -753,10 +657,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
   describe('handleInitialRequest', () => {
     it('should dispatch action to update existing venue', () => {
       // when
-      mapDispatchToProps(dispatch, ownProps).handleInitialRequest(
-        jest.fn(),
-        jest.fn()
-      )
+      mapDispatchToProps(dispatch, ownProps).handleInitialRequest(jest.fn(), jest.fn())
 
       // then
       expect(dispatch.mock.calls[0][0]).toStrictEqual({

@@ -8,7 +8,6 @@ ShallowWrapper {
     closeInfo={[MockFunction]}
     dispatch={[MockFunction]}
     isEvent={true}
-    offer={null}
     parseFormChild={[MockFunction]}
     readOnly={true}
     showInfo={[MockFunction]}
@@ -33,17 +32,17 @@ ShallowWrapper {
         <td
           title="Gratuit si vide"
         >
-          <Unknown
+          <HiddenField
             name="offerId"
             type="hidden"
             validator={[Function]}
           />
-          <Unknown
+          <HiddenField
             name="venueId"
             type="hidden"
             validator={[Function]}
           />
-          <Unknown
+          <PriceField
             format={[Function]}
             name="price"
             onBlur={[Function]}
@@ -70,7 +69,7 @@ ShallowWrapper {
             name="bookingLimitDatetime"
             placeholder="Laissez vide si pas de limite"
             readOnly={true}
-            renderValue={[Function]}
+            renderValue={null}
             required={false}
             timezone={null}
             validate={null}
@@ -79,12 +78,12 @@ ShallowWrapper {
         <td
           className="tooltiped"
         >
-          <Unknown
+          <NumberField
             format={[Function]}
             name="available"
             placeholder="Illimité"
             readOnly={true}
-            renderValue={[Function]}
+            renderValue={null}
             title="Stock[ou] Places affecté[es]"
           />
         </td>,
@@ -104,17 +103,17 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <Unknown
+            <HiddenField
               name="offerId"
               type="hidden"
               validator={[Function]}
             />,
-            <Unknown
+            <HiddenField
               name="venueId"
               type="hidden"
               validator={[Function]}
             />,
-            <Unknown
+            <PriceField
               format={[Function]}
               name="price"
               onBlur={[Function]}
@@ -130,7 +129,7 @@ ShallowWrapper {
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "function",
+            "nodeType": "class",
             "props": Object {
               "name": "offerId",
               "type": "hidden",
@@ -143,7 +142,7 @@ ShallowWrapper {
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "function",
+            "nodeType": "class",
             "props": Object {
               "name": "venueId",
               "type": "hidden",
@@ -191,7 +190,7 @@ ShallowWrapper {
             name="bookingLimitDatetime"
             placeholder="Laissez vide si pas de limite"
             readOnly={true}
-            renderValue={[Function]}
+            renderValue={null}
             required={false}
             timezone={null}
             validate={null}
@@ -218,7 +217,7 @@ ShallowWrapper {
             "name": "bookingLimitDatetime",
             "placeholder": "Laissez vide si pas de limite",
             "readOnly": true,
-            "renderValue": [Function],
+            "renderValue": null,
             "required": false,
             "timezone": null,
             "validate": null,
@@ -234,12 +233,12 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": <Unknown
+          "children": <NumberField
             format={[Function]}
             name="available"
             placeholder="Illimité"
             readOnly={true}
-            renderValue={[Function]}
+            renderValue={null}
             title="Stock[ou] Places affecté[es]"
           />,
           "className": "tooltiped",
@@ -254,7 +253,7 @@ ShallowWrapper {
             "name": "available",
             "placeholder": "Illimité",
             "readOnly": true,
-            "renderValue": [Function],
+            "renderValue": null,
             "title": "Stock[ou] Places affecté[es]",
           },
           "ref": null,
@@ -289,17 +288,17 @@ ShallowWrapper {
           <td
             title="Gratuit si vide"
           >
-            <Unknown
+            <HiddenField
               name="offerId"
               type="hidden"
               validator={[Function]}
             />
-            <Unknown
+            <HiddenField
               name="venueId"
               type="hidden"
               validator={[Function]}
             />
-            <Unknown
+            <PriceField
               format={[Function]}
               name="price"
               onBlur={[Function]}
@@ -326,7 +325,7 @@ ShallowWrapper {
               name="bookingLimitDatetime"
               placeholder="Laissez vide si pas de limite"
               readOnly={true}
-              renderValue={[Function]}
+              renderValue={null}
               required={false}
               timezone={null}
               validate={null}
@@ -335,12 +334,12 @@ ShallowWrapper {
           <td
             className="tooltiped"
           >
-            <Unknown
+            <NumberField
               format={[Function]}
               name="available"
               placeholder="Illimité"
               readOnly={true}
-              renderValue={[Function]}
+              renderValue={null}
               title="Stock[ou] Places affecté[es]"
             />
           </td>,
@@ -360,17 +359,17 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <Unknown
+              <HiddenField
                 name="offerId"
                 type="hidden"
                 validator={[Function]}
               />,
-              <Unknown
+              <HiddenField
                 name="venueId"
                 type="hidden"
                 validator={[Function]}
               />,
-              <Unknown
+              <PriceField
                 format={[Function]}
                 name="price"
                 onBlur={[Function]}
@@ -386,7 +385,7 @@ ShallowWrapper {
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "function",
+              "nodeType": "class",
               "props": Object {
                 "name": "offerId",
                 "type": "hidden",
@@ -399,7 +398,7 @@ ShallowWrapper {
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "function",
+              "nodeType": "class",
               "props": Object {
                 "name": "venueId",
                 "type": "hidden",
@@ -447,7 +446,7 @@ ShallowWrapper {
               name="bookingLimitDatetime"
               placeholder="Laissez vide si pas de limite"
               readOnly={true}
-              renderValue={[Function]}
+              renderValue={null}
               required={false}
               timezone={null}
               validate={null}
@@ -474,7 +473,7 @@ ShallowWrapper {
               "name": "bookingLimitDatetime",
               "placeholder": "Laissez vide si pas de limite",
               "readOnly": true,
-              "renderValue": [Function],
+              "renderValue": null,
               "required": false,
               "timezone": null,
               "validate": null,
@@ -490,12 +489,12 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <Unknown
+            "children": <NumberField
               format={[Function]}
               name="available"
               placeholder="Illimité"
               readOnly={true}
-              renderValue={[Function]}
+              renderValue={null}
               title="Stock[ou] Places affecté[es]"
             />,
             "className": "tooltiped",
@@ -510,7 +509,7 @@ ShallowWrapper {
               "name": "available",
               "placeholder": "Illimité",
               "readOnly": true,
-              "renderValue": [Function],
+              "renderValue": null,
               "title": "Stock[ou] Places affecté[es]",
             },
             "ref": null,

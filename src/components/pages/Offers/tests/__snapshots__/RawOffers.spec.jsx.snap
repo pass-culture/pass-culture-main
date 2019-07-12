@@ -225,6 +225,7 @@ ShallowWrapper {
               <button
                 className="button is-secondary"
                 disabled={true}
+                type="button"
               >
                  
                 <Icon
@@ -392,6 +393,7 @@ ShallowWrapper {
                 <button
                   className="button is-secondary"
                   disabled={true}
+                  type="button"
                 >
                    
                   <Icon
@@ -449,6 +451,7 @@ ShallowWrapper {
                   <button
                     className="button is-secondary"
                     disabled={true}
+                    type="button"
                   >
                      
                     <Icon
@@ -510,6 +513,7 @@ ShallowWrapper {
                     <button
                       className="button is-secondary"
                       disabled={true}
+                      type="button"
                     >
                        
                       <Icon
@@ -551,6 +555,7 @@ ShallowWrapper {
                       ],
                       "className": "button is-secondary",
                       "disabled": true,
+                      "type": "button",
                     },
                     "ref": null,
                     "rendered": Array [
@@ -714,6 +719,7 @@ ShallowWrapper {
                 <button
                   className="button is-secondary"
                   disabled={true}
+                  type="button"
                 >
                    
                   <Icon
@@ -881,6 +887,7 @@ ShallowWrapper {
                   <button
                     className="button is-secondary"
                     disabled={true}
+                    type="button"
                   >
                      
                     <Icon
@@ -938,6 +945,7 @@ ShallowWrapper {
                     <button
                       className="button is-secondary"
                       disabled={true}
+                      type="button"
                     >
                        
                       <Icon
@@ -999,6 +1007,7 @@ ShallowWrapper {
                       <button
                         className="button is-secondary"
                         disabled={true}
+                        type="button"
                       >
                          
                         <Icon
@@ -1040,6 +1049,7 @@ ShallowWrapper {
                         ],
                         "className": "button is-secondary",
                         "disabled": true,
+                        "type": "button",
                       },
                       "ref": null,
                       "rendered": Array [

@@ -165,6 +165,7 @@ ShallowWrapper {
           className="button is-secondary is-pulled-right"
           id="close-manager"
           onClick={[Function]}
+          type="button"
         >
           Fermer
         </button>,
@@ -705,6 +706,7 @@ ShallowWrapper {
           "className": "button is-secondary is-pulled-right",
           "id": "close-manager",
           "onClick": [Function],
+          "type": "button",
         },
         "ref": null,
         "rendered": "Fermer",
@@ -830,6 +832,7 @@ ShallowWrapper {
             className="button is-secondary is-pulled-right"
             id="close-manager"
             onClick={[Function]}
+            type="button"
           >
             Fermer
           </button>,
@@ -1370,6 +1373,7 @@ ShallowWrapper {
             "className": "button is-secondary is-pulled-right",
             "id": "close-manager",
             "onClick": [Function],
+            "type": "button",
           },
           "ref": null,
           "rendered": "Fermer",

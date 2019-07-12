@@ -45,19 +45,8 @@ ShallowWrapper {
           timezone={null}
           validate={null}
         />
-        <TimeField
-          autoComplete={false}
-          className=""
-          disabled={false}
-          id={null}
-          label=""
-          locale="fr"
+        <UNDEFINED
           name="myTime"
-          placeholder="Please enter a value"
-          readOnly={false}
-          renderValue={[Function]}
-          required={false}
-          validate={null}
         />
         <button
           onClick={[Function]}
@@ -112,19 +101,8 @@ ShallowWrapper {
             timezone={null}
             validate={null}
           />,
-          <TimeField
-            autoComplete={false}
-            className=""
-            disabled={false}
-            id={null}
-            label=""
-            locale="fr"
+          <UNDEFINED
             name="myTime"
-            placeholder="Please enter a value"
-            readOnly={false}
-            renderValue={[Function]}
-            required={false}
-            validate={null}
           />,
           <button
             onClick={[Function]}
@@ -167,22 +145,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "autoComplete": false,
-            "className": "",
-            "disabled": false,
-            "id": null,
-            "label": "",
-            "locale": "fr",
             "name": "myTime",
-            "placeholder": "Please enter a value",
-            "readOnly": false,
-            "renderValue": [Function],
-            "required": false,
-            "validate": null,
           },
           "ref": null,
           "rendered": null,
-          "type": [Function],
+          "type": undefined,
         },
         Object {
           "instance": null,
@@ -244,19 +211,8 @@ ShallowWrapper {
             timezone={null}
             validate={null}
           />
-          <TimeField
-            autoComplete={false}
-            className=""
-            disabled={false}
-            id={null}
-            label=""
-            locale="fr"
+          <UNDEFINED
             name="myTime"
-            placeholder="Please enter a value"
-            readOnly={false}
-            renderValue={[Function]}
-            required={false}
-            validate={null}
           />
           <button
             onClick={[Function]}
@@ -311,19 +267,8 @@ ShallowWrapper {
               timezone={null}
               validate={null}
             />,
-            <TimeField
-              autoComplete={false}
-              className=""
-              disabled={false}
-              id={null}
-              label=""
-              locale="fr"
+            <UNDEFINED
               name="myTime"
-              placeholder="Please enter a value"
-              readOnly={false}
-              renderValue={[Function]}
-              required={false}
-              validate={null}
             />,
             <button
               onClick={[Function]}
@@ -366,22 +311,11 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "function",
             "props": Object {
-              "autoComplete": false,
-              "className": "",
-              "disabled": false,
-              "id": null,
-              "label": "",
-              "locale": "fr",
               "name": "myTime",
-              "placeholder": "Please enter a value",
-              "readOnly": false,
-              "renderValue": [Function],
-              "required": false,
-              "validate": null,
             },
             "ref": null,
             "rendered": null,
-            "type": [Function],
+            "type": undefined,
           },
           Object {
             "instance": null,
