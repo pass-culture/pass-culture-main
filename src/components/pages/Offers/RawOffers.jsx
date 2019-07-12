@@ -268,7 +268,7 @@ class RawOffers extends Component {
 
 RawOffers.propTypes = {
   currentUser: PropTypes.shape().isRequired,
-  offers: PropTypes.arrayOf.isRequired,
+  offers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default RawOffers

@@ -173,10 +173,14 @@ class Header extends Component {
   }
 }
 
+Header.defaultProps = {
+  whiteHeader: null,
+}
+
 Header.propTypes = {
   name: PropTypes.string.isRequired,
-  offerers: PropTypes.arrayOf().isRequired,
-  whiteHeader: PropTypes.string.isRequired,
+  offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  whiteHeader: PropTypes.string,
 }
 
 export default Header

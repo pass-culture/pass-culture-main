@@ -15,14 +15,15 @@ const Price = ({ value, free, Tag, className }) => {
 
 Price.defaultProps = {
   Tag: 'span',
+  className: null,
   free: 'Gratuit',
 }
 
 Price.propTypes = {
   Tag: PropTypes.string,
-  className: PropTypes.string.isRequired,
+  className: PropTypes.string,
   free: PropTypes.string,
-  value: PropTypes.string.isRequired,
+  value: PropTypes.number.isRequired,
 }
 
 export default Price

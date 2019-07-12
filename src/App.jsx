@@ -16,8 +16,8 @@ function mapStateToProps(state) {
 }
 
 App.propTypes = {
-  children: PropTypes.string.isRequired,
-  modalOpen: PropTypes.string.isRequired,
+  children: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  modalOpen: PropTypes.bool.isRequired,
 }
 
 export default compose(

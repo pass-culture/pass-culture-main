@@ -152,22 +152,29 @@ class Main extends Component {
 
 Main.defaultProps = {
   Tag: 'main',
+  backTo: null,
+  fullscreen: false,
+  handleDataRequest: null,
+  header: {},
+  redBg: null,
+  whiteHeader: null,
+  withLoading: null,
 }
 
 Main.propTypes = {
   Tag: PropTypes.string,
-  backTo: PropTypes.string.isRequired,
-  children: PropTypes.arrayOf().isRequired,
+  backTo: PropTypes.string,
+  children: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
-  fullscreen: PropTypes.bool.isRequired,
-  handleDataRequest: PropTypes.func.isRequired,
-  header: PropTypes.shape().isRequired,
+  fullscreen: PropTypes.bool,
+  handleDataRequest: PropTypes.func,
+  header: PropTypes.shape(),
   location: PropTypes.shape().isRequired,
   name: PropTypes.string.isRequired,
-  redBg: PropTypes.string.isRequired,
-  whiteHeader: PropTypes.string.isRequired,
-  withLoading: PropTypes.bool.isRequired,
+  redBg: PropTypes.string,
+  whiteHeader: PropTypes.string,
+  withLoading: PropTypes.bool,
 }
 
 export default Main
