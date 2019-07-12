@@ -1,21 +1,15 @@
-import classnames from 'classnames'
-import get from 'lodash.get'
-import { showNotification } from 'pass-culture-shared'
-import React, { PureComponent, Fragment } from 'react'
-import { connect } from 'react-redux'
-import { NavLink, withRouter } from 'react-router-dom'
-import { compose } from 'redux'
-import { requestData } from 'redux-saga-data'
+import React, {Fragment, PureComponent} from "react";
+import classnames from "classnames";
+import get from "lodash.get";
+import {showNotification} from "pass-culture-shared";
+import {requestData} from "redux-saga-data";
+import {NavLink} from 'react-router-dom'
 
-import { withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
+import {withRedirectToSigninWhenNotAuthenticated} from 'components/hocs'
 import HeroSection from 'components/layout/HeroSection/HeroSection'
 import Main from 'components/layout/Main'
 import UploadThumb from 'components/layout/UploadThumb'
-import selectMediationById from 'selectors/selectMediationById'
-import selectOfferById from 'selectors/selectOfferById'
-import selectOffererById from 'selectors/selectOffererById'
-import selectVenueById from 'selectors/selectVenueById'
-import { mediationNormalizer, offerNormalizer } from 'utils/normalizers'
+import {mediationNormalizer, offerNormalizer} from 'utils/normalizers'
 import CanvasTools from 'utils/canvas'
 
 const IMAGE_UPLOAD_SIZE = 400
@@ -55,12 +49,12 @@ class Mediation extends PureComponent {
     } = this.props
     const { isNew } = this.state
     !offer &&
-      dispatch(
-        requestData({
-          apiPath: `/offers/${offerId}`,
-          normalizer: offerNormalizer,
-        })
-      )
+    dispatch(
+      requestData({
+        apiPath: `/offers/${offerId}`,
+        normalizer: offerNormalizer,
+      })
+    )
     if (!isNew) {
       dispatch(
         requestData({
@@ -192,10 +186,10 @@ class Mediation extends PureComponent {
 
   onOkClick = e => {
     this.state.inputUrl &&
-      this.setState({
-        image: null,
-        imageUrl: this.state.inputUrl,
-      })
+    this.setState({
+      image: null,
+      imageUrl: this.state.inputUrl,
+    })
   }
 
   onSubmit = () => {
@@ -451,23 +445,5 @@ class Mediation extends PureComponent {
   }
 }
 
-function mapStateToProps(state, ownProps) {
-  const {
-    match: {
-      params: { mediationId, offerId },
-    },
-  } = ownProps
-  const offer = selectOfferById(state, offerId)
-  const venue = selectVenueById(state, get(offer, 'venueId'))
-  return {
-    offer,
-    offerer: selectOffererById(state, get(venue, 'managingOffererId')),
-    mediation: selectMediationById(state, mediationId),
-  }
-}
 
-export default compose(
-  withRedirectToSigninWhenNotAuthenticated,
-  withRouter,
-  connect(mapStateToProps)
-)(Mediation)
+export default Mediation
