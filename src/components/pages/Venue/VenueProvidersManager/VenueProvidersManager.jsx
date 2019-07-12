@@ -181,7 +181,7 @@ class VenueProvidersManager extends Component {
               onClick={this.addVenueProvider}
               type="button"
             >
-              + Importer des offres
+              {"+ Importer des offres"}
             </button>
           </div>
         )}

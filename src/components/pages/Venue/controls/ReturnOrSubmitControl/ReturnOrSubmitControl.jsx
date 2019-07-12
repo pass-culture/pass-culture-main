@@ -21,7 +21,7 @@ const ReturnOrSubmitControl = ({
             className="button is-primary is-medium"
             to={`/structures/${offererId}`}
           >
-            Terminer
+            {"Terminer"}
           </NavLink>
         ) : (
           <button

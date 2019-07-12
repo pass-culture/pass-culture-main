@@ -356,7 +356,7 @@ class Mediation extends PureComponent {
               className="button is-primary is-outlined is-medium"
               to={backPath}
             >
-              Annuler
+              {"Annuler"}
             </NavLink>
           </div>
           <div className="control">
@@ -366,8 +366,9 @@ class Mediation extends PureComponent {
               })}
               disabled={!image}
               onClick={this.handleOnSubmit}
+              type="button"
             >
-              Valider
+              {"Valider "}
             </button>
           </div>
         </div>
@@ -422,8 +423,9 @@ class Mediation extends PureComponent {
               <button
                 className="button is-primary is-outlined is-medium"
                 onClick={this.handleOnOkClick}
+                type="button"
               >
-                OK
+                {"OK"}
               </button>
             </p>
           </div>
