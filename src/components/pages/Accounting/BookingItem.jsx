@@ -239,4 +239,8 @@ function mapStateToProps(state, ownProps) {
   }
 }
 
+BookingItem.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+}
+
 export default connect(mapStateToProps)(BookingItem)
