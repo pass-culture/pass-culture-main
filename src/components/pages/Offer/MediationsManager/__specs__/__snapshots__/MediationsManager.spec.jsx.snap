@@ -11,11 +11,11 @@ ShallowWrapper {
             Object {
               "patch": Object {
                 "tag": "mediations-manager",
-                "text": "Cette offre n'apparaîtra pas dans l'app pass Culture.",
+                "text": "Cette offre n’apparaîtra pas dans l’app pass Culture.",
                 "tooltip": Object {
-                  "children": <a>
-                     Pourquoi ? 
-                  </a>,
+                  "children": <span>
+                     Pourquoi ?
+                  </span>,
                   "place": "bottom",
                   "tip": "<div><p>Pour que votre offre s'affiche dans l'application du Pass Culture, vous devez:</p><p>- ajouter une ou plusieurs accroches.</p></div>",
                   "type": "info",
@@ -56,12 +56,14 @@ ShallowWrapper {
         >
           <p>
             <b>
-              L'accroche permet d'afficher votre offre "à la une" de l'app
+              L’accroche permet d’afficher votre offre "à la une" de l’app
             </b>
-            , et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
+            , et la rend visuellement plus attrayante. C’est une image (et bientôt
+            une phrase ou une vidéo) intrigante, percutante, séduisante... en un
+            mot : accrocheuse.
           </p>
           <p>
-            Les accroches font la 
+            Les accroches font la
             <b>
               spécificité du Pass Culture
             </b>
@@ -85,12 +87,14 @@ ShallowWrapper {
           "children": Array [
             <p>
               <b>
-                L'accroche permet d'afficher votre offre "à la une" de l'app
+                L’accroche permet d’afficher votre offre "à la une" de l’app
               </b>
-              , et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
+              , et la rend visuellement plus attrayante. C’est une image (et bientôt
+              une phrase ou une vidéo) intrigante, percutante, séduisante... en un
+              mot : accrocheuse.
             </p>,
             <p>
-              Les accroches font la 
+              Les accroches font la
               <b>
                 spécificité du Pass Culture
               </b>
@@ -108,9 +112,11 @@ ShallowWrapper {
             "props": Object {
               "children": Array [
                 <b>
-                  L'accroche permet d'afficher votre offre "à la une" de l'app
+                  L’accroche permet d’afficher votre offre "à la une" de l’app
                 </b>,
-                ", et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.",
+                ", et la rend visuellement plus attrayante. C’est une image (et bientôt",
+                "une phrase ou une vidéo) intrigante, percutante, séduisante... en un",
+                "mot : accrocheuse.",
               ],
             },
             "ref": null,
@@ -120,13 +126,15 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "L'accroche permet d'afficher votre offre \\"à la une\\" de l'app",
+                  "children": "L’accroche permet d’afficher votre offre \\"à la une\\" de l’app",
                 },
                 "ref": null,
-                "rendered": "L'accroche permet d'afficher votre offre \\"à la une\\" de l'app",
+                "rendered": "L’accroche permet d’afficher votre offre \\"à la une\\" de l’app",
                 "type": "b",
               },
-              ", et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.",
+              ", et la rend visuellement plus attrayante. C’est une image (et bientôt",
+              "une phrase ou une vidéo) intrigante, percutante, séduisante... en un",
+              "mot : accrocheuse.",
             ],
             "type": "p",
           },
@@ -202,12 +210,14 @@ ShallowWrapper {
           >
             <p>
               <b>
-                L'accroche permet d'afficher votre offre "à la une" de l'app
+                L’accroche permet d’afficher votre offre "à la une" de l’app
               </b>
-              , et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
+              , et la rend visuellement plus attrayante. C’est une image (et bientôt
+              une phrase ou une vidéo) intrigante, percutante, séduisante... en un
+              mot : accrocheuse.
             </p>
             <p>
-              Les accroches font la 
+              Les accroches font la
               <b>
                 spécificité du Pass Culture
               </b>
@@ -231,12 +241,14 @@ ShallowWrapper {
             "children": Array [
               <p>
                 <b>
-                  L'accroche permet d'afficher votre offre "à la une" de l'app
+                  L’accroche permet d’afficher votre offre "à la une" de l’app
                 </b>
-                , et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
+                , et la rend visuellement plus attrayante. C’est une image (et bientôt
+                une phrase ou une vidéo) intrigante, percutante, séduisante... en un
+                mot : accrocheuse.
               </p>,
               <p>
-                Les accroches font la 
+                Les accroches font la
                 <b>
                   spécificité du Pass Culture
                 </b>
@@ -254,9 +266,11 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   <b>
-                    L'accroche permet d'afficher votre offre "à la une" de l'app
+                    L’accroche permet d’afficher votre offre "à la une" de l’app
                   </b>,
-                  ", et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.",
+                  ", et la rend visuellement plus attrayante. C’est une image (et bientôt",
+                  "une phrase ou une vidéo) intrigante, percutante, séduisante... en un",
+                  "mot : accrocheuse.",
                 ],
               },
               "ref": null,
@@ -266,13 +280,15 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": "L'accroche permet d'afficher votre offre \\"à la une\\" de l'app",
+                    "children": "L’accroche permet d’afficher votre offre \\"à la une\\" de l’app",
                   },
                   "ref": null,
-                  "rendered": "L'accroche permet d'afficher votre offre \\"à la une\\" de l'app",
+                  "rendered": "L’accroche permet d’afficher votre offre \\"à la une\\" de l’app",
                   "type": "b",
                 },
-                ", et la rend visuellement plus attrayante. C'est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.",
+                ", et la rend visuellement plus attrayante. C’est une image (et bientôt",
+                "une phrase ou une vidéo) intrigante, percutante, séduisante... en un",
+                "mot : accrocheuse.",
               ],
               "type": "p",
             },

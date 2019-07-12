@@ -11,7 +11,7 @@ import { formatSirenOrSiret } from '../../../../../utils/siren'
 const getIsCommentRequired = formSiret => !formSiret || formSiret.length !== 14
 
 class IdentifierFields extends Component {
-  handleRenderValue = (fieldReadOnlyBecauseFrozenFormSiret, readOnly) => {
+  handleRenderValue = (fieldReadOnlyBecauseFrozenFormSiret, readOnly) => () => {
     if (readOnly) {
       return null
     }
@@ -40,7 +40,7 @@ class IdentifierFields extends Component {
     )
   }
 
-  handleRender = readOnly => {
+  handleRender = readOnly => () => {
     if (readOnly) {
       return null
     }

@@ -15,7 +15,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       dispatch,
       mediations: [],
       notification: null,
-      offer: null
+      offer: null,
     }
   })
 
@@ -45,23 +45,24 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       expect(dispatch).toHaveBeenCalledWith({
         patch: {
           tag: 'mediations-manager',
-          text: 'Cette offre n\'apparaîtra pas dans l\'app pass Culture.',
+          text: 'Cette offre n’apparaîtra pas dans l’app pass Culture.',
           tooltip: {
-            children: <a> Pourquoi ? </a>,
+            children: <span>{' Pourquoi ? '}</span>,
             place: 'bottom',
-            tip: '<div><p>Pour que votre offre s\'affiche dans l\'application du Pass Culture, vous devez:</p><p>- ajouter une ou plusieurs accroches.</p></div>',
-            type: 'info'
+            tip:
+              "<div><p>Pour que votre offre s'affiche dans l’application du Pass Culture, vous devez:</p><p>- ajouter une ou plusieurs accroches.</p></div>",
+            type: 'info',
           },
-          type: 'warning'
+          type: 'warning',
         },
-        type: 'SHOW_NOTIFICATION'
+        type: 'SHOW_NOTIFICATION',
       })
     })
 
     it('should close notification when unmounting component', () => {
       // given
       props.notification = {
-        tag: 'mediations-manager'
+        tag: 'mediations-manager',
       }
       const wrapper = shallow(<MediationsManager {...props} />)
 
@@ -69,15 +70,15 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       wrapper.unmount()
 
       // then
-      expect(dispatch.mock.calls[1][0]).toStrictEqual({type: 'CLOSE_NOTIFICATION'})
+      expect(dispatch.mock.calls[1][0]).toStrictEqual({ type: 'CLOSE_NOTIFICATION' })
     })
 
     it('should render a NavLink component when there is an offer', () => {
       // given
       props.offer = {
-        id: 'ABC'
+        id: 'ABC',
       }
-      props.mediations = [{id: 'A'}, {id: 'B'}]
+      props.mediations = [{ id: 'A' }, { id: 'B' }]
 
       // when
       const wrapper = shallow(<MediationsManager {...props} />)
@@ -92,7 +93,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
     it('should render 2 spans element containing the right info', () => {
       // given
       props.offer = {
-        id: 'ABC'
+        id: 'ABC',
       }
       props.mediations = []
 
@@ -109,7 +110,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
     it('should render an Icon component with the prop ico-stars-w when no mediation', () => {
       // given
       props.offer = {
-        id: 'ABC'
+        id: 'ABC',
       }
       props.mediations = []
 
@@ -127,9 +128,9 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
     it('should render an Icon component with the prop ico-stars when mediations', () => {
       // given
       props.offer = {
-        id: 'ABC'
+        id: 'ABC',
       }
-      props.mediations = [{id: 'A'}, {id: 'B'}]
+      props.mediations = [{ id: 'A' }, { id: 'B' }]
 
       // when
       const wrapper = shallow(<MediationsManager {...props} />)

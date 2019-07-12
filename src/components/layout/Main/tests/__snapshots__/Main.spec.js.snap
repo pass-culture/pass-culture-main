@@ -5,10 +5,17 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Main
     Tag="main"
+    backTo={null}
     dispatch={[MockFunction]}
+    fullscreen={false}
+    handleDataRequest={null}
+    header={Object {}}
     history={Object {}}
     location={Object {}}
     name="foo"
+    redBg={null}
+    whiteHeader={null}
+    withLoading={null}
   >
     <div>
       foo
@@ -29,7 +36,9 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": Array [
-        <withRouter(Connect(Header)) />,
+        <withRouter(Connect(Header))
+          whiteHeader={null}
+        />,
         <ReactTooltip
           className="flex-center items-center"
           clickable={false}
@@ -41,7 +50,7 @@ ShallowWrapper {
           wrapper="div"
         />,
         <main
-          className="page foo-page container"
+          className="page foo-page with-header container"
         >
           <div
             className="columns is-gapless"
@@ -74,7 +83,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "whiteHeader": undefined,
+          "whiteHeader": null,
         },
         "ref": null,
         "rendered": null,
@@ -126,7 +135,7 @@ ShallowWrapper {
             </div>,
             undefined,
           ],
-          "className": "page foo-page container",
+          "className": "page foo-page with-header container",
         },
         "ref": null,
         "rendered": Array [
@@ -192,7 +201,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": Array [
-                      undefined,
+                      null,
                       <div
                         className="main-content"
                       >
@@ -200,13 +209,13 @@ ShallowWrapper {
                           foo
                         </div>
                       </div>,
-                      undefined,
+                      null,
                     ],
                     "className": "after-notification-content",
                   },
                   "ref": null,
                   "rendered": Array [
-                    undefined,
+                    null,
                     Object {
                       "instance": null,
                       "key": undefined,
@@ -235,7 +244,7 @@ ShallowWrapper {
                       ],
                       "type": "div",
                     },
-                    undefined,
+                    null,
                   ],
                   "type": "div",
                 },
@@ -267,7 +276,9 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": Array [
-          <withRouter(Connect(Header)) />,
+          <withRouter(Connect(Header))
+            whiteHeader={null}
+          />,
           <ReactTooltip
             className="flex-center items-center"
             clickable={false}
@@ -279,7 +290,7 @@ ShallowWrapper {
             wrapper="div"
           />,
           <main
-            className="page foo-page container"
+            className="page foo-page with-header container"
           >
             <div
               className="columns is-gapless"
@@ -312,7 +323,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "whiteHeader": undefined,
+            "whiteHeader": null,
           },
           "ref": null,
           "rendered": null,
@@ -364,7 +375,7 @@ ShallowWrapper {
               </div>,
               undefined,
             ],
-            "className": "page foo-page container",
+            "className": "page foo-page with-header container",
           },
           "ref": null,
           "rendered": Array [
@@ -430,7 +441,7 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": Array [
-                        undefined,
+                        null,
                         <div
                           className="main-content"
                         >
@@ -438,13 +449,13 @@ ShallowWrapper {
                             foo
                           </div>
                         </div>,
-                        undefined,
+                        null,
                       ],
                       "className": "after-notification-content",
                     },
                     "ref": null,
                     "rendered": Array [
-                      undefined,
+                      null,
                       Object {
                         "instance": null,
                         "key": undefined,
@@ -473,7 +484,7 @@ ShallowWrapper {
                         ],
                         "type": "div",
                       },
-                      undefined,
+                      null,
                     ],
                     "type": "div",
                   },

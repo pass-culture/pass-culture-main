@@ -32,7 +32,7 @@ ShallowWrapper {
           <p
             className="subtitle"
           >
-            Enregistrez les codes de réservations présentés par les porteurs du Pass.
+            Enregistrez les codes de réservations présentés par les porteurs du pass.
           </p>
         </div>,
         <div
@@ -41,7 +41,7 @@ ShallowWrapper {
           <p
             className="subtitle is-medium has-text-weight-bold"
           >
-            Scannez un code-barres ou saisissez-le ci-dessous:
+            Scannez un code-barres ou saisissez-le ci-dessous :
           </p>
           <input
             className="input is-undefined"
@@ -93,7 +93,7 @@ ShallowWrapper {
             <p
               className="subtitle"
             >
-              Enregistrez les codes de réservations présentés par les porteurs du Pass.
+              Enregistrez les codes de réservations présentés par les porteurs du pass.
             </p>,
           ],
           "className": "section hero",
@@ -117,11 +117,11 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Enregistrez les codes de réservations présentés par les porteurs du Pass.",
+              "children": "Enregistrez les codes de réservations présentés par les porteurs du pass.",
               "className": "subtitle",
             },
             "ref": null,
-            "rendered": "Enregistrez les codes de réservations présentés par les porteurs du Pass.",
+            "rendered": "Enregistrez les codes de réservations présentés par les porteurs du pass.",
             "type": "p",
           },
         ],
@@ -136,7 +136,7 @@ ShallowWrapper {
             <p
               className="subtitle is-medium has-text-weight-bold"
             >
-              Scannez un code-barres ou saisissez-le ci-dessous:
+              Scannez un code-barres ou saisissez-le ci-dessous :
             </p>,
             <input
               className="input is-undefined"
@@ -178,11 +178,11 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Scannez un code-barres ou saisissez-le ci-dessous:",
+              "children": "Scannez un code-barres ou saisissez-le ci-dessous :",
               "className": "subtitle is-medium has-text-weight-bold",
             },
             "ref": null,
-            "rendered": "Scannez un code-barres ou saisissez-le ci-dessous:",
+            "rendered": "Scannez un code-barres ou saisissez-le ci-dessous :",
             "type": "p",
           },
           Object {
@@ -269,7 +269,7 @@ ShallowWrapper {
             <p
               className="subtitle"
             >
-              Enregistrez les codes de réservations présentés par les porteurs du Pass.
+              Enregistrez les codes de réservations présentés par les porteurs du pass.
             </p>
           </div>,
           <div
@@ -278,7 +278,7 @@ ShallowWrapper {
             <p
               className="subtitle is-medium has-text-weight-bold"
             >
-              Scannez un code-barres ou saisissez-le ci-dessous:
+              Scannez un code-barres ou saisissez-le ci-dessous :
             </p>
             <input
               className="input is-undefined"
@@ -330,7 +330,7 @@ ShallowWrapper {
               <p
                 className="subtitle"
               >
-                Enregistrez les codes de réservations présentés par les porteurs du Pass.
+                Enregistrez les codes de réservations présentés par les porteurs du pass.
               </p>,
             ],
             "className": "section hero",
@@ -354,11 +354,11 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Enregistrez les codes de réservations présentés par les porteurs du Pass.",
+                "children": "Enregistrez les codes de réservations présentés par les porteurs du pass.",
                 "className": "subtitle",
               },
               "ref": null,
-              "rendered": "Enregistrez les codes de réservations présentés par les porteurs du Pass.",
+              "rendered": "Enregistrez les codes de réservations présentés par les porteurs du pass.",
               "type": "p",
             },
           ],
@@ -373,7 +373,7 @@ ShallowWrapper {
               <p
                 className="subtitle is-medium has-text-weight-bold"
               >
-                Scannez un code-barres ou saisissez-le ci-dessous:
+                Scannez un code-barres ou saisissez-le ci-dessous :
               </p>,
               <input
                 className="input is-undefined"
@@ -415,11 +415,11 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Scannez un code-barres ou saisissez-le ci-dessous:",
+                "children": "Scannez un code-barres ou saisissez-le ci-dessous :",
                 "className": "subtitle is-medium has-text-weight-bold",
               },
               "ref": null,
-              "rendered": "Scannez un code-barres ou saisissez-le ci-dessous:",
+              "rendered": "Scannez un code-barres ou saisissez-le ci-dessous :",
               "type": "p",
             },
             Object {
