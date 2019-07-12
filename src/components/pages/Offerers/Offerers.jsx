@@ -86,7 +86,7 @@ class Offerers extends Component {
     })
   }
 
-  handleRequestData = (handleSuccess, handleFail) => {
+  handleRequestData = () => {
     const { currentUser, dispatch, offerers, query } = this.props
     const { isAdmin } = currentUser || {}
     const queryParams = query.parse()
@@ -136,7 +136,7 @@ class Offerers extends Component {
     }
   }
 
-  onKeywordsSubmit = values => {
+  handleOnKeywordsSubmit = values => {
     const { dispatch, query } = this.props
     const { keywords } = values
 
@@ -181,7 +181,7 @@ class Offerers extends Component {
               className="cta button is-primary is-outlined"
               to="/structures/creation"
             >
-              + Ajouter une structure
+              {"+ Ajouter une structure"}
               <span
                 className="tip-icon"
                 data-place="bottom"
@@ -196,7 +196,7 @@ class Offerers extends Component {
 
         <Form
           initialValues={initialValues}
-          onSubmit={this.onKeywordsSubmit}
+          onSubmit={this.handleOnKeywordsSubmit}
           render={({ handleSubmit }) => (
             <form onSubmit={handleSubmit}>
               Rechercher une structure :
@@ -210,11 +210,12 @@ class Offerers extends Component {
                       className="button is-primary is-outlined search-ok ml12"
                       type="submit"
                     >
-                      OK
+                      {"OK"}
                     </button>
                     <button
                       className="button is-secondary"
                       disabled
+                      type="button"
                     >
                       &nbsp;
                       <Icon svg="ico-filter" />
