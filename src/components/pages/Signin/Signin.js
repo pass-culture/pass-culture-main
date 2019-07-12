@@ -19,9 +19,11 @@ class Signin extends Component {
     if (fromUrl) {
       return decodeURIComponent(fromUrl)
     }
-    
+
     return hasOffersWithPhysicalVenues || hasPhysicalVenues ? '/offres' : '/structures'
   }
+
+  handleOnEnterKey = event => event.form.handleOnSubmit()
 
   render() {
     const { errors } = this.props
@@ -59,13 +61,14 @@ class Signin extends Component {
                     <span className="required-legend">{"*"} </span> {"Champs obligatoires"}
                   </span>
                   <Form
-                    action="/users/signin"
                     BlockComponent={null}
+                    action="/users/signin"
                     handleSuccessNotification={null}
                     handleSuccessRedirect={this.handleSuccessRedirect}
                     layout="vertical"
                     name="user"
-                    onEnterKey={event => event.form.onSubmit()}>
+                    onEnterKey={this.handleOnEnterKey(event)}
+                  >
                     <div className="field-group">
                       <Field
                         label="Adresse e-mail"
@@ -118,7 +121,13 @@ class Signin extends Component {
 }
 
 Signin.propTypes = {
+<<<<<<< HEAD
   query: PropTypes.shapeOf().isRequired,
+||||||| merged common ancestors
+  query: PropTypes.shape(),
+=======
+  query: PropTypes.shape().isRequired,
+>>>>>>> (PC-1958) amend Signin and Signup to apply new eslint rules
 }
 
 export default Signin

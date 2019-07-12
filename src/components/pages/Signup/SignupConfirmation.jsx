@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React from 'react'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { connect } from 'react-redux'

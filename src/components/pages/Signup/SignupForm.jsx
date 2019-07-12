@@ -6,6 +6,9 @@ import { connect } from 'react-redux'
 import get from 'lodash.get'
 
 class SignupForm extends PureComponent {
+  handleSuccessRedirect=() => '/inscription/confirmation'
+  handleformatPatch = patch => Object.assign({ publicName: patch.firstName }, patch)
+
   render() {
     const { errors, patch, offererName } = this.props
     return (
@@ -29,16 +32,15 @@ class SignupForm extends PureComponent {
             <span className="required-legend">{" * "}</span>{" Champs obligatoires"}
           </span>
           <Form
-            action="/users/signup/pro"
             BlockComponent={null}
-            formatPatch={patch =>
-              Object.assign({ publicName: patch.firstName }, patch)
-            }
+            action="/users/signup/pro"
+            formatPatch={this.handleformatPatch()}
             handleSuccessNotification={null}
-            handleSuccessRedirect={() => '/inscription/confirmation'}
+            handleSuccessRedirect={this.handleSuccessRedirect}
             layout="vertical"
             name="user"
-            patch={patch}>
+            patch={patch}
+          >
             <div className="field-group">
               <Field
                 label="Adresse e-mail"
