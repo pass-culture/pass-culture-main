@@ -6,13 +6,13 @@ import Dotdotdot from 'react-dotdotdot'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
-import Price from 'components/layout/Price'
-import Thumb from 'components/layout/Thumb'
-import { offerNormalizer } from 'utils/normalizers'
+import Price from '../../../layout/Price'
+import Thumb from '../../../layout/Thumb'
+import { offerNormalizer } from '../../../../utils/normalizers'
 
 
 class OfferItem extends Component {
-  onDeactivateClick = () => {
+  handleOnDeactivateClick = () => {
     const { dispatch, offer } = this.props
     const { id, isActive } = offer || {}
 
@@ -124,7 +124,7 @@ class OfferItem extends Component {
               {groupSizeMin === 1 && <Icon svg="picto-user" />}
               {groupSizeMin > 1 && (
                 <div>
-                  <Icon svg="picto-group" />,{' '}
+                  <Icon svg="picto-group" />{", "}
                   <p>
                     {this.buildNumberOfParticipantsLabel(
                       groupSizeMin,
@@ -149,7 +149,7 @@ class OfferItem extends Component {
                 <Price value={priceMin || 0} />
               ) : (
                 <span>
-                  <Price value={priceMin} /> - <Price value={priceMax} />
+                  <Price value={priceMin} />{" - "}<Price value={priceMax} />
                 </span>
               )}
             </li>
@@ -185,12 +185,13 @@ class OfferItem extends Component {
 
               <button
                 className="button is-secondary is-small activ-switch"
-                onClick={this.onDeactivateClick}
+                onClick={this.handleOnDeactivateClick}
+                type="button"
               >
                 {offer.isActive ? (
                   <span>
                     <Icon svg="ico-close-r" />
-                    Désactiver
+                    {"Désactiver"}
                   </span>
                 ) : (
                   'Activer'
