@@ -98,6 +98,18 @@ class RawOffers extends Component {
     }
   }
 
+  handleOnVenueClick = (query) =>
+    query.change({
+      [mapApiToBrowser.venueId]: null,
+      page: null,
+    })
+
+  handleOnOffererClick = (query) =>
+    query.change({
+      [mapApiToBrowser.offererId]: null,
+      page: null,
+    })
+
   render() {
     const { currentUser, offers, offerer, query, venue } = this.props
     const { isAdmin } = currentUser || {}
@@ -180,11 +192,7 @@ class RawOffers extends Component {
               <span className="has-text-weight-semibold"> {offerer.name} </span>
               <button
                 className="delete is-small"
-                onClick={() =>
-                  query.change({
-                    [mapApiToBrowser.offererId]: null,
-                    page: null,
-                  })}
+                onClick={this.handleOnOffererClick(query)}
                 type="button"
               />
             </li>
@@ -195,11 +203,7 @@ class RawOffers extends Component {
                 <span className="has-text-weight-semibold">{venue.name}</span>
                 <button
                   className="delete is-small"
-                  onClick={() =>
-                    query.change({
-                      [mapApiToBrowser.venueId]: null,
-                      page: null,
-                    })}
+                  onClick={this.handleOnVenueClick(query)}
                   type="button"
                 />
               </li>

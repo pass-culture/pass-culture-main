@@ -204,6 +204,15 @@ class Offer extends Component {
     handleSuccess()
   }
 
+  handleOnClick = (event, query) => {
+    event.preventDefault()
+    query.change({ gestion: '' })
+  }
+
+  handleCancelOnClick = (offerId, query) => query.changeToReadOnly({}, { id: offerId })
+
+  handleChangeOnClick = (query) => query.changeToModification()
+
   handleFormSuccess = (state, action) => {
     const { offer, query } = this.props
     const previousOfferId = offer && offer.id
@@ -467,10 +476,8 @@ class Offer extends Component {
                       </span>
                       <button
                         className="button is-primary is-outlined is-small manage-stock"
-                        onClick={event => {
-                          event.preventDefault()
-                          query.change({ gestion: '' })
-                        }}
+                        onClick={this.handleOnClick(event, query)}
+                        type="button"
                       >
                         <span className="icon">
                           <Icon svg="ico-calendar" />
@@ -647,7 +654,8 @@ class Offer extends Component {
                 {readOnly ? (
                   <button
                     className="button is-secondary is-medium"
-                    onClick={() => query.changeToModification()}
+                    onClick={this.handleChangeOnClick(query)}
+                    type="button"
                   >
                     {"Modifier l'offre"}
                   </button>
@@ -655,9 +663,10 @@ class Offer extends Component {
                   <button
                     className="button is-secondary is-medium"
                     id="cancel-button"
-                    onClick={() => query.changeToReadOnly({}, { id: offerId })}
+                    onClick={this.handleCancelOnClick(offerId, query)}
+                    type="button"
                   >
-                    Annuler
+                    {"Annuler"}
                   </button>
                 )}
               </div>
@@ -667,13 +676,13 @@ class Offer extends Component {
                     className="button is-primary is-medium"
                     to="/offres"
                   >
-                    Terminer{' '}
+                    {"Terminer "}
                     {isModifiedEntity && !isOfferActive && 'et activer'}
                   </NavLink>
                 ) : (
                   showAllForm && (
                     <SubmitButton className="button is-primary is-medium">
-                      Enregistrer{' '}
+                      {"Enregistrer "}
                       {isCreatedEntity &&
                         'et passer ' +
                           (isEventType ? 'aux dates' : 'aux stocks')}

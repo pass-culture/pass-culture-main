@@ -15,6 +15,13 @@ class Header extends Component {
     }
   }
 
+  handleSuccessRedirect = () => '/connexion'
+
+  handleOnClick = (showMobileMenu) =>
+    this.setState({
+      showMobileMenu: !showMobileMenu,
+    })
+
   render() {
     const { name, whiteHeader, offerers } = this.props
     const { showMobileMenu } = this.state
@@ -28,10 +35,7 @@ class Header extends Component {
             />
             <span
               className="navbar-burger"
-              onClick={() =>
-                this.setState({
-                  showMobileMenu: !showMobileMenu,
-                })}
+              onClick={this.handleOnClick(showMobileMenu)}
             >
               <span />
               <span />
@@ -149,9 +153,9 @@ class Header extends Component {
                     </NavLink>
                   )}
                   <SignoutButton
+                    Tag="a"
                     className="navbar-item"
-                    handleSuccessRedirect={() => '/connexion'}
-                    Tag="a">
+                    handleSuccessRedirect={this.handleSuccessRedirect}>
                     <span className="icon">
                       <Icon svg="ico-deconnect" />
                     </span>
@@ -168,9 +172,9 @@ class Header extends Component {
 }
 
 Header.propTypes = {
-  name: PropTypes.string,
-  offerers: PropTypes.arrayOf(),
-  whiteHeader: PropTypes.string,
+  name: PropTypes.string.isRequired,
+  offerers: PropTypes.arrayOf().isRequired,
+  whiteHeader: PropTypes.string.isRequired,
 }
 
 export default Header

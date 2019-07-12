@@ -77,6 +77,23 @@ class BookingItem extends Component {
     )
   }
 
+  handleOnClick = (dispatch, id) => {
+    dispatch(
+      requestData({
+      apiPath: `/bookings/${id}`,
+      body: {
+        isCancelled: true,
+      },
+      handleFail: this.cancelError,
+      method: 'PATCH',
+      normalizer: bookingNormalizer,
+      })
+    )
+    dispatch(closeModal())
+  }
+
+  handleOnNoClick = (dispatch) => dispatch(closeModal())
+
   handleOnCancelClick = () => {
     const { booking, dispatch } = this.props
     const { id } = booking
@@ -88,27 +105,14 @@ class BookingItem extends Component {
           <div className="level">
             <button
               className="button is-primary level-item"
-              onClick={() => {
-                dispatch(
-                  requestData({
-                    apiPath: `/bookings/${id}`,
-                    body: {
-                      isCancelled: true,
-                    },
-                    handleFail: this.cancelError,
-                    method: 'PATCH',
-                    normalizer: bookingNormalizer,
-                  })
-                )
-                dispatch(closeModal())
-              }}
+              onClick={this.handleOnClick(dispatch, id)}
               type="button"
             >
               {"Oui"}
             </button>
             <button
               className="button is-primary level-item"
-              onClick={() => dispatch(closeModal())}
+              onClick={this.handleOnNoClick(dispatch)}
               type="button"
             >
               {"Non"}

@@ -20,7 +20,7 @@ const SubmitAndCancelControl = ({
         onClick={handleSubmit}
         type="submit"
       >
-        Valider
+        {"Valider"}
       </button>
     </td>
     <td className="is-clipped">
@@ -32,7 +32,7 @@ const SubmitAndCancelControl = ({
         }}
         type="reset"
       >
-        Annuler
+        {"Annuler"}
       </button>
     </td>
   </Fragment>
