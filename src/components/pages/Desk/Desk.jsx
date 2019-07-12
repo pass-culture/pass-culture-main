@@ -1,10 +1,10 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 import { getRequestErrorStringFromErrors } from 'pass-culture-shared'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 import DeskState from './DeskState/DeskState'
 import Main from '../../layout/Main'
-import PropTypes from "prop-types";
 
 const CODE_MAX_LENGTH = 6
 const CODE_REGEX_VALIDATION = /[^a-z0-9]/i
@@ -39,7 +39,7 @@ class Desk extends React.PureComponent {
     return element => (this.input = element)
   }
 
-  handleOnClick = (code) => () => this.handleCodeRegistration(code)
+  handleOnClick = code => () => this.handleCodeRegistration(code)
 
   getBookingFromCode = code => {
     const { dispatch } = this.props
@@ -57,9 +57,7 @@ class Desk extends React.PureComponent {
     const { payload } = action
     const booking = payload.datum
 
-    const status = booking.isValidated
-      ? CODE_ALREADY_USED
-      : CODE_VERIFICATION_SUCCESS
+    const status = booking.isValidated ? CODE_ALREADY_USED : CODE_VERIFICATION_SUCCESS
 
     this.setState({ booking, status })
   }
@@ -140,8 +138,7 @@ class Desk extends React.PureComponent {
 
     switch (status) {
       case CODE_TYPING:
-        message = `Caractères restants: ${CODE_MAX_LENGTH -
-          code.length}/${CODE_MAX_LENGTH}`
+        message = `Caractères restants: ${CODE_MAX_LENGTH - code.length}/${CODE_MAX_LENGTH}`
         level = 'pending'
         break
       case CODE_SYNTAX_INVALID:
@@ -188,9 +185,7 @@ class Desk extends React.PureComponent {
 
   renderChildComponent = () => {
     const { status } = this.state
-    const { booking, level, message } = this.getValuesFromStatus(
-      status
-    )
+    const { booking, level, message } = this.getValuesFromStatus(status)
     return (<DeskState
       booking={booking}
       level={level}
@@ -203,15 +198,15 @@ class Desk extends React.PureComponent {
     return (
       <Main name="desk">
         <div className="section hero">
-          <h1 className="main-title">{"Guichet"}</h1>
+          <h1 className="main-title">{'Guichet'}</h1>
           <p className="subtitle">
-            {"Enregistrez les codes de réservations présentés par les porteurs du Pass."}
+            {'Enregistrez les codes de réservations présentés par les porteurs du pass.'}
           </p>
         </div>
 
         <div className="section form">
           <p className="subtitle is-medium has-text-weight-bold">
-            Scannez un code-barres ou saisissez-le ci-dessous:
+            {'Scannez un code-barres ou saisissez-le ci-dessous :'}
           </p>
 
           <input
@@ -230,7 +225,7 @@ class Desk extends React.PureComponent {
             onClick={this.handleOnClick(code)}
             type="submit"
           >
-            {"Valider"}
+            {'Valider'}
           </button>
 
           {this.renderChildComponent()}
@@ -240,7 +235,7 @@ class Desk extends React.PureComponent {
             id="exitlink"
             to="/accueil"
           >
-            {"Terminer"}
+            {'Terminer'}
           </NavLink>
         </div>
       </Main>

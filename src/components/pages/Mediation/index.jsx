@@ -47,7 +47,7 @@ class Mediation extends PureComponent {
 
   handleOnChange = event => this.setState({ credit: event.target.value })
 
-  handleDataRequest = (handleSuccess, handleFail) => {
+  onHandleDataRequest = (handleSuccess, handleFail) => {
     const {
       dispatch,
       match: {
@@ -193,10 +193,12 @@ class Mediation extends PureComponent {
   }
 
   handleOnOkClick = () => {
-    this.state.inputUrl &&
+    const { inputUrl } = this.state
+
+    inputUrl &&
       this.setState({
         image: null,
-        imageUrl: this.state.inputUrl,
+        imageUrl: inputUrl,
       })
   }
 
@@ -263,7 +265,7 @@ class Mediation extends PureComponent {
         <div className="thumbnailManager">
           <div className="section ">
             <h2 className="has-text-primary has-text-weight-semibold active">
-              Comment cadrer votre image d’accroche
+              {'Comment cadrer votre image d’accroche'}
             </h2>
             <ul>
               <li className="mb12">
@@ -384,7 +386,7 @@ class Mediation extends PureComponent {
     return (
       <Main
         backTo={{ path: backPath, label: "Revenir à l'offre" }}
-        handleDataRequest={this.handleDataRequest}
+        handleDataRequest={this.onHandleDataRequest}
         name="mediation"
       >
         <HeroSection title={`${isNew ? 'Créez' : 'Modifiez'} une accroche`}>
