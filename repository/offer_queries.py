@@ -178,7 +178,7 @@ def _order_by_offer_name_containing_keyword_string(keywords_string: str, query: 
         desc(
             Offer.query
                 .filter(Offer.id == offer_alias.id)
-                .filter(Offer.name.ilike('%' + keywords_string + '%'))
+                .filter(Offer.name.op('@@')(func.plainto_tsquery(keywords_string)))
                 .order_by(offer_alias.name)
                 .exists()
         )
