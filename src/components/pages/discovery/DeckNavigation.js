@@ -76,22 +76,14 @@ export class RawDeckNavigation extends React.PureComponent {
   }
 
   render() {
-    const {
-      isFinished,
-      recommendation,
-      flipHandler,
-      transitionTimeout,
-    } = this.props
+    const { isFinished, recommendation, flipHandler, transitionTimeout } = this.props
 
     const { distance, offer } = recommendation || {}
     let distanceClue = ' '
     if (offer && offer.venue) {
       distanceClue = offer.venue.isVirtual ? 'offre en ligne' : distance
     }
-    const firstThumbDominantColor = get(
-      recommendation,
-      'firstThumbDominantColor'
-    )
+    const firstThumbDominantColor = get(recommendation, 'firstThumbDominantColor')
     const headerColor = getHeaderColor(firstThumbDominantColor)
     const priceRange = getPriceRangeFromStocks(offer && offer.stocks)
 

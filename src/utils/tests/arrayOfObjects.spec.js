@@ -69,9 +69,7 @@ describe('src | utils | arrayOfObjects | sortAlphabeticallyArrayOfObjectsByPrope
       },
     ]
     // when
-    const result = typesArray.sort(
-      sortAlphabeticallyArrayOfObjectsByProperty('sublabel')
-    )
+    const result = typesArray.sort(sortAlphabeticallyArrayOfObjectsByProperty('sublabel'))
     const expected = [
       {
         description:
@@ -113,9 +111,7 @@ describe('src | utils | arrayOfObjects | sortAlphabeticallyArrayOfObjectsByPrope
     ]
 
     // when
-    const result = typesArray.sort(
-      sortAlphabeticallyArrayOfObjectsByProperty('fake')
-    )
+    const result = typesArray.sort(sortAlphabeticallyArrayOfObjectsByProperty('fake'))
 
     // then
     expect(result).toStrictEqual(typesArray)

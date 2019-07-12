@@ -13,9 +13,7 @@ const closeVersoLink = Selector('#deck .close-link')
 const menuButton = Selector('#open-menu-button')
 const menuLogoutButton = Selector('#main-menu-logout-button')
 
-const getNbRecos = ClientFunction(
-  () => document.querySelector('#deck').dataset.nbRecos
-)
+const getNbRecos = ClientFunction(() => document.querySelector('#deck').dataset.nbRecos)
 
 let userRole1
 let userRole2
@@ -60,17 +58,15 @@ test('Je fais ma première visite sur découverte', async t => {
   await t.expect(getPageUrl()).notContains('/decouverte/tuto/')
 })
 
-fixture('O3_03 Découverte | exploration | Recommendations').beforeEach(
-  async t => {
-    if (!userRole2) {
-      userRole2 = await createUserRoleFromUserSandbox(
-        'webapp_03_decouverte',
-        'get_existing_webapp_user_with_bookings'
-      )
-    }
-    await t.useRole(userRole2)
+fixture('O3_03 Découverte | exploration | Recommendations').beforeEach(async t => {
+  if (!userRole2) {
+    userRole2 = await createUserRoleFromUserSandbox(
+      'webapp_03_decouverte',
+      'get_existing_webapp_user_with_bookings'
+    )
   }
-)
+  await t.useRole(userRole2)
+})
 
 test('Je ne vois plus les cartes tutos', async t => {
   // then
@@ -155,10 +151,7 @@ test("Je vois la carte finale si j'arrive à la fin des cartes", async t => {
     urlAfter = await getPageUrl()
     if (urlAfter.endsWith('/decouverte/tuto/fin')) {
       await t
-        .expect(
-          Selector('div.card.current > div.recto', { visibilityCheck: true })
-            .textContent
-        )
+        .expect(Selector('div.card.current > div.recto', { visibilityCheck: true }).textContent)
         .match(/parcouru toutes les offres/)
       seenFinalCard = true
       break

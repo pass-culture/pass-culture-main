@@ -7,11 +7,7 @@ import Booking from './Booking'
 
 export const mapStateToProps = (state, { match }) => {
   const { offerId, mediationId, view, bookingId } = match.params
-  const recommendation = currentRecommendationSelector(
-    state,
-    offerId,
-    mediationId
-  )
+  const recommendation = currentRecommendationSelector(state, offerId, mediationId)
 
   const isEvent = get(recommendation, 'offer.isEvent')
   const bookables = selectBookables(state, recommendation, match)

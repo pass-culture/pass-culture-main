@@ -99,11 +99,7 @@ describe('src | components | pages | activation | password | ActivationPageConta
         requestData.mockReturnValue(expectedAction)
 
         // when
-        actions.loginUserAfterPasswordSaveSuccess(
-          values,
-          failFunction,
-          successFunction
-        )
+        actions.loginUserAfterPasswordSaveSuccess(values, failFunction, successFunction)
 
         // then
         expect(requestData).toHaveBeenCalledWith(config)
@@ -136,11 +132,7 @@ describe('src | components | pages | activation | password | ActivationPageConta
         requestData.mockReturnValue(expectedAction)
 
         // when
-        actions.sendActivationPasswordForm(
-          values,
-          () => failFunction,
-          () => successFunction
-        )
+        actions.sendActivationPasswordForm(values, () => failFunction, () => successFunction)
 
         // then
         expect(requestData).toHaveBeenCalledWith(config)

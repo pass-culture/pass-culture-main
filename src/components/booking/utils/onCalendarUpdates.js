@@ -22,12 +22,8 @@ const onCalendarUpdates = (selectedDate, name, allFormValues) => {
     Array.isArray(bookables) &&
     bookables.length &&
     bookables
-      .filter(
-        o => o && o.beginningDatetime && moment.isMoment(o.beginningDatetime)
-      )
-      .find(o =>
-        isSameDayInEachTimezone(selectedDate.date, o.beginningDatetime)
-      )
+      .filter(o => o && o.beginningDatetime && moment.isMoment(o.beginningDatetime))
+      .find(o => isSameDayInEachTimezone(selectedDate.date, o.beginningDatetime))
   if (!filtered) return resetObj
   return {
     price: filtered.price,

@@ -11,11 +11,7 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       const subCode = 519
 
       // when
-      const musicSubType = selectMusicSubTypeByCodeAndSubCode(
-        state,
-        String(code),
-        String(subCode)
-      )
+      const musicSubType = selectMusicSubTypeByCodeAndSubCode(state, String(code), String(subCode))
 
       // then
       expect(musicSubType.code).toStrictEqual(subCode)
@@ -27,11 +23,7 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       const subCode = 666
 
       // when
-      const musicSubType = selectMusicSubTypeByCodeAndSubCode(
-        state,
-        String(code),
-        String(subCode)
-      )
+      const musicSubType = selectMusicSubTypeByCodeAndSubCode(state, String(code), String(subCode))
 
       // then
       expect(musicSubType).toStrictEqual(undefined)

@@ -71,9 +71,7 @@ describe('src | components | pages | discovery | RawDiscoveryPage', () => {
           type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?',
         }
         expect(props.dispatch.mock.calls).toHaveLength(1)
-        expect(props.dispatch.mock.calls[0][0]).toStrictEqual(
-          expectedRequestDataAction
-        )
+        expect(props.dispatch.mock.calls[0][0]).toStrictEqual(expectedRequestDataAction)
       })
     })
   })

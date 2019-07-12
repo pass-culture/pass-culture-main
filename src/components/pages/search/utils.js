@@ -63,9 +63,7 @@ export const searchResultsTitle = (
   let resultTitle
   if (cameFromOfferTypesPage) {
     resultTitle =
-      items.length === 0
-        ? "Il n'y a pas d'offres dans cette catégorie pour le moment."
-        : ''
+      items.length === 0 ? "Il n'y a pas d'offres dans cette catégorie pour le moment." : ''
   } else {
     const count = items.length
     const resultString = pluralize(count, 'résultats')
@@ -87,10 +85,7 @@ const formatDate = (date, timeZone) => {
     weekday: 'long',
   }
 
-  return `${date.toLocaleDateString(
-    'fr-FR',
-    options
-  )} ${date.toLocaleDateString()}`
+  return `${date.toLocaleDateString('fr-FR', options)} ${date.toLocaleDateString()}`
 }
 
 export const getRecommendationDateString = offer => {
@@ -108,9 +103,7 @@ export const getRecommendationDateString = offer => {
 }
 
 export const getDescriptionFromCategory = (categoryName, categories) => {
-  const goodCategory = categories.find(
-    category => category.sublabel === categoryName
-  )
+  const goodCategory = categories.find(category => category.sublabel === categoryName)
 
   return goodCategory ? goodCategory.description : ''
 }
@@ -120,14 +113,9 @@ const mapWindowToApi = {
   'mots-cles': 'keywords',
 }
 
-export const translateBrowserUrlToApiUrl = query =>
-  getObjectWithMappedKeys(query, mapWindowToApi)
+export const translateBrowserUrlToApiUrl = query => getObjectWithMappedKeys(query, mapWindowToApi)
 
-export const isDaysChecked = (
-  pickedDate,
-  pickedDaysInQuery = '0-1',
-  inputValue = '0-1'
-) => {
+export const isDaysChecked = (pickedDate, pickedDaysInQuery = '0-1', inputValue = '0-1') => {
   if (pickedDate !== null) return false
 
   return pickedDaysInQuery.includes(inputValue)

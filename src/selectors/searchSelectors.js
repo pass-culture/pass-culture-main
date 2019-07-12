@@ -7,12 +7,7 @@ export const selectCurrentSearchRecommendation = createCachedSelector(
   (state, offerId) => offerId,
   (state, offerId, mediationId) => mediationId,
   (recommendations, offerId, mediationId) => {
-    if (
-      !recommendations ||
-      !recommendations.length ||
-      (!offerId && !mediationId)
-    )
-      return null
+    if (!recommendations || !recommendations.length || (!offerId && !mediationId)) return null
     const currentRecommendation = recommendations.find(recommendation => {
       const matchOffer = recommendation.offerId === offerId
       const matchMediation = recommendation.mediationId === mediationId
@@ -21,13 +16,7 @@ export const selectCurrentSearchRecommendation = createCachedSelector(
     return currentRecommendation || null
   }
 )((state, offerId, mediationId) =>
-  mapArgsToSelectorCachedKeys(
-    'search',
-    'current',
-    'recommendation',
-    offerId,
-    mediationId
-  )
+  mapArgsToSelectorCachedKeys('search', 'current', 'recommendation', offerId, mediationId)
 )
 
 export default selectCurrentSearchRecommendation

@@ -64,17 +64,8 @@ RawRequestEmailForm.defaultProps = {
 
 RawRequestEmailForm.propTypes = {
   canSubmit: PropTypes.bool.isRequired,
-  formErrors: PropTypes.oneOfType([
-    PropTypes.array,
-    PropTypes.bool,
-    PropTypes.string,
-  ]),
+  formErrors: PropTypes.oneOfType([PropTypes.array, PropTypes.bool, PropTypes.string]),
   isLoading: PropTypes.bool.isRequired,
 }
 
-export default withResetForm(
-  RawRequestEmailForm,
-  null,
-  '/users/reset-password',
-  'POST'
-)
+export default withResetForm(RawRequestEmailForm, null, '/users/reset-password', 'POST')

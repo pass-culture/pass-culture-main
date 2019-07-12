@@ -23,8 +23,7 @@ class Menu extends PureComponent {
     toggleOverlay()
   }
 
-  urlWithoutMenuElement = history => () =>
-    history.location.pathname.replace('/menu', '')
+  urlWithoutMenuElement = history => () => history.location.pathname.replace('/menu', '')
 
   render() {
     const { currentUser, history, readRecommendations } = this.props
@@ -84,8 +83,7 @@ class Menu extends PureComponent {
 Menu.propTypes = {
   currentUser: PropTypes.shape().isRequired,
   history: PropTypes.shape().isRequired,
-  readRecommendations: PropTypes.arrayOf(PropTypes.shape().isRequired)
-    .isRequired,
+  readRecommendations: PropTypes.arrayOf(PropTypes.shape().isRequired).isRequired,
   toggleOverlay: PropTypes.func.isRequired,
 }
 

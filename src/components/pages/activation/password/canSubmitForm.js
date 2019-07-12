@@ -1,4 +1,4 @@
-const canSubmitForm = (formProps) => {
+const canSubmitForm = formProps => {
   if (!formProps) {
     throw new Error('canSubmitForm: Missing arguments')
   }

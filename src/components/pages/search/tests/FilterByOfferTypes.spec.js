@@ -57,10 +57,7 @@ describe('src | components | pages | search | FilterByOfferTypes', () => {
       wrapper.instance().onChangeCategory(category)()
 
       // then
-      expect(props.filterActions.add).toHaveBeenCalledWith(
-        'categories',
-        category
-      )
+      expect(props.filterActions.add).toHaveBeenCalledWith('categories', category)
     })
 
     it('should uncheck Applaudir within categories when I check Applaudir', () => {
@@ -73,10 +70,7 @@ describe('src | components | pages | search | FilterByOfferTypes', () => {
       wrapper.instance().onChangeCategory(category)()
 
       // then
-      expect(props.filterActions.remove).toHaveBeenCalledWith(
-        'categories',
-        category
-      )
+      expect(props.filterActions.remove).toHaveBeenCalledWith('categories', category)
     })
   })
 
@@ -109,12 +103,8 @@ describe('src | components | pages | search | FilterByOfferTypes', () => {
       }, [])
 
       // when
-      const firstLabel = expectedLabels[0]
-        .find('i')
-        .is('.icon-legacy-check-circled')
-      const secondLabel = expectedLabels[1]
-        .find('i')
-        .is('.icon-legacy-check-circled')
+      const firstLabel = expectedLabels[0].find('i').is('.icon-legacy-check-circled')
+      const secondLabel = expectedLabels[1].find('i').is('.icon-legacy-check-circled')
 
       // then
       expect(firstLabel).toBe(true)

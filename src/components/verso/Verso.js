@@ -9,16 +9,16 @@ import VersoContentTuto from './verso-content/VersoContentTuto'
 import Footer from '../layout/Footer'
 
 const Verso = ({
-    areDetailsVisible,
-    backgroundColor,
-    contentInlineStyle,
-    extraClassName,
-    forceDetailsVisible,
-    isTuto,
-    imageURL,
-    offerName,
-    offerVenueNameOrPublicName,
-  }) => {
+  areDetailsVisible,
+  backgroundColor,
+  contentInlineStyle,
+  extraClassName,
+  forceDetailsVisible,
+  isTuto,
+  imageURL,
+  offerName,
+  offerVenueNameOrPublicName,
+}) => {
   const flipped = forceDetailsVisible || areDetailsVisible
 
   return (

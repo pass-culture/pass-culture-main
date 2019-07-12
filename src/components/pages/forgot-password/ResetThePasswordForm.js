@@ -34,7 +34,9 @@ export const RawResetThePasswordForm = ({ canSubmit, formErrors, isLoading }) =>
               <span className="is-block">{'votre nouveau mot de passe.'}</span>
             </h2>
             <p className="mt12 fs16">
-              {'Il doit contenir au minimum 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.'}
+              {
+                'Il doit contenir au minimum 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.'
+              }
             </p>
             <p className="is-block is-regular fs13 mt18">
               <span>{'*'}</span>
@@ -77,17 +79,8 @@ RawResetThePasswordForm.defaultProps = {
 
 RawResetThePasswordForm.propTypes = {
   canSubmit: PropTypes.bool.isRequired,
-  formErrors: PropTypes.oneOfType([
-    PropTypes.array,
-    PropTypes.bool,
-    PropTypes.string,
-  ]),
+  formErrors: PropTypes.oneOfType([PropTypes.array, PropTypes.bool, PropTypes.string]),
   isLoading: PropTypes.bool.isRequired,
 }
 
-export default withResetForm(
-  RawResetThePasswordForm,
-  null,
-  '/users/new-password',
-  'POST'
-)
+export default withResetForm(RawResetThePasswordForm, null, '/users/new-password', 'POST')

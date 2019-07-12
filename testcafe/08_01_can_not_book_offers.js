@@ -45,7 +45,5 @@ test("Je n'ai plus d'argent", async t => {
     .expect(bookingErrorReasons.nth(1).exists)
     .ok()
     .expect(bookingErrorReasons.nth(1).textContent)
-    .eql(
-      "Le solde de votre pass n'est pas suffisant pour effectuer cette réservation."
-    )
+    .eql("Le solde de votre pass n'est pas suffisant pour effectuer cette réservation.")
 })

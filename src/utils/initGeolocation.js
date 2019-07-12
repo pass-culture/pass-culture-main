@@ -1,8 +1,5 @@
 import logger from './logger'
-import {
-  setGeolocationPosition,
-  setGeolocationWatchId,
-} from '../reducers/geolocation'
+import { setGeolocationPosition, setGeolocationWatchId } from '../reducers/geolocation'
 
 const initGeolocation = store => {
   logger.log('Geoloc queried')

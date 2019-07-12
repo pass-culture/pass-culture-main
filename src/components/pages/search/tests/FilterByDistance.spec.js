@@ -1,9 +1,7 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import options, {
-  INFINITE_DISTANCE,
-} from '../../../../helpers/search/distanceOptions'
+import options, { INFINITE_DISTANCE } from '../../../../helpers/search/distanceOptions'
 import FilterByDistance from '../FilterByDistance'
 
 describe('src | components | pages | search | FilterByDistance', () => {

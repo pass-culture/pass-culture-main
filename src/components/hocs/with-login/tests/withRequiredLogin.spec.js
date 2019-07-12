@@ -28,63 +28,66 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin', () 
   })
 
   describe('functions', () => {
-    it('should redirect to signin when not authenticated', () => {return new Promise(done => {
-      // given
-      const history = createBrowserHistory()
-      history.push('/test')
-      const store = configureTestStore()
-      fetch.mockResponse(
-        JSON.stringify([{ global: ['Nobody is authenticated here'] }]),
-        { status: 400 }
-      )
+    it('should redirect to signin when not authenticated', () => {
+      return new Promise(done => {
+        // given
+        const history = createBrowserHistory()
+        history.push('/test')
+        const store = configureTestStore()
+        fetch.mockResponse(JSON.stringify([{ global: ['Nobody is authenticated here'] }]), {
+          status: 400,
+        })
 
-      // when
-      mount(
-        <Provider store={store}>
-          <Router history={history}>
-            <Switch>
-              <Route path="/test">
-                <RequiredLoginTest />
-              </Route>
-              <Route path="/connexion">
-                <OnMountCaller onMountCallback={done} />
-              </Route>
-            </Switch>
-          </Router>
-        </Provider>
-      )
-    })})
-    it('should redirect to typeform when authenticated and not needsToFillCulturalSurvey', () => {return new Promise(done => {
-      // given
-      const history = createBrowserHistory()
-      history.push('/test')
-      const store = configureTestStore()
-      fetch.mockResponse(
-        JSON.stringify({
-          email: 'michel.marx@youpi.fr',
-          needsToFillCulturalSurvey: true,
-        }),
-        {
-          status: 200,
-        }
-      )
+        // when
+        mount(
+          <Provider store={store}>
+            <Router history={history}>
+              <Switch>
+                <Route path="/test">
+                  <RequiredLoginTest />
+                </Route>
+                <Route path="/connexion">
+                  <OnMountCaller onMountCallback={done} />
+                </Route>
+              </Switch>
+            </Router>
+          </Provider>
+        )
+      })
+    })
+    it('should redirect to typeform when authenticated and not needsToFillCulturalSurvey', () => {
+      return new Promise(done => {
+        // given
+        const history = createBrowserHistory()
+        history.push('/test')
+        const store = configureTestStore()
+        fetch.mockResponse(
+          JSON.stringify({
+            email: 'michel.marx@youpi.fr',
+            needsToFillCulturalSurvey: true,
+          }),
+          {
+            status: 200,
+          }
+        )
 
-      // when
-      mount(
-        <Provider store={store}>
-          <Router history={history}>
-            <Switch>
-              <Route path="/test">
-                <RequiredLoginTest />
-              </Route>
-              <Route path="/typeform">
-                <OnMountCaller onMountCallback={done} />
-              </Route>
-            </Switch>
-          </Router>
-        </Provider>
-      )
-    })})
+        // when
+        mount(
+          <Provider store={store}>
+            <Router history={history}>
+              <Switch>
+                <Route path="/test">
+                  <RequiredLoginTest />
+                </Route>
+                <Route path="/typeform">
+                  <OnMountCaller onMountCallback={done} />
+                </Route>
+              </Switch>
+            </Router>
+          </Provider>
+        )
+      })
+    })
 
     it('should not redirect when authenticated and needsToFillCulturalSurvey', () => {
       // given

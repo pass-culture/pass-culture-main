@@ -11,13 +11,10 @@ const setDangerousArrayKeyIndex = index => `field_error_${index}`
 const FormError = ({ className, customMessage, id, meta, theme }) => {
   const showError =
     customMessage ||
-    (meta &&
-      meta.touched &&
-      (meta.error || (!meta.dirtySinceLastSubmit && meta.submitError)))
+    (meta && meta.touched && (meta.error || (!meta.dirtySinceLastSubmit && meta.submitError)))
   let errorMessage =
     (showError &&
-      (customMessage ||
-        (meta.error || (!meta.dirtySinceLastSubmit && meta.submitError)))) ||
+      (customMessage || (meta.error || (!meta.dirtySinceLastSubmit && meta.submitError)))) ||
     null
   // FIXME -> transformation en array plus propre
   // on considére qu'une erreur est soit un string, soit un array

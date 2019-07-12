@@ -63,10 +63,7 @@ describe('src | components | verso | Verso', () => {
 
     // then
     expect(tuto).toHaveLength(1)
-    expect(tuto.props()).toHaveProperty(
-      'imageURL',
-      'https://example.net/tuto/image.png'
-    )
+    expect(tuto.props()).toHaveProperty('imageURL', 'https://example.net/tuto/image.png')
     expect(infos).toHaveLength(0)
     expect(controls).toHaveLength(0)
   })

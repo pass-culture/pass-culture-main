@@ -60,22 +60,17 @@ class EmailField extends Component {
   }
 
   render() {
-    const {
-      name,
-      required,
-    } = this.props
+    const { name, required } = this.props
     const validateFunc =
       required && typeof required === 'function'
         ? required
         : (required && validateRequiredField) || undefined
 
-    return (
-      <Field
-        name={name}
-        render={this.renderField}
-        validate={validateFunc || undefined}
-      />
-    )
+    return (<Field
+      name={name}
+      render={this.renderField}
+      validate={validateFunc || undefined}
+            />)
   }
 }
 

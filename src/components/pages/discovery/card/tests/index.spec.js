@@ -59,9 +59,7 @@ describe('src | components | pages | discovery | RawCard', () => {
           const wrapper = shallow(<RawCard {...props} />)
 
           // then
-          expect(wrapper.props().style.backgroundColor).toStrictEqual(
-            'hsl(324, 100%, 7.5%)'
-          )
+          expect(wrapper.props().style.backgroundColor).toStrictEqual('hsl(324, 100%, 7.5%)')
         })
       })
     })

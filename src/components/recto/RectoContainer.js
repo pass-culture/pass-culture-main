@@ -32,8 +32,7 @@ export const mapStateToProps = (state, ownProps) => {
   const areDetailsVisible = get(state, 'card.areDetailsVisible') || false
 
   const recommendation =
-    get(ownProps, 'recommendation') ||
-    getRecommendationBySelectorUsingRouterParams(state, ownProps)
+    get(ownProps, 'recommendation') || getRecommendationBySelectorUsingRouterParams(state, ownProps)
 
   return {
     areDetailsVisible,

@@ -40,12 +40,11 @@ class PasswordField extends PureComponent {
           className="pc-final-form-password"
           htmlFor={id || name}
         >
-          {label &&
-            <InputLabel
-              label={label}
-              required={required}
-              sublabel={sublabel}
-            />}
+          {label && <InputLabel
+            label={label}
+            required={required}
+            sublabel={sublabel}
+                    />}
           {help && <InputHelp label={help} />}
           <span className="pc-final-form-inner">
             <input

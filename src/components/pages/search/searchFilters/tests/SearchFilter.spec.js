@@ -211,12 +211,8 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
       // when
       const transition = wrapper.find(Transition)
       const filterByDates = transition.find(FilterByDates)
-      const filterByDistanceContainer = transition.find(
-        FilterByDistanceContainer
-      )
-      const filterByOfferTypesContainer = transition.find(
-        FilterByOfferTypesContainer
-      )
+      const filterByDistanceContainer = transition.find(FilterByDistanceContainer)
+      const filterByOfferTypesContainer = transition.find(FilterByOfferTypesContainer)
       const resetButton = transition.find('#search-filter-reset-button')
       const filterButton = transition.find('#filter-button')
 

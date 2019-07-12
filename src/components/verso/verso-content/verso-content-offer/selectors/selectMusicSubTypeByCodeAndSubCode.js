@@ -13,9 +13,7 @@ const selectMusicSubTypeByCodeAndSubCode = createCachedSelector(
     if (!musicType) {
       return undefined
     }
-    return musicType.children.find(
-      musicSubType => musicSubType.code.toString() === subCode
-    )
+    return musicType.children.find(musicSubType => musicSubType.code.toString() === subCode)
   }
 )(mapArgsToCacheKey)
 

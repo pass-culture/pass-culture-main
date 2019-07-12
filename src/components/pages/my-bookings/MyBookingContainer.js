@@ -12,11 +12,7 @@ export const stringify = date => timeZone =>
       .format('dddd DD/MM/YYYY à H:mm')
   )
 
-export const updatePropsWithDateElements = (
-  props,
-  beginningDateTime,
-  departementCode
-) => {
+export const updatePropsWithDateElements = (props, beginningDateTime, departementCode) => {
   const timeZone = getTimezone(departementCode)
   const stringifyDate = stringify(beginningDateTime)(timeZone)
 
@@ -24,18 +20,9 @@ export const updatePropsWithDateElements = (
 }
 
 export const urlOf = myBooking => {
-  const urlElements = [
-    '',
-    'decouverte',
-    myBooking.stock.resolvedOffer.id,
-    'verso',
-  ]
+  const urlElements = ['', 'decouverte', myBooking.stock.resolvedOffer.id, 'verso']
   if (myBooking.recommendation.mediationId) {
-    urlElements.splice(
-      3,
-      0,
-      myBooking.recommendation.mediationId
-    )
+    urlElements.splice(3, 0, myBooking.recommendation.mediationId)
   }
 
   return urlElements.join('/')

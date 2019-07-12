@@ -81,9 +81,7 @@ describe('src | components | pages | search | SearchResults', () => {
       const wrapper = shallow(<SearchResults {...props} />)
 
       // when
-      const handleShouldCancelLoading = wrapper
-        .instance()
-        .handleShouldCancelLoading()
+      const handleShouldCancelLoading = wrapper.instance().handleShouldCancelLoading()
 
       // then
       expect(handleShouldCancelLoading).toBeUndefined()
@@ -114,10 +112,7 @@ describe('src | components | pages | search | SearchResults', () => {
 
       // then
       expect(wrapper.state(['isLoading'])).toBe(true)
-      expect(props.query.change).toHaveBeenCalledWith(
-        { page },
-        { historyMethod: 'replace' }
-      )
+      expect(props.query.change).toHaveBeenCalledWith({ page }, { historyMethod: 'replace' })
     })
   })
 
@@ -137,9 +132,7 @@ describe('src | components | pages | search | SearchResults', () => {
 
           // when
           const resultsTitle = wrapper.is('h2')
-          const SearchResultItemWrapper = wrapper.find(
-            SearchResultItemContainer
-          )
+          const SearchResultItemWrapper = wrapper.find(SearchResultItemContainer)
           const item = {
             recommendation: items[0],
           }
@@ -158,9 +151,7 @@ describe('src | components | pages | search | SearchResults', () => {
           // when
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
-          const SearchResultItemWrapper = wrapper.find(
-            SearchResultItemContainer
-          )
+          const SearchResultItemWrapper = wrapper.find(SearchResultItemContainer)
 
           // then
           expect(resultsTitle.children).toBe(
@@ -182,9 +173,7 @@ describe('src | components | pages | search | SearchResults', () => {
           // when
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
-          const SearchResultItemWrapper = wrapper.find(
-            SearchResultItemContainer
-          )
+          const SearchResultItemWrapper = wrapper.find(SearchResultItemContainer)
           const item = {
             recommendation: items[0],
           }
@@ -204,9 +193,7 @@ describe('src | components | pages | search | SearchResults', () => {
           // when
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
-          const SearchResultItemWrapper = wrapper.find(
-            SearchResultItemContainer
-          )
+          const SearchResultItemWrapper = wrapper.find(SearchResultItemContainer)
 
           // then
           expect(resultsTitle.children).toBe('"fakeKeywords" : 0 résultat')

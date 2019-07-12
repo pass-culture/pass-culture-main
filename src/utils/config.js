@@ -16,8 +16,7 @@ export const PROJECT_NAME = 'Pass Culture'
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
 export const MOBILE_OS = getMobileOperatingSystem()
-export const WEBAPP_CONTACT_EXTERNAL_PAGE =
-  'https://docs.passculture.app/experimentateurs'
+export const WEBAPP_CONTACT_EXTERNAL_PAGE = 'https://docs.passculture.app/experimentateurs'
 
 // NOTE: valeur également présente en dur dans:
 // - ./webapp/README.md
@@ -25,9 +24,7 @@ export const WEBAPP_CONTACT_EXTERNAL_PAGE =
 // - ./webapp/config-production.xml
 // - ./webapp/public/MentionsLegalesPass.md
 export const SUPPORT_EMAIL = 'support@passculture.app'
-export const SUPPORT_EMAIL_SUBJECT = encodeURI(
-  "Votre question depuis l'application pass Culture"
-)
+export const SUPPORT_EMAIL_SUBJECT = encodeURI("Votre question depuis l'application pass Culture")
 
 export const API_URL = process.env.API_URL || 'http://localhost'
 
@@ -38,9 +35,7 @@ if (typeof window !== 'undefined') {
     // [::1] is the IPv6 localhost address.
     window.location.hostname === '[::1]' ||
     // 127.0.0.1/8 is considered localhost for IPv4.
-    window.location.hostname.match(
-      /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
-    )
+    window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
 }
 
 export const IS_LOCALHOST = Boolean(calculatedLocalhost)

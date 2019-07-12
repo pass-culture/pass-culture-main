@@ -111,12 +111,10 @@ describe('src | components | pages | activation | password | RawActivationPasswo
   describe('when the isValidUrl is false', () => {
     it('should redirect to activation error page', () => {
       // when
-      const wrapper = shallow(
-        <RawActivationPassword
-          {...props}
-          isValidUrl={false}
-        />
-      )
+      const wrapper = shallow(<RawActivationPassword
+        {...props}
+        isValidUrl={false}
+                              />)
 
       // then
       const redirectComponent = wrapper.find(Redirect)
@@ -140,9 +138,7 @@ describe('src | components | pages | activation | password | RawActivationPasswo
       const formFooter = form.find(FormFooter).dive()
 
       // then
-      expect(formFooter.find('button[type="submit"]').prop('disabled')).toBe(
-        true
-      )
+      expect(formFooter.find('button[type="submit"]').prop('disabled')).toBe(true)
     })
 
     it('should send password details to api', () => {
@@ -246,7 +242,9 @@ describe('src | components | pages | activation | password | RawActivationPasswo
 
       it('should redirect user to activation/error when failed', async () => {
         // given
-        jest.spyOn(props, 'loginUserAfterPasswordSaveSuccess').mockImplementation((_, fail) => fail())
+        jest
+          .spyOn(props, 'loginUserAfterPasswordSaveSuccess')
+          .mockImplementation((_, fail) => fail())
 
         // when
         const wrapper = shallow(<RawActivationPassword {...props} />)
@@ -264,17 +262,14 @@ describe('src | components | pages | activation | password | RawActivationPasswo
 
       it('should redirect user to /decouverte page when succeed', async () => {
         // given
-        props.loginUserAfterPasswordSaveSuccess = (_, fail, success) =>
-          success(formResolver)
+        props.loginUserAfterPasswordSaveSuccess = (_, fail, success) => success(formResolver)
 
         // when
         const wrapper = shallow(<RawActivationPassword {...props} />)
         await wrapper.find(Form).prop('onSubmit')(activationData)
 
         // then
-        expect(props.history.replace).toHaveBeenCalledWith(
-          '/typeform?from=password'
-        )
+        expect(props.history.replace).toHaveBeenCalledWith('/typeform?from=password')
       })
     })
   })

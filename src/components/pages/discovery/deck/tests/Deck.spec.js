@@ -87,9 +87,7 @@ describe('src | components | pages | discovery | deck | Deck', () => {
         // when
         const wrapper = shallow(<Deck {...props} />)
         const wrapperInstance = wrapper.instance()
-        const spy = jest
-          .spyOn(wrapperInstance, 'handleUrlFlip')
-          .mockImplementation(() => {})
+        const spy = jest.spyOn(wrapperInstance, 'handleUrlFlip').mockImplementation(() => {})
         wrapper.setProps(props)
 
         // then
@@ -127,9 +125,7 @@ describe('src | components | pages | discovery | deck | Deck', () => {
         // when
         const wrapper = shallow(<Deck {...props} />)
         const wrapperInstance = wrapper.instance()
-        const spy = jest
-          .spyOn(wrapperInstance, 'handleUrlFlip')
-          .mockImplementation(() => {})
+        const spy = jest.spyOn(wrapperInstance, 'handleUrlFlip').mockImplementation(() => {})
         props.match = {
           params: {
             mediationId: 'verso',

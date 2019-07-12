@@ -14,9 +14,7 @@ const onlineAlreadyBookedButton = Selector('#verso-online-booked-button')
 const sharePopinTitle = Selector('#share-popin-fixed-container h3')
 const sharePopinYesButton = Selector('#popin-cancel-booking-yes')
 const sharePopinNoButton = Selector('#popin-cancel-booking-no')
-const bookingCheckIcon = Selector(
-  '#verso-cancel-booking-button .icon-ico-check'
-)
+const bookingCheckIcon = Selector('#verso-cancel-booking-button .icon-ico-check')
 
 let offerTitle
 
@@ -47,20 +45,18 @@ test("L'user ne peut plus réserver une offre digitale déjà réservée", async
 })
 
 // FIXME: the sandbox getter is not working
-fixture
-  .skip("04_02_02 Verso | annulation d'une réservation")
-  .beforeEach(async t => {
-    // given
-    const { mediation, offer, user } = await fetchSandbox(
-      'webapp_04_verso',
-      'get_existing_event_offer_with_active_mediation_already_booked_but_cancellable_and_user_hnmm_93'
-    )
-    offerTitle = offer.thingName
-    const offerURL = `${discoverURL}/${offer.id}/${mediation.id}`
+fixture.skip("04_02_02 Verso | annulation d'une réservation").beforeEach(async t => {
+  // given
+  const { mediation, offer, user } = await fetchSandbox(
+    'webapp_04_verso',
+    'get_existing_event_offer_with_active_mediation_already_booked_but_cancellable_and_user_hnmm_93'
+  )
+  offerTitle = offer.thingName
+  const offerURL = `${discoverURL}/${offer.id}/${mediation.id}`
 
-    await t.useRole(createUserRole(user)).navigateTo(offerURL)
-    await dragButton.with({ visibilityCheck: true })()
-  })
+  await t.useRole(createUserRole(user)).navigateTo(offerURL)
+  await dragButton.with({ visibilityCheck: true })()
+})
 
 test("L'utilisateur ne peut plus réserver un event déjà réservé", async t => {
   await t

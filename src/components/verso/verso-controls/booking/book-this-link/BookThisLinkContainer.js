@@ -20,10 +20,8 @@ export const getLinkDestination = (url, search) => {
 }
 
 export const getPriceValue = (state, params) => {
-  const isValidState =
-    state && typeof state === 'object' && !Array.isArray(state)
-  const isValidParams =
-    params && typeof params === 'object' && !Array.isArray(params)
+  const isValidState = state && typeof state === 'object' && !Array.isArray(state)
+  const isValidParams = params && typeof params === 'object' && !Array.isArray(params)
   if (!isValidState || !isValidParams) {
     throw new Error('Invalid function parameters')
   }

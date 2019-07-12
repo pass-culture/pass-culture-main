@@ -20,11 +20,7 @@ const getOnlineUrl = (recommendation, state) => {
 const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const { mediationId, offerId } = match.params
-  const recommendation = currentRecommendationSelector(
-    state,
-    offerId,
-    mediationId
-  )
+  const recommendation = currentRecommendationSelector(state, offerId, mediationId)
 
   const bookables = selectBookables(state, recommendation, match)
   const isFinished = isRecommendationOfferFinished(recommendation, offerId)

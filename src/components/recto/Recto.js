@@ -6,8 +6,7 @@ import Thumb from '../layout/Thumb'
 import { IS_DEV } from '../../utils/config'
 
 const Recto = ({ areDetailsVisible, extraClassName, recommendation }) => {
-  const { dateRead, mediation, id, index, isClicked, offer, thumbUrl } =
-    recommendation || {}
+  const { dateRead, mediation, id, index, isClicked, offer, thumbUrl } = recommendation || {}
 
   return (
     <div className={classnames('recto', extraClassName)}>
@@ -24,11 +23,7 @@ const Recto = ({ areDetailsVisible, extraClassName, recommendation }) => {
       {IS_DEV && (
         <div className="debug debug-recto">
           <div>
-            {id}
-            {' '}
-            {offer && offer.id}
-            {' '}
-            {index}
+            {id} {offer && offer.id} {index}
           </div>
           {dateRead && <div> {'déjà lue'} </div>}
           {isClicked && <div> {'déjà retournée'} </div>}

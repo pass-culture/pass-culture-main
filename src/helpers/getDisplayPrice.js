@@ -7,12 +7,10 @@ const sortNumber = (a, b) => {
 }
 
 // DEMO -> https://jsperf.com/es6-array-unique/1
-const uniqueFilter = entries =>
-  entries.filter((elem, pos, arr) => arr.indexOf(elem) === pos)
+const uniqueFilter = entries => entries.filter((elem, pos, arr) => arr.indexOf(elem) === pos)
 
 const isValidType = value =>
-  (typeof value === 'string' || typeof value === 'number') &&
-  (value || value >= 0)
+  (typeof value === 'string' || typeof value === 'number') && (value || value >= 0)
 
 const valueToNumber = v => {
   const isString = typeof v === 'string'
@@ -34,8 +32,7 @@ const parsePriceArray = value => {
 }
 
 export const defaultOutputPriceFormatter = (pricesArray, devise) => {
-  if (!pricesArray || !Array.isArray(pricesArray) || !pricesArray.length)
-    return '--'
+  if (!pricesArray || !Array.isArray(pricesArray) || !pricesArray.length) return '--'
   const space = '\u0020'
   const arrow = '\u2192'
   const spacedArrowSplitter = `${space}${arrow}${space}`
@@ -45,19 +42,11 @@ export const defaultOutputPriceFormatter = (pricesArray, devise) => {
 
 export const priceIsDefined = value => {
   const isDefined =
-    value !== null &&
-    value !== 'null' &&
-    !(value instanceof Error) &&
-    typeof value !== 'undefined'
+    value !== null && value !== 'null' && !(value instanceof Error) && typeof value !== 'undefined'
   return isDefined
 }
 
-export const getDisplayPrice = (
-  value,
-  freeValue = null,
-  formatterFunc = null,
-  devise = '€'
-) => {
+export const getDisplayPrice = (value, freeValue = null, formatterFunc = null, devise = '€') => {
   const isDefined = priceIsDefined(value)
   if (!isDefined) return ''
 
@@ -69,9 +58,7 @@ export const getDisplayPrice = (
 
   const pricesWithComma = parsedPrices.map(v => valueToPrice(v))
 
-  const useDefaultFormatter = Boolean(
-    !formatterFunc || typeof formatterFunc !== 'function'
-  )
+  const useDefaultFormatter = Boolean(!formatterFunc || typeof formatterFunc !== 'function')
 
   if (!useDefaultFormatter) return formatterFunc(pricesWithComma, devise)
   return defaultOutputPriceFormatter(pricesWithComma, devise)

@@ -9,14 +9,10 @@ const getSearchResultsHook = RequestMock()
   .respond([], 200, { 'access-control-allow-origin': '*' })
 
 const headerTitle = Selector('header')
-const toggleFilterButton = Selector('#search-filter-menu-toggle-button').find(
-  'img'
-)
+const toggleFilterButton = Selector('#search-filter-menu-toggle-button').find('img')
 const menuButton = Selector('#open-menu-button')
 const mainMenu = Selector('#main-menu')
-const button = Selector('#nav-by-offer-type .pc-list button').withText(
-  'Applaudir'
-)
+const button = Selector('#nav-by-offer-type .pc-list button').withText('Applaudir')
 const resultsHeader = Selector('#nav-results-header')
 const category = Selector('#category-description')
 const categoryTitle = category.find('h2')
@@ -63,9 +59,7 @@ test('Je vois le champ de recherche par mot-clé', async t => {
 })
 
 test("Le filtre de recherche existe et l'icône n'est pas activée", async t => {
-  await t
-    .expect(toggleFilterButton.getAttribute('src'))
-    .contains('ico-filter.svg')
+  await t.expect(toggleFilterButton.getAttribute('src')).contains('ico-filter.svg')
 })
 
 test('Je vois le titre de la recherche "EXPLORER LES CATÉGORIES"', async t => {
@@ -99,9 +93,7 @@ test('Lorsque je clique sur la croix, je reviens à la page des offres', async t
   await t.expect(getPageUrl()).contains('/decouverte')
 })
 
-fixture(
-  "O5_01_04 Recherche | Je cherche des offres par catégories et je n'ai de résultats"
-)
+fixture("O5_01_04 Recherche | Je cherche des offres par catégories et je n'ai de résultats")
   .requestHooks(getSearchResultsHook)
   .beforeEach(async t => {
     await t.useRole(userRole).navigateTo(`${ROOT_PATH}recherche/`)

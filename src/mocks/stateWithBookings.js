@@ -865,10 +865,7 @@ const stateWithBookings = {
           bookingEmail: null,
           dateCreated: '2018-10-29T09:44:38.216817Z',
           dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
-          dateRange: [
-            '2018-10-29T21:42:56.790000Z',
-            '2018-12-28T22:42:56.790000Z',
-          ],
+          dateRange: ['2018-10-29T21:42:56.790000Z', '2018-12-28T22:42:56.790000Z'],
           productId: 'AE',
           product: {
             accessibility: '\u0000',
@@ -1138,10 +1135,7 @@ const stateWithBookings = {
           bookingEmail: null,
           dateCreated: '2018-10-29T09:44:38.216817Z',
           dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
-          dateRange: [
-            '2018-10-29T21:42:56.790000Z',
-            '2018-12-28T22:42:56.790000Z',
-          ],
+          dateRange: ['2018-10-29T21:42:56.790000Z', '2018-12-28T22:42:56.790000Z'],
           productId: 'AE',
           product: {
             accessibility: '\u0000',
@@ -1411,10 +1405,7 @@ const stateWithBookings = {
           bookingEmail: null,
           dateCreated: '2018-10-29T09:44:38.291323Z',
           dateModifiedAtLastProvider: '2018-10-29T09:44:38.291297Z',
-          dateRange: [
-            '2018-11-06T21:42:56.790000Z',
-            '2018-12-01T22:42:56.790000Z',
-          ],
+          dateRange: ['2018-11-06T21:42:56.790000Z', '2018-12-01T22:42:56.790000Z'],
           productId: 'A9',
           product: {
             accessibility: '\u0000',
@@ -1524,10 +1515,7 @@ const stateWithBookings = {
           bookingEmail: null,
           dateCreated: '2018-10-29T09:44:38.216817Z',
           dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
-          dateRange: [
-            '2018-10-29T21:42:56.790000Z',
-            '2018-12-28T22:42:56.790000Z',
-          ],
+          dateRange: ['2018-10-29T21:42:56.790000Z', '2018-12-28T22:42:56.790000Z'],
           productId: 'AE',
           product: {
             accessibility: '\u0000',

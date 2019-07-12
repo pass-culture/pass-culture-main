@@ -134,9 +134,7 @@ test('Menu | Liens | Mentions légales', async t => {
 })
 
 test('Menu | Liens | Déconnexion', async t => {
-  const menuLogoutButton = Selector('#main-menu-logout-button').withText(
-    'Déconnexion'
-  )
+  const menuLogoutButton = Selector('#main-menu-logout-button').withText('Déconnexion')
 
   await t
     .expect(menuLogoutButton.exists)

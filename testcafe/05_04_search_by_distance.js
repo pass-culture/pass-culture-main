@@ -8,9 +8,7 @@ const getPageUrl = ClientFunction(() => window.location.href.toString())
 const distanceInput = Selector('#filter-by-distance select')
 const distanceOption = distanceInput.find('option')
 const filterButton = Selector('#filter-button')
-const toogleFilterButton = Selector('#search-filter-menu-toggle-button').find(
-  'img'
-)
+const toogleFilterButton = Selector('#search-filter-menu-toggle-button').find('img')
 
 let userRole
 
@@ -41,10 +39,7 @@ test('Je vois le titre de la recherche par distance', async t => {
 })
 
 test('Par défaut, le sélecteur est Toutes distances', async t => {
-  await t.expect(
-    distanceOption.withText(distanceOptions[0].label).hasAttribute('selected')
-      .ok
-  )
+  await t.expect(distanceOption.withText(distanceOptions[0].label).hasAttribute('selected').ok)
 })
 
 test('Je ne sélectionne aucun filtre et je clique sur filtrer', async t => {

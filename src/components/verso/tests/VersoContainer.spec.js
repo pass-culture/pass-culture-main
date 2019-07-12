@@ -181,8 +181,7 @@ describe('src | components | verso | VersoContainer', () => {
 
   describe('mapStateToProps', () => {
     describe('ownProps should contains a recommendation object', () => {
-      const throwMessage =
-        'Props recommandation is missing in VersoContainer component'
+      const throwMessage = 'Props recommandation is missing in VersoContainer component'
 
       it('should throw error if a recommendation object is missing', () => {
         // given
@@ -224,10 +223,7 @@ describe('src | components | verso | VersoContainer', () => {
       const props = mapStateToProps(state, ownProps)
 
       // then
-      expect(props).toHaveProperty(
-        'imageURL',
-        'https://example.net/image-bank/tuto.png'
-      )
+      expect(props).toHaveProperty('imageURL', 'https://example.net/image-bank/tuto.png')
     })
 
     it('should not export a mediationId', () => {

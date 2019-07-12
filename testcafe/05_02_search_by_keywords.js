@@ -12,18 +12,16 @@ const baseUrl = `${ROOT_PATH}recherche`
 
 let userRole
 
-fixture("O5_02_01 Recherche | J'effectue une recherche par mot-clé").beforeEach(
-  async t => {
-    if (!userRole) {
-      const { user } = await fetchSandbox(
-        'webapp_05_search',
-        'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
-      )
-      userRole = createUserRole(user)
-    }
-    await t.useRole(userRole).navigateTo(baseUrl)
+fixture("O5_02_01 Recherche | J'effectue une recherche par mot-clé").beforeEach(async t => {
+  if (!userRole) {
+    const { user } = await fetchSandbox(
+      'webapp_05_search',
+      'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
+    )
+    userRole = createUserRole(user)
   }
-)
+  await t.useRole(userRole).navigateTo(baseUrl)
+})
 
 test("Je fais une recherche par mots-clés et je n'ai pas de résultats", async t => {
   // given

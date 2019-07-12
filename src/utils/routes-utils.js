@@ -22,8 +22,7 @@ export const addMenuViewToRoutesWithPath = routes =>
     return clone
   })
 
-export const getReactRoutes = routes =>
-  filterRoutes(addMenuViewToRoutesWithPath(routes))
+export const getReactRoutes = routes => filterRoutes(addMenuViewToRoutesWithPath(routes))
 
 export const getMenuRoutes = routes =>
   routes.reduce((accumulator, currentRoute) => {

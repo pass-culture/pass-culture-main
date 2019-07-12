@@ -1,5 +1,4 @@
-const each = (args, ...functions) =>
-  functions.filter(v => v).map(fn => fn(...args))
+const each = (args, ...functions) => functions.filter(v => v).map(fn => fn(...args))
 
 const compose = (...fns) =>
   fns

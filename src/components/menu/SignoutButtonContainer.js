@@ -21,8 +21,7 @@ export const mapDispatchToProps = dispatch => ({
 
     if (!readRecommendations || readRecommendations.length === 0) {
       handleRequestSignout()
-    }
-    else {
+    } else {
       dispatch(
         requestData({
           apiPath: '/recommendations/read',
@@ -36,4 +35,7 @@ export const mapDispatchToProps = dispatch => ({
   },
 })
 
-export default connect(null, mapDispatchToProps)(SignoutButton)
+export default connect(
+  null,
+  mapDispatchToProps
+)(SignoutButton)

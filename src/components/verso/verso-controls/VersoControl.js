@@ -21,12 +21,10 @@ const VersoControl = ({ booking, isFinished }) => (
         <ShareButton />
       </li>
       <li className="is-relative">
-        {booking && (
-          <CancelThisLinkContainer
-            booking={booking}
-            isFinished={isFinished}
-          />
-        )}
+        {booking && <CancelThisLinkContainer
+          booking={booking}
+          isFinished={isFinished}
+                    />}
         {!booking && <BookThisLinkContainer isFinished={isFinished} />}
       </li>
     </ul>

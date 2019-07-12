@@ -71,8 +71,7 @@ class Loader extends React.PureComponent {
     // si il est en court de chargement et qu'on est à la fin du Deck
     // si il y a aucun produits à afficher pour l'utilisateur
     const showFooter = isEmpty || hasError
-    const shouldHide =
-      !(isLoading && (atDecksEnd || isFirstLoad)) && !isEmpty && !hasError
+    const shouldHide = !(isLoading && (atDecksEnd || isFirstLoad)) && !isEmpty && !hasError
     return (
       <Transition
         in={!shouldHide}
@@ -86,21 +85,17 @@ class Loader extends React.PureComponent {
             style={{ ...defaultStyle, ...transitionStyles[status] }}
           >
             <div className="flex-1 flex-rows flex-center">
-              {isLoading && (
-                <Icon
-                  alt=""
-                  draggable={false}
-                  svg="ico-loading-card"
-                />
-              )}
+              {isLoading && <Icon
+                alt=""
+                draggable={false}
+                svg="ico-loading-card"
+                            />}
               <h2 className="fs20">{this.renderMessage()}</h2>
             </div>
-            {showFooter && (
-              <NavigationFooter
-                className="dotted-top-white"
-                theme="transparent"
-              />
-            )}
+            {showFooter && <NavigationFooter
+              className="dotted-top-white"
+              theme="transparent"
+                           />}
           </div>
         )}
       </Transition>

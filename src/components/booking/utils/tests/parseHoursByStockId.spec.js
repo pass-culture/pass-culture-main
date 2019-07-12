@@ -63,10 +63,7 @@ describe('src | components | booking | utils | parseHoursByStockId', () => {
     const devisedPrice = getDisplayPrice(price)
     const expected = [{ id: 'AAAAA', label: `${time} - ${devisedPrice}` }]
     const value = {
-      bookables: [
-        { beginningDatetime: now },
-        { beginningDatetime: now, id: 'AAAAA', price },
-      ],
+      bookables: [{ beginningDatetime: now }, { beginningDatetime: now, id: 'AAAAA', price }],
       date: { date: now },
     }
     const result = parseHoursByStockId(value)
@@ -81,10 +78,7 @@ describe('src | components | booking | utils | parseHoursByStockId', () => {
     const devisedPrice = getDisplayPrice(price)
     const expected = [{ id: 'AAAAA', label: `${time} - ${devisedPrice}` }]
     const value = {
-      bookables: [
-        { beginningDatetime: now },
-        { beginningDatetime: now, id: 'AAAAA', price },
-      ],
+      bookables: [{ beginningDatetime: now }, { beginningDatetime: now, id: 'AAAAA', price }],
       date: { date: nowtz },
     }
     const result = parseHoursByStockId(value)

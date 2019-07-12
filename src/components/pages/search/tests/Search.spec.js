@@ -20,9 +20,7 @@ const getPageContentForm = wrapper =>
   getPageContentDiv(wrapper).props.children.find(child => child.type === 'form')
 
 const getPageContentFilter = wrapper =>
-  getPageContentForm(wrapper).props.children.find(
-    child => child.key === 'SearchFilterContainer'
-  )
+  getPageContentForm(wrapper).props.children.find(child => child.key === 'SearchFilterContainer')
 
 const getPageContentSwitch = wrapper =>
   getPageContentDiv(wrapper).props.children.find(child => child.type === Switch)
@@ -36,18 +34,13 @@ const getSearchResults = wrapper =>
   getSwitchedPageContent('/recherche/resultats/:menu(menu)?')(wrapper)
 
 const getSearchResultsFromCategory = wrapper =>
-  getSwitchedPageContent(
-    '/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?'
-  )(wrapper).props.children[1]
+  getSwitchedPageContent('/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?')(wrapper).props
+    .children[1]
 
 const getKeywordsInput = wrapper =>
   getPageContentForm(wrapper)
-    .props.children[0].props.children.find(
-      child => child.props.id === 'search-page-keywords-field'
-    )
-    .props.children[0].props.children.find(
-      child => child.props.id === 'keywords'
-    )
+    .props.children[0].props.children.find(child => child.props.id === 'search-page-keywords-field')
+    .props.children[0].props.children.find(child => child.props.id === 'keywords')
 
 const getRefreshKeywordsButton = wrapper =>
   getPageContentForm(wrapper).props.children[0].props.children.find(
@@ -114,9 +107,7 @@ describe('src | components | pages | Search', () => {
 
       it('submitButton form is disabled', () => {
         // when
-        const button = getPageContentForm(
-          wrapper
-        ).props.children[0].props.children.find(
+        const button = getPageContentForm(wrapper).props.children[0].props.children.find(
           child => child.props.id === 'search-page-keywords-field'
         ).props.children[1].props.children
         // then
@@ -142,14 +133,10 @@ describe('src | components | pages | Search', () => {
 
       it('navByOfferType with path="/recherche"', () => {
         // when
-        const NavByOfferTypeComponent = getSwitchedPageContent(
-          '/recherche/:menu(menu)?'
-        )(wrapper)
+        const NavByOfferTypeComponent = getSwitchedPageContent('/recherche/:menu(menu)?')(wrapper)
 
         // then
-        expect(NavByOfferTypeComponent.props.title).toBe(
-          'EXPLORER LES CATÉGORIES'
-        )
+        expect(NavByOfferTypeComponent.props.title).toBe('EXPLORER LES CATÉGORIES')
       })
     })
 
@@ -163,9 +150,7 @@ describe('src | components | pages | Search', () => {
         const wrapper = shallow(<Search {...initialProps} />)
 
         it('should render the page title', () => {
-          expect(wrapper.find(PageHeader).props().title).toBe(
-            'Recherche : résultats'
-          )
+          expect(wrapper.find(PageHeader).props().title).toBe('Recherche : résultats')
         })
 
         it('searchResults with path="/recherche/resultats"', () => {
@@ -261,9 +246,7 @@ describe('src | components | pages | Search', () => {
           }
 
           // then
-          expect(dispatchMock.mock.calls[1][0]).toStrictEqual(
-            expectedRequestedGetTypes
-          )
+          expect(dispatchMock.mock.calls[1][0]).toStrictEqual(expectedRequestedGetTypes)
         })
       })
     })
@@ -283,8 +266,7 @@ describe('src | components | pages | Search', () => {
         // when
         const wrapper = shallow(<Search {...initialProps} />)
         wrapper.instance().loadMoreHandler()
-        const expected =
-          '/recherche?page=2&categories=Jouer&orderBy=offer.id+desc'
+        const expected = '/recherche?page=2&categories=Jouer&orderBy=offer.id+desc'
 
         // then
         expect(historyMock.push).toHaveBeenCalledWith(expected)
@@ -308,17 +290,14 @@ describe('src | components | pages | Search', () => {
           it('should back to /recherche/resultats/Applaudir', () => {
             // given
             baseInitialProps.match.params.subOption = 'item'
-            baseInitialProps.location.pathname =
-              '/recherche/resultats/Applaudir'
+            baseInitialProps.location.pathname = '/recherche/resultats/Applaudir'
             const wrapper = shallow(<Search {...baseInitialProps} />)
 
             // when
             const url = wrapper.instance().goBack()
 
             // then
-            expect(url).toBe(
-              '/recherche/resultats/Applaudir?orderBy=offer.id+desc'
-            )
+            expect(url).toBe('/recherche/resultats/Applaudir?orderBy=offer.id+desc')
           })
         })
 

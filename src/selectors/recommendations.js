@@ -23,44 +23,41 @@ export const selectRecommendations = createSelector(
     )
 
     // NOW WE CAN GIVE OTHER PROPERTIES TO THE GOOD SHAPED RECO
-    filteredRecommendations = filteredRecommendations.map(
-      (recommendation, index) => {
-        const { mediation, offer } = recommendation
-        const { product, venue } = offer || {}
+    filteredRecommendations = filteredRecommendations.map((recommendation, index) => {
+      const { mediation, offer } = recommendation
+      const { product, venue } = offer || {}
 
-        // FIXME Report the property computation on API side
-        const firstThumbDominantColor =
-          get(mediation, 'firstThumbDominantColor') ||
-          get(product, 'firstThumbDominantColor')
+      // FIXME Report the property computation on API side
+      const firstThumbDominantColor =
+        get(mediation, 'firstThumbDominantColor') || get(product, 'firstThumbDominantColor')
 
-        let distance
-        if (!latitude || !longitude || !offer || !venue) {
-          distance = '-'
-        } else {
-          const distanceInMeters = computeDistanceInMeters(
-            latitude,
-            longitude,
-            venue.latitude,
-            venue.longitude
-          )
-          distance = humanizeDistance(distanceInMeters)
-        }
-
-        // timezone
-        const tz = getTimezone(get(venue, 'departementCode'))
-
-        // return
-        return Object.assign(
-          {
-            distance,
-            firstThumbDominantColor,
-            index,
-            tz,
-          },
-          recommendation
+      let distance
+      if (!latitude || !longitude || !offer || !venue) {
+        distance = '-'
+      } else {
+        const distanceInMeters = computeDistanceInMeters(
+          latitude,
+          longitude,
+          venue.latitude,
+          venue.longitude
         )
+        distance = humanizeDistance(distanceInMeters)
       }
-    )
+
+      // timezone
+      const tz = getTimezone(get(venue, 'departementCode'))
+
+      // return
+      return Object.assign(
+        {
+          distance,
+          firstThumbDominantColor,
+          index,
+          tz,
+        },
+        recommendation
+      )
+    })
 
     return filteredRecommendations
   }

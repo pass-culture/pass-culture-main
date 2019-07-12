@@ -31,7 +31,11 @@ const MonPassCulture = ({ currentUser }) => {
             className="is-block"
             id="profile-physical-wallet-value"
           >
-            {'Jusqu’à'} <b>{physicalAvailable} {'€'}</b> {'pour les biens culturels'}
+            {'Jusqu’à'}{' '}
+            <b>
+              {physicalAvailable} {'€'}
+            </b>{' '}
+            {'pour les biens culturels'}
           </span>
         </div>
         <div className="fs14 mt12">
@@ -39,7 +43,11 @@ const MonPassCulture = ({ currentUser }) => {
             className="is-block"
             id="profile-digital-wallet-value"
           >
-            {'Jusqu’à'} <b>{digitalAvailable} {'€'}</b> {'pour les offres numériques'}
+            {'Jusqu’à'}{' '}
+            <b>
+              {digitalAvailable} {'€'}
+            </b>{' '}
+            {'pour les offres numériques'}
           </span>
         </div>
       </div>

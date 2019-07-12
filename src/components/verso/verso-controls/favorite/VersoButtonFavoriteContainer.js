@@ -18,11 +18,7 @@ const getRecommendationId = recommendation => {
 
 export const mapStateToProps = (state, ownProps) => {
   const { mediationId, offerId } = ownProps.match.params
-  const recommendation = currentRecommendationSelector(
-    state,
-    offerId,
-    mediationId
-  )
+  const recommendation = currentRecommendationSelector(state, offerId, mediationId)
   const isFavorite = checkIsFavorite(recommendation)
   const recommendationId = getRecommendationId(recommendation)
   return {

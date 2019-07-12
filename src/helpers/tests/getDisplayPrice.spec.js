@@ -1,8 +1,4 @@
-import {
-  getDisplayPrice,
-  defaultOutputPriceFormatter,
-  priceIsDefined,
-} from '../getDisplayPrice'
+import { getDisplayPrice, defaultOutputPriceFormatter, priceIsDefined } from '../getDisplayPrice'
 
 describe('priceIsDefined', () => {
   it('returns false', () => {

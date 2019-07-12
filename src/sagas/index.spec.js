@@ -14,10 +14,7 @@ describe('src | components | sagas ', () => {
       const allDescriptor = defaultSaga.next().value
 
       // then
-      const expected = all([
-        watchModalActions(),
-        watchDataActions({ rootUrl: API_URL }),
-      ])
+      const expected = all([watchModalActions(), watchDataActions({ rootUrl: API_URL })])
 
       expect(allDescriptor.ALL[0]).toEqual(watchModalActions())
       // Compared values have no visual difference. !!!

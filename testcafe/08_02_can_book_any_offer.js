@@ -22,23 +22,21 @@ const sendBookingButton = Selector('#booking-validation-button')
 
 let userRole
 
-fixture("08_02_01 L'user peut réserver n'importe quelle offre").beforeEach(
-  async t => {
-    if (!userRole) {
-      userRole = await createUserRoleFromUserSandbox(
-        'webapp_08_booking',
-        'get_existing_webapp_user_can_book_digital_offer'
-      )
-    }
-    const { mediationId, offer } = await fetchSandbox(
+fixture("08_02_01 L'user peut réserver n'importe quelle offre").beforeEach(async t => {
+  if (!userRole) {
+    userRole = await createUserRoleFromUserSandbox(
       'webapp_08_booking',
-      'get_non_free_thing_offer_with_active_mediation'
+      'get_existing_webapp_user_can_book_digital_offer'
     )
-    offerPage = `${discoverURL}/${offer.id}/${mediationId}`
-    offerBookingPage = `${offerPage}/booking`
-    await t.useRole(userRole).navigateTo(offerPage)
   }
-)
+  const { mediationId, offer } = await fetchSandbox(
+    'webapp_08_booking',
+    'get_non_free_thing_offer_with_active_mediation'
+  )
+  offerPage = `${discoverURL}/${offer.id}/${mediationId}`
+  offerBookingPage = `${offerPage}/booking`
+  await t.useRole(userRole).navigateTo(offerPage)
+})
 
 test("J'ai de l'argent sur mon pass", async t => {
   await t.click(openMenu).wait(500)

@@ -7,11 +7,7 @@ import Card from '../card'
 import CloseLink from '../../../layout/Header/CloseLink'
 import DeckNavigation from '../DeckNavigation'
 import { shouldShowVerso } from '../../../../helpers'
-import {
-  closeCardDetails,
-  flipUnflippable,
-  showCardDetails,
-} from '../../../../reducers/card'
+import { closeCardDetails, flipUnflippable, showCardDetails } from '../../../../reducers/card'
 
 class Deck extends Component {
   constructor(props) {
@@ -74,10 +70,7 @@ class Deck extends Component {
     const { history, areDetailsVisible, nextRecommendation } = this.props
     if (!nextRecommendation || areDetailsVisible) return
     const { offerId, mediationId } = nextRecommendation
-    history.push(
-      `/decouverte/${offerId || 'tuto'}${(mediationId && `/${mediationId}`) ||
-        ''}`
-    )
+    history.push(`/decouverte/${offerId || 'tuto'}${(mediationId && `/${mediationId}`) || ''}`)
     this.handleRefreshNext()
   }
 
@@ -85,10 +78,7 @@ class Deck extends Component {
     const { history, areDetailsVisible, previousRecommendation } = this.props
     if (!previousRecommendation || areDetailsVisible) return
     const { offerId, mediationId } = previousRecommendation
-    history.push(
-      `/decouverte/${offerId || 'tuto'}${(mediationId && `/${mediationId}`) ||
-        ''}`
-    )
+    history.push(`/decouverte/${offerId || 'tuto'}${(mediationId && `/${mediationId}`) || ''}`)
   }
 
   handleRefreshNext = () => {
@@ -197,13 +187,9 @@ class Deck extends Component {
         {this.renderDraggableCards()}
         {showNavigation && currentRecommendation && (
           <DeckNavigation
-            flipHandler={
-              (!isFlipDisabled && this.handleShowCardDetails) || null
-            }
+            flipHandler={(!isFlipDisabled && this.handleShowCardDetails) || null}
             handleGoNext={(nextRecommendation && this.handleGoNext) || null}
-            handleGoPrevious={
-              (previousRecommendation && this.handleGoPrevious) || null
-            }
+            handleGoPrevious={(previousRecommendation && this.handleGoPrevious) || null}
             height={height}
             recommendation={currentRecommendation}
           />

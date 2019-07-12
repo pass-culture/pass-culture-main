@@ -33,24 +33,19 @@ const myBookingsMenuButton = Selector('#main-menu-navigation a').nth(2)
 const profileWalletAllValue = Selector('#profile-wallet-balance-value')
 
 let userRole
-fixture("08_04_01 Réservation d'une offre type digitale").beforeEach(
-  async t => {
-    if (!userRole) {
-      userRole = await createUserRoleFromUserSandbox(
-        'webapp_08_booking',
-        'get_existing_webapp_user_can_book_digital_offer'
-      )
-    }
-    const { offer } = await fetchSandbox(
+fixture("08_04_01 Réservation d'une offre type digitale").beforeEach(async t => {
+  if (!userRole) {
+    userRole = await createUserRoleFromUserSandbox(
       'webapp_08_booking',
-      'get_non_free_digital_offer'
+      'get_existing_webapp_user_can_book_digital_offer'
     )
-
-    offerPage = `${discoverURL}/${offer.id}`
-    offerBookingPage = `${offerPage}/booking`
-    await t.useRole(userRole).navigateTo(offerPage)
   }
-)
+  const { offer } = await fetchSandbox('webapp_08_booking', 'get_non_free_digital_offer')
+
+  offerPage = `${discoverURL}/${offer.id}`
+  offerBookingPage = `${offerPage}/booking`
+  await t.useRole(userRole).navigateTo(offerPage)
+})
 
 test("Il s'agit d'une offre en ligne qui n'est pas terminée", async t => {
   await dragButton.with({ visibilityCheck: true })()
@@ -117,9 +112,7 @@ test("Parcours complet de réservation d'une offre digitale", async t => {
     .lt(previousWalletValue)
   previousWalletValue = await getMenuWalletValue()
 
-  const bookedOffer = Selector(
-    `.mb-my-booking[data-token="${currentBookedToken}"]`
-  )
+  const bookedOffer = Selector(`.mb-my-booking[data-token="${currentBookedToken}"]`)
   await t
     .click(myBookingsMenuButton)
     .expect(bookedOffer.exists)
@@ -130,9 +123,7 @@ test("Parcours complet de réservation d'une offre digitale", async t => {
 })
 
 test('Je vérifie mes réservations après reconnexion', async t => {
-  const bookedOffer = Selector(
-    `.mb-my-booking[data-token="${currentBookedToken}"]`
-  )
+  const bookedOffer = Selector(`.mb-my-booking[data-token="${currentBookedToken}"]`)
   await t
     .navigateTo(myBookingsURL)
     .expect(bookedOffer.exists)

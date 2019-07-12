@@ -34,9 +34,7 @@ describe('src | components | pages | discovery | card | connect', () => {
       const recommendation = { id: 'AE' }
 
       // when
-      mapDispatchToProps(store.dispatch).handleReadRecommendation(
-        recommendation
-      )
+      mapDispatchToProps(store.dispatch).handleReadRecommendation(recommendation)
 
       // then
       const {
@@ -44,9 +42,9 @@ describe('src | components | pages | discovery | card | connect', () => {
       } = store.getState()
       expect(readRecommendations.length).toStrictEqual(1)
       expect(readRecommendations[0].id).toStrictEqual('AE')
-      expect(
-        moment(readRecommendations[0].dateRead).isSame(moment.utc(), 'minutes')
-      ).toStrictEqual(true)
+      expect(moment(readRecommendations[0].dateRead).isSame(moment.utc(), 'minutes')).toStrictEqual(
+        true
+      )
     })
   })
 })

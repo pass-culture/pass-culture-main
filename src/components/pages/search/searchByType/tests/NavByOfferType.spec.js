@@ -63,9 +63,7 @@ describe('src | components | search | searchByType | NavByOfferType', () => {
         categories.first().simulate('click')
 
         // then
-        expect(props.updateSearchQuery).toHaveBeenCalledWith(
-          props.categories[0]
-        )
+        expect(props.updateSearchQuery).toHaveBeenCalledWith(props.categories[0])
       })
     })
   })

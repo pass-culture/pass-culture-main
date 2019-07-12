@@ -28,9 +28,7 @@ export const config = [
     // dans la partie mes identifiants et qu'il n'y a pas de valeur par défaut
     mainPlaceholder: 'Renseigner mon nom et prénom',
     resolver: (user, [firstnameKey, lastnameKey]) =>
-      [user[firstnameKey] || false, user[lastnameKey] || false]
-        .filter(v => v)
-        .join(' '),
+      [user[firstnameKey] || false, user[lastnameKey] || false].filter(v => v).join(' '),
     routeName: 'nom-prenom',
     title: 'Votre nom et prénom',
   },

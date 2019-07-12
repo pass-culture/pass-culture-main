@@ -26,8 +26,7 @@ export const getOfferVenueNameOrPublicName = recommendation => {
   return venuePublicName || venueName
 }
 
-export const getOfferName = recommendation =>
-  get(recommendation, 'offer.name', null)
+export const getOfferName = recommendation => get(recommendation, 'offer.name', null)
 
 export const getBackgroundColor = recommendation => {
   const firstThumbDominantColor = get(recommendation, 'firstThumbDominantColor')
@@ -41,9 +40,7 @@ export const mapStateToProps = (state, { recommendation }) => {
   }
   const backgroundColor = getBackgroundColor(recommendation)
   const isTuto = checkIsTuto(recommendation)
-  const offerVenueNameOrPublicName = getOfferVenueNameOrPublicName(
-    recommendation
-  )
+  const offerVenueNameOrPublicName = getOfferVenueNameOrPublicName(recommendation)
   const offerName = getOfferName(recommendation)
 
   const contentInlineStyle = getContentInlineStyle(isTuto, backgroundColor)

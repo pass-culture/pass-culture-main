@@ -12,11 +12,7 @@ import Deck from './Deck'
 
 export const mapStateToProps = (state, ownProps) => {
   const { mediationId, offerId } = ownProps.match.params
-  const currentRecommendation = currentRecommendationSelector(
-    state,
-    offerId,
-    mediationId
-  )
+  const currentRecommendation = currentRecommendationSelector(state, offerId, mediationId)
   const { mediation } = currentRecommendation || {}
   const { thumbCount, tutoIndex } = mediation || {}
 
@@ -47,11 +43,7 @@ export const mapStateToProps = (state, ownProps) => {
     nextLimit,
     nextRecommendation: nextRecommendationSelector(state, offerId, mediationId),
     previousLimit,
-    previousRecommendation: previousRecommendationSelector(
-      state,
-      offerId,
-      mediationId
-    ),
+    previousRecommendation: previousRecommendationSelector(state, offerId, mediationId),
     recommendations,
     unFlippable: state.card.unFlippable,
   }

@@ -26,9 +26,7 @@ class FilterByOfferTypes extends PureComponent {
         className="pt18"
         id="filter-by-offer-types"
       >
-        <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
-          {'Quoi'}
-        </h2>
+        <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">{'Quoi'}</h2>
         <div className="pc-scroll-horizontal is-relative">
           <div className="pc-list flex-columns pt7">
             {typeSublabels.map((category, index) => {

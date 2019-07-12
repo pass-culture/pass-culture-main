@@ -119,11 +119,7 @@ describe('src | components | pages | search | FilterByDates', () => {
 
         // then
         expect(wrapper.state(['pickedDate'])).toBeNull()
-        expect(props.filterActions.remove).toHaveBeenCalledWith(
-          'jours',
-          day,
-          callback
-        )
+        expect(props.filterActions.remove).toHaveBeenCalledWith('jours', day, callback)
       })
 
       it('shoud add another day not added yet to query with callback undefined ', () => {
@@ -138,11 +134,7 @@ describe('src | components | pages | search | FilterByDates', () => {
 
         // then
         expect(wrapper.state(['pickedDate'])).toBeNull()
-        expect(props.filterActions.add).toHaveBeenCalledWith(
-          'jours',
-          day,
-          callback
-        )
+        expect(props.filterActions.add).toHaveBeenCalledWith('jours', day, callback)
       })
     })
   })

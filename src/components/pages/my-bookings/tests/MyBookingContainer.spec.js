@@ -28,11 +28,7 @@ describe('src | components | pages | my-bookings | MyBookingContainer', () => {
       const departementCode = '93'
 
       // when
-      const updatedProps = updatePropsWithDateElements(
-        props,
-        beginningDateTime,
-        departementCode
-      )
+      const updatedProps = updatePropsWithDateElements(props, beginningDateTime, departementCode)
 
       // then
       expect(updatedProps).toStrictEqual({

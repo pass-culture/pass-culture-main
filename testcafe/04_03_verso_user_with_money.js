@@ -17,9 +17,7 @@ const alreadyBookedOfferButton = Selector('#verso-already-booked-button')
 
 let userRole
 
-fixture(
-  "04_03_01 Verso | L'utilisateur peut réserver l'offre payante"
-).beforeEach(async t => {
+fixture("04_03_01 Verso | L'utilisateur peut réserver l'offre payante").beforeEach(async t => {
   // given
   if (!userRole) {
     userRole = await createUserRoleFromUserSandbox(

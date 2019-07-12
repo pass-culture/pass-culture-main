@@ -42,9 +42,7 @@ export class RawCard extends PureComponent {
     if (!isCurrent) return
 
     const shouldRequest =
-      !prevProps.areDetailsVisible &&
-      areDetailsVisible &&
-      !recommendation.isClicked
+      !prevProps.areDetailsVisible && areDetailsVisible && !recommendation.isClicked
     if (!shouldRequest) return
 
     handleClickRecommendation(recommendation)
@@ -52,8 +50,7 @@ export class RawCard extends PureComponent {
 
   render() {
     const { position, recommendation, width } = this.props
-    const firstThumbDominantColor =
-      recommendation && recommendation.firstThumbDominantColor
+    const firstThumbDominantColor = recommendation && recommendation.firstThumbDominantColor
     const headerColor = getHeaderColor(firstThumbDominantColor)
 
     const { index } = recommendation || {}
@@ -67,15 +64,11 @@ export class RawCard extends PureComponent {
           transform: `translate(${translateTo}px, 0)`,
         }}
       >
-        {recommendation && isCurrent && (
-          <VersoContainer recommendation={recommendation} />
-        )}
-        {recommendation && (
-          <RectoContainer
-            position={position}
-            recommendation={recommendation}
-          />
-        )}
+        {recommendation && isCurrent && <VersoContainer recommendation={recommendation} />}
+        {recommendation && <RectoContainer
+          position={position}
+          recommendation={recommendation}
+                           />}
       </div>
     )
   }

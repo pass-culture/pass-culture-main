@@ -13,9 +13,7 @@ const selectShowSubTypeByCodeAndSubCode = createCachedSelector(
     if (!showType) {
       return undefined
     }
-    return showType.children.find(
-      showSubType => showSubType.code.toString() === subCode
-    )
+    return showType.children.find(showSubType => showSubType.code.toString() === subCode)
   }
 )(mapArgsToCacheKey)
 

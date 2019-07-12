@@ -10,8 +10,7 @@ import withProfileForm from '../withProfileForm'
 const ERROR_OLD_PASSWORD = "L'ancien mot de passe est manquant."
 
 export class UserPasswordField extends React.PureComponent {
-  buildOldPasswordLabel = () => value =>
-    value && !isEmpty(value) ? undefined : ERROR_OLD_PASSWORD
+  buildOldPasswordLabel = () => value => (value && !isEmpty(value) ? undefined : ERROR_OLD_PASSWORD)
 
   validateNewPassword = () => (newPasswordConfirm, formvalues) => {
     const { newPassword } = formvalues
@@ -55,11 +54,7 @@ UserPasswordField.defaultProps = {
 }
 
 UserPasswordField.propTypes = {
-  formErrors: PropTypes.oneOfType([
-    PropTypes.array,
-    PropTypes.bool,
-    PropTypes.string,
-  ]),
+  formErrors: PropTypes.oneOfType([PropTypes.array, PropTypes.bool, PropTypes.string]),
   isLoading: PropTypes.bool.isRequired,
 }
 

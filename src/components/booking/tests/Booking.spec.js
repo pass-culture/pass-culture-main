@@ -68,9 +68,7 @@ describe('src | components | booking', () => {
         // given
         props.isCancelled = true
         const wrapper = mount(<Booking {...props} />)
-        const okButton = wrapper.find(
-          '#booking-cancellation-confirmation-button'
-        )
+        const okButton = wrapper.find('#booking-cancellation-confirmation-button')
 
         // when
         okButton.simulate('click')
@@ -83,9 +81,7 @@ describe('src | components | booking', () => {
         // given
         props.isCancelled = true
         const wrapper = mount(<Booking {...props} />)
-        const okButton = wrapper.find(
-          '#booking-cancellation-confirmation-button'
-        )
+        const okButton = wrapper.find('#booking-cancellation-confirmation-button')
 
         // when
         okButton.simulate('click')
@@ -105,9 +101,7 @@ describe('src | components | booking', () => {
         // given
         props.isCancelled = true
         const wrapper = mount(<Booking {...props} />)
-        const okButton = wrapper.find(
-          '#booking-cancellation-confirmation-button'
-        )
+        const okButton = wrapper.find('#booking-cancellation-confirmation-button')
 
         // when
         okButton.simulate('click')
@@ -126,9 +120,7 @@ describe('src | components | booking', () => {
 
       // then
       const mainWrapper = wrapper.find('.main.flex-rows.flex-1.scroll-y')
-      expect(
-        mainWrapper.find('.content.flex-1.flex-center.items-center')
-      ).toHaveLength(0)
+      expect(mainWrapper.find('.content.flex-1.flex-center.items-center')).toHaveLength(0)
     })
 
     it('should not add classNames for padding to the div containing Booking sub-items components', () => {
@@ -154,9 +146,7 @@ describe('src | components | booking', () => {
 
       // then
       const mainWrapper = wrapper.find('.main')
-      expect(
-        mainWrapper.find('.content.flex-1.flex-center.items-center')
-      ).toHaveLength(1)
+      expect(mainWrapper.find('.content.flex-1.flex-center.items-center')).toHaveLength(1)
     })
 
     it('should add classNames for padding to the div containing Booking sub-items components', () => {

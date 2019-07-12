@@ -14,8 +14,7 @@ export const getOperatingSystemByUA = userAgent => {
 }
 
 export const getMobileOperatingSystem = () => {
-  const isDefined =
-    typeof window !== 'undefined' && typeof navigator !== 'undefined'
+  const isDefined = typeof window !== 'undefined' && typeof navigator !== 'undefined'
   if (!isDefined) return 'unknown'
   const userAgent = navigator.userAgent || navigator.vendor || window.opera
   return getOperatingSystemByUA(userAgent)

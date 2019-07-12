@@ -14,9 +14,7 @@ export const RawBetaPage = () => (
     >
       <h1 className="text-left fs32">
         <span className="is-bold is-italic is-block">{'Bienvenue'}</span>
-        <span className="is-italic is-block is-semi-bold">
-          {'dans l’avant-première'}
-        </span>
+        <span className="is-italic is-block is-semi-bold">{'dans l’avant-première'}</span>
         <span className="is-italic is-block">{'du pass Culture'}</span>
       </h1>
       <p className="text-left is-italic is-medium mt36 fs22">

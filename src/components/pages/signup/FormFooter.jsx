@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom'
 const FormFooter = ({ canSubmit, isLoading }) => (
   <footer>
     <button
-      className={classnames("button is-primary is-inverted", {
+      className={classnames('button is-primary is-inverted', {
         'is-loading': isLoading,
       })}
       disabled={!canSubmit}
@@ -25,12 +25,12 @@ const FormFooter = ({ canSubmit, isLoading }) => (
 
 FormFooter.defaultProps = {
   canSubmit: false,
-  isLoading: false
+  isLoading: false,
 }
 
 FormFooter.propTypes = {
   canSubmit: PropTypes.bool,
-  isLoading: PropTypes.bool
+  isLoading: PropTypes.bool,
 }
 
 export default FormFooter

@@ -43,9 +43,7 @@ describe('src | components | share | MailToLink', () => {
           const wrapper = shallow(<MailToLink {...props} />)
 
           // // then
-          expect(wrapper.find('a').props().href).toStrictEqual(
-            'mailto:email@fake.com?'
-          )
+          expect(wrapper.find('a').props().href).toStrictEqual('mailto:email@fake.com?')
         })
       })
       describe('when obfuscate is true', () => {

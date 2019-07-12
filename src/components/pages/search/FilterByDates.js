@@ -37,10 +37,7 @@ class FilterByDates extends PureComponent {
     if (pickedDaysInQuery.length === 0) {
       const date = new Date().toISOString()
       callback = () => filterActions.change({ date })
-    } else if (
-      isdayAlreadyChecked &&
-      pickedDaysInQuery.split(',').length === 1
-    ) {
+    } else if (isdayAlreadyChecked && pickedDaysInQuery.split(',').length === 1) {
       callback = () => filterActions.change({ date: null })
     }
 
@@ -71,17 +68,11 @@ class FilterByDates extends PureComponent {
         className="pt18"
         id="filter-by-dates"
       >
-        <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">
-          {'Quand'}
-        </h2>
+        <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">{'Quand'}</h2>
         <div className="pc-scroll-horizontal is-relative pb18">
           <div className="pc-list flex-columns">
             {DAYS_CHECKBOXES.map(({ label, value }, index) => {
-              const checked = isDaysChecked(
-                pickedDate,
-                pickedDaysInQuery,
-                value
-              )
+              const checked = isDaysChecked(pickedDate, pickedDaysInQuery, value)
 
               return (
                 <label

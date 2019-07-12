@@ -29,10 +29,7 @@ class Splash extends React.PureComponent {
   componentDidMount() {
     const { closeTimeout, isBetaPage } = this.props
     const delay = isBetaPage ? closeTimeout : 1
-    setTimeout(
-      () => this.setState({ close: true }, this.actions.closeSplash),
-      delay
-    )
+    setTimeout(() => this.setState({ close: true }, this.actions.closeSplash), delay)
   }
 
   render() {

@@ -38,19 +38,14 @@ const selectedTime = timeSelectBox.find('.ant-select-selection-selected-value')
 
 let userRole
 
-fixture(
-  "08_05_01 Réservation d'une offre type event à dates multiple"
-).beforeEach(async t => {
+fixture("08_05_01 Réservation d'une offre type event à dates multiple").beforeEach(async t => {
   if (!userRole) {
     userRole = await createUserRoleFromUserSandbox(
       'webapp_08_booking',
       'get_existing_webapp_user_can_book_multidates'
     )
   }
-  const { offer } = await fetchSandbox(
-    'webapp_08_booking',
-    'get_non_free_event_offer'
-  )
+  const { offer } = await fetchSandbox('webapp_08_booking', 'get_non_free_event_offer')
   offerPage = `${discoverURL}/${offer.id}`
   offerPageVerso = new RegExp(`${offerPage}(/[A-Z0-9]*)?/verso`)
   offerBookingPage = `${offerPage}/booking`
@@ -136,9 +131,7 @@ test("Parcours complet de réservation d'une offre event à date unique", async 
     .lt(previousWalletValue)
   previousWalletValue = await getMenuWalletValue()
 
-  const bookedOffer = Selector(
-    `.mb-my-booking[data-token="${currentBookedToken}"]`
-  )
+  const bookedOffer = Selector(`.mb-my-booking[data-token="${currentBookedToken}"]`)
   await t
     .click(myBookingsMenuButton)
     .expect(bookedOffer.exists)
@@ -155,9 +148,7 @@ test('Je vérifie mes réservations, après reconnexion', async t => {
   // de la sandbox (ie que le fetch sandbox devrait aussi retourner un
   // objet booking) car sinon on ne peut pas
   // runner ce test de maniere standalone
-  const bookedOffer = Selector(
-    `.mb-my-booking[data-token="${currentBookedToken}"]`
-  )
+  const bookedOffer = Selector(`.mb-my-booking[data-token="${currentBookedToken}"]`)
 
   await t
     .navigateTo(myBookingsURL)

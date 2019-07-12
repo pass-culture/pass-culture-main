@@ -63,10 +63,7 @@ test("Sur la page d'erreur d'activation je dois pouvoir cliquer sur le bouton co
 })
 
 test('Avec un email déjà activé, je suis redirigé·e vers la page lien invalide', async t => {
-  const { user } = await fetchSandbox(
-    'webapp_01_activation',
-    'get_existing_webapp_validated_user'
-  )
+  const { user } = await fetchSandbox('webapp_01_activation', 'get_existing_webapp_validated_user')
   const { email } = user
   const tokenAlreadyUsed = 'BFYU73UV'
 

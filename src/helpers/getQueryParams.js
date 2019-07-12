@@ -6,8 +6,7 @@ export const getQueryParams = (match, currentRecommendation) => {
   const isValid = match && typeof match === 'object' && !Array.isArray(match)
   if (!isValid) return ''
 
-  const { offerId: pOfferId, mediationId: pMediationId } =
-    match.params || match || {}
+  const { offerId: pOfferId, mediationId: pMediationId } = match.params || match || {}
 
   // offerId
   const offerId =
@@ -23,9 +22,10 @@ export const getQueryParams = (match, currentRecommendation) => {
     !DEFAULT_VIEW_IDENTIFIERS.includes(pMediationId) &&
     pMediationId
 
-  const isSameRecoAsMatchParams = currentRecommendation &&
-  currentRecommendation.mediationId === mediationId &&
-  currentRecommendation.offerId === offerId
+  const isSameRecoAsMatchParams =
+    currentRecommendation &&
+    currentRecommendation.mediationId === mediationId &&
+    currentRecommendation.offerId === offerId
   if (isSameRecoAsMatchParams) return ''
 
   const params = [

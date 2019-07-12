@@ -66,10 +66,7 @@ describe('src | components | pages | discovery | RawDeckNavigation', () => {
           isFinished: false,
           recommendation: {
             offer: {
-              stocks: [
-                { available: null, price: 12 },
-                { available: null, price: 0 },
-              ],
+              stocks: [{ available: null, price: 12 }, { available: null, price: 0 }],
             },
           },
         }

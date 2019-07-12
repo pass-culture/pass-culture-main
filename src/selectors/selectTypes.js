@@ -2,9 +2,7 @@ import pick from 'lodash.pick'
 import uniq from 'lodash.uniq'
 import { createSelector } from 'reselect'
 
-import arrayOfObjects, {
-  removeDuplicatesObjects,
-} from '../utils/arrayOfObjects'
+import arrayOfObjects, { removeDuplicatesObjects } from '../utils/arrayOfObjects'
 
 const selectTypeSublabels = createSelector(
   state => state.data.types,
@@ -18,13 +16,9 @@ const selectTypeSublabels = createSelector(
 export const selectTypes = createSelector(
   state => state.data.types,
   types => {
-    const sublabelTypesAndDescription = types.map(type =>
-      pick(type, ['description', 'sublabel'])
-    )
+    const sublabelTypesAndDescription = types.map(type => pick(type, ['description', 'sublabel']))
 
-    const sublabelTypesAndDescriptionFiltred = removeDuplicatesObjects(
-      sublabelTypesAndDescription
-    )
+    const sublabelTypesAndDescriptionFiltred = removeDuplicatesObjects(sublabelTypesAndDescription)
 
     return sublabelTypesAndDescriptionFiltred.sort(arrayOfObjects('sublabel'))
   }

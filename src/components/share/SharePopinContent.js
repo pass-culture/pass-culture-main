@@ -70,9 +70,7 @@ class SharePopinContent extends React.PureComponent {
                       <span>{text}</span>
                     </p>
                   </div>
-                  <div className="dotted-top-white flex-columns flex-around">
-                    {buttons}
-                  </div>
+                  <div className="dotted-top-white flex-columns flex-around">{buttons}</div>
                 </div>
               </div>
             )}

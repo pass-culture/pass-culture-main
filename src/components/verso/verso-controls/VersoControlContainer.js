@@ -16,12 +16,9 @@ export const mapStateToProps = (state, { match }) => {
   const stocks = get(recommendation, 'offer.stocks')
   const stockIds = (stocks || []).map(o => o.id)
   const bookings = selectBookings(state)
-  const booking = bookings
-    .filter(b => !b.isCancelled)
-    .find(b => stockIds.includes(b.stockId))
+  const booking = bookings.filter(b => !b.isCancelled).find(b => stockIds.includes(b.stockId))
   const isFinished =
-    isRecommendationOfferFinished(recommendation, offerId) ||
-    get(booking, 'isUsed')
+    isRecommendationOfferFinished(recommendation, offerId) || get(booking, 'isUsed')
 
   return {
     booking,

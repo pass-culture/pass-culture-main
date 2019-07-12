@@ -5,14 +5,7 @@ import { Link } from 'react-router-dom'
 import Icon from '../../layout/Icon'
 import Ribbon from '../../layout/Ribbon'
 
-const MyBooking = ({
-  isCancelled,
-  name,
-  offerVersoUrl,
-  stringifyDate,
-  thumbUrl,
-  token,
-}) => (
+const MyBooking = ({ isCancelled, name, offerVersoUrl, stringifyDate, thumbUrl, token }) => (
   <li
     className="mb-my-booking"
     data-token={token}
@@ -21,11 +14,10 @@ const MyBooking = ({
       className="mb-link"
       to={offerVersoUrl}
     >
-      <div className="mb-thumb">
-        {thumbUrl && <img
-          alt=""
-          src={thumbUrl}
-                     />}
+      <div className="mb-thumb">{thumbUrl && <img
+        alt=""
+        src={thumbUrl}
+                                             />}
       </div>
       <div className="mb-infos">
         <div className="mb-heading">

@@ -24,12 +24,7 @@ const getSelectorByCardPosition = position => {
 export const mapStateToProps = (state, ownProps) => {
   const { mediationId, offerId } = ownProps.match.params
   const recommendationSelector = getSelectorByCardPosition(ownProps.position)
-  const recommendation = recommendationSelector(
-    state,
-    offerId,
-    mediationId,
-    ownProps.position
-  )
+  const recommendation = recommendationSelector(state, offerId, mediationId, ownProps.position)
   return {
     areDetailsVisible: state.card.areDetailsVisible,
     recommendation,

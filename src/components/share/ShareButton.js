@@ -11,11 +11,7 @@ import currentRecommendationSelector from '../../selectors/currentRecommendation
 const mapStateToProps = (state, ownProps) => {
   const { location } = ownProps
   const { mediationId, offerId } = ownProps.match.params
-  const recommendation = currentRecommendationSelector(
-    state,
-    offerId,
-    mediationId
-  )
+  const recommendation = currentRecommendationSelector(state, offerId, mediationId)
   const user = selectCurrentUser(state)
   const url = (user && getShareURL(location, user)) || null
   const offerName = get(recommendation, 'offer.name')

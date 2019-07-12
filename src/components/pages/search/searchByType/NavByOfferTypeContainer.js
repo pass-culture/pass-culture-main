@@ -12,10 +12,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
 
   updateSearchQuery: categories => {
     const { query } = ownProps
-    query.change(
-      { categories, page: null },
-      { pathname: `/recherche/resultats/${categories}` }
-    )
+    query.change({ categories, page: null }, { pathname: `/recherche/resultats/${categories}` })
   },
 })
 

@@ -36,9 +36,7 @@ describe('src | components | booking | sub-items | BookingCancel', () => {
     const spans = mainWrapper.find('p span')
     expect(spans).toHaveLength(2)
     expect(spans.at(0).text()).toBe('12 € vont être recrédités sur votre pass.')
-    expect(spans.at(1).text()).toBe(
-      'Vous allez recevoir un e-mail de confirmation.'
-    )
+    expect(spans.at(1).text()).toBe('Vous allez recevoir un e-mail de confirmation.')
   })
 
   describe('when offer is an event', () => {

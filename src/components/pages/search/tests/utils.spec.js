@@ -30,10 +30,7 @@ describe('src | components | pages | search | utils', () => {
       // given
       const recommendation = {
         offer: {
-          dateRange: [
-            'Thu, 25 Oct 2018 18:15:24 GMT',
-            'Fri, 26 Oct 2018 19:45:24 GMT',
-          ],
+          dateRange: ['Thu, 25 Oct 2018 18:15:24 GMT', 'Fri, 26 Oct 2018 19:45:24 GMT'],
           venue: {
             departementCode: '93',
           },
@@ -52,10 +49,7 @@ describe('src | components | pages | search | utils', () => {
       // given
       const recommendation = {
         offer: {
-          dateRange: [
-            'Thu, 25 Oct 2018 12:15:24 GMT',
-            'Fri, 26 Oct 2018 1:45:24 GMT',
-          ],
+          dateRange: ['Thu, 25 Oct 2018 12:15:24 GMT', 'Fri, 26 Oct 2018 1:45:24 GMT'],
           venue: {
             departementCode: '97',
           },
@@ -86,9 +80,7 @@ describe('src | components | pages | search | utils', () => {
         page: '2',
         types: null,
       }
-      expect(
-        isInitialQueryWithoutFilters(INITIAL_FILTER_PARAMS, queryParams)
-      ).toBe(false)
+      expect(isInitialQueryWithoutFilters(INITIAL_FILTER_PARAMS, queryParams)).toBe(false)
     })
 
     it('should return true if there is no params changed with filter', () => {
@@ -103,18 +95,14 @@ describe('src | components | pages | search | utils', () => {
         [`mots-cles`]: null,
         orderBy: 'offer.id+desc',
       }
-      expect(
-        isInitialQueryWithoutFilters(INITIAL_FILTER_PARAMS, queryParams)
-      ).toBe(true)
+      expect(isInitialQueryWithoutFilters(INITIAL_FILTER_PARAMS, queryParams)).toBe(true)
     })
   })
 
   describe('getFirstChangingKey', () => {
     it('should return the name of the key wich value has changed', () => {
       const nextObject = { jours: '0-1,1-5' }
-      expect(getFirstChangingKey(INITIAL_FILTER_PARAMS, nextObject)).toBe(
-        'jours'
-      )
+      expect(getFirstChangingKey(INITIAL_FILTER_PARAMS, nextObject)).toBe('jours')
     })
   })
 
@@ -390,8 +378,7 @@ describe('src | components | pages | search | utils', () => {
           )
 
           // then
-          expected =
-            "Il n'y a pas d'offres dans cette catégorie pour le moment."
+          expected = "Il n'y a pas d'offres dans cette catégorie pour le moment."
           expect(result).toBe(expected)
         })
       })

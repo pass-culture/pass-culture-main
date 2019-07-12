@@ -15,11 +15,7 @@ describe('src | selectors | searchSelectors', () => {
     // when
     const offerId = undefined
     const mediationId = undefined
-    const result = selectCurrentSearchRecommendation(
-      state,
-      offerId,
-      mediationId
-    )
+    const result = selectCurrentSearchRecommendation(state, offerId, mediationId)
 
     // then
     expect(result).toStrictEqual(null)
@@ -39,11 +35,7 @@ describe('src | selectors | searchSelectors', () => {
     // when
     const offerId = 'ZZZZ'
     const mediationId = '0000'
-    const result = selectCurrentSearchRecommendation(
-      state,
-      offerId,
-      mediationId
-    )
+    const result = selectCurrentSearchRecommendation(state, offerId, mediationId)
 
     // then
     expect(result).toStrictEqual(null)
@@ -60,11 +52,7 @@ describe('src | selectors | searchSelectors', () => {
     // when
     const offerId = 'AAAA'
     const mediationId = '1234'
-    const result = selectCurrentSearchRecommendation(
-      state,
-      offerId,
-      mediationId
-    )
+    const result = selectCurrentSearchRecommendation(state, offerId, mediationId)
 
     // then
     expect(result).toStrictEqual(null)
@@ -84,11 +72,7 @@ describe('src | selectors | searchSelectors', () => {
     // when
     const offerId = 'AAAA'
     const mediationId = '5678'
-    const result = selectCurrentSearchRecommendation(
-      state,
-      offerId,
-      mediationId
-    )
+    const result = selectCurrentSearchRecommendation(state, offerId, mediationId)
 
     // then
     expect(result.mediationId).toStrictEqual('1234')
@@ -108,11 +92,7 @@ describe('src | selectors | searchSelectors', () => {
     // when
     const offerId = 'AAAA'
     const mediationId = '5678'
-    const result = selectCurrentSearchRecommendation(
-      state,
-      offerId,
-      mediationId
-    )
+    const result = selectCurrentSearchRecommendation(state, offerId, mediationId)
 
     // then
     expect(result.mediationId).toStrictEqual('1234')

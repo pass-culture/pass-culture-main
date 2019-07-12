@@ -2019,8 +2019,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Product',
-            name:
-              'helen frankenthaler: after abstract expressionism, 1959-1962 /francais/anglais',
+            name: 'helen frankenthaler: after abstract expressionism, 1959-1962 /francais/anglais',
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -4623,8 +4622,7 @@ const state = {
               author: 'Arthus-Bertrand',
               dewey: '740',
               prix_livre: '68.00',
-              rayon:
-                "Mobilier, Antiquités, Design, Décoration d'intérieur, Métiers d'art",
+              rayon: "Mobilier, Antiquités, Design, Décoration d'intérieur, Métiers d'art",
               titelive_regroup: '36058640',
             },
             firstThumbDominantColor: [19, 135, 172],
@@ -5148,8 +5146,7 @@ const state = {
               dewey: '230',
               num_in_collection: '0',
               prix_livre: '14.00',
-              rayon:
-                'Christianisme : essais religieux, témoignages, biographies',
+              rayon: 'Christianisme : essais religieux, témoignages, biographies',
               titelive_regroup: '0',
             },
             firstThumbDominantColor: [204, 44, 11],
@@ -5159,8 +5156,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Product',
-            name:
-              "pour (re)commencer à croire ; catéchisme à l'usage de nos contemporains",
+            name: "pour (re)commencer à croire ; catéchisme à l'usage de nos contemporains",
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -5463,8 +5459,7 @@ const state = {
               author: 'Oullion, Jean-Michel',
               num_in_collection: '0',
               prix_livre: '19.90',
-              rayon:
-                'Carrières et emplois Concours (hors Professorat et Paramédical)',
+              rayon: 'Carrières et emplois Concours (hors Professorat et Paramédical)',
               titelive_regroup: '2624394',
             },
             firstThumbDominantColor: [48, 142, 183],
@@ -5672,8 +5667,7 @@ const state = {
               author: 'Mauries, Patrick',
               dewey: '740',
               prix_livre: '42.00',
-              rayon:
-                "Mobilier, Antiquités, Design, Décoration d'intérieur, Métiers d'art",
+              rayon: "Mobilier, Antiquités, Design, Décoration d'intérieur, Métiers d'art",
               titelive_regroup: '36058209',
             },
             firstThumbDominantColor: null,
@@ -5896,8 +5890,7 @@ const state = {
             lastProviderId: 'BA',
             mediaUrls: [],
             modelName: 'Product',
-            name:
-              'William Walker, le flibustier ; souvenirs de guerre (Nicaragua 1854-1859)',
+            name: 'William Walker, le flibustier ; souvenirs de guerre (Nicaragua 1854-1859)',
             thumbCount: 2,
             type: 'Book',
             url: null,
@@ -6295,7 +6288,7 @@ const state = {
           dateRange: [],
           dehumanizedEventId: null,
           dehumanizedId: 106,
-         dehumanizedLastProviderId: 6,
+          dehumanizedLastProviderId: 6,
           dehumanizedThingId: 335,
           dehumanizedVenueId: 1,
           product: {

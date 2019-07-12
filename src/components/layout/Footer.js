@@ -6,14 +6,7 @@ import { connect } from 'react-redux'
 import { Link, withRouter } from 'react-router-dom'
 import ProfilePicture from './ProfilePicture'
 
-const Footer = ({
-  borderTop,
-  colored,
-  areDetailsVisible,
-  id,
-  location,
-  onTop,
-}) => {
+const Footer = ({ borderTop, colored, areDetailsVisible, id, location, onTop }) => {
   const maybeColored = {}
   if (colored) {
     maybeColored.colored = 'colored'

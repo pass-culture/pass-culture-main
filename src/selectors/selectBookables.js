@@ -42,8 +42,7 @@ export const humanizeBeginningDate = () => items => {
     let date = obj.beginningDatetime || null
     const ismoment = date && moment.isMoment(date)
     const isstring = date && isString(date) && !isEmpty(date)
-    const isvaliddate =
-      isstring && moment(date, moment.ISO_8601, true).isValid()
+    const isvaliddate = isstring && moment(date, moment.ISO_8601, true).isValid()
     const isvalid = isvaliddate || ismoment
     if (!isvalid) return obj
     if (isstring) date = moment(date)

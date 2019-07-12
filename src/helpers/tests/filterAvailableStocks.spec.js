@@ -35,8 +35,6 @@ describe('src | helpers | filterAvailableStocks', () => {
 
     // then
     expect(result).toHaveLength(1)
-    expect(result).toStrictEqual([
-      { bookingLimitDatetime: bookingLimitDatetimeOneDayAfterNow },
-    ])
+    expect(result).toStrictEqual([{ bookingLimitDatetime: bookingLimitDatetimeOneDayAfterNow }])
   })
 })

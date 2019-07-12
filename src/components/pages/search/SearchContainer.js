@@ -4,9 +4,7 @@ import { compose } from 'redux'
 import Search from './Search'
 import { withRequiredLogin } from '../../hocs'
 import { selectRecommendations } from '../../../selectors'
-import selectTypeSublabels, {
-  selectTypes,
-} from '../../../selectors/selectTypes'
+import selectTypeSublabels, { selectTypes } from '../../../selectors/selectTypes'
 
 const selectSearchRecommendations = state => {
   const recommendations = state.data.searchRecommendations || []

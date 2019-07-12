@@ -1,9 +1,6 @@
 export const NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD = 5
 
-export const isRecommendationOfferFinished = (
-  recommendation,
-  offerId = null
-) => {
+export const isRecommendationOfferFinished = (recommendation, offerId = null) => {
   if (!recommendation) return false
 
   const { offer } = recommendation

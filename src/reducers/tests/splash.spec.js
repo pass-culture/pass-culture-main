@@ -1,9 +1,4 @@
-import splash, {
-  closeSplash,
-  showSplash,
-  SHOW_SPLASH,
-  CLOSE_SPLASH,
-} from '../splash'
+import splash, { closeSplash, showSplash, SHOW_SPLASH, CLOSE_SPLASH } from '../splash'
 
 describe('src | reducers | splash  ', () => {
   it('should return the initial state by default', () => {

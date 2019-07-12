@@ -3,10 +3,7 @@ import { shallow } from 'enzyme'
 
 import ActivationError from '../ActivationError'
 import MailToLink from '../../../../layout/MailToLink'
-import {
-  SUPPORT_EMAIL,
-  SUPPORT_EMAIL_SUBJECT,
-} from '../../../../../utils/config'
+import { SUPPORT_EMAIL, SUPPORT_EMAIL_SUBJECT } from '../../../../../utils/config'
 
 describe('src | components | pages | activation | ActivationError', () => {
   it('should match snapshot', () => {

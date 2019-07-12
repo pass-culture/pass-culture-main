@@ -3,10 +3,7 @@ import withLogin from 'with-react-redux-login'
 
 import withFrenchQueryRouter from '../withFrenchQueryRouter'
 
-import {
-  getRedirectToSignin,
-  getRedirectToCurrentLocationOrTypeform,
-} from './helpers'
+import { getRedirectToSignin, getRedirectToCurrentLocationOrTypeform } from './helpers'
 
 const withRequiredLogin = compose(
   withFrenchQueryRouter,

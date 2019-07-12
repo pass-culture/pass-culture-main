@@ -91,9 +91,7 @@ describe('src | selectors| selectBookables', () => {
 
       // then
       expect(results[0].offerId).toBe('BYAQ')
-      expect(results[0].beginningDatetime.format()).toBe(
-        '2019-04-19T20:30:00+02:00'
-      )
+      expect(results[0].beginningDatetime.format()).toBe('2019-04-19T20:30:00+02:00')
       expect(results[0].endDatetime).toBe('2019-04-20T20:00:00Z')
     })
   })

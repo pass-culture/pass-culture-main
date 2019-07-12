@@ -5,8 +5,7 @@ const DISABLE_FEATURE_NOT_YET_IMPLEMENTED = true
 
 const getButtonIcon = isFavorite => `icon-ico-like${isFavorite ? '-on' : ''}`
 
-const getButtonLabel = isFavorite =>
-  isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'
+const getButtonLabel = isFavorite => (isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris')
 
 const VersoButtonFavorite = ({ isFavorite, onClick, recommendationId }) => (
   <button

@@ -9,8 +9,7 @@ import initGeolocation from './initGeolocation'
 const buildStoreEnhancer = (middlewares = []) => {
   const enhancers = []
   // utilisation de l'extension browser react-dev-tools
-  const useDevTools =
-    typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+  const useDevTools = typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
   if (useDevTools) {
     const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     return composeEnhancers(...enhancers, applyMiddleware(...middlewares))
@@ -25,11 +24,7 @@ const buildStoreEnhancer = (middlewares = []) => {
 // dans une function pour les tests unitaires
 export const configureStore = (initialState = {}) => {
   const sagaMiddleware = createSagaMiddleware()
-  const store = createStore(
-    rootReducer,
-    initialState,
-    buildStoreEnhancer([sagaMiddleware])
-  )
+  const store = createStore(rootReducer, initialState, buildStoreEnhancer([sagaMiddleware]))
   const persistor = persistStore(store)
   // lancement de la premiere saga
   sagaMiddleware.run(rootSaga)

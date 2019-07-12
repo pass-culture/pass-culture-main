@@ -28,37 +28,39 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
   })
 
   describe('functions', () => {
-    it('should redirect to discovery when already authenticated and needsToFillCulturalSurvey', () => {return new Promise(done => {
-      // given
-      const history = createBrowserHistory()
-      history.push('/test')
-      const store = configureTestStore()
-      fetch.mockResponse(
-        JSON.stringify({
-          email: 'michel.marx@youpi.fr',
-          needsToFillCulturalSurvey: false,
-        }),
-        {
-          status: 200,
-        }
-      )
+    it('should redirect to discovery when already authenticated and needsToFillCulturalSurvey', () => {
+      return new Promise(done => {
+        // given
+        const history = createBrowserHistory()
+        history.push('/test')
+        const store = configureTestStore()
+        fetch.mockResponse(
+          JSON.stringify({
+            email: 'michel.marx@youpi.fr',
+            needsToFillCulturalSurvey: false,
+          }),
+          {
+            status: 200,
+          }
+        )
 
-      // when
-      mount(
-        <Provider store={store}>
-          <Router history={history}>
-            <Switch>
-              <Route path="/test">
-                <NotRequiredLoginTest />
-              </Route>
-              <Route path="/decouverte">
-                <OnMountCaller onMountCallback={done} />
-              </Route>
-            </Switch>
-          </Router>
-        </Provider>
-      )
-    })})
+        // when
+        mount(
+          <Provider store={store}>
+            <Router history={history}>
+              <Switch>
+                <Route path="/test">
+                  <NotRequiredLoginTest />
+                </Route>
+                <Route path="/decouverte">
+                  <OnMountCaller onMountCallback={done} />
+                </Route>
+              </Switch>
+            </Router>
+          </Provider>
+        )
+      })
+    })
     it('should redirect to currentLocation when already authenticated and not needsToFillCulturalSurvey', () => {
       // given
       const history = createBrowserHistory()

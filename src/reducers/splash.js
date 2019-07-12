@@ -5,9 +5,7 @@ export const CLOSE_SPLASH = 'CLOSE_SPLASH'
 // INITIAL STATE
 const initialState = {
   closeTimeout: 1000,
-  isActive:
-    window.location.pathname === '/' ||
-    window.location.pathname.substr(0, 5) === '/beta',
+  isActive: window.location.pathname === '/' || window.location.pathname.substr(0, 5) === '/beta',
 }
 
 // REDUCER

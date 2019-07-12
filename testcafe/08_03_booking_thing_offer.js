@@ -101,9 +101,7 @@ test("Parcours complet de réservation d'une offre thing", async t => {
     .lt(previousWalletValue)
   previousWalletValue = await getMenuWalletValue()
 
-  const bookedOffer = Selector(
-    `.mb-my-booking[data-token="${currentBookedToken}"]`
-  )
+  const bookedOffer = Selector(`.mb-my-booking[data-token="${currentBookedToken}"]`)
   await t
     .click(myBookingsMenuButton)
     .expect(bookedOffer.exists)

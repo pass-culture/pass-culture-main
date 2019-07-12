@@ -13,10 +13,8 @@ function initMockResponse(req, res) {
     .slice(0, 3)
     .join('/')
   res.headers['access-control-allow-credentials'] = 'true'
-  res.headers['access-control-allow-headers'] =
-    'appname, appversion, content-type, x-request-id'
-  res.headers['access-control-allow-methods'] =
-    'DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT'
+  res.headers['access-control-allow-headers'] = 'appname, appversion, content-type, x-request-id'
+  res.headers['access-control-allow-methods'] = 'DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT'
 }
 
 export const mockBackendRequest = options => {
@@ -32,8 +30,7 @@ export const mockBackendRequest = options => {
     .onRequestTo({ method: 'PUT', url })
     .respond((req, res) => {
       initMockResponse(req, res)
-      res.headers['content-type'] =
-        options.responseContentType || 'application/json'
+      res.headers['content-type'] = options.responseContentType || 'application/json'
       res.statusCode = options.responseStatusCode || 200
       res.setBody(options.responseBody || '')
     })

@@ -155,9 +155,9 @@ describe('src | components | verso | verso-controls | booking | CancelThisLink',
         options: {
           buttons: expect.any(Array),
           text: "Une erreur inconnue s'est produite",
-          title: "Annulation impossible"
+          title: 'Annulation impossible',
         },
-        type: 'TOGGLE_SHARE_POPIN'
+        type: 'TOGGLE_SHARE_POPIN',
       })
     })
   })

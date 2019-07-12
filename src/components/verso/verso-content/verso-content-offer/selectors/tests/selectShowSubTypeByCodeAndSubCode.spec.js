@@ -11,11 +11,7 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       const subCode = 101
 
       // when
-      const showSubType = selectShowSubTypeByCodeAndSubCode(
-        state,
-        String(code),
-        String(subCode)
-      )
+      const showSubType = selectShowSubTypeByCodeAndSubCode(state, String(code), String(subCode))
 
       // then
       expect(showSubType.code).toStrictEqual(subCode)
@@ -27,11 +23,7 @@ describe('src | components | verso | verso-content | verso-content-offer | selec
       const subCode = 666
 
       // when
-      const showSubType = selectShowSubTypeByCodeAndSubCode(
-        state,
-        String(code),
-        String(subCode)
-      )
+      const showSubType = selectShowSubTypeByCodeAndSubCode(state, String(code), String(subCode))
 
       // then
       expect(showSubType).toStrictEqual(undefined)

@@ -58,10 +58,7 @@ export class RawDiscoveryPage extends React.PureComponent {
     } = action
 
     const newRecosNb = data ? data.length : 0
-    const pathnameWithoutTrailingSlash = document.location.pathname.replace(
-      /\/$/,
-      ''
-    )
+    const pathnameWithoutTrailingSlash = document.location.pathname.replace(/\/$/, '')
     const weAreNotViewingACard =
       pathnameWithoutTrailingSlash === '/decouverte' ||
       pathnameWithoutTrailingSlash === '/decouverte/tuto/fin'
@@ -83,10 +80,8 @@ export class RawDiscoveryPage extends React.PureComponent {
 
     // NOTE -> si la premiere carte n'a pas d'offerid
     // alors il s'agit d'une carte tuto
-    const firstOfferId =
-      (firstRecommendation && firstRecommendation.offerId) || 'tuto'
-    const firstMediationId =
-      (firstRecommendation && firstRecommendation.mediationId) || ''
+    const firstOfferId = (firstRecommendation && firstRecommendation.offerId) || 'tuto'
+    const firstMediationId = (firstRecommendation && firstRecommendation.mediationId) || ''
     // replace pluto qu'un push permet de recharger les données
     // quand on fait back dans le navigateur et qu'on revient
     // à l'URL /decouverte
@@ -112,8 +107,7 @@ export class RawDiscoveryPage extends React.PureComponent {
         apiPath,
         body: {
           readRecommendations,
-          seenRecommendationIds:
-            recommendations && recommendations.map(r => r.id),
+          seenRecommendationIds: recommendations && recommendations.map(r => r.id),
         },
         handleFail: this.handleRequestFail,
         handleSuccess: this.handleRequestSuccess,
@@ -133,8 +127,7 @@ export class RawDiscoveryPage extends React.PureComponent {
           className="discovery-page no-padding page with-footer"
           role="main"
         >
-          {(match.params.view === 'verso' ||
-            match.params.mediationId === 'verso') && (
+          {(match.params.view === 'verso' || match.params.mediationId === 'verso') && (
             <BackLink backTo="/reservations" />
           )}
           {!isEmpty && (
@@ -194,11 +187,7 @@ const mapStateToProps = (state, ownProps) => {
   const from = getRouterQueryByKey(location, 'from')
   const fromPassword = from === 'password'
   return {
-    currentRecommendation: selectCurrentRecommendation(
-      state,
-      offerId,
-      mediationId
-    ),
+    currentRecommendation: selectCurrentRecommendation(state, offerId, mediationId),
     fromPassword,
     readRecommendations: state.data.readRecommendations,
     recommendations: state.data.recommendations,

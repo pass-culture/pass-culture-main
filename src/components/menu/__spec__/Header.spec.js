@@ -30,9 +30,7 @@ describe('src | components | menu | Header', () => {
       const wrapper = shallow(<Header {...props} />)
 
       // when
-      const walletElement = wrapper
-        .find('#main-menu-header-wallet-value')
-        .text()
+      const walletElement = wrapper.find('#main-menu-header-wallet-value').text()
       const username = wrapper.find('#main-menu-header-username').text()
 
       // then

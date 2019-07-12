@@ -29,8 +29,7 @@ test("Je clique sur la vignette 'Lire' et je suis redirigé vers la page de rés
     .contains('/recherche/resultats/Lire')
 
   const resultsForLireCategory = Selector('.search-results')
-  const firstResultTitle = await resultsForLireCategory.find('h5').nth(0)
-    .textContent
+  const firstResultTitle = await resultsForLireCategory.find('h5').nth(0).textContent
   const firstResultLink = resultsForLireCategory.find('.to-details').nth(0)
 
   await t
