@@ -18,10 +18,10 @@ describe('src | selectors | selectBookings', () => {
         },
       }
 
-      // When
+      // when
       const result = selectBookingById(state, 'bar')
 
-      // Then
+      // then
       expect(result).toBeDefined()
       expect(result).toStrictEqual({ id: 'bar' })
       expect(result).toBe(state.data.bookings[1])
@@ -66,6 +66,7 @@ describe('src | selectors | selectBookings', () => {
     })
 
     it('do not remove offer from bookings, is not an activation type', () => {
+      // given
       const booking = {
         stock: {
           resolvedOffer: {

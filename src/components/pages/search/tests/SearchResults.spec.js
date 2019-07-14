@@ -155,7 +155,7 @@ describe('src | components | pages | search | SearchResults', () => {
 
           // then
           expect(resultsTitle.children).toBe(
-            "Il n'y a pas d'offres dans cette catégorie pour le moment."
+            'Il n’y a pas d’offres dans cette catégorie pour le moment.'
           )
           expect(SearchResultItemWrapper).toHaveLength(0)
         })

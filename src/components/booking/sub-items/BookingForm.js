@@ -111,7 +111,7 @@ class BookingForm extends Component {
           {stockId && (
             <p className="text-center fs22">
               <span className="is-block">{'Vous êtes sur le point de réserver'}</span>
-              <span className="is-block">{`cette offre pour ${price}€`}</span>
+              <span className="is-block">{`cette offre pour ${price} €.`}</span>
             </p>
           )}
         </form>

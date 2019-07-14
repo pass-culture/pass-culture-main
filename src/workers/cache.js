@@ -26,7 +26,7 @@ function registerValidSW(swUrl) {
                 window.location.pathname === '/' ||
                 // eslint-disable-next-line
                 window.confirm(
-                  "Une nouvelle version a été téléchargée. Redémarrer pour l'utiliser ?"
+                  'Une nouvelle version a été téléchargée. Redémarrer pour l’utiliser ?'
                 )
               ) {
                 window.location.reload()

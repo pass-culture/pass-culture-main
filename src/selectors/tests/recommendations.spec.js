@@ -3,11 +3,13 @@ import state2 from '../../mocks/global_state_2_Testing_10_10_18'
 
 describe('selectRecommendations', () => {
   it('should return an array of object having an `uniqId` property', () => {
-    // Given
+    // given
     const state = state2
-    // When
+
+    // when
     const results = selectRecommendations(state)
-    // Then
+
+    // then
     expect(results).not.toHaveLength(0)
     results.forEach(result => {
       expect(result.uniqId).toBeDefined()
@@ -275,6 +277,7 @@ describe('selectRecommendations', () => {
         expect(result[0].distance).toStrictEqual('470 m')
       })
     })
+
     describe('when recommendation and user are less than 5000 meters away', () => {
       it('should return 2.2 kilometers when distance is 2226.38 meters', () => {
         // given
@@ -309,6 +312,7 @@ describe('selectRecommendations', () => {
         expect(result[0].distance).toStrictEqual('2.2 km')
       })
     })
+
     describe('when recommendation and user are more than 5000 meters away', () => {
       it('should return 17 kilometers when distance is 16697.92 meters', () => {
         // given
@@ -380,6 +384,7 @@ describe('selectRecommendations', () => {
         expect(result[0].distance).toStrictEqual('-')
       })
     })
+
     describe('when there is no offer for the recommendation', () => {
       it('returns "-" as distance', () => {
         // given
@@ -436,6 +441,7 @@ describe('selectRecommendations', () => {
         expect(result[0].distance).toStrictEqual('-')
       })
     })
+
     describe('when there is no venue for the recommendation', () => {
       it('returns "-" as distance', () => {
         // given

@@ -38,7 +38,7 @@ describe('src | components | pages | discovery | RawDeckNavigation', () => {
   })
 
   describe('render', () => {
-    describe(`prix de l'offre`, () => {
+    describe('prix de l’offre', () => {
       it('should equal Gratuit when offer price is 0', () => {
         // given
         const props = {

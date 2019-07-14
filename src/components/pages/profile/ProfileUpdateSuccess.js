@@ -39,7 +39,7 @@ const ProfileUpdateSuccess = ({ config, match }) => {
             className="is-red-text"
             to="/profil"
           >
-            <span>{'Retour au profil'}</span>
+            <span>{'Retourner sur mon compte'}</span>
           </Link>
         </div>
       </main>

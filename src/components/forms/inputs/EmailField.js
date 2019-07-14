@@ -80,7 +80,7 @@ EmailField.defaultProps = {
   disabled: false,
   id: null,
   label: '',
-  placeholder: 'Identifiant (email)',
+  placeholder: 'Identifiant (e-mail)',
   required: false,
   sublabel: null,
 }

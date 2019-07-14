@@ -36,7 +36,7 @@ const BookingSuccess = ({ isEvent, data }) => {
           {price} {'ont été déduits de votre pass.'}
         </span>
         {!onlineOfferUrl && (
-          <span className="is-block">{'Présentez le code suivant sur place:'}</span>
+          <span className="is-block">{'Présentez le code suivant sur place :'}</span>
         )}
       </p>
       <p className="my28">
@@ -58,33 +58,33 @@ const BookingSuccess = ({ isEvent, data }) => {
             rel="noopener noreferrer"
             target="_blank"
           >
-            <b>{"Accéder à l'offre en ligne"}</b>
+            <b>{'Accéder à l’offre en ligne'}</b>
           </a>
         )}
       </p>
       <p>
         {!onlineOfferUrl && (
           <Fragment>
-            <span className="is-block">{"Retrouvez ce code et les détails de l'offre dans"}</span>
+            <span className="is-block">{'Retrouvez ce code et les détails de l’offre dans'}</span>
             <span className="is-block">
-              {'la rubrique'}
+              {'la rubrique '}
               <Link to="/reservations">
                 <b className="is-primary-text">{'Mes Réservations'}</b>
               </Link>
-              {'de votre compte'}
+              {' de votre compte'}
             </span>
           </Fragment>
         )}
         {onlineOfferUrl && (
           <Fragment>
-            <span className="is-block">{"Retrouvez l'adresse Internet et les détails de"}</span>
+            <span className="is-block">{'Retrouvez l’adresse Internet et les détails de'}</span>
             <span className="is-block">
-              {"l'offre dans la rubrique"}
+              {'l’offre dans la rubrique '}
               <Link to="/reservations">
                 <b className="is-primary-text">{'Mes Réservations'}</b>
               </Link>
             </span>
-            <span className="is-block">{'de votre compte'}</span>
+            <span className="is-block">{' de votre compte'}</span>
           </Fragment>
         )}
       </p>

@@ -57,12 +57,10 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
           />
           <CheckBoxField
             className="checkbox-accept-CGU"
-            id="activation-accept-CGU"
             name="cguCheckBox"
             required
-            theme="primary"
           >
-            <span>
+            <span className="pc-final-form-label">
               {'J’ai lu et accepte les '}
               <a
                 className="fs16"
@@ -72,8 +70,8 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
                 target="_blank"
               >
                 {'Conditions générales d’utilisation'}
-              </a>{' '}
-              {'du pass Culture'}
+              </a>
+              {' du pass Culture'}
             </span>
           </CheckBoxField>
           <HiddenField
@@ -84,7 +82,6 @@ const FormInputs = ({ formValues, formErrors, isLoading }) => {
             id="activation-token-hidden"
             name="token"
           />
-          {/* gestion des retours erreurs de l'API */}
           <HiddenField
             id="activation-global-hidden"
             name="global"

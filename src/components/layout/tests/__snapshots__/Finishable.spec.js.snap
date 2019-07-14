@@ -9,7 +9,7 @@ ShallowWrapper {
     <div
       className="content"
     >
-      cette offre n'est pas terminée
+      cette offre n’est pas terminée
     </div>
   </Finishable>,
   Symbol(enzyme.__renderer__): Object {
@@ -30,7 +30,7 @@ ShallowWrapper {
         <div
           className="content"
         >
-          cette offre n'est pas terminée
+          cette offre n’est pas terminée
         </div>,
         <span
           className="finish-ribon"
@@ -55,11 +55,11 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "cette offre n'est pas terminée",
+          "children": "cette offre n’est pas terminée",
           "className": "content",
         },
         "ref": null,
-        "rendered": "cette offre n'est pas terminée",
+        "rendered": "cette offre n’est pas terminée",
         "type": "div",
       },
       Object {
@@ -123,7 +123,7 @@ ShallowWrapper {
           <div
             className="content"
           >
-            cette offre n'est pas terminée
+            cette offre n’est pas terminée
           </div>,
           <span
             className="finish-ribon"
@@ -148,11 +148,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "cette offre n'est pas terminée",
+            "children": "cette offre n’est pas terminée",
             "className": "content",
           },
           "ref": null,
-          "rendered": "cette offre n'est pas terminée",
+          "rendered": "cette offre n’est pas terminée",
           "type": "div",
         },
         Object {

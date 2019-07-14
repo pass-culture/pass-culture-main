@@ -18,7 +18,7 @@ const FormFooter = ({ canSubmit, isLoading }) => (
       className="button is-secondary"
       to="/connexion"
     >
-      {"J'ai déjà un compte"}
+      {'J’ai déjà un compte'}
     </NavLink>
   </footer>
 )

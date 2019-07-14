@@ -36,7 +36,7 @@ export const RawBetaPage = () => (
         <span
           aria-hidden="true"
           className="pc-icon icon-legacy-next-long"
-          title="C'est par là"
+          title="C’est par là"
         />
       </Link>
     </footer>

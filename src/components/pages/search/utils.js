@@ -63,7 +63,7 @@ export const searchResultsTitle = (
   let resultTitle
   if (cameFromOfferTypesPage) {
     resultTitle =
-      items.length === 0 ? "Il n'y a pas d'offres dans cette catégorie pour le moment." : ''
+      items.length === 0 ? 'Il n’y a pas d’offres dans cette catégorie pour le moment.' : ''
   } else {
     const count = items.length
     const resultString = pluralize(count, 'résultats')

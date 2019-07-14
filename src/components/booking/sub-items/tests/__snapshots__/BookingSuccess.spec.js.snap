@@ -59,7 +59,7 @@ ShallowWrapper {
           <span
             className="is-block"
           >
-            Présentez le code suivant sur place:
+            Présentez le code suivant sur place :
           </span>
         </p>,
         <p
@@ -78,12 +78,12 @@ ShallowWrapper {
             <span
               className="is-block"
             >
-              Retrouvez ce code et les détails de l'offre dans
+              Retrouvez ce code et les détails de l’offre dans
             </span>
             <span
               className="is-block"
             >
-              la rubrique
+              la rubrique 
               <Link
                 replace={false}
                 to="/reservations"
@@ -94,7 +94,7 @@ ShallowWrapper {
                   Mes Réservations
                 </b>
               </Link>
-              de votre compte
+               de votre compte
             </span>
           </React.Fragment>
         </p>,
@@ -197,7 +197,7 @@ ShallowWrapper {
             <span
               className="is-block"
             >
-              Présentez le code suivant sur place:
+              Présentez le code suivant sur place :
             </span>,
           ],
         },
@@ -228,11 +228,11 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Présentez le code suivant sur place:",
+              "children": "Présentez le code suivant sur place :",
               "className": "is-block",
             },
             "ref": null,
-            "rendered": "Présentez le code suivant sur place:",
+            "rendered": "Présentez le code suivant sur place :",
             "type": "span",
           },
         ],
@@ -285,12 +285,12 @@ ShallowWrapper {
               <span
                 className="is-block"
               >
-                Retrouvez ce code et les détails de l'offre dans
+                Retrouvez ce code et les détails de l’offre dans
               </span>
               <span
                 className="is-block"
               >
-                la rubrique
+                la rubrique 
                 <Link
                   replace={false}
                   to="/reservations"
@@ -301,7 +301,7 @@ ShallowWrapper {
                     Mes Réservations
                   </b>
                 </Link>
-                de votre compte
+                 de votre compte
               </span>
             </React.Fragment>,
             undefined,
@@ -318,12 +318,12 @@ ShallowWrapper {
                 <span
                   className="is-block"
                 >
-                  Retrouvez ce code et les détails de l'offre dans
+                  Retrouvez ce code et les détails de l’offre dans
                 </span>,
                 <span
                   className="is-block"
                 >
-                  la rubrique
+                  la rubrique 
                   <Link
                     replace={false}
                     to="/reservations"
@@ -334,7 +334,7 @@ ShallowWrapper {
                       Mes Réservations
                     </b>
                   </Link>
-                  de votre compte
+                   de votre compte
                 </span>,
               ],
             },
@@ -345,11 +345,11 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "Retrouvez ce code et les détails de l'offre dans",
+                  "children": "Retrouvez ce code et les détails de l’offre dans",
                   "className": "is-block",
                 },
                 "ref": null,
-                "rendered": "Retrouvez ce code et les détails de l'offre dans",
+                "rendered": "Retrouvez ce code et les détails de l’offre dans",
                 "type": "span",
               },
               Object {
@@ -358,7 +358,7 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": Array [
-                    "la rubrique",
+                    "la rubrique ",
                     <Link
                       replace={false}
                       to="/reservations"
@@ -369,13 +369,13 @@ ShallowWrapper {
                         Mes Réservations
                       </b>
                     </Link>,
-                    "de votre compte",
+                    " de votre compte",
                   ],
                   "className": "is-block",
                 },
                 "ref": null,
                 "rendered": Array [
-                  "la rubrique",
+                  "la rubrique ",
                   Object {
                     "instance": null,
                     "key": undefined,
@@ -404,7 +404,7 @@ ShallowWrapper {
                     },
                     "type": [Function],
                   },
-                  "de votre compte",
+                  " de votre compte",
                 ],
                 "type": "span",
               },
@@ -458,7 +458,7 @@ ShallowWrapper {
             <span
               className="is-block"
             >
-              Présentez le code suivant sur place:
+              Présentez le code suivant sur place :
             </span>
           </p>,
           <p
@@ -477,12 +477,12 @@ ShallowWrapper {
               <span
                 className="is-block"
               >
-                Retrouvez ce code et les détails de l'offre dans
+                Retrouvez ce code et les détails de l’offre dans
               </span>
               <span
                 className="is-block"
               >
-                la rubrique
+                la rubrique 
                 <Link
                   replace={false}
                   to="/reservations"
@@ -493,7 +493,7 @@ ShallowWrapper {
                     Mes Réservations
                   </b>
                 </Link>
-                de votre compte
+                 de votre compte
               </span>
             </React.Fragment>
           </p>,
@@ -596,7 +596,7 @@ ShallowWrapper {
               <span
                 className="is-block"
               >
-                Présentez le code suivant sur place:
+                Présentez le code suivant sur place :
               </span>,
             ],
           },
@@ -627,11 +627,11 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Présentez le code suivant sur place:",
+                "children": "Présentez le code suivant sur place :",
                 "className": "is-block",
               },
               "ref": null,
-              "rendered": "Présentez le code suivant sur place:",
+              "rendered": "Présentez le code suivant sur place :",
               "type": "span",
             },
           ],
@@ -684,12 +684,12 @@ ShallowWrapper {
                 <span
                   className="is-block"
                 >
-                  Retrouvez ce code et les détails de l'offre dans
+                  Retrouvez ce code et les détails de l’offre dans
                 </span>
                 <span
                   className="is-block"
                 >
-                  la rubrique
+                  la rubrique 
                   <Link
                     replace={false}
                     to="/reservations"
@@ -700,7 +700,7 @@ ShallowWrapper {
                       Mes Réservations
                     </b>
                   </Link>
-                  de votre compte
+                   de votre compte
                 </span>
               </React.Fragment>,
               undefined,
@@ -717,12 +717,12 @@ ShallowWrapper {
                   <span
                     className="is-block"
                   >
-                    Retrouvez ce code et les détails de l'offre dans
+                    Retrouvez ce code et les détails de l’offre dans
                   </span>,
                   <span
                     className="is-block"
                   >
-                    la rubrique
+                    la rubrique 
                     <Link
                       replace={false}
                       to="/reservations"
@@ -733,7 +733,7 @@ ShallowWrapper {
                         Mes Réservations
                       </b>
                     </Link>
-                    de votre compte
+                     de votre compte
                   </span>,
                 ],
               },
@@ -744,11 +744,11 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": "Retrouvez ce code et les détails de l'offre dans",
+                    "children": "Retrouvez ce code et les détails de l’offre dans",
                     "className": "is-block",
                   },
                   "ref": null,
-                  "rendered": "Retrouvez ce code et les détails de l'offre dans",
+                  "rendered": "Retrouvez ce code et les détails de l’offre dans",
                   "type": "span",
                 },
                 Object {
@@ -757,7 +757,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": Array [
-                      "la rubrique",
+                      "la rubrique ",
                       <Link
                         replace={false}
                         to="/reservations"
@@ -768,13 +768,13 @@ ShallowWrapper {
                           Mes Réservations
                         </b>
                       </Link>,
-                      "de votre compte",
+                      " de votre compte",
                     ],
                     "className": "is-block",
                   },
                   "ref": null,
                   "rendered": Array [
-                    "la rubrique",
+                    "la rubrique ",
                     Object {
                       "instance": null,
                       "key": undefined,
@@ -803,7 +803,7 @@ ShallowWrapper {
                       },
                       "type": [Function],
                     },
-                    "de votre compte",
+                    " de votre compte",
                   ],
                   "type": "span",
                 },

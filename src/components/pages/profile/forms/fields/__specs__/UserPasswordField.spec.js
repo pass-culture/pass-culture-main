@@ -83,7 +83,7 @@ describe('src | components | pages | profile | forms | fields | UserPasswordFiel
         const result = wrapper.instance().buildOldPasswordLabel()()
 
         // then
-        expect(result).toBe("L'ancien mot de passe est manquant.")
+        expect(result).toBe('L’ancien mot de passe est manquant.')
       })
     })
 

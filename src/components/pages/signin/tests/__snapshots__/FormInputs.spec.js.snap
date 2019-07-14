@@ -31,7 +31,7 @@ ShallowWrapper {
           id="user-identifier"
           label="Adresse e-mail"
           name="identifier"
-          placeholder="Identifiant (email)"
+          placeholder="Identifiant (e-mail)"
           required={true}
           sublabel={null}
         />,
@@ -84,7 +84,7 @@ ShallowWrapper {
           "id": "user-identifier",
           "label": "Adresse e-mail",
           "name": "identifier",
-          "placeholder": "Identifiant (email)",
+          "placeholder": "Identifiant (e-mail)",
           "required": true,
           "sublabel": null,
         },
@@ -160,7 +160,7 @@ ShallowWrapper {
             id="user-identifier"
             label="Adresse e-mail"
             name="identifier"
-            placeholder="Identifiant (email)"
+            placeholder="Identifiant (e-mail)"
             required={true}
             sublabel={null}
           />,
@@ -213,7 +213,7 @@ ShallowWrapper {
             "id": "user-identifier",
             "label": "Adresse e-mail",
             "name": "identifier",
-            "placeholder": "Identifiant (email)",
+            "placeholder": "Identifiant (e-mail)",
             "required": true,
             "sublabel": null,
           },

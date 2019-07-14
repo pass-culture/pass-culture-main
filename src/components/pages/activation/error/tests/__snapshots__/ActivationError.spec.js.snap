@@ -36,7 +36,7 @@ ShallowWrapper {
             email="support@passculture.app"
             headers={
               Object {
-                "subject": "Votre question depuis l'application pass Culture",
+                "subject": "Votre question depuis l’application pass Culture",
               }
             }
             id="activation-error-contact-us"
@@ -91,7 +91,7 @@ ShallowWrapper {
             email="support@passculture.app"
             headers={
               Object {
-                "subject": "Votre question depuis l'application pass Culture",
+                "subject": "Votre question depuis l’application pass Culture",
               }
             }
             id="activation-error-contact-us"
@@ -115,7 +115,7 @@ ShallowWrapper {
             "className": "no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16",
             "email": "support@passculture.app",
             "headers": Object {
-              "subject": "Votre question depuis l'application pass Culture",
+              "subject": "Votre question depuis l’application pass Culture",
             },
             "id": "activation-error-contact-us",
             "obfuscate": true,
@@ -163,7 +163,7 @@ ShallowWrapper {
               email="support@passculture.app"
               headers={
                 Object {
-                  "subject": "Votre question depuis l'application pass Culture",
+                  "subject": "Votre question depuis l’application pass Culture",
                 }
               }
               id="activation-error-contact-us"
@@ -218,7 +218,7 @@ ShallowWrapper {
               email="support@passculture.app"
               headers={
                 Object {
-                  "subject": "Votre question depuis l'application pass Culture",
+                  "subject": "Votre question depuis l’application pass Culture",
                 }
               }
               id="activation-error-contact-us"
@@ -242,7 +242,7 @@ ShallowWrapper {
               "className": "no-background border-all rd4 py12 px18 is-inline-block is-white-text text-center fs16",
               "email": "support@passculture.app",
               "headers": Object {
-                "subject": "Votre question depuis l'application pass Culture",
+                "subject": "Votre question depuis l’application pass Culture",
               },
               "id": "activation-error-contact-us",
               "obfuscate": true,

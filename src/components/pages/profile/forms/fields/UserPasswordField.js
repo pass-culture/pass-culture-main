@@ -7,7 +7,7 @@ import { PasswordField } from '../../../../forms/inputs'
 import { validateMatchingFields } from '../../../../forms/validators'
 import withProfileForm from '../withProfileForm'
 
-const ERROR_OLD_PASSWORD = "L'ancien mot de passe est manquant."
+const ERROR_OLD_PASSWORD = 'L’ancien mot de passe est manquant.'
 
 export class UserPasswordField extends React.PureComponent {
   buildOldPasswordLabel = () => value => (value && !isEmpty(value) ? undefined : ERROR_OLD_PASSWORD)

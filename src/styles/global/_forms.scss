@@ -44,7 +44,9 @@
 .pc-final-form-text,
 .pc-final-form-password,
 .pc-final-form-selectbox,
-.pc-final-form-datepicker {
+.pc-final-form-datepicker,
+.pc-final-form-contact,
+.pc-final-form-cguCheckBox {
   // rangés par ordre d'architecture HTML
   .pc-final-form-label {
     @extend .pb7;

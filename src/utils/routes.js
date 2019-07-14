@@ -23,7 +23,7 @@ const routes = [
   {
     component: BetaPage,
     path: '/beta',
-    title: "Bienvenue dans l'avant-première du Pass Culture",
+    title: 'Bienvenue dans l’avant-première du pass Culture',
   },
   {
     component: ActivationRoutesContainer,

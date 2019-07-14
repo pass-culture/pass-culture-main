@@ -2,8 +2,8 @@ import React from 'react'
 import { shallow } from 'enzyme'
 import { Form } from 'react-final-form'
 import { Redirect } from 'react-router'
-import { FormFooter } from '../../../../forms/FormFooter'
 
+import { FormFooter } from '../../../../forms/FormFooter'
 import RawActivationPassword from '../RawActivationPassword'
 
 describe('src | components | pages | activation | password | RawActivationPassword', () => {
@@ -53,11 +53,11 @@ describe('src | components | pages | activation | password | RawActivationPasswo
 
   describe('when token validity has not been checked', () => {
     it('should check token validity', () => {
-      // Given
+      // given
       props.hasTokenBeenChecked = false
       props.initialValues.token = 'my-token-to-check'
 
-      // When
+      // when
       shallow(<RawActivationPassword {...props} />)
 
       // then
@@ -65,11 +65,11 @@ describe('src | components | pages | activation | password | RawActivationPasswo
     })
 
     it('should not redirect to invalid link page when token is marked as invalid', () => {
-      // Given
+      // given
       props.hasTokenBeenChecked = false
       props.isValidToken = false
 
-      // When
+      // when
       const wrapper = shallow(<RawActivationPassword {...props} />)
 
       // then
@@ -80,11 +80,11 @@ describe('src | components | pages | activation | password | RawActivationPasswo
 
   describe('when token validity has been checked', () => {
     it('should not check validity', () => {
-      // Given
+      // given
       props.hasTokenBeenChecked = true
       props.initialValues.token = 'my-token-to-check'
 
-      // When
+      // when
       shallow(<RawActivationPassword {...props} />)
 
       // then

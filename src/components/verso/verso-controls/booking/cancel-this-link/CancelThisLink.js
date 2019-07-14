@@ -35,7 +35,7 @@ class CancelThisLink extends React.PureComponent {
   onFailure = (state, request) => {
     const { dispatch } = this.props
     const { payload } = request
-    const message = get(payload, 'errors.booking') || [`Une erreur inconnue s'est produite`]
+    const message = get(payload, 'errors.booking') || ['Une erreur inconnue s’est produite']
 
     const options = {
       buttons: [

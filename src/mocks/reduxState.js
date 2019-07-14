@@ -4587,7 +4587,7 @@ const state = {
           product: {
             dateModifiedAtLastProvider: '2018-10-08T13:18:03.716190Z',
             description:
-              'Profite de 3 mois de musique illimitée avec l’offre Deezer Premium pour 4,99 €/mois.\n\n• Toute la musique que tu aimes sans aucune limite\n• Les nouveautés de tes artistes préférés\n• Tes titres favoris même quand ça ne capte pas\n\n0 pub, 0 contrainte, 100% musique, il ne te reste plus qu’à activer ton offre.\n\nPour valider ton offre, tu dois utiliser la même adresse mail sur ton compte Deezer que sur ton compte Pass Culture.',
+              'Profite de 3 mois de musique illimitée avec l’offre Deezer Premium pour 4,99 €/mois.\n\n• Toute la musique que tu aimes sans aucune limite\n• Les nouveautés de tes artistes préférés\n• Tes titres favoris même quand ça ne capte pas\n\n0 pub, 0 contrainte, 100% musique, il ne te reste plus qu’à activer ton offre.\n\nPour valider ton offre, tu dois utiliser la même adresse e-mail sur ton compte Deezer que sur ton compte pass Culture.',
             extraData: null,
             firstThumbDominantColor: null,
             id: '99',
@@ -4596,7 +4596,7 @@ const state = {
             lastProviderId: null,
             mediaUrls: [],
             modelName: 'Product',
-            name: 'Deezer Feat. Pass Culture',
+            name: 'Deezer Feat. pass Culture',
             thumbCount: 0,
             type: 'ThingType.MUSIQUE',
             url: 'http://www.deezer.com/passculture',

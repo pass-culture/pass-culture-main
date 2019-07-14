@@ -154,7 +154,7 @@ describe('src | components | verso | verso-controls | booking | CancelThisLink',
       expect(dispatch).toHaveBeenCalledWith({
         options: {
           buttons: expect.any(Array),
-          text: "Une erreur inconnue s'est produite",
+          text: 'Une erreur inconnue s’est produite',
           title: 'Annulation impossible',
         },
         type: 'TOGGLE_SHARE_POPIN',

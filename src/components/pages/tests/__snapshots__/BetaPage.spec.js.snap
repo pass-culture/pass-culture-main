@@ -631,7 +631,7 @@ initialize {
                     "attribs": Object {
                       "aria-hidden": "true",
                       "class": "pc-icon icon-legacy-next-long",
-                      "title": "C'est par là",
+                      "title": "C’est par là",
                     },
                     "children": Array [],
                     "name": "span",
@@ -665,7 +665,7 @@ initialize {
                   "attribs": Object {
                     "aria-hidden": "true",
                     "class": "pc-icon icon-legacy-next-long",
-                    "title": "C'est par là",
+                    "title": "C’est par là",
                   },
                   "children": Array [],
                   "name": "span",
@@ -788,7 +788,7 @@ initialize {
                   "attribs": Object {
                     "aria-hidden": "true",
                     "class": "pc-icon icon-legacy-next-long",
-                    "title": "C'est par là",
+                    "title": "C’est par là",
                   },
                   "children": Array [],
                   "name": "span",
@@ -822,7 +822,7 @@ initialize {
                 "attribs": Object {
                   "aria-hidden": "true",
                   "class": "pc-icon icon-legacy-next-long",
-                  "title": "C'est par là",
+                  "title": "C’est par là",
                 },
                 "children": Array [],
                 "name": "span",

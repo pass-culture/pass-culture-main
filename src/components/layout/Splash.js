@@ -47,7 +47,7 @@ class Splash extends React.PureComponent {
             style={{ ...defaultStyle, ...transitionStyles[state] }}
           >
             <Icon
-              alt="Logo Pass Culture"
+              alt="Logo pass Culture"
               svg="logo-group"
             />
           </div>

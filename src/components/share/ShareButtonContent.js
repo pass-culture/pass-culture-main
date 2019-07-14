@@ -80,7 +80,7 @@ class ShareButtonContent extends React.PureComponent {
       const { iscopied } = this.state
 
       if (iscopied) {
-        popinOptions.text = 'Le lien a bien été copié'
+        popinOptions.text = 'Le lien a bien été copié.'
         popinOptions.buttons = [this.getCloseButton(this.onCloseHandler)]
       }
 

@@ -12,7 +12,7 @@ export const { NODE_ENV, TYPEFORM_URL_CULTURAL_PRACTICES_POLL } = process.env
 export const APP_VERSION = version
 export const USE_REDUX_PERSIST = false
 export const PERSIST_STORE_KEY = 'app-passculture'
-export const PROJECT_NAME = 'Pass Culture'
+export const PROJECT_NAME = 'pass Culture'
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
 export const MOBILE_OS = getMobileOperatingSystem()
@@ -24,7 +24,7 @@ export const WEBAPP_CONTACT_EXTERNAL_PAGE = 'https://docs.passculture.app/experi
 // - ./webapp/config-production.xml
 // - ./webapp/public/MentionsLegalesPass.md
 export const SUPPORT_EMAIL = 'support@passculture.app'
-export const SUPPORT_EMAIL_SUBJECT = encodeURI("Votre question depuis l'application pass Culture")
+export const SUPPORT_EMAIL_SUBJECT = encodeURI('Votre question depuis l’application pass Culture')
 
 export const API_URL = process.env.API_URL || 'http://localhost'
 

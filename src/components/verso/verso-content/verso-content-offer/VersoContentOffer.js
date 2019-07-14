@@ -17,7 +17,9 @@ class VersoContentOffer extends React.PureComponent {
   renderOfferDetails() {
     const { recommendation } = this.props
     const description = get(recommendation, 'offer.description')
+
     if (!description) return null
+
     return (
       <div>
         <h3>{'Et en détails ?'}</h3>
@@ -48,6 +50,7 @@ class VersoContentOffer extends React.PureComponent {
     const stageDirector = get(extraData, 'stageDirector')
     const type = get(musicType, 'label') || get(showType, 'label')
     const subType = get(musicSubType, 'label') || get(showSubType, 'label')
+
     return (
       <div>
         <h3>{'Quoi ?'}</h3>
@@ -112,7 +115,7 @@ class VersoContentOffer extends React.PureComponent {
             {!obj.userHasCancelledThisDate && obj.userHasAlreadyBookedThisDate && ' (réservé)'}
           </li>
         ))}
-        {hasMoreBookables && <li>{'Cliquez sur "j\'y vais" pour voir plus de dates.'}</li>}
+        {hasMoreBookables && <li>{'Cliquez sur "j’y vais" pour voir plus de dates.'}</li>}
       </Fragment>
     )
   }
@@ -120,11 +123,12 @@ class VersoContentOffer extends React.PureComponent {
   renderThingOfferDateInfos() {
     const { bookables } = this.props
     const limitDatetime = get(bookables, '[0].bookinglimitDatetime')
+
     return (
       <Fragment>
         <li>
           {'Dès maintenant'}
-          {limitDatetime && ` et jusqu’au ${limitDatetime}`}{' '}
+          {limitDatetime && ` et jusqu’au ${limitDatetime}`}
         </li>
       </Fragment>
     )

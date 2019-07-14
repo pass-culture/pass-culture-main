@@ -115,7 +115,7 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
 
     // then
     const liElements = wrapper.find('.dates-info').find('li')
-    expect(liElements.at(1).text()).toBe('Cliquez sur "j\'y vais" pour voir plus de dates.')
+    expect(liElements.at(1).text()).toBe('Cliquez sur "j’y vais" pour voir plus de dates.')
   })
 
   it('should render thing offer infos when offer is thing, not finished and booking is available', () => {
@@ -136,7 +136,7 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
 
     // then
     const liElements = wrapper.find('.dates-info').find('li')
-    expect(liElements.at(0).text()).toBe('Dès maintenant et jusqu’au 2019-04-01 ')
+    expect(liElements.at(0).text()).toBe('Dès maintenant et jusqu’au 2019-04-01')
   })
 
   it('should render offer is unavailable when offer is finished', () => {

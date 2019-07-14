@@ -20,7 +20,7 @@ const FormFields = () => (
       name="email"
       placeholder="nom@exemple.fr"
       required
-      sublabel="...pour se connecter et récupérer son mot de passe en cas d'oubli : "
+      sublabel="...pour se connecter et récupérer son mot de passe en cas d’oubli : "
     />
     <PasswordField
       autoComplete="new-password"
@@ -36,16 +36,15 @@ const FormFields = () => (
       name="contact_ok"
       required
     >
-      <span className="subtitle">
-        {' '}
-        {"J'accepte d'être contacté par mail pour donner mon avis sur le"}{' '}
+      <span className="pc-final-form-label">
+        {'J’accepte d’être contacté par e-mail pour donner mon avis sur le '}
         <a
           href="http://passculture.beta.gouv.fr"
-          style={{ textDecoration: 'underline' }}
+          rel="noopener noreferrer"
+          target="_blank"
         >
           {'pass Culture'}
         </a>
-        {'.'}
         <span className="pc-final-form-asterisk">{'*'}</span>
       </span>
     </CheckBoxField>

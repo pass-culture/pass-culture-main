@@ -378,7 +378,7 @@ describe('src | components | pages | search | utils', () => {
           )
 
           // then
-          expected = "Il n'y a pas d'offres dans cette catégorie pour le moment."
+          expected = 'Il n’y a pas d’offres dans cette catégorie pour le moment.'
           expect(result).toBe(expected)
         })
       })

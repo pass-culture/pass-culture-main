@@ -25,7 +25,7 @@ const ProfileMainView = ({ config, currentUser }) => (
         {currentUser && <MonAvatar currentUser={currentUser} />}
         <div id="profile-page-user-passculture">
           <h3 className="dotted-bottom-primary pb8 px12">
-            <span className="is-italic is-uppercase is-primary-text">{'MON PASS CULTURE'}</span>
+            <span className="is-italic is-uppercase is-primary-text">{'Mon pass Culture'}</span>
           </h3>
           <div className="mt12 px12">
             {currentUser && <MonPassCulture currentUser={currentUser} />}

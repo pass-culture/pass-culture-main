@@ -12,7 +12,7 @@ class Debug extends React.PureComponent {
     const { dispatchShowModal } = this.props
     dispatchShowModal(
       <div className="debug-modal">
-        <h1 className="title">{'Pass Culture Debug'}</h1>
+        <h1 className="title">{'pass Culture Debug'}</h1>
         <pre>{get(window, 'logContent', []).map(this.renderLine)}</pre>
       </div>,
       {

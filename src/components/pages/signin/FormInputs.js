@@ -15,7 +15,7 @@ const FormInputs = () => (
       id="user-identifier"
       label="Adresse e-mail"
       name="identifier"
-      placeholder="Identifiant (email)"
+      placeholder="Identifiant (e-mail)"
       required
     />
     <PasswordField

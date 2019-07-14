@@ -1,7 +1,6 @@
 import { filterRoutes, getMenuRoutes } from '../routes-utils'
 
 import routes from '../routes'
-
 import DiscoveryPage from '../../components/pages/discovery'
 import FavoritesPage from '../../components/pages/FavoritesPage'
 import MyBookingsContainer from '../../components/pages/my-bookings/MyBookingsContainer'
@@ -10,6 +9,7 @@ import SearchContainer from '../../components/pages/search/SearchContainer'
 
 describe('filterRoutes', () => {
   it('filters routes for react-router', () => {
+    // given
     const values = [
       { path: '/' },
       { path: '/toto' },
@@ -18,7 +18,11 @@ describe('filterRoutes', () => {
       { exact: false, path: '/toto/:vars?/:vars2?/:vars3?' },
       { href: 'maitlo:mail.cool' },
     ]
+
+    // when
     const result = filterRoutes(values)
+
+    // then
     const expected = [
       { exact: true, path: '/' },
       { exact: true, path: '/toto' },
@@ -29,18 +33,19 @@ describe('filterRoutes', () => {
     ]
     expect(result).toStrictEqual(expected)
   })
+
   it('filters out routes with disabled true', () => {
-    // Given
+    // given
     const allRoutes = [
       { disabled: false, exact: true, path: '/' },
       { disabled: true, exact: true, path: '/disabledRoute' },
       { exact: true, path: '/unknownDisableRoute' },
     ]
 
-    // When
+    // when
     const filteredRoutes = filterRoutes(allRoutes)
 
-    // Then
+    // then
     expect(filteredRoutes).toStrictEqual([
       { disabled: false, exact: true, path: '/' },
       { exact: true, path: '/unknownDisableRoute' },
@@ -50,6 +55,7 @@ describe('filterRoutes', () => {
 
 describe('getMenuRoutes', () => {
   it('filter routes for react-router', () => {
+    // given
     const values = [
       { path: '/' },
       { path: '/toto' },
@@ -60,7 +66,11 @@ describe('getMenuRoutes', () => {
       { href: 'mailto:mail.cool' },
       { href: 'mailto:mail.cool', icon: 'toto' },
     ]
+
+    // when
     const result = getMenuRoutes(values)
+
+    // then
     const expected = [
       { icon: 'toto', path: '/toto' },
       { href: '/toto/:vars?', icon: 'toto' },
@@ -73,6 +83,8 @@ describe('getMenuRoutes', () => {
   it('should filter routes from webapp', () => {
     // when
     const result = getMenuRoutes(routes)
+
+    // then
     const expected = [
       {
         component: DiscoveryPage,
@@ -125,8 +137,6 @@ describe('getMenuRoutes', () => {
         title: 'Mentions légales',
       },
     ]
-
-    // then
     expect(result).toStrictEqual(expected)
   })
 })

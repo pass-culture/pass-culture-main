@@ -73,5 +73,3 @@ test("Je vois l'offre dans 'mes réservations' et je peux cliquer dessus pour re
     .expect(getPageUrl())
     .match(/\/decouverte\/.*\/verso$/)
 })
-
-// TODO Ecrire un test pour l'annulation d'une réservation
