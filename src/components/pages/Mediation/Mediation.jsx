@@ -1,20 +1,13 @@
+import React, { Fragment, PureComponent } from 'react'
 import classnames from 'classnames'
 import get from 'lodash.get'
 import { showNotification } from 'pass-culture-shared'
-import React, { PureComponent, Fragment } from 'react'
-import { connect } from 'react-redux'
-import { NavLink, withRouter } from 'react-router-dom'
-import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
+import { NavLink } from 'react-router-dom'
 
-import withRedirectToSigninWhenNotAuthenticated from '../../hocs/with-login/withRedirectToSigninWhenNotAuthenticated'
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import Main from '../../layout/Main'
 import UploadThumb from '../../layout/UploadThumb'
-import selectMediationById from '../../../selectors/selectMediationById'
-import selectOfferById from '../../../selectors/selectOfferById'
-import selectOffererById from '../../../selectors/selectOffererById'
-import selectVenueById from '../../../selectors/selectVenueById'
 import { mediationNormalizer, offerNormalizer } from '../../../utils/normalizers'
 import CanvasTools from '../../../utils/canvas'
 
@@ -461,23 +454,4 @@ class Mediation extends PureComponent {
   }
 }
 
-function mapStateToProps(state, ownProps) {
-  const {
-    match: {
-      params: { mediationId, offerId },
-    },
-  } = ownProps
-  const offer = selectOfferById(state, offerId)
-  const venue = selectVenueById(state, get(offer, 'venueId'))
-  return {
-    offer,
-    offerer: selectOffererById(state, get(venue, 'managingOffererId')),
-    mediation: selectMediationById(state, mediationId),
-  }
-}
-
-export default compose(
-  withRedirectToSigninWhenNotAuthenticated,
-  withRouter,
-  connect(mapStateToProps)
-)(Mediation)
+export default Mediation

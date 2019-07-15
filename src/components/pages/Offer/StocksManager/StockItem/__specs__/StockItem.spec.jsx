@@ -38,7 +38,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('onFormSubmit()', () => {
+  describe('handleOnFormSubmit()', () => {
     it('should set state isRequestPending to true', () => {
       // given
       const wrapper = shallow(<StockItem {...props} />)

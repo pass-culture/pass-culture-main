@@ -48,7 +48,7 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('onConfirmDeleteClick()', () => {
+  describe('handleOnConfirmDeleteClick()', () => {
     it('should dispatch the request data', () => {
       // given
       const expectedAction = {
