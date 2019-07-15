@@ -1,5 +1,4 @@
 import get from 'lodash.get'
-import React from 'react'
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 import {compose} from 'redux'
@@ -10,7 +9,6 @@ import selectMediationById from 'selectors/selectMediationById'
 import selectOfferById from 'selectors/selectOfferById'
 import selectOffererById from 'selectors/selectOffererById'
 import selectVenueById from 'selectors/selectVenueById'
-import {mediationNormalizer, offerNormalizer} from 'utils/normalizers'
 
 
 function mapStateToProps(state, ownProps) {

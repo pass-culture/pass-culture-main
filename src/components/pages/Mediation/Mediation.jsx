@@ -5,7 +5,6 @@ import {showNotification} from "pass-culture-shared";
 import {requestData} from "redux-saga-data";
 import {NavLink} from 'react-router-dom'
 
-import {withRedirectToSigninWhenNotAuthenticated} from 'components/hocs'
 import HeroSection from 'components/layout/HeroSection/HeroSection'
 import Main from 'components/layout/Main'
 import UploadThumb from 'components/layout/UploadThumb'
@@ -30,7 +29,7 @@ class Mediation extends PureComponent {
   static getDerivedStateFromProps(nextProps, prevState) {
     const {
       match: {
-        params: { mediationId },
+        params: {mediationId},
       },
     } = nextProps
     return {
@@ -43,11 +42,11 @@ class Mediation extends PureComponent {
     const {
       dispatch,
       match: {
-        params: { mediationId, offerId },
+        params: {mediationId, offerId},
       },
       offer,
     } = this.props
-    const { isNew } = this.state
+    const {isNew} = this.state
     !offer &&
     dispatch(
       requestData({
@@ -70,12 +69,12 @@ class Mediation extends PureComponent {
   }
 
   handleFailData = (state, action) => {
-    const { dispatch, history, offer } = this.props
+    const {dispatch, history, offer} = this.props
     const {
-      payload: { errors },
+      payload: {errors},
     } = action
 
-    this.setState({ isLoading: false }, () => {
+    this.setState({isLoading: false}, () => {
       history.push(`/offres/${offer.id}`)
       dispatch(
         showNotification({
@@ -87,9 +86,9 @@ class Mediation extends PureComponent {
   }
 
   handleSuccessData = () => {
-    const { dispatch, history, offer } = this.props
+    const {dispatch, history, offer} = this.props
 
-    this.setState({ isLoading: false }, () => {
+    this.setState({isLoading: false}, () => {
       history.push(`/offres/${offer.id}`)
       dispatch(
         showNotification({
@@ -193,8 +192,8 @@ class Mediation extends PureComponent {
   }
 
   onSubmit = () => {
-    const { dispatch, match, mediation, offerer } = this.props
-    const { croppingRect, image, credit, isNew } = this.state
+    const {dispatch, match, mediation, offerer} = this.props
+    const {croppingRect, image, credit, isNew} = this.state
 
     const offererId = get(offerer, 'id')
     const offerId = match.params.offerId
@@ -213,7 +212,7 @@ class Mediation extends PureComponent {
     body.append('croppingRect[width]', croppingRect.width)
     body.append('croppingRect[height]', croppingRect.height)
 
-    this.setState({ isLoading: true })
+    this.setState({isLoading: true})
 
     dispatch(
       requestData({
@@ -229,7 +228,7 @@ class Mediation extends PureComponent {
   }
 
   onUrlChange = event => {
-    this.setState({ inputUrl: event.target.value })
+    this.setState({inputUrl: event.target.value})
   }
 
   onUploadClick = event => {
@@ -243,11 +242,11 @@ class Mediation extends PureComponent {
   render() {
     const {
       match: {
-        params: { offerId },
+        params: {offerId},
       },
       mediation,
     } = this.props
-    const { image, credit, imageUrl, inputUrl, isLoading, isNew } = this.state
+    const {image, credit, imageUrl, inputUrl, isLoading, isNew} = this.state
     const backPath = `/offres/${offerId}`
 
     const $imageSections = (image || imageUrl) && (
@@ -269,7 +268,7 @@ class Mediation extends PureComponent {
                 <span>
                   <b>Les éléments importants</b> (p. ex. un visage, une zone
                   d’intérêt…) doivent se situer <b>dans le cadre 2 vert.</b>
-                  <br /> C’est la première vision de l'offre qu'aura
+                  <br/> C’est la première vision de l'offre qu'aura
                   l'utilisateur.
                 </span>
               </li>
@@ -313,7 +312,7 @@ class Mediation extends PureComponent {
               </div>
             </div>
 
-            <hr className="dotted" />
+            <hr className="dotted"/>
             <div className="row">
               <UploadThumb
                 border={IMAGE_UPLOAD_BORDER}
@@ -343,15 +342,15 @@ class Mediation extends PureComponent {
                 type="text"
                 className="input is-rounded"
                 value={credit}
-                onChange={e => this.setState({ credit: e.target.value })}
+                onChange={e => this.setState({credit: e.target.value})}
               />
             </div>
           </div>
         </div>
-        <hr />
+        <hr/>
         <div
           className="field is-grouped is-grouped-centered"
-          style={{ justifyContent: 'space-between' }}>
+          style={{justifyContent: 'space-between'}}>
           <div className="control">
             <NavLink
               to={backPath}
@@ -376,7 +375,7 @@ class Mediation extends PureComponent {
     return (
       <Main
         name="mediation"
-        backTo={{ path: backPath, label: "Revenir à l'offre" }}
+        backTo={{path: backPath, label: "Revenir à l'offre"}}
         handleDataRequest={this.handleDataRequest}>
         <HeroSection title={`${isNew ? 'Créez' : 'Modifiez'} une accroche`}>
           <p className="subtitle">
@@ -388,7 +387,7 @@ class Mediation extends PureComponent {
             </b>
             et la rend visuellement plus attrayante. C'est une image (et bientôt
             une phrase ou une vidéo) intrigante, percutante, séduisante...
-            <br /> en un mot : accrocheuse.
+            <br/> en un mot : accrocheuse.
           </p>
           <p>
             Les accroches font la spécificité du Pass Culture. Prenez le temps
@@ -396,7 +395,7 @@ class Mediation extends PureComponent {
           </p>
           <p>
             Le fichier doit peser <b>100Ko minimum.</b>
-            <br />
+            <br/>
             Utilisateurs avancés : vous pouvez
             <a href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip">
               {' '}
