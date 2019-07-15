@@ -1,4 +1,5 @@
 from datetime import datetime
+from freezegun import freeze_time
 
 from freezegun import freeze_time
 
@@ -27,6 +28,7 @@ class ReimbursementDetailsCSVTest:
         assert _get_header(csv,
                            0) == "Année;Virement;Créditeur;SIRET créditeur;Adresse créditeur;IBAN;Raison sociale du lieu;Nom de l'offre;Nom utilisateur;Prénom utilisateur;Contremarque;Date de validation de la réservation;Montant remboursé;Statut du remboursement"
 
+    @freeze_time('2019-07-05 12:00:00')
     @clean_database
     def test_generate_payment_details_csv_with_right_values(self, app):
         # given
