@@ -1,19 +1,19 @@
-from itertools import chain
 from datetime import datetime
 
-from tests.conftest import clean_database
+from freezegun import freeze_time
 
-from models import Booking, Offerer, Payment, PcObject
-from models.payment_status import TransactionStatus, PaymentStatus
-from scripts.payment.batch_steps import generate_new_payments
-from tests.test_utils import create_bank_information, create_stock_with_thing_offer, \
-    create_deposit, create_venue, create_offerer, create_payment, \
-    create_user, create_booking, create_user_offerer
-from repository.reimbursement_queries import find_all_offerer_reimbursement_details
-from domain.reimbursement import generate_reimbursement_details_csv
 from domain.reimbursement import ReimbursementDetails
+from domain.reimbursement import generate_reimbursement_details_csv
+from models import Payment, PcObject
+from models.payment_status import TransactionStatus, PaymentStatus
+from repository.reimbursement_queries import find_all_offerer_reimbursement_details
+from scripts.payment.batch_steps import generate_new_payments
+from tests.conftest import clean_database
+from tests.test_utils import create_bank_information, create_stock_with_thing_offer, \
+    create_deposit, create_venue, create_offerer, create_user, create_booking, create_user_offerer
 
 
+@freeze_time('2019-07-10')
 class ReimbursementDetailsCSVTest:
     @clean_database
     def test_generate_payment_details_csv_with_human_readable_header(self, app):
@@ -45,7 +45,6 @@ class ReimbursementDetailsCSVTest:
         generate_new_payments()
 
         reimbursement_details = find_all_offerer_reimbursement_details(offerer1.id)
-
 
         # when
         csv = generate_reimbursement_details_csv(reimbursement_details)
