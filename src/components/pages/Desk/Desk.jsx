@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { getRequestErrorStringFromErrors } from 'pass-culture-shared'
+import {getRequestErrorStringFromErrors, Icon} from 'pass-culture-shared'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 import DeskState from './DeskState/DeskState'
 import Main from '../../layout/Main'
+import HeroSection from "../../layout/HeroSection/HeroSection";
 
 const CODE_MAX_LENGTH = 6
 const CODE_REGEX_VALIDATION = /[^a-z0-9]/i
@@ -195,13 +196,11 @@ class Desk extends React.PureComponent {
     const { code, status } = this.state
     return (
       <Main name="desk">
-        <div className="section hero">
-          <h1 className="main-title">{'Guichet'}</h1>
+        <HeroSection title="Guichet">
           <p className="subtitle">
             {'Enregistrez les codes de réservations présentés par les porteurs du pass.'}
           </p>
-        </div>
-
+        </HeroSection>
         <div className="section form">
           <p className="subtitle is-medium has-text-weight-bold">
             {'Scannez un code-barres ou saisissez-le ci-dessous :'}
