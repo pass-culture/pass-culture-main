@@ -274,7 +274,7 @@ class Mediation extends PureComponent {
               <li className="mb12">
                 <span className="li-number">{'2'}</span>
                 <span>
-                  <b>{'Les éléments importants'}</b>
+                  <b>{'Les éléments importants '}</b>
                   {' (p. ex. un visage, une zone d’intérêt…) doivent se situer '}
                   <b>{'dans le cadre 2 vert.'}</b>
                   <br />
