@@ -71,7 +71,7 @@ def check_reset_token_validity(user):
     if datetime.utcnow() > user.resetPasswordTokenValidityLimit:
         errors = ApiErrors()
         errors.add_error('token',
-                        'Votre lien de changement de mot de passe est périmé. Veuillez effecture une nouvelle demande.')
+                        'Votre lien de changement de mot de passe est périmé. Veuillez effectuer une nouvelle demande.')
         raise errors
 
 

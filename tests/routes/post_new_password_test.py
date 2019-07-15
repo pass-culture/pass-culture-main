@@ -26,7 +26,7 @@ class PostNewPassword:
             # then
             assert response.status_code == 400
             assert response.json['token'] == [
-                'Votre lien de changement de mot de passe est périmé. Veuillez effecture une nouvelle demande.'
+                'Votre lien de changement de mot de passe est périmé. Veuillez effectuer une nouvelle demande.'
             ]
 
         @clean_database

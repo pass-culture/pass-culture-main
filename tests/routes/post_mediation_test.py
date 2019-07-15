@@ -117,7 +117,6 @@ class Post:
                 'offerId': humanize(offer.id),
                 'offererId': humanize(offerer.id),
                 'thumb': (BytesIO(ONE_PIXEL_PNG), '')
-
             }
 
             # when
@@ -144,7 +143,6 @@ class Post:
                 'offerId': humanize(offer.id),
                 'offererId': humanize(offerer.id),
                 'thumb': (BytesIO(thumb), 'image.png')
-
             }
 
             # when
@@ -172,7 +170,6 @@ class Post:
                 'offerId': humanize(offer.id),
                 'offererId': humanize(offerer.id),
                 'thumb': (BytesIO(thumb), 'image.png')
-
             }
             PcObject.reset_mock()
 

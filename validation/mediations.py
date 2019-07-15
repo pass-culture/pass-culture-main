@@ -8,12 +8,14 @@ MINIMUM_FILE_SIZE = 100 * 1000
 
 
 def check_thumb_in_request(files, form):
+    missing_image_error = ApiErrors({'thumb': ["Vous devez fournir une image d'accroche"]})
+    
     if 'thumb' in files:
         if files['thumb'].filename == '':
-            raise ApiErrors({'thumb': ["Vous devez fournir une image d'accroche"]})
+            raise missing_image_error
 
     elif 'thumbUrl' not in form:
-        raise ApiErrors({'thumb': ["Vous devez fournir une image d'accroche"]})
+        raise missing_image_error
 
 
 def check_thumb_quality(thumb: bytes):
