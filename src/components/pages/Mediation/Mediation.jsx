@@ -5,7 +5,6 @@ import { showNotification } from 'pass-culture-shared'
 import { requestData } from 'redux-saga-data'
 import { NavLink } from 'react-router-dom'
 
-import withRedirectToSigninWhenNotAuthenticated from '../../hocs/with-login/withRedirectToSigninWhenNotAuthenticated'
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import Main from '../../layout/Main'
 import UploadThumb from '../../layout/UploadThumb'
