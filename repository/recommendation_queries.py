@@ -1,5 +1,6 @@
 from datetime import datetime
 from sqlalchemy import func, or_, and_
+from sqlalchemy.sql.expression import literal
 
 from models import Mediation, \
                    Offer, \
@@ -20,7 +21,17 @@ def find_unseen_tutorials_for_user(seen_recommendation_ids, user):
         .all()
 
 
-def count_read_recommendations_for_user(user):
+def count_read_recommendations_for_user(user, limit=None):
+    query =  Recommendation.query.filter((Recommendation.user == user)
+                                         & (Recommendation.dateRead != None))
+    if limit:
+        query = query.with_entities(literal(1)) \
+                     .limit(limit) \
+                     .from_self()
+    return query.count()
+
+
+def count_recommendation(user):
     return keep_only_bookable_stocks() \
         .filter((Recommendation.user == user) & (Recommendation.dateRead != None)) \
         .count()

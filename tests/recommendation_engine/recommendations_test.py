@@ -47,6 +47,7 @@ def test_create_recommendations_for_discovery_does_not_put_mediation_ids_of_inac
 
 
 class GiveRequestedRecommendationToUser:
+    @clean_database
     def test_when_recommendation_exists_returns_it(self):
         # Given
         user = create_user()
@@ -64,6 +65,7 @@ class GiveRequestedRecommendationToUser:
         # Then
         assert result_reco.id == reco_ok.id
 
+    @clean_database
     def test_when_recommendation_exists_for_other_user_returns_a_new_one_for_the_current_user(self):
         # Given
         user = create_user()

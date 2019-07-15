@@ -9,7 +9,9 @@ from domain.types import get_event_or_thing_type_values_from_sublabels
 from models import ApiErrors, Recommendation, Offer, Mediation, PcObject
 from recommendations_engine import get_offers_for_recommendations_discovery
 from repository import offer_queries
+from repository.mediation_queries import get_all_tuto_mediations
 from repository.offer_queries import get_offers_for_recommendations_search, find_searchable_offer
+from repository.recommendation_queries import count_read_recommendations_for_user
 from utils.logger import logger
 
 class OfferNotFoundException(Exception):
@@ -34,17 +36,12 @@ def create_recommendations_for_discovery(limit=3, user=None, coords=None):
     tuto_mediations_by_index = {}
 
     max_tuto_index = 0
-    for to in Mediation.query.filter(Mediation.tutoIndex != None) \
-                             .order_by(Mediation.tutoIndex) \
-                             .all():
-        tuto_mediations_by_index[to.tutoIndex] = to
-        max_tuto_index = to.tutoIndex
+    for tuto_mediation in get_all_tuto_mediations():
+        tuto_mediations_by_index[tuto_mediation.tutoIndex] = tuto_mediation
+        max_tuto_index = tuto_mediation.tutoIndex
 
-    recommendation_count = Recommendation.query.filter_by(user=user) \
-                                               .with_entities(literal(1)) \
-                                               .limit(max_tuto_index) \
-                                               .from_self() \
-                                               .count()
+    read_recommendations_count = count_read_recommendations_for_user(user,
+                                                                     limit=max_tuto_index)
 
     inserted_tuto_mediations = 0
     offers = get_offers_for_recommendations_discovery(
@@ -54,10 +51,9 @@ def create_recommendations_for_discovery(limit=3, user=None, coords=None):
     )
 
     for (index, offer) in enumerate(offers):
-
-        while recommendation_count + index + inserted_tuto_mediations \
+        while read_recommendations_count + index + inserted_tuto_mediations \
                 in tuto_mediations_by_index:
-            tuto_mediation_index = recommendation_count \
+            tuto_mediation_index = read_recommendations_count \
                                         + index \
                                         + inserted_tuto_mediations
             create_tuto_mediation_if_non_existent_for_user(
