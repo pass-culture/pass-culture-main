@@ -15,12 +15,18 @@ const { store, persistor } = configureStore()
 const Root = () => (
   <StrictMode>
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
+      <PersistGate
+        loading={null}
+        persistor={persistor}
+      >
         <BrowserRouter>
           <App>
             <Switch>
               {browserRoutes.map(route => (
-                <FeaturedRouteContainer {...route} key={route.path} />
+                <FeaturedRouteContainer
+                  {...route}
+                  key={route.path}
+                />
               ))}
               <Route component={NotMatch} />
             </Switch>

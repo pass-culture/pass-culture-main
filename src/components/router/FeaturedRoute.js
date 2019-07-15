@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { Route } from 'react-router-dom'
 
 import NotMatch from '../pages/NotMatch'
 
-class FeaturedRoute extends Component {
+class FeaturedRoute extends PureComponent {
   componentDidMount() {
     const { features, requestGetFeatures } = this.props
 
