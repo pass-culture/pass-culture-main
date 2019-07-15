@@ -60,6 +60,7 @@ ShallowWrapper {
         "batch": [Function],
         "blur": [Function],
         "change": [Function],
+        "destroyOnUnregister": false,
         "focus": [Function],
         "getFieldState": [Function],
         "getRegisteredFields": [Function],
@@ -225,6 +226,7 @@ ShallowWrapper {
           "batch": [Function],
           "blur": [Function],
           "change": [Function],
+          "destroyOnUnregister": false,
           "focus": [Function],
           "getFieldState": [Function],
           "getRegisteredFields": [Function],
@@ -375,7 +377,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;

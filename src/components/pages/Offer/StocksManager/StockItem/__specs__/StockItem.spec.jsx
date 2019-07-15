@@ -38,13 +38,13 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('onFormSubmit()', () => {
+  describe('handleOnFormSubmit()', () => {
     it('should set state isRequestPending to true', () => {
       // given
       const wrapper = shallow(<StockItem {...props} />)
 
       // when
-      wrapper.instance().onFormSubmit({})
+      wrapper.instance().handleOnFormSubmit({})
 
       // then
       expect(wrapper.state(['isRequestPending'])).toBe(true)
@@ -55,7 +55,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       const wrapper = shallow(<StockItem {...props} />)
 
       // when
-      wrapper.instance().onFormSubmit({})
+      wrapper.instance().handleOnFormSubmit({})
 
       // then
       expect(props.handleSetErrors).toHaveBeenCalled()
@@ -70,7 +70,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       }
 
       // when
-      wrapper.instance().onFormSubmit(formValues)
+      wrapper.instance().handleOnFormSubmit(formValues)
 
       // then
       const result = {

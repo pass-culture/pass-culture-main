@@ -48,7 +48,7 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('onConfirmDeleteClick()', () => {
+  describe('handleOnConfirmDeleteClick()', () => {
     it('should dispatch the request data', () => {
       // given
       const expectedAction = {
@@ -58,7 +58,7 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
       const wrapper = shallow(<EditAndDeleteControl.WrappedComponent {...props} />)
 
       // when
-      wrapper.instance().onConfirmDeleteClick()
+      wrapper.instance().handleOnConfirmDeleteClick()
 
       // then
       const requestDataArguments = requestData.mock.calls[0][0]

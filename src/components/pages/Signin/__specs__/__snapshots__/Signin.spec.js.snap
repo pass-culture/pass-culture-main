@@ -59,13 +59,12 @@ ShallowWrapper {
                     <span
                       className="has-text-weight-bold "
                     >
-                      Bienvenue
+                      Bienvenue 
                     </span>
-                     
                     <span
                       className="has-text-weight-semibold"
                     >
-                      dans la version bêta
+                      dans la version bêta 
                     </span>
                     <span
                       className="has-text-weight-normal"
@@ -84,9 +83,11 @@ ShallowWrapper {
                     <span
                       className="required-legend"
                     >
-                       * 
+                      *
+                       
                     </span>
-                     Champs obligatoires
+                     
+                    Champs obligatoires
                   </span>
                   <withRouter(Connect(_Form))
                     BlockComponent={null}
@@ -242,13 +243,12 @@ ShallowWrapper {
                     <span
                       className="has-text-weight-bold "
                     >
-                      Bienvenue
+                      Bienvenue 
                     </span>
-                     
                     <span
                       className="has-text-weight-semibold"
                     >
-                      dans la version bêta
+                      dans la version bêta 
                     </span>
                     <span
                       className="has-text-weight-normal"
@@ -267,9 +267,11 @@ ShallowWrapper {
                     <span
                       className="required-legend"
                     >
-                       * 
+                      *
+                       
                     </span>
-                     Champs obligatoires
+                     
+                    Champs obligatoires
                   </span>
                   <withRouter(Connect(_Form))
                     BlockComponent={null}
@@ -388,13 +390,12 @@ ShallowWrapper {
                     <span
                       className="has-text-weight-bold "
                     >
-                      Bienvenue
+                      Bienvenue 
                     </span>
-                     
                     <span
                       className="has-text-weight-semibold"
                     >
-                      dans la version bêta
+                      dans la version bêta 
                     </span>
                     <span
                       className="has-text-weight-normal"
@@ -413,9 +414,11 @@ ShallowWrapper {
                     <span
                       className="required-legend"
                     >
-                       * 
+                      *
+                       
                     </span>
-                     Champs obligatoires
+                     
+                    Champs obligatoires
                   </span>
                   <withRouter(Connect(_Form))
                     BlockComponent={null}
@@ -530,13 +533,12 @@ ShallowWrapper {
                     <span
                       className="has-text-weight-bold "
                     >
-                      Bienvenue
+                      Bienvenue 
                     </span>
-                     
                     <span
                       className="has-text-weight-semibold"
                     >
-                      dans la version bêta
+                      dans la version bêta 
                     </span>
                     <span
                       className="has-text-weight-normal"
@@ -555,9 +557,11 @@ ShallowWrapper {
                     <span
                       className="required-legend"
                     >
-                       * 
+                      *
+                       
                     </span>
-                     Champs obligatoires
+                     
+                    Champs obligatoires
                   </span>
                   <withRouter(Connect(_Form))
                     BlockComponent={null}
@@ -668,13 +672,12 @@ ShallowWrapper {
                     <span
                       className="has-text-weight-bold "
                     >
-                      Bienvenue
+                      Bienvenue 
                     </span>
-                     
                     <span
                       className="has-text-weight-semibold"
                     >
-                      dans la version bêta
+                      dans la version bêta 
                     </span>
                     <span
                       className="has-text-weight-normal"
@@ -693,9 +696,11 @@ ShallowWrapper {
                     <span
                       className="required-legend"
                     >
-                       * 
+                      *
+                       
                     </span>
-                     Champs obligatoires
+                     
+                    Champs obligatoires
                   </span>
                   <withRouter(Connect(_Form))
                     BlockComponent={null}
@@ -803,13 +808,12 @@ ShallowWrapper {
                       <span
                         className="has-text-weight-bold "
                       >
-                        Bienvenue
+                        Bienvenue 
                       </span>
-                       
                       <span
                         className="has-text-weight-semibold"
                       >
-                        dans la version bêta
+                        dans la version bêta 
                       </span>
                       <span
                         className="has-text-weight-normal"
@@ -828,9 +832,11 @@ ShallowWrapper {
                       <span
                         className="required-legend"
                       >
-                         * 
+                        *
+                         
                       </span>
-                       Champs obligatoires
+                       
+                      Champs obligatoires
                     </span>,
                     <withRouter(Connect(_Form))
                       BlockComponent={null}
@@ -936,13 +942,12 @@ ShallowWrapper {
                         <span
                           className="has-text-weight-bold "
                         >
-                          Bienvenue
+                          Bienvenue 
                         </span>,
-                        " ",
                         <span
                           className="has-text-weight-semibold"
                         >
-                          dans la version bêta
+                          dans la version bêta 
                         </span>,
                         <span
                           className="has-text-weight-normal"
@@ -959,24 +964,23 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": "Bienvenue",
+                          "children": "Bienvenue ",
                           "className": "has-text-weight-bold ",
                         },
                         "ref": null,
-                        "rendered": "Bienvenue",
+                        "rendered": "Bienvenue ",
                         "type": "span",
                       },
-                      " ",
                       Object {
                         "instance": null,
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": "dans la version bêta",
+                          "children": "dans la version bêta ",
                           "className": "has-text-weight-semibold",
                         },
                         "ref": null,
-                        "rendered": "dans la version bêta",
+                        "rendered": "dans la version bêta ",
                         "type": "span",
                       },
                       Object {
@@ -1015,9 +1019,11 @@ ShallowWrapper {
                         <span
                           className="required-legend"
                         >
-                           * 
+                          *
+                           
                         </span>,
-                        " Champs obligatoires",
+                        " ",
+                        "Champs obligatoires",
                       ],
                       "className": "has-text-grey",
                     },
@@ -1028,14 +1034,21 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": " * ",
+                          "children": Array [
+                            "*",
+                            " ",
+                          ],
                           "className": "required-legend",
                         },
                         "ref": null,
-                        "rendered": " * ",
+                        "rendered": Array [
+                          "*",
+                          " ",
+                        ],
                         "type": "span",
                       },
-                      " Champs obligatoires",
+                      " ",
+                      "Champs obligatoires",
                     ],
                     "type": "span",
                   },
@@ -1386,13 +1399,12 @@ ShallowWrapper {
                       <span
                         className="has-text-weight-bold "
                       >
-                        Bienvenue
+                        Bienvenue 
                       </span>
-                       
                       <span
                         className="has-text-weight-semibold"
                       >
-                        dans la version bêta
+                        dans la version bêta 
                       </span>
                       <span
                         className="has-text-weight-normal"
@@ -1411,9 +1423,11 @@ ShallowWrapper {
                       <span
                         className="required-legend"
                       >
-                         * 
+                        *
+                         
                       </span>
-                       Champs obligatoires
+                       
+                      Champs obligatoires
                     </span>
                     <withRouter(Connect(_Form))
                       BlockComponent={null}
@@ -1569,13 +1583,12 @@ ShallowWrapper {
                       <span
                         className="has-text-weight-bold "
                       >
-                        Bienvenue
+                        Bienvenue 
                       </span>
-                       
                       <span
                         className="has-text-weight-semibold"
                       >
-                        dans la version bêta
+                        dans la version bêta 
                       </span>
                       <span
                         className="has-text-weight-normal"
@@ -1594,9 +1607,11 @@ ShallowWrapper {
                       <span
                         className="required-legend"
                       >
-                         * 
+                        *
+                         
                       </span>
-                       Champs obligatoires
+                       
+                      Champs obligatoires
                     </span>
                     <withRouter(Connect(_Form))
                       BlockComponent={null}
@@ -1715,13 +1730,12 @@ ShallowWrapper {
                       <span
                         className="has-text-weight-bold "
                       >
-                        Bienvenue
+                        Bienvenue 
                       </span>
-                       
                       <span
                         className="has-text-weight-semibold"
                       >
-                        dans la version bêta
+                        dans la version bêta 
                       </span>
                       <span
                         className="has-text-weight-normal"
@@ -1740,9 +1754,11 @@ ShallowWrapper {
                       <span
                         className="required-legend"
                       >
-                         * 
+                        *
+                         
                       </span>
-                       Champs obligatoires
+                       
+                      Champs obligatoires
                     </span>
                     <withRouter(Connect(_Form))
                       BlockComponent={null}
@@ -1857,13 +1873,12 @@ ShallowWrapper {
                       <span
                         className="has-text-weight-bold "
                       >
-                        Bienvenue
+                        Bienvenue 
                       </span>
-                       
                       <span
                         className="has-text-weight-semibold"
                       >
-                        dans la version bêta
+                        dans la version bêta 
                       </span>
                       <span
                         className="has-text-weight-normal"
@@ -1882,9 +1897,11 @@ ShallowWrapper {
                       <span
                         className="required-legend"
                       >
-                         * 
+                        *
+                         
                       </span>
-                       Champs obligatoires
+                       
+                      Champs obligatoires
                     </span>
                     <withRouter(Connect(_Form))
                       BlockComponent={null}
@@ -1995,13 +2012,12 @@ ShallowWrapper {
                       <span
                         className="has-text-weight-bold "
                       >
-                        Bienvenue
+                        Bienvenue 
                       </span>
-                       
                       <span
                         className="has-text-weight-semibold"
                       >
-                        dans la version bêta
+                        dans la version bêta 
                       </span>
                       <span
                         className="has-text-weight-normal"
@@ -2020,9 +2036,11 @@ ShallowWrapper {
                       <span
                         className="required-legend"
                       >
-                         * 
+                        *
+                         
                       </span>
-                       Champs obligatoires
+                       
+                      Champs obligatoires
                     </span>
                     <withRouter(Connect(_Form))
                       BlockComponent={null}
@@ -2130,13 +2148,12 @@ ShallowWrapper {
                         <span
                           className="has-text-weight-bold "
                         >
-                          Bienvenue
+                          Bienvenue 
                         </span>
-                         
                         <span
                           className="has-text-weight-semibold"
                         >
-                          dans la version bêta
+                          dans la version bêta 
                         </span>
                         <span
                           className="has-text-weight-normal"
@@ -2155,9 +2172,11 @@ ShallowWrapper {
                         <span
                           className="required-legend"
                         >
-                           * 
+                          *
+                           
                         </span>
-                         Champs obligatoires
+                         
+                        Champs obligatoires
                       </span>,
                       <withRouter(Connect(_Form))
                         BlockComponent={null}
@@ -2263,13 +2282,12 @@ ShallowWrapper {
                           <span
                             className="has-text-weight-bold "
                           >
-                            Bienvenue
+                            Bienvenue 
                           </span>,
-                          " ",
                           <span
                             className="has-text-weight-semibold"
                           >
-                            dans la version bêta
+                            dans la version bêta 
                           </span>,
                           <span
                             className="has-text-weight-normal"
@@ -2286,24 +2304,23 @@ ShallowWrapper {
                           "key": undefined,
                           "nodeType": "host",
                           "props": Object {
-                            "children": "Bienvenue",
+                            "children": "Bienvenue ",
                             "className": "has-text-weight-bold ",
                           },
                           "ref": null,
-                          "rendered": "Bienvenue",
+                          "rendered": "Bienvenue ",
                           "type": "span",
                         },
-                        " ",
                         Object {
                           "instance": null,
                           "key": undefined,
                           "nodeType": "host",
                           "props": Object {
-                            "children": "dans la version bêta",
+                            "children": "dans la version bêta ",
                             "className": "has-text-weight-semibold",
                           },
                           "ref": null,
-                          "rendered": "dans la version bêta",
+                          "rendered": "dans la version bêta ",
                           "type": "span",
                         },
                         Object {
@@ -2342,9 +2359,11 @@ ShallowWrapper {
                           <span
                             className="required-legend"
                           >
-                             * 
+                            *
+                             
                           </span>,
-                          " Champs obligatoires",
+                          " ",
+                          "Champs obligatoires",
                         ],
                         "className": "has-text-grey",
                       },
@@ -2355,14 +2374,21 @@ ShallowWrapper {
                           "key": undefined,
                           "nodeType": "host",
                           "props": Object {
-                            "children": " * ",
+                            "children": Array [
+                              "*",
+                              " ",
+                            ],
                             "className": "required-legend",
                           },
                           "ref": null,
-                          "rendered": " * ",
+                          "rendered": Array [
+                            "*",
+                            " ",
+                          ],
                           "type": "span",
                         },
-                        " Champs obligatoires",
+                        " ",
+                        "Champs obligatoires",
                       ],
                       "type": "span",
                     },
@@ -2699,7 +2725,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;

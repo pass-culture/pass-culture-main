@@ -117,7 +117,7 @@ ShallowWrapper {
                   <Icon
                     svg="ico-venue-r"
                   />
-                   Nouveau lieu
+                  Nouveau lieu
                 </NavLink>
               </li>
             </React.Fragment>
@@ -201,7 +201,7 @@ ShallowWrapper {
                     <Icon
                       svg="ico-venue-r"
                     />
-                     Nouveau lieu
+                    Nouveau lieu
                   </NavLink>
                 </li>
               </React.Fragment>
@@ -295,7 +295,7 @@ ShallowWrapper {
                       <Icon
                         svg="ico-venue-r"
                       />
-                       Nouveau lieu
+                      Nouveau lieu
                     </NavLink>
                   </li>
                 </React.Fragment>,
@@ -425,7 +425,7 @@ ShallowWrapper {
                         <Icon
                           svg="ico-venue-r"
                         />
-                         Nouveau lieu
+                        Nouveau lieu
                       </NavLink>
                     </li>,
                   ],
@@ -475,7 +475,7 @@ ShallowWrapper {
                         <Icon
                           svg="ico-venue-r"
                         />
-                         Nouveau lieu
+                        Nouveau lieu
                       </NavLink>,
                     },
                     "ref": null,
@@ -490,7 +490,7 @@ ShallowWrapper {
                           <Icon
                             svg="ico-venue-r"
                           />,
-                          " Nouveau lieu",
+                          "Nouveau lieu",
                         ],
                         "className": "has-text-primary",
                         "to": "/structures/undefined/lieux/creation",
@@ -508,7 +508,7 @@ ShallowWrapper {
                           "rendered": null,
                           "type": [Function],
                         },
-                        " Nouveau lieu",
+                        "Nouveau lieu",
                       ],
                       "type": [Function],
                     },
@@ -635,7 +635,7 @@ ShallowWrapper {
                     <Icon
                       svg="ico-venue-r"
                     />
-                     Nouveau lieu
+                    Nouveau lieu
                   </NavLink>
                 </li>
               </React.Fragment>
@@ -719,7 +719,7 @@ ShallowWrapper {
                       <Icon
                         svg="ico-venue-r"
                       />
-                       Nouveau lieu
+                      Nouveau lieu
                     </NavLink>
                   </li>
                 </React.Fragment>
@@ -813,7 +813,7 @@ ShallowWrapper {
                         <Icon
                           svg="ico-venue-r"
                         />
-                         Nouveau lieu
+                        Nouveau lieu
                       </NavLink>
                     </li>
                   </React.Fragment>,
@@ -943,7 +943,7 @@ ShallowWrapper {
                           <Icon
                             svg="ico-venue-r"
                           />
-                           Nouveau lieu
+                          Nouveau lieu
                         </NavLink>
                       </li>,
                     ],
@@ -993,7 +993,7 @@ ShallowWrapper {
                           <Icon
                             svg="ico-venue-r"
                           />
-                           Nouveau lieu
+                          Nouveau lieu
                         </NavLink>,
                       },
                       "ref": null,
@@ -1008,7 +1008,7 @@ ShallowWrapper {
                             <Icon
                               svg="ico-venue-r"
                             />,
-                            " Nouveau lieu",
+                            "Nouveau lieu",
                           ],
                           "className": "has-text-primary",
                           "to": "/structures/undefined/lieux/creation",
@@ -1026,7 +1026,7 @@ ShallowWrapper {
                             "rendered": null,
                             "type": [Function],
                           },
-                          " Nouveau lieu",
+                          "Nouveau lieu",
                         ],
                         "type": [Function],
                       },
@@ -1113,6 +1113,8 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
 }
 `;

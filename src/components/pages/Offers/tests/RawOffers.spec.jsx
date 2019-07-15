@@ -52,7 +52,6 @@ describe('src | components | pages | Offers | RawOffers', () => {
         const expected = {
           hasMore: false,
           isLoading: true,
-          keywordsValue: undefined,
         }
 
         // when
@@ -232,7 +231,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
       })
     })
 
-    describe('onSubmit', () => {
+    describe('handleOnSubmit', () => {
       // when
       const wrapper = shallow(<RawOffers {...initialProps} />)
       const event = Object.assign(jest.fn(), {
@@ -249,11 +248,10 @@ describe('src | components | pages | Offers | RawOffers', () => {
       describe('when keywords is not an empty string', () => {
         it('should update state with isLoading to true', () => {
           // when
-          wrapper.instance().onSubmit(event)
+          wrapper.instance().handleOnSubmit(event)
           const expected = {
             hasMore: false,
             isLoading: true,
-            keywordsValue: undefined,
           }
 
           // then
@@ -262,7 +260,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
 
         it('should dispatch assignData with good params', () => {
           // when
-          wrapper.instance().onSubmit(event)
+          wrapper.instance().handleOnSubmit(event)
 
           const expected = {
             patch: {
@@ -278,7 +276,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
 
         it('should change query', () => {
           // when
-          wrapper.instance().onSubmit(event)
+          wrapper.instance().handleOnSubmit(event)
           const expected = {
             'mots-cles': 'AnyWord',
             page: null,
@@ -305,7 +303,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
           })
 
           // when
-          wrapper.instance().onSubmit(eventEmptyWord)
+          wrapper.instance().handleOnSubmit(eventEmptyWord)
           const expected = {
             'mots-cles': null,
             page: null,

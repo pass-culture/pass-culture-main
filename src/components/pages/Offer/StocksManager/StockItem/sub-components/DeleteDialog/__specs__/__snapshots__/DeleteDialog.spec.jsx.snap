@@ -26,11 +26,12 @@ ShallowWrapper {
           colSpan="6"
         >
           En confirmant l’annulation de
-
+           
           ce stock
-          , vous supprimerez aussi toutes les réservations associées.
-
-          Êtes-vous sûr de vouloir continuer ?
+           
+          , 
+          vous supprimerez aussi toutes les réservations associées. 
+          Êtes-vous sûr de vouloir continuer ?
         </td>,
         <td>
           <button
@@ -61,10 +62,11 @@ ShallowWrapper {
             "En confirmant l’annulation de",
             " ",
             "ce stock",
-            ", vous supprimerez aussi toutes les réservations associées.",
             " ",
+            ", ",
+            "vous supprimerez aussi toutes les réservations associées. ",
             false,
-            "Êtes-vous sûr de vouloir continuer ?",
+            "Êtes-vous sûr de vouloir continuer ?",
           ],
           "className": "is-size-7",
           "colSpan": "6",
@@ -74,10 +76,11 @@ ShallowWrapper {
           "En confirmant l’annulation de",
           " ",
           "ce stock",
-          ", vous supprimerez aussi toutes les réservations associées.",
           " ",
+          ", ",
+          "vous supprimerez aussi toutes les réservations associées. ",
           false,
-          "Êtes-vous sûr de vouloir continuer ?",
+          "Êtes-vous sûr de vouloir continuer ?",
         ],
         "type": "td",
       },
@@ -154,11 +157,12 @@ ShallowWrapper {
             colSpan="6"
           >
             En confirmant l’annulation de
-
+             
             ce stock
-            , vous supprimerez aussi toutes les réservations associées.
-
-            Êtes-vous sûr de vouloir continuer ?
+             
+            , 
+            vous supprimerez aussi toutes les réservations associées. 
+            Êtes-vous sûr de vouloir continuer ?
           </td>,
           <td>
             <button
@@ -189,10 +193,11 @@ ShallowWrapper {
               "En confirmant l’annulation de",
               " ",
               "ce stock",
-              ", vous supprimerez aussi toutes les réservations associées.",
               " ",
+              ", ",
+              "vous supprimerez aussi toutes les réservations associées. ",
               false,
-              "Êtes-vous sûr de vouloir continuer ?",
+              "Êtes-vous sûr de vouloir continuer ?",
             ],
             "className": "is-size-7",
             "colSpan": "6",
@@ -202,10 +207,11 @@ ShallowWrapper {
             "En confirmant l’annulation de",
             " ",
             "ce stock",
-            ", vous supprimerez aussi toutes les réservations associées.",
             " ",
+            ", ",
+            "vous supprimerez aussi toutes les réservations associées. ",
             false,
-            "Êtes-vous sûr de vouloir continuer ?",
+            "Êtes-vous sûr de vouloir continuer ?",
           ],
           "type": "td",
         },
@@ -294,6 +300,7 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
 }
@@ -325,12 +332,13 @@ ShallowWrapper {
           colSpan="6"
         >
           En confirmant l’annulation de
-
+           
           cette date
-          , vous supprimerez aussi toutes les réservations associées.
-
+           
+          , 
+          vous supprimerez aussi toutes les réservations associées. 
           <br />
-          Êtes-vous sûr de vouloir continuer ?
+          Êtes-vous sûr de vouloir continuer ?
         </td>,
         <td>
           <button
@@ -361,10 +369,11 @@ ShallowWrapper {
             "En confirmant l’annulation de",
             " ",
             "cette date",
-            ", vous supprimerez aussi toutes les réservations associées.",
             " ",
+            ", ",
+            "vous supprimerez aussi toutes les réservations associées. ",
             <br />,
-            "Êtes-vous sûr de vouloir continuer ?",
+            "Êtes-vous sûr de vouloir continuer ?",
           ],
           "className": "is-size-7",
           "colSpan": "6",
@@ -374,8 +383,9 @@ ShallowWrapper {
           "En confirmant l’annulation de",
           " ",
           "cette date",
-          ", vous supprimerez aussi toutes les réservations associées.",
           " ",
+          ", ",
+          "vous supprimerez aussi toutes les réservations associées. ",
           Object {
             "instance": null,
             "key": undefined,
@@ -385,7 +395,7 @@ ShallowWrapper {
             "rendered": null,
             "type": "br",
           },
-          "Êtes-vous sûr de vouloir continuer ?",
+          "Êtes-vous sûr de vouloir continuer ?",
         ],
         "type": "td",
       },
@@ -462,12 +472,13 @@ ShallowWrapper {
             colSpan="6"
           >
             En confirmant l’annulation de
-
+             
             cette date
-            , vous supprimerez aussi toutes les réservations associées.
-
+             
+            , 
+            vous supprimerez aussi toutes les réservations associées. 
             <br />
-            Êtes-vous sûr de vouloir continuer ?
+            Êtes-vous sûr de vouloir continuer ?
           </td>,
           <td>
             <button
@@ -498,10 +509,11 @@ ShallowWrapper {
               "En confirmant l’annulation de",
               " ",
               "cette date",
-              ", vous supprimerez aussi toutes les réservations associées.",
               " ",
+              ", ",
+              "vous supprimerez aussi toutes les réservations associées. ",
               <br />,
-              "Êtes-vous sûr de vouloir continuer ?",
+              "Êtes-vous sûr de vouloir continuer ?",
             ],
             "className": "is-size-7",
             "colSpan": "6",
@@ -511,8 +523,9 @@ ShallowWrapper {
             "En confirmant l’annulation de",
             " ",
             "cette date",
-            ", vous supprimerez aussi toutes les réservations associées.",
             " ",
+            ", ",
+            "vous supprimerez aussi toutes les réservations associées. ",
             Object {
               "instance": null,
               "key": undefined,
@@ -522,7 +535,7 @@ ShallowWrapper {
               "rendered": null,
               "type": "br",
             },
-            "Êtes-vous sûr de vouloir continuer ?",
+            "Êtes-vous sûr de vouloir continuer ?",
           ],
           "type": "td",
         },
@@ -611,6 +624,7 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
 }

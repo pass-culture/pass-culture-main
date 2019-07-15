@@ -55,7 +55,7 @@ ShallowWrapper {
                   >
                      du lieu qui accueille vos offres
                   </span>
-                   (si applicable) :
+                   (si applicable) : 
                 </span>
               </React.Fragment>
             </label>
@@ -193,7 +193,7 @@ ShallowWrapper {
                     >
                        du lieu qui accueille vos offres
                     </span>
-                     (si applicable) :
+                     (si applicable) : 
                   </span>
                 </React.Fragment>
               </label>
@@ -317,7 +317,7 @@ ShallowWrapper {
                       >
                          du lieu qui accueille vos offres
                       </span>
-                       (si applicable) :
+                       (si applicable) : 
                     </span>
                   </React.Fragment>
                 </label>,
@@ -358,7 +358,7 @@ ShallowWrapper {
                       >
                          du lieu qui accueille vos offres
                       </span>
-                       (si applicable) :
+                       (si applicable) : 
                     </span>
                   </React.Fragment>,
                   "className": "field-label",
@@ -380,7 +380,7 @@ ShallowWrapper {
                         >
                            du lieu qui accueille vos offres
                         </span>
-                         (si applicable) :
+                         (si applicable) : 
                       </span>,
                     ],
                   },
@@ -592,7 +592,7 @@ ShallowWrapper {
                     >
                        du lieu qui accueille vos offres
                     </span>
-                     (si applicable) :
+                     (si applicable) : 
                   </span>
                 </React.Fragment>
               </label>
@@ -730,7 +730,7 @@ ShallowWrapper {
                       >
                          du lieu qui accueille vos offres
                       </span>
-                       (si applicable) :
+                       (si applicable) : 
                     </span>
                   </React.Fragment>
                 </label>
@@ -854,7 +854,7 @@ ShallowWrapper {
                         >
                            du lieu qui accueille vos offres
                         </span>
-                         (si applicable) :
+                         (si applicable) : 
                       </span>
                     </React.Fragment>
                   </label>,
@@ -895,7 +895,7 @@ ShallowWrapper {
                         >
                            du lieu qui accueille vos offres
                         </span>
-                         (si applicable) :
+                         (si applicable) : 
                       </span>
                     </React.Fragment>,
                     "className": "field-label",
@@ -917,7 +917,7 @@ ShallowWrapper {
                           >
                              du lieu qui accueille vos offres
                           </span>
-                           (si applicable) :
+                           (si applicable) : 
                         </span>,
                       ],
                     },
@@ -1117,6 +1117,7 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,

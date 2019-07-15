@@ -136,21 +136,24 @@ ShallowWrapper {
           <p
             className="subtitle"
           >
-            Pour présenter vos offres, vous devez d’abord
+            Pour présenter vos offres, vous devez d’abord 
             <a
               href="/structures/AE/lieux/creation"
             >
-              créer un
-
-              nouveau lieu
+               
+              créer un nouveau lieu 
+               
             </a>
+             
              lié à une structure.
             <br />
-            Sans lieu, vous pouvez uniquement
+            Sans lieu, vous pouvez uniquement 
             <a
               href="/offres/creation"
             >
+               
               ajouter des offres numériques.
+               
             </a>
           </p>
           <div
@@ -225,21 +228,24 @@ ShallowWrapper {
             <p
               className="subtitle"
             >
-              Pour présenter vos offres, vous devez d’abord
+              Pour présenter vos offres, vous devez d’abord 
               <a
                 href="/structures/AE/lieux/creation"
               >
-                créer un
-
-                nouveau lieu
+                 
+                créer un nouveau lieu 
+                 
               </a>
+               
                lié à une structure.
               <br />
-              Sans lieu, vous pouvez uniquement
+              Sans lieu, vous pouvez uniquement 
               <a
                 href="/offres/creation"
               >
+                 
                 ajouter des offres numériques.
+                 
               </a>
             </p>,
             <div
@@ -280,17 +286,20 @@ ShallowWrapper {
                 <a
                   href="/structures/AE/lieux/creation"
                 >
-                  créer un
-
-                  nouveau lieu
+                   
+                  créer un nouveau lieu 
+                   
                 </a>,
+                " ",
                 " lié à une structure.",
                 <br />,
                 "Sans lieu, vous pouvez uniquement ",
                 <a
                   href="/offres/creation"
                 >
+                   
                   ajouter des offres numériques.
+                   
                 </a>,
               ],
               "className": "subtitle",
@@ -304,20 +313,21 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": Array [
-                    "créer un",
                     " ",
-                    "nouveau lieu ",
+                    "créer un nouveau lieu ",
+                    " ",
                   ],
                   "href": "/structures/AE/lieux/creation",
                 },
                 "ref": null,
                 "rendered": Array [
-                  "créer un",
                   " ",
-                  "nouveau lieu ",
+                  "créer un nouveau lieu ",
+                  " ",
                 ],
                 "type": "a",
               },
+              " ",
               " lié à une structure.",
               Object {
                 "instance": null,
@@ -334,11 +344,19 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "ajouter des offres numériques.",
+                  "children": Array [
+                    " ",
+                    "ajouter des offres numériques.",
+                    " ",
+                  ],
                   "href": "/offres/creation",
                 },
                 "ref": null,
-                "rendered": "ajouter des offres numériques.",
+                "rendered": Array [
+                  " ",
+                  "ajouter des offres numériques.",
+                  " ",
+                ],
                 "type": "a",
               },
             ],
@@ -518,21 +536,24 @@ ShallowWrapper {
             <p
               className="subtitle"
             >
-              Pour présenter vos offres, vous devez d’abord
+              Pour présenter vos offres, vous devez d’abord 
               <a
                 href="/structures/AE/lieux/creation"
               >
-                créer un
-
-                nouveau lieu
+                 
+                créer un nouveau lieu 
+                 
               </a>
+               
                lié à une structure.
               <br />
-              Sans lieu, vous pouvez uniquement
+              Sans lieu, vous pouvez uniquement 
               <a
                 href="/offres/creation"
               >
+                 
                 ajouter des offres numériques.
+                 
               </a>
             </p>
             <div
@@ -607,21 +628,24 @@ ShallowWrapper {
               <p
                 className="subtitle"
               >
-                Pour présenter vos offres, vous devez d’abord
+                Pour présenter vos offres, vous devez d’abord 
                 <a
                   href="/structures/AE/lieux/creation"
                 >
-                  créer un
-
-                  nouveau lieu
+                   
+                  créer un nouveau lieu 
+                   
                 </a>
+                 
                  lié à une structure.
                 <br />
-                Sans lieu, vous pouvez uniquement
+                Sans lieu, vous pouvez uniquement 
                 <a
                   href="/offres/creation"
                 >
+                   
                   ajouter des offres numériques.
+                   
                 </a>
               </p>,
               <div
@@ -662,17 +686,20 @@ ShallowWrapper {
                   <a
                     href="/structures/AE/lieux/creation"
                   >
-                    créer un
-
-                    nouveau lieu
+                     
+                    créer un nouveau lieu 
+                     
                   </a>,
+                  " ",
                   " lié à une structure.",
                   <br />,
                   "Sans lieu, vous pouvez uniquement ",
                   <a
                     href="/offres/creation"
                   >
+                     
                     ajouter des offres numériques.
+                     
                   </a>,
                 ],
                 "className": "subtitle",
@@ -686,20 +713,21 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": Array [
-                      "créer un",
                       " ",
-                      "nouveau lieu ",
+                      "créer un nouveau lieu ",
+                      " ",
                     ],
                     "href": "/structures/AE/lieux/creation",
                   },
                   "ref": null,
                   "rendered": Array [
-                    "créer un",
                     " ",
-                    "nouveau lieu ",
+                    "créer un nouveau lieu ",
+                    " ",
                   ],
                   "type": "a",
                 },
+                " ",
                 " lié à une structure.",
                 Object {
                   "instance": null,
@@ -716,11 +744,19 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": "ajouter des offres numériques.",
+                    "children": Array [
+                      " ",
+                      "ajouter des offres numériques.",
+                      " ",
+                    ],
                     "href": "/offres/creation",
                   },
                   "ref": null,
-                  "rendered": "ajouter des offres numériques.",
+                  "rendered": Array [
+                    " ",
+                    "ajouter des offres numériques.",
+                    " ",
+                  ],
                   "type": "a",
                 },
               ],
@@ -910,7 +946,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;

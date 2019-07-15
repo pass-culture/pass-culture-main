@@ -116,18 +116,8 @@ class Signin extends Component {
 }
 
 Signin.propTypes = {
-<<<<<<< HEAD
-<<<<<<< HEAD
-  query: PropTypes.shapeOf().isRequired,
-||||||| merged common ancestors
-  query: PropTypes.shape(),
-=======
-||||||| merged common ancestors
-=======
   errors: PropTypes.string.isRequired,
->>>>>>> (PC-1958) fix Signin with new eslint rules
   query: PropTypes.shape().isRequired,
->>>>>>> (PC-1958) amend Signin and Signup to apply new eslint rules
 }
 
 export default Signin

@@ -72,23 +72,6 @@ describe('src | components | layout | form | HiddenField', () => {
         .simulate('change', { target: { value: 'J’irai droit au But' } })
       wrapper.find('button[type="submit"]').simulate('click')
 
-<<<<<<< HEAD
-    // then
-    function onSubmit(formValues) {
-      expect(formValues.title).toStrictEqual("J'irai droit au But")
-      expect(formValues.subtitle).toStrictEqual(initialValues.subtitle)
-      done()
-    }
-  })})
-||||||| merged common ancestors
-    // then
-    function handleOnSubmit(formValues) {
-      expect(formValues.title).toStrictEqual("J'irai droit au But")
-      expect(formValues.subtitle).toStrictEqual(initialValues.subtitle)
-      done()
-    }
-  })})
-=======
       // then
       function handleOnSubmit(formValues) {
         expect(formValues.title).toStrictEqual('J’irai droit au But')
@@ -97,5 +80,4 @@ describe('src | components | layout | form | HiddenField', () => {
       }
     })
   })
->>>>>>> (PC-1958) fix tests with new eslint rules
 })
