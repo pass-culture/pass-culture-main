@@ -30,6 +30,7 @@ class FilterByVenue extends PureComponent {
             disabled={isDigital}
             id="venues"
             onBlur={selectBookingsForVenues}
+            onChange={selectBookingsForVenues}
             value={venueId}
           >
             <option
