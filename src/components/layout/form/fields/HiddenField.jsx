@@ -10,8 +10,8 @@ class HiddenField extends Component {
   renderField = ({ input, meta }) => (
     <div>
       <input
-        type="hidden"
         {...input}
+        type="hidden"
       />
       <FieldErrors meta={meta} />
     </div>
