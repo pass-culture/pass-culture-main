@@ -62,9 +62,9 @@ test('Je créé un compte avec un nouveau siren, je suis redirigé·e vers la pa
 
   // when
   await t
+    .click(newsletterOkInput)
     .click(contactOkInput)
     .click(cguOkInput)
-    .click(newsletterOkInput)
     .click(signUpButton)
 
   // then
