@@ -5,6 +5,9 @@
 @import '~bulma/sass/components/_all';
 @import '~bulma/sass/grid/_all';
 @import '~bulma/sass/layout/_all';
+@import '~bulma/sass/form/shared';
+@import '~bulma/sass/form/input-textarea';
+@import '~bulma/sass/form/tools';
 
 [disabled] {
   opacity: $button-disabled-opacity;

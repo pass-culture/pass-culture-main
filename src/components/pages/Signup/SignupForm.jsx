@@ -38,7 +38,7 @@ class SignupForm extends PureComponent {
           </span>
           <Form
             action="/users/signup/pro"
-            blockComponent={null}
+            BlockComponent={null}
             formatPatch={this.handleformatPatch}
             handleSuccessNotification={null}
             handleSuccessRedirect={this.onHandleSuccessRedirect}
