@@ -194,6 +194,8 @@ jobs: # a collection of steps
             nvm use v8.15.1
             cd ~/pass-culture-main/pro
             yarn test:cafe
+      - store_artifacts:
+         path: ~/pass-culture-main/pro/testcafe_screenshots
       - run:
           name: Notify PC Ops Bot
           when: on_fail
