@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
-
-import {closeNotification, showNotification} from 'pass-culture-shared'
+import { showNotification} from 'pass-culture-shared'
 import { stringify } from 'query-string'
 import React, { Component, Fragment } from 'react'
 import { Form } from 'react-final-form'
@@ -118,20 +117,20 @@ class Offerers extends Component {
   }
 
   componentWillUnmount() {
-    const { dispatch, notification } = this.props
+    const { closeNotification, notification } = this.props
     if (get(notification, 'tag') === 'offerers') {
-      dispatch(closeNotification())
+      closeNotification()
     }
   }
 
   handleOnKeywordsSubmit = values => {
-    const { dispatch, query } = this.props
+    const { query } = this.props
     const { keywords } = values
 
     const isEmptyKeywords = typeof keywords === 'undefined' || keywords === ''
 
     if (!isEmptyKeywords) {
-      dispatch(assignData({ offerers: [], pendingOfferers: [] }))
+      assignData()
     }
 
     query.change({

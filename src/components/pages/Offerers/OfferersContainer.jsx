@@ -3,6 +3,9 @@ import { compose } from 'redux'
 
 import { withRequiredLogin } from '../../hocs'
 import Offerers from './Offerers'
+import { closeNotification } from 'pass-culture-shared'
+import {assignData} from 'redux-saga-data'
+
 
 export const mapStateToProps = state => {
   return {
@@ -12,7 +15,18 @@ export const mapStateToProps = state => {
   }
 }
 
+export const mapDispatchToProps = (dispatch) => {
+  return {
+    assignData:() => dispatch(assignData({ offerers: [], pendingOfferers: [] })),
+
+    closeNotification:() => dispatch(closeNotification()),
+  }
+}
+
 export default compose(
   withRequiredLogin,
-  connect(mapStateToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(Offerers)
