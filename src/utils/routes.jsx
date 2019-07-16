@@ -5,6 +5,7 @@ import Accouting from '../components/pages/Accounting'
 import BookingsContainer from '../components/pages/Bookings/BookingsContainer'
 import DeskContainer from '../components/pages/Desk/DeskContainer'
 import Home from '../components/pages/Home'
+import LostPassword from '../components/pages/LostPassword'
 import Mediation from '../components/pages/Mediation/MediationContainer'
 import Offers from '../components/pages/Offers'
 import Offer from '../components/pages/Offer/OfferContainer'
@@ -13,11 +14,10 @@ import Offerers from '../components/pages/Offerers/OfferersContainer'
 import ProfilContainer from '../components/pages/Profil/ProfilContainer'
 import ReimbursementsContainer from '../components/pages/Reimbursements/ReimbursementsContainer'
 import SigninContainer from '../components/pages/Signin/SigninContainer'
-import Signup from '../components/pages/Signup'
+import SignupContainer from '../components/pages/Signup/SignupContainer'
+import SignupValidationContainer from '../components/pages/Signup/SignupValidation/SignupValidationContainer'
 import Terms from '../components/pages/Terms'
 import VenueContainer from '../components/pages/Venue/VenueContainer'
-import LostPassword from '../components/pages/LostPassword'
-import SignupValidationContainer from '../components/pages/Signup/validation/SignupValidationContainer'
 
 // NOTE: routes are sorted by PATH alphabetical order
 const routes = [
@@ -46,7 +46,7 @@ const routes = [
     title: 'Guichet',
   },
   {
-    component: Signup,
+    component: SignupContainer,
     path: '/inscription/(confirmation)?',
     title: 'Inscription',
   },

@@ -1,17 +1,13 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
 import { Route, Switch } from 'react-router-dom/umd/react-router-dom'
-import { compose } from 'redux'
 
-import SignupForm from './SignupForm'
-import SignupConfirmation from './SignupConfirmation'
-import { withRedirectToOffersWhenAlreadyAuthenticated } from '../../hocs/with-login/withRedirectToOffersWhenAlreadyAuthenticated'
+import SignupFormContainer from './SignupForm/SignupFormContainer'
+import SignupConfirmationContainer from './SignupConfirmation/SignupConfirmationContainer'
 import Logo from '../../layout/Logo'
 import Main from '../../layout/Main'
 
-const SignupPage = ({ location }) => {
+const Signup = ({location}) => {
   return (
     <Main
       fullscreen
@@ -28,12 +24,12 @@ const SignupPage = ({ location }) => {
           <div className="column is-offset-6 is-two-fifths">
             <Switch location={location}>
               <Route
-                component={SignupForm}
+                component={SignupFormContainer}
                 exact
                 path="/inscription"
               />
               <Route
-                component={SignupConfirmation}
+                component={SignupConfirmationContainer}
                 path="/inscription/confirmation"
               />
             </Switch>
@@ -44,12 +40,8 @@ const SignupPage = ({ location }) => {
   )
 }
 
-SignupPage.propTypes = {
+Signup.propTypes = {
   location: PropTypes.shape().isRequired,
 }
 
-export default compose(
-  withRedirectToOffersWhenAlreadyAuthenticated,
-  withRouter,
-  connect()
-)(SignupPage)
+export default Signup

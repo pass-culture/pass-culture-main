@@ -1,15 +1,12 @@
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
-import { NavLink, withRouter } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
-import { compose } from 'redux'
-import { connect } from 'react-redux'
-import get from 'lodash.get'
 
 class SignupForm extends PureComponent {
   onHandleSuccessRedirect = () => '/inscription/confirmation'
 
-  handleformatPatch = patch => Object.assign({ publicName: patch.firstName }, patch)
+  handleFormatPatch = patch => Object.assign({ publicName: patch.firstName }, patch)
 
   isFieldDisabling = offererName => () => !offererName
 
@@ -39,7 +36,7 @@ class SignupForm extends PureComponent {
           <Form
             action="/users/signup/pro"
             BlockComponent={null}
-            formatPatch={this.handleformatPatch}
+            formatPatch={this.handleFormatPatch}
             handleSuccessNotification={null}
             handleSuccessRedirect={this.onHandleSuccessRedirect}
             layout="vertical"
@@ -153,18 +150,9 @@ class SignupForm extends PureComponent {
 }
 
 SignupForm.propTypes = {
-  errors: PropTypes.string.isRequired,
-  offererName: PropTypes.bool.isRequired,
-  patch: PropTypes.string.isRequired,
+  errors: PropTypes.arrayOf(String).isRequired,
+  offererName: PropTypes.string.isRequired,
+  patch: PropTypes.shape().isRequired,
 }
 
-function mapStateToProps(state) {
-  return {
-    offererName: get(state, `form.user.name`),
-  }
-}
-
-export default compose(
-  withRouter,
-  connect(mapStateToProps)
-)(SignupForm)
+export default SignupForm

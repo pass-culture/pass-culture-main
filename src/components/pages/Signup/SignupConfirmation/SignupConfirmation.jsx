@@ -1,9 +1,6 @@
 import React from 'react'
-import { withRouter } from 'react-router-dom'
-import { compose } from 'redux'
-import { connect } from 'react-redux'
 
-import { ROOT_PATH } from '../../../utils/config'
+import { ROOT_PATH } from '../../../../utils/config'
 
 const SignupConfirmation = () => (
   <div className="hero">
@@ -37,7 +34,4 @@ const SignupConfirmation = () => (
   </div>
 )
 
-export default compose(
-  withRouter,
-  connect()
-)(SignupConfirmation)
+export default SignupConfirmation

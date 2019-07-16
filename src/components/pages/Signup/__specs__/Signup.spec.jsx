@@ -1,5 +1,5 @@
 import React from 'react'
-import SignupPage from '../index'
+import Signup from '../Signup'
 import { shallow } from 'enzyme'
 
 describe('src | components | pages | Signup', () => {
@@ -11,7 +11,7 @@ describe('src | components | pages | Signup', () => {
       }
 
       // when
-      const wrapper = shallow(<SignupPage {...props} />)
+      const wrapper = shallow(<Signup {...props} />)
 
       // then
       expect(wrapper).toBeDefined()

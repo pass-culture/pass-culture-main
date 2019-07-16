@@ -30,7 +30,7 @@ test('Je peux valider une contremarque', async t => {
   await t
     .typeText(codeInput, token)
     .expect(stateText.innerText)
-    .eql('Coupon vérifié, cliquez sur "Valider pour enregistrer')
+    .eql('Coupon vérifié, cliquez sur "Valider" pour enregistrer')
     .expect(state.classNames)
     .contains('pending')
     .expect(codeInput.innerText)
