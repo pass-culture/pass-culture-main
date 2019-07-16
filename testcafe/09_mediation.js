@@ -95,10 +95,10 @@ test('Je peux créer une accroche', async t => {
   await t
     .typeText(
       urlInput,
-      'https://www.deridet.com/photo/art/grande/8682609-13705793.jpg?v=1450665370'
+      'https://upload.wikimedia.org/wikipedia/commons/f/f9/Zebra_%28PSF%29.png'
     )
     .click(urlButton)
-    .typeText(creditInput, 'deridet')
+    .typeText(creditInput, 'wikipedia')
     .wait(10000)
 
   // when
