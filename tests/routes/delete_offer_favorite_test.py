@@ -6,7 +6,7 @@ from utils.human_ids import humanize
 
 
 class Delete:
-    class Returns200:
+    class Returns204:
         @clean_database
         def when_favorite_exists(self, app):
             # given
@@ -21,13 +21,10 @@ class Delete:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).delete(
-                f'{API_URL}/offers/favorites/'
-                + humanize(offer.id)
-                + '/'
-                + humanize(mediation.id))
+                f'{API_URL}/offers/favorites/{humanize(offer.id)}/{humanize(mediation.id)}')
 
             # Then
-            assert response.status_code == 200
+            assert response.status_code == 204
             deleted_favorite = Favorite.query.first()
             assert deleted_favorite is None
 
@@ -46,8 +43,7 @@ class Delete:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).delete(
-                f'{API_URL}/offers/favorites/'
-                + '1')
+                f'{API_URL}/offers/favorites/1')
 
             # Then
             assert response.status_code == 404
@@ -66,10 +62,7 @@ class Delete:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).delete(
-                f'{API_URL}/offers/favorites/'
-                + 'ABCD'
-                + '/'
-                + 'ABCD')
+                f'{API_URL}/offers/favorites/ABCD/ABCD')
 
             # Then
             assert response.status_code == 404

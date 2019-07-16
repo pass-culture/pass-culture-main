@@ -487,7 +487,7 @@ def create_recommendation(offer=None, user=None, mediation=None, idx=None, date_
     return recommendation
 
 
-def create_favorite(mediation= None, offer=None, user=None):
+def create_favorite(mediation= None, offer=None, user=None) -> Favorite:
     favorite = Favorite()
     favorite.user = user
     favorite.mediation = mediation

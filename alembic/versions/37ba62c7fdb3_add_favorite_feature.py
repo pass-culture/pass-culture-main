@@ -37,7 +37,7 @@ def upgrade():
                ' USING name::text::featuretoggle')
     op.execute("""
         INSERT INTO feature (name, description, "isActive")
-        VALUES ('%s', '%s', TRUE);
+        VALUES ('%s', '%s', FALSE);
         """ % (FeatureToggle.FAVORITE_OFFER.name, FeatureToggle.FAVORITE_OFFER.value))
     temporary_enum.drop(op.get_bind(), checkfirst=False)
 

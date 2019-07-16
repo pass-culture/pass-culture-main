@@ -45,9 +45,18 @@ def check_valid_edition(payload: dict):
 
 
 def check_offer_type_is_valid(offer_type_name):
-
     if not ProductType.is_thing(offer_type_name) and not ProductType.is_event(offer_type_name):
         api_error = ApiErrors()
         api_error.add_error('type',
                            'Le type de cette offre est inconnu')
         raise api_error
+
+
+def check_offer_id_and_mediation_id_presents_in_request(offer_id: str, mediation_id: str):
+    if offer_id is None \
+            or mediation_id is None:
+        errors = ApiErrors()
+        errors.status_code = 400
+        errors.addError('global', "Les paramères offerId et mediationId sont obligatoires")
+        errors.maybeRaise()
+        raise errors

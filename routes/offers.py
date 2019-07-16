@@ -22,7 +22,7 @@ from utils.rest import expect_json_data, \
     handle_rest_get_list, \
     load_or_404, login_or_api_key_required, load_or_raise_error, ensure_current_user_has_rights
 from validation.offers import check_venue_exists_when_requested, check_user_has_rights_for_query, check_valid_edition, \
-    check_has_venue_id, check_offer_type_is_valid
+    check_has_venue_id, check_offer_type_is_valid, check_offer_id_and_mediation_id_presents_in_request
 
 
 @app.route('/offers', methods=['GET'])
@@ -125,17 +125,12 @@ def patch_offer(id):
 @feature_required(FeatureToggle.FAVORITE_OFFER)
 @login_required
 def add_to_favorite():
-    humanized_offer_id = request.json.get('offerId')
-    humanized_mediation_id = request.json.get('mediationId')
-    if humanized_offer_id is None \
-            or humanized_mediation_id is None:
-        errors = ApiErrors()
-        errors.status_code = 401
-        errors.addError('global', "Les paramères offerId et mediationId sont obligatoires")
-        errors.maybeRaise()
+    offer_id = request.json.get('offerId')
+    mediation_id = request.json.get('mediationId')
+    check_offer_id_and_mediation_id_presents_in_request(offer_id, mediation_id)
 
-    offer = load_or_404(Offer, humanized_offer_id)
-    mediation = load_or_404(Mediation, humanized_mediation_id)
+    offer = load_or_404(Offer, offer_id)
+    mediation = load_or_404(Mediation, mediation_id)
 
     favorite = create_favorite(mediation, offer, current_user)
     PcObject.save(favorite)
@@ -157,4 +152,4 @@ def delete_favorite(offer_id, mediation_id):
 
     PcObject.delete(favorite)
 
-    return jsonify({}), 200
+    return jsonify({}), 204

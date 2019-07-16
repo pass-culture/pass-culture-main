@@ -6,7 +6,7 @@ from utils.human_ids import humanize
 
 
 class Post:
-    class Returns401:
+    class Returns400:
         @clean_database
         def when_offer_id_is_not_received(self, app):
             # Given
@@ -23,7 +23,7 @@ class Post:
                 json=json)
 
             # Then
-            assert response.status_code == 401
+            assert response.status_code == 400
             assert response.json['global'] == ["Les paramères offerId et mediationId sont obligatoires"]
 
         @clean_database
@@ -42,7 +42,7 @@ class Post:
                 json=json)
 
             # Then
-            assert response.status_code == 401
+            assert response.status_code == 400
             assert response.json['global'] == ["Les paramères offerId et mediationId sont obligatoires"]
 
     class Returns404:
@@ -97,7 +97,7 @@ class Post:
 
     class Returns201:
         @clean_database
-        def when_offer_is_add_as_favorite_for_current_user(self, app):
+        def when_offer_is_added_as_favorite_for_current_user(self, app):
             # Given
             user = create_user(email='test@email.com')
             offerer = create_offerer()
