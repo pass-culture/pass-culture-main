@@ -1,15 +1,6 @@
 version: 2.1
 jobs:
 
-  tests-perf:
-    working_directory: ~
-    docker:
-      - image: edupedup/artillery:0.4
-    steps:
-      - checkout
-      - run: sed -i 's/$/'$USER_PASSWORD_PERF_ENV'/' artillery/user_list
-      - run: artillery run artillery/scenario.yml
-
   tests-script-pc:
     machine:
       image: circleci/classic:latest
@@ -173,6 +164,14 @@ jobs:
             export BOT_MESSAGE="Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL"
             curl -d text="$BOT_MESSAGE" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage?chat_id=$TELEGRAM_CHAT_ID&parse_mode=Markdown"
 
+  tests-perf:
+    working_directory: ~
+    docker:
+      - image: edupedup/artillery:0.5
+    steps:
+      - checkout
+      - run: sed -i 's/$/'$USER_PASSWORD_PERF_ENV'/' /root/project/artillery/user_list
+      - run: artillery run artillery/scenario.yml
 
   deploy-api:
     machine:
@@ -268,8 +267,7 @@ workflows:
   version: 2
   commit:
     jobs:
-#      - tests-script-pc
-      - tests-perf
+      - tests-script-pc
       - tests-api:
           filters:
             branches:
@@ -294,6 +292,11 @@ workflows:
                 - /hotfix-v.*/
             tags:
               only: /^v.*/
+      - tests-perf:
+          filters:
+            branches:
+              only:
+                - staging
       - deploy-api:
           filters:
             branches:

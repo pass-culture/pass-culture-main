@@ -1,6 +1,6 @@
-FROM node:8-alpine
+FROM node:8.15.1-alpine
 
-RUN npm install -g artillery@1.6.0-2 && npm install artillery-plugin-statsd
+RUN npm install --unsafe-perm=true -g artillery -allow-root && npm install artillery-plugin-statsd
 RUN apk update && apk add git && apk add openssh
 
 RUN mkdir /usr/local/lib/node_modules/artillery/node_modules/artillery-plugin-metrics-by-endpoint
