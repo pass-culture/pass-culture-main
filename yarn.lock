@@ -4605,6 +4605,7 @@ fbjs@^0.8.0:
     setimmediate "^1.0.5"
     ua-parser-js "^0.7.18"
 
+<<<<<<< HEAD
 fetch-normalize-data@1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.2.2.tgz#f339573cebb4117728c8636b6808a82d030008ed"
@@ -4619,11 +4620,21 @@ fetch-normalize-data@1.3.1:
   resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.3.1.tgz#d576e7c7aede44124dfb1aa3c95be288edc6cf2d"
   integrity sha512-sgqJrfmi496Lpshqpr5KNtikdNw1eGYouM7mqoJDZI6FqCiwUu1Vexkp6ICZgBYgLpszSsYtGsbaKyYVKMamyw==
 =======
+=======
+>>>>>>> (pC-2025) added redux-saga-data 2.6.1
 fetch-normalize-data@1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.2.3.tgz#f006fc49de99b81babec5a14992dd23866a8c7be"
   integrity sha512-RCOcidV4j4Uw7jD6Nw3EUnTcilE0vdpXUfnBkZ9F9zV1BpXL5Nqp3/iWq7c89wppjpk1DM1XheQE/65+b0J0TQ==
 >>>>>>> (pC-2025) updated libs
+  dependencies:
+    eslint "^5.8.0"
+    lodash.uniqby "^4.7.0"
+
+fetch-normalize-data@1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.3.1.tgz#d576e7c7aede44124dfb1aa3c95be288edc6cf2d"
+  integrity sha512-sgqJrfmi496Lpshqpr5KNtikdNw1eGYouM7mqoJDZI6FqCiwUu1Vexkp6ICZgBYgLpszSsYtGsbaKyYVKMamyw==
   dependencies:
     eslint "^5.8.0"
     lodash.uniqby "^4.7.0"
@@ -10597,13 +10608,13 @@ redux-persist@^5.10.0:
   resolved "https://registry.yarnpkg.com/redux-persist/-/redux-persist-5.10.0.tgz#5d8d802c5571e55924efc1c3a9b23575283be62b"
   integrity sha512-sSJAzNq7zka3qVHKce1hbvqf0Vf5DuTVm7dr4GtsqQVOexnrvbV47RWFiPxQ8fscnyiuWyD2O92DOxPl0tGCRg==
 
-redux-saga-data@2.5.4:
-  version "2.5.4"
-  resolved "https://registry.yarnpkg.com/redux-saga-data/-/redux-saga-data-2.5.4.tgz#150bba25dbbd93f6bd7cbad4c2b53731b9b4e920"
-  integrity sha512-/XTwAnWAeP8WnCJm7/xGUwc+LYvcMD0E7jSkvJy+fWkVtwZIXp+eebHRt/hfI4f/9e5QhZtjZ6np+BAtOWVDZg==
+redux-saga-data@2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/redux-saga-data/-/redux-saga-data-2.6.1.tgz#771256cd4ec0339f60813eb075502e3ee992634b"
+  integrity sha512-1RmSE8aO6rxmfOkRIKNj0wzabgKsWe+gmWIjBhyy5rWpn5DJI33TOkljVki+NfNlUrKb4bI+1l6FkFJef7hGuQ==
   dependencies:
     eslint "^5.8.0"
-    fetch-normalize-data "1.2.2"
+    fetch-normalize-data "1.3.1"
     prop-types "^15.6.2"
     redux "^4.0.0"
     redux-saga "^0.15.3"

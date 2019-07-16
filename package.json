@@ -83,7 +83,7 @@
     "redux-mock-store": "^1.5.3",
     "redux-persist": "^5.10.0",
     "redux-saga": "^0.15.3",
-    "redux-saga-data": "^2.5.2",
+    "redux-saga-data": "2.6.1",
     "reselect": "^3.0.1",
     "sass-loader": "^7.0.1",
     "style-loader": "0.19.0",
