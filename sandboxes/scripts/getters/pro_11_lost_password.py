@@ -13,3 +13,15 @@ def get_pro_validated_no_reset_password_token_user():
     return {
         "user": get_user_helper(user)
     }
+
+def get_pro_validated_with_reset_password_token_user():
+    query = User.query.filter(
+        (User.validationToken == None) & \
+        (User.resetPasswordToken != None)
+    )
+    query = query.join(UserOfferer)
+    user = query.first()
+
+    return {
+        "user": get_user_helper(user)
+    }

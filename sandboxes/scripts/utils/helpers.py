@@ -55,6 +55,7 @@ def get_email(first_name, last_name, domain):
 
 def get_user_helper(user):
     return dict(user.as_dict(include=USER_INCLUDES), **{
+        "resetPasswordToken": user.resetPasswordToken,
         "password": PLAIN_DEFAULT_TESTING_PASSWORD,
         "validationToken": user.validationToken
     })
