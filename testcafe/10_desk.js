@@ -13,10 +13,9 @@ const stateText = Selector('.form .state span')
 const exitlink = Selector('#exitlink')
 const registerButton = Selector('.form button[type="submit"]')
 
-fixture('En étant sur la page de validation des contremarques')
-  .page(`${ROOT_PATH}guichet`)
+fixture('En étant sur la page de validation des contremarques').page(`${ROOT_PATH}guichet`)
 
-test("Je peux valider une contremarque", async t => {
+test('Je peux valider une contremarque', async t => {
   // given
   const { booking, user } = await fetchSandbox(
     'pro_10_desk',
@@ -31,11 +30,14 @@ test("Je peux valider une contremarque", async t => {
   await t
     .typeText(codeInput, token)
     .expect(stateText.innerText)
-    .eql('Coupon vérifié, cliquez sur OK pour enregistrer')
-    .expect(state.classNames).contains('pending')
-    .expect(codeInput.innerText).eql('')
+    .eql('Coupon vérifié, cliquez sur "Valider pour enregistrer')
+    .expect(state.classNames)
+    .contains('pending')
+    .expect(codeInput.innerText)
+    .eql('')
     .click(registerButton)
-    .expect(state.classNames).contains('success')
+    .expect(state.classNames)
+    .contains('success')
     .click(exitlink)
 
   // then
