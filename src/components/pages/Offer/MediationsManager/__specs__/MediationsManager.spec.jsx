@@ -6,13 +6,18 @@ import {NavLink} from 'react-router-dom'
 import {Icon} from 'pass-culture-shared'
 
 describe('src | components | pages | Offer | MediationsManager | MediationsManager', () => {
-  let dispatch
+  let showNotification
+  let closeNotification
   let props
 
   beforeEach(() => {
-    dispatch = jest.fn()
+    showNotification = jest.fn()
+    closeNotification = jest.fn()
     props = {
-      dispatch,
+      showNotification,
+      closeNotification,
+      hasMediations: false,
+      atLeastOneActiveMediation: false,
       mediations: [],
       notification: {},
       offer: {},
@@ -30,60 +35,60 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
 
   describe('render()', () => {
     it('should display a notification when no mediation in offer', () => {
+      // given
+      props.hasMediations = false
+      props.atLeastOneActiveMediation = false
+
       // when
       shallow(<MediationsManager {...props} />)
 
       // then
-      expect(dispatch).toHaveBeenCalledWith({
-        patch: {
-          tag: 'mediations-manager',
-          text: 'Cette offre n’apparaîtra pas dans l’app pass Culture.',
-          tooltip: {
-            children: <span>{' Pourquoi ? '}</span>,
-            place: 'bottom',
-            tip: NO_MEDIATION_TOOLTIP,
-            type: 'info'
-          },
-          type: 'warning',
+      expect(showNotification).toHaveBeenCalledWith({
+        tag: 'mediations-manager',
+        text: 'Cette offre n\'apparaîtra pas dans l\'app pass Culture.',
+        tooltip: {
+          children: <a> Pourquoi ? </a>,
+          place: 'bottom',
+          tip: NO_MEDIATION_TOOLTIP,
+          type: 'info'
         },
-        type: 'SHOW_NOTIFICATION',
+        type: 'warning'
       })
     })
 
     it('should display a notification when no active mediation in offer', () => {
       // given
-      props.mediations = [{id: 'AGKA', isActive: false}]
+      props.hasMediations = true
+      props.atLeastOneActiveMediation = false
 
       // when
       shallow(<MediationsManager {...props} />)
 
       // then
-      expect(dispatch).toHaveBeenCalledWith({
-        patch: {
-          tag: 'mediations-manager',
-          text: 'Cette offre n\'apparaîtra pas dans l\'app pass Culture.',
-          tooltip: {
-            children: <a> Pourquoi ? </a>,
-            place: 'bottom',
-            tip: NO_MEDIATION_TOOLTIP,
-            type: 'info'
-          },
-          type: 'warning'
+      expect(showNotification).toHaveBeenCalledWith({
+        tag: 'mediations-manager',
+        text: 'Cette offre n\'apparaîtra pas dans l\'app pass Culture.',
+        tooltip: {
+          children: <a> Pourquoi ? </a>,
+          place: 'bottom',
+          tip: NO_MEDIATION_TOOLTIP,
+          type: 'info'
         },
-        type: 'SHOW_NOTIFICATION'
+        type: 'warning'
       })
     })
 
     it('shouldn\'t display a notification if a notification is already present', () => {
       // given
-      props.mediations = [{id: 'AGKA', isActive: false}]
+      props.hasMediations = true
+      props.atLeastOneActiveMediation = false
       props.notification = {text: 'bla bla bla'}
 
       // when
       shallow(<MediationsManager {...props} />)
 
       // then
-      expect(dispatch).not.toHaveBeenCalled()
+      expect(showNotification).not.toHaveBeenCalled()
     })
 
     it('should close notification when unmounting component', () => {
@@ -97,7 +102,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       wrapper.unmount()
 
       // then
-      expect(dispatch.mock.calls[0][0]).toEqual({type: 'CLOSE_NOTIFICATION'})
+      expect(closeNotification).toHaveBeenCalled()
     })
 
     it('should render a NavLink component when there is an offer', () => {

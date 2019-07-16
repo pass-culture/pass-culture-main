@@ -1,4 +1,4 @@
-import {closeNotification, Icon, showNotification} from 'pass-culture-shared'
+import {Icon} from 'pass-culture-shared'
 import get from 'lodash.get'
 import React, {Component} from 'react'
 import {NavLink} from 'react-router-dom'
@@ -10,13 +10,11 @@ export const NO_MEDIATION_TOOLTIP = "<div><p>Pour que votre offre s'affiche dans
 
 class MediationsManager extends Component {
   componentDidMount() {
-    const {dispatch, mediations, notification} = this.props
-    const atLeastOneActiveMediation = mediations.some((m) => m.isActive)
-    const hasMediations = get(mediations, 'length');
+    const {showNotification, hasMediations, atLeastOneActiveMediation, notification} = this.props
 
     if (!notification && !(hasMediations && atLeastOneActiveMediation)) {
-      dispatch(
-        showNotification({
+      showNotification(
+        {
           tag: 'mediations-manager',
           text: 'Cette offre n’apparaîtra pas dans l’app pass Culture.',
           tooltip: {
@@ -26,15 +24,15 @@ class MediationsManager extends Component {
             type: 'info',
           },
           type: 'warning',
-        })
+        }
       )
     }
   }
 
   componentWillUnmount() {
-    const {dispatch, notification} = this.props
+    const {closeNotification, notification} = this.props
     if (get(notification, 'tag') === 'mediations-manager') {
-      dispatch(closeNotification())
+      closeNotification()
     }
   }
 
@@ -59,29 +57,15 @@ class MediationsManager extends Component {
         </div>
         <ul className="mediations-list">
           {mediations.map(m => (
-<<<<<<< 5aca2475ba2bb80f6e5f5066c4e0eec269f1e505
-            <MediationItem
-              key={m.id}
-              mediation={m}
-            />
-=======
             <MediationItem key={m.id} mediation={m}/>
->>>>>>> (PC-1941) Show a notif at component mounting time only if no notification is already here and no mediation is active
           ))}
         </ul>
         <p>
           {offer && (
             <NavLink
-<<<<<<< 5aca2475ba2bb80f6e5f5066c4e0eec269f1e505
               className={`button is-primary ${numberOfMediations > 0 ? 'is-outlined' : ''}`}
               to={`/offres/${get(offer, 'id')}/accroches/nouveau`}
             >
-=======
-              className={`button is-primary ${
-                numberOfMediations > 0 ? 'is-outlined' : ''
-                }`}
-              to={`/offres/${get(offer, 'id')}/accroches/nouveau`}>
->>>>>>> (PC-1941) Show a notif at component mounting time only if no notification is already here and no mediation is active
               <span className="icon">
                 <Icon svg={numberOfMediations > 0 ? 'ico-stars' : 'ico-stars-w'} />
               </span>
