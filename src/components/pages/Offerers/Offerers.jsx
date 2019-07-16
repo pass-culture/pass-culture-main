@@ -1,12 +1,10 @@
 import PropTypes from 'prop-types'
-import { showNotification} from 'pass-culture-shared'
 import { stringify } from 'query-string'
 import React, { Component, Fragment } from 'react'
 import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { NavLink } from 'react-router-dom'
-import { assignData, requestData } from 'redux-saga-data'
-import get from 'lodash.get'
+import { assignData } from 'redux-saga-data'
 
 import OffererItemContainer from './OffererItem/OffererItemContainer'
 import PendingOffererItem from './OffererItem/PendingOffererItem'
@@ -15,7 +13,6 @@ import Icon from '../../layout/Icon'
 import Main from '../../layout/Main'
 import Spinner from '../../layout/Spinner'
 import TextField from '../../layout/form/fields/TextField'
-import { offererNormalizer } from '../../../utils/normalizers'
 import {
   mapApiToBrowser,
   translateQueryParamsToApiParams,
@@ -46,18 +43,12 @@ class Offerers extends Component {
     }
   }
 
-  showNotification = url => {
-    const { dispatch } = this.props
-    dispatch(
-      showNotification({
-        tag: 'offerers',
-        text:
-          'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
-        type: 'info',
-        url: url,
-        urlLabel: 'Nouveau lieu',
-      })
-    )
+  componentWillUnmount() {
+    const { closeNotification, notification } = this.props
+    const tag = notification.tag || ''
+    if (tag === 'offerers') {
+      closeNotification()
+    }
   }
 
   handleFail = () => {
@@ -67,24 +58,24 @@ class Offerers extends Component {
     })
   }
 
+  handleSuccess = (state, action) => {
+    const {
+      payload: { data },
+    } = action
+    this.setState({
+      hasMore: data.length > 0,
+      isLoading: false,
+    })
+  }
+
   handleRequestData = () => {
-    const { currentUser, dispatch, offerers, query } = this.props
+    const { currentUser, loadNotValidatedUserOfferers, loadOfferers, offerers, query, showNotification } = this.props
     const { isAdmin } = currentUser || {}
     const queryParams = query.parse()
     const apiParams = translateQueryParamsToApiParams(queryParams)
     const apiParamsString = stringify(apiParams)
     const apiPath = `/offerers?${apiParamsString}`
-
-    this.setState({ isLoading: true }, () => {
-      dispatch(
-        requestData({
-          apiPath,
-          handleFail: this.handleFail,
-          handleSuccess: this.handleSuccess,
-          normalizer: offererNormalizer,
-        })
-      )
-    })
+    this.setState({ isLoading: true }, loadOfferers(apiPath, this.handleSuccess, this.handleFail))
 
     const url = createVenueForOffererUrl(offerers)
     const offerersHaveNotOffers = !currentUser.hasOffers && !currentUser.hasPhysicalVenues
@@ -94,7 +85,7 @@ class Offerers extends Component {
       offerersHaveNotOffers || offerersHaveOnlyDigitalOffers
 
     if (userHasNoOffersInAPhysicalVenueYet) {
-      this.showNotification(url)
+      showNotification(url)
     }
 
     if (!isAdmin) {
@@ -106,25 +97,12 @@ class Offerers extends Component {
       )
       const notValidatedUserOfferersSearch = stringify(notValidatedUserOfferersParams)
       const notValidatedUserOfferersPath = `/offerers?${notValidatedUserOfferersSearch}`
-      dispatch(
-        requestData({
-          apiPath: notValidatedUserOfferersPath,
-          normalizer: offererNormalizer,
-          stateKey: 'pendingOfferers',
-        })
-      )
-    }
-  }
-
-  componentWillUnmount() {
-    const { closeNotification, notification } = this.props
-    if (get(notification, 'tag') === 'offerers') {
-      closeNotification()
+      loadNotValidatedUserOfferers(notValidatedUserOfferersPath)
     }
   }
 
   handleOnKeywordsSubmit = values => {
-    const { query } = this.props
+    const { assignData, query } = this.props
     const { keywords } = values
 
     const isEmptyKeywords = typeof keywords === 'undefined' || keywords === ''
@@ -255,12 +233,17 @@ class Offerers extends Component {
   }
 }
 
-PropTypes.propTypes = {
+Offerers.propTypes = {
+  assignData: PropTypes.func.isRequired,
+  closeNotification: PropTypes.func.isRequired,
   currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
-  offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  pendingOfferers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  loadNotValidatedUserOfferers: PropTypes.func.isRequired,
+  loadOfferers: PropTypes.func.isRequired,
+  offerers: PropTypes.arrayOf.isRequired,
+  pendingOfferers: PropTypes.arrayOf.isRequired,
   query: PropTypes.shape().isRequired,
+  showNotification: PropTypes.func.isRequired,
 }
 
 export default Offerers

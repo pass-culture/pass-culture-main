@@ -4,6 +4,8 @@ exports[`src | components | pages | Offerers | Offerers snapshot should match sn
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Offerers
+    assignData={[MockFunction]}
+    closeNotification={[MockFunction]}
     currentUser={Object {}}
     dispatch={
       [MockFunction] {
@@ -17,54 +19,20 @@ ShallowWrapper {
               "type": "ASSIGN_DATA",
             },
           ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
+    loadNotValidatedUserOfferers={
+      [MockFunction] {
+        "calls": Array [
           Array [
-            Object {
-              "config": Object {
-                "apiPath": "/offerers?keywords",
-                "handleFail": [Function],
-                "handleSuccess": [Function],
-                "method": "GET",
-                "normalizer": Object {
-                  "managedVenues": Object {
-                    "normalizer": Object {
-                      "offers": "offers",
-                    },
-                    "stateKey": "venues",
-                  },
-                },
-              },
-              "type": "REQUEST_DATA_GET_/OFFERERS?KEYWORDS",
-            },
-          ],
-          Array [
-            Object {
-              "patch": Object {
-                "tag": "offerers",
-                "text": "Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)",
-                "type": "info",
-                "url": "/structures/AE/lieux/creation",
-                "urlLabel": "Nouveau lieu",
-              },
-              "type": "SHOW_NOTIFICATION",
-            },
-          ],
-          Array [
-            Object {
-              "config": Object {
-                "apiPath": "/offerers?keywords&validated=false",
-                "method": "GET",
-                "normalizer": Object {
-                  "managedVenues": Object {
-                    "normalizer": Object {
-                      "offers": "offers",
-                    },
-                    "stateKey": "venues",
-                  },
-                },
-                "stateKey": "pendingOfferers",
-              },
-              "type": "REQUEST_DATA_GET_PENDINGOFFERERS",
-            },
+            "/offerers?keywords&validated=false",
           ],
         ],
         "results": Array [
@@ -72,14 +40,19 @@ ShallowWrapper {
             "type": "return",
             "value": undefined,
           },
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
+        ],
+      }
+    }
+    loadOfferers={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            "/offerers?keywords",
+            [Function],
+            [Function],
+          ],
+        ],
+        "results": Array [
           Object {
             "type": "return",
             "value": undefined,
@@ -111,6 +84,21 @@ ShallowWrapper {
       Object {
         "change": [MockFunction],
         "parse": [Function],
+      }
+    }
+    showNotification={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            "/structures/AE/lieux/creation",
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
       }
     }
   />,

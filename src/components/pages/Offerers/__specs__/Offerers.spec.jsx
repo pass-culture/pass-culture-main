@@ -15,8 +15,12 @@ describe('src | components | pages | Offerers | Offerers', () => {
     parse = () => ({ 'mots-cles': null })
 
     props = {
+      assignData:jest.fn(),
+      closeNotification:jest.fn(),
       currentUser: {},
       dispatch,
+      loadOfferers:jest.fn(),
+      loadNotValidatedUserOfferers:jest.fn(),
       offerers: [{ id: 'AE' }],
       pendingOfferers: [],
       pagination: {
@@ -28,6 +32,7 @@ describe('src | components | pages | Offerers | Offerers', () => {
         change,
         parse,
       },
+      showNotification:jest.fn(),
       location: {
         search: '',
       },
@@ -78,124 +83,6 @@ describe('src | components | pages | Offerers | Offerers', () => {
 
         // then
         expect(heroSection.title).toStrictEqual('Vos structures juridiques')
-      })
-    })
-
-    describe('should display a notification', () => {
-      it('should display a notification when current user has no offers and has digital venues', () => {
-        // given
-        props.currentUser = {
-          hasOffers: false,
-          hasPhysicalVenues: false,
-        }
-
-        // when
-        shallow(<Offerers {...props} />)
-
-        // then
-        const expected = [
-          {
-            patch: {
-              tag: 'offerers',
-              text:
-                'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
-              type: 'info',
-              url: '/structures/AE/lieux/creation',
-              urlLabel: 'Nouveau lieu',
-            },
-            type: 'SHOW_NOTIFICATION',
-          },
-        ]
-        expect(dispatch.mock.calls[2]).toStrictEqual(expected)
-      })
-
-      it('should display a notification when current user has only digital offers', () => {
-        // given
-        props.currentUser = {
-          hasOffers: true,
-          hasPhysicalVenues: false,
-        }
-
-        // when
-        shallow(<Offerers {...props} />)
-
-        // then
-        const expected = [
-          {
-            patch: {
-              tag: 'offerers',
-              text:
-                'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
-              type: 'info',
-              url: '/structures/AE/lieux/creation',
-              urlLabel: 'Nouveau lieu',
-            },
-            type: 'SHOW_NOTIFICATION',
-          },
-        ]
-        expect(dispatch.mock.calls[2]).toStrictEqual(expected)
-      })
-    })
-
-    describe('should not display a notification', () => {
-      it('should not display a notification when current user has offers and physical venues', () => {
-        // given
-        props.currentUser = {
-          hasOffers: true,
-          hasPhysicalVenues: true,
-        }
-
-        // when
-        shallow(<Offerers {...props} />)
-
-        // then
-        const expected = [
-          {
-            config: {
-              apiPath: '/offerers?keywords&validated=false',
-              method: 'GET',
-              normalizer: {
-                managedVenues: {
-                  normalizer: { offers: 'offers' },
-                  stateKey: 'venues',
-                },
-              },
-              stateKey: 'pendingOfferers',
-            },
-            type: 'REQUEST_DATA_GET_PENDINGOFFERERS',
-          },
-        ]
-        expect(dispatch.mock.calls[2]).toStrictEqual(expected)
-      })
-
-      it('should not display a notification when current user has no offers but physical venues', () => {
-        // given
-        props.currentUser = {
-          hasOffers: false,
-          hasPhysicalVenues: true,
-        }
-
-        // when
-        shallow(<Offerers {...props} />)
-
-        // then
-        const expected = [
-          {
-            config: {
-              apiPath: '/offerers?keywords&validated=false',
-              method: 'GET',
-              normalizer: {
-                managedVenues: {
-                  normalizer: { offers: 'offers' },
-                  stateKey: 'venues',
-                },
-              },
-              stateKey: 'pendingOfferers',
-            },
-            type: 'REQUEST_DATA_GET_PENDINGOFFERERS',
-          },
-        ]
-        expect(dispatch.mock.calls[2]).toStrictEqual(expected)
       })
     })
   })

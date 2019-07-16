@@ -1,5 +1,5 @@
 import state from '../../../utils/mocks/state'
-import { mapStateToProps } from '../OfferersContainer'
+import { mapStateToProps, mapDispatchToProps } from '../OfferersContainer'
 
 describe('src | components | pages | Offerers | OfferersContainer', () => {
   describe('mapStateToProps', () => {
@@ -55,6 +55,130 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
         "pendingOfferers": []
       }
       expect(result).toStrictEqual(expected)
+    })
+  })
+
+  describe('mapDispatchToProps', () => {
+    let dispatch
+
+    beforeEach(() => {
+      dispatch = jest.fn()
+    })
+
+    it('ebnable to assign data', () => {
+      //when
+      mapDispatchToProps(dispatch).assignData()
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith(
+        {
+          "patch": {
+            "offerers": [],
+            "pendingOfferers": [],
+          },
+          "type": "ASSIGN_DATA",
+        }
+      )
+    })
+
+    it('ebnable to close notifaction', () => {
+      //when
+      mapDispatchToProps(dispatch).closeNotification()
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith(
+        {
+          "type": "CLOSE_NOTIFICATION",
+        }
+      )
+    })
+
+    it('ebnable to load offerers', () => {
+      //when
+      const apiPath = '/offerers'
+      const handleFail = jest.fn()
+      const handleSuccess = jest.fn()
+      mapDispatchToProps(dispatch).loadOfferers(
+        apiPath,
+        handleFail,
+        handleSuccess
+      )()
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith(
+        {
+          "config":
+            {
+              "apiPath": "/offerers",
+              "handleFail": expect.any(Function),
+              "handleSuccess": expect.any(Function),
+              "method": "GET",
+              "normalizer":
+                {
+                  "managedVenues":
+                    {
+                      "normalizer":
+                        {
+                          "offers": "offers",
+                        },
+                      "stateKey": "venues",
+                    }
+                },
+            },
+          "type": "REQUEST_DATA_GET_/OFFERERS",
+        }
+      )
+    })
+
+
+    it('ebnable to load not validated offerers', () => {
+      //when
+      const apiPath = '/offerers'
+      mapDispatchToProps(dispatch).loadNotValidatedUserOfferers(apiPath)()
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith(
+        {
+          "config":
+            {
+              "apiPath": "/offerers",
+              "method": "GET",
+              "normalizer":
+                {
+                  "managedVenues":
+                    {
+                      "normalizer":
+                        {
+                          "offers": "offers",
+                        },
+                      "stateKey": "venues",
+                    },
+                },
+              "stateKey": "pendingOfferers",
+            },
+          "type": "REQUEST_DATA_GET_PENDINGOFFERERS",
+        }
+      )
+    })
+
+    it('ebnable to show notifaction', () => {
+      //when
+      const url = '/offerers'
+      mapDispatchToProps(dispatch).showNotification(url)()
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith(
+        {
+          "patch": {
+            "tag": "offerers",
+            "text": "Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)",
+            "type": "info",
+            "url": "/offerers",
+            "urlLabel": "Nouveau lieu",
+          },
+          "type": "SHOW_NOTIFICATION",
+        }
+      )
     })
   })
 })
