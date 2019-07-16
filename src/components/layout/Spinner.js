@@ -2,7 +2,7 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-import { Icon } from './Icon'
+import Icon from './Icon'
 
 class Spinner extends Component {
   constructor() {
@@ -35,13 +35,17 @@ class Spinner extends Component {
     const { className, label, style, Tag } = this.props
     const { nbDots } = this.state
     return (
-      <Tag className={classnames('spinner', className)} style={style}>
+      <Tag
+        className={classnames('spinner', className)}
+        style={style}
+      >
         <Icon svg="ico-loader-r" />
         <span
           className="content"
           data-dots={Array(nbDots)
             .fill('.')
-            .join('')}>
+            .join('')}
+        >
           {label}
         </span>
       </Tag>
@@ -62,7 +66,7 @@ Spinner.propTypes = {
   className: PropTypes.string,
   dotFrequency: PropTypes.number,
   label: PropTypes.string,
-  style: PropTypes.object,
+  style: PropTypes.shape(),
 }
 
 export default Spinner

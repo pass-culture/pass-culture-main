@@ -1,4 +1,4 @@
-import { computeNewZoom } from 'components/layout/UploadThumb'
+import { computeNewZoom } from '../UploadThumb'
 
 const defaultParams = {
   current: 0.3,
@@ -46,7 +46,7 @@ describe('src | components | pages | Offer | UploadThumb | computeZoom', () => {
 
     // then
     expect(newZoom).toBeDefined()
-    expect(newZoom).toEqual(current)
+    expect(newZoom).toStrictEqual(current)
   })
 
   it('should not return zoom greater than max', () => {
@@ -59,6 +59,6 @@ describe('src | components | pages | Offer | UploadThumb | computeZoom', () => {
 
     // then
     expect(newZoom).toBeDefined()
-    expect(newZoom).toEqual(current)
+    expect(newZoom).toStrictEqual(current)
   })
 })

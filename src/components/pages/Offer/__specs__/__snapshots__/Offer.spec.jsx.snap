@@ -67,7 +67,7 @@ ShallowWrapper {
       },
       "children": <HeroSection
         subtitle={null}
-        title="Détails de l'offre"
+        title="Détails de l’offre"
       >
         <p
           className="subtitle"
@@ -108,7 +108,7 @@ ShallowWrapper {
               displayValue={[Function]}
               errors={null}
               isExpanded={true}
-              label="Titre de l'offre"
+              label="Titre de l’offre"
               layout="horizontal"
               name="name"
               required={true}
@@ -123,11 +123,11 @@ ShallowWrapper {
               name="type"
               optionLabel="proLabel"
               optionValue="value"
-              placeholder="Sélectionnez un type d'offre"
+              placeholder="Sélectionnez un type d’offre"
               required={true}
               size="normal"
               storeValue={[Function]}
-              sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
+              sublabel="Le type d’offre ne peut pas être modifié une fois l’offre enregistrée."
               type="select"
             />
           </div>
@@ -176,7 +176,7 @@ ShallowWrapper {
                 name="bookingEmail"
                 size="normal"
                 storeValue={[Function]}
-                sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
                 type="email"
               />
             </div>
@@ -220,6 +220,7 @@ ShallowWrapper {
                 className="button is-secondary is-medium"
                 id="cancel-button"
                 onClick={[Function]}
+                type="button"
               >
                 Annuler
               </button>
@@ -234,8 +235,7 @@ ShallowWrapper {
                 requiredFields={Array []}
                 type="submit"
               >
-                Enregistrer
-                 
+                Enregistrer 
               </SubmitButton>
             </div>
           </div>
@@ -290,7 +290,7 @@ ShallowWrapper {
                 displayValue={[Function]}
                 errors={null}
                 isExpanded={true}
-                label="Titre de l'offre"
+                label="Titre de l’offre"
                 layout="horizontal"
                 name="name"
                 required={true}
@@ -305,11 +305,11 @@ ShallowWrapper {
                 name="type"
                 optionLabel="proLabel"
                 optionValue="value"
-                placeholder="Sélectionnez un type d'offre"
+                placeholder="Sélectionnez un type d’offre"
                 required={true}
                 size="normal"
                 storeValue={[Function]}
-                sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
+                sublabel="Le type d’offre ne peut pas être modifié une fois l’offre enregistrée."
                 type="select"
               />
             </div>
@@ -358,7 +358,7 @@ ShallowWrapper {
                   name="bookingEmail"
                   size="normal"
                   storeValue={[Function]}
-                  sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                  sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
                   type="email"
                 />
               </div>
@@ -402,6 +402,7 @@ ShallowWrapper {
                   className="button is-secondary is-medium"
                   id="cancel-button"
                   onClick={[Function]}
+                  type="button"
                 >
                   Annuler
                 </button>
@@ -416,15 +417,14 @@ ShallowWrapper {
                   requiredFields={Array []}
                   type="submit"
                 >
-                  Enregistrer
-                   
+                  Enregistrer 
                 </SubmitButton>
               </div>
             </div>
           </withRouter(Connect(_Form))>,
         ],
         "subtitle": null,
-        "title": "Détails de l'offre",
+        "title": "Détails de l’offre",
       },
       "ref": null,
       "rendered": Array [
@@ -468,7 +468,7 @@ ShallowWrapper {
                   displayValue={[Function]}
                   errors={null}
                   isExpanded={true}
-                  label="Titre de l'offre"
+                  label="Titre de l’offre"
                   layout="horizontal"
                   name="name"
                   required={true}
@@ -483,11 +483,11 @@ ShallowWrapper {
                   name="type"
                   optionLabel="proLabel"
                   optionValue="value"
-                  placeholder="Sélectionnez un type d'offre"
+                  placeholder="Sélectionnez un type d’offre"
                   required={true}
                   size="normal"
                   storeValue={[Function]}
-                  sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
+                  sublabel="Le type d’offre ne peut pas être modifié une fois l’offre enregistrée."
                   type="select"
                 />
               </div>,
@@ -537,7 +537,7 @@ ShallowWrapper {
                     name="bookingEmail"
                     size="normal"
                     storeValue={[Function]}
-                    sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                    sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
                     type="email"
                   />
                 </div>
@@ -581,6 +581,7 @@ ShallowWrapper {
                     className="button is-secondary is-medium"
                     id="cancel-button"
                     onClick={[Function]}
+                    type="button"
                   >
                     Annuler
                   </button>
@@ -595,8 +596,7 @@ ShallowWrapper {
                     requiredFields={Array []}
                     type="submit"
                   >
-                    Enregistrer
-                     
+                    Enregistrer 
                   </SubmitButton>
                 </div>
               </div>,
@@ -634,7 +634,7 @@ ShallowWrapper {
                     displayValue={[Function]}
                     errors={null}
                     isExpanded={true}
-                    label="Titre de l'offre"
+                    label="Titre de l’offre"
                     layout="horizontal"
                     name="name"
                     required={true}
@@ -649,11 +649,11 @@ ShallowWrapper {
                     name="type"
                     optionLabel="proLabel"
                     optionValue="value"
-                    placeholder="Sélectionnez un type d'offre"
+                    placeholder="Sélectionnez un type d’offre"
                     required={true}
                     size="normal"
                     storeValue={[Function]}
-                    sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
+                    sublabel="Le type d’offre ne peut pas être modifié une fois l’offre enregistrée."
                     type="select"
                   />,
                   false,
@@ -672,7 +672,7 @@ ShallowWrapper {
                     "displayValue": [Function],
                     "errors": null,
                     "isExpanded": true,
-                    "label": "Titre de l'offre",
+                    "label": "Titre de l’offre",
                     "layout": "horizontal",
                     "name": "name",
                     "required": true,
@@ -696,12 +696,12 @@ ShallowWrapper {
                     "optionLabel": "proLabel",
                     "optionValue": "value",
                     "options": undefined,
-                    "placeholder": "Sélectionnez un type d'offre",
+                    "placeholder": "Sélectionnez un type d’offre",
                     "readOnly": undefined,
                     "required": true,
                     "size": "normal",
                     "storeValue": [Function],
-                    "sublabel": "Le type d'offre ne peut pas être modifié une fois l'offre enregistrée.",
+                    "sublabel": "Le type d’offre ne peut pas être modifié une fois l’offre enregistrée.",
                     "type": "select",
                   },
                   "ref": null,
@@ -765,7 +765,7 @@ ShallowWrapper {
                       name="bookingEmail"
                       size="normal"
                       storeValue={[Function]}
-                      sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                      sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
                       type="email"
                     />
                   </div>,
@@ -854,7 +854,7 @@ ShallowWrapper {
                         name="bookingEmail"
                         size="normal"
                         storeValue={[Function]}
-                        sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                        sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
                         type="email"
                       />,
                     ],
@@ -923,7 +923,7 @@ ShallowWrapper {
                         "name": "bookingEmail",
                         "size": "normal",
                         "storeValue": [Function],
-                        "sublabel": "Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations",
+                        "sublabel": "Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations",
                         "type": "email",
                       },
                       "ref": null,
@@ -1032,6 +1032,7 @@ ShallowWrapper {
                       className="button is-secondary is-medium"
                       id="cancel-button"
                       onClick={[Function]}
+                      type="button"
                     >
                       Annuler
                     </button>
@@ -1046,8 +1047,7 @@ ShallowWrapper {
                       requiredFields={Array []}
                       type="submit"
                     >
-                      Enregistrer
-                       
+                      Enregistrer 
                     </SubmitButton>
                   </div>,
                 ],
@@ -1067,6 +1067,7 @@ ShallowWrapper {
                       className="button is-secondary is-medium"
                       id="cancel-button"
                       onClick={[Function]}
+                      type="button"
                     >
                       Annuler
                     </button>,
@@ -1082,6 +1083,7 @@ ShallowWrapper {
                       "className": "button is-secondary is-medium",
                       "id": "cancel-button",
                       "onClick": [Function],
+                      "type": "button",
                     },
                     "ref": null,
                     "rendered": "Annuler",
@@ -1101,8 +1103,7 @@ ShallowWrapper {
                       requiredFields={Array []}
                       type="submit"
                     >
-                      Enregistrer
-                       
+                      Enregistrer 
                     </SubmitButton>,
                     "className": "control",
                   },
@@ -1113,8 +1114,7 @@ ShallowWrapper {
                     "nodeType": "function",
                     "props": Object {
                       "children": Array [
-                        "Enregistrer",
-                        " ",
+                        "Enregistrer ",
                         undefined,
                       ],
                       "className": "button is-primary is-medium",
@@ -1125,8 +1125,7 @@ ShallowWrapper {
                     },
                     "ref": null,
                     "rendered": Array [
-                      "Enregistrer",
-                      " ",
+                      "Enregistrer ",
                       undefined,
                     ],
                     "type": [Function],
@@ -1156,7 +1155,7 @@ ShallowWrapper {
         },
         "children": <HeroSection
           subtitle={null}
-          title="Détails de l'offre"
+          title="Détails de l’offre"
         >
           <p
             className="subtitle"
@@ -1197,7 +1196,7 @@ ShallowWrapper {
                 displayValue={[Function]}
                 errors={null}
                 isExpanded={true}
-                label="Titre de l'offre"
+                label="Titre de l’offre"
                 layout="horizontal"
                 name="name"
                 required={true}
@@ -1212,11 +1211,11 @@ ShallowWrapper {
                 name="type"
                 optionLabel="proLabel"
                 optionValue="value"
-                placeholder="Sélectionnez un type d'offre"
+                placeholder="Sélectionnez un type d’offre"
                 required={true}
                 size="normal"
                 storeValue={[Function]}
-                sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
+                sublabel="Le type d’offre ne peut pas être modifié une fois l’offre enregistrée."
                 type="select"
               />
             </div>
@@ -1265,7 +1264,7 @@ ShallowWrapper {
                   name="bookingEmail"
                   size="normal"
                   storeValue={[Function]}
-                  sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                  sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
                   type="email"
                 />
               </div>
@@ -1309,6 +1308,7 @@ ShallowWrapper {
                   className="button is-secondary is-medium"
                   id="cancel-button"
                   onClick={[Function]}
+                  type="button"
                 >
                   Annuler
                 </button>
@@ -1323,8 +1323,7 @@ ShallowWrapper {
                   requiredFields={Array []}
                   type="submit"
                 >
-                  Enregistrer
-                   
+                  Enregistrer 
                 </SubmitButton>
               </div>
             </div>
@@ -1379,7 +1378,7 @@ ShallowWrapper {
                   displayValue={[Function]}
                   errors={null}
                   isExpanded={true}
-                  label="Titre de l'offre"
+                  label="Titre de l’offre"
                   layout="horizontal"
                   name="name"
                   required={true}
@@ -1394,11 +1393,11 @@ ShallowWrapper {
                   name="type"
                   optionLabel="proLabel"
                   optionValue="value"
-                  placeholder="Sélectionnez un type d'offre"
+                  placeholder="Sélectionnez un type d’offre"
                   required={true}
                   size="normal"
                   storeValue={[Function]}
-                  sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
+                  sublabel="Le type d’offre ne peut pas être modifié une fois l’offre enregistrée."
                   type="select"
                 />
               </div>
@@ -1447,7 +1446,7 @@ ShallowWrapper {
                     name="bookingEmail"
                     size="normal"
                     storeValue={[Function]}
-                    sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                    sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
                     type="email"
                   />
                 </div>
@@ -1491,6 +1490,7 @@ ShallowWrapper {
                     className="button is-secondary is-medium"
                     id="cancel-button"
                     onClick={[Function]}
+                    type="button"
                   >
                     Annuler
                   </button>
@@ -1505,15 +1505,14 @@ ShallowWrapper {
                     requiredFields={Array []}
                     type="submit"
                   >
-                    Enregistrer
-                     
+                    Enregistrer 
                   </SubmitButton>
                 </div>
               </div>
             </withRouter(Connect(_Form))>,
           ],
           "subtitle": null,
-          "title": "Détails de l'offre",
+          "title": "Détails de l’offre",
         },
         "ref": null,
         "rendered": Array [
@@ -1557,7 +1556,7 @@ ShallowWrapper {
                     displayValue={[Function]}
                     errors={null}
                     isExpanded={true}
-                    label="Titre de l'offre"
+                    label="Titre de l’offre"
                     layout="horizontal"
                     name="name"
                     required={true}
@@ -1572,11 +1571,11 @@ ShallowWrapper {
                     name="type"
                     optionLabel="proLabel"
                     optionValue="value"
-                    placeholder="Sélectionnez un type d'offre"
+                    placeholder="Sélectionnez un type d’offre"
                     required={true}
                     size="normal"
                     storeValue={[Function]}
-                    sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
+                    sublabel="Le type d’offre ne peut pas être modifié une fois l’offre enregistrée."
                     type="select"
                   />
                 </div>,
@@ -1626,7 +1625,7 @@ ShallowWrapper {
                       name="bookingEmail"
                       size="normal"
                       storeValue={[Function]}
-                      sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                      sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
                       type="email"
                     />
                   </div>
@@ -1670,6 +1669,7 @@ ShallowWrapper {
                       className="button is-secondary is-medium"
                       id="cancel-button"
                       onClick={[Function]}
+                      type="button"
                     >
                       Annuler
                     </button>
@@ -1684,8 +1684,7 @@ ShallowWrapper {
                       requiredFields={Array []}
                       type="submit"
                     >
-                      Enregistrer
-                       
+                      Enregistrer 
                     </SubmitButton>
                   </div>
                 </div>,
@@ -1723,7 +1722,7 @@ ShallowWrapper {
                       displayValue={[Function]}
                       errors={null}
                       isExpanded={true}
-                      label="Titre de l'offre"
+                      label="Titre de l’offre"
                       layout="horizontal"
                       name="name"
                       required={true}
@@ -1738,11 +1737,11 @@ ShallowWrapper {
                       name="type"
                       optionLabel="proLabel"
                       optionValue="value"
-                      placeholder="Sélectionnez un type d'offre"
+                      placeholder="Sélectionnez un type d’offre"
                       required={true}
                       size="normal"
                       storeValue={[Function]}
-                      sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
+                      sublabel="Le type d’offre ne peut pas être modifié une fois l’offre enregistrée."
                       type="select"
                     />,
                     false,
@@ -1761,7 +1760,7 @@ ShallowWrapper {
                       "displayValue": [Function],
                       "errors": null,
                       "isExpanded": true,
-                      "label": "Titre de l'offre",
+                      "label": "Titre de l’offre",
                       "layout": "horizontal",
                       "name": "name",
                       "required": true,
@@ -1785,12 +1784,12 @@ ShallowWrapper {
                       "optionLabel": "proLabel",
                       "optionValue": "value",
                       "options": undefined,
-                      "placeholder": "Sélectionnez un type d'offre",
+                      "placeholder": "Sélectionnez un type d’offre",
                       "readOnly": undefined,
                       "required": true,
                       "size": "normal",
                       "storeValue": [Function],
-                      "sublabel": "Le type d'offre ne peut pas être modifié une fois l'offre enregistrée.",
+                      "sublabel": "Le type d’offre ne peut pas être modifié une fois l’offre enregistrée.",
                       "type": "select",
                     },
                     "ref": null,
@@ -1854,7 +1853,7 @@ ShallowWrapper {
                         name="bookingEmail"
                         size="normal"
                         storeValue={[Function]}
-                        sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                        sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
                         type="email"
                       />
                     </div>,
@@ -1943,7 +1942,7 @@ ShallowWrapper {
                           name="bookingEmail"
                           size="normal"
                           storeValue={[Function]}
-                          sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
+                          sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
                           type="email"
                         />,
                       ],
@@ -2012,7 +2011,7 @@ ShallowWrapper {
                           "name": "bookingEmail",
                           "size": "normal",
                           "storeValue": [Function],
-                          "sublabel": "Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations",
+                          "sublabel": "Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations",
                           "type": "email",
                         },
                         "ref": null,
@@ -2121,6 +2120,7 @@ ShallowWrapper {
                         className="button is-secondary is-medium"
                         id="cancel-button"
                         onClick={[Function]}
+                        type="button"
                       >
                         Annuler
                       </button>
@@ -2135,8 +2135,7 @@ ShallowWrapper {
                         requiredFields={Array []}
                         type="submit"
                       >
-                        Enregistrer
-                         
+                        Enregistrer 
                       </SubmitButton>
                     </div>,
                   ],
@@ -2156,6 +2155,7 @@ ShallowWrapper {
                         className="button is-secondary is-medium"
                         id="cancel-button"
                         onClick={[Function]}
+                        type="button"
                       >
                         Annuler
                       </button>,
@@ -2171,6 +2171,7 @@ ShallowWrapper {
                         "className": "button is-secondary is-medium",
                         "id": "cancel-button",
                         "onClick": [Function],
+                        "type": "button",
                       },
                       "ref": null,
                       "rendered": "Annuler",
@@ -2190,8 +2191,7 @@ ShallowWrapper {
                         requiredFields={Array []}
                         type="submit"
                       >
-                        Enregistrer
-                         
+                        Enregistrer 
                       </SubmitButton>,
                       "className": "control",
                     },
@@ -2202,8 +2202,7 @@ ShallowWrapper {
                       "nodeType": "function",
                       "props": Object {
                         "children": Array [
-                          "Enregistrer",
-                          " ",
+                          "Enregistrer ",
                           undefined,
                         ],
                         "className": "button is-primary is-medium",
@@ -2214,8 +2213,7 @@ ShallowWrapper {
                       },
                       "ref": null,
                       "rendered": Array [
-                        "Enregistrer",
-                        " ",
+                        "Enregistrer ",
                         undefined,
                       ],
                       "type": [Function],
@@ -2257,7 +2255,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;

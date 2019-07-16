@@ -38,7 +38,10 @@ describe('src | components | pages | Offer | StocksManagerContainer | StockItem 
             <Fragment>
               <Field
                 name="foo"
-                render={({ input }) => <input name="foo" {...input} />}
+                render={({ input }) => (<input
+                  name="foo"
+                  {...input}
+                                        />)}
               />
               <SubmitAndCancelControl
                 form={form}
@@ -53,19 +56,17 @@ describe('src | components | pages | Offer | StocksManagerContainer | StockItem 
       )
 
       // when
-      wrapper
-        .find("input[name='foo']")
-        .simulate('change', { target: { value: 'bar' } })
+      wrapper.find("input[name='foo']").simulate('change', { target: { value: 'bar' } })
 
       // when
-      expect(wrapper.find("input[name='foo']").props().value).toEqual('bar')
+      expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('bar')
 
       // when
       const cancelButton = wrapper.find('button.cancel-step')
       cancelButton.simulate('click')
 
       // then
-      expect(wrapper.find("input[name='foo']").props().value).toEqual('')
+      expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('')
       expect(query.changeToReadOnly).toHaveBeenCalledWith(null, {
         id: stockId,
         key: 'stock',

@@ -1,9 +1,11 @@
+import PropTypes from 'prop-types'
 import React from 'react'
-import { getRequestErrorStringFromErrors } from 'pass-culture-shared'
+import {getRequestErrorStringFromErrors, Icon} from 'pass-culture-shared'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 import DeskState from './DeskState/DeskState'
 import Main from '../../layout/Main'
+import HeroSection from "../../layout/HeroSection/HeroSection";
 
 const CODE_MAX_LENGTH = 6
 const CODE_REGEX_VALIDATION = /[^a-z0-9]/i
@@ -30,6 +32,14 @@ class Desk extends React.PureComponent {
     }
   }
 
+  componentDidMount() {
+    this.input.focus()
+  }
+
+  getRef = () => element => (this.input = element)
+
+  handleOnClick = code => () => this.handleCodeRegistration(code)
+
   getBookingFromCode = code => {
     const { dispatch } = this.props
     dispatch(
@@ -46,9 +56,7 @@ class Desk extends React.PureComponent {
     const { payload } = action
     const booking = payload.datum
 
-    const status = booking.isValidated
-      ? CODE_ALREADY_USED
-      : CODE_VERIFICATION_SUCCESS
+    const status = booking.isValidated ? CODE_ALREADY_USED : CODE_VERIFICATION_SUCCESS
 
     this.setState({ booking, status })
   }
@@ -69,14 +77,14 @@ class Desk extends React.PureComponent {
     dispatch(
       requestData({
         apiPath: `/bookings/token/${code}`,
-        handleFail: this.handleFailWhenValidateBooking(),
-        handleSuccess: this.handleSuccessWhenValidateBooking(),
+        handleFail: this.handleFailWhenValidateBooking,
+        handleSuccess: this.handleSuccessWhenValidateBooking,
         method: 'PATCH',
       })
     )
   }
 
-  handleSuccessWhenValidateBooking = () => () => {
+  handleSuccessWhenValidateBooking = () => {
     this.setState({ status: CODE_REGISTERING_SUCCESS })
   }
 
@@ -124,13 +132,12 @@ class Desk extends React.PureComponent {
   }
 
   getValuesFromStatus = status => {
-    let { booking, message } = this.state
+    let { booking, code, message } = this.state
     let level
 
     switch (status) {
       case CODE_TYPING:
-        message = `Caractères restants: ${CODE_MAX_LENGTH -
-          this.state.code.length}/${CODE_MAX_LENGTH}`
+        message = `Caractères restants: ${CODE_MAX_LENGTH - code.length}/${CODE_MAX_LENGTH}`
         level = 'pending'
         break
       case CODE_SYNTAX_INVALID:
@@ -146,7 +153,7 @@ class Desk extends React.PureComponent {
         level = 'error'
         break
       case CODE_VERIFICATION_SUCCESS:
-        message = 'Coupon vérifié, cliquez sur OK pour enregistrer'
+        message = 'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
         level = 'pending'
         break
       case CODE_REGISTERING_IN_PROGRESS:
@@ -154,7 +161,7 @@ class Desk extends React.PureComponent {
         level = 'pending'
         break
       case CODE_REGISTERING_SUCCESS:
-        message = 'Enregistrement réussi!'
+        message = 'Enregistrement réussi !'
         level = 'success'
         break
       case CODE_VERIFICATION_FAILED:
@@ -176,66 +183,65 @@ class Desk extends React.PureComponent {
   }
 
   renderChildComponent = () => {
-    const { booking, level, message } = this.getValuesFromStatus(
-      this.state.status
-    )
-    return <DeskState booking={booking} level={level} message={message} />
-  }
-
-  componentDidMount() {
-    this.input.focus()
-  }
-
-  getRef() {
-    return element => (this.input = element)
+    const { status } = this.state
+    const { booking, level, message } = this.getValuesFromStatus(status)
+    return (<DeskState
+      booking={booking}
+      level={level}
+      message={message}
+            />)
   }
 
   render() {
+    const { code, status } = this.state
     return (
       <Main name="desk">
-        <div className="section hero">
-          <h1 className="main-title">Guichet</h1>
+        <HeroSection title="Guichet">
           <p className="subtitle">
-            Enregistrez les codes de réservations présentés par les porteurs du
-            Pass.
+            {'Enregistrez les codes de réservations présentés par les porteurs du pass.'}
           </p>
-        </div>
-
+        </HeroSection>
         <div className="section form">
           <p className="subtitle is-medium has-text-weight-bold">
-            Scannez un code-barres ou saisissez-le ci-dessous:
+            {'Scannez un code-barres ou saisissez-le ci-dessous :'}
           </p>
 
           <input
             className="input is-undefined"
-            type="text"
-            ref={this.getRef()}
+            maxLength={CODE_MAX_LENGTH}
             name="code"
             onChange={this.handleCodeChange}
-            maxLength={CODE_MAX_LENGTH}
-            value={this.state.code}
+            ref={this.getRef()}
+            type="text"
+            value={code}
           />
 
           <button
-            disabled={this.state.status !== CODE_VERIFICATION_SUCCESS}
             className="button"
+            disabled={status !== CODE_VERIFICATION_SUCCESS}
+            onClick={this.handleOnClick(code)}
             type="submit"
-            onClick={() => this.handleCodeRegistration(this.state.code)}>
-            Valider
+          >
+            {'Valider'}
           </button>
 
           {this.renderChildComponent()}
 
           <NavLink
-            id="exitlink"
             className="button is-primary is-medium is-pulled-right"
-            to="/accueil">
-            Terminer
+            id="exitlink"
+            to="/accueil"
+          >
+            {'Terminer'}
           </NavLink>
         </div>
       </Main>
     )
   }
+}
+
+Desk.propTypes = {
+  dispatch: PropTypes.func.isRequired,
 }
 
 export default Desk

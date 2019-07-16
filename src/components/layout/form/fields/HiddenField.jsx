@@ -1,23 +1,32 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
 
-import FieldErrors from 'components/layout/form/FieldErrors'
+import FieldErrors from '../FieldErrors'
 
 const noOperation = () => {}
 
-export const HiddenField = ({ name, validator }) => (
-  <Field
-    name={name}
-    validate={validator}
-    render={({ input, meta }) => (
-      <div>
-        <input type="hidden" {...input} />
-        <FieldErrors meta={meta} />
-      </div>
-    )}
-  />
-)
+class HiddenField extends Component {
+  renderField = ({ input, meta }) => (
+    <div>
+      <input
+        {...input}
+        type="hidden"
+      />
+      <FieldErrors meta={meta} />
+    </div>
+  )
+
+  render() {
+    const { name, validator } = this.props
+
+    return (<Field
+      name={name}
+      render={this.renderField}
+      validate={validator}
+            />)
+  }
+}
 
 HiddenField.defaultProps = {
   validator: noOperation,

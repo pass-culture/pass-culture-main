@@ -1,5 +1,5 @@
-import { selectTypeByIsVenueVirtualAndOfferTypeValue } from '../selectTypeByIsVenueVirtualAndOfferTypeValue'
-import state from './mockState'
+import selectTypeByIsVenueVirtualAndOfferTypeValue from '../selectTypeByIsVenueVirtualAndOfferTypeValue'
+import state from './mockState.json'
 
 describe('selectTypeByIsVenueVirtualAndOfferTypeValue', () => {
   describe('when offer type is consistent with isVirtual', () => {
@@ -9,14 +9,10 @@ describe('selectTypeByIsVenueVirtualAndOfferTypeValue', () => {
       const offerTypeValue = 'ThingType.MUSIQUE'
 
       // when
-      const result = selectTypeByIsVenueVirtualAndOfferTypeValue(
-        state,
-        isVirtual,
-        offerTypeValue
-      )
+      const result = selectTypeByIsVenueVirtualAndOfferTypeValue(state, isVirtual, offerTypeValue)
 
       // then
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         appLabel: 'Supports physiques ou en ligne',
         conditionalFields: ['author', 'musicType', 'performer'],
         description:
@@ -32,18 +28,14 @@ describe('selectTypeByIsVenueVirtualAndOfferTypeValue', () => {
     })
   })
 
-  describe('when offer type is consistent with isVirtual', () => {
+  describe('when offer type is consistent with isVirtual (réécrire)', () => {
     it('returns undefined if value is unknown', () => {
       // given
       const isVirtual = false
       const offerTypeValue = 'ThingType.TRUC'
 
       // when
-      const result = selectTypeByIsVenueVirtualAndOfferTypeValue(
-        state,
-        isVirtual,
-        offerTypeValue
-      )
+      const result = selectTypeByIsVenueVirtualAndOfferTypeValue(state, isVirtual, offerTypeValue)
 
       // then
       expect(result).not.toBeDefined()
@@ -57,11 +49,7 @@ describe('selectTypeByIsVenueVirtualAndOfferTypeValue', () => {
       const offerTypeValue = 'ThingType.PRATIQUE_ARTISTIQUE_ABO'
 
       // when
-      const result = selectTypeByIsVenueVirtualAndOfferTypeValue(
-        state,
-        isVirtual,
-        offerTypeValue
-      )
+      const result = selectTypeByIsVenueVirtualAndOfferTypeValue(state, isVirtual, offerTypeValue)
 
       // then
       expect(result).not.toBeDefined()
@@ -75,11 +63,7 @@ describe('selectTypeByIsVenueVirtualAndOfferTypeValue', () => {
       const offerTypeValue = 'ThingType.PRESSE_ABO'
 
       // when
-      const result = selectTypeByIsVenueVirtualAndOfferTypeValue(
-        state,
-        isVirtual,
-        offerTypeValue
-      )
+      const result = selectTypeByIsVenueVirtualAndOfferTypeValue(state, isVirtual, offerTypeValue)
 
       // then
       expect(result).not.toBeDefined()

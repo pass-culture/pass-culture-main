@@ -75,14 +75,14 @@ describe('src | components | pages | Offer | Offer ', () => {
           config: { method: 'PATCH' },
           payload: { datum: offer },
         }
-        wrapper.instance().handleFormSuccess({}, action)
+        wrapper.instance().onHandleFormSuccess({}, action)
 
         // then
         expect(queryChangeToReadOnly).toHaveBeenCalledWith(queryParams, offer)
       })
     })
 
-    describe('when the offer is successfully modified', () => {
+    describe('when the offer is successfully modified (réécrire)', () => {
       it('should redirect to gestion page', () => {
         // given
         const queryChangeToReadOnly = jest.fn()
@@ -114,7 +114,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         const queryParams = { gestion: '' }
         const offer = { id: 'SN' }
         const action = { config: { method: 'POST' }, payload: { datum: offer } }
-        wrapper.instance().handleFormSuccess({}, action)
+        wrapper.instance().onHandleFormSuccess({}, action)
 
         // then
         expect(queryChangeToReadOnly).toHaveBeenCalledWith(queryParams, offer)
@@ -123,7 +123,7 @@ describe('src | components | pages | Offer | Offer ', () => {
   })
 
   describe('render', () => {
-    describe('MediationsManager', () => {
+    describe('mediationsManager', () => {
       it("should be displayed when it's not a new offer", () => {
         // given
         const initialProps = {
@@ -203,7 +203,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         const wrapper = shallow(<Offer {...initialProps} />)
 
         // then
-        expect(wrapper.find(Form).prop('action')).toEqual('/offers')
+        expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers')
       })
 
       it('should create a new Event when event type given', () => {
@@ -241,7 +241,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         const wrapper = shallow(<Offer {...initialProps} />)
 
         // then
-        expect(wrapper.find(Form).prop('action')).toEqual('/offers')
+        expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers')
       })
     })
 
@@ -281,7 +281,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         const wrapper = shallow(<Offer {...initialProps} />)
 
         // then
-        expect(wrapper.find(Form).prop('action')).toEqual('/offers/VAG')
+        expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
       })
 
       it('should create a new Event when event type given', () => {
@@ -324,7 +324,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         const wrapper = shallow(<Offer {...initialProps} />)
 
         // then
-        expect(wrapper.find(Form).prop('action')).toEqual('/offers/VAG')
+        expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
       })
     })
 
@@ -357,14 +357,8 @@ describe('src | components | pages | Offer | Offer ', () => {
 
       it('should display venue name when venue publicName is not provided', () => {
         // given
-        props.venues = [
-          { name: 'quel beau théâtre' },
-          { name: 'quel beau musée' },
-        ]
-        const expectedOptions = [
-          { name: 'quel beau théâtre' },
-          { name: 'quel beau musée' },
-        ]
+        props.venues = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
+        const expectedOptions = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
 
         // when
         const wrapper = shallow(<Offer {...props} />)
@@ -374,7 +368,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         const fieldGroupForUsefulInformation = fieldGroups.at(1)
         const venueField = fieldGroupForUsefulInformation.find(Field).at(1)
         expect(fieldGroups).toHaveLength(3)
-        expect(venueField.prop('options')).toEqual(expectedOptions)
+        expect(venueField.prop('options')).toStrictEqual(expectedOptions)
       })
 
       it('should display venue public name when venue public name is provided', () => {
@@ -402,7 +396,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         const fieldGroupForUsefulInformation = fieldGroups.at(1)
         const venueField = fieldGroupForUsefulInformation.find(Field).at(1)
         expect(fieldGroups).toHaveLength(3)
-        expect(venueField.prop('options')).toEqual(expectedOptions)
+        expect(venueField.prop('options')).toStrictEqual(expectedOptions)
       })
 
       it('should display correctly duration field when EventType', () => {
@@ -424,7 +418,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         const fieldGroupForUsefulInformation = fieldGroups.at(1)
         const durationField = fieldGroupForUsefulInformation.find(Field).at(2)
         expect(fieldGroups).toHaveLength(3)
-        expect(durationField.prop('name')).toEqual('durationMinutes')
+        expect(durationField.prop('name')).toStrictEqual('durationMinutes')
       })
 
       it('should not display correctly duration field when Thing', () => {
@@ -446,7 +440,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         const fieldGroupForUsefulInformation = fieldGroups.at(1)
         const durationField = fieldGroupForUsefulInformation.find(Field).at(2)
         expect(fieldGroups).toHaveLength(3)
-        expect(durationField.prop('name')).toEqual('bookingEmail')
+        expect(durationField.prop('name')).toStrictEqual('bookingEmail')
       })
     })
   })

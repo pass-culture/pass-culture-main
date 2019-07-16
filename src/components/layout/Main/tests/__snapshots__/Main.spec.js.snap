@@ -1,18 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | layout | Main snapshot should match snapshot 1`] = `
+exports[`src | components | layout | Main should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Main
     Tag="main"
+    backTo={null}
+    currentUser={Object {}}
     dispatch={[MockFunction]}
+    fullscreen={false}
+    handleDataRequest={null}
+    header={Object {}}
     history={Object {}}
     location={Object {}}
     name="foo"
+    redBg={null}
+    whiteHeader={null}
+    withLoading={null}
   >
-    <div>
-      foo
-    </div>
+    Object {}
   </Main>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -29,7 +35,9 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": Array [
-        <withRouter(Connect(Header)) />,
+        <withRouter(Connect(Header))
+          whiteHeader={null}
+        />,
         <ReactTooltip
           className="flex-center items-center"
           clickable={false}
@@ -41,7 +49,7 @@ ShallowWrapper {
           wrapper="div"
         />,
         <main
-          className="page foo-page container"
+          className="page foo-page with-header container"
         >
           <div
             className="columns is-gapless"
@@ -56,9 +64,7 @@ ShallowWrapper {
                 <div
                   className="main-content"
                 >
-                  <div>
-                    foo
-                  </div>
+                  Object {}
                 </div>
               </div>
             </div>
@@ -74,7 +80,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "whiteHeader": undefined,
+          "whiteHeader": null,
         },
         "ref": null,
         "rendered": null,
@@ -117,16 +123,14 @@ ShallowWrapper {
                   <div
                     className="main-content"
                   >
-                    <div>
-                      foo
-                    </div>
+                    Object {}
                   </div>
                 </div>
               </div>
             </div>,
             undefined,
           ],
-          "className": "page foo-page container",
+          "className": "page foo-page with-header container",
         },
         "ref": null,
         "rendered": Array [
@@ -145,9 +149,7 @@ ShallowWrapper {
                   <div
                     className="main-content"
                   >
-                    <div>
-                      foo
-                    </div>
+                    Object {}
                   </div>
                 </div>
               </div>,
@@ -167,9 +169,7 @@ ShallowWrapper {
                     <div
                       className="main-content"
                     >
-                      <div>
-                        foo
-                      </div>
+                      Object {}
                     </div>
                   </div>,
                 ],
@@ -192,50 +192,36 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": Array [
-                      undefined,
+                      null,
                       <div
                         className="main-content"
                       >
-                        <div>
-                          foo
-                        </div>
+                        Object {}
                       </div>,
-                      undefined,
+                      null,
                     ],
                     "className": "after-notification-content",
                   },
                   "ref": null,
                   "rendered": Array [
-                    undefined,
+                    null,
                     Object {
                       "instance": null,
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
                         "children": Array [
-                          <div>
-                            foo
-                          </div>,
+                          Object {},
                         ],
                         "className": "main-content",
                       },
                       "ref": null,
                       "rendered": Array [
-                        Object {
-                          "instance": null,
-                          "key": undefined,
-                          "nodeType": "host",
-                          "props": Object {
-                            "children": "foo",
-                          },
-                          "ref": null,
-                          "rendered": "foo",
-                          "type": "div",
-                        },
+                        Object {},
                       ],
                       "type": "div",
                     },
-                    undefined,
+                    null,
                   ],
                   "type": "div",
                 },
@@ -267,7 +253,9 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": Array [
-          <withRouter(Connect(Header)) />,
+          <withRouter(Connect(Header))
+            whiteHeader={null}
+          />,
           <ReactTooltip
             className="flex-center items-center"
             clickable={false}
@@ -279,7 +267,7 @@ ShallowWrapper {
             wrapper="div"
           />,
           <main
-            className="page foo-page container"
+            className="page foo-page with-header container"
           >
             <div
               className="columns is-gapless"
@@ -294,9 +282,7 @@ ShallowWrapper {
                   <div
                     className="main-content"
                   >
-                    <div>
-                      foo
-                    </div>
+                    Object {}
                   </div>
                 </div>
               </div>
@@ -312,7 +298,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "whiteHeader": undefined,
+            "whiteHeader": null,
           },
           "ref": null,
           "rendered": null,
@@ -355,16 +341,14 @@ ShallowWrapper {
                     <div
                       className="main-content"
                     >
-                      <div>
-                        foo
-                      </div>
+                      Object {}
                     </div>
                   </div>
                 </div>
               </div>,
               undefined,
             ],
-            "className": "page foo-page container",
+            "className": "page foo-page with-header container",
           },
           "ref": null,
           "rendered": Array [
@@ -383,9 +367,7 @@ ShallowWrapper {
                     <div
                       className="main-content"
                     >
-                      <div>
-                        foo
-                      </div>
+                      Object {}
                     </div>
                   </div>
                 </div>,
@@ -405,9 +387,7 @@ ShallowWrapper {
                       <div
                         className="main-content"
                       >
-                        <div>
-                          foo
-                        </div>
+                        Object {}
                       </div>
                     </div>,
                   ],
@@ -430,50 +410,36 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": Array [
-                        undefined,
+                        null,
                         <div
                           className="main-content"
                         >
-                          <div>
-                            foo
-                          </div>
+                          Object {}
                         </div>,
-                        undefined,
+                        null,
                       ],
                       "className": "after-notification-content",
                     },
                     "ref": null,
                     "rendered": Array [
-                      undefined,
+                      null,
                       Object {
                         "instance": null,
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
                           "children": Array [
-                            <div>
-                              foo
-                            </div>,
+                            Object {},
                           ],
                           "className": "main-content",
                         },
                         "ref": null,
                         "rendered": Array [
-                          Object {
-                            "instance": null,
-                            "key": undefined,
-                            "nodeType": "host",
-                            "props": Object {
-                              "children": "foo",
-                            },
-                            "ref": null,
-                            "rendered": "foo",
-                            "type": "div",
-                          },
+                          Object {},
                         ],
                         "type": "div",
                       },
-                      undefined,
+                      null,
                     ],
                     "type": "div",
                   },
@@ -522,7 +488,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;

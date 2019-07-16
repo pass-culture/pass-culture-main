@@ -50,7 +50,6 @@ describe('src | components | pages | Offerers | Offerers', () => {
   })
 
   describe('render', () => {
-
     describe('should pluralize offerers menu link', () => {
       it('should display Votre structure when one offerer', () => {
         // given
@@ -64,26 +63,26 @@ describe('src | components | pages | Offerers | Offerers', () => {
 
         // then
 
-        expect(heroSection.title).toEqual('Votre structure juridique')
+        expect(heroSection.title).toStrictEqual('Votre structure juridique')
       })
 
       it('should display Vos structures when many offerers', () => {
         // given
-          props.currentUser = {}
-          props.offerers = [{ id: 'AE' }, { id: 'AF' }]
-          props.pendingOfferers = []
+        props.currentUser = {}
+        props.offerers = [{ id: 'AE' }, { id: 'AF' }]
+        props.pendingOfferers = []
 
         // when
         const wrapper = shallow(<Offerers {...props} />)
         const heroSection = wrapper.find('HeroSection').props()
 
         // then
-        expect(heroSection.title).toEqual('Vos structures juridiques')
+        expect(heroSection.title).toStrictEqual('Vos structures juridiques')
       })
     })
 
     describe('should display a notification', () => {
-      it("should display a notification when current user has no offers and has digital venues", () => {
+      it('should display a notification when current user has no offers and has digital venues', () => {
         // given
         props.currentUser = {
           hasOffers: false,
@@ -96,20 +95,21 @@ describe('src | components | pages | Offerers | Offerers', () => {
         // then
         const expected = [
           {
-          	"patch": {
-          		"tag": "offerers",
-          		"text": "Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)",
-          		"type": "info",
-          		"url": "/structures/AE/lieux/creation",
-          		"urlLabel": "Nouveau lieu"
-          	},
-          	"type": "SHOW_NOTIFICATION"
-          }
+            patch: {
+              tag: 'offerers',
+              text:
+                'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
+              type: 'info',
+              url: '/structures/AE/lieux/creation',
+              urlLabel: 'Nouveau lieu',
+            },
+            type: 'SHOW_NOTIFICATION',
+          },
         ]
-        expect(dispatch.mock.calls[2]).toEqual(expected)
+        expect(dispatch.mock.calls[2]).toStrictEqual(expected)
       })
 
-      it("should display a notification when current user has only digital offers", () => {
+      it('should display a notification when current user has only digital offers', () => {
         // given
         props.currentUser = {
           hasOffers: true,
@@ -122,22 +122,23 @@ describe('src | components | pages | Offerers | Offerers', () => {
         // then
         const expected = [
           {
-          	"patch": {
-          		"tag": "offerers",
-          		"text": "Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)",
-          		"type": "info",
-          		"url": "/structures/AE/lieux/creation",
-          		"urlLabel": "Nouveau lieu"
-          	},
-          	"type": "SHOW_NOTIFICATION"
-          }
+            patch: {
+              tag: 'offerers',
+              text:
+                'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
+              type: 'info',
+              url: '/structures/AE/lieux/creation',
+              urlLabel: 'Nouveau lieu',
+            },
+            type: 'SHOW_NOTIFICATION',
+          },
         ]
-        expect(dispatch.mock.calls[2]).toEqual(expected)
+        expect(dispatch.mock.calls[2]).toStrictEqual(expected)
       })
     })
 
     describe('should not display a notification', () => {
-      it("should not display a notification when current user has offers and physical venues", () => {
+      it('should not display a notification when current user has offers and physical venues', () => {
         // given
         props.currentUser = {
           hasOffers: true,
@@ -150,22 +151,24 @@ describe('src | components | pages | Offerers | Offerers', () => {
         // then
         const expected = [
           {
-            "config": {
-              "apiPath": "/offerers?keywords&validated=false",
-              "method": "GET",
-              "normalizer": {
-                "managedVenues": {
-                  "normalizer": {"offers": "offers"},
-                  "stateKey": "venues"}
+            config: {
+              apiPath: '/offerers?keywords&validated=false',
+              method: 'GET',
+              normalizer: {
+                managedVenues: {
+                  normalizer: { offers: 'offers' },
+                  stateKey: 'venues',
                 },
-                "stateKey": "pendingOfferers"},
-                "type": "REQUEST_DATA_GET_PENDINGOFFERERS"
-          }
+              },
+              stateKey: 'pendingOfferers',
+            },
+            type: 'REQUEST_DATA_GET_PENDINGOFFERERS',
+          },
         ]
-        expect(dispatch.mock.calls[2]).toEqual(expected)
+        expect(dispatch.mock.calls[2]).toStrictEqual(expected)
       })
 
-      it("should not display a notification when current user has no offers but physical venues", () => {
+      it('should not display a notification when current user has no offers but physical venues', () => {
         // given
         props.currentUser = {
           hasOffers: false,
@@ -178,21 +181,22 @@ describe('src | components | pages | Offerers | Offerers', () => {
         // then
         const expected = [
           {
-            "config": {
-              "apiPath": "/offerers?keywords&validated=false",
-              "method": "GET",
-              "normalizer": {
-                "managedVenues": {
-                  "normalizer": {"offers": "offers"},
-                  "stateKey": "venues"}
+            config: {
+              apiPath: '/offerers?keywords&validated=false',
+              method: 'GET',
+              normalizer: {
+                managedVenues: {
+                  normalizer: { offers: 'offers' },
+                  stateKey: 'venues',
                 },
-                "stateKey": "pendingOfferers"},
-                "type": "REQUEST_DATA_GET_PENDINGOFFERERS"
-          }
+              },
+              stateKey: 'pendingOfferers',
+            },
+            type: 'REQUEST_DATA_GET_PENDINGOFFERERS',
+          },
         ]
-        expect(dispatch.mock.calls[2]).toEqual(expected)
+        expect(dispatch.mock.calls[2]).toStrictEqual(expected)
       })
     })
-
   })
 })

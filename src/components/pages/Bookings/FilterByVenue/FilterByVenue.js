@@ -7,27 +7,41 @@ class FilterByVenue extends PureComponent {
     loadVenues()
   }
 
+  handleOnClick = () => {
+    const { isDigital, selectOnlyDigitalVenues } = this.props
+    selectOnlyDigitalVenues(!isDigital)
+  }
+
   render() {
     const { venuesOptions, isDigital, selectBookingsForVenues, venueId } = this.props
-    const labelClassName = this.props.isDigital
-      ? 'has-text-grey'
-      : 'has-text-black'
+    const labelClassName = isDigital ? 'has-text-grey' : 'has-text-black'
 
     return (
       <Fragment>
         <div id="filter-by-venue">
-          <label htmlFor="venues" className={labelClassName}>
+          <label
+            className={labelClassName}
+            htmlFor="venues"
+          >
             {'Sélectionnez un lieu :'}
           </label>
           <select
-            id="venues"
             className="pc-selectbox pl24 py5 fs19"
+            disabled={isDigital}
+            id="venues"
+            onBlur={selectBookingsForVenues}
             onChange={selectBookingsForVenues}
             value={venueId}
-            disabled={isDigital}>
-            <option disabled label=" "></option>
+          >
+            <option
+              disabled
+              label=" "
+            />
             {venuesOptions.map(({ name, id }) => (
-              <option key={id} value={id}>
+              <option
+                key={id}
+                value={id}
+              >
                 {name}
               </option>
             ))}
@@ -36,15 +50,13 @@ class FilterByVenue extends PureComponent {
         <div className="select-digital-offer mt16 mb12">
           <div>{'ou :'}</div>
           <input
-            id="isDigital"
             className="pc-checkbox input"
-            type="checkbox"
-            onClick={() => this.props.selectOnlyDigitalVenues(!isDigital)}
             defaultChecked={isDigital}
+            id="isDigital"
+            onClick={this.handleOnClick}
+            type="checkbox"
           />
-          <label htmlFor="isDigital">
-            {'Cochez cette case pour voir les offres numériques'}
-          </label>
+          <label htmlFor="isDigital">{'Cochez cette case pour voir les offres numériques'}</label>
         </div>
       </Fragment>
     )
@@ -58,8 +70,10 @@ FilterByVenue.defaultProps = {
 FilterByVenue.propTypes = {
   isDigital: PropTypes.bool.isRequired,
   loadVenues: PropTypes.func.isRequired,
+  selectBookingsForVenues: PropTypes.func.isRequired,
+  selectOnlyDigitalVenues: PropTypes.func.isRequired,
   venueId: PropTypes.string,
-  venuesOptions: PropTypes.array.isRequired,
+  venuesOptions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default FilterByVenue

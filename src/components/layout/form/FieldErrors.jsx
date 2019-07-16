@@ -1,5 +1,3 @@
-/* eslint
-  react/jsx-one-expression-per-line: 0 */
 import React from 'react'
 import PropTypes from 'prop-types'
 
@@ -10,16 +8,13 @@ import PropTypes from 'prop-types'
 // Documentation: https://reactjs.org/docs/lists-and-keys.html#keys
 const setDangerousArrayKeyIndex = index => `field_error_${index}`
 
-export const FieldErrors = ({ className, customMessage, meta }) => {
+const FieldErrors = ({ className, customMessage, meta }) => {
   const showError =
     customMessage ||
-    (meta &&
-      meta.touched &&
-      (meta.error || (!meta.dirtySinceLastSubmit && meta.submitError)))
+    (meta && meta.touched && (meta.error || (!meta.dirtySinceLastSubmit && meta.submitError)))
   let errorMessage =
     (showError &&
-      (customMessage ||
-        (meta.error || (!meta.dirtySinceLastSubmit && meta.submitError)))) ||
+      (customMessage || (meta.error || (!meta.dirtySinceLastSubmit && meta.submitError)))) ||
     null
   // FIXME -> transformation en array plus propre
   // on considére qu'une erreur est soit un string, soit un array
@@ -31,13 +26,18 @@ export const FieldErrors = ({ className, customMessage, meta }) => {
       {(errorMessage && (
         <span className="flex-columns">
           <span className="flex-0 mr3">
-            <span aria-hidden className="icon-warning-circled fs18" title="" />
+            <span
+              aria-hidden
+              className="icon-warning-circled fs18"
+              title=""
+            />
           </span>
           <span className="flex-1 is-semi-bold fs12">
             {errorMessage.map((err, index) => (
               <span
+                className="field-error-message is-block mt2"
                 key={setDangerousArrayKeyIndex(index)}
-                className="field-error-message is-block mt2">
+              >
                 {err}
               </span>
             ))}
@@ -65,7 +65,7 @@ FieldErrors.propTypes = {
   // par le formulaire via la propriété `meta`
   // Exemple: https://codesandbox.io/s/9y9om95lyp
   // Documentation: https://github.com/final-form/react-final-form
-  meta: PropTypes.object,
+  meta: PropTypes.shape(),
 }
 
 export default FieldErrors

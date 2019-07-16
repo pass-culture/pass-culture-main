@@ -1,12 +1,4 @@
-import {
-  errors,
-  form,
-  loading,
-  modal,
-  notification,
-  tracker,
-  user,
-} from 'pass-culture-shared'
+import { errors, form, loading, modal, notification, tracker, user } from 'pass-culture-shared'
 import { combineReducers } from 'redux'
 
 import data from './data'

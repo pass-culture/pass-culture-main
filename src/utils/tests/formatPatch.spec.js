@@ -59,7 +59,7 @@ describe('formatPatch', () => {
         siret: '22222222911111',
       }
       // then
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
   })
 
@@ -103,7 +103,7 @@ describe('formatPatch', () => {
       )
 
       // then
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         bookingEmail: 'R6465373fake674654673@email.com',
         publicName: 'Cinéma de la fin publique',
 

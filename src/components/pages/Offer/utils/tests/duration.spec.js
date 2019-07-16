@@ -1,4 +1,4 @@
-import getDurationInHours, { getDurationInMinutes } from '../duration'
+import { getDurationInHours, getDurationInMinutes } from '../duration'
 
 describe('src | components | pages | Offer | utils | getDurationInHours', () => {
   it('should return correct hour when minutes are not defined', () => {
@@ -7,7 +7,7 @@ describe('src | components | pages | Offer | utils | getDurationInHours', () => 
     const expected = 'HH:MM'
 
     // then
-    expect(value).toEqual(expected)
+    expect(value).toStrictEqual(expected)
   })
   it('should return correct hour when minutes are not given', () => {
     // given
@@ -18,7 +18,7 @@ describe('src | components | pages | Offer | utils | getDurationInHours', () => 
     const expected = 'HH:MM'
 
     // then
-    expect(value).toEqual(expected)
+    expect(value).toStrictEqual(expected)
   })
   it('should return correct hour when minutes are equal to 0', () => {
     // given
@@ -29,7 +29,7 @@ describe('src | components | pages | Offer | utils | getDurationInHours', () => 
     const expected = 'HH:MM'
 
     // then
-    expect(value).toEqual(expected)
+    expect(value).toStrictEqual(expected)
   })
   it('should return correct hour when minutes are below 10', () => {
     // given
@@ -40,7 +40,7 @@ describe('src | components | pages | Offer | utils | getDurationInHours', () => 
     const expected = '00:08'
 
     // then
-    expect(value).toEqual(expected)
+    expect(value).toStrictEqual(expected)
   })
   it('should return correct hour when minutes are equal to 60', () => {
     // given
@@ -51,7 +51,7 @@ describe('src | components | pages | Offer | utils | getDurationInHours', () => 
     const expected = '01:00'
 
     // then
-    expect(value).toEqual(expected)
+    expect(value).toStrictEqual(expected)
   })
   it('should return correct hour when minutes are below 60', () => {
     // given
@@ -62,7 +62,7 @@ describe('src | components | pages | Offer | utils | getDurationInHours', () => 
     const expected = '00:56'
 
     // then
-    expect(value).toEqual(expected)
+    expect(value).toStrictEqual(expected)
   })
   it('should return correct hour when minutes are not below 60', () => {
     // given
@@ -73,7 +73,7 @@ describe('src | components | pages | Offer | utils | getDurationInHours', () => 
     const expected = '02:00'
 
     // then
-    expect(value).toEqual(expected)
+    expect(value).toStrictEqual(expected)
   })
   it('should return correct hour when minutes are above 60', () => {
     // given
@@ -84,7 +84,7 @@ describe('src | components | pages | Offer | utils | getDurationInHours', () => 
     const expected = '14:59'
 
     // then
-    expect(value).toEqual(expected)
+    expect(value).toStrictEqual(expected)
   })
 })
 
@@ -98,7 +98,7 @@ describe('src | components | pages | Offer | utils | getDurationInMinutes', () =
     const expected = null
 
     // then
-    expect(value).toEqual(expected)
+    expect(value).toStrictEqual(expected)
   })
   it('should return correct hour when hour is equal to 0', () => {
     // given
@@ -109,7 +109,7 @@ describe('src | components | pages | Offer | utils | getDurationInMinutes', () =
     const expected = 0
 
     // then
-    expect(value).toEqual(expected)
+    expect(value).toStrictEqual(expected)
   })
   it('should return correct hour when hour is equal to 1', () => {
     // given
@@ -120,7 +120,7 @@ describe('src | components | pages | Offer | utils | getDurationInMinutes', () =
     const expected = 60
 
     // then
-    expect(value).toEqual(expected)
+    expect(value).toStrictEqual(expected)
   })
   it('should return correct hour when hour is below 1', () => {
     // given
@@ -131,7 +131,7 @@ describe('src | components | pages | Offer | utils | getDurationInMinutes', () =
     const expected = 0
 
     // then
-    expect(value).toEqual(expected)
+    expect(value).toStrictEqual(expected)
   })
   it('should return correct hour when hour is above 1', () => {
     // given
@@ -142,6 +142,6 @@ describe('src | components | pages | Offer | utils | getDurationInMinutes', () =
     const expected = 719
 
     // then
-    expect(value).toEqual(expected)
+    expect(value).toStrictEqual(expected)
   })
 })

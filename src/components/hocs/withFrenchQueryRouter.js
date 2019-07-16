@@ -5,7 +5,7 @@ import { mapBrowserToApi } from '../../utils/translate'
 export const CREATION = 'creation'
 export const MODIFICATION = 'modification'
 
-export const withFrenchQueryRouter = withQueryRouter({
+const withFrenchQueryRouter = withQueryRouter({
   mapper: mapBrowserToApi,
 })
 

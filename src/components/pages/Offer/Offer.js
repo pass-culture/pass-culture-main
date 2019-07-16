@@ -18,11 +18,11 @@ import { requestData } from 'redux-saga-data'
 
 import MediationsManager from './MediationsManager/MediationsManagerContainer'
 import StocksManagerContainer from './StocksManager/StocksManagerContainer'
-import HeroSection from 'components/layout/HeroSection/HeroSection'
-import Main from 'components/layout/Main'
-import { musicOptions, showOptions } from 'utils/edd'
-import { offerNormalizer } from 'utils/normalizers'
-import getDurationInHours, { getDurationInMinutes } from './utils/duration'
+import HeroSection from '../../layout/HeroSection/HeroSection'
+import Main from '../../layout/Main'
+import { musicOptions, showOptions } from '../../../utils/edd'
+import { offerNormalizer } from '../../../utils/normalizers'
+import { getDurationInHours, getDurationInMinutes } from './utils/duration'
 
 const DURATION_LIMIT_TIME = 100
 
@@ -41,22 +41,77 @@ const CONDITIONAL_FIELDS = {
   ],
   visa: ['EventType.CINEMA'],
   isbn: ['ThingType.LIVRE_EDITION'],
-  musicType: [
-    'EventType.MUSIQUE',
-    'ThingType.MUSIQUE',
-    'ThingType.MUSIQUE_ABO',
-  ],
+  musicType: ['EventType.MUSIQUE', 'ThingType.MUSIQUE', 'ThingType.MUSIQUE_ABO'],
   showType: ['EventType.SPECTACLE_VIVANT'],
   stageDirector: ['EventType.CINEMA', 'EventType.SPECTACLE_VIVANT'],
-  performer: [
-    'EventType.MUSIQUE',
-    'ThingType.MUSIQUE',
-    'EventType.SPECTACLE_VIVANT',
-  ],
+  performer: ['EventType.MUSIQUE', 'ThingType.MUSIQUE', 'EventType.SPECTACLE_VIVANT'],
 }
 
 class Offer extends Component {
-  handleDataRequest = (handleSuccess, handleFail) => {
+  componentWillMount() {
+    const { dispatch } = this.props
+    dispatch(resetForm())
+  }
+
+  componentDidMount() {
+    this.handleVenueRedirect()
+    this.handleShowStocksManager()
+    this.setDefaultBookingEmailIfNew()
+  }
+
+  componentDidUpdate(prevProps) {
+    const {
+      dispatch,
+      formInitialValues,
+      formOffererId,
+      formVenueId,
+      location,
+      offerer,
+      offerTypeError,
+      selectedOfferType,
+      venue,
+    } = this.props
+    const { search } = location
+
+    if (prevProps.location.search !== search) {
+      this.handleShowStocksManager()
+      return
+    }
+
+    if (
+      !formOffererId &&
+      ((!offerer && prevProps.offerer) || (!selectedOfferType && prevProps.selectedOfferType))
+    ) {
+      dispatch(
+        mergeForm('offer', {
+          offererId: null,
+          venueId: null,
+        })
+      )
+    }
+
+    if (!formVenueId && (!venue && prevProps.venue)) {
+      dispatch(
+        mergeForm('offer', {
+          venueId: null,
+        })
+      )
+    }
+
+    this.setDefaultBookingEmailIfNew(prevProps)
+
+    if (get(formInitialValues, 'type') && !selectedOfferType && !offerTypeError) {
+      dispatch(
+        mergeErrors('offer', {
+          type: [
+            'Il y a eu un problème avec la création de cette offre: son type est incompatible avec le lieu enregistré.',
+          ],
+        })
+      )
+    }
+  }
+
+  onHandleDataRequest = (handleSuccess, handleFail) => {
     const {
       history,
       dispatch,
@@ -101,8 +156,9 @@ class Offer extends Component {
               dispatch(
                 showModal(
                   <div>
-                    Vous devez avoir déjà enregistré un lieu dans une de vos
-                    structures pour ajouter des offres
+                    {
+                      'Vous devez avoir déjà enregistré un lieu dans une de vos structures pour ajouter des offres'
+                    }
                   </div>,
                   {
                     onCloseClick: () => history.push('/structures'),
@@ -137,7 +193,16 @@ class Offer extends Component {
     handleSuccess()
   }
 
-  handleFormSuccess = (state, action) => {
+  handleOnClick = query => event => {
+    event.preventDefault()
+    query.change({ gestion: '' })
+  }
+
+  handleCancelOnClick = (offerId, query) => () => query.changeToReadOnly({}, { id: offerId })
+
+  handleChangeOnClick = query => () => query.changeToModification()
+
+  onHandleFormSuccess = (state, action) => {
     const { offer, query } = this.props
     const previousOfferId = offer && offer.id
     const {
@@ -188,90 +253,18 @@ class Offer extends Component {
     }
   }
 
-  componentDidMount() {
-    this.handleVenueRedirect()
-    this.handleShowStocksManager()
-    this.setDefaultBookingEmailIfNew()
-  }
-
-  componentDidUpdate(prevProps) {
-    const {
-      dispatch,
-      formInitialValues,
-      formOffererId,
-      formVenueId,
-      location,
-      offerer,
-      offerTypeError,
-      selectedOfferType,
-      venue,
-    } = this.props
-    const { search } = location
-
-    if (prevProps.location.search !== search) {
-      this.handleShowStocksManager()
-      return
-    }
-
-    if (
-      !formOffererId &&
-      ((!offerer && prevProps.offerer) ||
-        (!selectedOfferType && prevProps.selectedOfferType))
-    ) {
-      dispatch(
-        mergeForm('offer', {
-          offererId: null,
-          venueId: null,
-        })
-      )
-    }
-
-    if (!formVenueId && (!venue && prevProps.venue)) {
-      dispatch(
-        mergeForm('offer', {
-          venueId: null,
-        })
-      )
-    }
-
-    this.setDefaultBookingEmailIfNew(prevProps)
-
-    if (
-      get(formInitialValues, 'type') &&
-      !selectedOfferType &&
-      !offerTypeError
-    ) {
-      dispatch(
-        mergeErrors('offer', {
-          type: [
-            'Il y a eu un problème avec la création de cette offre: son type est incompatible avec le lieu enregistré.',
-          ],
-        })
-      )
-    }
-  }
-
-  componentWillMount() {
-    this.props.dispatch(resetForm())
-  }
-
   hasConditionalField(fieldName) {
-    if (!this.props.selectedOfferType) {
+    const { selectedOfferType } = this.props
+    if (!selectedOfferType) {
       return false
     }
 
-    return (
-      CONDITIONAL_FIELDS[fieldName].indexOf(
-        this.props.selectedOfferType.value
-      ) > -1
-    )
+    return CONDITIONAL_FIELDS[fieldName].indexOf(selectedOfferType.value) > -1
   }
 
   replaceVenueNameByPublicName = venues => {
     return venues.map(venue => {
-      return venue.publicName
-        ? { ...venue, name: venue.publicName }
-        : { ...venue }
+      return venue.publicName ? { ...venue, name: venue.publicName } : { ...venue }
     })
   }
 
@@ -295,12 +288,7 @@ class Offer extends Component {
     } = this.props
 
     const { eventId } = offer || {}
-    const {
-      isCreatedEntity,
-      isModifiedEntity,
-      method,
-      readOnly,
-    } = query.context()
+    const { isCreatedEntity, isModifiedEntity, method, readOnly } = query.context()
 
     // FIXME Ne plus utiliser cette selection là, mais plutôt isEvent
     const isEventType = get(selectedOfferType, 'type') === 'Event' || eventId
@@ -330,39 +318,47 @@ class Offer extends Component {
         title = title + ` pour ${get(offerer, 'name')}`
       }
     } else {
-      title = "Détails de l'offre"
+      title = 'Détails de l’offre'
     }
 
     return (
       <Main
         backTo={{ path: '/offres', label: 'Vos offres' }}
+        handleDataRequest={this.onHandleDataRequest}
         name="offer"
-        handleDataRequest={this.handleDataRequest}>
+      >
         <HeroSection
           subtitle={productName && productName.toUpperCase()}
-          title={title}>
+          title={title}
+        >
           <p className="subtitle">
-            Renseignez les détails de cette offre, puis mettez-la en avant en
-            ajoutant une ou plusieurs accroches.
+            {
+              'Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.'
+            }
           </p>
 
           <p className="fs13 pb30">
-            Les offres payantes seront visibles dans l’application, toutefois
-            les utilisateurs ne pourront les réserver que s’ils ont activé leur
-            portefeuille numérique de 500 € sur Internet ou lors d’un des
-            événements d’activation.
+            {
+              'Les offres payantes seront visibles dans l’application, toutefois les utilisateurs ne pourront les réserver que s’ils ont activé leur portefeuille numérique de 500 € sur Internet ou lors d’un des événements d’activation.'
+            }
           </p>
 
           <Form
+            Tag={null}
             action={formApiPath}
+            handleSuccess={this.onHandleFormSuccess}
             method={method}
             name="offer"
-            handleSuccess={this.handleFormSuccess}
             patch={formInitialValues}
             readOnly={readOnly}
-            Tag={null}>
+          >
             <div className="field-group">
-              <Field isExpanded label="Titre de l'offre" name="name" required />
+              <Field
+                isExpanded
+                label="Titre de l’offre"
+                name="name"
+                required
+              />
               <Field
                 label="Type"
                 name="type"
@@ -372,11 +368,11 @@ class Offer extends Component {
                 placeholder={
                   get(formInitialValues, 'type') && !selectedOfferType
                     ? get(formInitialValues, 'offerTypeValue')
-                    : "Sélectionnez un type d'offre"
+                    : 'Sélectionnez un type d’offre'
                 }
                 readOnly={offerId && selectedOfferType}
                 required
-                sublabel="Le type d'offre ne peut pas être modifié une fois l'offre enregistrée."
+                sublabel="Le type d’offre ne peut pas être modifié une fois l’offre enregistrée."
                 type="select"
               />
               {this.hasConditionalField('musicType') && (
@@ -384,9 +380,9 @@ class Offer extends Component {
                   <Field
                     label="Genre musical"
                     name="musicType"
-                    options={musicOptions}
-                    optionValue="code"
                     optionLabel="label"
+                    optionValue="code"
+                    options={musicOptions}
                     setKey="extraData"
                     type="select"
                   />
@@ -395,9 +391,9 @@ class Offer extends Component {
                     <Field
                       label="Sous genre"
                       name="musicSubType"
-                      options={musicSubOptions}
-                      optionValue="code"
                       optionLabel="label"
+                      optionValue="code"
+                      options={musicSubOptions}
                       setKey="extraData"
                       type="select"
                     />
@@ -410,22 +406,22 @@ class Offer extends Component {
                   <Field
                     label="Type de spectacle"
                     name="showType"
-                    options={showOptions}
-                    optionValue="code"
                     optionLabel="label"
+                    optionValue="code"
+                    options={showOptions}
                     setKey="extraData"
                     type="select"
                   />
 
                   {get(showSubOptions, 'length') > 0 && (
                     <Field
-                      type="select"
                       label="Sous type"
                       name="showSubType"
-                      setKey="extraData"
-                      options={showSubOptions}
-                      optionValue="code"
                       optionLabel="label"
+                      optionValue="code"
+                      options={showSubOptions}
+                      setKey="extraData"
+                      type="select"
                     />
                   )}
                 </Fragment>
@@ -433,35 +429,34 @@ class Offer extends Component {
               {!isCreatedEntity && product && (
                 <div className="field is-horizontal field-text">
                   <div className="field-label">
-                    <label className="label" htmlFor="input_offers_name">
-                      <div className="subtitle">
-                        {isEventType ? 'Dates :' : 'Stocks :'}
-                      </div>
+                    <label
+                      className="label"
+                      htmlFor="input_offers_name"
+                    >
+                      <div className="subtitle">{isEventType ? 'Dates :' : 'Stocks :'}</div>
                     </label>
                   </div>
                   <div className="field-body">
-                    <div className="control" style={{ paddingTop: '0.25rem' }}>
+                    <div
+                      className="control"
+                      style={{ paddingTop: '0.25rem' }}
+                    >
                       <span
                         className="nb-dates"
-                        style={{ paddingTop: '0.25rem' }}>
-                        {pluralize(
-                          get(stocks, 'length'),
-                          isEventType ? 'date' : 'stock'
-                        )}
+                        style={{ paddingTop: '0.25rem' }}
+                      >
+                        {pluralize(get(stocks, 'length'), isEventType ? 'date' : 'stock')}
                       </span>
                       <button
                         className="button is-primary is-outlined is-small manage-stock"
-                        onClick={event => {
-                          event.preventDefault()
-                          query.change({ gestion: '' })
-                        }}>
+                        onClick={this.handleOnClick(query)}
+                        type="button"
+                      >
                         <span className="icon">
                           <Icon svg="ico-calendar" />
                         </span>
                         <span>
-                          {isEventType
-                            ? 'Gérer les dates et les stocks'
-                            : 'Gérer les stocks'}
+                          {isEventType ? 'Gérer les dates et les stocks' : 'Gérer les stocks'}
                         </span>
                       </button>
                     </div>
@@ -472,7 +467,7 @@ class Offer extends Component {
             {!isCreatedEntity && offer && <MediationsManager />}
             {showAllForm && (
               <div>
-                <h2 className="main-list-title">Infos pratiques</h2>
+                <h2 className="main-list-title">{'Infos pratiques'}</h2>
                 <div className="field-group">
                   <Field
                     debug
@@ -490,9 +485,13 @@ class Offer extends Component {
                       <div className="field-body">
                         <p className="help is-danger">
                           {venue
-                            ? "Erreur dans les données: Le lieu rattaché à cette offre n'est pas compatible avec le type de l'offre"
+                            ? 'Erreur dans les données : Le lieu rattaché à cette offre n’est pas compatible avec le type de l’offre'
                             : 'Il faut obligatoirement une structure avec un lieu.'}
-                          <Field type="hidden" name="__BLOCK_FORM__" required />
+                          <Field
+                            name="__BLOCK_FORM__"
+                            required
+                            type="hidden"
+                          />
                         </p>
                       </div>
                     </div>
@@ -514,7 +513,7 @@ class Offer extends Component {
                       required
                       sublabel={
                         !readOnly &&
-                        "Vous pouvez inclure {token} {email} et {offerId} dans l'URL, qui seront remplacés respectivement par le code de la contremarque, l'email de la personne ayant reservé et l'identifiant de l'offre"
+                        'Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre'
                       }
                       type="text"
                     />
@@ -528,23 +527,23 @@ class Offer extends Component {
                   )}
                   {isEventType && (
                     <Field
-                      label="Durée"
-                      placeholder="HH:MM"
-                      name="durationMinutes"
-                      type="duration"
                       getDurationInHours={getDurationInHours}
                       getDurationInMinutes={getDurationInMinutes}
+                      label="Durée"
                       limitTimeInHours={DURATION_LIMIT_TIME}
+                      name="durationMinutes"
+                      placeholder="HH:MM"
+                      type="duration"
                     />
                   )}
                   <Field
                     label="Email auquel envoyer les réservations"
                     name="bookingEmail"
+                    sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d’email lors des réservations"
                     type="email"
-                    sublabel="Merci de laisser ce champ vide si vous ne souhaitez pas recevoir d'email lors des réservations"
                   />
                 </div>
-                <h2 className="main-list-title">Infos artistiques</h2>
+                <h2 className="main-list-title">{'Infos artistiques'}</h2>
                 <div className="field-group">
                   <Field
                     displayMaxLength
@@ -558,26 +557,26 @@ class Offer extends Component {
 
                   {this.hasConditionalField('speaker') && (
                     <Field
-                      type="text"
                       label="Intervenant"
                       name="speaker"
                       setKey="extraData"
+                      type="text"
                     />
                   )}
 
                   {this.hasConditionalField('author') && (
                     <Field
-                      type="text"
                       label="Auteur"
                       name="author"
                       setKey="extraData"
+                      type="text"
                     />
                   )}
 
                   {this.hasConditionalField('visa') && (
                     <Field
                       isExpanded
-                      label="Visa d'exploitation"
+                      label="Visa d’exploitation"
                       name="visa"
                       setKey="extraData"
                       sublabel="(obligatoire si applicable)"
@@ -620,36 +619,42 @@ class Offer extends Component {
             <hr />
             <div
               className="field is-grouped is-grouped-centered"
-              style={{ justifyContent: 'space-between' }}>
+              style={{ justifyContent: 'space-between' }}
+            >
               <div className="control">
                 {readOnly ? (
                   <button
                     className="button is-secondary is-medium"
-                    onClick={() => query.changeToModification()}>
-                    Modifier l'offre
+                    onClick={this.handleChangeOnClick(query)}
+                    type="button"
+                  >
+                    {'Modifier l’offre'}
                   </button>
                 ) : (
                   <button
                     className="button is-secondary is-medium"
                     id="cancel-button"
-                    onClick={() => query.changeToReadOnly({}, { id: offerId })}>
-                    Annuler
+                    onClick={this.handleCancelOnClick(offerId, query)}
+                    type="button"
+                  >
+                    {'Annuler'}
                   </button>
                 )}
               </div>
               <div className="control">
                 {readOnly ? (
-                  <NavLink to="/offres" className="button is-primary is-medium">
-                    Terminer{' '}
+                  <NavLink
+                    className="button is-primary is-medium"
+                    to="/offres"
+                  >
+                    {'Terminer '}
                     {isModifiedEntity && !isOfferActive && 'et activer'}
                   </NavLink>
                 ) : (
                   showAllForm && (
                     <SubmitButton className="button is-primary is-medium">
-                      Enregistrer{' '}
-                      {isCreatedEntity &&
-                        'et passer ' +
-                          (isEventType ? 'aux dates' : 'aux stocks')}
+                      {'Enregistrer '}
+                      {isCreatedEntity && 'et passer ' + (isEventType ? 'aux dates' : 'aux stocks')}
                     </SubmitButton>
                   )
                 )}
@@ -667,12 +672,12 @@ Offer.defaultProps = {
 }
 
 Offer.propTypes = {
-  currentUser: PropTypes.object.isRequired,
+  currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
-  location: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired,
-  query: PropTypes.object.isRequired,
-  venues: PropTypes.array,
+  location: PropTypes.shape().isRequired,
+  match: PropTypes.shape().isRequired,
+  query: PropTypes.shape().isRequired,
+  venues: PropTypes.arrayOf(PropTypes.shape()),
 }
 
 export default Offer

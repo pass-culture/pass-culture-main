@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | Layout | Header snapshot should match snapshot 1`] = `
+exports[`src | components | Layout | Header should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Header
@@ -10,6 +10,7 @@ ShallowWrapper {
         Object {},
       ]
     }
+    whiteHeader={null}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -33,6 +34,9 @@ ShallowWrapper {
         >
           <Logo
             className="navbar-item"
+            noLink={false}
+            signPage={false}
+            whiteHeader={null}
           />
           <span
             className="navbar-burger"
@@ -226,6 +230,9 @@ ShallowWrapper {
           >
             <Logo
               className="navbar-item"
+              noLink={false}
+              signPage={false}
+              whiteHeader={null}
             />
             <span
               className="navbar-burger"
@@ -417,6 +424,9 @@ ShallowWrapper {
             "children": Array [
               <Logo
                 className="navbar-item"
+                noLink={false}
+                signPage={false}
+                whiteHeader={null}
               />,
               <span
                 className="navbar-burger"
@@ -437,7 +447,9 @@ ShallowWrapper {
               "nodeType": "function",
               "props": Object {
                 "className": "navbar-item",
-                "whiteHeader": undefined,
+                "noLink": false,
+                "signPage": false,
+                "whiteHeader": null,
               },
               "ref": null,
               "rendered": null,
@@ -1636,6 +1648,9 @@ ShallowWrapper {
           >
             <Logo
               className="navbar-item"
+              noLink={false}
+              signPage={false}
+              whiteHeader={null}
             />
             <span
               className="navbar-burger"
@@ -1829,6 +1844,9 @@ ShallowWrapper {
             >
               <Logo
                 className="navbar-item"
+                noLink={false}
+                signPage={false}
+                whiteHeader={null}
               />
               <span
                 className="navbar-burger"
@@ -2020,6 +2038,9 @@ ShallowWrapper {
               "children": Array [
                 <Logo
                   className="navbar-item"
+                  noLink={false}
+                  signPage={false}
+                  whiteHeader={null}
                 />,
                 <span
                   className="navbar-burger"
@@ -2040,7 +2061,9 @@ ShallowWrapper {
                 "nodeType": "function",
                 "props": Object {
                   "className": "navbar-item",
-                  "whiteHeader": undefined,
+                  "noLink": false,
+                  "signPage": false,
+                  "whiteHeader": null,
                 },
                 "ref": null,
                 "rendered": null,
@@ -3249,7 +3272,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;

@@ -54,7 +54,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       const wrapper = shallow(<VenueProvidersManager {...props} />)
 
       // then
-      expect(wrapper.state()).toEqual({
+      expect(wrapper.state()).toStrictEqual({
         isCreationMode: false,
         isLoadingMode: false,
         isProviderSelected: false,
@@ -70,7 +70,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       const wrapper = shallow(<VenueProvidersManager {...props} />)
 
       // then
-      expect(wrapper.state()).toEqual({
+      expect(wrapper.state()).toStrictEqual({
         isCreationMode: true,
         isLoadingMode: false,
         isProviderSelected: false,
@@ -98,10 +98,10 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       // then
       const venueProviderItemContainers = wrapper.find(VenueProviderItem)
       expect(venueProviderItemContainers).toHaveLength(2)
-      expect(venueProviderItemContainers.at(0).prop('venueProvider')).toEqual({
+      expect(venueProviderItemContainers.at(0).prop('venueProvider')).toStrictEqual({
         id: 'AA',
       })
-      expect(venueProviderItemContainers.at(1).prop('venueProvider')).toEqual({
+      expect(venueProviderItemContainers.at(1).prop('venueProvider')).toStrictEqual({
         id: 'BB',
       })
     })
@@ -123,9 +123,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       addOfferBtn.simulate('click')
 
       // then
-      expect(history.push).toHaveBeenCalledWith(
-        '/structures/CC/lieux/AB/fournisseurs/nouveau'
-      )
+      expect(history.push).toHaveBeenCalledWith('/structures/CC/lieux/AB/fournisseurs/nouveau')
     })
 
     it('should display an import button when at least one provider is given', () => {
@@ -138,7 +136,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       expect(importButton.prop('className')).toBe('button is-secondary')
       expect(importButton.prop('disabled')).toBe(false)
       expect(importButton.prop('id')).toBe('add-venue-provider-btn')
-      expect(importButton.prop('onClick')).toEqual(expect.any(Function))
+      expect(importButton.prop('onClick')).toStrictEqual(expect.any(Function))
       expect(importButton.prop('type')).toBe('button')
     })
 
@@ -170,11 +168,11 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
 
       // then
       expect(wrapper.state('isLoadingMode')).toBe(true)
-      expect(createVenueProvider).toHaveBeenCalledWith(
-        expect.any(Function),
-        expect.any(Function),
-        { providerId: 'CC', venueId: 'AA', venueIdAtOfferProvider: 'BB' }
-      )
+      expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
+        providerId: 'CC',
+        venueId: 'AA',
+        venueIdAtOfferProvider: 'BB',
+      })
     })
   })
 
@@ -235,7 +233,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       wrapper.instance().handleFail(form)({}, action)
 
       // then
-      expect(wrapper.state()).toEqual({
+      expect(wrapper.state()).toStrictEqual({
         isCreationMode: false,
         isLoadingMode: false,
         isProviderSelected: false,
@@ -285,7 +283,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       wrapper.instance().handleChange(event, input)
 
       // then
-      expect(wrapper.state()).toEqual({
+      expect(wrapper.state()).toStrictEqual({
         isCreationMode: false,
         isLoadingMode: false,
         isProviderSelected: false,
@@ -307,10 +305,10 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       // then
       const form = wrapper.find(Form)
       expect(form).toBeDefined()
-      expect(form.prop('decorators')).toEqual(expect.anything())
-      expect(form.prop('initialValues')).toEqual({ id: 'AB' })
-      expect(form.prop('onSubmit')).toEqual(expect.any(Function))
-      expect(form.prop('render')).toEqual(expect.any(Function))
+      expect(form.prop('decorators')).toStrictEqual(expect.anything())
+      expect(form.prop('initialValues')).toStrictEqual({ id: 'AB' })
+      expect(form.prop('onSubmit')).toStrictEqual(expect.any(Function))
+      expect(form.prop('render')).toStrictEqual(expect.any(Function))
     })
   })
 })

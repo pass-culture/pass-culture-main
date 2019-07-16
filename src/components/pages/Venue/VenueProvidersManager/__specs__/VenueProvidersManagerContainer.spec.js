@@ -1,7 +1,4 @@
-import {
-  mapDispatchToProps,
-  mapStateToProps,
-} from '../VenueProvidersManagerContainer'
+import { mapDispatchToProps, mapStateToProps } from '../VenueProvidersManagerContainer'
 
 describe('src | components | pages | Venue | VenueProvidersManager', () => {
   describe('mapStateToProps', () => {
@@ -9,10 +6,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       // given
       const state = {
         data: {
-          providers: [
-            { id: 'AF', localClass: 'a' },
-            { id: 'AG', localClass: 'b' },
-          ],
+          providers: [{ id: 'AF', localClass: 'a' }, { id: 'AG', localClass: 'b' }],
           venueProviders: [{ id: 'AE', venueId: 'EE' }],
         },
       }
@@ -24,11 +18,8 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       const result = mapStateToProps(state, props)
 
       // then
-      expect(result).toEqual({
-        providers: [
-          { id: 'AF', localClass: 'a' },
-          { id: 'AG', localClass: 'b' },
-        ],
+      expect(result).toStrictEqual({
+        providers: [{ id: 'AF', localClass: 'a' }, { id: 'AG', localClass: 'b' }],
         venueProviders: [{ id: 'AE', venueId: 'EE' }],
       })
     })
@@ -101,14 +92,14 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         functions.loadProvidersAndVenueProviders()
 
         // then
-        expect(dispatch.mock.calls[0][0]).toEqual({
+        expect(dispatch.mock.calls[0][0]).toStrictEqual({
           config: {
             apiPath: '/providers',
             method: 'GET',
           },
           type: 'REQUEST_DATA_GET_/PROVIDERS',
         })
-        expect(dispatch.mock.calls[1][0]).toEqual({
+        expect(dispatch.mock.calls[1][0]).toStrictEqual({
           config: {
             apiPath: '/venueProviders?venueId=AE',
             method: 'GET',

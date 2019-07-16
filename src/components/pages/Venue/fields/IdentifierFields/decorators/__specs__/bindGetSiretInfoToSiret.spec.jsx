@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import { mount } from 'enzyme'
 import React from 'react'
 import { Field, Form } from 'react-final-form'
@@ -11,7 +10,7 @@ const mockSuccessSiretInfo = {
   etablissement: {
     code_postal: '75010',
     l1_normalisee: NAME,
-    l4_normalisee: "5 cité de l'enfer",
+    l4_normalisee: '5 cité de l’enfer',
     libelle_commune: 'Paboude',
     latitude: 48.3,
     longitude: 1.2,
@@ -37,13 +36,22 @@ describe('src | components | pages | Venue | IdentifierFields | bindGetSiretInfo
       <Form
         decorators={[bindGetSiretInfoToSiret]}
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={handleOnSubmit}
         render={({ handleSubmit }) => (
           <form>
-            <Field name="siret" render={({ input }) => <input {...input} />} />
-            <Field name="name" render={({ input }) => <input {...input} />} />
-            <button onClick={handleSubmit} type="submit">
-              Submit
+            <Field
+              name="siret"
+              render={({ input }) => <input {...input} />}
+            />
+            <Field
+              name="name"
+              render={({ input }) => <input {...input} />}
+            />
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
+              {'Submit'}
             </button>
           </form>
         )}
@@ -59,12 +67,12 @@ describe('src | components | pages | Venue | IdentifierFields | bindGetSiretInfo
     setTimeout(() => wrapper.find('button[type="submit"]').simulate('click'))
 
     // then
-    function onSubmit(formValues) {
+    function handleOnSubmit(formValues) {
       const expectedFormValues = {
         name: NAME,
         siret: SIRET,
       }
-      expect(formValues).toEqual(expectedFormValues)
+      expect(formValues).toStrictEqual(expectedFormValues)
     }
   })
 })

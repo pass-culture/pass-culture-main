@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offerers | OffererItem snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Offerers | OffererItem should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <OffererItem
@@ -76,7 +76,7 @@ ShallowWrapper {
             className="is-italic mb12"
             id="offerer-item-validation"
           >
-            Structure en cours de validation par l'équipe Pass Culture.
+            Structure en cours de validation par l’équipe pass Culture.
           </p>
           <ul
             className="actions"
@@ -92,7 +92,8 @@ ShallowWrapper {
                   <Icon
                     svg="ico-offres-r"
                   />
-                  Nouvelle offre 
+                  Nouvelle offre
+                   
                 </NavLink>
               </li>
               <li>
@@ -116,7 +117,7 @@ ShallowWrapper {
                   <Icon
                     svg="ico-venue-r"
                   />
-                   Nouveau lieu
+                  Nouveau lieu
                 </NavLink>
               </li>
             </React.Fragment>
@@ -159,7 +160,7 @@ ShallowWrapper {
               className="is-italic mb12"
               id="offerer-item-validation"
             >
-              Structure en cours de validation par l'équipe Pass Culture.
+              Structure en cours de validation par l’équipe pass Culture.
             </p>,
             <ul
               className="actions"
@@ -175,7 +176,8 @@ ShallowWrapper {
                     <Icon
                       svg="ico-offres-r"
                     />
-                    Nouvelle offre 
+                    Nouvelle offre
+                     
                   </NavLink>
                 </li>
                 <li>
@@ -199,7 +201,7 @@ ShallowWrapper {
                     <Icon
                       svg="ico-venue-r"
                     />
-                     Nouveau lieu
+                    Nouveau lieu
                   </NavLink>
                 </li>
               </React.Fragment>
@@ -243,12 +245,12 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Structure en cours de validation par l'équipe Pass Culture.",
+              "children": "Structure en cours de validation par l’équipe pass Culture.",
               "className": "is-italic mb12",
               "id": "offerer-item-validation",
             },
             "ref": null,
-            "rendered": "Structure en cours de validation par l'équipe Pass Culture.",
+            "rendered": "Structure en cours de validation par l’équipe pass Culture.",
             "type": "p",
           },
           Object {
@@ -268,7 +270,8 @@ ShallowWrapper {
                       <Icon
                         svg="ico-offres-r"
                       />
-                      Nouvelle offre 
+                      Nouvelle offre
+                       
                     </NavLink>
                   </li>
                   <li>
@@ -292,7 +295,7 @@ ShallowWrapper {
                       <Icon
                         svg="ico-venue-r"
                       />
-                       Nouveau lieu
+                      Nouveau lieu
                     </NavLink>
                   </li>
                 </React.Fragment>,
@@ -317,7 +320,8 @@ ShallowWrapper {
                         <Icon
                           svg="ico-offres-r"
                         />
-                        Nouvelle offre 
+                        Nouvelle offre
+                         
                       </NavLink>
                     </li>,
                     <li>
@@ -341,7 +345,8 @@ ShallowWrapper {
                         <Icon
                           svg="ico-offres-r"
                         />
-                        Nouvelle offre 
+                        Nouvelle offre
+                         
                       </NavLink>,
                     },
                     "ref": null,
@@ -356,7 +361,8 @@ ShallowWrapper {
                           <Icon
                             svg="ico-offres-r"
                           />,
-                          "Nouvelle offre ",
+                          "Nouvelle offre",
+                          " ",
                           undefined,
                         ],
                         "className": "has-text-primary",
@@ -375,7 +381,8 @@ ShallowWrapper {
                           "rendered": null,
                           "type": [Function],
                         },
-                        "Nouvelle offre ",
+                        "Nouvelle offre",
+                        " ",
                         undefined,
                       ],
                       "type": [Function],
@@ -418,7 +425,7 @@ ShallowWrapper {
                         <Icon
                           svg="ico-venue-r"
                         />
-                         Nouveau lieu
+                        Nouveau lieu
                       </NavLink>
                     </li>,
                   ],
@@ -468,7 +475,7 @@ ShallowWrapper {
                         <Icon
                           svg="ico-venue-r"
                         />
-                         Nouveau lieu
+                        Nouveau lieu
                       </NavLink>,
                     },
                     "ref": null,
@@ -483,7 +490,7 @@ ShallowWrapper {
                           <Icon
                             svg="ico-venue-r"
                           />,
-                          " Nouveau lieu",
+                          "Nouveau lieu",
                         ],
                         "className": "has-text-primary",
                         "to": "/structures/undefined/lieux/creation",
@@ -501,7 +508,7 @@ ShallowWrapper {
                           "rendered": null,
                           "type": [Function],
                         },
-                        " Nouveau lieu",
+                        "Nouveau lieu",
                       ],
                       "type": [Function],
                     },
@@ -587,7 +594,7 @@ ShallowWrapper {
               className="is-italic mb12"
               id="offerer-item-validation"
             >
-              Structure en cours de validation par l'équipe Pass Culture.
+              Structure en cours de validation par l’équipe pass Culture.
             </p>
             <ul
               className="actions"
@@ -603,7 +610,8 @@ ShallowWrapper {
                     <Icon
                       svg="ico-offres-r"
                     />
-                    Nouvelle offre 
+                    Nouvelle offre
+                     
                   </NavLink>
                 </li>
                 <li>
@@ -627,7 +635,7 @@ ShallowWrapper {
                     <Icon
                       svg="ico-venue-r"
                     />
-                     Nouveau lieu
+                    Nouveau lieu
                   </NavLink>
                 </li>
               </React.Fragment>
@@ -670,7 +678,7 @@ ShallowWrapper {
                 className="is-italic mb12"
                 id="offerer-item-validation"
               >
-                Structure en cours de validation par l'équipe Pass Culture.
+                Structure en cours de validation par l’équipe pass Culture.
               </p>,
               <ul
                 className="actions"
@@ -686,7 +694,8 @@ ShallowWrapper {
                       <Icon
                         svg="ico-offres-r"
                       />
-                      Nouvelle offre 
+                      Nouvelle offre
+                       
                     </NavLink>
                   </li>
                   <li>
@@ -710,7 +719,7 @@ ShallowWrapper {
                       <Icon
                         svg="ico-venue-r"
                       />
-                       Nouveau lieu
+                      Nouveau lieu
                     </NavLink>
                   </li>
                 </React.Fragment>
@@ -754,12 +763,12 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Structure en cours de validation par l'équipe Pass Culture.",
+                "children": "Structure en cours de validation par l’équipe pass Culture.",
                 "className": "is-italic mb12",
                 "id": "offerer-item-validation",
               },
               "ref": null,
-              "rendered": "Structure en cours de validation par l'équipe Pass Culture.",
+              "rendered": "Structure en cours de validation par l’équipe pass Culture.",
               "type": "p",
             },
             Object {
@@ -779,7 +788,8 @@ ShallowWrapper {
                         <Icon
                           svg="ico-offres-r"
                         />
-                        Nouvelle offre 
+                        Nouvelle offre
+                         
                       </NavLink>
                     </li>
                     <li>
@@ -803,7 +813,7 @@ ShallowWrapper {
                         <Icon
                           svg="ico-venue-r"
                         />
-                         Nouveau lieu
+                        Nouveau lieu
                       </NavLink>
                     </li>
                   </React.Fragment>,
@@ -828,7 +838,8 @@ ShallowWrapper {
                           <Icon
                             svg="ico-offres-r"
                           />
-                          Nouvelle offre 
+                          Nouvelle offre
+                           
                         </NavLink>
                       </li>,
                       <li>
@@ -852,7 +863,8 @@ ShallowWrapper {
                           <Icon
                             svg="ico-offres-r"
                           />
-                          Nouvelle offre 
+                          Nouvelle offre
+                           
                         </NavLink>,
                       },
                       "ref": null,
@@ -867,7 +879,8 @@ ShallowWrapper {
                             <Icon
                               svg="ico-offres-r"
                             />,
-                            "Nouvelle offre ",
+                            "Nouvelle offre",
+                            " ",
                             undefined,
                           ],
                           "className": "has-text-primary",
@@ -886,7 +899,8 @@ ShallowWrapper {
                             "rendered": null,
                             "type": [Function],
                           },
-                          "Nouvelle offre ",
+                          "Nouvelle offre",
+                          " ",
                           undefined,
                         ],
                         "type": [Function],
@@ -929,7 +943,7 @@ ShallowWrapper {
                           <Icon
                             svg="ico-venue-r"
                           />
-                           Nouveau lieu
+                          Nouveau lieu
                         </NavLink>
                       </li>,
                     ],
@@ -979,7 +993,7 @@ ShallowWrapper {
                           <Icon
                             svg="ico-venue-r"
                           />
-                           Nouveau lieu
+                          Nouveau lieu
                         </NavLink>,
                       },
                       "ref": null,
@@ -994,7 +1008,7 @@ ShallowWrapper {
                             <Icon
                               svg="ico-venue-r"
                             />,
-                            " Nouveau lieu",
+                            "Nouveau lieu",
                           ],
                           "className": "has-text-primary",
                           "to": "/structures/undefined/lieux/creation",
@@ -1012,7 +1026,7 @@ ShallowWrapper {
                             "rendered": null,
                             "type": [Function],
                           },
-                          " Nouveau lieu",
+                          "Nouveau lieu",
                         ],
                         "type": [Function],
                       },
@@ -1099,6 +1113,8 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
 }
 `;

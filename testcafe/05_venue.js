@@ -65,9 +65,7 @@ test('Je rentre un nouveau lieu via son siret avec succès', async t => {
     postalCode,
     siret,
   }
-  await t.addRequestHooks(
-    getSiretRequestMockAs(future_venue_with_offerer_siret)
-  )
+  await t.addRequestHooks(getSiretRequestMockAs(future_venue_with_offerer_siret))
 
   // when
   await t.typeText(siretInput, siret)
@@ -126,20 +124,18 @@ let dataFromSandboxVenueB
 let userVenueB
 let offererVenueB
 let userRoleVenueB
-fixture("Venue B | Je ne peux pas créer de lieu, j'ai des erreurs").beforeEach(
-  async t => {
-    if (!dataFromSandboxVenueB) {
-      dataFromSandboxVenueB = await fetchSandbox(
-        'pro_05_venue',
-        'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_at_least_one_physical_venue'
-      )
-      userVenueB = dataFromSandboxVenueB.user
-      offererVenueB = dataFromSandboxVenueB.offerer
-      userRoleVenueB = createUserRole(userVenueB)
-    }
-    return navigateToNewVenueAs(userVenueB, offererVenueB, userRoleVenueB)(t)
+fixture('Venue B | Je ne peux pas créer de lieu, j’ai des erreurs').beforeEach(async t => {
+  if (!dataFromSandboxVenueB) {
+    dataFromSandboxVenueB = await fetchSandbox(
+      'pro_05_venue',
+      'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_at_least_one_physical_venue'
+    )
+    userVenueB = dataFromSandboxVenueB.user
+    offererVenueB = dataFromSandboxVenueB.offerer
+    userRoleVenueB = createUserRole(userVenueB)
   }
-)
+  return navigateToNewVenueAs(userVenueB, offererVenueB, userRoleVenueB)(t)
+})
 
 test('Une entrée avec cet identifiant existe déjà', async t => {
   // when
@@ -152,32 +148,28 @@ test('Une entrée avec cet identifiant existe déjà', async t => {
   // then
   await t
     .expect(siretInputError.innerText)
-    .contains(
-      'Une entrée avec cet identifiant existe déjà dans notre base de données'
-    )
+    .contains('Une entrée avec cet identifiant existe déjà dans notre base de données')
     .expect(notificationError.innerText)
     .contains('Formulaire non validé.\nOK')
 })
 
 test('Il est obligatoire de saisir le commentaire', async t => {
   // then
-  await t
-    .expect(commentInput.hasAttribute('required'))
-    .ok('Comment doit être requis par défaut')
+  await t.expect(commentInput.hasAttribute('required')).ok('Comment doit être requis par défaut')
 
   // when
   await t.typeText(siretInput, '123')
   // then
   await t
     .expect(commentInput.hasAttribute('required'))
-    .ok("Comment n'est pas requis si le SIRET saisi n'a pas la bonne longueur")
+    .ok('Comment n’est pas requis si le SIRET saisi n’a pas la bonne longueur')
 
   // when
   await t.typeText(siretInput, '12345678912345')
   // then
   await t
     .expect(commentInput.hasAttribute('required'))
-    .notOk("Comment n'est pas requis si un SIRET de bonne longueur est saisi")
+    .notOk('Comment n’est pas requis si un SIRET de bonne longueur est saisi')
 
   // when
   // WEIRD: wish to do a
@@ -189,9 +181,7 @@ test('Il est obligatoire de saisir le commentaire', async t => {
   // then
   await t
     .expect(commentInput.hasAttribute('required'))
-    .ok(
-      "Comment doit être requis à nouveau si SIRET n'est pas de la bonne forme"
-    )
+    .ok('Comment doit être requis à nouveau si SIRET n’est pas de la bonne forme')
 
   // when
   await t.typeText(commentInput, 'lorem ipsum dolor sit amet')
@@ -200,7 +190,7 @@ test('Il est obligatoire de saisir le commentaire', async t => {
     .expect(commentInput.hasAttribute('required'))
     .ok('Comment doit rester requis même saisi')
     .expect(siretInput.hasAttribute('required'))
-    .notOk("SIRET n'est pas requis")
+    .notOk('SIRET n’est pas requis')
 })
 
 test('Le code SIRET doit correspondre à un établissement de votre structure', async t => {
@@ -213,9 +203,7 @@ test('Le code SIRET doit correspondre à un établissement de votre structure', 
   // then
   await t
     .expect(siretInputError.innerText)
-    .contains(
-      'Le code SIRET doit correspondre à un établissement de votre structure'
-    )
+    .contains('Le code SIRET doit correspondre à un établissement de votre structure')
     .expect(notificationError.innerText)
     .contains('Formulaire non validé.\nOK')
 })
@@ -281,23 +269,19 @@ let userVenueC
 let offererVenueC
 let venueC
 let userRoleVenueC
-fixture('Venue C | Je suis sur la page de détail du lieu').beforeEach(
-  async t => {
-    if (!dataFromSandboxVenueC) {
-      dataFromSandboxVenueC = await fetchSandbox(
-        'pro_05_venue',
-        'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_at_least_one_physical_venue'
-      )
-      userVenueC = dataFromSandboxVenueC.user
-      offererVenueC = dataFromSandboxVenueC.offerer
-      venueC = dataFromSandboxVenueC.venue
-      userRoleVenueC = createUserRole(userVenueC)
-    }
-    return navigateToVenueAs(userVenueC, offererVenueC, venueC, userRoleVenueC)(
-      t
+fixture('Venue C | Je suis sur la page de détail du lieu').beforeEach(async t => {
+  if (!dataFromSandboxVenueC) {
+    dataFromSandboxVenueC = await fetchSandbox(
+      'pro_05_venue',
+      'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_at_least_one_physical_venue'
     )
+    userVenueC = dataFromSandboxVenueC.user
+    offererVenueC = dataFromSandboxVenueC.offerer
+    venueC = dataFromSandboxVenueC.venue
+    userRoleVenueC = createUserRole(userVenueC)
   }
-)
+  return navigateToVenueAs(userVenueC, offererVenueC, venueC, userRoleVenueC)(t)
+})
 
 test('Je peux revenir en arrière', async t => {
   // when
@@ -308,7 +292,7 @@ test('Je peux revenir en arrière', async t => {
   await t.expect(location.pathname).match(/\/structures\/([A-Z0-9]*)$/)
 })
 
-test("Je peux modifier l'email de contact du lieu", async t => {
+test('Je peux modifier l’e-mail de contact du lieu', async t => {
   // given
   await t.addRequestHooks(getSiretRequestMockAs(venueC))
   const { bookingEmail } = venueC

@@ -1,8 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[
-  `src | components | pages | Venue | VenueProvidersManager should match snapshot 1`
-] = `
+exports[`src | components | pages | Venue | VenueProvidersManager should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <VenueProvidersManager
@@ -81,7 +79,7 @@ ShallowWrapper {
         <h2
           className="main-list-title"
         >
-          IMPORTATIONS D'OFFRES
+          IMPORTATIONS D’OFFRES
           <span
             className="is-pulled-right is-size-7 has-text-grey"
           >
@@ -130,7 +128,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            "IMPORTATIONS D'OFFRES",
+            "IMPORTATIONS D’OFFRES",
             <span
               className="is-pulled-right is-size-7 has-text-grey"
             >
@@ -141,7 +139,7 @@ ShallowWrapper {
         },
         "ref": null,
         "rendered": Array [
-          "IMPORTATIONS D'OFFRES",
+          "IMPORTATIONS D’OFFRES",
           Object {
             "instance": null,
             "key": undefined,
@@ -263,7 +261,7 @@ ShallowWrapper {
           <h2
             className="main-list-title"
           >
-            IMPORTATIONS D'OFFRES
+            IMPORTATIONS D’OFFRES
             <span
               className="is-pulled-right is-size-7 has-text-grey"
             >
@@ -312,7 +310,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              "IMPORTATIONS D'OFFRES",
+              "IMPORTATIONS D’OFFRES",
               <span
                 className="is-pulled-right is-size-7 has-text-grey"
               >
@@ -323,7 +321,7 @@ ShallowWrapper {
           },
           "ref": null,
           "rendered": Array [
-            "IMPORTATIONS D'OFFRES",
+            "IMPORTATIONS D’OFFRES",
             Object {
               "instance": null,
               "key": undefined,
@@ -459,7 +457,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
-`
+`;

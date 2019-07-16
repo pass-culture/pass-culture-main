@@ -30,7 +30,7 @@ export function apiUrl(path) {
 
 function getMobileOperatingSystem() {
   if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
-    var userAgent = navigator.userAgent || navigator.vendor || window.opera
+    let userAgent = navigator.userAgent || navigator.vendor || window.opera
 
     // Windows Phone must come first because its UA also contains "Android"
     if (/windows phone/i.test(userAgent)) {
@@ -58,14 +58,12 @@ if (typeof window !== 'undefined') {
     // [::1] is the IPv6 localhost address.
     window.location.hostname === '[::1]' ||
     // 127.0.0.1/8 is considered localhost for IPv4.
-    window.location.hostname.match(
-      /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
-    )
+    window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
 }
 
 export const IS_LOCALHOST = Boolean(calculatedLocalhost)
 
-var CALC_ROOT_PATH = ''
+let CALC_ROOT_PATH = ''
 if (typeof window !== 'undefined' && window.cordova) {
   document.body.className += ' cordova'
   if (MOBILE_OS === 'android') {
@@ -78,11 +76,11 @@ if (typeof window !== 'undefined' && window.cordova) {
     // CALC_ROOT_PATH = window.location.href.split('/').slice(0, 10).join('/')
     CALC_ROOT_PATH = window.location.href.match(/file:\/\/(.*)\/www/)[0]
   }
-  window.addEventListener('keyboardWillShow', function(e) {
+  window.addEventListener('keyboardWillShow', function() {
     console.log('Keyboard show')
     document.body.className += ' softkeyboard'
   })
-  window.addEventListener('keyboardWillHide', function(e) {
+  window.addEventListener('keyboardWillHide', function() {
     console.log('Keyboard Hide')
     document.body.className = document.body.className
       .split(' ')

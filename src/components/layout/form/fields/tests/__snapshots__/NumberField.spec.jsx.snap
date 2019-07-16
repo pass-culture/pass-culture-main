@@ -28,10 +28,10 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": <form>
-        <Unknown
+        <NumberField
           name="foo"
         />
-        <Unknown
+        <NumberField
           name="bar"
         />
         <button
@@ -45,6 +45,7 @@ ShallowWrapper {
         "batch": [Function],
         "blur": [Function],
         "change": [Function],
+        "destroyOnUnregister": false,
         "focus": [Function],
         "getFieldState": [Function],
         "getRegisteredFields": [Function],
@@ -68,10 +69,10 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
-          <Unknown
+          <NumberField
             name="foo"
           />,
-          <Unknown
+          <NumberField
             name="bar"
           />,
           <button
@@ -135,8 +136,8 @@ ShallowWrapper {
         "_calculateChangedBits": null,
         "_currentRenderer": null,
         "_currentRenderer2": null,
-        "_currentValue": null,
-        "_currentValue2": null,
+        "_currentValue": undefined,
+        "_currentValue2": undefined,
         "_threadCount": 0,
       },
     },
@@ -148,10 +149,10 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": <form>
-          <Unknown
+          <NumberField
             name="foo"
           />
-          <Unknown
+          <NumberField
             name="bar"
           />
           <button
@@ -165,6 +166,7 @@ ShallowWrapper {
           "batch": [Function],
           "blur": [Function],
           "change": [Function],
+          "destroyOnUnregister": false,
           "focus": [Function],
           "getFieldState": [Function],
           "getRegisteredFields": [Function],
@@ -188,10 +190,10 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <Unknown
+            <NumberField
               name="foo"
             />,
-            <Unknown
+            <NumberField
               name="bar"
             />,
             <button
@@ -255,8 +257,8 @@ ShallowWrapper {
           "_calculateChangedBits": null,
           "_currentRenderer": null,
           "_currentRenderer2": null,
-          "_currentValue": null,
-          "_currentValue2": null,
+          "_currentValue": undefined,
+          "_currentValue2": undefined,
           "_threadCount": 0,
         },
       },
@@ -285,7 +287,8 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
-  Symbol(enzyme.__childContext__): null,
+  Symbol(enzyme.__providerValues__): Map {},
 }
 `;

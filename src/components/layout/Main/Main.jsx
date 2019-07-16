@@ -1,18 +1,13 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import {
-  Icon,
-  Modal,
-  resetForm,
-  showNotification,
-  Spinner,
-} from 'pass-culture-shared'
+import { Icon, Modal, resetForm, showNotification, Spinner } from 'pass-culture-shared'
+import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
-import HeaderContainer from 'components/layout/Header/HeaderContainer'
-import NotificationContainer from "../Notification/NotificationContainer";
+import HeaderContainer from '../Header/HeaderContainer'
+import NotificationContainer from '../Notification/NotificationContainer'
 
 class Main extends Component {
   constructor() {
@@ -20,39 +15,6 @@ class Main extends Component {
     this.state = {
       loading: false,
     }
-  }
-
-  static defaultProps = {
-    Tag: 'main',
-  }
-
-  handleDataFail = (state, action) => {
-    const { dispatch, payload } = action
-    this.setState({ loading: false })
-
-    dispatch(
-      showNotification({
-        type: 'danger',
-        text: get(payload, 'errors.0.global') || 'Erreur de chargement',
-      })
-    )
-  }
-
-  handleDataRequest = () => {
-    if (this.props.handleDataRequest) {
-      // possibility of the handleDataRequest to return
-      // false in order to not trigger the loading
-      this.setState({
-        loading: true,
-      })
-      this.props.handleDataRequest(this.handleDataSuccess, this.handleDataFail)
-    }
-  }
-
-  handleDataSuccess = () => {
-    this.setState({
-      loading: false,
-    })
   }
 
   componentDidMount() {
@@ -75,7 +37,38 @@ class Main extends Component {
 
   componentWillUnmount() {
     this.unblock && this.unblock()
-    this.props.dispatch(resetForm())
+    const { dispatch } = this.props
+    dispatch(resetForm())
+  }
+
+  handleDataSuccess = () => {
+    this.setState({
+      loading: false,
+    })
+  }
+
+  handleDataRequest = () => {
+    const { handleDataRequest } = this.props
+    if (handleDataRequest) {
+      // possibility of the handleDataRequest to return
+      // false in order to not trigger the loading
+      this.setState({
+        loading: true,
+      })
+      handleDataRequest(this.handleDataSuccess, this.handleDataFail)
+    }
+  }
+
+  handleDataFail = (state, action) => {
+    const { dispatch, payload } = action
+    this.setState({ loading: false })
+
+    dispatch(
+      showNotification({
+        type: 'danger',
+        text: get(payload, 'errors.0.global') || 'Erreur de chargement',
+      })
+    )
   }
 
   render() {
@@ -98,9 +91,10 @@ class Main extends Component {
 
     return (
       <Fragment>
-        {!fullscreen && (
-          <HeaderContainer whiteHeader={whiteHeader} {...header} />
-        )}
+        {!fullscreen && <HeaderContainer
+          whiteHeader={whiteHeader}
+          {...header}
+                        />}
         <ReactTooltip
           className="flex-center items-center"
           delayHide={500}
@@ -117,7 +111,8 @@ class Main extends Component {
             container: !fullscreen,
             fullscreen,
             loading,
-          })}>
+          })}
+        >
           {fullscreen ? (
             <Fragment>
               <NotificationContainer isFullscreen />
@@ -130,11 +125,13 @@ class Main extends Component {
                 <div
                   className={classnames('after-notification-content', {
                     'with-padding': backTo,
-                  })}>
+                  })}
+                >
                   {backTo && (
                     <NavLink
+                      className="back-button has-text-primary has-text-weight-semibold"
                       to={backTo.path}
-                      className="back-button has-text-primary has-text-weight-semibold">
+                    >
                       <Icon svg="ico-back" />
                       {` ${backTo.label}`}
                     </NavLink>
@@ -151,6 +148,33 @@ class Main extends Component {
       </Fragment>
     )
   }
+}
+
+Main.defaultProps = {
+  Tag: 'main',
+  backTo: null,
+  fullscreen: false,
+  handleDataRequest: null,
+  header: {},
+  redBg: null,
+  whiteHeader: null,
+  withLoading: null,
+}
+
+Main.propTypes = {
+  Tag: PropTypes.string,
+  backTo: PropTypes.shape(),
+  children: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  currentUser: PropTypes.shape().isRequired,
+  dispatch: PropTypes.func.isRequired,
+  fullscreen: PropTypes.bool,
+  handleDataRequest: PropTypes.func,
+  header: PropTypes.shape(),
+  location: PropTypes.shape().isRequired,
+  name: PropTypes.string.isRequired,
+  redBg: PropTypes.string,
+  whiteHeader: PropTypes.string,
+  withLoading: PropTypes.bool,
 }
 
 export default Main

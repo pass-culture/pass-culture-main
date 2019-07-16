@@ -25,15 +25,18 @@ ShallowWrapper {
           className="is-size-7"
           colSpan="6"
         >
-          En confirmant l'annulation de 
-          ce stock
-          , vous supprimerez aussi toutes les réservations associées.
+          En confirmant l’annulation de
            
-          Êtes-vous sûr de vouloir continuer ?
+          ce stock
+           
+          , 
+          vous supprimerez aussi toutes les réservations associées. 
+          Êtes-vous sûr de vouloir continuer ?
         </td>,
         <td>
           <button
             className="button is-primary"
+            type="button"
           >
             Oui
           </button>
@@ -41,6 +44,7 @@ ShallowWrapper {
         <td>
           <button
             className="button is-primary"
+            type="button"
           >
             Non
           </button>
@@ -55,24 +59,28 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            "En confirmant l'annulation de ",
-            "ce stock",
-            ", vous supprimerez aussi toutes les réservations associées.",
+            "En confirmant l’annulation de",
             " ",
+            "ce stock",
+            " ",
+            ", ",
+            "vous supprimerez aussi toutes les réservations associées. ",
             false,
-            "Êtes-vous sûr de vouloir continuer ?",
+            "Êtes-vous sûr de vouloir continuer ?",
           ],
           "className": "is-size-7",
           "colSpan": "6",
         },
         "ref": null,
         "rendered": Array [
-          "En confirmant l'annulation de ",
-          "ce stock",
-          ", vous supprimerez aussi toutes les réservations associées.",
+          "En confirmant l’annulation de",
           " ",
+          "ce stock",
+          " ",
+          ", ",
+          "vous supprimerez aussi toutes les réservations associées. ",
           false,
-          "Êtes-vous sûr de vouloir continuer ?",
+          "Êtes-vous sûr de vouloir continuer ?",
         ],
         "type": "td",
       },
@@ -83,6 +91,7 @@ ShallowWrapper {
         "props": Object {
           "children": <button
             className="button is-primary"
+            type="button"
           >
             Oui
           </button>,
@@ -96,6 +105,7 @@ ShallowWrapper {
             "children": "Oui",
             "className": "button is-primary",
             "onClick": undefined,
+            "type": "button",
           },
           "ref": null,
           "rendered": "Oui",
@@ -110,6 +120,7 @@ ShallowWrapper {
         "props": Object {
           "children": <button
             className="button is-primary"
+            type="button"
           >
             Non
           </button>,
@@ -123,6 +134,7 @@ ShallowWrapper {
             "children": "Non",
             "className": "button is-primary",
             "onClick": undefined,
+            "type": "button",
           },
           "ref": null,
           "rendered": "Non",
@@ -144,15 +156,18 @@ ShallowWrapper {
             className="is-size-7"
             colSpan="6"
           >
-            En confirmant l'annulation de 
-            ce stock
-            , vous supprimerez aussi toutes les réservations associées.
+            En confirmant l’annulation de
              
-            Êtes-vous sûr de vouloir continuer ?
+            ce stock
+             
+            , 
+            vous supprimerez aussi toutes les réservations associées. 
+            Êtes-vous sûr de vouloir continuer ?
           </td>,
           <td>
             <button
               className="button is-primary"
+              type="button"
             >
               Oui
             </button>
@@ -160,6 +175,7 @@ ShallowWrapper {
           <td>
             <button
               className="button is-primary"
+              type="button"
             >
               Non
             </button>
@@ -174,24 +190,28 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              "En confirmant l'annulation de ",
-              "ce stock",
-              ", vous supprimerez aussi toutes les réservations associées.",
+              "En confirmant l’annulation de",
               " ",
+              "ce stock",
+              " ",
+              ", ",
+              "vous supprimerez aussi toutes les réservations associées. ",
               false,
-              "Êtes-vous sûr de vouloir continuer ?",
+              "Êtes-vous sûr de vouloir continuer ?",
             ],
             "className": "is-size-7",
             "colSpan": "6",
           },
           "ref": null,
           "rendered": Array [
-            "En confirmant l'annulation de ",
-            "ce stock",
-            ", vous supprimerez aussi toutes les réservations associées.",
+            "En confirmant l’annulation de",
             " ",
+            "ce stock",
+            " ",
+            ", ",
+            "vous supprimerez aussi toutes les réservations associées. ",
             false,
-            "Êtes-vous sûr de vouloir continuer ?",
+            "Êtes-vous sûr de vouloir continuer ?",
           ],
           "type": "td",
         },
@@ -202,6 +222,7 @@ ShallowWrapper {
           "props": Object {
             "children": <button
               className="button is-primary"
+              type="button"
             >
               Oui
             </button>,
@@ -215,6 +236,7 @@ ShallowWrapper {
               "children": "Oui",
               "className": "button is-primary",
               "onClick": undefined,
+              "type": "button",
             },
             "ref": null,
             "rendered": "Oui",
@@ -229,6 +251,7 @@ ShallowWrapper {
           "props": Object {
             "children": <button
               className="button is-primary"
+              type="button"
             >
               Non
             </button>,
@@ -242,6 +265,7 @@ ShallowWrapper {
               "children": "Non",
               "className": "button is-primary",
               "onClick": undefined,
+              "type": "button",
             },
             "ref": null,
             "rendered": "Non",
@@ -276,8 +300,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
-  Symbol(enzyme.__childContext__): null,
+  Symbol(enzyme.__providerValues__): Map {},
 }
 `;
 
@@ -306,16 +331,19 @@ ShallowWrapper {
           className="is-size-7"
           colSpan="6"
         >
-          En confirmant l'annulation de 
-          cette date
-          , vous supprimerez aussi toutes les réservations associées.
+          En confirmant l’annulation de
            
+          cette date
+           
+          , 
+          vous supprimerez aussi toutes les réservations associées. 
           <br />
-          Êtes-vous sûr de vouloir continuer ?
+          Êtes-vous sûr de vouloir continuer ?
         </td>,
         <td>
           <button
             className="button is-primary"
+            type="button"
           >
             Oui
           </button>
@@ -323,6 +351,7 @@ ShallowWrapper {
         <td>
           <button
             className="button is-primary"
+            type="button"
           >
             Non
           </button>
@@ -337,22 +366,26 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            "En confirmant l'annulation de ",
-            "cette date",
-            ", vous supprimerez aussi toutes les réservations associées.",
+            "En confirmant l’annulation de",
             " ",
+            "cette date",
+            " ",
+            ", ",
+            "vous supprimerez aussi toutes les réservations associées. ",
             <br />,
-            "Êtes-vous sûr de vouloir continuer ?",
+            "Êtes-vous sûr de vouloir continuer ?",
           ],
           "className": "is-size-7",
           "colSpan": "6",
         },
         "ref": null,
         "rendered": Array [
-          "En confirmant l'annulation de ",
-          "cette date",
-          ", vous supprimerez aussi toutes les réservations associées.",
+          "En confirmant l’annulation de",
           " ",
+          "cette date",
+          " ",
+          ", ",
+          "vous supprimerez aussi toutes les réservations associées. ",
           Object {
             "instance": null,
             "key": undefined,
@@ -362,7 +395,7 @@ ShallowWrapper {
             "rendered": null,
             "type": "br",
           },
-          "Êtes-vous sûr de vouloir continuer ?",
+          "Êtes-vous sûr de vouloir continuer ?",
         ],
         "type": "td",
       },
@@ -373,6 +406,7 @@ ShallowWrapper {
         "props": Object {
           "children": <button
             className="button is-primary"
+            type="button"
           >
             Oui
           </button>,
@@ -386,6 +420,7 @@ ShallowWrapper {
             "children": "Oui",
             "className": "button is-primary",
             "onClick": undefined,
+            "type": "button",
           },
           "ref": null,
           "rendered": "Oui",
@@ -400,6 +435,7 @@ ShallowWrapper {
         "props": Object {
           "children": <button
             className="button is-primary"
+            type="button"
           >
             Non
           </button>,
@@ -413,6 +449,7 @@ ShallowWrapper {
             "children": "Non",
             "className": "button is-primary",
             "onClick": undefined,
+            "type": "button",
           },
           "ref": null,
           "rendered": "Non",
@@ -434,16 +471,19 @@ ShallowWrapper {
             className="is-size-7"
             colSpan="6"
           >
-            En confirmant l'annulation de 
-            cette date
-            , vous supprimerez aussi toutes les réservations associées.
+            En confirmant l’annulation de
              
+            cette date
+             
+            , 
+            vous supprimerez aussi toutes les réservations associées. 
             <br />
-            Êtes-vous sûr de vouloir continuer ?
+            Êtes-vous sûr de vouloir continuer ?
           </td>,
           <td>
             <button
               className="button is-primary"
+              type="button"
             >
               Oui
             </button>
@@ -451,6 +491,7 @@ ShallowWrapper {
           <td>
             <button
               className="button is-primary"
+              type="button"
             >
               Non
             </button>
@@ -465,22 +506,26 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              "En confirmant l'annulation de ",
-              "cette date",
-              ", vous supprimerez aussi toutes les réservations associées.",
+              "En confirmant l’annulation de",
               " ",
+              "cette date",
+              " ",
+              ", ",
+              "vous supprimerez aussi toutes les réservations associées. ",
               <br />,
-              "Êtes-vous sûr de vouloir continuer ?",
+              "Êtes-vous sûr de vouloir continuer ?",
             ],
             "className": "is-size-7",
             "colSpan": "6",
           },
           "ref": null,
           "rendered": Array [
-            "En confirmant l'annulation de ",
-            "cette date",
-            ", vous supprimerez aussi toutes les réservations associées.",
+            "En confirmant l’annulation de",
             " ",
+            "cette date",
+            " ",
+            ", ",
+            "vous supprimerez aussi toutes les réservations associées. ",
             Object {
               "instance": null,
               "key": undefined,
@@ -490,7 +535,7 @@ ShallowWrapper {
               "rendered": null,
               "type": "br",
             },
-            "Êtes-vous sûr de vouloir continuer ?",
+            "Êtes-vous sûr de vouloir continuer ?",
           ],
           "type": "td",
         },
@@ -501,6 +546,7 @@ ShallowWrapper {
           "props": Object {
             "children": <button
               className="button is-primary"
+              type="button"
             >
               Oui
             </button>,
@@ -514,6 +560,7 @@ ShallowWrapper {
               "children": "Oui",
               "className": "button is-primary",
               "onClick": undefined,
+              "type": "button",
             },
             "ref": null,
             "rendered": "Oui",
@@ -528,6 +575,7 @@ ShallowWrapper {
           "props": Object {
             "children": <button
               className="button is-primary"
+              type="button"
             >
               Non
             </button>,
@@ -541,6 +589,7 @@ ShallowWrapper {
               "children": "Non",
               "className": "button is-primary",
               "onClick": undefined,
+              "type": "button",
             },
             "ref": null,
             "rendered": "Non",
@@ -575,7 +624,8 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
-  Symbol(enzyme.__childContext__): null,
+  Symbol(enzyme.__providerValues__): Map {},
 }
 `;

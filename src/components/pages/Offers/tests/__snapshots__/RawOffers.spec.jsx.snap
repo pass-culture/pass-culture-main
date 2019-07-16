@@ -221,16 +221,15 @@ ShallowWrapper {
               >
                 OK
               </button>
-               
               <button
                 className="button is-secondary"
                 disabled={true}
+                type="button"
               >
-                 
+                   
                 <Icon
                   svg="ico-filter"
                 />
-                 
               </button>
             </p>
           </div>
@@ -388,16 +387,15 @@ ShallowWrapper {
                 >
                   OK
                 </button>
-                 
                 <button
                   className="button is-secondary"
                   disabled={true}
+                  type="button"
                 >
-                   
+                     
                   <Icon
                     svg="ico-filter"
                   />
-                   
                 </button>
               </p>
             </div>,
@@ -445,16 +443,15 @@ ShallowWrapper {
                   >
                     OK
                   </button>
-                   
                   <button
                     className="button is-secondary"
                     disabled={true}
+                    type="button"
                   >
-                     
+                       
                     <Icon
                       svg="ico-filter"
                     />
-                     
                   </button>
                 </p>,
               ],
@@ -506,16 +503,15 @@ ShallowWrapper {
                     >
                       OK
                     </button>,
-                    " ",
                     <button
                       className="button is-secondary"
                       disabled={true}
+                      type="button"
                     >
-                       
+                         
                       <Icon
                         svg="ico-filter"
                       />
-                       
                     </button>,
                   ],
                   "className": "control",
@@ -536,25 +532,24 @@ ShallowWrapper {
                     "rendered": "OK",
                     "type": "button",
                   },
-                  " ",
                   Object {
                     "instance": null,
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
                       "children": Array [
-                        " ",
+                        "   ",
                         <Icon
                           svg="ico-filter"
                         />,
-                        " ",
                       ],
                       "className": "button is-secondary",
                       "disabled": true,
+                      "type": "button",
                     },
                     "ref": null,
                     "rendered": Array [
-                      " ",
+                      "   ",
                       Object {
                         "instance": null,
                         "key": undefined,
@@ -566,7 +561,6 @@ ShallowWrapper {
                         "rendered": null,
                         "type": [Function],
                       },
-                      " ",
                     ],
                     "type": "button",
                   },
@@ -710,16 +704,15 @@ ShallowWrapper {
                 >
                   OK
                 </button>
-                 
                 <button
                   className="button is-secondary"
                   disabled={true}
+                  type="button"
                 >
-                   
+                     
                   <Icon
                     svg="ico-filter"
                   />
-                   
                 </button>
               </p>
             </div>
@@ -877,16 +870,15 @@ ShallowWrapper {
                   >
                     OK
                   </button>
-                   
                   <button
                     className="button is-secondary"
                     disabled={true}
+                    type="button"
                   >
-                     
+                       
                     <Icon
                       svg="ico-filter"
                     />
-                     
                   </button>
                 </p>
               </div>,
@@ -934,16 +926,15 @@ ShallowWrapper {
                     >
                       OK
                     </button>
-                     
                     <button
                       className="button is-secondary"
                       disabled={true}
+                      type="button"
                     >
-                       
+                         
                       <Icon
                         svg="ico-filter"
                       />
-                       
                     </button>
                   </p>,
                 ],
@@ -995,16 +986,15 @@ ShallowWrapper {
                       >
                         OK
                       </button>,
-                      " ",
                       <button
                         className="button is-secondary"
                         disabled={true}
+                        type="button"
                       >
-                         
+                           
                         <Icon
                           svg="ico-filter"
                         />
-                         
                       </button>,
                     ],
                     "className": "control",
@@ -1025,25 +1015,24 @@ ShallowWrapper {
                       "rendered": "OK",
                       "type": "button",
                     },
-                    " ",
                     Object {
                       "instance": null,
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
                         "children": Array [
-                          " ",
+                          "   ",
                           <Icon
                             svg="ico-filter"
                           />,
-                          " ",
                         ],
                         "className": "button is-secondary",
                         "disabled": true,
+                        "type": "button",
                       },
                       "ref": null,
                       "rendered": Array [
-                        " ",
+                        "   ",
                         Object {
                           "instance": null,
                           "key": undefined,
@@ -1055,7 +1044,6 @@ ShallowWrapper {
                           "rendered": null,
                           "type": [Function],
                         },
-                        " ",
                       ],
                       "type": "button",
                     },
@@ -1162,7 +1150,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;

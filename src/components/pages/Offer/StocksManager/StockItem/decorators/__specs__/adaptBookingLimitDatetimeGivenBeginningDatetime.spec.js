@@ -33,8 +33,11 @@ describe('src | pages | Offer | StocksManager | StockItem | decorators | adaptaB
               name="bookingLimitDatetime"
               render={({ input }) => <input {...input} />}
             />
-            <button onClick={handleSubmit} type="submit">
-              Submit
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
+              {'Submit'}
             </button>
           </form>
         )}
@@ -46,6 +49,6 @@ describe('src | pages | Offer | StocksManager | StockItem | decorators | adaptaB
       .find(Field)
       .find({ name: 'bookingLimitDatetime' })
       .find('input')
-    expect(input.props().value).toEqual('2019-04-21T02:59:00.000Z')
+    expect(input.props().value).toStrictEqual('2019-04-21T02:59:00.000Z')
   })
 })

@@ -12,14 +12,13 @@ ShallowWrapper {
         "zoom": 5,
       }
     }
-    latitude={null}
-    longitude={null}
     maxSuggestions={5}
     name={null}
     onMarkerDragend={[Function]}
     onSuggestionSelect={[Function]}
     onTextChange={[Function]}
-    placeholder="Sélectionnez l'adresse lorsqu'elle est proposée."
+    placeholder="Sélectionnez l’adresse lorsqu’elle est proposée."
+    readOnly={true}
     withMap={false}
     zoom={15}
   />,
@@ -35,247 +34,31 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "function",
+    "nodeType": "host",
     "props": Object {
-      "children": Array [
-        <Autocomplete
-          autoHighlight={true}
-          autocomplete="street-address"
-          getItemValue={[Function]}
-          inputProps={
-            Object {
-              "className": "input",
-              "id": undefined,
-              "name": null,
-              "placeholder": "Sélectionnez l'adresse lorsqu'elle est proposée.",
-              "readOnly": undefined,
-              "required": undefined,
-            }
-          }
-          isItemSelectable={[Function]}
-          items={Array []}
-          menuStyle={
-            Object {
-              "background": "rgba(255, 255, 255, 0.9)",
-              "borderRadius": "3px",
-              "boxShadow": "0 2px 12px rgba(0, 0, 0, 0.1)",
-              "fontSize": "90%",
-              "maxHeight": "50%",
-              "overflow": "auto",
-              "padding": "2px 0",
-              "position": "fixed",
-            }
-          }
-          onChange={[Function]}
-          onMenuVisibilityChange={[Function]}
-          onSelect={[Function]}
-          renderInput={[Function]}
-          renderItem={[Function]}
-          renderMenu={[Function]}
-          selectOnBlur={false}
-          value=""
-          wrapperProps={
-            Object {
-              "className": "input-wrapper",
-            }
-          }
-          wrapperStyle={
-            Object {
-              "display": "inline-block",
-            }
-          }
-        />,
-        <button
-          className="button is-loading is-invisible"
-        />,
-      ],
+      "className": undefined,
+      "name": null,
+      "readOnly": true,
+      "value": "",
     },
     "ref": null,
-    "rendered": Array [
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "class",
-        "props": Object {
-          "autoHighlight": true,
-          "autocomplete": "street-address",
-          "getItemValue": [Function],
-          "inputProps": Object {
-            "className": "input",
-            "id": undefined,
-            "name": null,
-            "placeholder": "Sélectionnez l'adresse lorsqu'elle est proposée.",
-            "readOnly": undefined,
-            "required": undefined,
-          },
-          "isItemSelectable": [Function],
-          "items": Array [],
-          "menuStyle": Object {
-            "background": "rgba(255, 255, 255, 0.9)",
-            "borderRadius": "3px",
-            "boxShadow": "0 2px 12px rgba(0, 0, 0, 0.1)",
-            "fontSize": "90%",
-            "maxHeight": "50%",
-            "overflow": "auto",
-            "padding": "2px 0",
-            "position": "fixed",
-          },
-          "onChange": [Function],
-          "onMenuVisibilityChange": [Function],
-          "onSelect": [Function],
-          "readOnly": undefined,
-          "renderInput": [Function],
-          "renderItem": [Function],
-          "renderMenu": [Function],
-          "selectOnBlur": false,
-          "value": "",
-          "wrapperProps": Object {
-            "className": "input-wrapper",
-          },
-          "wrapperStyle": Object {
-            "display": "inline-block",
-          },
-        },
-        "ref": null,
-        "rendered": null,
-        "type": [Function],
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "className": "button is-loading is-invisible",
-        },
-        "ref": null,
-        "rendered": null,
-        "type": "button",
-      },
-    ],
-    "type": Symbol(react.fragment),
+    "rendered": null,
+    "type": "input",
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "function",
+      "nodeType": "host",
       "props": Object {
-        "children": Array [
-          <Autocomplete
-            autoHighlight={true}
-            autocomplete="street-address"
-            getItemValue={[Function]}
-            inputProps={
-              Object {
-                "className": "input",
-                "id": undefined,
-                "name": null,
-                "placeholder": "Sélectionnez l'adresse lorsqu'elle est proposée.",
-                "readOnly": undefined,
-                "required": undefined,
-              }
-            }
-            isItemSelectable={[Function]}
-            items={Array []}
-            menuStyle={
-              Object {
-                "background": "rgba(255, 255, 255, 0.9)",
-                "borderRadius": "3px",
-                "boxShadow": "0 2px 12px rgba(0, 0, 0, 0.1)",
-                "fontSize": "90%",
-                "maxHeight": "50%",
-                "overflow": "auto",
-                "padding": "2px 0",
-                "position": "fixed",
-              }
-            }
-            onChange={[Function]}
-            onMenuVisibilityChange={[Function]}
-            onSelect={[Function]}
-            renderInput={[Function]}
-            renderItem={[Function]}
-            renderMenu={[Function]}
-            selectOnBlur={false}
-            value=""
-            wrapperProps={
-              Object {
-                "className": "input-wrapper",
-              }
-            }
-            wrapperStyle={
-              Object {
-                "display": "inline-block",
-              }
-            }
-          />,
-          <button
-            className="button is-loading is-invisible"
-          />,
-        ],
+        "className": undefined,
+        "name": null,
+        "readOnly": true,
+        "value": "",
       },
       "ref": null,
-      "rendered": Array [
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "class",
-          "props": Object {
-            "autoHighlight": true,
-            "autocomplete": "street-address",
-            "getItemValue": [Function],
-            "inputProps": Object {
-              "className": "input",
-              "id": undefined,
-              "name": null,
-              "placeholder": "Sélectionnez l'adresse lorsqu'elle est proposée.",
-              "readOnly": undefined,
-              "required": undefined,
-            },
-            "isItemSelectable": [Function],
-            "items": Array [],
-            "menuStyle": Object {
-              "background": "rgba(255, 255, 255, 0.9)",
-              "borderRadius": "3px",
-              "boxShadow": "0 2px 12px rgba(0, 0, 0, 0.1)",
-              "fontSize": "90%",
-              "maxHeight": "50%",
-              "overflow": "auto",
-              "padding": "2px 0",
-              "position": "fixed",
-            },
-            "onChange": [Function],
-            "onMenuVisibilityChange": [Function],
-            "onSelect": [Function],
-            "readOnly": undefined,
-            "renderInput": [Function],
-            "renderItem": [Function],
-            "renderMenu": [Function],
-            "selectOnBlur": false,
-            "value": "",
-            "wrapperProps": Object {
-              "className": "input-wrapper",
-            },
-            "wrapperStyle": Object {
-              "display": "inline-block",
-            },
-          },
-          "ref": null,
-          "rendered": null,
-          "type": [Function],
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "className": "button is-loading is-invisible",
-          },
-          "ref": null,
-          "rendered": null,
-          "type": "button",
-        },
-      ],
-      "type": Symbol(react.fragment),
+      "rendered": null,
+      "type": "input",
     },
   ],
   Symbol(enzyme.__options__): Object {
@@ -301,7 +84,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;

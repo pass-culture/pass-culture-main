@@ -3,14 +3,12 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import RawOffers from './RawOffers'
-import {
-  withFrenchQueryRouter,
-  withRedirectToSigninWhenNotAuthenticated,
-} from 'components/hocs'
-import selectOffererById from 'selectors/selectOffererById'
-import selectOffersByOffererIdAndVenueId from 'selectors/selectOffersByOffererIdAndVenueId'
-import selectVenueById from 'selectors/selectVenueById'
-import { translateQueryParamsToApiParams } from 'utils/translate'
+import withFrenchQueryRouter from '../../hocs/withFrenchQueryRouter'
+import withRedirectToSigninWhenNotAuthenticated from '../../hocs/with-login/withRedirectToSigninWhenNotAuthenticated'
+import selectOffererById from '../../../selectors/selectOffererById'
+import selectOffersByOffererIdAndVenueId from '../../../selectors/selectOffersByOffererIdAndVenueId'
+import selectVenueById from '../../../selectors/selectVenueById'
+import { translateQueryParamsToApiParams } from '../../../utils/translate'
 
 export function mapStateToProps(state, ownProps) {
   const { query } = ownProps

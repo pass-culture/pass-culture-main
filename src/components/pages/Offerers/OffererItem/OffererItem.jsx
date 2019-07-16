@@ -11,13 +11,16 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
   const $offersCount =
     nOffers && nOffers > 0 ? (
       <li>
-        <NavLink to={`/offres?structure=${id}`} className="has-text-primary">
+        <NavLink
+          className="has-text-primary"
+          to={`/offres?structure=${id}`}
+        >
           <Icon svg="ico-offres-r" />
           {pluralize(nOffers, 'offres')}
         </NavLink>
       </li>
     ) : (
-      <li>0 offre</li>
+      <li>{'0 offre'}</li>
     )
 
   const canCreateOnlyVirtualOffer = venues.length === 1 && venues[0].isVirtual
@@ -27,17 +30,21 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
     <Fragment>
       <li>
         <NavLink
+          className="has-text-primary"
           to={`/offres/creation?structure=${id}`}
-          className="has-text-primary">
+        >
           <Icon svg="ico-offres-r" />
-          Nouvelle offre {canCreateOnlyVirtualOffer && 'numérique'}
+          {'Nouvelle offre'} {canCreateOnlyVirtualOffer && 'numérique'}
         </NavLink>
       </li>
       {$offersCount}
     </Fragment>
   ) : (
-    <li className="is-italic" key={0}>
-      Créez un lieu pour pouvoir y associer des offres.
+    <li
+      className="is-italic"
+      key={0}
+    >
+      {'Créez un lieu pour pouvoir y associer des offres.'}
     </li>
   )
 
@@ -50,9 +57,11 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
       </li>
       <li>
         <NavLink
+          className="has-text-primary"
           to={`/structures/${id}/lieux/creation`}
-          className="has-text-primary">
-          <Icon svg="ico-venue-r" /> Nouveau lieu
+        >
+          <Icon svg="ico-venue-r" />
+          {'Nouveau lieu'}
         </NavLink>
       </li>
     </Fragment>
@@ -65,8 +74,11 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
           <NavLink to={showPath}>{name}</NavLink>
         </p>
         {!isValidated && (
-          <p className="is-italic mb12" id="offerer-item-validation">
-            Structure en cours de validation par l&apos;équipe Pass Culture.
+          <p
+            className="is-italic mb12"
+            id="offerer-item-validation"
+          >
+            {'Structure en cours de validation par l’équipe pass Culture.'}
           </p>
         )}
         <ul className="actions">
@@ -84,13 +96,13 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
 }
 
 OffererItem.defaultProps = {
-  venues: [],
   physicalVenues: [],
+  venues: [],
 }
 
 OffererItem.propTypes = {
-  venues: PropTypes.array,
-  physicalVenues: PropTypes.array,
+  physicalVenues: PropTypes.arrayOf(PropTypes.shape()),
+  venues: PropTypes.arrayOf(PropTypes.shape()),
 }
 
 export default OffererItem

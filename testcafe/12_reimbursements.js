@@ -4,9 +4,9 @@ import { navigateToReimbursementsAs } from './helpers/navigations'
 import { fetchSandbox } from './helpers/sandboxes'
 import { ROOT_PATH } from '../src/utils/config'
 
-fixture(
-  'Reimbursements A | Je peux télécharger un csv de mes remboursements'
-).page(`${ROOT_PATH + 'connexion'}`)
+fixture('Reimbursements A | Je peux télécharger un csv de mes remboursements').page(
+  `${ROOT_PATH + 'connexion'}`
+)
 
 test('Je clique sur le bouton télécharger', async t => {
   // given

@@ -1,4 +1,4 @@
-import { selectFormInitialValuesByProductAndOfferAndOffererAndVenue } from '../selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
+import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from '../selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
 
 describe('src | components | pages | Offer | utils | selectFormInitialValuesByProductAndOfferAndOffererAndVenue', () => {
   it('should build an object using initial values from offer or product (given POST or PATCH context), venue and offerer', () => {
@@ -8,7 +8,7 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
       ageMax: null,
       ageMin: null,
       condition: null,
-      description: "PNL n'est plus ce qu'il.elle était",
+      description: 'PNL n’est plus ce qu’il.elle était',
       durationMinutes: 60,
       extraData: { author: 'Jean-Michel' },
       id: 'FE',
@@ -41,7 +41,7 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
       ageMin: null,
       bookingEmail: undefined,
       condition: null,
-      description: "PNL n'est plus ce qu'il.elle était",
+      description: 'PNL n’est plus ce qu’il.elle était',
       durationMinutes: 60,
       extraData: { author: 'Jean-Michel' },
       isNational: true,
@@ -52,14 +52,14 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
       url: undefined,
       venueId: 'CE',
     }
-    expect(value).toEqual(expectedValue)
+    expect(value).toStrictEqual(expectedValue)
   })
 
   it('should build an object taking info from product when creating new offer', () => {
     // given
     const state = {}
     const product = {
-      description: "PNL n'est plus ce qu'il.elle était",
+      description: 'PNL n’est plus ce qu’il.elle était',
     }
     const offer = {}
     const offerer = {}
@@ -75,14 +75,14 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
     )
 
     // then
-    expect(value.description).toEqual(product.description)
+    expect(value.description).toStrictEqual(product.description)
   })
 
   it('should build an offer taking info from offer when updating offer', () => {
     // given
     const state = {}
     const product = {
-      description: "PNL n'est plus ce qu'il.elle était",
+      description: 'PNL n’est plus ce qu’il.elle était',
     }
     const offer = {
       description: '',
@@ -101,6 +101,6 @@ describe('src | components | pages | Offer | utils | selectFormInitialValuesByPr
     )
 
     // then
-    expect(value.description).toEqual(offer.description)
+    expect(value.description).toStrictEqual(offer.description)
   })
 })

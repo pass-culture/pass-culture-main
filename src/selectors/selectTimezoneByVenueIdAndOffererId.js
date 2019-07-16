@@ -17,14 +17,13 @@ const getTimezoneFromDepartementCode = departementCode => {
   }
 }
 
-export const selectTimezoneByVenueIdAndOffererId = createCachedSelector(
+const selectTimezoneByVenueIdAndOffererId = createCachedSelector(
   selectVenueById,
   (state, venueId, offererId) => selectOffererById(state, offererId),
   (venue, offerer) => {
     if (!venue) return
 
-    if (!venue.isVirtual)
-      return getTimezoneFromDepartementCode(venue.departementCode)
+    if (!venue.isVirtual) return getTimezoneFromDepartementCode(venue.departementCode)
 
     if (!offerer) return
 

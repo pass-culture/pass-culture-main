@@ -10,7 +10,7 @@ import getSuggestionsFromAddressAndMaxSuggestions from './selectors/getSuggestio
 import getSuggestionsFromLatitudeAndLongitude from './selectors/getSuggestionsFromLatitudeAndLongitude'
 import sanitizeCoordinates from './utils/sanitizeCoordinates'
 import { FRANCE_POSITION } from './utils/positions'
-import { ROOT_PATH } from 'utils/config'
+import { ROOT_PATH } from '../../../../../utils/config'
 
 const markerIcon = new LeafletIcon({
   iconUrl: `${ROOT_PATH}/icons/ico-geoloc-solid2.svg`,
@@ -33,10 +33,7 @@ class LocationViewer extends Component {
       suggestions: [],
     }
     this.refmarker = React.createRef()
-    this.onDebouncedFetchSuggestions = debounce(
-      this.fetchSuggestions,
-      props.debounceTimeout
-    )
+    this.onDebouncedFetchSuggestions = debounce(this.fetchSuggestions, props.debounceTimeout)
   }
 
   static getDerivedStateFromProps = (newProps, currentState) => {
@@ -48,14 +45,10 @@ class LocationViewer extends Component {
     const nextPosition = {
       latitude: latitude || newProps.defaultInitialPosition.latitude,
       longitude: longitude || newProps.defaultInitialPosition.longitude,
-      zoom: hasCoordinates
-        ? newProps.zoom
-        : newProps.defaultInitialPosition.zoom,
+      zoom: hasCoordinates ? newProps.zoom : newProps.defaultInitialPosition.zoom,
     }
     const isInputValueEmpty = newProps.value === ''
-    const nextInputValue = isInputValueEmpty
-      ? ''
-      : newProps.value || currentState.inputValue
+    const nextInputValue = isInputValueEmpty ? '' : newProps.value || currentState.inputValue
     const nextStateWithPositionAndInputValue = {
       inputValue: nextInputValue,
       position: nextPosition,
@@ -63,9 +56,7 @@ class LocationViewer extends Component {
 
     const nextStateWithSuggestionsAndMarker = hasCoordinates
       ? {
-          suggestions: currentState.hasSelectedSuggestion
-            ? []
-            : currentState.suggestions,
+          suggestions: currentState.hasSelectedSuggestion ? [] : currentState.suggestions,
           marker: {
             latitude,
             longitude,
@@ -82,18 +73,17 @@ class LocationViewer extends Component {
   }
 
   toggleDraggable = () => {
-    this.setState({ draggable: !this.state.draggable })
+    const { draggable } = this.state
+
+    this.setState({ draggable: !draggable })
   }
 
-  onMarkerDragend = () => {
+  handleOnMarkerDragend = () => {
     const { readOnly, onMarkerDragend } = this.props
     if (readOnly) {
       return
     }
-    const {
-      lat: latitude,
-      lng: longitude,
-    } = this.refmarker.current.leafletElement.getLatLng()
+    const { lat: latitude, lng: longitude } = this.refmarker.current.leafletElement.getLatLng()
 
     this.setState({
       marker: {
@@ -141,7 +131,7 @@ class LocationViewer extends Component {
     })
   }
 
-  onTextChange = event => {
+  handleOnTextChange = event => {
     const { onTextChange: onTextChangeFromProps } = this.props
     const address = event.target.value
     this.setState({
@@ -161,7 +151,7 @@ class LocationViewer extends Component {
     this.onDebouncedFetchSuggestions(address)
   }
 
-  onSuggestionSelect = (address, location) => {
+  handleOnSuggestionSelect = (address, location) => {
     const { onSuggestionSelect: onSuggestionSelectFromProps, zoom } = this.props
     const { latitude, longitude, placeholder } = location
     if (placeholder) return
@@ -188,40 +178,36 @@ class LocationViewer extends Component {
     // NOTE: CANNOT EXPRESS THIS WITH AWAIT ASYNC
     // BECAUSE this.props cannot be found in that case...
     // weird
-    getSuggestionsFromAddressAndMaxSuggestions(address, maxSuggestions).then(
-      result => {
-        if (result.error) {
-          return
-        }
+    getSuggestionsFromAddressAndMaxSuggestions(address, maxSuggestions).then(result => {
+      if (result.error) {
+        return
+      }
 
-        const hasNoData = result.data.length === 0
-        if (hasNoData) {
-          this.setState({
-            isLoading: false,
-          })
-          return
-        }
-
-        const defaultSuggestion = {
-          label: placeholder,
-          placeholder: true,
-          id: 'placeholder',
-        }
-
-        const suggestions = result.data.concat(defaultSuggestion)
+      const hasNoData = result.data.length === 0
+      if (hasNoData) {
         this.setState({
           isLoading: false,
-          suggestions,
         })
+        return
       }
-    )
+
+      const defaultSuggestion = {
+        label: placeholder,
+        placeholder: true,
+        id: 'placeholder',
+      }
+
+      const suggestions = result.data.concat(defaultSuggestion)
+      this.setState({
+        isLoading: false,
+        suggestions,
+      })
+    })
   }
 
   renderSuggestionsMenu = suggestionElements => {
     const empty = suggestionElements.length === 0
-    return (
-      <div className={classnames('menu', { empty })}>{suggestionElements}</div>
-    )
+    return <div className={classnames('menu', { empty })}>{suggestionElements}</div>
   }
 
   renderSuggestion = ({ id, label, placeholder }, highlighted) => (
@@ -231,39 +217,32 @@ class LocationViewer extends Component {
         highlighted,
         placeholder,
       })}
-      key={id}>
+      key={id}
+    >
       {label}
     </div>
   )
 
+  onHandleGetItemValue = value => value.label
+
   renderInput() {
-    const {
-      className,
-      id,
-      name,
-      placeholder,
-      readOnly,
-      required,
-      value,
-    } = this.props
+    const { className, id, name, placeholder, readOnly, required, value } = this.props
     const { inputValue, isLoading, suggestions } = this.state
 
     if (readOnly) {
-      return (
-        <input
-          className={className}
-          name={name}
-          readOnly={readOnly}
-          value={inputValue}
-        />
-      )
+      return (<input
+        className={className}
+        name={name}
+        readOnly={readOnly}
+        value={inputValue}
+              />)
     }
 
     return (
       <Fragment>
         <Autocomplete
           autocomplete="street-address"
-          getItemValue={value => value.label}
+          getItemValue={this.onHandleGetItemValue}
           inputProps={{
             className: className || `input`,
             id,
@@ -273,8 +252,8 @@ class LocationViewer extends Component {
             required,
           }}
           items={suggestions}
-          onChange={this.onTextChange}
-          onSelect={this.onSuggestionSelect}
+          onChange={this.handleOnTextChange}
+          onSelect={this.handleOnSuggestionSelect}
           readOnly={readOnly}
           renderItem={this.renderSuggestion}
           renderMenu={this.renderSuggestionsMenu}
@@ -285,6 +264,7 @@ class LocationViewer extends Component {
           className={classnames('button is-loading', {
             'is-invisible': !isLoading,
           })}
+          type="button"
         />
       </Fragment>
     )
@@ -300,16 +280,20 @@ class LocationViewer extends Component {
     return (
       <div className="location-viewer">
         {this.renderInput()}
-        <Map center={[latitude, longitude]} zoom={zoom} className="map">
+        <Map
+          center={[latitude, longitude]}
+          className="map"
+          zoom={zoom}
+        >
           <TileLayer url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png" />
           {marker && (
             <Marker
-              draggable={!readOnly}
-              onDragend={this.onMarkerDragend}
-              position={[marker.latitude, marker.longitude]}
-              icon={markerIcon}
-              ref={this.refmarker}
               alt={[marker.latitude, marker.longitude].join('-')}
+              draggable={!readOnly}
+              icon={markerIcon}
+              onDragend={this.handleOnMarkerDragend}
+              position={[marker.latitude, marker.longitude]}
+              ref={this.refmarker}
             />
           )}
         </Map>
@@ -321,14 +305,13 @@ class LocationViewer extends Component {
 LocationViewer.defaultProps = {
   debounceTimeout: 300,
   defaultInitialPosition: FRANCE_POSITION,
-  latitude: null,
-  longitude: null,
   maxSuggestions: 5,
   name: null,
   onMarkerDragend: () => {},
   onSuggestionSelect: () => {},
   onTextChange: () => {},
-  placeholder: "Sélectionnez l'adresse lorsqu'elle est proposée.",
+  placeholder: 'Sélectionnez l’adresse lorsqu’elle est proposée.',
+  readOnly: true,
   withMap: false,
   zoom: 15,
 }
@@ -340,14 +323,13 @@ LocationViewer.propTypes = {
     longitude: PropTypes.number,
     zoom: PropTypes.number,
   }),
-  latitude: PropTypes.number,
-  longitude: PropTypes.number,
   maxSuggestions: PropTypes.number,
   name: PropTypes.string,
   onMarkerDragend: PropTypes.func,
   onSuggestionSelect: PropTypes.func,
   onTextChange: PropTypes.func,
   placeholder: PropTypes.string,
+  readOnly: PropTypes.bool,
   withMap: PropTypes.bool,
   zoom: PropTypes.number,
 }

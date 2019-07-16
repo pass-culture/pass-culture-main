@@ -7,8 +7,8 @@ describe('src | components | pages | Offerers | OffererItemContainer', () => {
       // given
       const props = {
         offerer: {
-          id: "BA"
-        }
+          id: 'BA',
+        },
       }
 
       // when
@@ -16,32 +16,34 @@ describe('src | components | pages | Offerers | OffererItemContainer', () => {
 
       // then
       const expected = {
-        "physicalVenues": [],
-        "venues": [{
-          "address": null,
-          "bookingEmail": "john.doe@test.com",
-          "city": null,
-          "comment": null,
-          "dateModifiedAtLastProvider": "2019-03-07T10:40:03.234016Z",
-          "departementCode": null,
-          "firstThumbDominantColor": null,
-          "id": "DA",
-          "idAtProviders": null,
-          "isValidated": true,
-          "isVirtual": true,
-          "lastProviderId": null,
-          "latitude": 48.83638,
-          "longitude": 2.40027,
-          "managingOffererId": "BA",
-          "modelName": "Venue",
-          "name": "Le Sous-sol (Offre en ligne)",
-          "postalCode": null,
-          "siret": null,
-          "thumbCount": 0,
-          "validationToken": null
-        }]
+        physicalVenues: [],
+        venues: [
+          {
+            address: null,
+            bookingEmail: 'john.doe@test.com',
+            city: null,
+            comment: null,
+            dateModifiedAtLastProvider: '2019-03-07T10:40:03.234016Z',
+            departementCode: null,
+            firstThumbDominantColor: null,
+            id: 'DA',
+            idAtProviders: null,
+            isValidated: true,
+            isVirtual: true,
+            lastProviderId: null,
+            latitude: 48.83638,
+            longitude: 2.40027,
+            managingOffererId: 'BA',
+            modelName: 'Venue',
+            name: 'Le Sous-sol (Offre en ligne)',
+            postalCode: null,
+            siret: null,
+            thumbCount: 0,
+            validationToken: null,
+          },
+        ],
       }
-      expect(result).toEqual(expected)
+      expect(result).toStrictEqual(expected)
     })
   })
 })

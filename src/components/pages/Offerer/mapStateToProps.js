@@ -1,8 +1,8 @@
 import get from 'lodash.get'
 
-import selectOffererById from 'selectors/selectOffererById'
-import selectUserOffererByOffererIdAndUserIdAndRightsType from 'selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
-import selectPhysicalVenuesByOffererId from 'selectors/selectPhysicalVenuesByOffererId'
+import selectOffererById from '../../../selectors/selectOffererById'
+import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
+import selectPhysicalVenuesByOffererId from '../../../selectors/selectPhysicalVenuesByOffererId'
 
 const mapStateToProps = (state, ownProps) => {
   const { currentUser, match } = ownProps

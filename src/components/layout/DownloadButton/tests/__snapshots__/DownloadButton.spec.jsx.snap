@@ -5,7 +5,9 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <DownloadButton
     downloadFileOrNotifyAnError={[Function]}
-  />,
+  >
+    Fake title
+  </DownloadButton>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -20,7 +22,7 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "children": undefined,
+      "children": "Fake title",
       "className": "button is-primary",
       "disabled": false,
       "download": true,
@@ -28,7 +30,7 @@ ShallowWrapper {
       "type": "button",
     },
     "ref": null,
-    "rendered": null,
+    "rendered": "Fake title",
     "type": "button",
   },
   Symbol(enzyme.__nodes__): Array [
@@ -37,7 +39,7 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "children": undefined,
+        "children": "Fake title",
         "className": "button is-primary",
         "disabled": false,
         "download": true,
@@ -45,7 +47,7 @@ ShallowWrapper {
         "type": "button",
       },
       "ref": null,
-      "rendered": null,
+      "rendered": "Fake title",
       "type": "button",
     },
   ],
@@ -72,7 +74,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;

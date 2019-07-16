@@ -130,6 +130,7 @@ ShallowWrapper {
             <li>
               <Price
                 Tag="span"
+                className={null}
                 free="Gratuit"
                 value={0}
               />
@@ -172,6 +173,7 @@ ShallowWrapper {
               <button
                 className="button is-secondary is-small activ-switch"
                 onClick={[Function]}
+                type="button"
               >
                 <span>
                   <Icon
@@ -261,6 +263,7 @@ ShallowWrapper {
               <li>
                 <Price
                   Tag="span"
+                  className={null}
                   free="Gratuit"
                   value={0}
                 />
@@ -303,6 +306,7 @@ ShallowWrapper {
                 <button
                   className="button is-secondary is-small activ-switch"
                   onClick={[Function]}
+                  type="button"
                 >
                   <span>
                     <Icon
@@ -486,6 +490,7 @@ ShallowWrapper {
                 <li>
                   <Price
                     Tag="span"
+                    className={null}
                     free="Gratuit"
                     value={0}
                   />
@@ -565,6 +570,7 @@ ShallowWrapper {
                 "props": Object {
                   "children": <Price
                     Tag="span"
+                    className={null}
                     free="Gratuit"
                     value={0}
                   />,
@@ -576,6 +582,7 @@ ShallowWrapper {
                   "nodeType": "function",
                   "props": Object {
                     "Tag": "span",
+                    "className": null,
                     "free": "Gratuit",
                     "value": 0,
                   },
@@ -628,6 +635,7 @@ ShallowWrapper {
                   <button
                     className="button is-secondary is-small activ-switch"
                     onClick={[Function]}
+                    type="button"
                   >
                     <span>
                       <Icon
@@ -750,6 +758,7 @@ ShallowWrapper {
                     <button
                       className="button is-secondary is-small activ-switch"
                       onClick={[Function]}
+                      type="button"
                     >
                       <span>
                         <Icon
@@ -808,6 +817,7 @@ ShallowWrapper {
                       </span>,
                       "className": "button is-secondary is-small activ-switch",
                       "onClick": [Function],
+                      "type": "button",
                     },
                     "ref": null,
                     "rendered": Object {
@@ -922,6 +932,7 @@ ShallowWrapper {
               <li>
                 <Price
                   Tag="span"
+                  className={null}
                   free="Gratuit"
                   value={0}
                 />
@@ -964,6 +975,7 @@ ShallowWrapper {
                 <button
                   className="button is-secondary is-small activ-switch"
                   onClick={[Function]}
+                  type="button"
                 >
                   <span>
                     <Icon
@@ -1053,6 +1065,7 @@ ShallowWrapper {
                 <li>
                   <Price
                     Tag="span"
+                    className={null}
                     free="Gratuit"
                     value={0}
                   />
@@ -1095,6 +1108,7 @@ ShallowWrapper {
                   <button
                     className="button is-secondary is-small activ-switch"
                     onClick={[Function]}
+                    type="button"
                   >
                     <span>
                       <Icon
@@ -1278,6 +1292,7 @@ ShallowWrapper {
                   <li>
                     <Price
                       Tag="span"
+                      className={null}
                       free="Gratuit"
                       value={0}
                     />
@@ -1357,6 +1372,7 @@ ShallowWrapper {
                   "props": Object {
                     "children": <Price
                       Tag="span"
+                      className={null}
                       free="Gratuit"
                       value={0}
                     />,
@@ -1368,6 +1384,7 @@ ShallowWrapper {
                     "nodeType": "function",
                     "props": Object {
                       "Tag": "span",
+                      "className": null,
                       "free": "Gratuit",
                       "value": 0,
                     },
@@ -1420,6 +1437,7 @@ ShallowWrapper {
                     <button
                       className="button is-secondary is-small activ-switch"
                       onClick={[Function]}
+                      type="button"
                     >
                       <span>
                         <Icon
@@ -1542,6 +1560,7 @@ ShallowWrapper {
                       <button
                         className="button is-secondary is-small activ-switch"
                         onClick={[Function]}
+                        type="button"
                       >
                         <span>
                           <Icon
@@ -1600,6 +1619,7 @@ ShallowWrapper {
                         </span>,
                         "className": "button is-secondary is-small activ-switch",
                         "onClick": [Function],
+                        "type": "button",
                       },
                       "ref": null,
                       "rendered": Object {
@@ -1669,7 +1689,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;

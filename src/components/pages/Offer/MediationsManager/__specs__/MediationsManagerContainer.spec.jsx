@@ -1,4 +1,3 @@
-import React from 'react'
 import state from '../../../../utils/mocks/state'
 import { mapStateToProps } from '../MediationsManagerContainer'
 
@@ -9,16 +8,16 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManan
       const props = {
         match: {
           params: {
-            offerId: 'UU'
-          }
-        }
+            offerId: 'UU',
+          },
+        },
       }
 
       // when
       const result = mapStateToProps(state, props)
 
       // then
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         mediations: [
           {
             authorId: null,
@@ -35,8 +34,8 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManan
             modelName: 'Mediation',
             offerId: 'UU',
             thumbCount: 1,
-            tutoIndex: null
-          }
+            tutoIndex: null,
+          },
         ],
         notification: null,
         offer: {
@@ -49,16 +48,13 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManan
           isEvent: false,
           isThing: true,
           lastProviderId: null,
-          mediationsIds: [
-            'H4'
-          ],
+          mediationsIds: ['H4'],
           modelName: 'Offer',
           productId: 'LY',
           stocksIds: ['MU'],
-          venueId: 'DA'
-        }
+          venueId: 'DA',
+        },
       })
-
     })
   })
 })

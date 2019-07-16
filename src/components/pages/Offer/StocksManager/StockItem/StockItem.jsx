@@ -1,10 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { Form } from 'react-final-form'
-import {
-  getCanSubmit,
-  bindTimeFieldWithDateField,
-} from 'react-final-form-utils'
+import { getCanSubmit, bindTimeFieldWithDateField } from 'react-final-form-utils'
 import { requestData } from 'redux-saga-data'
 
 import EditAndDeleteControl from './sub-components/EditAndDeleteControl/EditAndDeleteControl'
@@ -15,7 +12,7 @@ import ProductFields from './sub-components/fields/ProductFields/ProductFields'
 import SubmitAndCancelControlContainer from './sub-components/SubmitAndCancelControl/SubmitAndCancelControlContainer'
 import { errorKeyToFrenchKey } from './utils'
 
-export class StockItem extends Component {
+class StockItem extends Component {
   constructor() {
     super()
     this.state = {
@@ -28,7 +25,7 @@ export class StockItem extends Component {
     this.setState({ tbodyElement: this.tbodyElement })
   }
 
-  handleRequestFail = formResolver => (state, action) => {
+  handleRequestFail = () => (state, action) => {
     const { handleSetErrors } = this.props
     const {
       payload: { errors },
@@ -38,10 +35,7 @@ export class StockItem extends Component {
       .filter(errorKeyToFrenchKey)
       .reduce(
         (result, errorKey) =>
-          Object.assign(
-            { [errorKeyToFrenchKey(errorKey)]: errors[errorKey] },
-            result
-          ),
+          Object.assign({ [errorKeyToFrenchKey(errorKey)]: errors[errorKey] }, result),
         null
       )
     this.setState(nextState, () => handleSetErrors(frenchErrors))
@@ -57,7 +51,7 @@ export class StockItem extends Component {
     })
   }
 
-  onFormSubmit = formValues => {
+  handleOnFormSubmit = formValues => {
     const { dispatch, handleSetErrors, query, stockPatch } = this.props
     const { id: stockId } = stockPatch
     const context = query.context({ id: stockId, key: 'stock' })
@@ -89,7 +83,7 @@ export class StockItem extends Component {
     return formSubmitPromise
   }
 
-  render() {
+  renderForm = formProps => {
     const {
       closeInfo,
       dispatch,
@@ -109,6 +103,61 @@ export class StockItem extends Component {
     const { isRequestPending, tbodyElement } = this.state
     const { id: stockId } = stockPatch
     const { readOnly } = query.context({ id: stockId, key: 'stock' })
+    const { form, values, handleSubmit } = formProps
+    const { beginningDatetime } = values
+    const canSubmit = getCanSubmit(Object.assign({}, formProps, { pristine: false }))
+
+    return (
+      <tr className="stock-item">
+        {isEvent && (
+          <EventFields
+            dispatch={dispatch}
+            readOnly={readOnly}
+            stockPatch={stockPatch}
+            stocks={stocks}
+            timezone={timezone}
+            values={values}
+          />
+        )}
+        <ProductFields
+          beginningDatetime={beginningDatetime}
+          closeInfo={closeInfo}
+          dispatch={dispatch}
+          hasIban={hasIban}
+          isEvent={isEvent}
+          offer={offer}
+          readOnly={readOnly}
+          showInfo={showInfo}
+          stock={stock}
+          timezone={timezone}
+          venue={venue}
+        />
+        {readOnly ? (
+          <EditAndDeleteControl
+            dispatch={dispatch}
+            formInitialValues={stockPatch}
+            handleSetErrors={handleSetErrors}
+            history={history}
+            isEvent={isEvent}
+            offer={offer}
+            stock={stock}
+            tbody={tbodyElement}
+          />
+        ) : (
+          <SubmitAndCancelControlContainer
+            canSubmit={canSubmit}
+            form={form}
+            handleSubmit={handleSubmit}
+            isRequestPending={isRequestPending}
+            stockId={stockId}
+          />
+        )}
+      </tr>
+    )
+  }
+
+  render() {
+    const { isEvent, stockPatch, timezone } = this.props
 
     let decorators = [
       adaptBookingLimitDatetimeGivenBeginningDatetime({
@@ -142,66 +191,13 @@ export class StockItem extends Component {
       <tbody
         ref={_element => {
           this.tbodyElement = _element
-        }}>
+        }}
+      >
         <Form
           decorators={decorators}
           initialValues={stockPatch}
-          onSubmit={this.onFormSubmit}
-          render={formProps => {
-            const { form, values, handleSubmit } = formProps
-            const { beginningDatetime } = values
-            const canSubmit = getCanSubmit(
-              Object.assign({}, formProps, { pristine: false })
-            )
-
-            return (
-              <tr className="stock-item">
-                {isEvent && (
-                  <EventFields
-                    dispatch={dispatch}
-                    readOnly={readOnly}
-                    stockPatch={stockPatch}
-                    stocks={stocks}
-                    timezone={timezone}
-                    values={values}
-                  />
-                )}
-                <ProductFields
-                  beginningDatetime={beginningDatetime}
-                  closeInfo={closeInfo}
-                  dispatch={dispatch}
-                  hasIban={hasIban}
-                  isEvent={isEvent}
-                  readOnly={readOnly}
-                  offer={offer}
-                  showInfo={showInfo}
-                  stock={stock}
-                  timezone={timezone}
-                  venue={venue}
-                />
-                {readOnly ? (
-                  <EditAndDeleteControl
-                    dispatch={dispatch}
-                    formInitialValues={stockPatch}
-                    history={history}
-                    isEvent={isEvent}
-                    offer={offer}
-                    stock={stock}
-                    tbody={tbodyElement}
-                    handleSetErrors={handleSetErrors}
-                  />
-                ) : (
-                  <SubmitAndCancelControlContainer
-                    canSubmit={canSubmit}
-                    form={form}
-                    handleSubmit={handleSubmit}
-                    isRequestPending={isRequestPending}
-                    stockId={stockId}
-                  />
-                )}
-              </tr>
-            )
-          }}
+          onSubmit={this.handleOnFormSubmit}
+          render={this.renderForm}
         />
       </tbody>
     )
@@ -209,14 +205,10 @@ export class StockItem extends Component {
 }
 
 StockItem.defaultProps = {
-  closeInfo: PropTypes.func.isRequired,
-  formBeginningDatetime: null,
-  formBookingLimitDatetime: null,
-  formEndDatetime: null,
   offer: null,
-  showInfo: PropTypes.func.isRequired,
   stocks: null,
   timezone: null,
+  venue: {},
 }
 
 StockItem.propTypes = {
@@ -227,9 +219,9 @@ StockItem.propTypes = {
   isEvent: PropTypes.bool.isRequired,
   offer: PropTypes.shape(),
   query: PropTypes.shape().isRequired,
-  stockPatch: PropTypes.shape().isRequired,
-  stocks: PropTypes.arrayOf(PropTypes.object),
   showInfo: PropTypes.func.isRequired,
+  stockPatch: PropTypes.shape().isRequired,
+  stocks: PropTypes.arrayOf(PropTypes.shape()),
   timezone: PropTypes.string,
   venue: PropTypes.shape(),
 }

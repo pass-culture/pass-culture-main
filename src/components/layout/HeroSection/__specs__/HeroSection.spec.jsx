@@ -9,6 +9,7 @@ describe('src | components | layout | HeroSection', () => {
       // given
       const props = {
         subtitle: 'Fake subtitle',
+        title: 'Fake title',
       }
 
       // when
@@ -26,11 +27,11 @@ describe('src | components | layout | HeroSection', () => {
         // given
         const props = {
           subtitle: 'Fake subtitle',
-          title: 'Fake title'
+          title: 'Fake title',
         }
 
         // when
-        const wrapper = shallow(<HeroSection {...props}/>)
+        const wrapper = shallow(<HeroSection {...props} />)
         const subtitle = wrapper.find('h2')
 
         // then

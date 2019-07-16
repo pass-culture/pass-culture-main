@@ -1,4 +1,5 @@
 import classnames from 'classnames'
+import PropTypes from 'prop-types'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
@@ -21,12 +22,29 @@ const Logo = ({ className, noLink, whiteHeader, signPage }) => {
   return (
     <NavLink
       className={classnames('logo', className, { 'no-link': noLink })}
-      isActive={() => false}
       to="/accueil"
-      {...extraProps}>
-      <img src={src} alt="Logo" />
+      {...extraProps}
+    >
+      <img
+        alt="Logo"
+        src={src}
+      />
     </NavLink>
   )
+}
+
+Logo.defaultProps = {
+  className: '',
+  noLink: false,
+  signPage: false,
+  whiteHeader: false,
+}
+
+Logo.propTypes = {
+  className: PropTypes.string,
+  noLink: PropTypes.bool,
+  signPage: PropTypes.bool,
+  whiteHeader: PropTypes.bool,
 }
 
 export default Logo

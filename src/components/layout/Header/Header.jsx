@@ -1,10 +1,11 @@
+import PropTypes from 'prop-types'
 import classnames from 'classnames'
 import { SignoutButton } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 
-import { Icon } from 'components/layout/Icon'
-import Logo from 'components/layout/Logo'
+import Icon from '../Icon'
+import Logo from '../Logo'
 
 class Header extends Component {
   constructor() {
@@ -14,21 +15,30 @@ class Header extends Component {
     }
   }
 
+  onHandleSuccessRedirect = () => '/connexion'
+
+  handleOnClick = showMobileMenu => () => {
+    this.setState({
+      showMobileMenu: !showMobileMenu,
+    })
+  }
+
   render() {
     const { name, whiteHeader, offerers } = this.props
     const { showMobileMenu } = this.state
+
     return (
       <header className={classnames('navbar', { 'is-primary': !whiteHeader })}>
         <div className="container">
           <div className="navbar-brand">
-            <Logo className="navbar-item" whiteHeader={whiteHeader} />
+            <Logo
+              className="navbar-item"
+              whiteHeader={whiteHeader}
+            />
             <span
               className="navbar-burger"
-              onClick={e =>
-                this.setState({
-                  showMobileMenu: !showMobileMenu,
-                })
-              }>
+              onClick={this.handleOnClick(showMobileMenu)}
+            >
               <span />
               <span />
               <span />
@@ -37,47 +47,64 @@ class Header extends Component {
           <div
             className={classnames('navbar-menu', {
               'is-active': showMobileMenu,
-            })}>
+            })}
+          >
             <div className="navbar-end">
-              <NavLink className="navbar-item" to="/guichet">
+              <NavLink
+                className="navbar-item"
+                to="/guichet"
+              >
                 <span className="icon">
                   <Icon svg="ico-guichet-w" />
                 </span>
-                <span>Guichet</span>
+                <span>{'Guichet'}</span>
               </NavLink>
               {!whiteHeader && (
-                <NavLink className="navbar-item" to="/offres">
+                <NavLink
+                  className="navbar-item"
+                  to="/offres"
+                >
                   <span className="icon">
                     <Icon svg="ico-offres-w" />
                   </span>
-                  <span>Vos offres</span>
+                  <span>{'Vos offres'}</span>
                 </NavLink>
               )}
               <a
                 className="navbar-item"
                 href="https://docs.passculture.app/structures-culturelles"
                 rel="noopener noreferrer"
-                target="_blank">
+                target="_blank"
+              >
                 <span className="icon">
                   <Icon svg="ico-help-w" />
                 </span>
-                <span>Aide</span>
+                <span>{'Aide'}</span>
               </a>
               <div className="navbar-item has-dropdown is-hoverable">
-                <NavLink className="navbar-link" to="#">
+                <NavLink
+                  className="navbar-link"
+                  to="#"
+                >
                   <span className="icon">
                     <Icon svg={`ico-user-circled${whiteHeader ? '' : '-w'}`} />
                   </span>
                   <span>{name}</span>
                 </NavLink>
                 <div className="navbar-dropdown is-right">
-                  <NavLink to="/profil" className="navbar-item">
+                  <NavLink
+                    className="navbar-item"
+                    to="/profil"
+                  >
                     <span className="icon">
                       <Icon svg="ico-user" />
                     </span>
-                    <span>Profil</span>
+                    <span>{'Profil'}</span>
                   </NavLink>
-                  <NavLink to="/structures" className="navbar-item">
+                  <NavLink
+                    className="navbar-item"
+                    to="/structures"
+                  >
                     <span className="icon">
                       <Icon svg="ico-structure-r" />
                     </span>
@@ -88,41 +115,54 @@ class Header extends Component {
                     </span>
                   </NavLink>
                   {false && (
-                    <NavLink to="/delegations" className="navbar-item">
+                    <NavLink
+                      className="navbar-item"
+                      to="/delegations"
+                    >
                       <span className="icon">
                         <Icon svg="ico-delegation-r" />
                       </span>
-                      <span>Délégations</span>
+                      <span>{'Délégations'}</span>
                     </NavLink>
                   )}
-                  <NavLink to="/reservations" className="navbar-item">
+                  <NavLink
+                    className="navbar-item"
+                    to="/reservations"
+                  >
                     <span className="icon">
                       <Icon svg="ico-bookings" />
                     </span>
-                    <span>Suivi des réservations</span>
+                    <span>{'Suivi des réservations'}</span>
                   </NavLink>
-                  <NavLink to="/remboursements" className="navbar-item">
+                  <NavLink
+                    className="navbar-item"
+                    to="/remboursements"
+                  >
                     <span className="icon">
                       <Icon svg="ico-compta" />
                     </span>
-                    <span>Suivi des remboursements</span>
+                    <span>{'Suivi des remboursements'}</span>
                   </NavLink>
                   {false && (
-                    <NavLink to="/comptabilite" className="navbar-item">
+                    <NavLink
+                      className="navbar-item"
+                      to="/comptabilite"
+                    >
                       <span className="icon">
                         <Icon svg="ico-compta" />
                       </span>
-                      <span>Comptabilité</span>
+                      <span>{'Comptabilité'}</span>
                     </NavLink>
                   )}
                   <SignoutButton
+                    Tag="a"
                     className="navbar-item"
-                    handleSuccessRedirect={() => '/connexion'}
-                    Tag="a">
+                    handleSuccessRedirect={this.onHandleSuccessRedirect}
+                  >
                     <span className="icon">
                       <Icon svg="ico-deconnect" />
                     </span>
-                    <span>Déconnexion</span>
+                    <span>{'Déconnexion'}</span>
                   </SignoutButton>
                 </div>
               </div>
@@ -132,6 +172,16 @@ class Header extends Component {
       </header>
     )
   }
+}
+
+Header.defaultProps = {
+  whiteHeader: null,
+}
+
+Header.propTypes = {
+  name: PropTypes.string.isRequired,
+  offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  whiteHeader: PropTypes.string,
 }
 
 export default Header

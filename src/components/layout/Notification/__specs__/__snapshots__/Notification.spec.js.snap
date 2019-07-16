@@ -7,10 +7,6 @@ ShallowWrapper {
     dispatch={[MockFunction]}
     isFullscreen={false}
     notification={Object {}}
-    tooltip={null}
-    type={null}
-    url={null}
-    urlLabel={null}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -45,6 +41,7 @@ ShallowWrapper {
           <button
             className="close pl12"
             onClick={[Function]}
+            type="button"
           >
             OK
           </button>
@@ -75,6 +72,7 @@ ShallowWrapper {
             <button
               className="close pl12"
               onClick={[Function]}
+              type="button"
             >
               OK
             </button>
@@ -137,6 +135,7 @@ ShallowWrapper {
               <button
                 className="close pl12"
                 onClick={[Function]}
+                type="button"
               >
                 OK
               </button>,
@@ -154,6 +153,7 @@ ShallowWrapper {
                 "children": "OK",
                 "className": "close pl12",
                 "onClick": [Function],
+                "type": "button",
               },
               "ref": null,
               "rendered": "OK",
@@ -192,6 +192,7 @@ ShallowWrapper {
             <button
               className="close pl12"
               onClick={[Function]}
+              type="button"
             >
               OK
             </button>
@@ -222,6 +223,7 @@ ShallowWrapper {
               <button
                 className="close pl12"
                 onClick={[Function]}
+                type="button"
               >
                 OK
               </button>
@@ -284,6 +286,7 @@ ShallowWrapper {
                 <button
                   className="close pl12"
                   onClick={[Function]}
+                  type="button"
                 >
                   OK
                 </button>,
@@ -301,6 +304,7 @@ ShallowWrapper {
                   "children": "OK",
                   "className": "close pl12",
                   "onClick": [Function],
+                  "type": "button",
                 },
                 "ref": null,
                 "rendered": "OK",
@@ -338,7 +342,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;

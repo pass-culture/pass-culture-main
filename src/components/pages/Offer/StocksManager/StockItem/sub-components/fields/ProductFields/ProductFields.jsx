@@ -5,20 +5,14 @@ import React, { Component, Fragment } from 'react'
 import { createParseNumberValue } from 'react-final-form-utils'
 import ReactTooltip from 'react-tooltip'
 
-import {
-  createFormatAvailable,
-  formatPrice,
-  getRemainingStocksCount,
-} from '../../../utils'
-import {
-  DateField,
-  HiddenField,
-  NumberField,
-} from 'components/layout/form/fields'
-import Icon from 'components/layout/Icon'
-import { PriceField } from '../../../../../../../layout/form/fields/PriceField'
+import { createFormatAvailable, formatPrice, getRemainingStocksCount } from '../../../utils'
+import DateField from '../../../../../../../layout/form/fields/DateField'
+import HiddenField from '../../../../../../../layout/form/fields/HiddenField'
+import NumberField from '../../../../../../../layout/form/fields/NumberField'
+import Icon from '../../../../../../../layout/Icon'
+import PriceField from '../../../../../../../layout/form/fields/PriceField'
 
-export class ProductFields extends Component {
+class ProductFields extends Component {
   static isParsedByForm = true
 
   constructor() {
@@ -31,10 +25,11 @@ export class ProductFields extends Component {
   }
 
   componentWillUnmount() {
-    this.props.closeInfo()
+    const { closeInfo } = this.props
+    closeInfo()
   }
 
-  onPriceBlur = event => {
+  handleOnPriceBlur = event => {
     if (this.isPriceInputDeactivate) {
       return
     }
@@ -55,82 +50,103 @@ export class ProductFields extends Component {
     showInfo(
       <Fragment>
         <div className="mb24 has-text-left">
-          Vous avez saisi une offre payante. Pensez à demander à
-          l'administrateur financier nommé pour votre structure de renseigner
-          son IBAN. Sans IBAN, les réservations de vos offres éligibles ne vous
-          seront pas remboursées.
+          {'Vous avez saisi une offre payante. Pensez à demander à '}
+          {'l’administrateur financier nommé pour votre structure de renseigner '}
+          {'son IBAN. Sans IBAN, les réservations de vos offres éligibles ne vous '}
+          {'seront pas remboursées.'}
         </div>
         <div className="has-text-right">
           <button
             className="button is-primary"
-            onClick={() => {
-              dispatch(assignModalConfig({ extraClassName: null }))
-              closeInfo()
-              this.isPriceInputDeactivate = false
-            }}>
-            J'ai compris
+            onClick={this.handleOnClick(dispatch, closeInfo)}
+            type="button"
+          >
+            {'J’ai compris'}
           </button>
         </div>
       </Fragment>
     )
   }
 
-  render() {
-    const {
-      beginningDatetime,
-      isEvent,
-      readOnly,
-      stock,
-      timezone,
-      venue,
-    } = this.props
-    const { available, bookings } = stock || {}
-    const remainingStocksCount = getRemainingStocksCount(
-      available,
-      bookings || []
+  handleOnClick = (dispatch, closeInfo) => () => {
+    dispatch(assignModalConfig({ extraClassName: null }))
+    closeInfo()
+    this.isPriceInputDeactivate = false
+  }
+
+  handleRender = (readOnly, venue) => () => {
+    if (readOnly) {
+      return null
+    }
+
+    let tip = "L'heure limite de réservation de ce jour est 23h59 et ne peut pas être changée."
+    if (venue && venue.isVirtual) {
+      tip = `${tip}<br /><br />Vous êtes sur une offre numérique, la zone horaire de cette date correspond à celle de votre structure.`
+    }
+
+    return (
+      <span
+        className="button tooltip tooltip-info"
+        data-place="bottom"
+        data-tip={`<p>${tip}</p>`}
+        data-type="info"
+      >
+        <Icon svg="picto-info" />
+      </span>
     )
+  }
+
+  handleRenderValue = readOnly => () => {
+    if (readOnly) {
+      return null
+    }
+    return (
+      <span
+        className="button tooltip tooltip-info"
+        data-place="bottom"
+        data-tip="<p>Laissez ce champ vide pour un nombre de places ou stock illimité.</p>"
+        data-type="info"
+      >
+        <Icon svg="picto-info" />
+      </span>
+    )
+  }
+
+  render() {
+    const { beginningDatetime, isEvent, readOnly, stock, timezone, venue } = this.props
+    const { available, bookings } = stock || {}
+    const remainingStocksCount = getRemainingStocksCount(available, bookings || [])
 
     return (
       <Fragment>
         <td title="Gratuit si vide">
-          <HiddenField name="offerId" type="hidden" />
-          <HiddenField name="venueId" type="hidden" />
+          <HiddenField
+            name="offerId"
+            type="hidden"
+          />
+          <HiddenField
+            name="venueId"
+            type="hidden"
+          />
           <PriceField
-            name="price"
-            onBlur={this.onPriceBlur}
             format={formatPrice(readOnly)}
+            name="price"
+            onBlur={this.handleOnPriceBlur}
             placeholder="Gratuit"
             readOnly={readOnly}
             title="Prix"
           />
         </td>
-        <td className="tooltiped" title="Laissez vide si pas de limite">
+        <td
+          className="tooltiped"
+          title="Laissez vide si pas de limite"
+        >
           <DateField
             maxDate={isEvent ? moment(beginningDatetime) : undefined}
             name="bookingLimitDatetime"
             placeholder="Laissez vide si pas de limite"
             readOnly={readOnly}
-            renderValue={() => {
-              if (readOnly) {
-                return null
-              }
-
-              let tip =
-                "L'heure limite de réservation de ce jour est 23h59 et ne peut pas être changée."
-              if (venue && venue.isVirtual) {
-                tip = `${tip}<br /><br /> Vous êtes sur une offre numérique, la zone horaire de cette date correspond à celle de votre structure.`
-              }
-
-              return (
-                <span
-                  className="button tooltip tooltip-info"
-                  data-place="bottom"
-                  data-tip={`<p>${tip}</p>`}
-                  data-type="info">
-                  <Icon svg="picto-info" />
-                </span>
-              )
-            }}
+            renderValue={this.handleRender(readOnly, venue)}
             timezone={timezone}
           />
         </td>
@@ -140,25 +156,15 @@ export class ProductFields extends Component {
             name="available"
             placeholder="Illimité"
             readOnly={readOnly}
-            renderValue={() => {
-              if (readOnly) {
-                return null
-              }
-              return (
-                <span
-                  className="button tooltip tooltip-info"
-                  data-place="bottom"
-                  data-tip="<p>Laissez ce champ vide pour un nombre de places ou stock illimité.</p>"
-                  data-type="info">
-                  <Icon svg="picto-info" />
-                </span>
-              )
-            }}
+            renderValue={this.handleRenderValue(readOnly)}
             title="Stock[ou] Places affecté[es]"
           />
         </td>
 
-        <td className="is-small remaining-stock" id="remaining-stock">
+        <td
+          className="is-small remaining-stock"
+          id="remaining-stock"
+        >
           {remainingStocksCount}
         </td>
       </Fragment>
@@ -168,9 +174,8 @@ export class ProductFields extends Component {
 
 ProductFields.defaultProps = {
   beginningDatetime: null,
-  readOnly: true,
   isEvent: true,
-  offer: null,
+  readOnly: true,
   stock: null,
   timezone: null,
 }
@@ -179,14 +184,13 @@ ProductFields.propTypes = {
   beginningDatetime: PropTypes.string,
   closeInfo: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
+  hasIban: PropTypes.bool.isRequired,
   isEvent: PropTypes.bool,
-  offer: PropTypes.shape(),
-  parseFormChild: PropTypes.func,
   readOnly: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   showInfo: PropTypes.func.isRequired,
   stock: PropTypes.shape(),
   timezone: PropTypes.string,
-  venue: PropTypes.shape(),
+  venue: PropTypes.shape().isRequired,
 }
 
 export default ProductFields

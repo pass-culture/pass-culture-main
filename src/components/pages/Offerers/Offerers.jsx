@@ -13,12 +13,9 @@ import HeroSection from '../../layout/HeroSection/HeroSection'
 import Icon from '../../layout/Icon'
 import Main from '../../layout/Main'
 import Spinner from '../../layout/Spinner'
-import { TextField } from '../../layout/form/fields'
+import TextField from '../../layout/form/fields/TextField'
 import { offererNormalizer } from '../../../utils/normalizers'
-import {
-  mapApiToBrowser,
-  translateQueryParamsToApiParams,
-} from '../../../utils/translate'
+import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
 
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 
@@ -46,15 +43,16 @@ class Offerers extends Component {
     }
   }
 
-  showNotification = (url) => {
+  showNotification = url => {
     const { dispatch } = this.props
     dispatch(
       showNotification({
         tag: 'offerers',
-        text: 'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
+        text:
+          'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
         type: 'info',
         url: url,
-        urlLabel: 'Nouveau lieu'
+        urlLabel: 'Nouveau lieu',
       })
     )
   }
@@ -86,7 +84,7 @@ class Offerers extends Component {
     })
   }
 
-  handleRequestData = (handleSuccess, handleFail) => {
+  handleRequestData = () => {
     const { currentUser, dispatch, offerers, query } = this.props
     const { isAdmin } = currentUser || {}
     const queryParams = query.parse()
@@ -109,10 +107,11 @@ class Offerers extends Component {
     const offerersHaveNotOffers = !currentUser.hasOffers && !currentUser.hasPhysicalVenues
     const offerersHaveOnlyDigitalOffers = currentUser.hasOffers && !currentUser.hasPhysicalVenues
 
-    const userHasNoOffersInAPhysicalVenueYet = offerersHaveNotOffers || offerersHaveOnlyDigitalOffers
+    const userHasNoOffersInAPhysicalVenueYet =
+      offerersHaveNotOffers || offerersHaveOnlyDigitalOffers
 
     if (userHasNoOffersInAPhysicalVenueYet) {
-       this.showNotification(url)
+      this.showNotification(url)
     }
 
     if (!isAdmin) {
@@ -122,9 +121,7 @@ class Offerers extends Component {
         },
         apiParams
       )
-      const notValidatedUserOfferersSearch = stringify(
-        notValidatedUserOfferersParams
-      )
+      const notValidatedUserOfferersSearch = stringify(notValidatedUserOfferersParams)
       const notValidatedUserOfferersPath = `/offerers?${notValidatedUserOfferersSearch}`
       dispatch(
         requestData({
@@ -136,7 +133,7 @@ class Offerers extends Component {
     }
   }
 
-  onKeywordsSubmit = values => {
+  handleOnKeywordsSubmit = values => {
     const { dispatch, query } = this.props
     const { keywords } = values
 
@@ -152,15 +149,45 @@ class Offerers extends Component {
     })
   }
 
+  renderTextField = () => (
+    <Fragment>
+      <button
+        className="button is-primary is-outlined search-ok ml12"
+        type="submit"
+      >
+        {'OK'}
+      </button>
+      <button
+        className="button is-secondary"
+        disabled
+        type="button"
+      >
+        &nbsp;
+        <Icon svg="ico-filter" />
+        &nbsp;
+      </button>
+    </Fragment>
+  )
+
+  renderForm = ({ handleSubmit }) => (
+    <form onSubmit={handleSubmit}>
+      {'Rechercher une structure :'}
+      <TextField
+        id="search"
+        name="keywords"
+        placeholder="Saisissez un ou plusieurs mots complets"
+        renderValue={this.renderTextField}
+      />
+    </form>
+  )
+
   render() {
     const { pendingOfferers, offerers, query } = this.props
     const queryParams = query.parse()
     const { hasMore, isLoading } = this.state
 
     const sectionTitle =
-      offerers.length > 1
-        ? 'Vos structures juridiques'
-        : 'Votre structure juridique'
+      offerers.length > 1 ? 'Vos structures juridiques' : 'Votre structure juridique'
 
     const initialValues = {
       keywords: queryParams[mapApiToBrowser.keywords],
@@ -172,21 +199,24 @@ class Offerers extends Component {
       <Main name="offerers">
         <HeroSection title={sectionTitle}>
           <p className="subtitle">
-            Pour présenter vos offres, vous devez d'abord <a href={url}>créer un{' '}
-            nouveau lieu </a> lié à une structure.
+            {'Pour présenter vos offres, vous devez d’abord '}
+            <a href={url}> {'créer un nouveau lieu '} </a> {' lié à une structure.'}
             <br />
-            Sans lieu, vous pouvez uniquement <a href="/offres/creation">ajouter des offres numériques.</a>
+            {'Sans lieu, vous pouvez uniquement '}
+            <a href="/offres/creation"> {'ajouter des offres numériques.'} </a>
           </p>
           <div className="title-action-links">
             <NavLink
+              className="cta button is-primary is-outlined"
               to="/structures/creation"
-              className="cta button is-primary is-outlined">
-              + Ajouter une structure
+            >
+              {'+ Ajouter une structure'}
               <span
                 className="tip-icon"
                 data-place="bottom"
                 data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par example, un réseau de grande distribution ou de franchisés).</p>"
-                data-type="info">
+                data-type="info"
+              >
                 <Icon svg="picto-tip" />
               </span>
             </NavLink>
@@ -195,39 +225,22 @@ class Offerers extends Component {
 
         <Form
           initialValues={initialValues}
-          onSubmit={this.onKeywordsSubmit}
-          render={({ handleSubmit }) => (
-            <form onSubmit={handleSubmit}>
-              Rechercher une structure :
-              <TextField
-                id="search"
-                name="keywords"
-                placeholder="Saisissez un ou plusieurs mots complets"
-                renderValue={() => (
-                  <Fragment>
-                    <button
-                      className="button is-primary is-outlined search-ok ml12"
-                      type="submit">
-                      OK
-                    </button>
-                    <button className="button is-secondary" disabled>
-                      &nbsp;
-                      <Icon svg="ico-filter" />
-                      &nbsp;
-                    </button>
-                  </Fragment>
-                )}
-              />
-            </form>
-          )}
+          onSubmit={this.handleOnKeywordsSubmit}
+          render={this.renderForm}
         />
 
         <br />
 
         {pendingOfferers.length > 0 && (
-          <ul id="pending-offerer-list" className="main-list offerers-list">
+          <ul
+            className="main-list offerers-list"
+            id="pending-offerer-list"
+          >
             {pendingOfferers.map(o => (
-              <PendingOffererItem key={o.siren} offerer={o} />
+              <PendingOffererItem
+                key={o.siren}
+                offerer={o}
+              />
             ))}
           </ul>
         )}
@@ -236,11 +249,15 @@ class Offerers extends Component {
           className="main-list offerers-list"
           element="ul"
           hasMore={hasMore}
-          loader={<Spinner key="spinner" />}
           isLoading={isLoading}
-          useWindow>
+          loader={<Spinner key="spinner" />}
+          useWindow
+        >
           {offerers.map(offerer => (
-            <OffererItemContainer key={offerer.id} offerer={offerer} />
+            <OffererItemContainer
+              key={offerer.id}
+              offerer={offerer}
+            />
           ))}
         </LoadingInfiniteScroll>
       </Main>
@@ -249,11 +266,11 @@ class Offerers extends Component {
 }
 
 PropTypes.propTypes = {
-  currentUser: PropTypes.object.isRequired,
+  currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
-  offerers: PropTypes.array.isRequired,
-  pendingOfferers: PropTypes.array.isRequired,
-  query: PropTypes.object.isRequired,
+  offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  pendingOfferers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  query: PropTypes.shape().isRequired,
 }
 
 export default Offerers

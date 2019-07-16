@@ -1,15 +1,15 @@
-import React, {Fragment, PureComponent} from "react";
-import classnames from "classnames";
-import get from "lodash.get";
-import {showNotification} from "pass-culture-shared";
-import {requestData} from "redux-saga-data";
-import {NavLink} from 'react-router-dom'
+import React, { Fragment, PureComponent } from 'react'
+import classnames from 'classnames'
+import get from 'lodash.get'
+import { showNotification } from 'pass-culture-shared'
+import { requestData } from 'redux-saga-data'
+import { NavLink } from 'react-router-dom'
 
-import HeroSection from 'components/layout/HeroSection/HeroSection'
-import Main from 'components/layout/Main'
-import UploadThumb from 'components/layout/UploadThumb'
-import {mediationNormalizer, offerNormalizer} from 'utils/normalizers'
-import CanvasTools from 'utils/canvas'
+import HeroSection from '../../layout/HeroSection/HeroSection'
+import Main from '../../layout/Main'
+import UploadThumb from '../../layout/UploadThumb'
+import { mediationNormalizer, offerNormalizer } from '../../../utils/normalizers'
+import CanvasTools from '../../../utils/canvas'
 
 const IMAGE_UPLOAD_SIZE = 400
 const IMAGE_UPLOAD_BORDER = 25
@@ -29,7 +29,7 @@ class Mediation extends PureComponent {
   static getDerivedStateFromProps(nextProps, prevState) {
     const {
       match: {
-        params: {mediationId},
+        params: { mediationId },
       },
     } = nextProps
     return {
@@ -38,22 +38,24 @@ class Mediation extends PureComponent {
     }
   }
 
-  handleDataRequest = (handleSuccess, handleFail) => {
+  handleOnChange = event => this.setState({ credit: event.target.value })
+
+  onHandleDataRequest = (handleSuccess, handleFail) => {
     const {
       dispatch,
       match: {
-        params: {mediationId, offerId},
+        params: { mediationId, offerId },
       },
       offer,
     } = this.props
-    const {isNew} = this.state
+    const { isNew } = this.state
     !offer &&
-    dispatch(
-      requestData({
-        apiPath: `/offers/${offerId}`,
-        normalizer: offerNormalizer,
-      })
-    )
+      dispatch(
+        requestData({
+          apiPath: `/offers/${offerId}`,
+          normalizer: offerNormalizer,
+        })
+      )
     if (!isNew) {
       dispatch(
         requestData({
@@ -69,12 +71,12 @@ class Mediation extends PureComponent {
   }
 
   handleFailData = (state, action) => {
-    const {dispatch, history, offer} = this.props
+    const { dispatch, history, offer } = this.props
     const {
-      payload: {errors},
+      payload: { errors },
     } = action
 
-    this.setState({isLoading: false}, () => {
+    this.setState({ isLoading: false }, () => {
       history.push(`/offres/${offer.id}`)
       dispatch(
         showNotification({
@@ -86,9 +88,9 @@ class Mediation extends PureComponent {
   }
 
   handleSuccessData = () => {
-    const {dispatch, history, offer} = this.props
+    const { dispatch, history, offer } = this.props
 
-    this.setState({isLoading: false}, () => {
+    this.setState({ isLoading: false }, () => {
       history.push(`/offres/${offer.id}`)
       dispatch(
         showNotification({
@@ -100,7 +102,7 @@ class Mediation extends PureComponent {
     })
   }
 
-  onImageChange = (context, image, croppingRect) => {
+  handleOnImageChange = (context, image, croppingRect) => {
     this.setState({
       image,
       croppingRect,
@@ -114,12 +116,7 @@ class Mediation extends PureComponent {
     const purpleRectangle = {
       width: 2,
       color: '#b921d7',
-      coordinates: [
-        IMAGE_UPLOAD_BORDER,
-        IMAGE_UPLOAD_BORDER,
-        IMAGE_UPLOAD_SIZE,
-        IMAGE_UPLOAD_SIZE,
-      ],
+      coordinates: [IMAGE_UPLOAD_BORDER, IMAGE_UPLOAD_BORDER, IMAGE_UPLOAD_SIZE, IMAGE_UPLOAD_SIZE],
     }
 
     cvs.drawArea(purpleRectangle)
@@ -183,17 +180,19 @@ class Mediation extends PureComponent {
     })
   }
 
-  onOkClick = e => {
-    this.state.inputUrl &&
-    this.setState({
-      image: null,
-      imageUrl: this.state.inputUrl,
-    })
+  handleOnOkClick = () => {
+    const { inputUrl } = this.state
+
+    inputUrl &&
+      this.setState({
+        image: null,
+        imageUrl: inputUrl,
+      })
   }
 
-  onSubmit = () => {
-    const {dispatch, match, mediation, offerer} = this.props
-    const {croppingRect, image, credit, isNew} = this.state
+  handleOnSubmit = () => {
+    const { dispatch, match, mediation, offerer } = this.props
+    const { croppingRect, image, credit, isNew } = this.state
 
     const offererId = get(offerer, 'id')
     const offerId = match.params.offerId
@@ -212,7 +211,7 @@ class Mediation extends PureComponent {
     body.append('croppingRect[width]', croppingRect.width)
     body.append('croppingRect[height]', croppingRect.height)
 
-    this.setState({isLoading: true})
+    this.setState({ isLoading: true })
 
     dispatch(
       requestData({
@@ -227,11 +226,11 @@ class Mediation extends PureComponent {
     )
   }
 
-  onUrlChange = event => {
-    this.setState({inputUrl: event.target.value})
+  handleOnUrlChange = event => {
+    this.setState({ inputUrl: event.target.value })
   }
 
-  onUploadClick = event => {
+  handleOnUploadClick = () => {
     this.setState({
       image: this.$uploadInput.files[0],
       imageUrl: null,
@@ -242,11 +241,11 @@ class Mediation extends PureComponent {
   render() {
     const {
       match: {
-        params: {offerId},
+        params: { offerId },
       },
       mediation,
     } = this.props
-    const {image, credit, imageUrl, inputUrl, isLoading, isNew} = this.state
+    const { image, credit, imageUrl, inputUrl, isLoading, isNew } = this.state
     const backPath = `/offres/${offerId}`
 
     const $imageSections = (image || imageUrl) && (
@@ -254,65 +253,68 @@ class Mediation extends PureComponent {
         <div className="thumbnailManager">
           <div className="section ">
             <h2 className="has-text-primary has-text-weight-semibold active">
-              Comment cadrer votre image d’accroche
+              {'Comment cadrer votre image d’accroche'}
             </h2>
             <ul>
               <li className="mb12">
-                <span className="li-number">1</span>
+                <span className="li-number">{'1'}</span>
                 <span>
-                  Le visuel doit <b>remplir le cadre 1 violet</b>.
+                  {'Le visuel doit '}
+                  <b>{'remplir le cadre 1 violet'}</b>
+                  {'.'}
                 </span>
               </li>
               <li className="mb12">
-                <span className="li-number">2</span>
+                <span className="li-number">{'2'}</span>
                 <span>
-                  <b>Les éléments importants</b> (p. ex. un visage, une zone
-                  d’intérêt…) doivent se situer <b>dans le cadre 2 vert.</b>
-                  <br/> C’est la première vision de l'offre qu'aura
-                  l'utilisateur.
+                  <b>{'Les éléments importants '}</b>
+                  {' (p. ex. un visage, une zone d’intérêt…) doivent se situer '}
+                  <b>{'dans le cadre 2 vert.'}</b>
+                  <br />
+                  {' C’est la première vision de l’offre qu’aura l’utilisateur.'}
                 </span>
               </li>
             </ul>
-            La zone en pointillés représente la partie visible de l'image dans
-            la fiche détail de l’offre.
+            {
+              'La zone en pointillés représente la partie visible de l’image dans la fiche détail de l’offre.'
+            }
           </div>
           <div className="section">
             <div className="row">
               <div className="section">
-                <h6>Exemples :</h6>
+                <h6>{'Exemples :'}</h6>
                 <div className="columns crop-explain">
                   <div className="column">
                     <img
+                      alt="Explication"
                       src="/bad-crop.png"
                       title="Exemple de cadrage"
-                      alt="Explication"
                     />
                   </div>
                   <div className="column explain-text explain-bad">
                     <p>
-                      <b>Mauvais cadrage</b>
-                      Les éléments importants sont hors-cadre.
+                      <b>{'Mauvais cadrage'}</b>
+                      {'Les éléments importants sont hors-cadre.'}
                     </p>
                   </div>
                   <div className="column">
                     <img
+                      alt="Explication"
                       src="/good-crop.png"
                       title="Exemple de cadrage"
-                      alt="Explication"
                     />
                   </div>
                   <div className="column explain-text explain-good">
                     <p>
-                      <b>Cadrage idéal</b>
-                      Les éléments importants sont visibles dans tous les
-                      cadres.
+                      <b>{'Cadrage idéal'}</b>
+                      {'Les éléments importants sont visibles dans tous les cadres.'}
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <hr className="dotted"/>
+            <hr className="dotted" />
             <div className="row">
               <UploadThumb
                 border={IMAGE_UPLOAD_BORDER}
@@ -323,12 +325,12 @@ class Mediation extends PureComponent {
                 height={IMAGE_UPLOAD_SIZE}
                 image={image || imageUrl}
                 index={0}
-                width={IMAGE_UPLOAD_SIZE}
+                onImageChange={this.handleOnImageChange}
                 readOnly
                 required
-                onImageChange={this.onImageChange}
                 storeKey="mediations"
                 type="thumb"
+                width={IMAGE_UPLOAD_SIZE}
               />
             </div>
           </div>
@@ -336,26 +338,28 @@ class Mediation extends PureComponent {
         <div className="section">
           <div className="field-group">
             <div className="field">
-              <label className="label">Crédit photo</label>
+              <label className="label">{'Crédit photo'}</label>
               <input
-                id="mediation-credit"
-                type="text"
                 className="input is-rounded"
+                id="mediation-credit"
+                onChange={this.handleOnChange}
+                type="text"
                 value={credit}
-                onChange={e => this.setState({credit: e.target.value})}
               />
             </div>
           </div>
         </div>
-        <hr/>
+        <hr />
         <div
           className="field is-grouped is-grouped-centered"
-          style={{justifyContent: 'space-between'}}>
+          style={{ justifyContent: 'space-between' }}
+        >
           <div className="control">
             <NavLink
+              className="button is-primary is-outlined is-medium"
               to={backPath}
-              className="button is-primary is-outlined is-medium">
-              Annuler
+            >
+              {'Annuler'}
             </NavLink>
           </div>
           <div className="control">
@@ -364,8 +368,10 @@ class Mediation extends PureComponent {
                 'is-loading': isLoading,
               })}
               disabled={!image}
-              onClick={this.onSubmit}>
-              Valider
+              onClick={this.handleOnSubmit}
+              type="button"
+            >
+              {'Valider '}
             </button>
           </div>
         </div>
@@ -374,65 +380,69 @@ class Mediation extends PureComponent {
 
     return (
       <Main
+        backTo={{ path: backPath, label: 'Revenir à l’offre' }}
+        handleDataRequest={this.onHandleDataRequest}
         name="mediation"
-        backTo={{path: backPath, label: "Revenir à l'offre"}}
-        handleDataRequest={this.handleDataRequest}>
+      >
         <HeroSection title={`${isNew ? 'Créez' : 'Modifiez'} une accroche`}>
           <p className="subtitle">
-            Ajoutez un visuel marquant pour mettre en avant cette offre.
+            {'Ajoutez un visuel marquant pour mettre en avant cette offre.'}
           </p>
           <p>
-            <b>
-              L'accroche permet d'afficher votre offre "à la une" de l'app,{' '}
-            </b>
-            et la rend visuellement plus attrayante. C'est une image (et bientôt
-            une phrase ou une vidéo) intrigante, percutante, séduisante...
-            <br/> en un mot : accrocheuse.
+            <b>{'L’accroche permet d’afficher votre offre "à la une" de l’app, '}</b>
+            {
+              'et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...'
+            }
+            <br />
+            {'en un mot : accrocheuse.'}
           </p>
           <p>
-            Les accroches font la spécificité du Pass Culture. Prenez le temps
-            de les choisir avec soin !
+            {
+              'Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! '
+            }
           </p>
           <p>
-            Le fichier doit peser <b>100Ko minimum.</b>
-            <br/>
-            Utilisateurs avancés : vous pouvez
+            {'Le fichier doit peser '}
+            <b>{'100 Ko minimum. '}</b>
+            <br />
+            {'Utilisateurs avancés : vous pouvez '}
             <a href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip">
-              {' '}
-              télécharger ici les gabarits Illustrator et Photoshop.
+              {'télécharger ici les gabarits Illustrator et Photoshop.'}
             </a>
           </p>
         </HeroSection>
 
         <div className="section">
-          <label className="label">Depuis une adresse Internet :</label>
+          <label className="label">{'Depuis une adresse Internet :'}</label>
           <div className="field is-grouped">
             <p className="control is-expanded">
               <input
-                type="url"
                 className="input is-rounded"
+                onChange={this.handleOnUrlChange}
                 placeholder="URL du fichier"
+                type="url"
                 value={inputUrl}
-                onChange={this.onUrlChange}
               />
             </p>
             <p className="control">
               <button
                 className="button is-primary is-outlined is-medium"
-                onClick={this.onOkClick}>
-                OK
+                onClick={this.handleOnOkClick}
+                type="button"
+              >
+                {'OK'}
               </button>
             </p>
           </div>
         </div>
 
         <div className="section">
-          <label className="label">...ou depuis votre poste :</label>
+          <label className="label">{'...ou depuis votre poste : '}</label>
           <label className="button is-primary is-outlined">
-            Choisir un fichier{' '}
+            {'Choisir un fichier '}
             <input
               hidden
-              onChange={this.onUploadClick}
+              onChange={this.handleOnUploadClick}
               ref={$element => (this.$uploadInput = $element)}
               type="file"
             />
@@ -443,6 +453,5 @@ class Mediation extends PureComponent {
     )
   }
 }
-
 
 export default Mediation

@@ -8,20 +8,6 @@ import { DEFAULT_PROVIDER_OPTION } from './utils/utils'
 import VenueProviderForm from './form/VenueProviderForm/VenueProviderForm'
 
 class VenueProvidersManager extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      isCreationMode: false,
-      isLoadingMode: false,
-      isProviderSelected: false,
-      venueIdAtOfferProviderIsRequired: true,
-    }
-  }
-
-  componentDidUpdate() {
-    ReactTooltip.rebuild()
-  }
-
   static getDerivedStateFromProps(nextProps) {
     const {
       match: {
@@ -35,7 +21,26 @@ class VenueProvidersManager extends Component {
     }
   }
 
-  addVenueProvider = () => {
+  constructor(props) {
+    super(props)
+    this.state = {
+      isCreationMode: false,
+      isLoadingMode: false,
+      isProviderSelected: false,
+      venueIdAtOfferProviderIsRequired: true,
+    }
+  }
+
+  componentDidMount() {
+    const { loadProvidersAndVenueProviders } = this.props
+    loadProvidersAndVenueProviders()
+  }
+
+  componentDidUpdate() {
+    ReactTooltip.rebuild()
+  }
+
+  handleAddVenueProvider = () => {
     const {
       history,
       match: {
@@ -45,9 +50,7 @@ class VenueProvidersManager extends Component {
     this.setState({
       isCreationMode: true,
     })
-    history.push(
-      `/structures/${offererId}/lieux/${venueId}/fournisseurs/nouveau`
-    )
+    history.push(`/structures/${offererId}/lieux/${venueId}/fournisseurs/nouveau`)
   }
 
   resetFormState = () => {
@@ -118,11 +121,6 @@ class VenueProvidersManager extends Component {
     input.onChange(valueFromSelectInput)
   }
 
-  componentDidMount() {
-    const { loadProvidersAndVenueProviders } = this.props
-    loadProvidersAndVenueProviders()
-  }
-
   render() {
     const { providers, venue, venueProviders } = this.props
     const {
@@ -137,10 +135,9 @@ class VenueProvidersManager extends Component {
     return (
       <div className="venue-providers-manager section">
         <h2 className="main-list-title">
-          IMPORTATIONS D'OFFRES
+          {'IMPORTATIONS D’OFFRES'}
           <span className="is-pulled-right is-size-7 has-text-grey">
-            Si vous avez plusieurs comptes auprès de la même source, ajoutez-les
-            successivement.
+            {'Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.'}
           </span>
         </h2>
 
@@ -178,9 +175,10 @@ class VenueProvidersManager extends Component {
               className="button is-secondary"
               disabled={isCreationMode}
               id="add-venue-provider-btn"
-              onClick={this.addVenueProvider}
-              type="button">
-              + Importer des offres
+              onClick={this.handleAddVenueProvider}
+              type="button"
+            >
+              {'+ Importer des offres'}
             </button>
           </div>
         )}
@@ -197,9 +195,9 @@ VenueProvidersManager.propTypes = {
     params: PropTypes.shape(),
   }).isRequired,
   notify: PropTypes.func.isRequired,
-  providers: PropTypes.array.isRequired,
+  providers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   venue: PropTypes.shape().isRequired,
-  venueProviders: PropTypes.array.isRequired,
+  venueProviders: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default VenueProvidersManager

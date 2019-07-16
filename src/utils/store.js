@@ -9,8 +9,7 @@ import rootSaga from '../sagas'
 const buildStoreEnhancer = (middlewares = []) => {
   const enhancers = []
 
-  const useDevTools =
-    typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+  const useDevTools = typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
   if (useDevTools) {
     const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     return composeEnhancers(...enhancers, applyMiddleware(...middlewares))
@@ -22,16 +21,12 @@ const buildStoreEnhancer = (middlewares = []) => {
   )
 }
 
-export const configureStore = (initialState = {}) => {
+const configureStore = (initialState = {}) => {
   const sagaMiddleware = createSagaMiddleware()
 
   const persistedReducer = persistReducer(persist, rootReducer)
 
-  const store = createStore(
-    persistedReducer,
-    initialState,
-    buildStoreEnhancer([sagaMiddleware])
-  )
+  const store = createStore(persistedReducer, initialState, buildStoreEnhancer([sagaMiddleware]))
 
   const persistor = persistStore(store)
 

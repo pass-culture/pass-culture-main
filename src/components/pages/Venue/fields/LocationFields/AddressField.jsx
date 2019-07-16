@@ -5,12 +5,12 @@ import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
 
 import LocationViewer from './LocationViewer'
-import FieldErrors from 'components/layout/form/FieldErrors'
-import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
+import FieldErrors from '../../../../layout/form/FieldErrors'
+import getRequiredValidate from '../../../../layout/form/utils/getRequiredValidate'
 
-const updateLocationFields = (form, {isLocationFrozen}) => location => {
+const updateLocationFields = (form, { isLocationFrozen }) => location => {
   form.batch(() => {
-    const {address, city, latitude, longitude, postalCode} = location
+    const { address, city, latitude, longitude, postalCode } = location
     form.change('address', address)
     form.change('city', city)
     form.change('isLocationFrozen', isLocationFrozen)
@@ -20,32 +20,40 @@ const updateLocationFields = (form, {isLocationFrozen}) => location => {
   })
 }
 
-export const AddressFieldRender = ({className, disabled, form, id, innerClassName, label, name, placeholder, readOnly, required, addressProps}) => ({input, meta}) => (
+export const AddressFieldRender = ({
+  className,
+  disabled,
+  form,
+  id,
+  innerClassName,
+  label,
+  name,
+  placeholder,
+  readOnly,
+  required,
+  addressProps,
+}) => ({ input, meta }) => (
   <div
     className={classnames('field text-field', className, {
       'is-label-aligned': label,
       'is-read-only': readOnly,
     })}
-    id={id}>
+    id={id}
+  >
     <label
+      className={classnames('field-label', { empty: !label })}
       htmlFor={name}
-      className={classnames('field-label', {empty: !label})}>
+    >
       {label && (
         <span>
-            <span>{label}</span>
-          {required && !readOnly && (
-            <span className="field-asterisk">*</span>
-          )}
+          <span>{label}</span>
+          {required && !readOnly && <span className="field-asterisk">{'*'}</span>}
         </span>
       )}
     </label>
     <div className="field-control">
       <div className="field-value flex-columns items-center">
-        <div
-          className={classnames(
-            'field-inner flex-columns items-center',
-            innerClassName
-          )}>
+        <div className={classnames('field-inner flex-columns items-center', innerClassName)}>
           <LocationViewer
             {...input}
             {...addressProps}
@@ -67,34 +75,30 @@ export const AddressFieldRender = ({className, disabled, form, id, innerClassNam
           />
         </div>
       </div>
-      <FieldErrors meta={meta}/>
+      <FieldErrors meta={meta} />
     </div>
-    <div/>
+    <div />
   </div>
 )
 
 export const AddressField = ({
-                               className,
-                               disabled,
-                               form,
-                               format,
-                               id,
-                               innerClassName,
-                               label,
-                               name,
-                               parse,
-                               placeholder,
-                               readOnly,
-                               renderInner,
-                               renderValue,
-                               required,
-                               validate,
-                               ...addressProps
-                             }) => (
+  className,
+  disabled,
+  form,
+  format,
+  id,
+  innerClassName,
+  label,
+  name,
+  placeholder,
+  readOnly,
+  required,
+  validate,
+  ...addressProps
+}) => (
   <Field
     format={format}
     name={name}
-    validate={composeValidators(validate, getRequiredValidate(required))}
     render={AddressFieldRender({
       className,
       disabled,
@@ -106,8 +110,9 @@ export const AddressField = ({
       placeholder,
       readOnly,
       required,
-      addressProps
+      addressProps,
     })}
+    validate={composeValidators(validate, getRequiredValidate(required))}
   />
 )
 
@@ -121,14 +126,13 @@ AddressField.defaultProps = {
   placeholder: '',
   readOnly: false,
   required: false,
-  type: 'text',
   validate: null,
 }
 
 AddressField.propTypes = {
   className: PropTypes.string,
   disabled: PropTypes.bool,
-  form: PropTypes.object.isRequired,
+  form: PropTypes.shape().isRequired,
   format: PropTypes.func,
   id: PropTypes.string,
   innerClassName: PropTypes.string,

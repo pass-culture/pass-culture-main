@@ -1,7 +1,7 @@
 import BankFields from '../BankFields'
 import { shallow } from 'enzyme'
 import React from 'react'
-import { TextField } from '../../../../../layout/form/fields'
+import TextField from '../../../../../layout/form/fields/TextField'
 
 describe('src | components | pages | Venue | fields | BankFields', () => {
   let props
@@ -9,14 +9,14 @@ describe('src | components | pages | Venue | fields | BankFields', () => {
   beforeEach(() => {
     props = {
       adminUserOfferer: true,
-      readOnly: true
+      readOnly: true,
     }
   })
 
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // when
-      const wrapper = shallow(<BankFields {...props}/>)
+      const wrapper = shallow(<BankFields {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -30,11 +30,13 @@ describe('src | components | pages | Venue | fields | BankFields', () => {
       props.adminUserOfferer = false
 
       // when
-      const wrapper = shallow(<BankFields {...props}/>)
+      const wrapper = shallow(<BankFields {...props} />)
 
       // then
       const title = wrapper.find('h2 > span')
-      expect(title.text()).toBe('Vous avez besoin d\'être administrateur de la structure pour éditer ces informations.')
+      expect(title.text()).toBe(
+        "Vous avez besoin d'être administrateur de la structure pour éditer ces informations."
+      )
     })
 
     it('should not display information label when user is admin of the offerer', () => {
@@ -42,7 +44,7 @@ describe('src | components | pages | Venue | fields | BankFields', () => {
       props.adminUserOfferer = true
 
       // when
-      const wrapper = shallow(<BankFields {...props}/>)
+      const wrapper = shallow(<BankFields {...props} />)
 
       // then
       const title = wrapper.find('h2 > span')
@@ -51,7 +53,7 @@ describe('src | components | pages | Venue | fields | BankFields', () => {
 
     it('should display two TextField components with the right props', () => {
       // when
-      const wrapper = shallow(<BankFields {...props}/>)
+      const wrapper = shallow(<BankFields {...props} />)
 
       // then
       const textFields = wrapper.find(TextField)

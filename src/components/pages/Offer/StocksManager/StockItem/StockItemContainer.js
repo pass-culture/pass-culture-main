@@ -2,15 +2,14 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import StockItem from './StockItem'
-import { withFrenchQueryRouter } from 'components/hocs'
-import selectFormInitialValuesByStockAndOfferIdAndOffererIdAndTimezone
-  from './selectors/selectFormInitialValuesByStockAndOfferIdAndOffererId'
+import withFrenchQueryRouter from '../../../../hocs/withFrenchQueryRouter'
+import selectFormInitialValuesByStockAndOfferIdAndOffererIdAndTimezone from './selectors/selectFormInitialValuesByStockAndOfferIdAndOffererId'
 import { translateQueryParamsToApiParams } from '../../../../../utils/translate'
-import { selectOfferById } from '../../../../../selectors/selectOfferById'
-import { selectProductById } from '../../../../../selectors/selectProductById'
-import { selectVenueById } from '../../../../../selectors/selectVenueById'
-import { selectOffererById } from '../../../../../selectors/selectOffererById'
-import { selectTimezoneByVenueIdAndOffererId } from '../../../../../selectors/selectTimezoneByVenueIdAndOffererId'
+import selectOfferById from '../../../../../selectors/selectOfferById'
+import selectProductById from '../../../../../selectors/selectProductById'
+import selectVenueById from '../../../../../selectors/selectVenueById'
+import selectOffererById from '../../../../../selectors/selectOffererById'
+import selectTimezoneByVenueIdAndOffererId from '../../../../../selectors/selectTimezoneByVenueIdAndOffererId'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -31,14 +30,9 @@ export const mapStateToProps = (state, ownProps) => {
 
   const offerer = selectOffererById(state, managingOffererId)
   const hasIban =
-    (venue && typeof venue.iban !== 'undefined') ||
-    (offerer && typeof offerer.iban !== 'undefined')
+    (venue && typeof venue.iban !== 'undefined') || (offerer && typeof offerer.iban !== 'undefined')
 
-  const timezone = selectTimezoneByVenueIdAndOffererId(
-    state,
-    venueId,
-    managingOffererId
-  )
+  const timezone = selectTimezoneByVenueIdAndOffererId(state, venueId, managingOffererId)
 
   const stockPatch = selectFormInitialValuesByStockAndOfferIdAndOffererIdAndTimezone(
     state,

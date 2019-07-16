@@ -1,10 +1,12 @@
+import classNames from 'classnames'
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'react-final-form'
-import { HiddenField, TextField } from '../../../../../layout/form/fields'
+
+import HiddenField from '../../../../../layout/form/fields/HiddenField'
+import TextField from '../../../../../layout/form/fields/TextField'
 import Icon from '../../../../../layout/Icon'
 import SelectSourceField from '../SelectSourceField/SelectSourceField'
-import classNames from 'classnames'
 
 const VenueProviderForm = ({
   handleChange,
@@ -22,7 +24,10 @@ const VenueProviderForm = ({
         <div className="provider-picto">
           <span className="field picto">
             <label htmlFor="provider-options">
-              <Icon svg="picto-db-default" alt="Choix de la source" />
+              <Icon
+                alt="Choix de la source"
+                svg="picto-db-default"
+              />
             </label>
           </span>
         </div>
@@ -42,8 +47,7 @@ const VenueProviderForm = ({
         <div className="venue-id-at-offer-provider-container">
           <TextField
             className={classNames('field-text fs12', {
-              'field-is-read-only':
-                !venueIdAtOfferProviderIsRequired || isLoadingMode,
+              'field-is-read-only': !venueIdAtOfferProviderIsRequired || isLoadingMode,
             })}
             label="Compte : "
             name="venueIdAtOfferProvider"
@@ -55,8 +59,12 @@ const VenueProviderForm = ({
             <span
               className="tooltip tooltip-info"
               data-place="bottom"
-              data-tip={`<p>Veuillez saisir un compte.</p>`}>
-              <Icon svg="picto-info" alt="image d'aide à l'information" />
+              data-tip={`<p>Veuillez saisir un compte.</p>`}
+            >
+              <Icon
+                alt="image d’aide à l’information"
+                svg="picto-info"
+              />
             </span>
           )}
         </div>
@@ -66,8 +74,9 @@ const VenueProviderForm = ({
         <div className="provider-import-button-container">
           <button
             className="button is-intermediate provider-import-button"
-            type="submit">
-            Importer
+            type="submit"
+          >
+            {'Importer'}
           </button>
         </div>
       )}
@@ -80,9 +89,9 @@ VenueProviderForm.propTypes = {
   isCreationMode: PropTypes.bool.isRequired,
   isLoadingMode: PropTypes.bool.isRequired,
   isProviderSelected: PropTypes.bool.isRequired,
-  providers: PropTypes.array.isRequired,
-  venueProviders: PropTypes.array.isRequired,
+  providers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   venueIdAtOfferProviderIsRequired: PropTypes.bool.isRequired,
+  venueProviders: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default VenueProviderForm

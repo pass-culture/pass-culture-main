@@ -14,15 +14,13 @@ const newsletterOkInput = Selector('#user-newsletter_ok')
 const notificationSuccess = Selector('.notification.is-success')
 const passwordInput = Selector('#user-password')
 const passwordInputError = Selector('#user-password-error')
-const signInButton = Selector('.is-secondary').withText("J'ai déjà un compte")
+const signInButton = Selector('.is-secondary').withText('J’ai déjà un compte')
 const signUpButton = Selector('button.button.is-primary')
 const sirenInput = Selector('#user-siren')
 
-fixture('Signup A | Je crée un compte utilisateur·ice').page(
-  `${ROOT_PATH + 'inscription'}`
-)
+fixture('Signup A | Je crée un compte utilisateur·ice').page(`${ROOT_PATH + 'inscription'}`)
 
-test("Je peux cliquer sur le lien pour me connecter si j'ai déjà un compte", async t => {
+test('Je peux cliquer sur le lien pour me connecter si j’ai déjà un compte', async t => {
   // when
   await t.click(signInButton)
 
@@ -31,7 +29,7 @@ test("Je peux cliquer sur le lien pour me connecter si j'ai déjà un compte", a
   await t.expect(location.pathname).eql('/connexion')
 })
 
-test("Lorsque l'un des champs obligatoires est manquant, le bouton créer est désactivé", async t => {
+test('Lorsque l’un des champs obligatoires est manquant, le bouton créer est désactivé', async t => {
   // given
   await t.typeText(emailInput, 'email@email.test')
 
@@ -64,9 +62,9 @@ test('Je créé un compte avec un nouveau siren, je suis redirigé·e vers la pa
 
   // when
   await t
+    .click(newsletterOkInput)
     .click(contactOkInput)
     .click(cguOkInput)
-    .click(newsletterOkInput)
     .click(signUpButton)
 
   // then
@@ -76,15 +74,12 @@ test('Je créé un compte avec un nouveau siren, je suis redirigé·e vers la pa
 
 let dataFromSandbox
 fixture(
-  "Signup B | Création d'un compte utilisateur et messages d'erreur lorsque les champs ne sont pas correctement remplis"
+  'Signup B | Création d’un compte utilisateur et messages d’erreur lorsque les champs ne sont pas correctement remplis'
 )
   .page(`${ROOT_PATH + 'inscription'}`)
   .beforeEach(async t => {
     if (!dataFromSandbox) {
-      dataFromSandbox = await fetchSandbox(
-        'pro_01_signup',
-        'get_existing_pro_user_with_offerer'
-      )
+      dataFromSandbox = await fetchSandbox('pro_01_signup', 'get_existing_pro_user_with_offerer')
     }
     await t.addRequestHooks(getSirenRequestMockAs(dataFromSandbox.offerer))
   })
@@ -131,9 +126,9 @@ test('Mot de passe invalide', async t => {
   await t.expect(passwordInputError.innerText).match(/.*\S.*/)
 })
 
-fixture(
-  "Signup C | Création d'un compte pour rattachement à une structure existante"
-).page(`${ROOT_PATH + 'inscription'}`)
+fixture('Signup C | Création d’un compte pour rattachement à une structure existante').page(
+  `${ROOT_PATH + 'inscription'}`
+)
 
 test('Je crée un compte avec un siren déjà dans la base, je suis redirigé·e vers la page /inscription/confirmation', async t => {
   // given
@@ -161,9 +156,9 @@ test('Je crée un compte avec un siren déjà dans la base, je suis redirigé·e
   await t.expect(location.pathname).eql('/inscription/confirmation')
 })
 
-fixture(
-  'Signup D | Clic sur le lien de validation de compte reçu par email'
-).page(`${ROOT_PATH + 'inscription'}`)
+fixture('Signup D | Clic sur le lien de validation de compte reçu par email').page(
+  `${ROOT_PATH + 'inscription'}`
+)
 
 test('Je suis redirigé·e vers la page de connexion avec un message de confirmation', async t => {
   // given

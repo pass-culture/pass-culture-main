@@ -1,7 +1,9 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 import LocationFields from '../LocationFields'
-import { HiddenField, NumberField, TextField } from '../../../../../layout/form/fields'
+import HiddenField from '../../../../../layout/form/fields/HiddenField'
+import NumberField from '../../../../../layout/form/fields/NumberField'
+import TextField from '../../../../../layout/form/fields/TextField'
 import AddressField from '../AddressField'
 
 describe('src | components | pages | Venue | fields | LocationFields', () => {
@@ -14,13 +16,13 @@ describe('src | components | pages | Venue | fields | LocationFields', () => {
       formIsLocationFrozen: true,
       formLatitude: 1,
       formLongitude: 1,
-      readOnly: true
+      readOnly: true,
     }
   })
 
   it('should match snapshot', () => {
     // when
-    const wrapper = shallow(<LocationFields {...props}/>)
+    const wrapper = shallow(<LocationFields {...props} />)
 
     // then
     expect(wrapper).toBeDefined()
@@ -30,7 +32,7 @@ describe('src | components | pages | Venue | fields | LocationFields', () => {
   describe('render', () => {
     it('should display an HiddenField component with the right props', () => {
       // when
-      const wrapper = shallow(<LocationFields {...props}/>)
+      const wrapper = shallow(<LocationFields {...props} />)
 
       // then
       const hiddenField = wrapper.find(HiddenField)
@@ -40,12 +42,12 @@ describe('src | components | pages | Venue | fields | LocationFields', () => {
 
     it('should display an AddressField component with the right props', () => {
       // when
-      const wrapper = shallow(<LocationFields {...props}/>)
+      const wrapper = shallow(<LocationFields {...props} />)
 
       // then
       const addressField = wrapper.find(AddressField)
       expect(addressField).toHaveLength(1)
-      expect(addressField.prop('form')).toEqual({})
+      expect(addressField.prop('form')).toStrictEqual({})
       expect(addressField.prop('label')).toBe('Numéro et voie : ')
       expect(addressField.prop('latitude')).toBe(1)
       expect(addressField.prop('longitude')).toBe(1)
@@ -57,7 +59,7 @@ describe('src | components | pages | Venue | fields | LocationFields', () => {
 
     it('should display two TextField components with the right props', () => {
       // when
-      const wrapper = shallow(<LocationFields {...props}/>)
+      const wrapper = shallow(<LocationFields {...props} />)
 
       // then
       const textFields = wrapper.find(TextField)
@@ -78,7 +80,7 @@ describe('src | components | pages | Venue | fields | LocationFields', () => {
 
     it('should display two NumberField with the right props', () => {
       // when
-      const wrapper = shallow(<LocationFields {...props}/>)
+      const wrapper = shallow(<LocationFields {...props} />)
 
       // then
       const numberFields = wrapper.find(NumberField)

@@ -3,9 +3,8 @@ import { showNotification } from 'pass-culture-shared'
 import React from 'react'
 import { Provider } from 'react-redux'
 
-import { configureStore } from 'utils/store'
-
 import DownloadButtonContainer from '../DownloadButtonContainer'
+import configureStore from '../../../../utils/store'
 
 global.fetch = url => {
   if (url.includes('reimbursements/csv')) {
@@ -16,7 +15,7 @@ global.fetch = url => {
   return response
 }
 
-window.location.assign = jest.fn()
+jest.spyOn(window.location, 'assign')
 const mockDownloadUrl = 'http://plop.com'
 window.URL = { createObjectURL: jest.fn(() => mockDownloadUrl) }
 
@@ -24,10 +23,11 @@ describe('src | components | Layout | DownloadButtonContainer', () => {
   it('should download data', () => {
     // given
     const props = {
+      children: 'Fake title',
       href: 'https://foo.com/reimbursements/csv',
     }
     const { store } = configureStore()
-    store.dispatch = jest.fn()
+    jest.spyOn(store, 'dispatch')
 
     // when
     const wrapper = mount(
@@ -46,10 +46,11 @@ describe('src | components | Layout | DownloadButtonContainer', () => {
   it('should notify when wrong href', () => {
     // given
     const props = {
+      children: 'Fake title',
       href: 'https://foo.com/wrong-url',
     }
     const { store } = configureStore()
-    store.dispatch = jest.fn()
+    jest.spyOn(store, 'dispatch')
 
     // when
     const wrapper = mount(

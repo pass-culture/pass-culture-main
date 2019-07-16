@@ -27,7 +27,7 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
           }),
         ]}
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={handleOnSubmit}
         render={({ handleSubmit }) => (
           <form>
             <Field
@@ -42,8 +42,11 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
               name="endTime"
               render={({ input }) => <input {...input} />}
             />
-            <button onClick={handleSubmit} type="submit">
-              Submit
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
+              {'Submit'}
             </button>
           </form>
         )}
@@ -58,9 +61,9 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
     wrapper.find('button[type="submit"]').simulate('click')
 
     // then
-    function onSubmit(formValues) {
-      expect(formValues.beginningDateTime).toEqual(dateModified)
-      expect(formValues.endDateTime).toEqual('2022-08-28T12:02:00.000Z')
+    function handleOnSubmit(formValues) {
+      expect(formValues.beginningDateTime).toStrictEqual(dateModified)
+      expect(formValues.endDateTime).toStrictEqual('2022-08-28T12:02:00.000Z')
     }
   })
 
@@ -85,7 +88,7 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
           }),
         ]}
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={handleOnSubmit}
         render={({ handleSubmit }) => (
           <form>
             <Field
@@ -100,8 +103,11 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
               name="endTime"
               render={({ input }) => <input {...input} />}
             />
-            <button onClick={handleSubmit} type="submit">
-              Submit
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
+              {'Submit'}
             </button>
           </form>
         )}
@@ -116,7 +122,7 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
     wrapper.find('button[type="submit"]').simulate('click')
 
     // then
-    function onSubmit(formValues) {
+    function handleOnSubmit(formValues) {
       expect(formValues.endDateTime).toBeNull()
       expect(formValues.beginningDateTime).toBeNull()
     }
@@ -144,7 +150,7 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
           }),
         ]}
         initialValues={initialValues}
-        onSubmit={onSubmit}
+        onSubmit={handleOnSubmit}
         render={({ handleSubmit }) => (
           <form>
             <Field
@@ -159,8 +165,11 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
               name="endTime"
               render={({ input }) => <input {...input} />}
             />
-            <button onClick={handleSubmit} type="submit">
-              Submit
+            <button
+              onClick={handleSubmit}
+              type="submit"
+            >
+              {'Submit'}
             </button>
           </form>
         )}
@@ -183,9 +192,9 @@ describe('src | components | pages | Offer | StockItem | fillEndDatimeWhenUpdati
     wrapper.find('button[type="submit"]').simulate('click')
 
     // then
-    function onSubmit(formValues) {
-      expect(formValues.beginningDateTime).toEqual(dateModified)
-      expect(formValues.endDateTime).toEqual(dateModified)
+    function handleOnSubmit(formValues) {
+      expect(formValues.beginningDateTime).toStrictEqual(dateModified)
+      expect(formValues.endDateTime).toStrictEqual(dateModified)
     }
   })
 })

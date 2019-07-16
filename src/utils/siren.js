@@ -19,9 +19,7 @@ export function formatSirenOrSiret(string) {
 
   const siren = value.substring(0, 9)
   const nic = value.substring(9)
-  const sirenWithThreeBatchesOfThreeNumbers = (
-    siren.match(/.{1,3}/g) || []
-  ).join(' ')
+  const sirenWithThreeBatchesOfThreeNumbers = (siren.match(/.{1,3}/g) || []).join(' ')
   return `${sirenWithThreeBatchesOfThreeNumbers} ${nic}`.trim()
 }
 
@@ -43,8 +41,7 @@ export const getSirenOrSiretInfo = createCachedSelector(
 
     const withoutWhiteSpacesSiretOrSiren = removeWhitespaces(sirenOrSiret)
 
-    const isNotValidSiret =
-      type === SIRET && withoutWhiteSpacesSiretOrSiren.length !== 14
+    const isNotValidSiret = type === SIRET && withoutWhiteSpacesSiretOrSiren.length !== 14
     if (isNotValidSiret) {
       if (withoutWhiteSpacesSiretOrSiren.length < 14) {
         const error = `${capitalize(type)} trop court`
@@ -56,8 +53,7 @@ export const getSirenOrSiretInfo = createCachedSelector(
       }
     }
 
-    const isNotValidSiren =
-      type === SIREN && withoutWhiteSpacesSiretOrSiren.length !== 9
+    const isNotValidSiren = type === SIREN && withoutWhiteSpacesSiretOrSiren.length !== 9
     if (isNotValidSiren) {
       if (withoutWhiteSpacesSiretOrSiren.length < 9) {
         const error = `${capitalize(type)} trop court`
@@ -87,10 +83,7 @@ export const getSirenOrSiretInfo = createCachedSelector(
         city: get(body, `${dataPath}.libelle_commune`),
         latitude: parseFloat(get(body, `${dataPath}.latitude`)) || null,
         longitude: parseFloat(get(body, `${dataPath}.longitude`)) || null,
-        name:
-          get(body, `${dataPath}.l1_normalisee`) ||
-          get(body, `${dataPath}.l1_declaree`) ||
-          '',
+        name: get(body, `${dataPath}.l1_normalisee`) || get(body, `${dataPath}.l1_declaree`) || '',
         postalCode: get(body, `${dataPath}.code_postal`),
         [type]: get(body, `${dataPath}.${type}`),
         sire: get(body, `${dataPath}.${type}`),

@@ -1,7 +1,8 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 import IdentifierFields from '../IdentifierFields'
-import { TextareaField, TextField } from '../../../../../layout/form/fields'
+import TextareaField from '../../../../../layout/form/fields/TextareaField'
+import TextField from '../../../../../layout/form/fields/TextField'
 
 describe('src | components | pages | Venue | fields | IdentifierFields', () => {
   let props
@@ -56,7 +57,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       expect(textFields.at(1).prop('name')).toBe('name')
       expect(textFields.at(1).prop('required')).toBe(true)
 
-      expect(textFields.at(2).prop('label')).toBe("Nom d'usage : ")
+      expect(textFields.at(2).prop('label')).toBe('Nom d’usage : ')
       expect(textFields.at(2).prop('name')).toBe('publicName')
       expect(textFields.at(2).prop('required')).toBe(false)
 
@@ -69,7 +70,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
     })
 
     describe('siret text field', () => {
-      test('siret TextField can be edited when mode is not readOnly and there is no initial siret', () => {
+      it('siret TextField can be edited when mode is not readOnly and there is no initial siret', () => {
         // given
         const props = {
           isCreatedEntity: true,
@@ -87,7 +88,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         expect(textFields.at(0).prop('readOnly')).toBe(false)
       })
 
-      test('siret TextField cannot be edited when mode is read only', () => {
+      it('siret TextField cannot be edited when mode is read only', () => {
         // given
         const props = {
           isCreatedEntity: true,
@@ -104,16 +105,19 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         expect(textFields.at(0).prop('readOnly')).toBe(true)
       })
 
-      test('proper siret label is returned when isCreatedEntity is true', () => {
+      it('proper siret label is returned when isCreatedEntity is true', () => {
         // when
         const wrapper = shallow(<IdentifierFields {...props} />)
 
         // then
-        const label = wrapper.find('label').at(0).text()
+        const label = wrapper
+          .find('label')
+          .at(0)
+          .text()
         expect(label).toBe('SIRET du lieu qui accueille vos offres (si applicable) : ')
       })
 
-      test('proper siret label is returned when isCreatedEntity is false', () => {
+      it('proper siret label is returned when isCreatedEntity is false', () => {
         // given
         const props = {
           isCreatedEntity: false,
@@ -124,13 +128,16 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         const wrapper = shallow(<IdentifierFields {...props} />)
 
         // then
-        const label = wrapper.find('label').at(0).text()
+        const label = wrapper
+          .find('label')
+          .at(0)
+          .text()
         expect(label).toBe('SIRET : ')
       })
     })
 
     describe('name text field', () => {
-      test('name TextField can be edited when mode is not readOnly and fieldReadOnlyBecauseFrozenFormSiretdisplay is false', () => {
+      it('name TextField can be edited when mode is not readOnly and fieldReadOnlyBecauseFrozenFormSiretdisplay is false', () => {
         // given
         const props = {
           isCreatedEntity: true,
@@ -148,7 +155,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         expect(textFields.at(1).prop('readOnly')).toBe(false)
       })
 
-      test('name TextField cannot be edited when mode is read only', () => {
+      it('name TextField cannot be edited when mode is read only', () => {
         // given
         const props = {
           isCreatedEntity: true,
@@ -165,7 +172,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         expect(textFields.at(1).prop('readOnly')).toBe(true)
       })
 
-      test('name TextField cannot be edited when fieldReadOnlyBecauseFrozenFormSiretdisplay is tue', () => {
+      it('name TextField cannot be edited when fieldReadOnlyBecauseFrozenFormSiretdisplay is tue', () => {
         // given
         const props = {
           isCreatedEntity: true,
@@ -184,7 +191,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
     })
 
     describe('publicName text field', () => {
-      test('publicName TextField can be edited when mode is not readOnly', () => {
+      it('publicName TextField can be edited when mode is not readOnly', () => {
         // given
         const props = {
           isCreatedEntity: true,
@@ -202,7 +209,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         expect(textFields.at(2).prop('readOnly')).toBe(false)
       })
 
-      test('publicName TextField cannot be edited when mode is read only', () => {
+      it('publicName TextField cannot be edited when mode is read only', () => {
         // given
         const props = {
           isCreatedEntity: true,
@@ -221,7 +228,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
     })
 
     describe('email text field', () => {
-      test('email TextField can be edited when mode is not readOnly', () => {
+      it('email TextField can be edited when mode is not readOnly', () => {
         // given
         const props = {
           isCreatedEntity: true,
@@ -239,7 +246,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         expect(textFields.at(3).prop('readOnly')).toBe(false)
       })
 
-      test('email TextField cannot be edited when mode is read only', () => {
+      it('email TextField cannot be edited when mode is read only', () => {
         // given
         const props = {
           isCreatedEntity: true,
@@ -258,7 +265,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
     })
 
     describe('comment text area field', () => {
-      test('comment text area field can be edited when mode is not readOnly', () => {
+      it('comment text area field can be edited when mode is not readOnly', () => {
         // given
         const props = {
           isCreatedEntity: true,
@@ -275,7 +282,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         expect(textareaField.at(0).prop('readOnly')).toBe(false)
       })
 
-      test('comment text area field cannot be edited when mode is read only', () => {
+      it('comment text area field cannot be edited when mode is read only', () => {
         // given
         const props = {
           isCreatedEntity: true,

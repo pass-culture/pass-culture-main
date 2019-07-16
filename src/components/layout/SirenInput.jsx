@@ -1,12 +1,13 @@
 import get from 'lodash.get'
 import { BasicInput, removeWhitespaces } from 'pass-culture-shared'
+import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
 
-import { formatSirenOrSiret } from 'utils/siren'
+import { formatSirenOrSiret } from '../../utils/siren'
 
 class SirenInput extends Component {
-  onChange = event => {
+  handleOnChange = event => {
     const { onChange: onFieldChange, type } = this.props
 
     event.persist()
@@ -31,7 +32,7 @@ class SirenInput extends Component {
     const $input = (
       <BasicInput
         {...this.props}
-        onChange={this.onChange}
+        onChange={this.handleOnChange}
         type="text"
         value={formatSirenOrSiret(value)}
       />
@@ -41,12 +42,11 @@ class SirenInput extends Component {
       <Fragment>
         {$input}
         {fetchedName
-          ? withFetchedName && (
-              <span className="display-name">{fetchedName}</span>
-            )
-          : value &&
-            !errors &&
-            !readOnly && <button className="button is-loading" />}
+          ? withFetchedName && <span className="display-name">{fetchedName}</span>
+          : value && !errors && !readOnly && <button
+            className="button is-loading"
+            type="button"
+                                             />}
       </Fragment>
     )
   }
@@ -56,6 +56,16 @@ function mapStateToProps(state, ownProps) {
   return {
     fetchedName: get(state, `form.${ownProps.formName}.name`),
   }
+}
+
+SirenInput.propTypes = {
+  errors: PropTypes.bool.isRequired,
+  fetchedName: PropTypes.string.isRequired,
+  onFieldChange: PropTypes.func.isRequired,
+  readOnly: PropTypes.bool.isRequired,
+  type: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  withFetchedName: PropTypes.bool.isRequired,
 }
 
 export default connect(mapStateToProps)(SirenInput)

@@ -1,4 +1,5 @@
 import classnames from 'classnames'
+import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import AvatarEditor from 'react-avatar-editor'
 import Dropzone from 'react-dropzone'
@@ -20,10 +21,9 @@ class UploadThumb extends Component {
     super()
     this.avatarEditor = React.createRef()
     this.state = {
-      hasExistingImage: false,
       isEdited: false,
       readOnly: false,
-      image: null,
+      imageState: null,
       isUploadDisabled: false,
       isDragging: false,
       zoom: 1,
@@ -31,54 +31,54 @@ class UploadThumb extends Component {
   }
 
   static getDerivedStateFromProps(props, prevState) {
-    // const hasExistingImage = typeof props.image === 'string'
     const readOnly = props.hasExistingImage && !prevState.isEdited
     return {
       readOnly,
       isDragging: prevState.isDragging,
-      image: props.image || prevState.image,
+      image: props.image || prevState.imageState,
     }
   }
 
-  handleDragStart = e => {
+  handleDragStart = () => {
     this.setState({
       dragging: true,
     })
   }
 
-  handleDragStop = e => {
+  handleDragStop = () => {
     this.setState({
       dragging: false,
     })
   }
 
   handleDrop = dropped => {
+    const { maxSize } = this.props
     const image = dropped[0]
     // convert into MB
     const size = image.size / 1048576
     this.setState({
       isDragging: false,
-      isUploadDisabled: size > this.props.maxSize,
+      isUploadDisabled: size > maxSize,
       image,
       size,
     })
   }
 
-  onUploadClick = e => {
+  handleOnUploadClick = e => () => {
     const { collectionName, dispatch, entityId, index, storeKey } = this.props
-    const { image, isUploadDisabled } = this.state
+    const { imageState, isUploadDisabled } = this.state
     this.setState({
       isEdited: false,
     })
-    if (typeof image === 'string') return
+
+    if (typeof imageState === 'string') return
+
     if (isUploadDisabled) return
+
     e.preventDefault()
-    // const type = image.type.includes('image/') && image.type.split('image/')[1]
     const formData = new FormData()
     formData.append('file', image)
-    if (!entityId) {
-      console.warn('entityId not defined for upload')
-    }
+
     dispatch(
       requestData({
         apiPath: `/storage/thumb/${collectionName}/${entityId}/${index}`,
@@ -88,38 +88,42 @@ class UploadThumb extends Component {
         stateKey: storeKey,
       })
     )
-    window && window.URL.revokeObjectURL(image.preview)
+    window && window.URL.revokeObjectURL(imageState.preview)
   }
 
-  onZoomChange = e => {
-    this.setState({ zoom: parseFloat(e.target.value) })
+  handleOnZoomChange = event => {
+    this.setState({ zoom: parseFloat(event.target.value) })
   }
 
-  onImageChange = ctx => {
-    if (!this.state.image) return
+  handleOnImageChange = ctx => {
+    const { image, isUploadDisabled } = this.state
+    if (!image) return
     const { onImageChange } = this.props
     if (onImageChange) {
-      if (this.state.isUploadDisabled) return onImageChange(ctx)
+      if ( isUploadDisabled ) return onImageChange(ctx)
       onImageChange(
         ctx,
-        this.state.image,
+        image,
         this.avatarEditor.current.getCroppingRect()
       )
     }
   }
 
-  setZoomInput = element => {
+  handleSetZoomInput = element => {
     this.zoomInput = element
   }
 
+  handleOnCancelModificationClick = () => this.setState({ isEdited: false, dragging: false })
+
   changeZoom(direction) {
+    const { zoom } = this.state
     const factor = 10 // Slider step is too low for button usage
     const step = parseFloat(this.zoomInput.getAttribute('step'))
     const min = parseFloat(this.zoomInput.getAttribute('min'))
     const max = parseFloat(this.zoomInput.getAttribute('max'))
 
-    const zoom = computeNewZoom(
-      this.state.zoom,
+    const newZoom = computeNewZoom(
+      zoom,
       min,
       max,
       step,
@@ -127,11 +131,20 @@ class UploadThumb extends Component {
       direction
     )
 
-    this.setState({ zoom })
+    this.setState({ zoom: newZoom })
   }
 
-  increment = () => this.changeZoom(1)
-  decrement = () => this.changeZoom(-1)
+  handleOnChangeImageClick = () => this.setState({ isEdited: true })
+
+  handleIncrement = () => this.changeZoom(1)
+  handleDecrement = () => this.changeZoom(-1)
+
+  handleOnRemoveImageClick = () =>
+    this.setState({
+      image: null,
+      dragging: false,
+      isUploadDisabled: false,
+    })
 
   render() {
     const {
@@ -139,71 +152,71 @@ class UploadThumb extends Component {
       borderRadius,
       className,
       height,
+      image,
       maxSize,
       width,
       onImageChange,
       hasExistingImage,
     } = this.props
-    const {
-      image,
-      dragging,
-      isUploadDisabled,
-      readOnly,
-      size,
-      zoom,
-    } = this.state
+    const { imageState, dragging, isUploadDisabled, readOnly, size, zoom } = this.state
 
     return (
       <div className="field">
         <div className={classnames('upload-thumb', className)}>
           <Dropzone
             className={classnames('dropzone', {
-              'has-image': Boolean(image),
+              'has-image': Boolean(imageState),
               'no-drag': readOnly,
             })}
+            disableClick={Boolean(image || readOnly)}
             onDragEnter={this.handleDragStart}
             onDragLeave={this.handleDragStop}
             onDrop={this.handleDrop}
-            disableClick={Boolean(image || readOnly)}>
+          >
             {!image && (
               <div
                 className={`drag-n-drop ${dragging ? 'dragged' : ''}`}
-                style={{ borderRadius, width, height }}>
-                Cliquez ou glissez-déposez pour charger une image
+                style={{ borderRadius, width, height }}
+              >
+                {'Cliquez ou glissez-déposez pour charger une image'}
               </div>
             )}
             <AvatarEditor
-              ref={this.avatarEditor}
-              width={width}
-              height={height}
-              scale={zoom}
               border={border}
               borderRadius={borderRadius}
               color={[255, 255, 255, readOnly || !image ? 1 : 0.6]}
+              height={height}
               image={image}
-              onImageChange={this.onImageChange}
+              onImageChange={this.handleOnImageChange}
+              ref={this.avatarEditor}
+              scale={zoom}
+              width={width}
             />
-            {!readOnly && image && (
+            {!readOnly && imageState && (
               <div id="zoomControl">
                 <button
-                  onClick={this.decrement}
-                  className="change-zoom decrement">
-                  <span>-</span>
+                  className="change-zoom decrement"
+                  onClick={this.handleDecrement}
+                  type="button"
+                >
+                  <span>{'-'}</span>
                 </button>
                 <input
-                  ref={this.setZoomInput}
                   className="zoom level-left"
-                  type="range"
-                  min="1"
                   max="4"
+                  min="1"
+                  onChange={this.handleOnZoomChange}
+                  ref={this.setZoomInput}
                   step="0.01"
+                  type="range"
                   value={zoom}
-                  onChange={this.onZoomChange}
                 />
                 <button
-                  onClick={this.increment}
-                  className="change-zoom increment">
-                  <span>+</span>
+                  className="change-zoom increment"
+                  onClick={this.handleIncrement}
+                  type="button"
+                >
+                  <span>{'+'}</span>
                 </button>
               </div>
             )}
@@ -211,54 +224,52 @@ class UploadThumb extends Component {
           <nav className="field content">
             {isUploadDisabled && (
               <p className="has-text-danger">
-                {`Votre image trop volumineuse : ${size.toFixed(
-                  2
-                )} > ${maxSize}Mo`}
+                {`Votre image trop volumineuse : ${size.toFixed(2)} > ${maxSize}Mo`}
               </p>
             )}
             <div className="field is-grouped is-grouped-centered">
               <div className="control">
                 {readOnly && (
                   <button
-                    onClick={e => this.setState({ isEdited: true })}
-                    className="button is-primary">
-                    Modifier l'image
+                    className="button is-primary"
+                    onClick={this.handleOnChangeImageClick}
+                    type="button"
+                  >
+                    {"Modifier l'image"}
                   </button>
                 )}
                 {!onImageChange && // upload is managed by child component
-                  !readOnly &&
-                  image && (
-                    <button
-                      onClick={this.onUploadClick}
-                      className="button is-primary"
-                      disabled={isUploadDisabled}>
-                      Enregistrer
-                    </button>
-                  )}
+                !readOnly &&
+                image && (
+                  <button
+                    className="button is-primary"
+                    disabled={isUploadDisabled}
+                    onClick={this.handleOnUploadClick}
+                    type="button"
+                  >
+                    {'Enregistrer'}
+                  </button>
+                )}
               </div>
-              {!readOnly && image && !this.props.image && (
+              {!readOnly && imageState && !image && (
                 <div className="control">
                   <button
-                    onClick={e =>
-                      this.setState({
-                        image: null,
-                        dragging: false,
-                        isUploadDisabled: false,
-                      })
-                    }
-                    className="button is-primary is-outlined">
-                    Retirer l'image
+                    className="button is-primary is-outlined"
+                    onClick={this.handleOnRemoveImageClick}
+                    type="button"
+                  >
+                    {"Retirer l'image"}
                   </button>
                 </div>
               )}
               {!readOnly && hasExistingImage && (
                 <div className="control">
                   <button
-                    onClick={e =>
-                      this.setState({ isEdited: false, dragging: false })
-                    }
-                    className="button is-primary is-outlined">
-                    Annuler la modification
+                    className="button is-primary is-outlined"
+                    onClick={this.handleOnCancelModificationClick}
+                    type="button"
+                  >
+                    {'Annuler la modification'}
                   </button>
                 </div>
               )}
@@ -277,6 +288,23 @@ UploadThumb.defaultProps = {
   index: 0,
   maxSize: 10, // in MB
   width: 250,
+}
+
+UploadThumb.propTypes = {
+  border: PropTypes.number,
+  borderRadius: PropTypes.number,
+  className: PropTypes.string.isRequired,
+  collectionName: PropTypes.string.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  entityId: PropTypes.string.isRequired,
+  hasExistingImage: PropTypes.bool.isRequired,
+  height: PropTypes.number,
+  image: PropTypes.string.isRequired,
+  index: PropTypes.number,
+  maxSize: PropTypes.number,
+  onImageChange: PropTypes.func.isRequired,
+  storeKey: PropTypes.string.isRequired,
+  width: PropTypes.number,
 }
 
 export default connect()(UploadThumb)

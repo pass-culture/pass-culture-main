@@ -11,8 +11,8 @@ describe('src | components | pages | Venue | controls | ReturnOrSubmitControl ',
       canSubmit: true,
       isCreatedEntity: true,
       isRequestPending: true,
-      offererId: "ABC",
-      readOnly: true
+      offererId: 'ABC',
+      readOnly: true,
     }
   })
 

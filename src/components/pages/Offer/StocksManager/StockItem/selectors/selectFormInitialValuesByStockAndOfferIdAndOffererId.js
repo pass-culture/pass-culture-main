@@ -1,8 +1,8 @@
 import moment from 'moment'
 import createCachedSelector from 're-reselect'
 
-import selectOfferById from 'selectors/selectOfferById'
-import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
+import selectOfferById from '../../../../../../selectors/selectOfferById'
+import selectStocksByOfferId from '../../../../../../selectors/selectStocksByOfferId'
 import {
   DEFAULT_BEGINNING_DATE_TIME_HOURS,
   DEFAULT_BEGINNING_DATE_TIME_MINUTES,
@@ -15,8 +15,7 @@ function mapArgsToCacheKey(state, stock, offerId, offererId) {
   return `${(stock && stock.id) || ''}${offerId || ''}/${offererId || ''}`
 }
 
-// TODO No (green) tests found for this part of code
-export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCachedSelector(
+const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCachedSelector(
   (state, stock) => stock,
   (state, stock, offerId) => selectOfferById(state, offerId),
   (state, stock, offerId) => selectStocksByOfferId(state, offerId),
@@ -24,14 +23,7 @@ export const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCached
   (state, stock, offerId, offererId) => offererId,
   (state, stock, offerId, offererId, timezone) => timezone,
   (stock, offer, stocks, offerId, offererId, timezone) => {
-    let {
-      available,
-      beginningDatetime,
-      bookingLimitDatetime,
-      endDatetime,
-      id,
-      price,
-    } = stock || {}
+    let { available, beginningDatetime, bookingLimitDatetime, endDatetime, id, price } = stock || {}
 
     if (!offer) {
       return {}

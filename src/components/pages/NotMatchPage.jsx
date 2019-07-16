@@ -1,15 +1,8 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { PureComponent } from 'react'
 import { Redirect } from 'react-router-dom'
 
-const renderRedirect = () => <Redirect to="/" />
-const renderRedirecting = () => <span>{'Redirecting...'}</span>
-
-const renderTimer = timing => (
-  <span>{`You will be redirect in ${timing} seconds`}</span>
-)
-
-class NoMatchPage extends React.PureComponent {
+class NoMatchPage extends PureComponent {
   constructor(props) {
     super(props)
     this.timer = null
@@ -28,16 +21,21 @@ class NoMatchPage extends React.PureComponent {
     this.timer = null
   }
 
+  renderRedirect = () => <Redirect to="/" />
+  renderRedirecting = () => <span>{'Redirecting...'}</span>
+
+  renderTimer = timing => <span>{`You will be redirect in ${timing} seconds`}</span>
+
   render() {
     const { timing } = this.state
     const { location } = this.props
-    if (timing < 0) return renderRedirect()
+    if (timing < 0) return this.renderRedirect()
     return (
       <div id="page-redirect">
         <h3 className="title">{`404 Not found ${location.pathname}`}</h3>
         <p className="content">
-          {timing > 0 && renderTimer(timing)}
-          {timing === 0 && renderRedirecting()}
+          {timing > 0 && this.renderTimer(timing)}
+          {timing === 0 && this.renderRedirecting()}
         </p>
       </div>
     )
@@ -45,7 +43,7 @@ class NoMatchPage extends React.PureComponent {
 }
 
 NoMatchPage.propTypes = {
-  location: PropTypes.object.isRequired,
+  location: PropTypes.shape().isRequired,
 }
 
 export default NoMatchPage

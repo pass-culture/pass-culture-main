@@ -25,8 +25,8 @@ const fromWatchSirenInput = sireType =>
         get(patch, `${SIRET}.length`) > 14
           ? SIRET
           : get(patch, `${SIREN}.length`) > 9
-            ? SIREN
-            : null
+          ? SIREN
+          : null
       if (wrongSireType) {
         yield put(
           mergeErrors(name, {
@@ -41,9 +41,7 @@ const fromWatchSirenInput = sireType =>
     try {
       const response = yield call(
         fetch,
-        `https://sirene.entreprise.api.gouv.fr/v1/${sireType}/${
-          patch[sireType]
-        }`
+        `https://sirene.entreprise.api.gouv.fr/v1/${sireType}/${patch[sireType]}`
       )
       if (response.status === 404) {
         yield put(
@@ -94,9 +92,7 @@ const fromWatchSirenInput = sireType =>
       console.error(e)
       yield put(
         mergeErrors(name, {
-          [sireType]: [
-            `Impossible de vérifier le ${capitalize(sireType)} saisi.`,
-          ],
+          [sireType]: [`Impossible de vérifier le ${capitalize(sireType)} saisi.`],
         })
       )
     }
@@ -126,10 +122,8 @@ export function* watchFormActions() {
       /MERGE_FORM_(.*)/.test(type) &&
       get(config, 'isSagaCalling') &&
       !get(config, 'calledFromSaga') &&
-      ((get(config, 'type') === 'siren' &&
-        get(patch, `${SIREN}.length`) !== 9) ||
-        (get(config, 'type') === 'siret' &&
-          get(patch, `${SIRET}.length`) !== 14)),
+      ((get(config, 'type') === 'siren' && get(patch, `${SIREN}.length`) !== 9) ||
+        (get(config, 'type') === 'siret' && get(patch, `${SIRET}.length`) !== 14)),
     fromWatchSirenInput(null)
   )
 }

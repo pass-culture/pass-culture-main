@@ -2,9 +2,9 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import BankFields from './BankFields'
-import { withFrenchQueryRouter } from 'components/hocs'
+import withFrenchQueryRouter from '../../../../hocs/withFrenchQueryRouter'
 import { selectCurrentUser } from 'with-login'
-import { selectUserOffererByOffererIdAndUserIdAndRightsType } from '../../../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
+import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps

@@ -5,15 +5,12 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
 import RawAccounting from './RawAccounting'
-import { withRedirectToSigninWhenNotAuthenticated } from 'components/hocs'
-import selectOffererById from 'selectors/selectOffererById'
-import { mapApiToWindow, windowToApiQuery } from 'utils/pagination'
+import withRedirectToSigninWhenNotAuthenticated from '../../hocs/with-login/withRedirectToSigninWhenNotAuthenticated'
+import selectOffererById from '../../../selectors/selectOffererById'
+import { mapApiToWindow, windowToApiQuery } from '../../../utils/pagination'
 
 const mapStateToProps = (state, ownProps) => {
-  const offererId = get(
-    ownProps,
-    `pagination.windowQuery.${mapApiToWindow.offererId}`
-  )
+  const offererId = get(ownProps, `pagination.windowQuery.${mapApiToWindow.offererId}`)
 
   return {
     bookings: state.data.bookings,

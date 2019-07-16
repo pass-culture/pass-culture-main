@@ -2,7 +2,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 import Profil from '../Profil'
 import { Form } from 'react-final-form'
-import { TextField } from '../../../layout/form/fields'
+import TextField from '../../../layout/form/fields/TextField'
 import HeroSection from '../../../layout/HeroSection/HeroSection'
 
 describe('src | components | pages | Profil', () => {
@@ -49,9 +49,7 @@ describe('src | components | pages | Profil', () => {
     expect(textFieldComponents).toHaveLength(2)
     expect(textFieldComponents.at(0).prop('name')).toBe('publicName')
     expect(textFieldComponents.at(0).prop('label')).toBe('Nom :')
-    expect(textFieldComponents.at(0).prop('placeholder')).toBe(
-      '3 caractères minimum'
-    )
+    expect(textFieldComponents.at(0).prop('placeholder')).toBe('3 caractères minimum')
     expect(textFieldComponents.at(0).prop('required')).toBe(true)
     expect(textFieldComponents.at(1).prop('name')).toBe('email')
     expect(textFieldComponents.at(1).prop('label')).toBe('E-mail :')
@@ -68,7 +66,7 @@ describe('src | components | pages | Profil', () => {
     innerForm.simulate('submit')
 
     // then
-    expect(dispatch.mock.calls[0][0]).toEqual({
+    expect(dispatch.mock.calls[0][0]).toStrictEqual({
       config: {
         apiPath: '/users/current',
         body: {

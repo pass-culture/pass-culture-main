@@ -1,10 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Signin | Signin  snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Signin | Signin  should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Signin
     dispatch={[MockFunction]}
+    errors="errors"
     history={Object {}}
     query={
       Object {
@@ -31,8 +32,10 @@ ShallowWrapper {
           className="logo-side"
         >
           <Logo
+            className=""
             noLink={true}
             signPage={true}
+            whiteHeader={false}
           />
         </div>,
         <div
@@ -56,40 +59,41 @@ ShallowWrapper {
                     <span
                       className="has-text-weight-bold "
                     >
-                      Bienvenue
+                      Bienvenue 
                     </span>
-                     
                     <span
                       className="has-text-weight-semibold"
                     >
-                      dans la version bêta
+                      dans la version bêta 
                     </span>
                     <span
                       className="has-text-weight-normal"
                     >
-                      du Pass Culture pro.
+                      du pass Culture pro.
                     </span>
                   </h1>
                   <h2
                     className="subtitle is-2"
                   >
-                    Et merci de votre participation pour nous aider à l'améliorer !
+                    Et merci de votre participation pour nous aider à l’améliorer !
                   </h2>
                   <span
                     className="has-text-grey"
                   >
-                     
                     <span
                       className="required-legend"
                     >
-                       * 
+                      *
+                       
                     </span>
-                     Champs obligatoires
+                     
+                    Champs obligatoires
                   </span>
                   <withRouter(Connect(_Form))
                     BlockComponent={null}
                     Tag="form"
                     action="/users/signin"
+                    blockComponent={null}
                     className={null}
                     errorsPatch={Object {}}
                     failNotification="Formulaire non validé"
@@ -118,7 +122,7 @@ ShallowWrapper {
                         label="Adresse e-mail"
                         layout="horizontal"
                         name="identifier"
-                        placeholder="Identifiant (email)"
+                        placeholder="Identifiant (e-mail)"
                         required={true}
                         size="normal"
                         storeValue={[Function]}
@@ -149,7 +153,9 @@ ShallowWrapper {
                     </div>
                     <div
                       className="errors"
-                    />
+                    >
+                      errors
+                    </div>
                     <div
                       className="field buttons-field"
                     >
@@ -190,8 +196,10 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": <Logo
+            className=""
             noLink={true}
             signPage={true}
+            whiteHeader={false}
           />,
           "className": "logo-side",
         },
@@ -201,8 +209,10 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
+            "className": "",
             "noLink": true,
             "signPage": true,
+            "whiteHeader": false,
           },
           "ref": null,
           "rendered": null,
@@ -233,40 +243,41 @@ ShallowWrapper {
                     <span
                       className="has-text-weight-bold "
                     >
-                      Bienvenue
+                      Bienvenue 
                     </span>
-                     
                     <span
                       className="has-text-weight-semibold"
                     >
-                      dans la version bêta
+                      dans la version bêta 
                     </span>
                     <span
                       className="has-text-weight-normal"
                     >
-                      du Pass Culture pro.
+                      du pass Culture pro.
                     </span>
                   </h1>
                   <h2
                     className="subtitle is-2"
                   >
-                    Et merci de votre participation pour nous aider à l'améliorer !
+                    Et merci de votre participation pour nous aider à l’améliorer !
                   </h2>
                   <span
                     className="has-text-grey"
                   >
-                     
                     <span
                       className="required-legend"
                     >
-                       * 
+                      *
+                       
                     </span>
-                     Champs obligatoires
+                     
+                    Champs obligatoires
                   </span>
                   <withRouter(Connect(_Form))
                     BlockComponent={null}
                     Tag="form"
                     action="/users/signin"
+                    blockComponent={null}
                     className={null}
                     errorsPatch={Object {}}
                     failNotification="Formulaire non validé"
@@ -295,7 +306,7 @@ ShallowWrapper {
                         label="Adresse e-mail"
                         layout="horizontal"
                         name="identifier"
-                        placeholder="Identifiant (email)"
+                        placeholder="Identifiant (e-mail)"
                         required={true}
                         size="normal"
                         storeValue={[Function]}
@@ -326,7 +337,9 @@ ShallowWrapper {
                     </div>
                     <div
                       className="errors"
-                    />
+                    >
+                      errors
+                    </div>
                     <div
                       className="field buttons-field"
                     >
@@ -377,40 +390,41 @@ ShallowWrapper {
                     <span
                       className="has-text-weight-bold "
                     >
-                      Bienvenue
+                      Bienvenue 
                     </span>
-                     
                     <span
                       className="has-text-weight-semibold"
                     >
-                      dans la version bêta
+                      dans la version bêta 
                     </span>
                     <span
                       className="has-text-weight-normal"
                     >
-                      du Pass Culture pro.
+                      du pass Culture pro.
                     </span>
                   </h1>
                   <h2
                     className="subtitle is-2"
                   >
-                    Et merci de votre participation pour nous aider à l'améliorer !
+                    Et merci de votre participation pour nous aider à l’améliorer !
                   </h2>
                   <span
                     className="has-text-grey"
                   >
-                     
                     <span
                       className="required-legend"
                     >
-                       * 
+                      *
+                       
                     </span>
-                     Champs obligatoires
+                     
+                    Champs obligatoires
                   </span>
                   <withRouter(Connect(_Form))
                     BlockComponent={null}
                     Tag="form"
                     action="/users/signin"
+                    blockComponent={null}
                     className={null}
                     errorsPatch={Object {}}
                     failNotification="Formulaire non validé"
@@ -439,7 +453,7 @@ ShallowWrapper {
                         label="Adresse e-mail"
                         layout="horizontal"
                         name="identifier"
-                        placeholder="Identifiant (email)"
+                        placeholder="Identifiant (e-mail)"
                         required={true}
                         size="normal"
                         storeValue={[Function]}
@@ -470,7 +484,9 @@ ShallowWrapper {
                     </div>
                     <div
                       className="errors"
-                    />
+                    >
+                      errors
+                    </div>
                     <div
                       className="field buttons-field"
                     >
@@ -517,40 +533,41 @@ ShallowWrapper {
                     <span
                       className="has-text-weight-bold "
                     >
-                      Bienvenue
+                      Bienvenue 
                     </span>
-                     
                     <span
                       className="has-text-weight-semibold"
                     >
-                      dans la version bêta
+                      dans la version bêta 
                     </span>
                     <span
                       className="has-text-weight-normal"
                     >
-                      du Pass Culture pro.
+                      du pass Culture pro.
                     </span>
                   </h1>
                   <h2
                     className="subtitle is-2"
                   >
-                    Et merci de votre participation pour nous aider à l'améliorer !
+                    Et merci de votre participation pour nous aider à l’améliorer !
                   </h2>
                   <span
                     className="has-text-grey"
                   >
-                     
                     <span
                       className="required-legend"
                     >
-                       * 
+                      *
+                       
                     </span>
-                     Champs obligatoires
+                     
+                    Champs obligatoires
                   </span>
                   <withRouter(Connect(_Form))
                     BlockComponent={null}
                     Tag="form"
                     action="/users/signin"
+                    blockComponent={null}
                     className={null}
                     errorsPatch={Object {}}
                     failNotification="Formulaire non validé"
@@ -579,7 +596,7 @@ ShallowWrapper {
                         label="Adresse e-mail"
                         layout="horizontal"
                         name="identifier"
-                        placeholder="Identifiant (email)"
+                        placeholder="Identifiant (e-mail)"
                         required={true}
                         size="normal"
                         storeValue={[Function]}
@@ -610,7 +627,9 @@ ShallowWrapper {
                     </div>
                     <div
                       className="errors"
-                    />
+                    >
+                      errors
+                    </div>
                     <div
                       className="field buttons-field"
                     >
@@ -653,40 +672,41 @@ ShallowWrapper {
                     <span
                       className="has-text-weight-bold "
                     >
-                      Bienvenue
+                      Bienvenue 
                     </span>
-                     
                     <span
                       className="has-text-weight-semibold"
                     >
-                      dans la version bêta
+                      dans la version bêta 
                     </span>
                     <span
                       className="has-text-weight-normal"
                     >
-                      du Pass Culture pro.
+                      du pass Culture pro.
                     </span>
                   </h1>
                   <h2
                     className="subtitle is-2"
                   >
-                    Et merci de votre participation pour nous aider à l'améliorer !
+                    Et merci de votre participation pour nous aider à l’améliorer !
                   </h2>
                   <span
                     className="has-text-grey"
                   >
-                     
                     <span
                       className="required-legend"
                     >
-                       * 
+                      *
+                       
                     </span>
-                     Champs obligatoires
+                     
+                    Champs obligatoires
                   </span>
                   <withRouter(Connect(_Form))
                     BlockComponent={null}
                     Tag="form"
                     action="/users/signin"
+                    blockComponent={null}
                     className={null}
                     errorsPatch={Object {}}
                     failNotification="Formulaire non validé"
@@ -715,7 +735,7 @@ ShallowWrapper {
                         label="Adresse e-mail"
                         layout="horizontal"
                         name="identifier"
-                        placeholder="Identifiant (email)"
+                        placeholder="Identifiant (e-mail)"
                         required={true}
                         size="normal"
                         storeValue={[Function]}
@@ -746,7 +766,9 @@ ShallowWrapper {
                     </div>
                     <div
                       className="errors"
-                    />
+                    >
+                      errors
+                    </div>
                     <div
                       className="field buttons-field"
                     >
@@ -786,40 +808,41 @@ ShallowWrapper {
                       <span
                         className="has-text-weight-bold "
                       >
-                        Bienvenue
+                        Bienvenue 
                       </span>
-                       
                       <span
                         className="has-text-weight-semibold"
                       >
-                        dans la version bêta
+                        dans la version bêta 
                       </span>
                       <span
                         className="has-text-weight-normal"
                       >
-                        du Pass Culture pro.
+                        du pass Culture pro.
                       </span>
                     </h1>,
                     <h2
                       className="subtitle is-2"
                     >
-                      Et merci de votre participation pour nous aider à l'améliorer !
+                      Et merci de votre participation pour nous aider à l’améliorer !
                     </h2>,
                     <span
                       className="has-text-grey"
                     >
-                       
                       <span
                         className="required-legend"
                       >
-                         * 
+                        *
+                         
                       </span>
-                       Champs obligatoires
+                       
+                      Champs obligatoires
                     </span>,
                     <withRouter(Connect(_Form))
                       BlockComponent={null}
                       Tag="form"
                       action="/users/signin"
+                      blockComponent={null}
                       className={null}
                       errorsPatch={Object {}}
                       failNotification="Formulaire non validé"
@@ -848,7 +871,7 @@ ShallowWrapper {
                           label="Adresse e-mail"
                           layout="horizontal"
                           name="identifier"
-                          placeholder="Identifiant (email)"
+                          placeholder="Identifiant (e-mail)"
                           required={true}
                           size="normal"
                           storeValue={[Function]}
@@ -879,7 +902,9 @@ ShallowWrapper {
                       </div>
                       <div
                         className="errors"
-                      />
+                      >
+                        errors
+                      </div>
                       <div
                         className="field buttons-field"
                       >
@@ -917,18 +942,17 @@ ShallowWrapper {
                         <span
                           className="has-text-weight-bold "
                         >
-                          Bienvenue
+                          Bienvenue 
                         </span>,
-                        " ",
                         <span
                           className="has-text-weight-semibold"
                         >
-                          dans la version bêta
+                          dans la version bêta 
                         </span>,
                         <span
                           className="has-text-weight-normal"
                         >
-                          du Pass Culture pro.
+                          du pass Culture pro.
                         </span>,
                       ],
                       "className": "title is-spaced is-1",
@@ -940,24 +964,23 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": "Bienvenue",
+                          "children": "Bienvenue ",
                           "className": "has-text-weight-bold ",
                         },
                         "ref": null,
-                        "rendered": "Bienvenue",
+                        "rendered": "Bienvenue ",
                         "type": "span",
                       },
-                      " ",
                       Object {
                         "instance": null,
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": "dans la version bêta",
+                          "children": "dans la version bêta ",
                           "className": "has-text-weight-semibold",
                         },
                         "ref": null,
-                        "rendered": "dans la version bêta",
+                        "rendered": "dans la version bêta ",
                         "type": "span",
                       },
                       Object {
@@ -965,11 +988,11 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": "du Pass Culture pro.",
+                          "children": "du pass Culture pro.",
                           "className": "has-text-weight-normal",
                         },
                         "ref": null,
-                        "rendered": "du Pass Culture pro.",
+                        "rendered": "du pass Culture pro.",
                         "type": "span",
                       },
                     ],
@@ -980,11 +1003,11 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": "Et merci de votre participation pour nous aider à l'améliorer !",
+                      "children": "Et merci de votre participation pour nous aider à l’améliorer !",
                       "className": "subtitle is-2",
                     },
                     "ref": null,
-                    "rendered": "Et merci de votre participation pour nous aider à l'améliorer !",
+                    "rendered": "Et merci de votre participation pour nous aider à l’améliorer !",
                     "type": "h2",
                   },
                   Object {
@@ -993,32 +1016,39 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": Array [
-                        " ",
                         <span
                           className="required-legend"
                         >
-                           * 
+                          *
+                           
                         </span>,
-                        " Champs obligatoires",
+                        " ",
+                        "Champs obligatoires",
                       ],
                       "className": "has-text-grey",
                     },
                     "ref": null,
                     "rendered": Array [
-                      " ",
                       Object {
                         "instance": null,
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": " * ",
+                          "children": Array [
+                            "*",
+                            " ",
+                          ],
                           "className": "required-legend",
                         },
                         "ref": null,
-                        "rendered": " * ",
+                        "rendered": Array [
+                          "*",
+                          " ",
+                        ],
                         "type": "span",
                       },
-                      " Champs obligatoires",
+                      " ",
+                      "Champs obligatoires",
                     ],
                     "type": "span",
                   },
@@ -1030,6 +1060,7 @@ ShallowWrapper {
                       "BlockComponent": null,
                       "Tag": "form",
                       "action": "/users/signin",
+                      "blockComponent": null,
                       "children": Array [
                         <div
                           className="field-group"
@@ -1040,7 +1071,7 @@ ShallowWrapper {
                             label="Adresse e-mail"
                             layout="horizontal"
                             name="identifier"
-                            placeholder="Identifiant (email)"
+                            placeholder="Identifiant (e-mail)"
                             required={true}
                             size="normal"
                             storeValue={[Function]}
@@ -1071,7 +1102,9 @@ ShallowWrapper {
                         </div>,
                         <div
                           className="errors"
-                        />,
+                        >
+                          errors
+                        </div>,
                         <div
                           className="field buttons-field"
                         >
@@ -1128,7 +1161,7 @@ ShallowWrapper {
                               label="Adresse e-mail"
                               layout="horizontal"
                               name="identifier"
-                              placeholder="Identifiant (email)"
+                              placeholder="Identifiant (e-mail)"
                               required={true}
                               size="normal"
                               storeValue={[Function]}
@@ -1171,7 +1204,7 @@ ShallowWrapper {
                               "label": "Adresse e-mail",
                               "layout": "horizontal",
                               "name": "identifier",
-                              "placeholder": "Identifiant (email)",
+                              "placeholder": "Identifiant (e-mail)",
                               "required": true,
                               "size": "normal",
                               "storeValue": [Function],
@@ -1240,11 +1273,11 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": undefined,
+                          "children": "errors",
                           "className": "errors",
                         },
                         "ref": null,
-                        "rendered": null,
+                        "rendered": "errors",
                         "type": "div",
                       },
                       Object {
@@ -1339,8 +1372,10 @@ ShallowWrapper {
             className="logo-side"
           >
             <Logo
+              className=""
               noLink={true}
               signPage={true}
+              whiteHeader={false}
             />
           </div>,
           <div
@@ -1364,40 +1399,41 @@ ShallowWrapper {
                       <span
                         className="has-text-weight-bold "
                       >
-                        Bienvenue
+                        Bienvenue 
                       </span>
-                       
                       <span
                         className="has-text-weight-semibold"
                       >
-                        dans la version bêta
+                        dans la version bêta 
                       </span>
                       <span
                         className="has-text-weight-normal"
                       >
-                        du Pass Culture pro.
+                        du pass Culture pro.
                       </span>
                     </h1>
                     <h2
                       className="subtitle is-2"
                     >
-                      Et merci de votre participation pour nous aider à l'améliorer !
+                      Et merci de votre participation pour nous aider à l’améliorer !
                     </h2>
                     <span
                       className="has-text-grey"
                     >
-                       
                       <span
                         className="required-legend"
                       >
-                         * 
+                        *
+                         
                       </span>
-                       Champs obligatoires
+                       
+                      Champs obligatoires
                     </span>
                     <withRouter(Connect(_Form))
                       BlockComponent={null}
                       Tag="form"
                       action="/users/signin"
+                      blockComponent={null}
                       className={null}
                       errorsPatch={Object {}}
                       failNotification="Formulaire non validé"
@@ -1426,7 +1462,7 @@ ShallowWrapper {
                           label="Adresse e-mail"
                           layout="horizontal"
                           name="identifier"
-                          placeholder="Identifiant (email)"
+                          placeholder="Identifiant (e-mail)"
                           required={true}
                           size="normal"
                           storeValue={[Function]}
@@ -1457,7 +1493,9 @@ ShallowWrapper {
                       </div>
                       <div
                         className="errors"
-                      />
+                      >
+                        errors
+                      </div>
                       <div
                         className="field buttons-field"
                       >
@@ -1498,8 +1536,10 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": <Logo
+              className=""
               noLink={true}
               signPage={true}
+              whiteHeader={false}
             />,
             "className": "logo-side",
           },
@@ -1509,8 +1549,10 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "function",
             "props": Object {
+              "className": "",
               "noLink": true,
               "signPage": true,
+              "whiteHeader": false,
             },
             "ref": null,
             "rendered": null,
@@ -1541,40 +1583,41 @@ ShallowWrapper {
                       <span
                         className="has-text-weight-bold "
                       >
-                        Bienvenue
+                        Bienvenue 
                       </span>
-                       
                       <span
                         className="has-text-weight-semibold"
                       >
-                        dans la version bêta
+                        dans la version bêta 
                       </span>
                       <span
                         className="has-text-weight-normal"
                       >
-                        du Pass Culture pro.
+                        du pass Culture pro.
                       </span>
                     </h1>
                     <h2
                       className="subtitle is-2"
                     >
-                      Et merci de votre participation pour nous aider à l'améliorer !
+                      Et merci de votre participation pour nous aider à l’améliorer !
                     </h2>
                     <span
                       className="has-text-grey"
                     >
-                       
                       <span
                         className="required-legend"
                       >
-                         * 
+                        *
+                         
                       </span>
-                       Champs obligatoires
+                       
+                      Champs obligatoires
                     </span>
                     <withRouter(Connect(_Form))
                       BlockComponent={null}
                       Tag="form"
                       action="/users/signin"
+                      blockComponent={null}
                       className={null}
                       errorsPatch={Object {}}
                       failNotification="Formulaire non validé"
@@ -1603,7 +1646,7 @@ ShallowWrapper {
                           label="Adresse e-mail"
                           layout="horizontal"
                           name="identifier"
-                          placeholder="Identifiant (email)"
+                          placeholder="Identifiant (e-mail)"
                           required={true}
                           size="normal"
                           storeValue={[Function]}
@@ -1634,7 +1677,9 @@ ShallowWrapper {
                       </div>
                       <div
                         className="errors"
-                      />
+                      >
+                        errors
+                      </div>
                       <div
                         className="field buttons-field"
                       >
@@ -1685,40 +1730,41 @@ ShallowWrapper {
                       <span
                         className="has-text-weight-bold "
                       >
-                        Bienvenue
+                        Bienvenue 
                       </span>
-                       
                       <span
                         className="has-text-weight-semibold"
                       >
-                        dans la version bêta
+                        dans la version bêta 
                       </span>
                       <span
                         className="has-text-weight-normal"
                       >
-                        du Pass Culture pro.
+                        du pass Culture pro.
                       </span>
                     </h1>
                     <h2
                       className="subtitle is-2"
                     >
-                      Et merci de votre participation pour nous aider à l'améliorer !
+                      Et merci de votre participation pour nous aider à l’améliorer !
                     </h2>
                     <span
                       className="has-text-grey"
                     >
-                       
                       <span
                         className="required-legend"
                       >
-                         * 
+                        *
+                         
                       </span>
-                       Champs obligatoires
+                       
+                      Champs obligatoires
                     </span>
                     <withRouter(Connect(_Form))
                       BlockComponent={null}
                       Tag="form"
                       action="/users/signin"
+                      blockComponent={null}
                       className={null}
                       errorsPatch={Object {}}
                       failNotification="Formulaire non validé"
@@ -1747,7 +1793,7 @@ ShallowWrapper {
                           label="Adresse e-mail"
                           layout="horizontal"
                           name="identifier"
-                          placeholder="Identifiant (email)"
+                          placeholder="Identifiant (e-mail)"
                           required={true}
                           size="normal"
                           storeValue={[Function]}
@@ -1778,7 +1824,9 @@ ShallowWrapper {
                       </div>
                       <div
                         className="errors"
-                      />
+                      >
+                        errors
+                      </div>
                       <div
                         className="field buttons-field"
                       >
@@ -1825,40 +1873,41 @@ ShallowWrapper {
                       <span
                         className="has-text-weight-bold "
                       >
-                        Bienvenue
+                        Bienvenue 
                       </span>
-                       
                       <span
                         className="has-text-weight-semibold"
                       >
-                        dans la version bêta
+                        dans la version bêta 
                       </span>
                       <span
                         className="has-text-weight-normal"
                       >
-                        du Pass Culture pro.
+                        du pass Culture pro.
                       </span>
                     </h1>
                     <h2
                       className="subtitle is-2"
                     >
-                      Et merci de votre participation pour nous aider à l'améliorer !
+                      Et merci de votre participation pour nous aider à l’améliorer !
                     </h2>
                     <span
                       className="has-text-grey"
                     >
-                       
                       <span
                         className="required-legend"
                       >
-                         * 
+                        *
+                         
                       </span>
-                       Champs obligatoires
+                       
+                      Champs obligatoires
                     </span>
                     <withRouter(Connect(_Form))
                       BlockComponent={null}
                       Tag="form"
                       action="/users/signin"
+                      blockComponent={null}
                       className={null}
                       errorsPatch={Object {}}
                       failNotification="Formulaire non validé"
@@ -1887,7 +1936,7 @@ ShallowWrapper {
                           label="Adresse e-mail"
                           layout="horizontal"
                           name="identifier"
-                          placeholder="Identifiant (email)"
+                          placeholder="Identifiant (e-mail)"
                           required={true}
                           size="normal"
                           storeValue={[Function]}
@@ -1918,7 +1967,9 @@ ShallowWrapper {
                       </div>
                       <div
                         className="errors"
-                      />
+                      >
+                        errors
+                      </div>
                       <div
                         className="field buttons-field"
                       >
@@ -1961,40 +2012,41 @@ ShallowWrapper {
                       <span
                         className="has-text-weight-bold "
                       >
-                        Bienvenue
+                        Bienvenue 
                       </span>
-                       
                       <span
                         className="has-text-weight-semibold"
                       >
-                        dans la version bêta
+                        dans la version bêta 
                       </span>
                       <span
                         className="has-text-weight-normal"
                       >
-                        du Pass Culture pro.
+                        du pass Culture pro.
                       </span>
                     </h1>
                     <h2
                       className="subtitle is-2"
                     >
-                      Et merci de votre participation pour nous aider à l'améliorer !
+                      Et merci de votre participation pour nous aider à l’améliorer !
                     </h2>
                     <span
                       className="has-text-grey"
                     >
-                       
                       <span
                         className="required-legend"
                       >
-                         * 
+                        *
+                         
                       </span>
-                       Champs obligatoires
+                       
+                      Champs obligatoires
                     </span>
                     <withRouter(Connect(_Form))
                       BlockComponent={null}
                       Tag="form"
                       action="/users/signin"
+                      blockComponent={null}
                       className={null}
                       errorsPatch={Object {}}
                       failNotification="Formulaire non validé"
@@ -2023,7 +2075,7 @@ ShallowWrapper {
                           label="Adresse e-mail"
                           layout="horizontal"
                           name="identifier"
-                          placeholder="Identifiant (email)"
+                          placeholder="Identifiant (e-mail)"
                           required={true}
                           size="normal"
                           storeValue={[Function]}
@@ -2054,7 +2106,9 @@ ShallowWrapper {
                       </div>
                       <div
                         className="errors"
-                      />
+                      >
+                        errors
+                      </div>
                       <div
                         className="field buttons-field"
                       >
@@ -2094,40 +2148,41 @@ ShallowWrapper {
                         <span
                           className="has-text-weight-bold "
                         >
-                          Bienvenue
+                          Bienvenue 
                         </span>
-                         
                         <span
                           className="has-text-weight-semibold"
                         >
-                          dans la version bêta
+                          dans la version bêta 
                         </span>
                         <span
                           className="has-text-weight-normal"
                         >
-                          du Pass Culture pro.
+                          du pass Culture pro.
                         </span>
                       </h1>,
                       <h2
                         className="subtitle is-2"
                       >
-                        Et merci de votre participation pour nous aider à l'améliorer !
+                        Et merci de votre participation pour nous aider à l’améliorer !
                       </h2>,
                       <span
                         className="has-text-grey"
                       >
-                         
                         <span
                           className="required-legend"
                         >
-                           * 
+                          *
+                           
                         </span>
-                         Champs obligatoires
+                         
+                        Champs obligatoires
                       </span>,
                       <withRouter(Connect(_Form))
                         BlockComponent={null}
                         Tag="form"
                         action="/users/signin"
+                        blockComponent={null}
                         className={null}
                         errorsPatch={Object {}}
                         failNotification="Formulaire non validé"
@@ -2156,7 +2211,7 @@ ShallowWrapper {
                             label="Adresse e-mail"
                             layout="horizontal"
                             name="identifier"
-                            placeholder="Identifiant (email)"
+                            placeholder="Identifiant (e-mail)"
                             required={true}
                             size="normal"
                             storeValue={[Function]}
@@ -2187,7 +2242,9 @@ ShallowWrapper {
                         </div>
                         <div
                           className="errors"
-                        />
+                        >
+                          errors
+                        </div>
                         <div
                           className="field buttons-field"
                         >
@@ -2225,18 +2282,17 @@ ShallowWrapper {
                           <span
                             className="has-text-weight-bold "
                           >
-                            Bienvenue
+                            Bienvenue 
                           </span>,
-                          " ",
                           <span
                             className="has-text-weight-semibold"
                           >
-                            dans la version bêta
+                            dans la version bêta 
                           </span>,
                           <span
                             className="has-text-weight-normal"
                           >
-                            du Pass Culture pro.
+                            du pass Culture pro.
                           </span>,
                         ],
                         "className": "title is-spaced is-1",
@@ -2248,24 +2304,23 @@ ShallowWrapper {
                           "key": undefined,
                           "nodeType": "host",
                           "props": Object {
-                            "children": "Bienvenue",
+                            "children": "Bienvenue ",
                             "className": "has-text-weight-bold ",
                           },
                           "ref": null,
-                          "rendered": "Bienvenue",
+                          "rendered": "Bienvenue ",
                           "type": "span",
                         },
-                        " ",
                         Object {
                           "instance": null,
                           "key": undefined,
                           "nodeType": "host",
                           "props": Object {
-                            "children": "dans la version bêta",
+                            "children": "dans la version bêta ",
                             "className": "has-text-weight-semibold",
                           },
                           "ref": null,
-                          "rendered": "dans la version bêta",
+                          "rendered": "dans la version bêta ",
                           "type": "span",
                         },
                         Object {
@@ -2273,11 +2328,11 @@ ShallowWrapper {
                           "key": undefined,
                           "nodeType": "host",
                           "props": Object {
-                            "children": "du Pass Culture pro.",
+                            "children": "du pass Culture pro.",
                             "className": "has-text-weight-normal",
                           },
                           "ref": null,
-                          "rendered": "du Pass Culture pro.",
+                          "rendered": "du pass Culture pro.",
                           "type": "span",
                         },
                       ],
@@ -2288,11 +2343,11 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": "Et merci de votre participation pour nous aider à l'améliorer !",
+                        "children": "Et merci de votre participation pour nous aider à l’améliorer !",
                         "className": "subtitle is-2",
                       },
                       "ref": null,
-                      "rendered": "Et merci de votre participation pour nous aider à l'améliorer !",
+                      "rendered": "Et merci de votre participation pour nous aider à l’améliorer !",
                       "type": "h2",
                     },
                     Object {
@@ -2301,32 +2356,39 @@ ShallowWrapper {
                       "nodeType": "host",
                       "props": Object {
                         "children": Array [
-                          " ",
                           <span
                             className="required-legend"
                           >
-                             * 
+                            *
+                             
                           </span>,
-                          " Champs obligatoires",
+                          " ",
+                          "Champs obligatoires",
                         ],
                         "className": "has-text-grey",
                       },
                       "ref": null,
                       "rendered": Array [
-                        " ",
                         Object {
                           "instance": null,
                           "key": undefined,
                           "nodeType": "host",
                           "props": Object {
-                            "children": " * ",
+                            "children": Array [
+                              "*",
+                              " ",
+                            ],
                             "className": "required-legend",
                           },
                           "ref": null,
-                          "rendered": " * ",
+                          "rendered": Array [
+                            "*",
+                            " ",
+                          ],
                           "type": "span",
                         },
-                        " Champs obligatoires",
+                        " ",
+                        "Champs obligatoires",
                       ],
                       "type": "span",
                     },
@@ -2338,6 +2400,7 @@ ShallowWrapper {
                         "BlockComponent": null,
                         "Tag": "form",
                         "action": "/users/signin",
+                        "blockComponent": null,
                         "children": Array [
                           <div
                             className="field-group"
@@ -2348,7 +2411,7 @@ ShallowWrapper {
                               label="Adresse e-mail"
                               layout="horizontal"
                               name="identifier"
-                              placeholder="Identifiant (email)"
+                              placeholder="Identifiant (e-mail)"
                               required={true}
                               size="normal"
                               storeValue={[Function]}
@@ -2379,7 +2442,9 @@ ShallowWrapper {
                           </div>,
                           <div
                             className="errors"
-                          />,
+                          >
+                            errors
+                          </div>,
                           <div
                             className="field buttons-field"
                           >
@@ -2436,7 +2501,7 @@ ShallowWrapper {
                                 label="Adresse e-mail"
                                 layout="horizontal"
                                 name="identifier"
-                                placeholder="Identifiant (email)"
+                                placeholder="Identifiant (e-mail)"
                                 required={true}
                                 size="normal"
                                 storeValue={[Function]}
@@ -2479,7 +2544,7 @@ ShallowWrapper {
                                 "label": "Adresse e-mail",
                                 "layout": "horizontal",
                                 "name": "identifier",
-                                "placeholder": "Identifiant (email)",
+                                "placeholder": "Identifiant (e-mail)",
                                 "required": true,
                                 "size": "normal",
                                 "storeValue": [Function],
@@ -2548,11 +2613,11 @@ ShallowWrapper {
                           "key": undefined,
                           "nodeType": "host",
                           "props": Object {
-                            "children": undefined,
+                            "children": "errors",
                             "className": "errors",
                           },
                           "ref": null,
-                          "rendered": null,
+                          "rendered": "errors",
                           "type": "div",
                         },
                         Object {
@@ -2660,7 +2725,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;

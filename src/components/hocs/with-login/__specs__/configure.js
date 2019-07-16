@@ -27,22 +27,27 @@ export const configureTestStore = () => {
 }
 
 export const configureFetchCurrentUserWithLoginFail = () => {
-  fetch.mockResponse(
-    JSON.stringify([{ global: ['Nobody is authenticated here'] }]),
-    { status: 400 }
-  )
+  fetch.mockResponse(JSON.stringify([{ global: ['Nobody is authenticated here'] }]), {
+    status: 400,
+  })
 }
 
 export const configureFetchCurrentUserWithLoginSuccess = () => {
-  fetch.mockResponse(JSON.stringify({ email: 'michel.marx@youpi.fr', hasOffers: false, hasPhysicalVenues: false }), {
-    status: 200,
-  })
+  fetch.mockResponse(
+    JSON.stringify({ email: 'michel.marx@youpi.fr', hasOffers: false, hasPhysicalVenues: false }),
+    {
+      status: 200,
+    }
+  )
 }
 
 export const configureFetchCurrentUserWithLoginSuccessAndOffers = () => {
-  fetch.mockResponse(JSON.stringify({ email: 'michel.marx@youpi.fr', hasOffers: true, hasPhysicalVenues: true  }), {
-    status: 200,
-  })
+  fetch.mockResponse(
+    JSON.stringify({ email: 'michel.marx@youpi.fr', hasOffers: true, hasPhysicalVenues: true }),
+    {
+      status: 200,
+    }
+  )
 }
 
 export default configureTestStore

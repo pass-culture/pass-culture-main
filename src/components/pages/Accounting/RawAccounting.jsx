@@ -1,18 +1,13 @@
 import get from 'lodash.get'
-import {
-  Icon,
-  InfiniteScroller,
-  requestData,
-  Spinner,
-} from 'pass-culture-shared'
+import { Icon, InfiniteScroller, requestData, Spinner } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import BookingItem from './BookingItem'
-import HeroSection from 'components/layout/HeroSection/HeroSection'
-import Main from 'components/layout/Main'
-import { bookingNormalizer, offererNormalizer } from 'utils/normalizers'
-import { mapApiToWindow } from 'utils/pagination'
+import HeroSection from '../../layout/HeroSection/HeroSection'
+import Main from '../../layout/Main'
+import { bookingNormalizer, offererNormalizer } from '../../../utils/normalizers'
+import { mapApiToWindow } from '../../../utils/pagination'
 
 const TableSortableTh = ({ field, label, sort, action, style }) => (
   <th style={style}>
@@ -20,25 +15,30 @@ const TableSortableTh = ({ field, label, sort, action, style }) => (
       <span>{label}</span>
 
       <span className="sortPlaceHolder">
-        {sort.field === field && (
-          // @TODO: onclick sort action
-          <Icon svg={`ico-sort-${sort.dir}ending`} />
-        )}
+        {sort.field === field && <Icon svg={`ico-sort-${sort.dir}ending`} />}
       </span>
     </a>
   </th>
 )
 
 TableSortableTh.propTypes = {
-  sort: PropTypes.object.isRequired,
+  action: PropTypes.func.isRequired,
   field: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
-  action: PropTypes.func.isRequired,
-  style: PropTypes.object,
+  sort: PropTypes.shape().isRequired,
+  style: PropTypes.shape().isRequired,
 }
 
 class RawAccouting extends Component {
-  onSubmit = event => {
+  componentDidUpdate(prevProps) {
+    const { offerers, pagination } = this.props
+    const offererId = get(pagination.windowQuery, mapApiToWindow.offererId)
+    if (!offererId && offerers !== prevProps.offerers && get(offerers, 'length')) {
+      pagination.change({ [mapApiToWindow.offererId]: offerers[0].id })
+    }
+  }
+
+  handleOnSubmit = event => {
     const { pagination } = this.props
 
     event.preventDefault()
@@ -98,12 +98,12 @@ class RawAccouting extends Component {
     )
   }
 
-  handleDataRequest = (handleSuccess, handleFail) => {
+  onHandleDataRequest = (handleSuccess, handleFail) => {
     this.fetchOfferers(handleSuccess, handleFail)
   }
 
-  handleLoadMore = (handleSuccess, handleFail) => {
-    this.handleDataRequest(handleSuccess, handleFail)
+  onHandleLoadMore = (handleSuccess, handleFail) => {
+    this.onHandleDataRequest(handleSuccess, handleFail)
     const { history, location, pagination } = this.props
     const { windowQueryString, page } = pagination
 
@@ -112,26 +112,30 @@ class RawAccouting extends Component {
     history.push(to)
   }
 
-  handleSortChange = (field, currentSort) => {
+  handleOnChange = (event, pagination) => () =>
+    pagination.change({
+      [mapApiToWindow.offererId]: event.target.value,
+    })
+
+  onSortChange = (field, currentSort) => {
     let dir = currentSort.dir || 'asc'
     if (currentSort.field === field) {
       dir = dir === 'asc' ? 'desc' : 'asc'
     }
 
-    this.props.pagination.change({ orderBy: [field, dir].join('+') })
+    const { pagination } = this.props
+    pagination.change({ orderBy: [field, dir].join('+') })
   }
 
-  componentDidUpdate(prevProps) {
-    const { offerers, pagination } = this.props
-    const offererId = get(pagination.windowQuery, mapApiToWindow.offererId)
-    if (
-      !offererId &&
-      offerers !== prevProps.offerers &&
-      get(offerers, 'length')
-    ) {
-      pagination.change({ [mapApiToWindow.offererId]: offerers[0].id })
-    }
-  }
+  renderLoading = () => (
+    <tr>
+      <Spinner
+        Tag="td"
+        colSpan="6"
+        style={{ justifyContent: 'center' }}
+      />
+    </tr>
+  )
 
   render() {
     const { bookings, offerer, offerers, pagination } = this.props
@@ -143,39 +147,44 @@ class RawAccouting extends Component {
     // Inject sort and action once for all
     const Th = ({ field, label, style }) => (
       <TableSortableTh
+        action={this.onSortChange}
         field={field}
         label={label}
         sort={{ field: orderName, dir: orderDirection }}
-        action={this.handleSortChange}
         style={style}
       />
     )
 
     return (
       <Main
+        backTo={{ path: '/accueil', label: 'Accueil' }}
+        handleDataRequest={this.onHandleDataRequest}
         name="accounting"
-        handleDataRequest={this.handleDataRequest}
-        backTo={{ path: '/accueil', label: 'Accueil' }}>
+      >
         <HeroSection
           subtitle="Suivez vos réservations et vos remboursements."
-          title="Comptabilité">
-          <form className="section" onSubmit={this.onSubmit} />
+          title="Comptabilité"
+        >
+          <form
+            className="section"
+            onSubmit={this.handleOnSubmit}
+          />
           <div className="section">
             <div className="list-header">
               {offerer && (
                 <div>
-                  Structure:
+                  {'Structure:'}
                   <span className="select is-rounded is-small">
                     <select
-                      onChange={event =>
-                        pagination.change({
-                          [mapApiToWindow.offererId]: event.target.value,
-                        })
-                      }
                       className=""
-                      value={offerer.id}>
+                      onBlur={this.handleOnChange(event, pagination)}
+                      value={offerer.id}
+                    >
                       {offerers.map(item => (
-                        <option key={item.id} value={item.id}>
+                        <option
+                          key={item.id}
+                          value={item.id}
+                        >
                           {item.name}
                         </option>
                       ))}
@@ -185,50 +194,77 @@ class RawAccouting extends Component {
               )}
             </div>
 
-            <table className="accounting" style={{ width: '100%' }}>
+            <table
+              className="accounting"
+              style={{ width: '100%' }}
+            >
               <thead>
                 <tr>
-                  <th className="first-row" colSpan="5">
-                    OFFRE
+                  <th
+                    className="first-row"
+                    colSpan="5"
+                  >
+                    {'OFFRE'}
                   </th>
-                  <th className="first-row" colSpan="2">
-                    RESERVATION
+                  <th
+                    className="first-row"
+                    colSpan="2"
+                  >
+                    {'RESERVATION'}
                   </th>
-                  <th className="first-row" colSpan="4">
-                    REMBOURSEMENT
+                  <th
+                    className="first-row"
+                    colSpan="4"
+                  >
+                    {'REMBOURSEMENT'}
                   </th>
                 </tr>
                 <tr>
-                  {/* @TODO: Fix fake key attributes !*/}
-                  <Th label="Date" field="booking.%22dataModified%22" />
-                  <Th label="Catégorie" field="category" />
-                  <Th label="Structure" field="structure" />
-                  <Th label="Lieu" field="place" />
-                  <Th style={{ width: '60px' }} label="Type" field="type" />
                   <Th
-                    style={{ width: '100px' }}
-                    label="Date limite d'annulation"
-                    field="cancelDate"
+                    field="booking.%22dataModified%22"
+                    label="Date"
                   />
                   <Th
-                    style={{ width: '85px' }}
-                    label="Taux écoulé"
-                    field="rate"
+                    field="category"
+                    label="Catégorie"
                   />
                   <Th
+                    field="structure"
+                    label="Structure"
+                  />
+                  <Th
+                    field="place"
+                    label="Lieu"
+                  />
+                  <Th
+                    field="type"
+                    label="Type"
                     style={{ width: '60px' }}
-                    label="Prix pass"
+                  />
+                  <Th
+                    field="cancelDate"
+                    label="Date limite d’annulation"
+                    style={{ width: '100px' }}
+                  />
+                  <Th
+                    field="rate"
+                    label="Taux écoulé"
+                    style={{ width: '85px' }}
+                  />
+                  <Th
                     field="passPrice"
+                    label="Prix pass"
+                    style={{ width: '60px' }}
                   />
                   <Th
-                    style={{ width: '80px' }}
-                    label="Montant rbt."
                     field="ammount"
+                    label="Montant rbt."
+                    style={{ width: '80px' }}
                   />
                   <Th
-                    style={{ width: '120px' }}
-                    label="État du paiement"
                     field="state"
+                    label="État du paiement"
+                    style={{ width: '120px' }}
                   />
                   <th style={{ width: '25px' }} />
                 </tr>
@@ -236,18 +272,14 @@ class RawAccouting extends Component {
               <InfiniteScroller
                 Tag="tbody"
                 className="offers-list main-list"
-                handleLoadMore={this.handleLoadMore}
-                renderLoading={() => (
-                  <tr>
-                    <Spinner
-                      Tag="td"
-                      colSpan="6"
-                      style={{ justifyContent: 'center' }}
-                    />
-                  </tr>
-                )}>
+                handleLoadMore={this.onHandleLoadMore}
+                renderLoading={this.renderLoading}
+              >
                 {bookings.map(booking => (
-                  <BookingItem key={booking.id} booking={booking} />
+                  <BookingItem
+                    booking={booking}
+                    key={booking.id}
+                  />
                 ))}
               </InfiniteScroller>
             </table>
@@ -256,6 +288,10 @@ class RawAccouting extends Component {
       </Main>
     )
   }
+}
+
+RawAccouting.propTypes = {
+  dispatch: PropTypes.func.isRequired,
 }
 
 export default RawAccouting

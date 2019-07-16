@@ -8,7 +8,7 @@ class DownloadButton extends PureComponent {
     this.state = { isLoading: false }
   }
 
-  onClick = () => {
+  handleOnClick = () => {
     const { downloadFileOrNotifyAnError } = this.props
     this.setState({ isLoading: true }, async () => {
       await downloadFileOrNotifyAnError()
@@ -19,6 +19,7 @@ class DownloadButton extends PureComponent {
   render() {
     const { children } = this.props
     const { isLoading } = this.state
+
     return (
       <button
         className={classnames('button is-primary', {
@@ -26,8 +27,9 @@ class DownloadButton extends PureComponent {
         })}
         disabled={isLoading}
         download
-        onClick={this.onClick}
-        type="button">
+        onClick={this.handleOnClick}
+        type="button"
+      >
         {children}
       </button>
     )
@@ -35,10 +37,7 @@ class DownloadButton extends PureComponent {
 }
 
 DownloadButton.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]),
+  children: PropTypes.string.isRequired,
   downloadFileOrNotifyAnError: PropTypes.func.isRequired,
 }
 

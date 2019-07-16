@@ -1,4 +1,4 @@
-import SignupValidation from 'components/pages/Signup/validation/SignupValidation'
+import SignupValidation from '../../../../../components/pages/Signup/validation/SignupValidation'
 import { mount, shallow } from 'enzyme'
 import React from 'react'
 import { Redirect, Router } from 'react-router-dom'
@@ -54,7 +54,7 @@ describe('src | components | pages | Signup | validation', () => {
     )
 
     // then
-    expect(dispatch.mock.calls[0][0]).toEqual({
+    expect(dispatch.mock.calls[0][0]).toStrictEqual({
       config: {
         apiPath: '/validate/user/AAA',
         handleFail: expect.any(Function),
@@ -76,7 +76,7 @@ describe('src | components | pages | Signup | validation', () => {
 
       // then
       const notifySuccessCall = dispatch.mock.calls[1][0]
-      expect(notifySuccessCall).toEqual({
+      expect(notifySuccessCall).toStrictEqual({
         patch: {
           text:
             'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.',
@@ -106,7 +106,7 @@ describe('src | components | pages | Signup | validation', () => {
 
       // then
       const notifyFailureCall = dispatch.mock.calls[1][0]
-      expect(notifyFailureCall).toEqual({
+      expect(notifyFailureCall).toStrictEqual({
         patch: {
           text: ['error1', 'error2'],
           type: 'danger',

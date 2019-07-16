@@ -34,7 +34,7 @@ ShallowWrapper {
         <div
           className="field-group"
         >
-          <Unknown
+          <HiddenField
             name="isLocationFrozen"
             validator={[Function]}
           />
@@ -52,7 +52,6 @@ ShallowWrapper {
             placeholder=""
             readOnly={true}
             required={false}
-            type="text"
             validate={null}
             withMap={true}
           />
@@ -92,14 +91,14 @@ ShallowWrapper {
             type="text"
             validate={null}
           />
-          <Unknown
+          <NumberField
             innerClassName="col-33"
             label="Latitude : "
             name="latitude"
             readOnly={true}
             required={true}
           />
-          <Unknown
+          <NumberField
             innerClassName="col-33"
             label="Longitude : "
             name="longitude"
@@ -130,7 +129,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <Unknown
+            <HiddenField
               name="isLocationFrozen"
               validator={[Function]}
             />,
@@ -148,7 +147,6 @@ ShallowWrapper {
               placeholder=""
               readOnly={true}
               required={false}
-              type="text"
               validate={null}
               withMap={true}
             />,
@@ -188,14 +186,14 @@ ShallowWrapper {
               type="text"
               validate={null}
             />,
-            <Unknown
+            <NumberField
               innerClassName="col-33"
               label="Latitude : "
               name="latitude"
               readOnly={true}
               required={true}
             />,
-            <Unknown
+            <NumberField
               innerClassName="col-33"
               label="Longitude : "
               name="longitude"
@@ -210,7 +208,7 @@ ShallowWrapper {
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "function",
+            "nodeType": "class",
             "props": Object {
               "name": "isLocationFrozen",
               "validator": [Function],
@@ -237,7 +235,6 @@ ShallowWrapper {
               "placeholder": "",
               "readOnly": true,
               "required": false,
-              "type": "text",
               "validate": null,
               "withMap": true,
             },
@@ -348,7 +345,7 @@ ShallowWrapper {
           <div
             className="field-group"
           >
-            <Unknown
+            <HiddenField
               name="isLocationFrozen"
               validator={[Function]}
             />
@@ -366,7 +363,6 @@ ShallowWrapper {
               placeholder=""
               readOnly={true}
               required={false}
-              type="text"
               validate={null}
               withMap={true}
             />
@@ -406,14 +402,14 @@ ShallowWrapper {
               type="text"
               validate={null}
             />
-            <Unknown
+            <NumberField
               innerClassName="col-33"
               label="Latitude : "
               name="latitude"
               readOnly={true}
               required={true}
             />
-            <Unknown
+            <NumberField
               innerClassName="col-33"
               label="Longitude : "
               name="longitude"
@@ -444,7 +440,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <Unknown
+              <HiddenField
                 name="isLocationFrozen"
                 validator={[Function]}
               />,
@@ -462,7 +458,6 @@ ShallowWrapper {
                 placeholder=""
                 readOnly={true}
                 required={false}
-                type="text"
                 validate={null}
                 withMap={true}
               />,
@@ -502,14 +497,14 @@ ShallowWrapper {
                 type="text"
                 validate={null}
               />,
-              <Unknown
+              <NumberField
                 innerClassName="col-33"
                 label="Latitude : "
                 name="latitude"
                 readOnly={true}
                 required={true}
               />,
-              <Unknown
+              <NumberField
                 innerClassName="col-33"
                 label="Longitude : "
                 name="longitude"
@@ -524,7 +519,7 @@ ShallowWrapper {
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "function",
+              "nodeType": "class",
               "props": Object {
                 "name": "isLocationFrozen",
                 "validator": [Function],
@@ -551,7 +546,6 @@ ShallowWrapper {
                 "placeholder": "",
                 "readOnly": true,
                 "required": false,
-                "type": "text",
                 "validate": null,
                 "withMap": true,
               },
@@ -671,6 +665,8 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
 }
 `;

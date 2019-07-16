@@ -24,19 +24,17 @@ test('Création des données', async () => {
 
 fixture('Mediation A | Naviguer vers "ajouter une accroche"')
 
-test("Lorsque je clique sur le bouton 'créer une accroche' sur la page d'une offre, j'accède au formulaire de création d'une accroche", async t => {
+test("Lorsque je clique sur le bouton 'créer une accroche' sur la page d’une offre, j’accède au formulaire de création d’une accroche", async t => {
   // when
   const { offer, user } = dataFromSandbox
   await navigateToNewMediationAs(user, offer, userRole)(t)
 
   // then
   const location = await t.eval(() => window.location)
-  await t
-    .expect(location.pathname)
-    .match(/offres\/([A-Z0-9]*)\/accroches\/nouveau$/)
+  await t.expect(location.pathname).match(/offres\/([A-Z0-9]*)\/accroches\/nouveau$/)
 })
 
-fixture("Mediation B | Charger des images de l'url input")
+fixture('Mediation B | Charger des images de l’url input')
 
 test('Je peux charger une image same origin', async t => {
   // given
@@ -67,7 +65,7 @@ test('Je peux charger une CORS image', async t => {
   await t.expect(dropZoneDiv.exists).ok()
 })
 
-test("Je peux changer d'image chargée", async t => {
+test('Je peux changer d’image chargée', async t => {
   // given
   const { offer, user } = dataFromSandbox
   await navigateToNewMediationAs(user, offer, userRole)(t)

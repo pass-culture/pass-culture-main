@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Venue | fields | AddressField AddressFieldRender should match snapshot 1`] = `
+exports[`src | components | pages | Venue | fields | AddressField addressFieldRender should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Unknown
@@ -52,7 +52,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
 }
 `;
 
@@ -71,7 +73,6 @@ ShallowWrapper {
     placeholder=""
     readOnly={false}
     required={false}
-    type="text"
     validate={null}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -86,7 +87,7 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "class",
+    "nodeType": "function",
     "props": Object {
       "format": null,
       "name": "fake name",
@@ -101,7 +102,7 @@ ShallowWrapper {
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "class",
+      "nodeType": "function",
       "props": Object {
         "format": null,
         "name": "fake name",
@@ -136,6 +137,8 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
 }
 `;

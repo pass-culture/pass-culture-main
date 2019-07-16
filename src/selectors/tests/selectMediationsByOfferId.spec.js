@@ -1,43 +1,43 @@
-import { selectMediationsByOfferId } from '../selectMediationsByOfferId'
+import selectMediationsByOfferId from '../selectMediationsByOfferId'
 
 describe('selectMediationsByOfferId', () => {
-  describe('When there is no mediations in state and no offerId provided', () => {
+  describe('when there is no mediations in state and no offerId provided', () => {
     it('should return an empty array', () => {
-      // Given
+      // given
       const state = {
         data: {
           mediations: [],
         },
       }
 
-      // When
+      // when
       const mediations = selectMediationsByOfferId(state)
 
-      // Then
-      expect(mediations).toEqual([])
+      // then
+      expect(mediations).toStrictEqual([])
     })
   })
 
-  describe('When there is no mediations in state and offerId', () => {
+  describe('when there is no mediations in state and offerId', () => {
     it('should return an empty array', () => {
-      // Given
+      // given
       const state = {
         data: {
           mediations: [],
         },
       }
 
-      // When
+      // when
       const mediations = selectMediationsByOfferId(state, 'MY')
 
-      // Then
-      expect(mediations).toEqual([])
+      // then
+      expect(mediations).toStrictEqual([])
     })
   })
 
-  describe('When there are mediations in state and offerI is not matching', () => {
+  describe('when there are mediations in state and offerI is not matching', () => {
     it('should return an empty array', () => {
-      // Given
+      // given
       const state = {
         data: {
           mediations: [
@@ -61,17 +61,17 @@ describe('selectMediationsByOfferId', () => {
         },
       }
 
-      // When
+      // when
       const mediations = selectMediationsByOfferId(state, 'MY')
 
-      // Then
-      expect(mediations).toEqual([])
+      // then
+      expect(mediations).toStrictEqual([])
     })
   })
 
-  describe('When there are mediations in state and offerId matching', () => {
+  describe('when there are mediations in state and offerId matching', () => {
     it('should return the mediations matching with offerId', () => {
-      // Given
+      // given
       const state = {
         data: {
           mediations: [
@@ -95,7 +95,7 @@ describe('selectMediationsByOfferId', () => {
         },
       }
 
-      // When
+      // when
       const mediations = selectMediationsByOfferId(state, 'NE')
       const expected = [
         {
@@ -116,8 +116,8 @@ describe('selectMediationsByOfferId', () => {
         },
       ]
 
-      // Then
-      expect(mediations).toEqual(expected)
+      // then
+      expect(mediations).toStrictEqual(expected)
     })
   })
 })

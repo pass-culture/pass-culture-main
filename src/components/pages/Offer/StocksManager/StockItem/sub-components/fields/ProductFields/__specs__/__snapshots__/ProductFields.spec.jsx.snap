@@ -1,19 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offer | StockItem | ProductFields snapshot should match snapshot 1`] = `
+exports[`src | components | pages | Offer | StocksManager | StockItem | sub-components | fields | ProductFields should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <ProductFields
     beginningDatetime={null}
     closeInfo={[MockFunction]}
     dispatch={[MockFunction]}
+    hasIban={false}
     isEvent={true}
-    offer={null}
     parseFormChild={[MockFunction]}
     readOnly={true}
     showInfo={[MockFunction]}
     stock={null}
     timezone={null}
+    venue={Object {}}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -33,17 +34,17 @@ ShallowWrapper {
         <td
           title="Gratuit si vide"
         >
-          <Unknown
+          <HiddenField
             name="offerId"
             type="hidden"
             validator={[Function]}
           />
-          <Unknown
+          <HiddenField
             name="venueId"
             type="hidden"
             validator={[Function]}
           />
-          <Unknown
+          <PriceField
             format={[Function]}
             name="price"
             onBlur={[Function]}
@@ -79,7 +80,7 @@ ShallowWrapper {
         <td
           className="tooltiped"
         >
-          <Unknown
+          <NumberField
             format={[Function]}
             name="available"
             placeholder="Illimité"
@@ -104,17 +105,17 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <Unknown
+            <HiddenField
               name="offerId"
               type="hidden"
               validator={[Function]}
             />,
-            <Unknown
+            <HiddenField
               name="venueId"
               type="hidden"
               validator={[Function]}
             />,
-            <Unknown
+            <PriceField
               format={[Function]}
               name="price"
               onBlur={[Function]}
@@ -130,7 +131,7 @@ ShallowWrapper {
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "function",
+            "nodeType": "class",
             "props": Object {
               "name": "offerId",
               "type": "hidden",
@@ -143,7 +144,7 @@ ShallowWrapper {
           Object {
             "instance": null,
             "key": undefined,
-            "nodeType": "function",
+            "nodeType": "class",
             "props": Object {
               "name": "venueId",
               "type": "hidden",
@@ -234,7 +235,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": <Unknown
+          "children": <NumberField
             format={[Function]}
             name="available"
             placeholder="Illimité"
@@ -289,17 +290,17 @@ ShallowWrapper {
           <td
             title="Gratuit si vide"
           >
-            <Unknown
+            <HiddenField
               name="offerId"
               type="hidden"
               validator={[Function]}
             />
-            <Unknown
+            <HiddenField
               name="venueId"
               type="hidden"
               validator={[Function]}
             />
-            <Unknown
+            <PriceField
               format={[Function]}
               name="price"
               onBlur={[Function]}
@@ -335,7 +336,7 @@ ShallowWrapper {
           <td
             className="tooltiped"
           >
-            <Unknown
+            <NumberField
               format={[Function]}
               name="available"
               placeholder="Illimité"
@@ -360,17 +361,17 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <Unknown
+              <HiddenField
                 name="offerId"
                 type="hidden"
                 validator={[Function]}
               />,
-              <Unknown
+              <HiddenField
                 name="venueId"
                 type="hidden"
                 validator={[Function]}
               />,
-              <Unknown
+              <PriceField
                 format={[Function]}
                 name="price"
                 onBlur={[Function]}
@@ -386,7 +387,7 @@ ShallowWrapper {
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "function",
+              "nodeType": "class",
               "props": Object {
                 "name": "offerId",
                 "type": "hidden",
@@ -399,7 +400,7 @@ ShallowWrapper {
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "function",
+              "nodeType": "class",
               "props": Object {
                 "name": "venueId",
                 "type": "hidden",
@@ -490,7 +491,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <Unknown
+            "children": <NumberField
               format={[Function]}
               name="available"
               placeholder="Illimité"
@@ -559,7 +560,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;

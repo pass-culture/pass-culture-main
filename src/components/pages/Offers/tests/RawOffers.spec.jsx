@@ -52,19 +52,18 @@ describe('src | components | pages | Offers | RawOffers', () => {
         const expected = {
           hasMore: false,
           isLoading: true,
-          keywordsValue: undefined,
         }
 
         // when
         const wrapper = shallow(<RawOffers {...initialProps} />)
 
         // then
-        expect(wrapper.state()).toEqual(expected)
+        expect(wrapper.state()).toStrictEqual(expected)
         dispatchMock.mockClear()
         queryChangeMock.mockClear()
       })
     })
-    describe('OfferItem', () => {
+    describe('offerItem', () => {
       it('should render items corresponding to offers', () => {
         // given
         initialProps.offers = mockedOffers
@@ -77,9 +76,9 @@ describe('src | components | pages | Offers | RawOffers', () => {
         expect(offerItem).toHaveLength(mockedOffers.length)
       })
     })
-    describe('When offers shown for an offerer or a venue', () => {
-      describe('NavLink to create offer', () => {
-        describe('When user isAdmin', () => {
+    describe('when offers shown for an offerer or a venue', () => {
+      describe('navLink to create offer', () => {
+        describe('when user isAdmin', () => {
           it('should display NavLink', () => {
             // given
             initialProps.currentUser = {
@@ -94,7 +93,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
             expect(navLink).toHaveLength(0)
           })
         })
-        describe('When structure (or offererId)', () => {
+        describe('when structure (or offererId)', () => {
           it('should render link properly', () => {
             // given
             initialProps.currentUser = {
@@ -110,12 +109,10 @@ describe('src | components | pages | Offers | RawOffers', () => {
 
             // then
             expect(navLink).toHaveLength(1)
-            expect(navLink.props().to).toEqual(
-              '/offres/creation?structure=TEST'
-            )
+            expect(navLink.props().to).toStrictEqual('/offres/creation?structure=TEST')
           })
         })
-        describe('When lieu or (VenueId)', () => {
+        describe('when lieu or (VenueId)', () => {
           it('should render link properly', () => {
             // given
             initialProps.currentUser = {
@@ -131,7 +128,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
 
             // then
             expect(navLink).toHaveLength(1)
-            expect(navLink.props().to).toEqual('/offres/creation?lieu=LIEU')
+            expect(navLink.props().to).toStrictEqual('/offres/creation?lieu=LIEU')
           })
         })
       })
@@ -151,7 +148,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
         }
 
         // then
-        expect(dispatchMock.mock.calls[0][0]).toEqual(expectedAssignData)
+        expect(dispatchMock.mock.calls[0][0]).toStrictEqual(expectedAssignData)
         dispatchMock.mockClear()
         queryChangeMock.mockClear()
       })
@@ -171,7 +168,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
           wrapper.instance().componentDidMount()
 
           // then
-          expect(queryChangeMock.mock.call).toEqual({ page: null })
+          expect(queryChangeMock.mock.call).toStrictEqual({ page: null })
           queryChangeMock.mockClear()
         })
       })
@@ -197,7 +194,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
           }
 
           // then
-          expect(dispatchMock.mock.calls[1][0]).toEqual(expected)
+          expect(dispatchMock.mock.calls[1][0]).toStrictEqual(expected)
           dispatchMock.mockClear()
         })
       })
@@ -227,14 +224,14 @@ describe('src | components | pages | Offers | RawOffers', () => {
           }
 
           // the
-          expect(dispatchMock.mock.calls[1][0]).toEqual(expectedAssignData)
+          expect(dispatchMock.mock.calls[1][0]).toStrictEqual(expectedAssignData)
 
           dispatchMock.mockClear()
         })
       })
     })
 
-    describe('onSubmit', () => {
+    describe('handleOnSubmit', () => {
       // when
       const wrapper = shallow(<RawOffers {...initialProps} />)
       const event = Object.assign(jest.fn(), {
@@ -251,20 +248,19 @@ describe('src | components | pages | Offers | RawOffers', () => {
       describe('when keywords is not an empty string', () => {
         it('should update state with isLoading to true', () => {
           // when
-          wrapper.instance().onSubmit(event)
+          wrapper.instance().handleOnSubmit(event)
           const expected = {
             hasMore: false,
             isLoading: true,
-            keywordsValue: undefined,
           }
 
           // then
-          expect(wrapper.state()).toEqual(expected)
+          expect(wrapper.state()).toStrictEqual(expected)
         })
 
         it('should dispatch assignData with good params', () => {
           // when
-          wrapper.instance().onSubmit(event)
+          wrapper.instance().handleOnSubmit(event)
 
           const expected = {
             patch: {
@@ -274,20 +270,20 @@ describe('src | components | pages | Offers | RawOffers', () => {
           }
 
           // then
-          expect(dispatchMock.mock.calls[0][0]).toEqual(expected)
+          expect(dispatchMock.mock.calls[0][0]).toStrictEqual(expected)
           dispatchMock.mockClear()
         })
 
         it('should change query', () => {
           // when
-          wrapper.instance().onSubmit(event)
+          wrapper.instance().handleOnSubmit(event)
           const expected = {
             'mots-cles': 'AnyWord',
             page: null,
           }
 
           // then
-          expect(queryChangeMock.mock.calls[0][0]).toEqual(expected)
+          expect(queryChangeMock.mock.calls[0][0]).toStrictEqual(expected)
           queryChangeMock.mockClear()
         })
       })
@@ -307,14 +303,14 @@ describe('src | components | pages | Offers | RawOffers', () => {
           })
 
           // when
-          wrapper.instance().onSubmit(eventEmptyWord)
+          wrapper.instance().handleOnSubmit(eventEmptyWord)
           const expected = {
             'mots-cles': null,
             page: null,
           }
 
           // then
-          expect(queryChangeMock.mock.calls[0][0]).toEqual(expected)
+          expect(queryChangeMock.mock.calls[0][0]).toStrictEqual(expected)
           queryChangeMock.mockClear()
         })
       })

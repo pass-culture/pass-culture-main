@@ -6,16 +6,16 @@ import React, { Component } from 'react'
 import ReactTooltip from 'react-tooltip'
 
 class Notification extends Component {
-  dispatchCloseNotification = () => {
-    const { dispatch } = this.props
-    dispatch(closeNotification())
-  }
-
   componentDidUpdate() {
     const { notification } = this.props
     if (get(notification, 'tooltip')) {
       ReactTooltip.rebuild()
     }
+  }
+
+  handleDispatchCloseNotification = () => {
+    const { dispatch } = this.props
+    dispatch(closeNotification())
   }
 
   render() {
@@ -41,37 +41,47 @@ class Notification extends Component {
 
     return (
       <div
-      className={classnames(`notification is-${type || 'info'}`, {
-        fullscreen: isFullscreen
-      })}>
+        className={classnames(`notification is-${type || 'info'}`, {
+          fullscreen: isFullscreen,
+        })}
+      >
         <div
-        className={classnames('is-flex fullscreen', {
-          'small-padding': !isFullscreen,
-        })}>
+          className={classnames('is-flex fullscreen', {
+            'small-padding': !isFullscreen,
+          })}
+        >
           <div className="notification-description">
             <Icon svg={svg} />
             <span className="ml8 mb6">{text}</span>
           </div>
           <div className="notification-action-links">
             {url && (
-              <a className="close pl12" href={url}>{urlLabel}</a>
+              <a
+                className="close pl12"
+                href={url}
+              >
+                {urlLabel}
+              </a>
             )}
             {tooltip ? (
               <span
-              className={classnames({
-                'has-text-weight-semibold tooltip small-padding is-2': !isFullscreen,
-              })}
-              data-place={tooltip.place}
-              data-tip={tooltip.tip}
-              data-type={tooltip.type}>
-              {tooltip.children}
+                className={classnames({
+                  'has-text-weight-semibold tooltip small-padding is-2': !isFullscreen,
+                })}
+                data-place={tooltip.place}
+                data-tip={tooltip.tip}
+                data-type={tooltip.type}
+              >
+                {tooltip.children}
               </span>
             ) : (
               <button
-              className="close pl12"
-              onClick={this.dispatchCloseNotification}>
-              {url ? 'Fermer' : 'OK'}
-            </button>
+                className="close pl12"
+                onClick={this.handleDispatchCloseNotification}
+                type="button"
+              >
+                {url ? 'Fermer' : 'OK'}
+              </button>
             )}
           </div>
         </div>
@@ -83,21 +93,12 @@ class Notification extends Component {
 Notification.defaultProps = {
   isFullscreen: false,
   notification: null,
-  tooltip: null,
-  type: null,
-  url: null,
-  urlLabel: null
 }
 
 Notification.propTypes = {
   dispatch: PropTypes.func.isRequired,
   isFullscreen: PropTypes.bool,
-  notification: PropTypes.object,
-  text: PropTypes.string,
-  tooltip: PropTypes.object,
-  type: PropTypes.string,
-  url: PropTypes.string,
-  urlLabel: PropTypes.string,
+  notification: PropTypes.shape(),
 }
 
 export default Notification

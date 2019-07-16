@@ -6,17 +6,14 @@ import { requestData } from 'redux-saga-data'
 
 import CreationControl from './controls/CreationControl'
 import ModificationControl from './controls/ModificationControl'
-import {
-  OFFERER_CREATION_PATCH_KEYS,
-  OFFERER_MODIFICATION_PATCH_KEYS,
-} from './utils'
-import HeroSection from 'components/layout/HeroSection/HeroSection'
-import Main from 'components/layout/Main'
-import { offererNormalizer } from 'utils/normalizers'
-import { formatPatch } from 'utils/formatPatch'
+import { OFFERER_CREATION_PATCH_KEYS, OFFERER_MODIFICATION_PATCH_KEYS } from './utils'
+import HeroSection from '../../layout/HeroSection/HeroSection'
+import Main from '../../layout/Main'
+import { offererNormalizer } from '../../../utils/normalizers'
+import { formatPatch } from '../../../utils/formatPatch'
 
 class Offerer extends Component {
-  handleDataRequest = (handleSuccess, handleFail) => {
+  onHandleDataRequest = (handleSuccess, handleFail) => {
     const {
       dispatch,
       match: {
@@ -44,17 +41,17 @@ class Offerer extends Component {
     handleSuccess()
   }
 
-   handleFail = () => {
-     const { dispatch } = this.props
-     dispatch(
-       showNotification({
-         text: "Vous étes déjà rattaché à cette structure.",
-         type: 'danger',
-       })
-     )
-   }
+  onHandleFail = () => {
+    const { dispatch } = this.props
+    dispatch(
+      showNotification({
+        text: 'Vous étes déjà rattaché à cette structure.',
+        type: 'danger',
+      })
+    )
+  }
 
-  handleSuccess = () => {
+  onHandleSuccess = () => {
     const { dispatch, history } = this.props
     const { isCreatedEntity } = this.props
 
@@ -72,9 +69,10 @@ class Offerer extends Component {
     )
   }
 
-  onAddProviderClick = () => {
-    this.setState({ isCreatedEntityProvider: true })
-  }
+  handleDisabling = offererName => () => !offererName
+
+  formatPatch = patchConfig => patch =>
+    formatPatch(patch, patchConfig, OFFERER_CREATION_PATCH_KEYS, OFFERER_MODIFICATION_PATCH_KEYS)
 
   render() {
     const { adminUserOfferer, offerer, query, offererName } = this.props
@@ -87,35 +85,32 @@ class Offerer extends Component {
     return (
       <Main
         backTo={{ label: 'Vos structures juridiques', path: '/structures' }}
+        handleDataRequest={this.onHandleDataRequest}
         name="offerer"
-        handleDataRequest={this.handleDataRequest}>
-        <HeroSection subtitle={get(offerer, 'name')} title="Structure">
+      >
+        <HeroSection
+          subtitle={get(offerer, 'name')}
+          title="Structure"
+        >
           <p className="subtitle">
-            Détails de la structure rattachée, des lieux et des fournisseurs de
-            ses offres.
+            {'Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.'}
           </p>
         </HeroSection>
 
         <Form
           action={`/offerers/${get(offerer, 'id') || ''}`}
-          name="offerer"
           className="section"
-          formatPatch={patch =>
-            formatPatch(
-              patch,
-              patchConfig,
-              OFFERER_CREATION_PATCH_KEYS,
-              OFFERER_MODIFICATION_PATCH_KEYS
-            )
-          }
-          handleSuccess={this.handleSuccess}
-          handleFail={this.handleFail}
+          formatPatch={this.formatPatch(patchConfig)}
+          handleFail={this.onHandleFail}
+          handleSuccess={this.onHandleSuccess}
+          name="offerer"
           patch={offerer}
-          readOnly={readOnly}>
+          readOnly={readOnly}
+        >
           <div className="section">
             <div className="field-group">
               <Field
-                disabling={() => !offererName}
+                disabling={this.handleDisabling(offererName)}
                 label="SIREN"
                 name="siren"
                 readOnly={get(offerer, 'id')}
@@ -145,7 +140,7 @@ class Offerer extends Component {
           </div>
           <div className="section">
             <h2 className="main-list-title">
-              INFORMATIONS BANCAIRES
+              {'INFORMATIONS BANCAIRES'}
               <span className="is-pulled-right is-size-7 has-text-grey">
                 {readOnly &&
                   !adminUserOfferer &&
@@ -160,8 +155,8 @@ class Offerer extends Component {
                 isExpanded
                 label="BIC"
                 name="bic"
-                type="bic"
                 readOnly={areBankInfosReadOnly}
+                type="bic"
               />
               <Field
                 className={classnames({
@@ -170,15 +165,11 @@ class Offerer extends Component {
                 isExpanded
                 label="IBAN"
                 name="iban"
-                type="iban"
                 readOnly={areBankInfosReadOnly}
+                type="iban"
               />
             </div>
-            {isCreatedEntity ? (
-              <CreationControl />
-            ) : (
-              <ModificationControl {...this.props} />
-            )}
+            {isCreatedEntity ? <CreationControl /> : <ModificationControl {...this.props} />}
           </div>
         </Form>
       </Main>

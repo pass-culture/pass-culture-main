@@ -8,6 +8,7 @@ describe('src | components | Layout | DownloadButton', () => {
     it('should match snapshot', () => {
       // given
       const props = {
+        children: 'Fake title',
         downloadFileOrNotifyAnError: () => jest.fn(),
       }
 
@@ -20,35 +21,38 @@ describe('src | components | Layout | DownloadButton', () => {
     })
   })
   describe('render', () => {
-    it('should set loading and disabled during onClick', done => {
-      // given
-      const props = {
-        downloadFileOrNotifyAnError: () => jest.fn(),
-      }
+    it('should set loading and disabled during onClick', () => {
+      return new Promise(done => {
+        // given
+        const props = {
+          children: 'Fake title',
+          downloadFileOrNotifyAnError: () => jest.fn(),
+        }
 
-      // when
-      const wrapper = shallow(<DownloadButton {...props} />)
+        // when
+        const wrapper = shallow(<DownloadButton {...props} />)
 
-      // then
-      let buttonProps = wrapper.find('button[download]').props()
-      expect(buttonProps.disabled).toEqual(false)
-      expect(buttonProps.className.includes('is-loading')).toEqual(false)
+        // then
+        let buttonProps = wrapper.find('button[download]').props()
+        expect(buttonProps.disabled).toStrictEqual(false)
+        expect(buttonProps.className).not.toContain('is-loading')
 
-      // when
-      wrapper.find('button[download]').simulate('click')
+        // when
+        wrapper.find('button[download]').simulate('click')
 
-      // then
-      buttonProps = wrapper.find('button[download]').props()
-      expect(buttonProps.disabled).toEqual(true)
-      expect(buttonProps.className.includes('is-loading')).toEqual(true)
-
-      // when (in the end of digest)
-      setTimeout(() => {
         // then
         buttonProps = wrapper.find('button[download]').props()
-        expect(buttonProps.disabled).toEqual(false)
-        expect(buttonProps.className.includes('is-loading')).toEqual(false)
-        done()
+        expect(buttonProps.disabled).toStrictEqual(true)
+        expect(buttonProps.className).toContain('is-loading')
+
+        // when (in the end of digest)
+        setTimeout(() => {
+          // then
+          buttonProps = wrapper.find('button[download]').props()
+          expect(buttonProps.disabled).toStrictEqual(false)
+          expect(buttonProps.className).not.toContain('is-loading')
+          done()
+        })
       })
     })
   })

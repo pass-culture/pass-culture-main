@@ -4,8 +4,8 @@ import { Portal } from 'react-portal'
 import { requestData } from 'redux-saga-data'
 
 import DeleteDialog from '../DeleteDialog/DeleteDialog'
-import { withFrenchQueryRouter } from 'components/hocs'
-import Icon from 'components/layout/Icon'
+import withFrenchQueryRouter from '../../../../../../hocs/withFrenchQueryRouter'
+import Icon from '../../../../../../layout/Icon'
 import { errorKeyToFrenchKey } from '../../utils'
 
 class EditAndDeleteControl extends Component {
@@ -16,15 +16,15 @@ class EditAndDeleteControl extends Component {
     }
   }
 
-  onDeleteClick = () => {
+  handleOnDeleteClick = () => {
     this.setState({ isDeleting: true })
   }
 
-  onCancelDeleteClick = () => {
+  handleOnCancelDeleteClick = () => {
     this.setState({ isDeleting: false })
   }
 
-  handleRequestFail = formResolver => (state, action) => {
+  handleRequestFail = () => (state, action) => {
     const { handleSetErrors } = this.props
     const {
       payload: { errors },
@@ -34,16 +34,16 @@ class EditAndDeleteControl extends Component {
       .filter(errorKeyToFrenchKey)
       .reduce(
         (result, errorKey) =>
-          Object.assign(
-            { [errorKeyToFrenchKey(errorKey)]: errors[errorKey] },
-            result
-          ),
+          Object.assign({ [errorKeyToFrenchKey(errorKey)]: errors[errorKey] }, result),
         null
       )
     this.setState(nextState, () => handleSetErrors(frenchErrors))
   }
 
-  onConfirmDeleteClick = () => {
+  handleOnClick = (query, stockId) => () =>
+    query.changeToModification(null, { id: stockId, key: 'stock' })
+
+  handleOnConfirmDeleteClick = () => {
     const { dispatch, formInitialValues } = this.props
 
     const formSubmitPromise = new Promise(resolve => {
@@ -59,7 +59,7 @@ class EditAndDeleteControl extends Component {
   }
 
   render() {
-    const { isEvent, query, stock } = this.props
+    const { isEvent, query, stock, tbody } = this.props
     const { id: stockId } = stock
     const { isDeleting } = this.state
 
@@ -71,11 +71,11 @@ class EditAndDeleteControl extends Component {
     if (isDeleting) {
       return (
         <td colSpan="2">
-          <Portal node={this.props.tbody}>
+          <Portal node={tbody}>
             <DeleteDialog
               isEvent={isEvent}
-              onCancelDeleteClick={this.onCancelDeleteClick}
-              onConfirmDeleteClick={this.onConfirmDeleteClick}
+              onCancelDeleteClick={this.handleOnCancelDeleteClick}
+              onConfirmDeleteClick={this.handleOnConfirmDeleteClick}
             />
           </Portal>
         </td>
@@ -88,9 +88,9 @@ class EditAndDeleteControl extends Component {
           <button
             className="button is-small is-secondary edit-stock"
             id={`edit-stock-${stockId}-button`}
-            onClick={() =>
-              query.changeToModification(null, { id: stockId, key: 'stock' })
-            }>
+            onClick={this.handleOnClick(query, stockId)}
+            type="button"
+          >
             <span className="icon">
               <Icon svg="ico-pen-r" />
             </span>
@@ -100,8 +100,10 @@ class EditAndDeleteControl extends Component {
           {!isDeleting && (
             <button
               className="button is-small is-secondary delete-stock"
+              onClick={this.handleOnDeleteClick}
               style={{ width: '100%' }}
-              onClick={this.onDeleteClick}>
+              type="button"
+            >
               <span className="icon">
                 <Icon svg="ico-close-r" />
               </span>
@@ -115,11 +117,11 @@ class EditAndDeleteControl extends Component {
 
 EditAndDeleteControl.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  isEvent: PropTypes.bool.isRequired,
-  query: PropTypes.object.isRequired,
-  stock: PropTypes.object.isRequired,
-  formInitialValues: PropTypes.object.isRequired,
+  formInitialValues: PropTypes.shape().isRequired,
   handleSetErrors: PropTypes.func.isRequired,
+  isEvent: PropTypes.bool.isRequired,
+  query: PropTypes.shape().isRequired,
+  stock: PropTypes.shape().isRequired,
 }
 
 export default withFrenchQueryRouter(EditAndDeleteControl)

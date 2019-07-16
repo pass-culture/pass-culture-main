@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { NavLink, withRouter } from 'react-router-dom'
 import { Field, Form, SubmitButton } from 'pass-culture-shared'
@@ -6,45 +7,52 @@ import { connect } from 'react-redux'
 import get from 'lodash.get'
 
 class SignupForm extends PureComponent {
+  onHandleSuccessRedirect = () => '/inscription/confirmation'
+
+  handleformatPatch = patch => Object.assign({ publicName: patch.firstName }, patch)
+
+  isFieldDisabling = offererName => () => !offererName
+
   render() {
     const { errors, patch, offererName } = this.props
+
     return (
       <section>
         <div className="hero-body">
-          <h1 className="title is-spaced is-1">Créez votre compte</h1>
+          <h1 className="title is-spaced is-1">{'Créez votre compte'}</h1>
           <h2 className="subtitle is-2">
-            Nous vous invitons à prendre connaissance des{' '}
+            {'Nous vous invitons à prendre connaissance des '}
             <a
               className="is-secondary"
               href="https://pass.culture.fr/ressources"
               rel="noopener noreferrer"
-              target="_blank">
-              modalités de fonctionnement en cliquant ici
-            </a>{' '}
-            avant de renseigner les champs suivants.
+              target="_blank"
+            >
+              {'modalités de fonctionnement en cliquant ici '}
+            </a>
+            {'avant de renseigner les champs suivants.'}
           </h2>
           <span className="has-text-grey">
-            {' '}
-            <span className="required-legend"> * </span> Champs obligatoires
+            <span className="required-legend">{'*'}</span>
+            {' Champs obligatoires'}
           </span>
           <Form
             action="/users/signup/pro"
             BlockComponent={null}
+            formatPatch={this.handleformatPatch}
             handleSuccessNotification={null}
-            handleSuccessRedirect={() => '/inscription/confirmation'}
-            formatPatch={patch =>
-              Object.assign({ publicName: patch.firstName }, patch)
-            }
+            handleSuccessRedirect={this.onHandleSuccessRedirect}
             layout="vertical"
+            name="user"
             patch={patch}
-            name="user">
+          >
             <div className="field-group">
               <Field
                 label="Adresse e-mail"
                 name="email"
                 placeholder="nom@exemple.fr"
                 required
-                sublabel="pour se connecter et récupérer son mot de passe en cas d'oubli"
+                sublabel="pour se connecter et récupérer son mot de passe en cas d’oubli"
                 type="email"
               />
               <Field
@@ -60,8 +68,8 @@ class SignupForm extends PureComponent {
                     </ul>
                   </div>
                   `}
-                name="password"
                 label="Mot de passe"
+                name="password"
                 placeholder="Mon mot de passe"
                 required
                 sublabel="pour se connecter"
@@ -82,7 +90,7 @@ class SignupForm extends PureComponent {
                 required
               />
               <Field
-                disabling={() => !offererName}
+                disabling={this.isFieldDisabling(offererName)}
                 label="SIREN"
                 name="siren"
                 placeholder="123 456 789"
@@ -92,42 +100,49 @@ class SignupForm extends PureComponent {
                 withFetchedName
               />
               <Field
-                label="Je souhaite recevoir les actualités du Pass Culture."
+                label="Je souhaite recevoir les actualités du pass Culture"
                 name="newsletter_ok"
                 type="checkbox"
               />
               <Field
-                label="J'accepte d'être contacté par mail pour donner mon avis sur le Pass Culture."
+                label="J’accepte d'être contacté par e-mail pour donner mon avis sur le pass Culture"
                 name="contact_ok"
-                type="checkbox"
                 required
+                type="checkbox"
               />
               <Field
                 className="cgu-field"
                 label={
                   <Fragment>
-                    J’ai lu et j’accepte les{' '}
+                    {'J’ai lu et j’accepte les '}
                     <a
                       href="https://pass-culture.gitbook.io/documents/textes-normatifs"
                       id="accept-cgu-link"
+                      rel="noopener noreferrer"
                       target="_blank"
-                      rel="noopener noreferrer">
-                      Conditions Générales d’Utilisation
+                    >
+                      {'Conditions Générales d’Utilisation'}
                     </a>
                   </Fragment>
                 }
                 name="cgu_ok"
-                type="checkbox"
                 required
+                type="checkbox"
               />
               <div className="errors">{errors}</div>
             </div>
             <div className="buttons-field">
-              <NavLink to="/connexion" className="button is-secondary">
-                J'ai déjà un compte
+              <NavLink
+                className="button is-secondary"
+                to="/connexion"
+              >
+                {'J’ai déjà un compte'}
               </NavLink>
-              <SubmitButton className="button is-primary is-outlined">
-                Créer
+              <SubmitButton
+                className="button is-primary is-outlined"
+                type="submit"
+              >
+                {'Créer'}
               </SubmitButton>
             </div>
           </Form>
@@ -135,6 +150,12 @@ class SignupForm extends PureComponent {
       </section>
     )
   }
+}
+
+SignupForm.propTypes = {
+  errors: PropTypes.string.isRequired,
+  offererName: PropTypes.bool.isRequired,
+  patch: PropTypes.string.isRequired,
 }
 
 function mapStateToProps(state) {

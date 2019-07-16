@@ -54,7 +54,7 @@ describe('src | reducers | bookingSummary', () => {
     })
   })
 
-  describe('BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE', () => {
+  describe('bOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE', () => {
     it('should reinitialize selectedVenue when filtering on digital venues', () => {
       // given
       const initialState = {
@@ -63,7 +63,7 @@ describe('src | reducers | bookingSummary', () => {
       }
       const action = {
         payload: true,
-          type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE',
+        type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE',
       }
 
       // when
@@ -117,5 +117,5 @@ describe('src | reducers | bookingSummary', () => {
         selectedVenue: '',
       })
     })
-  });
+  })
 })

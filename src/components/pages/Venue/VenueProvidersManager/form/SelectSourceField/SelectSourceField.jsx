@@ -3,30 +3,28 @@ import PropTypes from 'prop-types'
 import checkIfProviderShouldBeDisabled from '../../../VenueProvidersManager/utils/checkIfProviderShouldBeDisabled'
 import { DEFAULT_PROVIDER_OPTION } from '../../utils/utils'
 
-const SelectSourceField = ({ handleChange, providers, venueProviders }) => ({
-  input,
-}) => (
+const SelectSourceField = ({ handleChange, providers, venueProviders }) => ({ input }) => (
   <select
     {...input}
     className="field-select"
     id="provider-options"
-    onChange={event => handleChange(event, input)}>
+    onBlur={event => handleChange(event, input)}
+  >
     <option
       key={DEFAULT_PROVIDER_OPTION.id}
-      value={JSON.stringify(DEFAULT_PROVIDER_OPTION)}>
+      value={JSON.stringify(DEFAULT_PROVIDER_OPTION)}
+    >
       {DEFAULT_PROVIDER_OPTION.name}
     </option>
     {providers.map((provider, index) => {
-      const isProviderDisabled = checkIfProviderShouldBeDisabled(
-        venueProviders,
-        provider
-      )
+      const isProviderDisabled = checkIfProviderShouldBeDisabled(venueProviders, provider)
 
       return (
         <option
           disabled={isProviderDisabled}
           key={index}
-          value={JSON.stringify(provider)}>
+          value={JSON.stringify(provider)}
+        >
           {provider.name}
         </option>
       )
@@ -36,8 +34,8 @@ const SelectSourceField = ({ handleChange, providers, venueProviders }) => ({
 
 SelectSourceField.propTypes = {
   handleChange: PropTypes.func.isRequired,
-  providers: PropTypes.array.isRequired,
-  venueProviders: PropTypes.array.isRequired,
+  providers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  venueProviders: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default SelectSourceField

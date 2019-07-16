@@ -6,11 +6,10 @@ function mapArgsToCachedKey(state, isVirtual, offerType) {
   return `${isVirtual || ''}${offerType || ''}`
 }
 
-export const selectTypeByIsVenueVirtualAndOfferTypeValue = createCachedSelector(
+const selectTypeByIsVenueVirtualAndOfferTypeValue = createCachedSelector(
   selectTypesByIsVenueVirtual,
   (state, isVirtual, offerTypeValue) => offerTypeValue,
-  (types, offerTypeValue) =>
-    offerTypeValue && types.find(t => t.value === offerTypeValue)
+  (types, offerTypeValue) => offerTypeValue && types.find(t => t.value === offerTypeValue)
 )(mapArgsToCachedKey)
 
 export default selectTypeByIsVenueVirtualAndOfferTypeValue

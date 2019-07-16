@@ -1,10 +1,7 @@
 import { Selector } from 'testcafe'
 
 import { fetchSandbox } from './helpers/sandboxes'
-import {
-  navigateToOffererAs,
-  navigateToOfferersAs,
-} from './helpers/navigations'
+import { navigateToOffererAs, navigateToOfferersAs } from './helpers/navigations'
 
 const subTitleHeader = Selector('h2')
 
@@ -42,7 +39,7 @@ test('Création des utilisateurs', async () => {
 
 fixture(`Offerers A | Voir la liste de mes structures`)
 
-test("L'utilisateur a au moins une structure validée, il peut se rendre à la page de ses structures", async t => {
+test('L’utilisateur a au moins une structure validée, il peut se rendre à la page de ses structures', async t => {
   // given
   let { id: offererId } = offererOne
   const activationOffererItem = Selector('.offerer-item')
@@ -65,15 +62,13 @@ test("L'utilisateur a au moins une structure validée, il peut se rendre à la p
   await t.expect(subTitleHeader.exists).ok()
 })
 
-test("L'utilisateur a au moins une structure en cours de validation, il peut se rendre à la page de ses structures", async t => {
+test("L’utilisateur a au moins une structure en cours de validation, il peut se rendre à la page de ses structures", async t => {
   // given
   const { id: offererId } = offererTwo
   const activationOffererItem = Selector('.offerer-item')
     .find(`a[href="/structures/${offererId}"]`)
     .parent('.offerer-item')
-  const activationOffererItemValidation = activationOffererItem.find(
-    '#offerer-item-validation'
-  )
+  const activationOffererItemValidation = activationOffererItem.find('#offerer-item-validation')
   const arrow = activationOffererItem.find('div.caret').find('a')
 
   // when
@@ -91,12 +86,10 @@ test("L'utilisateur a au moins une structure en cours de validation, il peut se 
   await t.expect(subTitleHeader.exists).ok()
 })
 
-test("L'utilisateur a au moins un rattachement à une structure en cours de validation, il peut se rendre à la page de ses structures", async t => {
+test("L’utilisateur a au moins un rattachement à une structure en cours de validation, il peut se rendre à la page de ses structures", async t => {
   // given
   const { name: offererName } = offererThree
-  const pendingOffererItem = Selector('.offerer-item.pending').withText(
-    offererName
-  )
+  const pendingOffererItem = Selector('.offerer-item.pending').withText(offererName)
   const arrow = pendingOffererItem.find('div.caret').find('a')
 
   // when
@@ -109,7 +102,7 @@ test("L'utilisateur a au moins un rattachement à une structure en cours de vali
   await t.expect(arrow.exists).notOk()
 })
 
-test("L'utilisateur a au moins un rattachement à une structure en cours de validation, une validée avec un rattachement en cours de validation et une validée avec un rattachement validé", async t => {
+test("L’utilisateur a au moins un rattachement à une structure en cours de validation, une validée avec un rattachement en cours de validation et une validée avec un rattachement validé", async t => {
   // given
   const {
     notValidatedOfferer,
@@ -129,9 +122,7 @@ test("L'utilisateur a au moins un rattachement à une structure en cours de vali
     .parent('.offerer-item')
     .find('#offerer-item-validation')
   const validatedOffererItem = Selector('.offerer-item')
-    .find(
-      `a[href="/structures/${validatedOffererWithValidatedUserOfferer.id}"]`
-    )
+    .find(`a[href="/structures/${validatedOffererWithValidatedUserOfferer.id}"]`)
     .parent('.offerer-item')
 
   // when
@@ -146,9 +137,7 @@ test("L'utilisateur a au moins un rattachement à une structure en cours de vali
   // when
   await t.click(
     validatedOffererItem.find(
-      `a[href="/structures/${
-        validatedOffererWithValidatedUserOfferer.id
-      }/lieux/creation"]`
+      `a[href="/structures/${validatedOffererWithValidatedUserOfferer.id}/lieux/creation"]`
     )
   )
   await t.navigateTo('/structures')
@@ -187,9 +176,7 @@ test('Quand je cherche, je filtre sur les structures en cours de rattachement ET
     .parent('.offerer-item')
     .find('#offerer-item-validation')
   const validatedOffererItem = Selector('.offerer-item')
-    .find(
-      `a[href="/structures/${validatedOffererWithValidatedUserOfferer.id}"]`
-    )
+    .find(`a[href="/structures/${validatedOffererWithValidatedUserOfferer.id}"]`)
     .parent('.offerer-item')
   const searchInput = Selector('#search').find('input')
   const submitButton = Selector('button[type="submit"]')
@@ -197,10 +184,7 @@ test('Quand je cherche, je filtre sur les structures en cours de rattachement ET
 
   // when
   await t
-    .typeText(
-      searchInput,
-      validatedOffererWithNotValidatedUserOfferer.keywordsString
-    )
+    .typeText(searchInput, validatedOffererWithNotValidatedUserOfferer.keywordsString)
     .click(submitButton)
 
   // then
@@ -218,11 +202,9 @@ test('Quand je cherche, je filtre sur les structures en cours de rattachement ET
 
   // when
   await t
-    .typeText(
-      searchInput,
-      validatedOffererWithValidatedUserOfferer.keywordsString,
-      { replace: true }
-    )
+    .typeText(searchInput, validatedOffererWithValidatedUserOfferer.keywordsString, {
+      replace: true,
+    })
     .click(submitButton)
 
   // then

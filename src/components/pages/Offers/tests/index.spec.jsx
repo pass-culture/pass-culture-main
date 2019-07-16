@@ -7,7 +7,7 @@ import { Route, Router } from 'react-router'
 import { compose } from 'redux'
 import configureStore from 'redux-mock-store'
 
-import { withFrenchQueryRouter } from 'components/hocs'
+import withFrenchQueryRouter from '../../../../components/hocs/withFrenchQueryRouter'
 import RawOffers from '../RawOffers'
 import { mapStateToProps } from '../index'
 
@@ -55,7 +55,7 @@ describe('src | components | pages | Offers', () => {
         .props()
         .onClick()
 
-      // given
+      // then
       const queryParams = wrapper
         .find('RawOffers')
         .props()

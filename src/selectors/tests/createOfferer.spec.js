@@ -1,5 +1,5 @@
 import selectOffererById from '../selectOffererById'
-import state from './mockState'
+import state from './mockState.json'
 
 describe('selectOffererById', () => {
   it('should retrieve offerer from state when id is given', () => {
@@ -30,6 +30,6 @@ describe('selectOffererById', () => {
     const result = selectOffererById(state, offererId)
 
     // then
-    expect(result).toEqual(expected)
+    expect(result).toStrictEqual(expected)
   })
 })

@@ -47,7 +47,7 @@ function registerValidSW(swUrl) {
               if (
                 window.location.pathname === '/acceuil' ||
                 window.confirm(
-                  "Une nouvelle version a été téléchargée. Redémarrer pour l'utiliser ?"
+                  'Une nouvelle version a été téléchargée. Redémarrer pour l’utiliser ?'
                 )
               ) {
                 window.location.reload()
@@ -85,9 +85,7 @@ function checkValidServiceWorker(swUrl) {
       }
     })
     .catch(() => {
-      console.log(
-        'No internet connection found. App is running in offline mode.'
-      )
+      console.log('No internet connection found. App is running in offline mode.')
     })
 }
 
