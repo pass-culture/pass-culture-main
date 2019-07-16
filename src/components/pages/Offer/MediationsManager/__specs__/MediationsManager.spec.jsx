@@ -1,9 +1,9 @@
 import React from 'react'
-import { shallow } from 'enzyme'
+import {shallow} from 'enzyme'
 
-import MediationsManager from '../MediationsManager'
-import { NavLink } from 'react-router-dom'
-import { Icon } from 'pass-culture-shared'
+import MediationsManager, {NO_MEDIATION_TOOLTIP} from '../MediationsManager'
+import {NavLink} from 'react-router-dom'
+import {Icon} from 'pass-culture-shared'
 
 describe('src | components | pages | Offer | MediationsManager | MediationsManager', () => {
   let dispatch
@@ -29,7 +29,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
   })
 
   describe('render()', () => {
-    it('should display a notification when no mediation', () => {
+    it('should display a notification when no mediation in offer', () => {
       // when
       shallow(<MediationsManager {...props} />)
 
@@ -41,14 +41,49 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
           tooltip: {
             children: <span>{' Pourquoi ? '}</span>,
             place: 'bottom',
-            tip:
-              '<div><p>Pour que votre offre s’affiche dans l’application du pass Culture, vous devez :</p><p>- Ajouter une ou plusieurs accroches</p></div>',
-            type: 'info',
+            tip: NO_MEDIATION_TOOLTIP,
+            type: 'info'
           },
           type: 'warning',
         },
         type: 'SHOW_NOTIFICATION',
       })
+    })
+
+    it('should display a notification when no active mediation in offer', () => {
+      // given
+      props.mediations = [{id: 'AGKA', isActive: false}]
+
+      // when
+      shallow(<MediationsManager {...props} />)
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith({
+        patch: {
+          tag: 'mediations-manager',
+          text: 'Cette offre n\'apparaîtra pas dans l\'app pass Culture.',
+          tooltip: {
+            children: <a> Pourquoi ? </a>,
+            place: 'bottom',
+            tip: NO_MEDIATION_TOOLTIP,
+            type: 'info'
+          },
+          type: 'warning'
+        },
+        type: 'SHOW_NOTIFICATION'
+      })
+    })
+
+    it('shouldn\'t display a notification if a notification is already present', () => {
+      // given
+      props.mediations = [{id: 'AGKA', isActive: false}]
+      props.notification = {text: 'bla bla bla'}
+
+      // when
+      shallow(<MediationsManager {...props} />)
+
+      // then
+      expect(dispatch).not.toHaveBeenCalled()
     })
 
     it('should close notification when unmounting component', () => {
@@ -62,7 +97,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       wrapper.unmount()
 
       // then
-      expect(dispatch.mock.calls[1][0]).toStrictEqual({ type: 'CLOSE_NOTIFICATION' })
+      expect(dispatch.mock.calls[0][0]).toEqual({type: 'CLOSE_NOTIFICATION'})
     })
 
     it('should render a NavLink component when there is an offer', () => {

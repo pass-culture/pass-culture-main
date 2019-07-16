@@ -1,15 +1,20 @@
-import { closeNotification, Icon, showNotification } from 'pass-culture-shared'
+import {closeNotification, Icon, showNotification} from 'pass-culture-shared'
 import get from 'lodash.get'
-import React, { Component } from 'react'
-import { NavLink } from 'react-router-dom'
+import React, {Component} from 'react'
+import {NavLink} from 'react-router-dom'
 
 import MediationItem from './MediationItem/MediationItem'
 import PropTypes from 'prop-types'
 
+export const NO_MEDIATION_TOOLTIP = "<div><p>Pour que votre offre s'affiche dans l'application du Pass Culture, vous devez&nbsp;:</p><p>- ajouter une ou plusieurs accroches</p><p>- sélectionner au moins une accroche</p></div>"
+
 class MediationsManager extends Component {
   componentDidMount() {
-    const { dispatch, mediations } = this.props
-    if (!get(mediations, 'length')) {
+    const {dispatch, mediations, notification} = this.props
+    const atLeastOneActiveMediation = mediations.some((m) => m.isActive)
+    const hasMediations = get(mediations, 'length');
+
+    if (!notification && !(hasMediations && atLeastOneActiveMediation)) {
       dispatch(
         showNotification({
           tag: 'mediations-manager',
@@ -17,8 +22,7 @@ class MediationsManager extends Component {
           tooltip: {
             children: <span>{' Pourquoi ? '}</span>,
             place: 'bottom',
-            tip:
-              '<div><p>Pour que votre offre s’affiche dans l’application du pass Culture, vous devez :</p><p>- Ajouter une ou plusieurs accroches</p></div>',
+            tip: NO_MEDIATION_TOOLTIP,
             type: 'info',
           },
           type: 'warning',
@@ -28,14 +32,14 @@ class MediationsManager extends Component {
   }
 
   componentWillUnmount() {
-    const { dispatch, notification } = this.props
+    const {dispatch, notification} = this.props
     if (get(notification, 'tag') === 'mediations-manager') {
       dispatch(closeNotification())
     }
   }
 
   render() {
-    const { mediations, offer } = this.props
+    const {mediations, offer} = this.props
     const numberOfMediations = get(mediations, 'length')
 
     return (
@@ -55,18 +59,29 @@ class MediationsManager extends Component {
         </div>
         <ul className="mediations-list">
           {mediations.map(m => (
+<<<<<<< 5aca2475ba2bb80f6e5f5066c4e0eec269f1e505
             <MediationItem
               key={m.id}
               mediation={m}
             />
+=======
+            <MediationItem key={m.id} mediation={m}/>
+>>>>>>> (PC-1941) Show a notif at component mounting time only if no notification is already here and no mediation is active
           ))}
         </ul>
         <p>
           {offer && (
             <NavLink
+<<<<<<< 5aca2475ba2bb80f6e5f5066c4e0eec269f1e505
               className={`button is-primary ${numberOfMediations > 0 ? 'is-outlined' : ''}`}
               to={`/offres/${get(offer, 'id')}/accroches/nouveau`}
             >
+=======
+              className={`button is-primary ${
+                numberOfMediations > 0 ? 'is-outlined' : ''
+                }`}
+              to={`/offres/${get(offer, 'id')}/accroches/nouveau`}>
+>>>>>>> (PC-1941) Show a notif at component mounting time only if no notification is already here and no mediation is active
               <span className="icon">
                 <Icon svg={numberOfMediations > 0 ? 'ico-stars' : 'ico-stars-w'} />
               </span>

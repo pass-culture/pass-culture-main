@@ -14,10 +14,10 @@ ShallowWrapper {
                 "text": "Cette offre n’apparaîtra pas dans l’app pass Culture.",
                 "tooltip": Object {
                   "children": <span>
-                     Pourquoi ? 
+                     Pourquoi ?
                   </span>,
                   "place": "bottom",
-                  "tip": "<div><p>Pour que votre offre s’affiche dans l’application du pass Culture, vous devez :</p><p>- Ajouter une ou plusieurs accroches</p></div>",
+                  "tip": "<div><p>Pour que votre offre s'affiche dans l'application du Pass Culture, vous devez&nbsp;:</p><p>- ajouter une ou plusieurs accroches</p><p>- sélectionner au moins une accroche</p></div>",
                   "type": "info",
                 },
                 "type": "warning",
@@ -60,11 +60,11 @@ ShallowWrapper {
             <b>
               L’accroche permet d’afficher votre offre "à la une" de l’app
             </b>
-            , et la rend visuellement plus attrayante. C’est une image (et bientôt 
+            , et la rend visuellement plus attrayante. C’est une image (et bientôt
             une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
           </p>
           <p>
-            Les accroches font la 
+            Les accroches font la
             <b>
               spécificité du pass Culture
             </b>
@@ -109,11 +109,11 @@ ShallowWrapper {
               <b>
                 L’accroche permet d’afficher votre offre "à la une" de l’app
               </b>
-              , et la rend visuellement plus attrayante. C’est une image (et bientôt 
+              , et la rend visuellement plus attrayante. C’est une image (et bientôt
               une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
             </p>,
             <p>
-              Les accroches font la 
+              Les accroches font la
               <b>
                 spécificité du pass Culture
               </b>
@@ -309,11 +309,11 @@ ShallowWrapper {
               <b>
                 L’accroche permet d’afficher votre offre "à la une" de l’app
               </b>
-              , et la rend visuellement plus attrayante. C’est une image (et bientôt 
+              , et la rend visuellement plus attrayante. C’est une image (et bientôt
               une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
             </p>
             <p>
-              Les accroches font la 
+              Les accroches font la
               <b>
                 spécificité du pass Culture
               </b>
@@ -358,11 +358,11 @@ ShallowWrapper {
                 <b>
                   L’accroche permet d’afficher votre offre "à la une" de l’app
                 </b>
-                , et la rend visuellement plus attrayante. C’est une image (et bientôt 
+                , et la rend visuellement plus attrayante. C’est une image (et bientôt
                 une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
               </p>,
               <p>
-                Les accroches font la 
+                Les accroches font la
                 <b>
                   spécificité du pass Culture
                 </b>
