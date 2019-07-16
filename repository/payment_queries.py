@@ -34,7 +34,7 @@ def find_payments_by_message(message_name: str) -> List[Payment]:
 
 def find_all_with_status_not_processable_for_bank_information(bank_information: BankInformation) -> List[Payment]:
     predicate_matches_venue_or_offerer = (Venue.id == BankInformation.venueId) | (
-                Offerer.id == BankInformation.offererId)
+            Offerer.id == BankInformation.offererId)
 
     query = Payment.query \
         .join(Booking) \

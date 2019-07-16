@@ -45,7 +45,7 @@ def generate_and_send_payments(payment_message_id: str = None):
         logger.error('[BATCH][PAYMENTS] STEP 6', e)
 
 
-def generate_or_collect_payments(payment_message_id: str = None):
+def generate_or_collect_payments(payment_message_id: str = None) -> Tuple[List[Payment], List[Payment]]:
     if payment_message_id is None:
         logger.info('[BATCH][PAYMENTS] STEP 1 : generate payments')
         pending_payments, not_processable_payments = generate_new_payments()

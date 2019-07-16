@@ -9,7 +9,8 @@ from repository.payment_queries import find_message_checksum, find_error_payment
 from tests.conftest import clean_database
 from tests.test_utils import create_bank_information, create_venue, create_offerer, create_stock, \
     create_offer_with_thing_product
-from tests.test_utils import create_payment_message, create_payment, create_booking, create_user, create_deposit, create_stock_from_offer
+from tests.test_utils import create_payment_message, create_payment, create_booking, create_user, create_deposit, \
+    create_stock_from_offer
 
 
 class FindMessageChecksumTest:
@@ -339,4 +340,5 @@ class GeneratePayementsByMessageIdTest:
         payements_by_id = get_payments_by_message_id('ABCD123')
 
         # Then
+        assert len(payements_by_id) == 1
         assert payements_by_id[0].paymentMessage.name == 'ABCD123'
