@@ -52,7 +52,7 @@ def check_offer_type_is_valid(offer_type_name):
         raise api_error
 
 
-def check_offer_id_and_mediation_id_presents_in_request(offer_id: str, mediation_id: str):
+def check_offer_id_and_mediation_id_are_present_in_request(offer_id: str, mediation_id: str):
     if offer_id is None \
             or mediation_id is None:
         errors = ApiErrors()

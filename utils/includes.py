@@ -126,6 +126,7 @@ RECOMMENDATION_INCLUDES = [
     {
         "key": "offer",
         "sub_joins": [
+            'favorites',
             'isFinished',
             'isFullyBooked',
             "dateRange",
