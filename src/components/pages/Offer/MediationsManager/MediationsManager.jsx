@@ -67,7 +67,7 @@ class MediationsManager extends Component {
               to={`/offres/${get(offer, 'id')}/accroches/nouveau`}
             >
               <span className="icon">
-                <Icon svg={numberOfMediations > 0 ? 'ico-stars' : 'ico-stars-w'} />
+                <Icon svg={numberOfMediations > 0 ? 'ico-stars' : 'ico-stars-w'}/>
               </span>
               <span>{'Ajouter une accroche'}</span>
             </NavLink>
@@ -78,10 +78,13 @@ class MediationsManager extends Component {
   }
 }
 
+MediationsManager.defaultProps = {
+  notification: null,
+}
+
 MediationsManager.propTypes = {
-  dispatch: PropTypes.func.isRequired,
   mediations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  notification: PropTypes.shape().isRequired,
+  notification: PropTypes.shape(),
   offer: PropTypes.shape({
     id: PropTypes.string,
   }).isRequired,

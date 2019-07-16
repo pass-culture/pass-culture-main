@@ -8,9 +8,35 @@ ShallowWrapper {
     closeNotification={[MockFunction]}
     hasMediations={false}
     mediations={Array []}
-    notification={Object {}}
+    notification={null}
     offer={Object {}}
-    showNotification={[MockFunction]}
+    showNotification={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            Object {
+              "tag": "mediations-manager",
+              "text": "Cette offre n’apparaîtra pas dans l’app pass Culture.",
+              "tooltip": Object {
+                "children": <span>
+                   Pourquoi ? 
+                </span>,
+                "place": "bottom",
+                "tip": "<div><p>Pour que votre offre s'affiche dans l'application du Pass Culture, vous devez&nbsp;:</p><p>- ajouter une ou plusieurs accroches</p><p>- sélectionner au moins une accroche</p></div>",
+                "type": "info",
+              },
+              "type": "warning",
+            },
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -542,7 +568,9 @@ ShallowWrapper {
         },
       },
     },
+    Symbol(enzyme.__providerValues__): undefined,
   },
+  Symbol(enzyme.__providerValues__): Map {},
   Symbol(enzyme.__childContext__): null,
 }
 `;

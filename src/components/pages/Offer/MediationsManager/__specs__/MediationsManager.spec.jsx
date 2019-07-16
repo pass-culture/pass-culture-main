@@ -19,7 +19,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       hasMediations: false,
       atLeastOneActiveMediation: false,
       mediations: [],
-      notification: {},
+      notification: null,
       offer: {},
     }
   })
@@ -36,6 +36,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
   describe('render()', () => {
     it('should display a notification when no mediation in offer', () => {
       // given
+      props.notification = null
       props.hasMediations = false
       props.atLeastOneActiveMediation = false
 
@@ -43,11 +44,11 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       shallow(<MediationsManager {...props} />)
 
       // then
-      expect(showNotification).toHaveBeenCalledWith({
+      expect(props.showNotification).toHaveBeenCalledWith({
         tag: 'mediations-manager',
-        text: 'Cette offre n\'apparaîtra pas dans l\'app pass Culture.',
+        text: 'Cette offre n’apparaîtra pas dans l’app pass Culture.',
         tooltip: {
-          children: <a> Pourquoi ? </a>,
+          children: <span> Pourquoi ? </span>,
           place: 'bottom',
           tip: NO_MEDIATION_TOOLTIP,
           type: 'info'
@@ -58,6 +59,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
 
     it('should display a notification when no active mediation in offer', () => {
       // given
+      props.notification = null
       props.hasMediations = true
       props.atLeastOneActiveMediation = false
 
@@ -65,11 +67,11 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       shallow(<MediationsManager {...props} />)
 
       // then
-      expect(showNotification).toHaveBeenCalledWith({
+      expect(props.showNotification).toHaveBeenCalledWith({
         tag: 'mediations-manager',
-        text: 'Cette offre n\'apparaîtra pas dans l\'app pass Culture.',
+        text: 'Cette offre n’apparaîtra pas dans l’app pass Culture.',
         tooltip: {
-          children: <a> Pourquoi ? </a>,
+          children: <span> Pourquoi ? </span>,
           place: 'bottom',
           tip: NO_MEDIATION_TOOLTIP,
           type: 'info'
@@ -88,7 +90,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       shallow(<MediationsManager {...props} />)
 
       // then
-      expect(showNotification).not.toHaveBeenCalled()
+      expect(props.showNotification).not.toHaveBeenCalled()
     })
 
     it('should close notification when unmounting component', () => {
@@ -102,7 +104,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
       wrapper.unmount()
 
       // then
-      expect(closeNotification).toHaveBeenCalled()
+      expect(props.closeNotification).toHaveBeenCalled()
     })
 
     it('should render a NavLink component when there is an offer', () => {
