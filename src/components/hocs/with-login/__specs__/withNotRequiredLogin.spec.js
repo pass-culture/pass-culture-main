@@ -1,11 +1,7 @@
-import { mount, shallow } from 'enzyme'
+import { shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { Route, Router, Switch } from 'react-router-dom'
 
-import { configureTestStore } from './configure'
-import { OnMountCaller } from './OnMountCaller'
 import withNotRequiredLogin, { handleSuccess } from '../withNotRequiredLogin'
 import { getRedirectToCurrentLocationOrDiscovery } from '../helpers'
 
@@ -28,85 +24,29 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
     fetch.resetMocks()
   })
 
-  describe('functions', () => {
-    it('should redirect to discovery when already authenticated and needsToFillCulturalSurvey', () => {
-      return new Promise(done => {
-        // given
-        const history = createBrowserHistory()
-        history.push('/test')
-        const store = configureTestStore()
-        fetch.mockResponse(
-          JSON.stringify({
-            email: 'michel.marx@youpi.fr',
-            needsToFillCulturalSurvey: false,
-          }),
-          {
-            status: 200,
-          }
-        )
-
-        // when
-        mount(
-          <Provider store={store}>
-            <Router history={history}>
-              <Switch>
-                <Route path="/test">
-                  <NotRequiredLoginTest />
-                </Route>
-                <Route path="/decouverte">
-                  <OnMountCaller onMountCallback={done} />
-                </Route>
-              </Switch>
-            </Router>
-          </Provider>
-        )
-      })
-    })
-
-    it('should redirect to currentLocation when already authenticated and not needsToFillCulturalSurvey', () => {
-      // given
-      const history = createBrowserHistory()
-      history.push('/test')
-      const store = configureTestStore()
-      fetch.mockResponse(
-        JSON.stringify({
-          email: 'michel.marx@youpi.fr',
-          needsToFillCulturalSurvey: true,
-        }),
-        {
-          status: 200,
-        }
-      )
-
-      // when
-      mount(
-        <Provider store={store}>
-          <Router history={history}>
-            <Switch>
-              <Route path="/test">
-                <NotRequiredLoginTest />
-              </Route>
-            </Switch>
-          </Router>
-        </Provider>
-      )
-
-      expect(history.location.pathname).toBe('/test')
-    })
-  })
-
   describe('handleSuccess()', () => {
     it('should call getRedirectToCurrentLocationOrDiscovery with right parameters', () => {
       // given
       const state = {}
       const action = {
-        payload: {},
+        payload: {
+          datum: {
+            email: 'michel.marx@youpi.fr',
+            needsToFillCulturalSurvey: false
+          }
+        }
       }
       const ownProps = {
         history: {
           push: jest.fn(),
         },
-        location: {},
+        location: {
+          hash: "",
+          key: expect.any(String),
+          pathname: "/test",
+          search: "",
+          state: undefined
+        },
       }
 
       // when
@@ -165,7 +105,7 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
       handleSuccess(state, action, ownProps)
 
       // then
-      expect(ownProps.history.push).not.toBeCalled()
+      expect(ownProps.history.push).not.toHaveBeenCalled()
     })
   })
 })
