@@ -1,7 +1,7 @@
 """add_favorite_feature
 
 Revision ID: 37ba62c7fdb3
-Revises: 926f236ee66f
+Revises: 1a6a6a4baf3b
 Create Date: 2019-07-09 09:47:32.341098
 
 """
@@ -13,7 +13,7 @@ from sqlalchemy.sql import expression
 from models.feature import FeatureToggle
 
 revision = '37ba62c7fdb3'
-down_revision = '926f236ee66f'
+down_revision = '1a6a6a4baf3b'
 branch_labels = None
 depends_on = None
 
