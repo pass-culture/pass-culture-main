@@ -142,8 +142,6 @@ jobs:
             cd pro
             yarn start
           background: true
-      - store_artifacts:
-          path: ~/pass-culture/pro/testcafe_screenshots
       - run:
           name: Running Sandbox
           command: |
@@ -157,6 +155,8 @@ jobs:
             nvm use "$NODE_VERSION"
             cd pro
             yarn test:cafe
+      - store_artifacts:
+          path: ~/pass-culture/pro/testcafe_screenshots
       - run:
           name: Notify PC Ops Bot
           when: on_fail
