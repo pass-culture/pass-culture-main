@@ -298,6 +298,42 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         expect(textareaField.at(0).prop('name')).toBe('comment')
         expect(textareaField.at(0).prop('readOnly')).toBe(true)
       })
+
+      it('should set comment field to required when no siret have been provided', () => {
+        // given
+        props.formSiret = null
+
+        // when
+        const wrapper = shallow(<IdentifierFields {...props} />)
+
+        // then
+        const commentField = wrapper.find(TextareaField)
+        expect(commentField.prop('required')).toBe(true)
+      })
+
+      it('should set comment field to required when siret length does not match 14 characters', () => {
+        // given
+        props.formSiret = 'AAA'
+
+        // when
+        const wrapper = shallow(<IdentifierFields {...props} />)
+
+        // then
+        const commentField = wrapper.find(TextareaField)
+        expect(commentField.prop('required')).toBe(true)
+      })
+
+      it('should set comment field to not required when siret is provided and valid', () => {
+        // given
+        props.formSiret = '41816609600068'
+
+        // when
+        const wrapper = shallow(<IdentifierFields {...props} />)
+
+        // then
+        const commentField = wrapper.find(TextareaField)
+        expect(commentField.prop('required')).toBe(false)
+      })
     })
   })
 })
