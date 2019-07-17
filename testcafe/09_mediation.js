@@ -34,25 +34,22 @@ test("Lorsque je clique sur le bouton 'créer une accroche' sur la page d'une of
 
 test('Je peux créer une accroche', async t => {
   // given
-  const mediationItems = Selector('.mediations-list li')
+  const mediationsListItems = Selector('.mediations-list li')
   const successBanner = Selector('.notification.is-success')
   const { offer, user } = dataFromSandbox
   await navigateToNewMediationAs(user, offer, userRole)(t)
   await t
-    .typeText(
-      imageUrlInput,
-      'https://www.deridet.com/photo/art/grande/8682609-13705793.jpg?v=1450665370'
-    )
-    .click(imageUrlButton)
-    .typeText(creditInput, 'deridet')
-    .wait(20000)
+    .typeText(urlInput, 'https://upload.wikimedia.org/wikipedia/commons/f/f9/Zebra_%28PSF%29.png')
+    .click(urlButton)
+    .typeText(creditInput, 'wikipedia')
+    .wait(10000)
 
   // when
   await t.click(submitButton)
 
   // then
   await t
-    .expect(mediationItems.count)
+    .expect(mediationsListItems.count)
     .eql(1)
     .expect(successBanner.exists)
     .ok()
