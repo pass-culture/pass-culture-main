@@ -1,12 +1,15 @@
+from typing import List
+
 from domain.favorites import create_favorite
-from models import Mediation, Offer, PcObject
+from models import Mediation, Offer, PcObject, Favorite
 from models.feature import FeatureToggle
-from repository.favorite_queries import find_favorite_for_offer_mediation_and_user
+from repository.favorite_queries import find_favorite_for_offer_mediation_and_user, find_all_favorites_by_user_id
 from utils.feature import feature_required
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from utils.human_ids import dehumanize
+from utils.includes import FAVORITE_INCLUDES
 from utils.rest import load_or_404
 from validation.offers import check_offer_id_and_mediation_id_are_present_in_request
 
@@ -43,3 +46,20 @@ def delete_favorite(offer_id, mediation_id):
     PcObject.delete(favorite)
 
     return jsonify({}), 204
+
+
+@app.route('/favorites', methods=['GET'])
+@feature_required(FeatureToggle.FAVORITE_OFFER)
+@login_required
+def get_favorites():
+    favorites = find_all_favorites_by_user_id(current_user.id)
+
+    return jsonify(_serialize_favorites(favorites)), 200
+
+
+def _serialize_favorites(favorites: List[Favorite]) -> List:
+    return list(map(_serialize_favorite, favorites))
+
+
+def _serialize_favorite(favorite: Favorite) -> dict:
+    return favorite.as_dict(include=FAVORITE_INCLUDES)

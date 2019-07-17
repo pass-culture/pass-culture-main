@@ -1,0 +1,47 @@
+import pytest
+
+from models import PcObject
+from tests.conftest import clean_database, TestClient
+from tests.test_utils import API_URL, create_user, create_offerer, create_venue, create_offer_with_thing_product, \
+    create_mediation, create_favorite
+
+
+@pytest.mark.standalone
+class Get:
+
+    class Returns200:
+        @clean_database
+        def when_user_is_logged_in_but_has_no_favorites(self, app):
+            # given
+            user = create_user()
+            PcObject.save(user)
+
+            # when
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .get(API_URL + '/favorites')
+
+            # then
+            assert response.status_code == 200
+            assert response.json == []
+
+        @clean_database
+        def when_user_is_logged_in_and_has_two_favorite_offers(self, app):
+            # given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
+            offer1 = create_offer_with_thing_product(venue, thumb_count=0)
+            mediation1 = create_mediation(offer1, is_active=True)
+            favorite1 = create_favorite(mediation1, offer1, user)
+            offer2 = create_offer_with_thing_product(venue, thumb_count=0)
+            mediation2 = create_mediation(offer2, is_active=True)
+            favorite2 = create_favorite(mediation2, offer2, user)
+            PcObject.save(user, favorite1, favorite2)
+
+            # when
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .get(API_URL + '/favorites')
+
+            # then
+            assert response.status_code == 200
+            assert len(response.json) == 2

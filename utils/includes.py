@@ -121,6 +121,34 @@ OFFER_INCLUDES = [
     }
 ]
 
+FAVORITE_INCLUDES = [
+    "-userId",
+    "mediation",
+    {
+        "key": "offer",
+        "sub_joins": [
+            'favorites',
+            'isFinished',
+            'isFullyBooked',
+            "dateRange",
+            "isEvent",
+            "isThing",
+            "mediation",
+            "stocks",
+            {
+                "key": "venue",
+                "sub_joins": ["managingOfferer"]
+            },
+            {
+                "key": "product",
+                "sub_joins": ["thumbUrl", "offerType"]
+            }
+        ]
+    },
+    "thumbUrl",
+    "isFavorite"
+]
+
 RECOMMENDATION_INCLUDES = [
     "mediation",
     {
