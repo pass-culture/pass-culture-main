@@ -8,11 +8,11 @@ import Logo from '../layout/Logo'
 import Main from '../layout/Main'
 
 class LostPasswordPage extends Component {
-  onHandleSuccessRedirect = () => '/mot-de-passe-perdu?change=1'
+  onHandleSuccessRedirectForResetPassword = () => '/mot-de-passe-perdu?change=1'
 
   storeValue = token => () => token
 
-  onHandleSuccessRedirect = () => '/mot-de-passe-perdu?envoye=1'
+  onHandleSuccessRedirectForResetPasswordRequest = () => '/mot-de-passe-perdu?envoye=1'
 
   render() {
     const { change, envoye, errors, token } = this.props
@@ -78,7 +78,7 @@ class LostPasswordPage extends Component {
                       BlockComponent={null}
                       action="/users/new-password"
                       handleSuccessNotification={null}
-                      handleSuccessRedirect={this.onHandleSuccessRedirect}
+                      handleSuccessRedirect={this.onHandleSuccessRedirectForResetPassword}
                       layout="vertical"
                       name="user"
                       patch={{ token }}
@@ -133,7 +133,7 @@ class LostPasswordPage extends Component {
                       action="/users/reset-password"
                       blockComponent={null}
                       handleSuccessNotification={null}
-                      handleSuccessRedirect={this.onHandleSuccessRedirect}
+                      handleSuccessRedirect={this.onHandleSuccessRedirectForResetPasswordRequest}
                       layout="vertical"
                       name="user"
                     >
