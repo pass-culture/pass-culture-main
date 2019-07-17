@@ -6,6 +6,7 @@ from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
 from models import User, UserOfferer, Offerer, RightsType
+from models.beneficiary_import import BeneficiaryImport, ImportStatus
 from models.db import db
 from models.user import WalletBalance
 
@@ -16,13 +17,19 @@ def find_user_by_email(email: str) -> User:
         .first()
 
 
-def find_user_by_demarche_simplifiee_application_id(application_id: int) -> User:
-    return User.query \
-        .filter(User.demarcheSimplifieeApplicationId == application_id) \
-        .first()
+def has_already_been_created(application_id: int) -> bool:
+    return db.session.query(
+        BeneficiaryImport.query \
+            .filter(BeneficiaryImport.status == ImportStatus.CREATED) \
+            .filter(BeneficiaryImport.demarcheSimplifieeApplicationId == application_id) \
+            .exists()
+    ).scalar()
 
-def find_by_first_and_last_names_and_birth_date_or_email(first_name: str, last_name: str, birth_date: datetime, email: str) -> List[User]:
-    civility_predicate = (_matching(User.firstName, first_name)) & (_matching(User.lastName,last_name)) & (User.dateOfBirth == birth_date)
+
+def find_by_first_and_last_names_and_birth_date_or_email(first_name: str, last_name: str, birth_date: datetime,
+                                                         email: str) -> List[User]:
+    civility_predicate = (_matching(User.firstName, first_name)) & (_matching(User.lastName, last_name)) & (
+            User.dateOfBirth == birth_date)
     email_predicate = _matching(User.email, email)
 
     return User.query \
@@ -109,18 +116,16 @@ def keep_only_webapp_users(query):
     return query
 
 
-def find_most_recent_beneficiary_creation_date():
-    most_recent_beneficiary = User.query \
-        .filter(User.canBookFreeOffers == True) \
-        .filter(User.offerers == None) \
-        .filter(User.demarcheSimplifieeApplicationId != None) \
-        .order_by(User.dateCreated.desc()) \
+def find_most_recent_beneficiary_creation_date() -> datetime:
+    most_recent_creation = BeneficiaryImport.query \
+        .filter(BeneficiaryImport.status == ImportStatus.CREATED) \
+        .order_by(BeneficiaryImport.date.desc()) \
         .first()
 
-    if not most_recent_beneficiary:
+    if not most_recent_creation:
         return datetime(MINYEAR, 1, 1)
 
-    return most_recent_beneficiary.dateCreated
+    return most_recent_creation.date
 
 
 def _matching(column: Column, search_value: str) -> BinaryExpression:

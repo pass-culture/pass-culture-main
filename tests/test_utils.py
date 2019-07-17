@@ -26,10 +26,10 @@ from models import Booking, \
     User, \
     UserOfferer, \
     BankInformation, \
-    Venue, PaymentMessage, VenueProvider, Provider, Product, Feature, Favorite
+    Venue, PaymentMessage, VenueProvider, Product, Favorite
+from models.beneficiary_import import BeneficiaryImport, ImportStatus
 from models.db import db
 from models.email import Email, EmailStatus
-from models.feature import FeatureToggle
 from models.payment import PaymentDetails
 from models.payment_status import PaymentStatus, TransactionStatus
 from models.pc_object import PcObject
@@ -132,11 +132,13 @@ def create_booking_for_event(
     return booking
 
 
-def create_user(public_name='John Doe', password=None, first_name='John', last_name='Doe', postal_code='93100', departement_code='93',
-                email='john.doe@test.com', can_book_free_offers=True, needs_to_fill_cultural_survey=False, cultural_survey_id=None, validation_token=None, is_admin=False,
+def create_user(public_name='John Doe', password=None, first_name='John', last_name='Doe', postal_code='93100',
+                departement_code='93',
+                email='john.doe@test.com', can_book_free_offers=True, needs_to_fill_cultural_survey=False,
+                cultural_survey_id=None, validation_token=None, is_admin=False,
                 reset_password_token=None, reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
                 date_created=datetime.utcnow(), phone_number='0612345678', date_of_birth=datetime(2001, 1, 1),
-                idx=None, demarcheSimplifieeApplicationId=None):
+                idx=None):
     user = User()
     user.publicName = public_name
     user.firstName = first_name
@@ -146,7 +148,6 @@ def create_user(public_name='John Doe', password=None, first_name='John', last_n
     user.postalCode = postal_code
     user.departementCode = departement_code
     user.validationToken = validation_token
-    user.demarcheSimplifieeApplicationId = demarcheSimplifieeApplicationId
 
     if password:
         user.setPassword(password)
@@ -164,6 +165,22 @@ def create_user(public_name='John Doe', password=None, first_name='John', last_n
     user.culturalSurveyId = cultural_survey_id
     user.id = idx
     return user
+
+
+def create_beneficiary_import(
+        user: User,
+        status=ImportStatus.CREATED,
+        date=datetime.utcnow(),
+        detail: str = None,
+        demarche_simplifiee_application_id: int = None
+):
+    beneficiary_import = BeneficiaryImport()
+    beneficiary_import.beneficiary = user
+    beneficiary_import.status = status
+    beneficiary_import.date = date
+    beneficiary_import.detail = detail
+    beneficiary_import.demarcheSimplifieeApplicationId = demarche_simplifiee_application_id
+    return beneficiary_import
 
 
 def create_stock_with_event_offer(offerer, venue, price=10, booking_email='offer.booking.email@test.com', available=10,
@@ -325,7 +342,8 @@ def create_offer_with_thing_product(venue, product=None, date_created=datetime.u
                                     thing_type=ThingType.AUDIOVISUEL, thing_name='Test Book', media_urls=['test/urls'],
                                     author_name='Test Author', description=None, thumb_count=1, dominant_color=None,
                                     url=None,
-                                    is_national=False, is_active=True, id_at_providers=None, idx=None, last_provider_id=None) -> Offer:
+                                    is_national=False, is_active=True, id_at_providers=None, idx=None,
+                                    last_provider_id=None) -> Offer:
     offer = Offer()
     if product:
         offer.product = product
@@ -489,7 +507,7 @@ def create_recommendation(offer=None, user=None, mediation=None, idx=None, date_
     return recommendation
 
 
-def create_favorite(mediation= None, offer=None, user=None) -> Favorite:
+def create_favorite(mediation=None, offer=None, user=None) -> Favorite:
     favorite = Favorite()
     favorite.user = user
     favorite.mediation = mediation

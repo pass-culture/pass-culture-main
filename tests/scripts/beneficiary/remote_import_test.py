@@ -35,14 +35,14 @@ class RunTest:
             make_application_detail(789, 'closed')
         ]
 
-        find_user_by_email = Mock(return_value=None)
+        has_already_been_created = Mock(return_value=None)
 
         # when
         remote_import.run(
             ONE_WEEK_AGO,
             get_all_applications_ids=get_all_application_ids,
             get_details=get_details,
-            existing_user=find_user_by_email
+            existing_user=has_already_been_created
         )
 
         # then
@@ -55,14 +55,14 @@ class RunTest:
         # given
         get_all_application_ids = Mock(return_value=[123])
         get_details = Mock(side_effect=[make_application_detail(123, 'closed')])
-        find_user_by_email = Mock(return_value=None)
+        has_already_been_created = Mock(return_value=None)
 
         # when
         remote_import.run(
             ONE_WEEK_AGO,
             get_all_applications_ids=get_all_application_ids,
             get_details=get_details,
-            existing_user=find_user_by_email
+            existing_user=has_already_been_created
         )
 
         # then
@@ -81,7 +81,7 @@ class RunTest:
         # given
         get_all_application_ids = Mock(return_value=[123])
         get_details = Mock(side_effect=[make_application_detail(123, 'closed')])
-        find_user_by_email = Mock(return_value=None)
+        has_already_been_created = Mock(return_value=None)
         parse_beneficiary_information.side_effect = [Exception()]
 
         # when
@@ -89,7 +89,7 @@ class RunTest:
             ONE_WEEK_AGO,
             get_all_applications_ids=get_all_application_ids,
             get_details=get_details,
-            existing_user=find_user_by_email
+            existing_user=has_already_been_created
         )
 
         # then

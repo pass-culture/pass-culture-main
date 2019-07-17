@@ -11,7 +11,7 @@ from domain.user_emails import send_activation_notification_email
 from models import User, PcObject, Deposit, ApiErrors
 from models.beneficiary_import import BeneficiaryImport, ImportStatus
 from repository.user_queries import find_by_first_and_last_names_and_birth_date_or_email, \
-    find_user_by_demarche_simplifiee_application_id
+    has_already_been_created
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from utils.logger import logger
 from utils.mailing import send_raw_email, DEV_EMAIL_ADDRESS
@@ -25,7 +25,7 @@ def run(
         process_applications_updated_after: datetime,
         get_all_applications_ids: Callable[..., dict] = get_all_application_ids_for_procedure,
         get_details: Callable[..., dict] = get_application_details,
-        existing_user: Callable[[str], User] = find_user_by_demarche_simplifiee_application_id
+        existing_user: Callable[[str], User] = has_already_been_created
 ):
     error_messages = []
     new_beneficiaries = []

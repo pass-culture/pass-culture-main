@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta, MINYEAR
 
 from models import PcObject
+from models.beneficiary_import import ImportStatus
 from repository.user_queries import get_all_users_wallet_balances, find_by_first_and_last_names_and_birth_date_or_email, \
-    find_most_recent_beneficiary_creation_date, find_user_by_demarche_simplifiee_application_id
+    find_most_recent_beneficiary_creation_date, has_already_been_created
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_deposit, \
-    create_stock, create_booking, create_user_offerer
+    create_stock, create_booking, create_beneficiary_import
 
 
 class GetAllUsersWalletBalancesTest:
@@ -216,7 +217,7 @@ class FindByFirstAndLastNamesOrEmailTest:
 
 class FindMostRecentBeneficiaryCreationDateTest:
     @clean_database
-    def test_returns_created_at_date_of_most_recent_beneficiary_user_that_has_an_demarche_simplifiee_application_id(
+    def test_returns_created_at_date_of_most_recent_beneficiary_import(
             self, app):
         # given
         now = datetime.utcnow()
@@ -225,31 +226,28 @@ class FindMostRecentBeneficiaryCreationDateTest:
         two_days_ago = now - timedelta(days=2)
         three_days_ago = now - timedelta(days=3)
 
-        user1 = create_user(email='user1@test.com', date_created=yesterday, can_book_free_offers=False,
-                            demarcheSimplifieeApplicationId=1)
-        user2 = create_user(email='user2@test.com', date_created=two_days_ago, can_book_free_offers=True,
-                            demarcheSimplifieeApplicationId=None)
-        user3 = create_user(email='user3@test.com', date_created=three_days_ago, can_book_free_offers=True,
-                            demarcheSimplifieeApplicationId=3)
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user1, offerer)
+        user1 = create_user(email='user1@test.com', date_created=yesterday)
+        user2 = create_user(email='user2@test.com', date_created=two_days_ago)
+        user3 = create_user(email='user3@test.com', date_created=three_days_ago)
+        beneficiary_import1 = create_beneficiary_import(user1, status=ImportStatus.CREATED, date=yesterday,
+                                                        demarche_simplifiee_application_id=1)
+        beneficiary_import2 = create_beneficiary_import(user3, status=ImportStatus.CREATED, date=three_days_ago,
+                                                        demarche_simplifiee_application_id=3)
 
-        PcObject.save(user_offerer, user2, user3)
+        PcObject.save(user2, beneficiary_import1, beneficiary_import2)
 
         # when
         most_recent_creation_date = find_most_recent_beneficiary_creation_date()
 
         # then
-        assert most_recent_creation_date == three_days_ago
+        assert most_recent_creation_date == yesterday
 
     @clean_database
-    def test_returns_min_year_if_no_beneficiary_exist(self, app):
+    def test_returns_min_year_if_no_beneficiary_import_exist(self, app):
         # given
         yesterday = datetime.utcnow() - timedelta(days=1)
-        user1 = create_user(email='user1@test.com', date_created=yesterday, can_book_free_offers=False)
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user1, offerer)
-        PcObject.save(user_offerer)
+        user1 = create_user(email='user1@test.com', date_created=yesterday)
+        PcObject.save(user1)
 
         # when
         most_recent_creation_date = find_most_recent_beneficiary_creation_date()
@@ -258,48 +256,57 @@ class FindMostRecentBeneficiaryCreationDateTest:
         assert most_recent_creation_date == datetime(MINYEAR, 1, 1)
 
 
-class FindUserByDemarcheSimplifieeApplicationIdTest:
+class HasAlreadyBeenCreatedTest:
     @clean_database
-    def test_returns_user_matching_the_given_demarche_simplifiee_application_id(self, app):
+    def test_returns_true_when_a_beneficiary_import_exist_with_status_created(self, app):
         # given
         now = datetime.utcnow()
-        user1 = create_user(email='user1@test.com', date_created=now, can_book_free_offers=False,
-                            demarcheSimplifieeApplicationId=1)
-        user2 = create_user(email='user2@test.com', date_created=now, can_book_free_offers=True,
-                            demarcheSimplifieeApplicationId=2)
-        user3 = create_user(email='user3@test.com', date_created=now, can_book_free_offers=True,
-                            demarcheSimplifieeApplicationId=3)
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user1, offerer)
+        user1 = create_user(email='user1@test.com', date_created=now)
+        user2 = create_user(email='user2@test.com', date_created=now)
+        beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.CREATED,
+                                                       demarche_simplifiee_application_id=123)
 
-        PcObject.save(user_offerer, user2, user3)
+        PcObject.save(beneficiary_import, user2)
 
         # when
-        result = find_user_by_demarche_simplifiee_application_id(2)
+        result = has_already_been_created(123)
 
         # then
-        assert result == user2
+        assert result is True
 
     @clean_database
-    def test_returns_no_user_when_the_given_demarche_simplifiee_application_id_does_not_match(self, app):
+    def test_returns_false_when_a_beneficiary_import_exist_with_status_duplicate(self, app):
         # given
         now = datetime.utcnow()
-        user1 = create_user(email='user1@test.com', date_created=now, can_book_free_offers=False,
-                            demarcheSimplifieeApplicationId=1)
-        user2 = create_user(email='user2@test.com', date_created=now, can_book_free_offers=True,
-                            demarcheSimplifieeApplicationId=2)
-        user3 = create_user(email='user3@test.com', date_created=now, can_book_free_offers=True,
-                            demarcheSimplifieeApplicationId=3)
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user1, offerer)
+        user1 = create_user(email='user1@test.com', date_created=now)
+        user2 = create_user(email='user2@test.com', date_created=now)
+        beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.DUPLICATE,
+                                                       demarche_simplifiee_application_id=123)
 
-        PcObject.save(user_offerer, user2, user3)
+        PcObject.save(beneficiary_import, user2)
 
         # when
-        result = find_user_by_demarche_simplifiee_application_id(5)
+        result = has_already_been_created(123)
 
         # then
-        assert result is None
+        assert result is False
+
+    @clean_database
+    def test_returns_false_when_no_beneficiary_import_exist_for_this_id(self, app):
+        # given
+        now = datetime.utcnow()
+        user1 = create_user(email='user1@test.com', date_created=now)
+        user2 = create_user(email='user2@test.com', date_created=now)
+        beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.CREATED,
+                                                       demarche_simplifiee_application_id=123)
+
+        PcObject.save(beneficiary_import, user2)
+
+        # when
+        result = has_already_been_created(456)
+
+        # then
+        assert result is False
 
 
 def _create_balances_for_user2(stock3, user2, venue):
