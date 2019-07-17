@@ -7,7 +7,7 @@ import SignupConfirmationContainer from './SignupConfirmation/SignupConfirmation
 import Logo from '../../layout/Logo'
 import Main from '../../layout/Main'
 
-const Signup = ({location}) => {
+const Signup = ({ location }) => {
   return (
     <Main
       fullscreen

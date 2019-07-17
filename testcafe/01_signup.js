@@ -7,15 +7,13 @@ const emailInput = Selector('#user-email')
 const firstNameInput = Selector('#user-firstName')
 const lastNameInput = Selector('#user-lastName')
 const passwordInput = Selector('#user-password')
-const signInButton = Selector('.is-secondary').withText('J’ai déjà un compte')
 const sirenInput = Selector('#user-siren')
 const contactOkInput = Selector('#user-contact_ok')
 const cguOkInput = Selector('#user-cgu_ok')
 const newsletterOkInput = Selector('#user-newsletter_ok')
 const signUpButton = Selector('button.button.is-primary')
 
-fixture("Création d'un compte utilisateur·trice")
-  .page(`${ROOT_PATH + 'inscription'}`)
+fixture("Création d'un compte utilisateur·trice").page(`${ROOT_PATH + 'inscription'}`)
 
 test("Je peux créer un compte avec un SIREN non existant en base de données, et je suis redirigé·e vers la page de confirmation de l'inscription", async t => {
   // given
@@ -50,15 +48,12 @@ test("Je peux créer un compte avec un SIREN non existant en base de données, e
 
 test("Je peux créer un compte avec un SIREN déjà existant en base de données, et je suis redirigé·e vers la page de confirmation de l'inscription", async t => {
   // given
-  const {offerer} = await fetchSandbox(
-    'pro_01_signup',
-    'get_existing_pro_user_with_offerer'
-  )
+  const { offerer } = await fetchSandbox('pro_01_signup', 'get_existing_pro_user_with_offerer')
   const email = 'pctest0.pro93.cafe1@btmx.fr'
   const firstName = 'PC Test Pro'
   const lastName = '93 Café1'
   const password = 'user@AZERTY123'
-  const {siren} = offerer
+  const { siren } = offerer
 
   // when
   await t
@@ -79,11 +74,11 @@ test("Je peux créer un compte avec un SIREN déjà existant en base de données
 
 test('Lorsque je clique sur le lien de validation de création du compte reçu par email, je suis redirigé·e vers la page de connexion', async t => {
   // given
-  const {user} = await fetchSandbox(
+  const { user } = await fetchSandbox(
     'pro_01_signup',
     'get_existing_pro_not_validated_user_with_real_offerer'
   )
-  const {validationToken} = user
+  const { validationToken } = user
 
   // when
   await t.navigateTo(`/inscription/validation/${validationToken}`)

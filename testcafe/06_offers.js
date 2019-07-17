@@ -14,14 +14,13 @@ const venueOption = Selector('#offer-venueId option')
 const typeOption = Selector('#offer-type option')
 const durationMinutesInput = Selector('input.field-duration')
 const descriptionInput = Selector('#offer-description')
-const submitButton = Selector('button.button.is-primary').withText(
-  'Enregistrer'
-)
+const submitButton = Selector('button.button.is-primary').withText('Enregistrer')
 
 fixture('En étant sur la page des offres')
-test('J\'ai accès à l\'ensemble de mes offres', async t => {
+
+test("J'ai accès à l'ensemble de mes offres", async t => {
   // given
-  const {user} = await fetchSandbox(
+  const { user } = await fetchSandbox(
     'pro_06_offers',
     'get_existing_pro_validated_user_with_at_least_one_visible_activated_offer'
   )
@@ -38,7 +37,7 @@ test('J\'ai accès à l\'ensemble de mes offres', async t => {
 
 test('Je recherche une offre et je clique sur celle-ci pour accéder au détail', async t => {
   // given
-  const {offer, user} = await fetchSandbox(
+  const { offer, user } = await fetchSandbox(
     'pro_06_offers',
     'get_existing_pro_validated_user_with_at_least_one_visible_activated_offer'
   )
@@ -53,7 +52,7 @@ test('Je recherche une offre et je clique sur celle-ci pour accéder au détail'
 
 test('Je peux créer une offre de type événement', async t => {
   // given
-  const {offerer, user, venue} = await fetchSandbox(
+  const { offerer, user, venue } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
   )
@@ -65,22 +64,25 @@ test('Je peux créer une offre de type événement', async t => {
     'Avec d’autres travailleurs socioculturels, ',
     'lassés des euphémismes et des mensonges du langage du pouvoir, ',
     'Franck Lepage s’est lancé dans cette bataille très politique : celle des mots. ',
-    'Atelier d\'initiation pour reconnaître tout ce qui est du pipotron dans vos lectures de tous les jours. ',
-    'Suivi d\'une séance de dédicaces.',
+    "Atelier d'initiation pour reconnaître tout ce qui est du pipotron dans vos lectures de tous les jours. ",
+    "Suivi d'une séance de dédicaces.",
   ].join('')
   const eventDuration = '02:00'
   const eventName = 'Rencontre avec Franck Lepage'
   const eventType = 'Conférences, rencontres et découverte des métiers'
-  const {name: offererName} = offerer
-  const {name: venueName} = venue
+  const { name: offererName } = offerer
+  const { name: venueName } = venue
   await navigateToNewOfferAs(user, null, null, userRole)(t)
 
   // when
   await t
     .typeText(nameInput, eventName)
-    .click(typeInput).click(typeOption.withText(eventType))
-    .click(offererInput).click(offererOption.withText(offererName))
-    .click(venueInput).click(venueOption.withText(venueName))
+    .click(typeInput)
+    .click(typeOption.withText(eventType))
+    .click(offererInput)
+    .click(offererOption.withText(offererName))
+    .click(venueInput)
+    .click(venueOption.withText(venueName))
     .typeText(durationMinutesInput, eventDuration)
     .typeText(descriptionInput, eventDescription)
     .click(submitButton)
@@ -96,7 +98,7 @@ test('Je peux créer une offre de type événement', async t => {
 
 test('Je peux créer une offre avec des sous-types', async t => {
   // given
-  const {offerer, user, venue} = await fetchSandbox(
+  const { offerer, user, venue } = await fetchSandbox(
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
   )
@@ -111,19 +113,23 @@ test('Je peux créer une offre avec des sous-types', async t => {
   const eventType = 'Musique — concerts, festivals'
   const eventMusicType = 'Hip-Hop/Rap'
   const eventMusicSubType = 'Rap Alternatif'
-  const {name: offererName} = offerer
-  const {name: venueName} = venue
+  const { name: offererName } = offerer
+  const { name: venueName } = venue
   await navigateToNewOfferAs(user)(t)
 
   // when
   await t
     .typeText(nameInput, eventName)
-    .click(typeInput).click(typeOption.withText(eventType))
-    .click(musicTypeInput).click(musicTypeOption.withText(eventMusicType))
+    .click(typeInput)
+    .click(typeOption.withText(eventType))
+    .click(musicTypeInput)
+    .click(musicTypeOption.withText(eventMusicType))
     .click(musicSubTypeInput)
     .click(musicSubTypeOption.withText(eventMusicSubType))
-    .click(offererInput).click(offererOption.withText(offererName))
-    .click(venueInput).click(venueOption.withText(venueName))
+    .click(offererInput)
+    .click(offererOption.withText(offererName))
+    .click(venueInput)
+    .click(venueOption.withText(venueName))
     .typeText(durationMinutesInput, eventDurationMinutes)
     .typeText(descriptionInput, eventDescription)
     .click(submitButton)
