@@ -167,7 +167,7 @@ jobs:
   tests-perf:
     working_directory: ~
     docker:
-      - image: edupedup/artillery:0.5
+      - image: passcultureapp/artillery:0.2
     steps:
       - checkout
       - run: sed -i 's/$/'$USER_PASSWORD_PERF_ENV'/' /root/project/artillery/user_list
