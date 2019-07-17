@@ -13,7 +13,7 @@ const showFailModal = () => {
 }
 
 const Favorite = ({ handleFavorite, recommendation }) => {
-  const isFavorite = recommendation.offer.favorites.length > 0
+  const isFavorite = recommendation.offer && recommendation.offer.favorites.length > 0
 
   return (
     <button
