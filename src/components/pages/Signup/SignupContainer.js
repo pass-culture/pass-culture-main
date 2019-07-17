@@ -1,9 +1,4 @@
-import { withRouter } from 'react-router-dom'
-import { compose } from 'redux'
-import { withRedirectToOffersWhenAlreadyAuthenticated } from '../../hocs/with-login/withRedirectToOffersWhenAlreadyAuthenticated'
 import Signup from './Signup'
+import { withNotRequiredLogin } from '../../hocs'
 
-export default compose(
-  withRedirectToOffersWhenAlreadyAuthenticated,
-  withRouter
-)(Signup)
+export default withNotRequiredLogin(Signup)
