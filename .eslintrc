@@ -17,22 +17,22 @@
   },
   "parser": "babel-eslint",
   "rules": {
-    "jest/no-hooks": false,
-    "jest/prefer-expect-assertions": false,
-    "jest/prefer-inline-snapshots": false,
-    "jsx-a11y/label-has-for": false,
+    "jest/no-hooks": "off",
+    "jest/prefer-expect-assertions": "off",
+    "jest/prefer-inline-snapshots": "off",
+    "jsx-a11y/label-has-for": "off",
     "no-var": "error",
-    "react/forbid-component-props": false,
+    "react/forbid-component-props": "off",
     "react/jsx-curly-brace-presence": [true, { "props": "never", "children": "always" }],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-    "react/jsx-fragments": false,
+    "react/jsx-fragments": "off",
     "react/jsx-indent": [2, 2],
     "react/jsx-indent-props": [2, 2],
-    "react/jsx-max-depth": false,
+    "react/jsx-max-depth": "off",
     "react/jsx-one-expression-per-line": [true, { "allow": "literal" }],
-    "react/jsx-props-no-spreading": false,
-    "react/no-set-state": false,
-    "react/static-property-placement": false,
+    "react/jsx-props-no-spreading": "off",
+    "react/no-set-state": "off",
+    "react/static-property-placement": "off",
     "semi": ["error", "never"]
   },
   "overrides": [
@@ -41,10 +41,10 @@
         "testcafe/*.js"
       ],
       "rules": {
-        "jest/expect-expect": false,
-        "jest/lowercase-name": false,
-        "jest/no-test-callback": false,
-        "jest/prefer-expect-assertions": false
+        "jest/expect-expect": "off",
+        "jest/lowercase-name": "off",
+        "jest/no-test-callback": "off",
+        "jest/prefer-expect-assertions": "off"
       }
     }
   ],
