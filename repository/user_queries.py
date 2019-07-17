@@ -5,7 +5,7 @@ from sqlalchemy import func, Column
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
-from models import User, UserOfferer, Offerer, RightsType
+from models import User, UserOfferer, Offerer, RightsType, PcObject
 from models.beneficiary_import import BeneficiaryImport, ImportStatus
 from models.db import db
 from models.user import WalletBalance
@@ -126,6 +126,22 @@ def find_most_recent_beneficiary_creation_date() -> datetime:
         return datetime(MINYEAR, 1, 1)
 
     return most_recent_creation.date
+
+
+def save_new_beneficiary_import(
+        status: ImportStatus,
+        date: datetime,
+        demarche_simplifiee_application_id: int,
+        user: User = None,
+        detail = None,
+):
+    beneficiary_import = BeneficiaryImport()
+    beneficiary_import.beneficiary = user
+    beneficiary_import.status = status
+    beneficiary_import.date = date
+    beneficiary_import.detail = detail
+    beneficiary_import.demarcheSimplifieeApplicationId = demarche_simplifiee_application_id
+    PcObject.save(beneficiary_import)
 
 
 def _matching(column: Column, search_value: str) -> BinaryExpression:

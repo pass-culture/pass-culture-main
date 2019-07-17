@@ -8,10 +8,10 @@ from domain.admin_emails import send_remote_beneficiaries_import_report_email
 from domain.demarches_simplifiees import get_all_application_ids_for_procedure
 from domain.password import generate_reset_token, random_password
 from domain.user_emails import send_activation_notification_email
-from models import User, PcObject, Deposit, ApiErrors
-from models.beneficiary_import import BeneficiaryImport, ImportStatus
+from models import User, Deposit, ApiErrors, PcObject
+from models.beneficiary_import import ImportStatus
 from repository.user_queries import find_by_first_and_last_names_and_birth_date_or_email, \
-    has_already_been_created
+    has_already_been_created, save_new_beneficiary_import
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from utils.logger import logger
 from utils.mailing import send_raw_email, DEV_EMAIL_ADDRESS
@@ -70,24 +70,26 @@ def process_beneficiary_application(
     except DuplicateBeneficiaryError as e:
         logger.warning(f'[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : {e.message}')
         error_messages.append(e.message)
-        beneficiary_import = BeneficiaryImport()
-        beneficiary_import.status = ImportStatus.DUPLICATE
-        beneficiary_import.detail = f"Utilisateur en doublon : {e.duplicate_ids}"
-        beneficiary_import.demarcheSimplifieeApplicationId = information['application_id']
-        PcObject.save(beneficiary_import)
-
+        save_new_beneficiary_import(
+            ImportStatus.DUPLICATE,
+            datetime.utcnow(),
+            information['application_id'],
+            detail=f"Utilisateur en doublon : {e.duplicate_ids}"
+        )
     else:
         try:
-            beneficiary_import = BeneficiaryImport()
-            beneficiary_import.beneficiary = new_beneficiary
-            beneficiary_import.status = ImportStatus.CREATED
-            beneficiary_import.demarcheSimplifieeApplicationId = information['application_id']
-            PcObject.save(beneficiary_import)
+            PcObject.save(new_beneficiary)
         except ApiErrors as e:
             logger.warning(f"[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application "
                            f"{information['application_id']}, because of error : {str(e)}")
             error_messages.append(str(e))
         else:
+            save_new_beneficiary_import(
+                ImportStatus.CREATED,
+                datetime.utcnow(),
+                information['application_id'],
+                user=new_beneficiary
+            )
             new_beneficiaries.append(new_beneficiary)
             send_activation_notification_email(new_beneficiary, send_raw_email)
 

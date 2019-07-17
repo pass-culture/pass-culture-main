@@ -189,7 +189,7 @@ class ProcessBeneficiaryApplicationTest:
             'application_id': 123
         }
 
-        create_beneficiary_from_application.return_value = User()
+        create_beneficiary_from_application.return_value = create_user()
 
         # when
         remote_import.process_beneficiary_application(information, [], [])
