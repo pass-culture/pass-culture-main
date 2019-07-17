@@ -10,7 +10,7 @@ from domain.password import generate_reset_token, random_password
 from domain.user_emails import send_activation_notification_email
 from models import User, Deposit, ApiErrors, PcObject
 from models.beneficiary_import import ImportStatus
-from repository.user_queries import find_by_civility, \
+from repository.user_queries import find_by_civility, find_user_by_email, \
     has_already_been_created, save_new_beneficiary_import
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from utils.logger import logger
@@ -25,7 +25,8 @@ def run(
         process_applications_updated_after: datetime,
         get_all_applications_ids: Callable[..., dict] = get_all_application_ids_for_procedure,
         get_details: Callable[..., dict] = get_application_details,
-        existing_user: Callable[[str], User] = has_already_been_created
+        already_imported: Callable[..., User] = has_already_been_created,
+        already_created: Callable[..., User] = find_user_by_email
 ):
     error_messages = []
     new_beneficiaries = []
@@ -45,7 +46,16 @@ def run(
             error_messages.append(error)
             continue
 
-        if not existing_user(information['application_id']):
+        if already_created(information['email']):
+            save_new_beneficiary_import(
+                ImportStatus.REJECTED,
+                datetime.utcnow(),
+                information['application_id'],
+                detail='Compte existant avec cet email'
+            )
+            continue
+
+        if not already_imported(information['application_id']):
             process_beneficiary_application(information, error_messages, new_beneficiaries)
 
     send_remote_beneficiaries_import_report_email(new_beneficiaries, error_messages, REPORT_RECIPIENTS, send_raw_email)

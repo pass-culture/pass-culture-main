@@ -36,14 +36,16 @@ class RunTest:
             make_application_detail(789, 'closed')
         ]
 
-        has_already_been_created = Mock(return_value=None)
+        has_already_been_imported = Mock(return_value=False)
+        has_already_been_created = Mock(return_value=False)
 
         # when
         remote_import.run(
             ONE_WEEK_AGO,
             get_all_applications_ids=get_all_application_ids,
             get_details=get_details,
-            existing_user=has_already_been_created
+            already_imported=has_already_been_imported,
+            already_created=has_already_been_created
         )
 
         # then
@@ -56,14 +58,16 @@ class RunTest:
         # given
         get_all_application_ids = Mock(return_value=[123])
         get_details = Mock(side_effect=[make_application_detail(123, 'closed')])
-        has_already_been_created = Mock(return_value=None)
+        has_already_been_imported = Mock(return_value=False)
+        has_already_been_created = Mock(return_value=False)
 
         # when
         remote_import.run(
             ONE_WEEK_AGO,
             get_all_applications_ids=get_all_application_ids,
             get_details=get_details,
-            existing_user=has_already_been_created
+            already_imported=has_already_been_imported,
+            already_created=has_already_been_created
         )
 
         # then
@@ -82,6 +86,7 @@ class RunTest:
         # given
         get_all_application_ids = Mock(return_value=[123])
         get_details = Mock(side_effect=[make_application_detail(123, 'closed')])
+        has_already_been_imported = Mock(return_value=False)
         has_already_been_created = Mock(return_value=False)
         parse_beneficiary_information.side_effect = [Exception()]
 
@@ -90,7 +95,8 @@ class RunTest:
             ONE_WEEK_AGO,
             get_all_applications_ids=get_all_application_ids,
             get_details=get_details,
-            existing_user=has_already_been_created
+            already_imported=has_already_been_imported,
+            already_created=has_already_been_created
         )
 
         # then
@@ -108,6 +114,34 @@ class RunTest:
         user = User()
         user.email = 'john.doe@test.com'
         user.demarcheSimplifieeApplicationId = 123
+        has_already_been_imported = Mock()
+        has_already_been_created = Mock(return_value=False)
+
+        # when
+        remote_import.run(
+            ONE_WEEK_AGO,
+            get_all_applications_ids=get_all_application_ids,
+            get_details=get_details,
+            already_imported=has_already_been_imported,
+            already_created=has_already_been_created
+        )
+
+        # then
+        process_beneficiary_application.assert_not_called()
+
+    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
+    @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
+    @clean_database
+    def test_application_with_known_email_are_saved_as_rejected(self,
+                                                                process_beneficiary_application,
+                                                                send_report_email, app):
+        # given
+        get_all_application_ids = Mock(return_value=[123, 456])
+        get_details = Mock(return_value=make_application_detail(123, 'closed'))
+        user = User()
+        user.email = 'john.doe@test.com'
+        user.demarcheSimplifieeApplicationId = 123
+        has_already_been_imported = Mock(return_value=False)
         has_already_been_created = Mock(return_value=True)
 
         # when
@@ -115,10 +149,15 @@ class RunTest:
             ONE_WEEK_AGO,
             get_all_applications_ids=get_all_application_ids,
             get_details=get_details,
-            existing_user=has_already_been_created
+            already_imported=has_already_been_imported,
+            already_created=has_already_been_created
         )
 
         # then
+        beneficiary_import = BeneficiaryImport.query.first()
+        assert beneficiary_import.status == ImportStatus.REJECTED
+        assert beneficiary_import.demarcheSimplifieeApplicationId == 123
+        assert beneficiary_import.detail == 'Compte existant avec cet email'
         process_beneficiary_application.assert_not_called()
 
 
