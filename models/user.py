@@ -44,8 +44,6 @@ class User(PcObject,
     dateOfBirth = Column(DateTime,
                          nullable=True)
 
-    demarcheSimplifieeApplicationId = Column(BigInteger, nullable=True)
-
     departementCode = Column(String(3), nullable=False)
 
     firstName = Column(String(35), nullable=True)
