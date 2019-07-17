@@ -4,23 +4,16 @@ import { shallow } from 'enzyme'
 import Offerers from '../Offerers'
 
 describe('src | components | pages | Offerers | Offerers', () => {
-  let change
-  let dispatch
-  let parse
   let props
 
   beforeEach(() => {
-    dispatch = jest.fn()
-    change = jest.fn()
-    parse = () => ({ 'mots-cles': null })
-
     props = {
-      assignData:jest.fn(),
-      closeNotification:jest.fn(),
+      assignData: jest.fn(),
+      closeNotification: jest.fn(),
       currentUser: {},
-      dispatch,
-      loadOfferers:jest.fn(),
-      loadNotValidatedUserOfferers:jest.fn(),
+      dispatch: jest.fn(),
+      loadOfferers: jest.fn(),
+      loadNotValidatedUserOfferers: jest.fn(),
       offerers: [{ id: 'AE' }],
       pendingOfferers: [],
       pagination: {
@@ -29,29 +22,23 @@ describe('src | components | pages | Offerers | Offerers', () => {
         },
       },
       query: {
-        change,
-        parse,
+        change: jest.fn(),
+        parse: () => ({ 'mots-cles': null }),
       },
-      showNotification:jest.fn(),
+      showNotification: jest.fn(),
       location: {
         search: '',
       },
     }
   })
 
-  afterEach(() => {
-    dispatch.mockClear()
-  })
+  it('should match snapshot', () => {
+    // when
+    const wrapper = shallow(<Offerers {...props} />)
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<Offerers {...props} />)
-
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toBeDefined()
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {
@@ -67,7 +54,6 @@ describe('src | components | pages | Offerers | Offerers', () => {
         const heroSection = wrapper.find('HeroSection').props()
 
         // then
-
         expect(heroSection.title).toStrictEqual('Votre structure juridique')
       })
 

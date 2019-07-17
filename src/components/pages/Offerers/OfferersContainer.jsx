@@ -3,9 +3,9 @@ import { compose } from 'redux'
 
 import { withRequiredLogin } from '../../hocs'
 import { assignData } from 'redux-saga-data'
+import { requestData } from 'redux-saga-data'
 import Offerers from './Offerers'
 import { closeNotification, showNotification } from 'pass-culture-shared'
-import { requestData } from 'redux-saga-data'
 import { offererNormalizer } from '../../../utils/normalizers'
 
 export const mapStateToProps = state => {
@@ -16,43 +16,45 @@ export const mapStateToProps = state => {
   }
 }
 
-export const mapDispatchToProps = (dispatch) => ({
-  assignData:() => dispatch(assignData({ offerers: [], pendingOfferers: [] })),
+export const mapDispatchToProps = dispatch => ({
+  assignData: () => dispatch(assignData({ offerers: [], pendingOfferers: [] })),
 
-  closeNotification:() => dispatch(closeNotification()),
+  closeNotification: () => dispatch(closeNotification()),
 
   loadOfferers: (apiPath, handleFail, handleSuccess) => () => {
     dispatch(
       requestData({
         apiPath,
-        handleFail: handleFail,
-        handleSuccess: handleSuccess,
+        handleFail,
+        handleSuccess,
         normalizer: offererNormalizer,
       })
     )
   },
 
-  loadNotValidatedUserOfferers: (notValidatedUserOfferersPath) => () => {
+  loadNotValidatedUserOfferers: (apiPath, handleFail) => () => {
     dispatch(
       requestData({
-        apiPath: notValidatedUserOfferersPath,
+        apiPath,
+        handleFail,
         normalizer: offererNormalizer,
         stateKey: 'pendingOfferers',
       })
     )
   },
 
-  showNotification: (url) => () => {
+  showNotification: url => () => {
     dispatch(
       showNotification({
         tag: 'offerers',
-        text: 'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
+        text:
+          'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
         type: 'info',
-        url: url,
-        urlLabel: 'Nouveau lieu'
+        url,
+        urlLabel: 'Nouveau lieu',
       })
     )
-  }
+  },
 })
 
 export default compose(

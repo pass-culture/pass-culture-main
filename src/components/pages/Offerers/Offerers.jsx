@@ -13,10 +13,7 @@ import Icon from '../../layout/Icon'
 import Main from '../../layout/Main'
 import Spinner from '../../layout/Spinner'
 import TextField from '../../layout/form/fields/TextField'
-import {
-  mapApiToBrowser,
-  translateQueryParamsToApiParams,
-} from '../../../utils/translate'
+import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 
 class Offerers extends Component {
@@ -69,7 +66,14 @@ class Offerers extends Component {
   }
 
   handleRequestData = () => {
-    const { currentUser, loadNotValidatedUserOfferers, loadOfferers, offerers, query, showNotification } = this.props
+    const {
+      currentUser,
+      loadNotValidatedUserOfferers,
+      loadOfferers,
+      offerers,
+      query,
+      showNotification,
+    } = this.props
     const { isAdmin } = currentUser || {}
     const queryParams = query.parse()
     const apiParams = translateQueryParamsToApiParams(queryParams)
@@ -97,7 +101,7 @@ class Offerers extends Component {
       )
       const notValidatedUserOfferersSearch = stringify(notValidatedUserOfferersParams)
       const notValidatedUserOfferersPath = `/offerers?${notValidatedUserOfferersSearch}`
-      loadNotValidatedUserOfferers(notValidatedUserOfferersPath)
+      loadNotValidatedUserOfferers(notValidatedUserOfferersPath, this.handleFail)
     }
   }
 
@@ -119,17 +123,10 @@ class Offerers extends Component {
 
   renderTextField = () => (
     <Fragment>
-      <button
-        className="button is-primary is-outlined search-ok ml12"
-        type="submit"
-      >
+      <button className="button is-primary is-outlined search-ok ml12" type="submit">
         {'OK'}
       </button>
-      <button
-        className="button is-secondary"
-        disabled
-        type="button"
-      >
+      <button className="button is-secondary" disabled type="button">
         &nbsp;
         <Icon svg="ico-filter" />
         &nbsp;
@@ -174,10 +171,7 @@ class Offerers extends Component {
             <a href="/offres/creation"> {'ajouter des offres numériques.'} </a>
           </p>
           <div className="title-action-links">
-            <NavLink
-              className="cta button is-primary is-outlined"
-              to="/structures/creation"
-            >
+            <NavLink className="cta button is-primary is-outlined" to="/structures/creation">
               {'+ Ajouter une structure'}
               <span
                 className="tip-icon"
@@ -200,15 +194,9 @@ class Offerers extends Component {
         <br />
 
         {pendingOfferers.length > 0 && (
-          <ul
-            className="main-list offerers-list"
-            id="pending-offerer-list"
-          >
+          <ul className="main-list offerers-list" id="pending-offerer-list">
             {pendingOfferers.map(o => (
-              <PendingOffererItem
-                key={o.siren}
-                offerer={o}
-              />
+              <PendingOffererItem key={o.siren} offerer={o} />
             ))}
           </ul>
         )}
@@ -222,10 +210,7 @@ class Offerers extends Component {
           useWindow
         >
           {offerers.map(offerer => (
-            <OffererItemContainer
-              key={offerer.id}
-              offerer={offerer}
-            />
+            <OffererItemContainer key={offerer.id} offerer={offerer} />
           ))}
         </LoadingInfiniteScroll>
       </Main>
