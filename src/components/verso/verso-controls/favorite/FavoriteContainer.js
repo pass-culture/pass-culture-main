@@ -1,8 +1,7 @@
-import { mergeData } from 'fetch-normalize-data'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import { requestData } from 'redux-saga-data'
+import { mergeData, requestData } from 'redux-saga-data'
 
 import currentRecommendationSelector from '../../../../selectors/currentRecommendation'
 import Favorite from './Favorite'

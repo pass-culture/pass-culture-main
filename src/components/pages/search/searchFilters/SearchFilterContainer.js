@@ -1,6 +1,6 @@
-import { assignData } from 'fetch-normalize-data'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import { assignData } from 'redux-saga-data'
 
 import SearchFilter from './SearchFilter'
 import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'

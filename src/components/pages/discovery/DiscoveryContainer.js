@@ -1,8 +1,7 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { toast } from 'react-toastify'
-import { assignData } from 'fetch-normalize-data'
-import { requestData } from 'redux-saga-data'
+import { assignData, requestData } from 'redux-saga-data'
 
 import Discovery from './Discovery'
 import { checkIfShouldReloadRecommendations, isDiscoveryStartupPathname } from './utils'

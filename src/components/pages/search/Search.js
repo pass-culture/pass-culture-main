@@ -1,9 +1,8 @@
-import { assignData } from 'fetch-normalize-data'
 import PropTypes from 'prop-types'
 import { stringify } from 'query-string'
 import React, { Fragment, PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
-import { requestData } from 'redux-saga-data'
+import { assignData, requestData } from 'redux-saga-data'
 
 import Footer from './Footer'
 import PageHeader from '../../layout/Header/PageHeader'
