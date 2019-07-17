@@ -11,7 +11,7 @@ from models.venue_provider import VenueProvider
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
 from tests.test_utils import create_offerer, create_venue, create_product_with_Thing_type, \
-    create_offer_with_thing_product, provider_test
+    create_offer_with_thing_product, provider_test, create_stock
 
 savedCounts = {}
 
@@ -25,10 +25,9 @@ def check_titelive_epagine_is_down():
 
 
 @clean_database
-@pytest.mark.skipif(check_titelive_epagine_is_down(), reason="Titelive Epagine API is down")
 @patch('local_providers.titelive_stocks.get_data')
 def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
-    # mock
+    # given
     get_data.return_value = {
         'total': 'null',
         'limit': 5000,
@@ -41,7 +40,7 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
             }
         ]
     }
-    # given
+
     offerer = create_offerer(siren='775671464')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
     PcObject.save(venue)
@@ -61,6 +60,7 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
 
     PcObject.save(product)
 
+    # When / Then
     provider_test(app,
                   TiteLiveStocks,
                   venue_provider,
@@ -86,10 +86,9 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
 
 
 @clean_database
-@pytest.mark.skipif(check_titelive_epagine_is_down(), reason="Titelive Epagine API is down")
 @patch('local_providers.titelive_stocks.get_data')
-def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(get_data, app):
-    # mock
+def test_titelive_stock_provider_update_1_stock_and_1_offer(get_data, app):
+    # given
     get_data.return_value = {
         'total': 'null',
         'limit': 5000,
@@ -102,15 +101,68 @@ def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(get_
             }
         ]
     }
-    # given
+
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
     PcObject.save(venue)
 
-    titeLive_things_provider = get_provider_by_local_class('TiteLiveThings')
+    tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
     venue_provider = VenueProvider()
     venue_provider.venue = venue
-    venue_provider.provider = titeLive_things_provider
+    venue_provider.provider = tite_live_things_provider
+    venue_provider.isActive = True
+    venue_provider.venueIdAtOfferProvider = '77567146400110'
+    PcObject.save(venue_provider)
+    venue_provider = VenueProvider.query \
+        .filter_by(venueIdAtOfferProvider='77567146400110') \
+        .one_or_none()
+
+    product = create_product_with_Thing_type(id_at_providers='0002730757438')
+    offer = create_offer_with_thing_product(venue, product=product, id_at_providers='0002730757438@77567146400110')
+    stock = create_stock(offer=offer, id_at_providers='0002730757438@77567146400110')
+
+    PcObject.save(product, offer, stock)
+
+    # When / Then
+    provider_test(app,
+                  TiteLiveStocks,
+                  venue_provider,
+                  checkedObjects=2,
+                  createdObjects=0,
+                  updatedObjects=2,
+                  erroredObjects=0,
+                  checkedThumbs=0,
+                  createdThumbs=0,
+                  updatedThumbs=0,
+                  erroredThumbs=0,
+                  )
+
+
+@clean_database
+@patch('local_providers.titelive_stocks.get_data')
+def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(get_data, app):
+    # given
+    get_data.return_value = {
+        'total': 'null',
+        'limit': 5000,
+        'stocks': [
+            {
+                "ref": "0002730757438",
+                "available": 10,
+                "price": 4500,
+                "validUntil": "2019-10-31T15:10:27Z"
+            }
+        ]
+    }
+
+    offerer = create_offerer(siren='987654321')
+    venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
+    PcObject.save(venue)
+
+    tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
+    venue_provider = VenueProvider()
+    venue_provider.venue = venue
+    venue_provider.provider = tite_live_things_provider
     venue_provider.isActive = True
     venue_provider.venueIdAtOfferProvider = '77567146400110'
     PcObject.save(venue_provider)
@@ -123,6 +175,7 @@ def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(get_
 
     PcObject.save(product, offer)
 
+    # When / Then
     provider_test(app,
                   TiteLiveStocks,
                   venue_provider,
@@ -139,10 +192,9 @@ def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(get_
 
 
 @clean_database
-@pytest.mark.skipif(check_titelive_epagine_is_down(), reason="Titelive Epagine API is down")
 @patch('local_providers.titelive_stocks.get_data')
 def test_titelive_stock_provider_create_2_stock_and_2_offer_even_if_existing_offer_on_same_product(get_data, app):
-    # mock
+    # given
     get_data.return_value = {
         'total': 'null',
         'limit': 5000,
@@ -161,15 +213,15 @@ def test_titelive_stock_provider_create_2_stock_and_2_offer_even_if_existing_off
             }
         ]
     }
-    # given
+
     offerer = create_offerer(siren='987654321')
     venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
     PcObject.save(venue)
 
-    titeLive_things_provider = get_provider_by_local_class('TiteLiveThings')
+    tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
     venue_provider = VenueProvider()
     venue_provider.venue = venue
-    venue_provider.provider = titeLive_things_provider
+    venue_provider.provider = tite_live_things_provider
     venue_provider.isActive = True
     venue_provider.venueIdAtOfferProvider = '77567146400110'
     PcObject.save(venue_provider)
@@ -183,6 +235,7 @@ def test_titelive_stock_provider_create_2_stock_and_2_offer_even_if_existing_off
 
     PcObject.save(thing_1, offer, thing_2)
 
+    # When / Then
     provider_test(app,
                   TiteLiveStocks,
                   venue_provider,
@@ -207,16 +260,16 @@ def test_titelive_stock_provider_create_nothing_if_siret_is_not_in_titelive_data
     venue = create_venue(offerer, name='Librairie Titelive', siret='12345678912345')
     PcObject.save(venue)
 
-    oa_provider = get_provider_by_local_class('TiteLiveThings')
-    venueProvider = VenueProvider()
-    venueProvider.venue = venue
-    venueProvider.provider = oa_provider
-    venueProvider.isActive = True
-    venueProvider.venueIdAtOfferProvider = '12345678912345'
+    tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
+    venue_provider = VenueProvider()
+    venue_provider.venue = venue
+    venue_provider.provider = tite_live_things_provider
+    venue_provider.isActive = True
+    venue_provider.venueIdAtOfferProvider = '12345678912345'
 
-    PcObject.save(venueProvider)
+    PcObject.save(venue_provider)
 
-    venueProvider = VenueProvider.query \
+    venue_provider = VenueProvider.query \
         .filter_by(venueIdAtOfferProvider='12345678912345') \
         .one_or_none()
 
@@ -225,9 +278,10 @@ def test_titelive_stock_provider_create_nothing_if_siret_is_not_in_titelive_data
 
     PcObject.save(product, offer)
 
+    # When / Then
     provider_test(app,
                   TiteLiveStocks,
-                  venueProvider,
+                  venue_provider,
                   checkedObjects=0,
                   createdObjects=0,
                   updatedObjects=0,

@@ -216,10 +216,10 @@ class LocalProvider(Iterator):
                 logger.info("VenueProvider is not active. Stopping")
                 return
             db.session.add(self.venueProvider)  # FIXME: we should not need this
-        providerName = self.__class__.__name__
+        provider_name = self.__class__.__name__
 
         if not self.dbObject.isActive:
-            logger.info("Provider " + providerName + " is inactive")
+            logger.info("Provider " + provider_name + " is inactive")
             return
 
         logger.debug("Updating "
@@ -355,6 +355,7 @@ class LocalProvider(Iterator):
         if len(chunk_to_insert) > 0:
             db.session.bulk_save_objects(chunk_to_insert.values())
             db.session.commit()
+
         if len(chunk_to_update) > 0:
             self.save_chunk_to_update(chunk_to_update, providable_info)
 

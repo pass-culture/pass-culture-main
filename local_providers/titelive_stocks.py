@@ -7,6 +7,7 @@ from models.db import db
 from local_providers.local_provider import LocalProvider, ProvidableInfo
 from models.stock import Stock
 from repository import thing_queries, local_provider_event_queries, venue_queries
+from sqlalchemy import Sequence
 
 PRICE_DIVIDER_TO_EURO = 100
 URL_TITELIVE_WEBSERVICE_STOCKS = "https://stock.epagine.fr/stocks/"
@@ -104,7 +105,7 @@ class TiteLiveStocks(LocalProvider):
         obj.price = int(stock_information['price']) / PRICE_DIVIDER_TO_EURO
         obj.available = int(stock_information['available'])
         obj.bookingLimitDatetime = read_stock_datetime(stock_information['validUntil'])
-        obj.offer = self.providables[0]
+        obj.offerId = self.providables[0].id
 
     def update_offer_object(self, obj):
         obj.name = self.product.name
@@ -113,6 +114,13 @@ class TiteLiveStocks(LocalProvider):
         obj.extraData = self.product.extraData
         obj.venueId = self.venueId
         obj.productId = self.product.id
+        if obj.id is None:
+            next_id = self.get_next_offer_id_from_sequence()
+            obj.id = next_id
+
+    def get_next_offer_id_from_sequence(self):
+        sequence = Sequence('offer_id_seq')
+        return db.session.execute(sequence)
 
     def create_providable_info(self, model_object: PcObject) -> ProvidableInfo:
         providable_info = ProvidableInfo()

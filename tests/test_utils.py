@@ -223,7 +223,7 @@ def create_stock_from_offer(offer, price=10, available=10, soft_deleted=False, b
 
 def create_stock(price=10, available=10, booking_limit_datetime=None, offer=None,
                  beginning_datetime=None, end_datetime=None,
-                 is_soft_deleted=False):
+                 is_soft_deleted=False, id_at_providers=None, last_provider_id=None):
     stock = Stock()
     stock.price = price
     stock.available = available
@@ -232,6 +232,8 @@ def create_stock(price=10, available=10, booking_limit_datetime=None, offer=None
     stock.beginningDatetime = beginning_datetime
     stock.endDatetime = end_datetime
     stock.isSoftDeleted = is_soft_deleted
+    stock.idAtProviders = id_at_providers
+    stock.lastProviderId = last_provider_id
     return stock
 
 
