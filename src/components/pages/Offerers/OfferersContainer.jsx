@@ -21,7 +21,7 @@ export const mapDispatchToProps = (dispatch) => ({
 
   closeNotification:() => dispatch(closeNotification()),
 
-  loadOfferers: (apiPath, handleFail, handleSuccess) => () => {
+  loadOfferers: (apiPath, handleFail, handleSuccess) => {
     dispatch(
       requestData({
         apiPath,
@@ -32,7 +32,7 @@ export const mapDispatchToProps = (dispatch) => ({
     )
   },
 
-  loadNotValidatedUserOfferers: (apiPath, handleFail) => () => {
+  loadNotValidatedUserOfferers: (apiPath, handleFail) => {
     dispatch(
       requestData({
         apiPath,
@@ -43,7 +43,7 @@ export const mapDispatchToProps = (dispatch) => ({
     )
   },
 
-  showNotification: url => () => {
+  showNotification: url => {
     dispatch(
       showNotification({
         tag: 'offerers',

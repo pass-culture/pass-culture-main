@@ -97,7 +97,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
       const apiPath = '/offerers'
       const handleFail = jest.fn()
       const handleSuccess = jest.fn()
-      mapDispatchToProps(dispatch).loadOfferers(apiPath, handleFail, handleSuccess)()
+      mapDispatchToProps(dispatch).loadOfferers(apiPath, handleFail, handleSuccess)
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
@@ -122,7 +122,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
     it('enable to load not validated offerers', () => {
       // when
       const apiPath = '/offerers'
-      mapDispatchToProps(dispatch).loadNotValidatedUserOfferers(apiPath)()
+      mapDispatchToProps(dispatch).loadNotValidatedUserOfferers(apiPath)
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
@@ -146,7 +146,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
     it('enable to show notification', () => {
       //when
       const url = '/offerers'
-      mapDispatchToProps(dispatch).showNotification(url)()
+      mapDispatchToProps(dispatch).showNotification(url)
 
       // then
       expect(dispatch).toHaveBeenCalledWith(
