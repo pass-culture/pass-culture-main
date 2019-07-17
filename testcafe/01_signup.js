@@ -81,7 +81,7 @@ test('Lorsque je clique sur le lien de validation de création du compte reçu p
   const { validationToken } = user
 
   // when
-  await t.navigateTo(`/inscription/validation/${validationToken}`)
+  await t.navigateTo('/inscription/validation/' + validationToken)
 
   // then
   const location = await t.eval(() => window.location)

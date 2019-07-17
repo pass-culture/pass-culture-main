@@ -150,7 +150,7 @@ class SignupForm extends PureComponent {
 }
 
 SignupForm.propTypes = {
-  errors: PropTypes.arrayOf(String).isRequired,
+  errors: PropTypes.arrayOf(PropTypes.string).isRequired,
   offererName: PropTypes.string.isRequired,
   patch: PropTypes.shape().isRequired,
 }
