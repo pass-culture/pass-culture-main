@@ -74,14 +74,13 @@ class RunTest:
         send_report_email.assert_called_with([], [], 'send@report.to', ANY)
 
     @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
-    @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
     @patch('scripts.beneficiary.remote_import.parse_beneficiary_information')
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_REPORT_RECIPIENTS': 'send@report.to'})
-    def test_a_report_email_is_sent_even_if_an_application_is_not_parsable(
+    @clean_database
+    def test_an_error_status_is_saved_when_an_application_is_not_parsable(
             self,
             parse_beneficiary_information,
-            process_beneficiary_application,
-            send_report_email
+            send_report_email, app
     ):
         # given
         get_all_application_ids = Mock(return_value=[123])
@@ -100,8 +99,10 @@ class RunTest:
         )
 
         # then
-        error = 'Le dossier 123 contient des erreurs et a été ignoré'
-        send_report_email.assert_called_with([], [error], 'send@report.to', ANY)
+        beneficiary_import = BeneficiaryImport.query.first()
+        assert beneficiary_import.status == ImportStatus.ERROR
+        assert beneficiary_import.demarcheSimplifieeApplicationId == 123
+        assert beneficiary_import.detail == 'Le dossier 123 contient des erreurs et a été ignoré'
 
     @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')

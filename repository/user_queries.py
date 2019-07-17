@@ -128,8 +128,8 @@ def find_most_recent_beneficiary_creation_date() -> datetime:
 
 def save_new_beneficiary_import(
         status: ImportStatus,
-        date: datetime,
         demarche_simplifiee_application_id: int,
+        date=datetime.utcnow(),
         user: User = None,
         detail=None,
 ):

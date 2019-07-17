@@ -44,12 +44,12 @@ def run(
             error = f"Le dossier {id} contient des erreurs et a été ignoré"
             logger.error(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {error}')
             error_messages.append(error)
+            save_new_beneficiary_import(ImportStatus.ERROR, id, detail=error)
             continue
 
         if already_created(information['email']):
             save_new_beneficiary_import(
                 ImportStatus.REJECTED,
-                datetime.utcnow(),
                 information['application_id'],
                 detail='Compte existant avec cet email'
             )
@@ -82,7 +82,6 @@ def process_beneficiary_application(
         error_messages.append(e.message)
         save_new_beneficiary_import(
             ImportStatus.DUPLICATE,
-            datetime.utcnow(),
             information['application_id'],
             detail=f"Utilisateur en doublon : {e.duplicate_ids}"
         )
@@ -96,7 +95,6 @@ def process_beneficiary_application(
         else:
             save_new_beneficiary_import(
                 ImportStatus.CREATED,
-                datetime.utcnow(),
                 information['application_id'],
                 user=new_beneficiary
             )
