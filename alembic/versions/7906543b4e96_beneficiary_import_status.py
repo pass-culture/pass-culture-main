@@ -1,7 +1,7 @@
 """Create table BeneficiaryImportStatus
 
 Revision ID: 7906543b4e96
-Revises: 1a6a6a4baf3b
+Revises: 37ba62c7fdb3
 Create Date: 2019-07-17 07:49:02.562498
 
 """
@@ -13,7 +13,7 @@ from sqlalchemy import func, ForeignKey
 from models.beneficiary_import import ImportStatus
 
 revision = '7906543b4e96'
-down_revision = '1a6a6a4baf3b'
+down_revision = '37ba62c7fdb3'
 branch_labels = None
 depends_on = None
 
