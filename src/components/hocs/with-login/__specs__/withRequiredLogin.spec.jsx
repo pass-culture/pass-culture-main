@@ -31,7 +31,7 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin', () 
   })
 
   describe('functions', () => {
-    it.only('should redirect to signin when not authenticated', done => {
+    it('should redirect to signin when not authenticated', done => {
       // given
       const history = createBrowserHistory()
       history.push('/test')

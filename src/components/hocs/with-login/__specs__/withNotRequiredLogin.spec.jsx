@@ -38,6 +38,9 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
       history.push('/test')
       const store = configureTestStore()
       configureFetchCurrentUserWithLoginSuccess()
+      function onFailMountCallback() {
+        done('Should have been redirected to /structures')
+      }
       function onSuccessMountCallback() {
         expect(history.location.pathname).toStrictEqual("/structures")
         done()
@@ -54,12 +57,13 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
               <Route path="/structures">
                 <OnMountCaller onMountCallback={onSuccessMountCallback} />
               </Route>
+              <Route path="/">
+                <OnMountCaller onMountCallback={onFailMountCallback} />
+              </Route>
             </Switch>
           </Router>
         </Provider>
       )
-
-      setTimeout(() => done('Should have been redirected to /structures'))
     })
 
     it('should redirect to offers when already authenticated and hasOffers', done => {
@@ -68,6 +72,9 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
       history.push('/test')
       const store = configureTestStore()
       configureFetchCurrentUserWithLoginSuccessAndOffers()
+      function onFailMountCallback() {
+        done('Should have been redirected to /offres')
+      }
       function onSuccessMountCallback() {
         expect(history.location.pathname).toStrictEqual("/offres")
         done()
@@ -84,12 +91,13 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
               <Route path="/offres">
                 <OnMountCaller onMountCallback={onSuccessMountCallback} />
               </Route>
+              <Route path="/">
+                <OnMountCaller onMountCallback={onFailMountCallback} />
+              </Route>
             </Switch>
           </Router>
         </Provider>
       )
-
-      setTimeout(() => done('Should have been redirected to /offres'))
     })
   })
 })
