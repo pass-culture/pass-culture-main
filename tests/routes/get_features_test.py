@@ -22,12 +22,11 @@ class Get:
 
             # then
             assert response.status_code == 200
-            response_text = response.data.decode('utf-8')
-            assert response_text.startswith('var features = ')
-            cleaned_text = response_text.replace('var features = ', '')
-            json_cleaned_response = json.loads(cleaned_text)
-            assert 'WEBAPP_SIGNUP' in json_cleaned_response
-            assert json_cleaned_response['WEBAPP_SIGNUP'] is True
+            feature_name_keys = [
+                feature_dict['nameKey']
+                for feature_dict in response.json
+            ]
+            assert 'WEBAPP_SIGNUP' in feature_name_keys
 
         @clean_database
         def when_user_is_not_logged_in(self, app):

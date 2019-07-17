@@ -59,10 +59,8 @@ def clean_all_database(*args, **kwargs):
     UserSession.query.delete()
     Email.query.delete()
     LocalProviderEvent.query.delete()
-    Feature.query.delete()
     Provider.query.delete()
     db.session.commit()
 
     install_features()
     install_local_providers()
-

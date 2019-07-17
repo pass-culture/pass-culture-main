@@ -8,7 +8,6 @@ from flask_login import LoginManager
 from mailjet_rest import Client
 from werkzeug.middleware.profiler import ProfilerMiddleware
 from admin.install import install_admin_views
-from models import Feature
 from repository.feature_queries import feature_request_profiling_enabled
 from utils.tutorials import upsert_tuto_mediations
 from local_providers.install import install_local_providers
@@ -73,7 +72,6 @@ with app.app_context():
         install_models()
         upsert_tuto_mediations()
         install_local_providers()
-        Feature.query.delete()
         install_features()
     import utils.login_manager
     install_routes()
