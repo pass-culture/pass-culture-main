@@ -55,9 +55,9 @@ def run(
 class DuplicateBeneficiaryError(Exception):
     def __init__(self, application_id: int, duplicate_beneficiaries: List[User]):
         number_of_beneficiaries = len(duplicate_beneficiaries)
-        duplicate_ids = ", ".join([str(u.id) for u in duplicate_beneficiaries])
+        self.duplicate_ids = ", ".join([str(u.id) for u in duplicate_beneficiaries])
         self.message = '%s utilisateur(s) en doublons (%s) pour le dossier %s' % (
-            number_of_beneficiaries, duplicate_ids, application_id
+            number_of_beneficiaries, self.duplicate_ids, application_id
         )
 
 
@@ -70,6 +70,12 @@ def process_beneficiary_application(
     except DuplicateBeneficiaryError as e:
         logger.warning(f'[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : {e.message}')
         error_messages.append(e.message)
+        beneficiary_import = BeneficiaryImport()
+        beneficiary_import.status = ImportStatus.DUPLICATE
+        beneficiary_import.detail = f"Utilisateur en doublon : {e.duplicate_ids}"
+        beneficiary_import.demarcheSimplifieeApplicationId = information['application_id']
+        PcObject.save(beneficiary_import)
+
     else:
         try:
             beneficiary_import = BeneficiaryImport()

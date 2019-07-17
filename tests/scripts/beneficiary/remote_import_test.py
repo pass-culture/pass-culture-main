@@ -13,6 +13,7 @@ from scripts.beneficiary.remote_import import parse_beneficiary_information, cre
 from tests.conftest import clean_database
 from tests.scripts.beneficiary.fixture import make_application_detail, \
     APPLICATION_DETAIL_STANDARD_RESPONSE
+from tests.test_utils import create_user
 
 NOW = datetime.utcnow()
 datetime_pattern = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -81,7 +82,7 @@ class RunTest:
         # given
         get_all_application_ids = Mock(return_value=[123])
         get_details = Mock(side_effect=[make_application_detail(123, 'closed')])
-        has_already_been_created = Mock(return_value=None)
+        has_already_been_created = Mock(return_value=False)
         parse_beneficiary_information.side_effect = [Exception()]
 
         # when
@@ -107,14 +108,14 @@ class RunTest:
         user = User()
         user.email = 'john.doe@test.com'
         user.demarcheSimplifieeApplicationId = 123
-        find_user_by_demarche_simplifiee_application_id = Mock(return_value=user)
+        has_already_been_created = Mock(return_value=True)
 
         # when
         remote_import.run(
             ONE_WEEK_AGO,
             get_all_applications_ids=get_all_application_ids,
             get_details=get_details,
-            existing_user=find_user_by_demarche_simplifiee_application_id
+            existing_user=has_already_been_created
         )
 
         # then
@@ -147,7 +148,7 @@ class ProcessBeneficiaryApplicationTest:
         assert first.wallet_balance == 500
 
     @clean_database
-    def test_an_import_status_is_saved(self, app):
+    def test_an_import_status_is_saved_if_beneficiary_is_created(self, app):
         # given
         app.mailjet_client = Mock(spec=Client)
         app.mailjet_client.send = Mock()
@@ -251,6 +252,31 @@ class ProcessBeneficiaryApplicationTest:
         # then
         send_activation_notification_email.assert_not_called()
         PcObject.assert_not_called()
+
+    @clean_database
+    def test_an_import_status_is_saved_if_beneficiary_is_a_duplicate(self, app):
+        # given
+        information = {
+            'department': '67',
+            'last_name': 'Doe',
+            'first_name': 'Jane',
+            'birth_date': datetime(2000, 5, 1),
+            'email': 'jane.doe@test.com',
+            'phone': '0612345678',
+            'postal_code': '67200',
+            'application_id': 123
+        }
+        duplicates = [create_user(idx=11), create_user(idx=22)]
+        mocked_query = Mock(side_effect=DuplicateBeneficiaryError(123, duplicates))
+
+        # when
+        remote_import.process_beneficiary_application(information, [], [], find_duplicate_users=mocked_query)
+
+        # then
+        beneficiary_import = BeneficiaryImport.query.first()
+        assert beneficiary_import.status == ImportStatus.DUPLICATE
+        assert beneficiary_import.demarcheSimplifieeApplicationId == 123
+        assert beneficiary_import.detail == "Utilisateur en doublon : 11, 22"
 
 
 class ParseBeneficiaryInformationTest:
