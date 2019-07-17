@@ -2,19 +2,16 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.admin_emails import send_offer_creation_notification_to_administration
-from domain.favorites import create_favorite
 from domain.offers import add_stock_alert_message_to_offer
 from domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
 from models import Offer, PcObject, Venue, RightsType, Mediation
 from models.api_errors import ResourceNotFound
 from models.feature import FeatureToggle
 from repository import venue_queries, offer_queries
-from repository.favorite_queries import find_favorite_for_offer_mediation_and_user
 from repository.offer_queries import find_activation_offers, \
     find_offers_with_filter_parameters
 from repository.recommendation_queries import invalidate_recommendations
 from utils.config import PRO_URL
-from utils.feature import feature_required
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
 from utils.mailing import send_raw_email
@@ -22,7 +19,7 @@ from utils.rest import expect_json_data, \
     handle_rest_get_list, \
     load_or_404, login_or_api_key_required, load_or_raise_error, ensure_current_user_has_rights
 from validation.offers import check_venue_exists_when_requested, check_user_has_rights_for_query, check_valid_edition, \
-    check_has_venue_id, check_offer_type_is_valid, check_offer_id_and_mediation_id_are_present_in_request
+    check_has_venue_id, check_offer_type_is_valid
 
 
 @app.route('/offers', methods=['GET'])
@@ -118,37 +115,3 @@ def patch_offer(id):
     return jsonify(
         offer.as_dict(include=OFFER_INCLUDES)
     ), 200
-
-
-@app.route('/offers/favorites', methods=['POST'])
-@feature_required(FeatureToggle.FAVORITE_OFFER)
-@login_required
-def add_to_favorite():
-    offer_id = request.json.get('offerId')
-    mediation_id = request.json.get('mediationId')
-    check_offer_id_and_mediation_id_are_present_in_request(offer_id, mediation_id)
-
-    offer = load_or_404(Offer, offer_id)
-    mediation = load_or_404(Mediation, mediation_id)
-
-    favorite = create_favorite(mediation, offer, current_user)
-    PcObject.save(favorite)
-
-    return jsonify(favorite.as_dict()), 201
-
-
-@app.route('/offers/favorites/<offer_id>/<mediation_id>', methods=['DELETE'])
-@feature_required(FeatureToggle.FAVORITE_OFFER)
-@login_required
-def delete_favorite(offer_id, mediation_id):
-    dehumanized_offer_id = dehumanize(offer_id)
-    dehumanized_mediation_id = dehumanize(mediation_id)
-
-    favorite = find_favorite_for_offer_mediation_and_user(dehumanized_mediation_id,
-                                                          dehumanized_offer_id,
-                                                          current_user.id) \
-        .first_or_404()
-
-    PcObject.delete(favorite)
-
-    return jsonify({}), 204

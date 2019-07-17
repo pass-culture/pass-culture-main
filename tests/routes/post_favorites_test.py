@@ -1,4 +1,4 @@
-from models import PcObject, ThingType, Favorite
+from models import PcObject, Favorite
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, API_URL, create_offerer, create_venue, create_offer_with_thing_product, \
     create_mediation, create_recommendation
@@ -19,7 +19,7 @@ class Post:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).post(
-                f'{API_URL}/offers/favorites',
+                f'{API_URL}/favorites',
                 json=json)
 
             # Then
@@ -38,7 +38,7 @@ class Post:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).post(
-                f'{API_URL}/offers/favorites',
+                f'{API_URL}/favorites',
                 json=json)
 
             # Then
@@ -64,7 +64,7 @@ class Post:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).post(
-                f'{API_URL}/offers/favorites',
+                f'{API_URL}/favorites',
                 json=json)
 
             # Then
@@ -88,7 +88,7 @@ class Post:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).post(
-                f'{API_URL}/offers/favorites',
+                f'{API_URL}/favorites',
                 json=json)
 
             # Then
@@ -114,7 +114,7 @@ class Post:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).post(
-                f'{API_URL}/offers/favorites',
+                f'{API_URL}/favorites',
                 json=json)
 
             # Then

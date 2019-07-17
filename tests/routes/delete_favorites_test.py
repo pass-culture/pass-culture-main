@@ -21,7 +21,7 @@ class Delete:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).delete(
-                f'{API_URL}/offers/favorites/{humanize(offer.id)}/{humanize(mediation.id)}')
+                f'{API_URL}/favorites/{humanize(offer.id)}/{humanize(mediation.id)}')
 
             # Then
             assert response.status_code == 204
@@ -43,7 +43,7 @@ class Delete:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).delete(
-                f'{API_URL}/offers/favorites/1')
+                f'{API_URL}/favorites/1')
 
             # Then
             assert response.status_code == 404
@@ -62,7 +62,7 @@ class Delete:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).delete(
-                f'{API_URL}/offers/favorites/ABCD/ABCD')
+                f'{API_URL}/favorites/ABCD/ABCD')
 
             # Then
             assert response.status_code == 404
