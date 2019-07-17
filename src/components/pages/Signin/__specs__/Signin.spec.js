@@ -46,9 +46,7 @@ describe('src | components | pages | Signin | Signin ', () => {
         const wrapper = shallow(<Signin {...props} />)
 
         // when
-        const result = wrapper
-          .instance()
-          .onHandleSuccessRedirectForResetPasswordRequest(state, action)
+        const result = wrapper.instance().onHandleSuccessRedirect(state, action)
 
         // then
         expect(result).toStrictEqual('/structures')
@@ -67,9 +65,7 @@ describe('src | components | pages | Signin | Signin ', () => {
         const wrapper = shallow(<Signin {...props} />)
 
         // when
-        const result = wrapper
-          .instance()
-          .onHandleSuccessRedirectForResetPasswordRequest(state, action)
+        const result = wrapper.instance().onHandleSuccessRedirect(state, action)
 
         // then
         expect(result).toStrictEqual('/structures')
@@ -88,9 +84,7 @@ describe('src | components | pages | Signin | Signin ', () => {
         const wrapper = shallow(<Signin {...props} />)
 
         // when
-        const result = wrapper
-          .instance()
-          .onHandleSuccessRedirectForResetPasswordRequest(state, action)
+        const result = wrapper.instance().onHandleSuccessRedirect(state, action)
 
         // then
         expect(result).toStrictEqual('/offres')
@@ -109,9 +103,7 @@ describe('src | components | pages | Signin | Signin ', () => {
         const wrapper = shallow(<Signin {...props} />)
 
         // when
-        const result = wrapper
-          .instance()
-          .onHandleSuccessRedirectForResetPasswordRequest(state, action)
+        const result = wrapper.instance().onHandleSuccessRedirect(state, action)
 
         // then
         expect(result).toStrictEqual('/offres')
