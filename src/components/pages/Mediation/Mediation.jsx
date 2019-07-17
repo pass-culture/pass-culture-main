@@ -5,11 +5,11 @@ import React, { Fragment, PureComponent } from 'react'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
-import HeroSection from 'components/layout/HeroSection/HeroSection'
-import Main from 'components/layout/Main'
-import UploadThumb from 'components/layout/UploadThumb'
-import {mediationNormalizer, offerNormalizer} from 'utils/normalizers'
-import CanvasTools from 'utils/canvas'
+import HeroSection from '../../layout/HeroSection/HeroSection'
+import Main from '../../layout/Main'
+import UploadThumb from '../../layout/UploadThumb'
+import {mediationNormalizer, offerNormalizer} from '../../../utils/normalizers'
+import CanvasTools from '../../../utils/canvas'
 
 const IMAGE_UPLOAD_SIZE = 400
 const IMAGE_UPLOAD_BORDER = 25

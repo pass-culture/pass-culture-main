@@ -2,7 +2,7 @@ import Desk from './Desk'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 
-import { withRequiredLogin } from 'components/hocs'
+import { withRequiredLogin } from '../../hocs'
 
 export default compose(
   withRequiredLogin,

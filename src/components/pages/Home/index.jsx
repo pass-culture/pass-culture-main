@@ -1,8 +1,8 @@
 import React from 'react'
 
-import { withRequiredLogin } from 'components/hocs'
-import Icon from 'components/layout/Icon'
-import Main from 'components/layout/Main'
+import Card from './Card'
+import { withRequiredLogin } from '../../hocs'
+import Main from '../../layout/Main'
 
 const Home = () => (
   <Main

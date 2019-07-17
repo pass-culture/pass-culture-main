@@ -4,21 +4,18 @@ import { compose } from 'redux'
 
 import Offer from './Offer'
 import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from './utils/selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
-import {
-  withFrenchQueryRouter,
-  withRequiredLogin,
-} from 'components/hocs'
-import selectOfferById from 'selectors/selectOfferById'
-import selectOffererById from 'selectors/selectOffererById'
-import selectProductById from 'selectors/selectProductById'
-import selectProviders from 'selectors/selectProviders'
-import selectMusicSubOptionsByMusicType from 'selectors/selectMusicSubOptionsByMusicType'
-import selectShowSubOptionsByShowType from 'selectors/selectShowSubOptionsByShowType'
-import selectStocksByOfferId from 'selectors/selectStocksByOfferId'
-import selectTypesByIsVenueVirtual from 'selectors/selectTypesByIsVenueVirtual'
-import selectTypeByIsVenueVirtualAndOfferTypeValue from 'selectors/selectTypeByIsVenueVirtualAndOfferTypeValue'
-import selectVenueById from 'selectors/selectVenueById'
-import selectVenuesByOffererIdAndOfferType from 'selectors/selectVenuesByOffererIdAndOfferType'
+import { withRequiredLogin } from '../../hocs'
+import selectOfferById from '../../../selectors/selectOfferById'
+import selectOffererById from '../../../selectors/selectOffererById'
+import selectProductById from '../../../selectors/selectProductById'
+import selectProviders from '../../../selectors/selectProviders'
+import selectMusicSubOptionsByMusicType from '../../../selectors/selectMusicSubOptionsByMusicType'
+import selectShowSubOptionsByShowType from '../../../selectors/selectShowSubOptionsByShowType'
+import selectStocksByOfferId from '../../../selectors/selectStocksByOfferId'
+import selectTypesByIsVenueVirtual from '../../../selectors/selectTypesByIsVenueVirtual'
+import selectTypeByIsVenueVirtualAndOfferTypeValue from '../../../selectors/selectTypeByIsVenueVirtualAndOfferTypeValue'
+import selectVenueById from '../../../selectors/selectVenueById'
+import selectVenuesByOffererIdAndOfferType from '../../../selectors/selectVenuesByOffererIdAndOfferType'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -92,6 +89,5 @@ export const mapStateToProps = (state, ownProps) => {
 
 export default compose(
   withRequiredLogin,
-  withFrenchQueryRouter,
   connect(mapStateToProps)
 )(Offer)

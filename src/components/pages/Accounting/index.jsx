@@ -2,12 +2,11 @@ import get from 'lodash.get'
 import { withPagination } from 'pass-culture-shared'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
 
 import RawAccounting from './RawAccounting'
-import { withRequiredLogin } from 'components/hocs'
-import selectOffererById from 'selectors/selectOffererById'
-import { mapApiToWindow, windowToApiQuery } from 'utils/pagination'
+import { withRequiredLogin } from '../../hocs'
+import selectOffererById from '../../../selectors/selectOffererById'
+import { mapApiToWindow, windowToApiQuery } from '../../../utils/pagination'
 
 const mapStateToProps = (state, ownProps) => {
   const offererId = get(ownProps, `pagination.windowQuery.${mapApiToWindow.offererId}`)
@@ -21,7 +20,6 @@ const mapStateToProps = (state, ownProps) => {
 
 export default compose(
   withRequiredLogin,
-  withRouter,
   withPagination({
     dataKey: 'bookings',
     defaultWindowQuery: {

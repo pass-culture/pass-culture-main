@@ -20,11 +20,7 @@ class Signin extends Component {
       return decodeURIComponent(fromUrl)
     }
 
-<<<<<<< HEAD
     return hasOffersWithPhysicalVenues || hasPhysicalVenues ? '/offres' : '/structures'
-=======
-    return hasOffersWithPhysicalVenues || hasPhysicalVenues ? '/offres' : '/structures'
->>>>>>> (pC-2025) renamed withLogin hocs
   }
 
   handleOnEnterKey = event => event.form.onSubmit()

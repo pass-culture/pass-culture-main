@@ -6,12 +6,10 @@ import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
 import Venue from './Venue'
-import selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity
-  from './selectors/selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity'
-import { withRequiredLogin, } from 'components/hocs'
+import selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity from './selectors/selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity'
 import { VENUE_CREATION_PATCH_KEYS, VENUE_MODIFICATION_PATCH_KEYS } from './utils/utils'
-import withFrenchQueryRouter, { CREATION } from '../../hocs/withFrenchQueryRouter'
-import withRedirectToSigninWhenNotAuthenticated from '../../hocs/with-login/withRedirectToSigninWhenNotAuthenticated'
+import { withRequiredLogin } from '../../hocs'
+import { CREATION } from '../../hocs/withFrenchQueryRouter'
 import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../selectors/selectUserOffererByOffererIdAndUserIdAndRightsType'
 import selectOffererById from '../../../selectors/selectOffererById'
 import { offererNormalizer, venueNormalizer } from '../../../utils/normalizers'
@@ -160,7 +158,6 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 
 export default compose(
   withRequiredLogin,
-  withFrenchQueryRouter,
   connect(
     mapStateToProps,
     mapDispatchToProps

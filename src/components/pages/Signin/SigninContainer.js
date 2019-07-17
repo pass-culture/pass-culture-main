@@ -1,10 +1,4 @@
-import { compose } from 'redux'
-
 import Signin from './Signin'
-import { withFrenchQueryRouter } from "../../hocs/withFrenchQueryRouter"
-import { withNotRequiredLogin } from "../../hocs/with-login"
+import { withNotRequiredLogin } from '../../hocs'
 
-export default compose(
-  withNotRequiredLogin,
-  withFrenchQueryRouter
-)(Signin)
+export default withNotRequiredLogin(Signin)

@@ -1,6 +1,4 @@
-import { compose } from 'redux'
-
 import Reimbursements from './Reimbursements'
-import { withRequiredLogin } from 'components/hocs'
+import { withRequiredLogin } from '../../hocs'
 
-export default compose(withRequiredLogin)(Reimbursements)
+export default withRequiredLogin(Reimbursements)

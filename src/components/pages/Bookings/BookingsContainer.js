@@ -1,8 +1,8 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import { withRequiredLogin } from 'components/hocs'
 import Bookings from './Bookings'
+import { withRequiredLogin } from '../../hocs'
 import { API_URL } from '../../../utils/config'
 
 const buildPathToReservationFile = (isFilterByDigitalVenues, selectedVenue) => {
