@@ -57,8 +57,8 @@ describe('src | components | pages | discovery | Discovery', () => {
     })
   })
 
-  xdescribe('handleDataRequest', () => {
-    describe('One case', () => {
+  describe.skip('handleDataRequest', () => {
+    describe('one case', () => {
       it('should update recommendation infos using API when Main component is rendered', () => {
         // given
         shallow(<Discovery {...props} />)

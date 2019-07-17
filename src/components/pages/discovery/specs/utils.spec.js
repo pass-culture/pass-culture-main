@@ -4,12 +4,10 @@ import {
 } from '../utils'
 
 describe('src | components | pages | discovery | tests | utils', () => {
-  describe('MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS', () => {
+  describe('handle MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS', () => {
     it('should be equals to 3 hours in milliseconds', () => {
       const expected = 3 * 60 * 60 * 1000
-      expect(MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS).toEqual(
-        expected
-      )
+      expect(MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS).toStrictEqual(expected)
     })
   })
 

@@ -43,7 +43,7 @@ class Deck extends Component {
     if (noDataTimeout) clearTimeout(noDataTimeout)
   }
 
-  onStop = (event, data) => {
+  handleOnStop = (event, data) => {
     const {
       width,
       height,
@@ -56,7 +56,7 @@ class Deck extends Component {
     const index = get(currentRecommendation, 'index', 0)
     const offset = (data.x + width * index) / width
     if (draggable && data.y > height * verticalSlideRatio) {
-      this.handleCloseCardDetails(event)
+      this.onHandleCloseCardDetails(event)
     } else if (data.y < -height * verticalSlideRatio) {
       this.handleShowCardDetails()
     } else if (offset > horizontalSlideRatio) {
@@ -100,7 +100,7 @@ class Deck extends Component {
     dispatch(showCardDetails())
   }
 
-  handleCloseCardDetails = event => {
+  onHandleCloseCardDetails = event => {
     event.preventDefault()
     const { dispatch, unFlippable } = this.props
     if (unFlippable) return
@@ -142,7 +142,7 @@ class Deck extends Component {
         bounds={draggableBounds}
         enableUserSelectHack={false}
         key={refreshKey}
-        onStop={this.onStop}
+        onStop={this.handleOnStop}
         position={position}
         speed={{ x: 5 }}
       >
@@ -180,7 +180,7 @@ class Deck extends Component {
       >
         {showCloseButton && (
           <CloseLink
-            actionOnClick={this.handleCloseCardDetails}
+            actionOnClick={this.onHandleCloseCardDetails}
             closeTitle="Fermer"
           />
         )}
@@ -211,21 +211,21 @@ Deck.defaultProps = {
 
 Deck.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
-  currentRecommendation: PropTypes.object,
+  currentRecommendation: PropTypes.shape(),
   dispatch: PropTypes.func.isRequired,
   draggable: PropTypes.bool.isRequired,
   handleDataRequest: PropTypes.func.isRequired,
   height: PropTypes.number.isRequired,
-  history: PropTypes.object.isRequired,
+  history: PropTypes.shape().isRequired,
   horizontalSlideRatio: PropTypes.number,
   isFlipDisabled: PropTypes.bool.isRequired,
-  match: PropTypes.object.isRequired,
+  match: PropTypes.shape().isRequired,
   nextLimit: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]).isRequired,
-  nextRecommendation: PropTypes.object,
+  nextRecommendation: PropTypes.shape(),
   noDataTimeout: PropTypes.number,
-  previousRecommendation: PropTypes.object,
+  previousRecommendation: PropTypes.shape(),
   readTimeout: PropTypes.number,
-  recommendations: PropTypes.array.isRequired,
+  recommendations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   unFlippable: PropTypes.bool.isRequired,
   verticalSlideRatio: PropTypes.number,
   width: PropTypes.number.isRequired,

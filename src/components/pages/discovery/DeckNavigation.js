@@ -23,7 +23,7 @@ const toRectoDraggableBounds = {
 }
 
 export class RawDeckNavigation extends React.PureComponent {
-  onStop = event => {
+  handleOnStop = event => {
     const { flipHandler, height, verticalSlideRatio } = this.props
     const shiftedDistance = height - getPageY(event)
 
@@ -97,15 +97,13 @@ export class RawDeckNavigation extends React.PureComponent {
           className="controls flex-columns items-end wrap-3"
           style={{ backgroundImage: `url('${ROOT_PATH}/mosaic-w@2x.png')` }}
         >
-          {/* previous button */}
           {this.renderPreviousButton()}
-          {/* flip button */}
           {(flipHandler && (
             <div className="flex-rows">
               <Draggable
                 axis="y"
                 bounds={toRectoDraggableBounds}
-                onStop={this.onStop}
+                onStop={this.handleOnStop}
               >
                 <div id="dragButton">
                   <button
@@ -139,7 +137,6 @@ export class RawDeckNavigation extends React.PureComponent {
               </Draggable>
             </div>
           )) || <span />}
-          {/* next button */}
           {this.renderNextButton()}
         </div>
       </div>
@@ -163,7 +160,7 @@ RawDeckNavigation.propTypes = {
   handleGoPrevious: PropTypes.func,
   height: PropTypes.number.isRequired,
   isFinished: PropTypes.bool,
-  recommendation: PropTypes.object,
+  recommendation: PropTypes.shape(),
   transitionTimeout: PropTypes.number,
   verticalSlideRatio: PropTypes.number,
 }

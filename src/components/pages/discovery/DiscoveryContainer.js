@@ -5,16 +5,9 @@ import { assignData } from 'fetch-normalize-data'
 import { requestData } from 'redux-saga-data'
 
 import Discovery from './Discovery'
-import {
-  checkIfShouldReloadRecommendations,
-  isDiscoveryStartupPathname,
-} from './utils'
+import { checkIfShouldReloadRecommendations, isDiscoveryStartupPathname } from './utils'
 import { withRequiredLogin } from '../../hocs'
-import {
-  getQueryParams,
-  getRouterQueryByKey,
-  shouldShowVerso,
-} from '../../../helpers'
+import { getQueryParams, getRouterQueryByKey, shouldShowVerso } from '../../../helpers'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 import { saveLastRecommendationsRequestTimestamp } from '../../../reducers/data'
 
@@ -23,8 +16,7 @@ export const mapStateToProps = (state, props) => {
   const withBackButton = shouldShowVerso(match)
   const { readRecommendations, recommendations } = (state && state.data) || {}
   const shouldReloadRecommendations =
-    checkIfShouldReloadRecommendations(state) ||
-    (recommendations && recommendations.length <= 0)
+    checkIfShouldReloadRecommendations(state) || (recommendations && recommendations.length <= 0)
   return {
     readRecommendations,
     recommendations,
@@ -45,8 +37,7 @@ export const mapDispatchToProps = (dispatch, props) => ({
     const queryString = getQueryParams(match, readRecommendations)
     const apiPath = `/recommendations?${queryString}`
     const seenRecommendationIds =
-      (shouldReloadRecommendations && []) ||
-      (recommendations && recommendations.map(r => r.id))
+      (shouldReloadRecommendations && []) || (recommendations && recommendations.map(r => r.id))
     dispatch(
       requestData({
         apiPath,
@@ -69,16 +60,13 @@ export const mapDispatchToProps = (dispatch, props) => ({
     const { history, location } = props
 
     const shouldReloadPage =
-      loadedRecommendations.length > 0 &&
-      isDiscoveryStartupPathname(location.pathname)
+      loadedRecommendations.length > 0 && isDiscoveryStartupPathname(location.pathname)
 
     if (!shouldReloadPage) return
 
     const firstRecommendation = loadedRecommendations[0] || false
-    const firstOfferId =
-      (firstRecommendation && firstRecommendation.offerId) || 'tuto'
-    const firstMediationId =
-      (firstRecommendation && firstRecommendation.mediationId) || ''
+    const firstOfferId = (firstRecommendation && firstRecommendation.offerId) || 'tuto'
+    const firstMediationId = (firstRecommendation && firstRecommendation.mediationId) || ''
     // replace pluto qu'un push permet de recharger les données
     // quand on fait back dans le navigateur et qu'on revient
     // à l'URL /decouverte

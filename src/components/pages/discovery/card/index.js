@@ -84,7 +84,7 @@ RawCard.propTypes = {
   handleClickRecommendation: PropTypes.func.isRequired,
   handleReadRecommendation: PropTypes.func.isRequired,
   position: PropTypes.string.isRequired,
-  recommendation: PropTypes.object,
+  recommendation: PropTypes.shape(),
   width: PropTypes.number.isRequired,
 }
 

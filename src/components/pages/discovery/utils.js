@@ -1,5 +1,4 @@
-export const MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS =
-  3 * 60 * 60 * 1000
+export const MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS = 3 * 60 * 60 * 1000
 
 export const isDiscoveryStartupPathname = str => {
   if (!str || typeof str !== 'string') return false
@@ -13,8 +12,6 @@ export const checkIfShouldReloadRecommendations = state => {
   const { lastRecommendationsRequestTimestamp } = state || 0
   if (!lastRecommendationsRequestTimestamp) return true
   return (
-    now >=
-    lastRecommendationsRequestTimestamp +
-      MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS
+    now >= lastRecommendationsRequestTimestamp + MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS
   )
 }

@@ -1,6 +1,6 @@
 import { mapStateToProps, mapSizeToProps } from '../DeckContainer'
 
-describe('src | components | pages | discovery | deck | DeckContainer', () => {
+describe('src | components | pages | discovery | deck | DeckContainer', () => {
   let initialState
 
   beforeEach(() => {

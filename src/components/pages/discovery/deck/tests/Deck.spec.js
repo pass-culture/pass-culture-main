@@ -6,7 +6,7 @@ import Deck from '../Deck'
 const dispatchMock = jest.fn()
 const handleDataRequestMock = jest.fn()
 
-describe('src | components | pages | discovery | deck | Deck', () => {
+describe('src | components | pages | discovery | deck | Deck', () => {
   const initialProps = {
     areDetailsVisible: false,
     backButton: true,

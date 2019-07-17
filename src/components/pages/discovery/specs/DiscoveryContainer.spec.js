@@ -70,13 +70,12 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
       const loadedRecommendations = []
 
       // when
-      const redirect = mapDispatchToProps(
-        dispatch,
-        props
-      ).redirectToFirstRecommendationIfNeeded(loadedRecommendations)
+      const redirect = mapDispatchToProps(dispatch, props).redirectToFirstRecommendationIfNeeded(
+        loadedRecommendations
+      )
 
       // then
-      expect(redirect).toBe(undefined)
+      expect(redirect).toBeUndefined()
     })
 
     it('should reset recommendations read with the right configuration', () => {
@@ -113,13 +112,10 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
 
     it('should return undefined when there is no password', () => {
       // when
-      const popin = mapDispatchToProps(
-        dispatch,
-        props
-      ).showPasswordChangedPopin()
+      const popin = mapDispatchToProps(dispatch, props).showPasswordChangedPopin()
 
       // then
-      expect(popin).toBe(undefined)
+      expect(popin).toBeUndefined()
     })
   })
 })
