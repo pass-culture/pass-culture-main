@@ -1,5 +1,6 @@
 from local_providers.install import install_local_providers
 from models.activity import load_activity
+from models.beneficiary_import import BeneficiaryImport
 from models.db import db
 from models import Booking, \
     Deposit, \
@@ -41,6 +42,7 @@ def clean_all_database(*args, **kwargs):
     UserOfferer.query.delete()
     Offerer.query.delete()
     Deposit.query.delete()
+    BeneficiaryImport.query.delete()
     User.query.delete()
     Activity.query.delete()
     UserSession.query.delete()

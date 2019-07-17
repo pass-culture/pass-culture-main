@@ -17,7 +17,7 @@ class ImportStatus(enum.Enum):
 
 class BeneficiaryImport(PcObject, Model):
     demarcheSimplifieeApplicationId = Column(BigInteger,
-                                             unique=True,
+                                             unique=False,
                                              nullable=False)
 
     status = Column(Enum(ImportStatus), nullable=False)

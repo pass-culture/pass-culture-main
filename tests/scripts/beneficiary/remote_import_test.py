@@ -1,4 +1,3 @@
-import os
 from datetime import datetime, timedelta
 from decimal import Decimal
 from unittest.mock import Mock, patch, ANY
@@ -7,6 +6,7 @@ import pytest
 from mailjet_rest import Client
 
 from models import User, ApiErrors
+from models.beneficiary_import import BeneficiaryImport, ImportStatus
 from scripts.beneficiary import remote_import
 from scripts.beneficiary.remote_import import parse_beneficiary_information, create_beneficiary_from_application, \
     DuplicateBeneficiaryError
@@ -72,7 +72,7 @@ class RunTest:
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
     @patch('scripts.beneficiary.remote_import.parse_beneficiary_information')
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_REPORT_RECIPIENTS': 'send@report.to'})
-    def test_a_report_email_is_sent8even_if_an_application_is_not_parsable(
+    def test_a_report_email_is_sent_even_if_an_application_is_not_parsable(
             self,
             parse_beneficiary_information,
             process_beneficiary_application,
@@ -146,6 +146,31 @@ class ProcessBeneficiaryApplicationTest:
         assert first.email == 'jane.doe@test.com'
         assert first.wallet_balance == 500
 
+    @clean_database
+    def test_an_import_status_is_saved(self, app):
+        # given
+        app.mailjet_client = Mock(spec=Client)
+        app.mailjet_client.send = Mock()
+        information = {
+            'department': '67',
+            'last_name': 'Doe',
+            'first_name': 'Jane',
+            'birth_date': datetime(2000, 5, 1),
+            'email': 'jane.doe@test.com',
+            'phone': '0612345678',
+            'postal_code': '67200',
+            'application_id': 123
+        }
+
+        # when
+        remote_import.process_beneficiary_application(information, [], [])
+
+        # then
+        beneficiary_import = BeneficiaryImport.query.first()
+        assert beneficiary_import.beneficiary.email == 'jane.doe@test.com'
+        assert beneficiary_import.status == ImportStatus.CREATED
+        assert beneficiary_import.demarcheSimplifieeApplicationId == 123
+
     @patch('scripts.beneficiary.remote_import.create_beneficiary_from_application')
     @patch('scripts.beneficiary.remote_import.PcObject')
     @patch('scripts.beneficiary.remote_import.send_activation_notification_email')
@@ -163,7 +188,7 @@ class ProcessBeneficiaryApplicationTest:
             'application_id': 123
         }
 
-        create_beneficiary_from_application.return_value = [User()]
+        create_beneficiary_from_application.return_value = User()
 
         # when
         remote_import.process_beneficiary_application(information, [], [])
@@ -335,7 +360,6 @@ class CreateBeneficiaryFromApplicationTest:
         beneficiary = create_beneficiary_from_application(beneficiary_information, find_duplicate_users)
 
         # then
-        assert beneficiary.demarcheSimplifieeApplicationId == 123
         assert beneficiary.lastName == 'Doe'
         assert beneficiary.firstName == 'Jane'
         assert beneficiary.publicName == 'Jane Doe'

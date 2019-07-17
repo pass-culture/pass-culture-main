@@ -9,6 +9,7 @@ from domain.demarches_simplifiees import get_all_application_ids_for_procedure
 from domain.password import generate_reset_token, random_password
 from domain.user_emails import send_activation_notification_email
 from models import User, PcObject, Deposit, ApiErrors
+from models.beneficiary_import import BeneficiaryImport, ImportStatus
 from repository.user_queries import find_by_first_and_last_names_and_birth_date_or_email, \
     find_user_by_demarche_simplifiee_application_id
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
@@ -71,7 +72,11 @@ def process_beneficiary_application(
         error_messages.append(e.message)
     else:
         try:
-            PcObject.save(new_beneficiary)
+            beneficiary_import = BeneficiaryImport()
+            beneficiary_import.beneficiary = new_beneficiary
+            beneficiary_import.status = ImportStatus.CREATED
+            beneficiary_import.demarcheSimplifieeApplicationId = information['application_id']
+            PcObject.save(beneficiary_import)
         except ApiErrors as e:
             logger.warning(f"[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application "
                            f"{information['application_id']}, because of error : {str(e)}")
@@ -135,7 +140,6 @@ def create_beneficiary_from_application(
     beneficiary.canBookFreeOffers = True
     beneficiary.isAdmin = False
     beneficiary.password = random_password()
-    beneficiary.demarcheSimplifieeApplicationId = application_detail['application_id']
     generate_reset_token(beneficiary, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
 
     deposit = Deposit()

@@ -22,7 +22,7 @@ def upgrade():
     op.create_table(
         'beneficiary_import',
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column('demarcheSimplifieeApplicationId', sa.BigInteger, unique=True, nullable=False),
+        sa.Column('demarcheSimplifieeApplicationId', sa.BigInteger, unique=False, nullable=False),
         sa.Column('status', sa.Enum(ImportStatus), nullable=False),
         sa.Column('date', sa.DateTime, nullable=False, server_default=func.now()),
         sa.Column('detail', sa.VARCHAR(255), nullable=True),
