@@ -1,4 +1,4 @@
-import { currentUserUUID } from 'with-react-redux-login'
+import { getCurrentUserUUID } from 'with-react-redux-login'
 
 import { mapStateToProps } from '../ProfileFormContainer'
 
@@ -9,7 +9,7 @@ describe('src | components | pages | profile | forms | ProfileFormContainer', ()
       const id = '1'
       const publicName = 'fake name'
       const state = {
-        data: { users: [{ currentUserUUID, id, publicName }] },
+        data: { users: [{ currentUserUUID: getCurrentUserUUID(), id, publicName }] },
       }
 
       // when
