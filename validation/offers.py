@@ -57,6 +57,6 @@ def check_offer_id_and_mediation_id_are_present_in_request(offer_id: str, mediat
             or mediation_id is None:
         errors = ApiErrors()
         errors.status_code = 400
-        errors.addError('global', "Les paramères offerId et mediationId sont obligatoires")
-        errors.maybeRaise()
+        errors.add_error('global', "Les paramères offerId et mediationId sont obligatoires")
+        errors.maybe_raise()
         raise errors
