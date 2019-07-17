@@ -10,7 +10,7 @@ from domain.password import generate_reset_token, random_password
 from domain.user_emails import send_activation_notification_email
 from models import User, Deposit, ApiErrors, PcObject
 from models.beneficiary_import import ImportStatus
-from repository.user_queries import find_by_first_and_last_names_and_birth_date_or_email, \
+from repository.user_queries import find_by_civility, \
     has_already_been_created, save_new_beneficiary_import
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from utils.logger import logger
@@ -63,7 +63,7 @@ class DuplicateBeneficiaryError(Exception):
 
 def process_beneficiary_application(
         information: dict, error_messages: List[str], new_beneficiaries,
-        find_duplicate_users: Callable[[str, str, str], User] = find_by_first_and_last_names_and_birth_date_or_email
+        find_duplicate_users: Callable[[str, str, str], User] = find_by_civility
 ):
     try:
         new_beneficiary = create_beneficiary_from_application(information, find_duplicate_users=find_duplicate_users)
@@ -123,14 +123,12 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
 
 def create_beneficiary_from_application(
         application_detail: dict,
-        find_duplicate_users: Callable[
-            [str, str, str, str], User] = find_by_first_and_last_names_and_birth_date_or_email
+        find_duplicate_users: Callable = find_by_civility
 ) -> User:
     duplicate_users = find_duplicate_users(
         application_detail['first_name'],
         application_detail['last_name'],
-        application_detail['birth_date'],
-        application_detail['email']
+        application_detail['birth_date']
     )
 
     if duplicate_users:

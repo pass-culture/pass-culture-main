@@ -26,14 +26,12 @@ def has_already_been_created(application_id: int) -> bool:
     ).scalar()
 
 
-def find_by_first_and_last_names_and_birth_date_or_email(first_name: str, last_name: str, birth_date: datetime,
-                                                         email: str) -> List[User]:
+def find_by_civility(first_name: str, last_name: str, birth_date: datetime) -> List[User]:
     civility_predicate = (_matching(User.firstName, first_name)) & (_matching(User.lastName, last_name)) & (
             User.dateOfBirth == birth_date)
-    email_predicate = _matching(User.email, email)
 
     return User.query \
-        .filter(civility_predicate | email_predicate) \
+        .filter(civility_predicate) \
         .all()
 
 
@@ -133,7 +131,7 @@ def save_new_beneficiary_import(
         date: datetime,
         demarche_simplifiee_application_id: int,
         user: User = None,
-        detail = None,
+        detail=None,
 ):
     beneficiary_import = BeneficiaryImport()
     beneficiary_import.beneficiary = user
