@@ -44,9 +44,8 @@ class Offerers extends Component {
   }
 
   componentWillUnmount() {
-    const { closeNotification, notification } = this.props
-    const tag = notification.tag || ''
-    if (tag === 'offerers') {
+    const { closeNotification, notification}  = this.props
+    if (notification && notification.tag === 'offerers') {
       closeNotification()
     }
   }

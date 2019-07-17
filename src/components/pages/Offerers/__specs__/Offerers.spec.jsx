@@ -71,5 +71,53 @@ describe('src | components | pages | Offerers | Offerers', () => {
         expect(heroSection.title).toStrictEqual('Vos structures juridiques')
       })
     })
+
+    describe('when leaving page', () => {
+      it('should not close notifcation', () => {
+        // given
+        props = {...props, closeNotification: jest.fn()}
+        const wrapper = shallow(<Offerers {...props} />)
+
+        // when
+        wrapper.unmount()
+
+        // then
+        expect(props.closeNotification).not.toHaveBeenCalled()
+      })
+
+      it('should close offerer notifcation', () => {
+        // given
+        props = {
+          ...props,
+          closeNotification: jest.fn(),
+          notification: {
+            tag: 'offerers'
+          }
+        }
+        const wrapper = shallow(<Offerers {...props} />)
+
+        // when
+        wrapper.unmount()
+
+        // then
+        expect(props.closeNotification).toHaveBeenCalledWith()
+      })
+
+      it('should not fail on null notifcation', () => {
+        // given
+        props = {
+          ...props,
+          closeNotification: jest.fn(),
+          notification: null
+        }
+        const wrapper = shallow(<Offerers {...props} />)
+
+        // when
+        wrapper.unmount()
+
+        // then
+        expect(props.closeNotification).not.toHaveBeenCalledWith()
+      })
+    })
   })
 })
