@@ -1,10 +1,4 @@
-import { getCurrentUserUUID } from 'with-react-redux-login'
-
-import {
-  mapDispatchToProps,
-  mapStateToProps,
-} from '../VenueProvidersManagerContainer'
-
+import { mapDispatchToProps, mapStateToProps } from '../VenueProvidersManagerContainer'
 
 describe('src | components | pages | Venue | VenueProvidersManager', () => {
   describe('mapStateToProps', () => {
@@ -25,15 +19,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
 
       // then
       expect(result).toStrictEqual({
-        currentUser: {
-          currentUserUUID: getCurrentUserUUID(),
-          id: 'RR',
-        },
-        provider: {id: 'AG', localClass: 'b'},
-        providers: [
-          { id: 'AF', localClass: 'a' },
-          { id: 'AG', localClass: 'b' },
-        ],
+        providers: [{ id: 'AF', localClass: 'a' }, { id: 'AG', localClass: 'b' }],
         venueProviders: [{ id: 'AE', venueId: 'EE' }],
       })
     })

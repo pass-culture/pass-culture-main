@@ -9,13 +9,17 @@ import {
   configureFetchCurrentUserWithLoginSuccessAndOffers,
   configureTestStore,
 } from './configure'
-import { OnMountCaller } from './OnMountCaller'
+import OnMountCaller from './OnMountCaller'
 import withNotRequiredLogin from '../withNotRequiredLogin'
 
 const Test = () => null
 const NotRequiredLogin = withNotRequiredLogin(Test)
 
 describe('src | components | pages | hocs | with-login | withNotRequiredLogin', () => {
+  afterEach(() => {
+    fetch.resetMocks()
+  })
+
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // when
@@ -27,10 +31,6 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
     })
   })
 
-  beforeEach(() => {
-    fetch.resetMocks()
-  })
-
   describe('functions', () => {
     it('should redirect to offerers when already authenticated and not hasOffers', done => {
       // given
@@ -38,6 +38,10 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
       history.push('/test')
       const store = configureTestStore()
       configureFetchCurrentUserWithLoginSuccess()
+      function onSuccessMountCallback() {
+        expect(history.location.pathname).toStrictEqual("/structures")
+        done()
+      }
 
       // when
       mount(
@@ -48,12 +52,14 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
                 <NotRequiredLogin />
               </Route>
               <Route path="/structures">
-                <OnMountCaller onMountCallback={done} />
+                <OnMountCaller onMountCallback={onSuccessMountCallback} />
               </Route>
             </Switch>
           </Router>
         </Provider>
       )
+
+      setTimeout(() => done('Should have been redirected to /structures'))
     })
 
     it('should redirect to offers when already authenticated and hasOffers', done => {
@@ -62,6 +68,10 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
       history.push('/test')
       const store = configureTestStore()
       configureFetchCurrentUserWithLoginSuccessAndOffers()
+      function onSuccessMountCallback() {
+        expect(history.location.pathname).toStrictEqual("/offres")
+        done()
+      }
 
       // when
       mount(
@@ -72,12 +82,14 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
                 <NotRequiredLogin />
               </Route>
               <Route path="/offres">
-                <OnMountCaller onMountCallback={done} />
+                <OnMountCaller onMountCallback={onSuccessMountCallback} />
               </Route>
             </Switch>
           </Router>
         </Provider>
       )
+
+      setTimeout(() => done('Should have been redirected to /offres'))
     })
   })
 })

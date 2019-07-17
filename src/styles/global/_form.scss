@@ -7,7 +7,6 @@
 input.input,
 .select select,
 textarea.textarea {
-  border-radius: $control-radius;
   font-weight: 500;
 
   &[readonly]:not([type='checkbox']) {

@@ -1,4 +1,4 @@
-import { currentUserUUID } from 'with-react-redux-login'
+import { getCurrentUserUUID } from 'with-react-redux-login'
 
 const state = {
   data: {
@@ -926,7 +926,7 @@ const state = {
     ],
     users: [
       {
-        currentUserUUID,
+        currentUserUUID: getCurrentUserUUID(),
         id: 'FE',
         canBookFreeOffers: false,
         dateCreated: '2019-03-07T10:39:23.560374Z',
@@ -1083,7 +1083,7 @@ const state = {
   notification: null,
   tracker: {},
   user: {
-    currentUserUUID,
+    currentUserUUID: getCurrentUserUUID(),
     id: 'FE',
     canBookFreeOffers: false,
     dateCreated: '2019-03-07T10:39:23.560374Z',

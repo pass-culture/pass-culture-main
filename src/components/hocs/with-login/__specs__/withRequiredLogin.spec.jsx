@@ -8,13 +8,17 @@ import {
   configureTestStore,
   configureFetchCurrentUserWithLoginFail,
 } from './configure'
-import { OnMountCaller } from './OnMountCaller'
+import OnMountCaller from './OnMountCaller'
 import withRequiredLogin from '../withRequiredLogin'
 
 const Test = () => null
 const RequiredLoginTest = withRequiredLogin(Test)
 
 describe('src | components | pages | hocs | with-login | withRequiredLogin', () => {
+  afterEach(() => {
+    fetch.resetMocks()
+  })
+
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // when
@@ -26,17 +30,17 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin', () 
     })
   })
 
-  beforeEach(() => {
-    fetch.resetMocks()
-  })
-
   describe('functions', () => {
-    it('should redirect to signin when not authenticated', done => {
+    it.only('should redirect to signin when not authenticated', done => {
       // given
       const history = createBrowserHistory()
       history.push('/test')
       const store = configureTestStore()
       configureFetchCurrentUserWithLoginFail()
+      function onSuccessMountCallback() {
+        expect(history.location.pathname).toStrictEqual("/connexion")
+        done()
+      }
 
       // when
       mount(
@@ -47,12 +51,14 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin', () 
                 <RequiredLoginTest />
               </Route>
               <Route path="/connexion">
-                <OnMountCaller onMountCallback={done} />
+                <OnMountCaller onMountCallback={onSuccessMountCallback} />
               </Route>
             </Switch>
           </Router>
         </Provider>
       )
+
+      setTimeout(() => done('Should have been redirected to /connexion'))
     })
   })
 })

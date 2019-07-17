@@ -1,14 +1,10 @@
-import {
-  getRequestErrorStringFromErrors,
-  showNotification,
-} from 'pass-culture-shared'
+import { getRequestErrorStringFromErrors, showNotification } from 'pass-culture-shared'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import VenueProvidersManager from './VenueProvidersManager'
-import selectVenueProviderByVenueIdAndVenueProviderId from './selectors/selectVenueProviderByVenueIdAndVenueProviderId'
 import selectVenueProvidersByVenueId from './selectors/selectVenueProvidersByVenueId'
 import selectProviders from '../../../../selectors/selectProviders'
 

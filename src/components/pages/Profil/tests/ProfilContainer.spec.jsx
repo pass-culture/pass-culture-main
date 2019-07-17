@@ -1,4 +1,4 @@
-import { currentUserUUID } from 'with-react-redux-login'
+import { getCurrentUserUUID } from 'with-react-redux-login'
 
 import { mapStateToProps } from '../ProfilContainer'
 
@@ -7,6 +7,7 @@ describe('src | components | pages | Profil | ProfilContainer', () => {
     it('should return an object of props', () => {
       // given
       const id = '1'
+      const currentUserUUID = getCurrentUserUUID()
       const state = {
         data: { users: [{ currentUserUUID, id }] },
       }

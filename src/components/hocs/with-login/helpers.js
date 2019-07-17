@@ -1,8 +1,6 @@
 export const getRedirectToOffersOrOfferers = ({ hasOffers, hasPhysicalVenues }) => {
   const hasOffersWithPhysicalVenues = hasOffers && hasPhysicalVenues
-  return (hasOffersWithPhysicalVenues || hasPhysicalVenues)
-    ? '/offres'
-    : '/structures'
+  return hasOffersWithPhysicalVenues || hasPhysicalVenues ? '/offres' : '/structures'
 }
 
 export const getRedirectToSignin = ({ pathname, search }) => {
