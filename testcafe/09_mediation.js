@@ -9,17 +9,18 @@ const dropZoneDiv = Selector('div.dropzone').filterVisible()
 const submitButton = Selector('button.button.is-primary').withText('Valider')
 const imageUrlInput = Selector("input[placeholder='URL du fichier']")
 const imageUrlButton = Selector('button.is-primary').withText('OK')
+const urlInput = Selector("input[placeholder='URL du fichier']")
+const urlButton = Selector('button.is-primary').withText('OK')
 
 let userRole
 let dataFromSandbox
-fixture('En étant sur la page de gestion des médiations')
-  .beforeEach(async () => {
-    dataFromSandbox = await fetchSandbox(
-      'pro_09_mediation',
-      'get_existing_pro_validated_user_with_at_least_one_visible_offer_with_no_mediation'
-    )
-    userRole = createUserRole(dataFromSandbox.user)
-  })
+fixture('En étant sur la page de gestion des médiations').beforeEach(async () => {
+  dataFromSandbox = await fetchSandbox(
+    'pro_09_mediation',
+    'get_existing_pro_validated_user_with_at_least_one_visible_offer_with_no_mediation'
+  )
+  userRole = createUserRole(dataFromSandbox.user)
+})
 
 test("Lorsque je clique sur le bouton 'créer une accroche' sur la page d'une offre, j'accède au formulaire de création d'une accroche", async t => {
   // when
@@ -28,9 +29,7 @@ test("Lorsque je clique sur le bouton 'créer une accroche' sur la page d'une of
 
   // then
   const location = await t.eval(() => window.location)
-  await t
-    .expect(location.pathname)
-    .match(/offres\/([A-Z0-9]*)\/accroches\/nouveau$/)
+  await t.expect(location.pathname).match(/offres\/([A-Z0-9]*)\/accroches\/nouveau$/)
 })
 
 test('Je peux créer une accroche', async t => {
@@ -65,9 +64,7 @@ test('Je peux charger une image same origin', async t => {
   await navigateToNewMediationAs(user, offer, userRole)(t)
 
   // when
-  await t
-    .typeText(imageUrlInput, '/images/mediation-test.jpg')
-    .click(imageUrlButton)
+  await t.typeText(imageUrlInput, '/images/mediation-test.jpg').click(imageUrlButton)
 
   // then
   await t.expect(dropZoneDiv.exists).ok()
@@ -94,23 +91,16 @@ test("Je peux changer d'image chargée", async t => {
   // given
   const { offer, user } = dataFromSandbox
   await navigateToNewMediationAs(user, offer, userRole)(t)
-  await t
-    .typeText(
-      urlInput,
-      'https://upload.wikimedia.org/wikipedia/commons/f/f9/Zebra_%28PSF%29.png'
-    )
-    .click(urlButton)
-    .typeText(creditInput, 'wikipedia')
-    .wait(10000)
+  await t.typeText(urlInput, '/images/mediation-test.jpg').click(urlButton)
 
   // when
   await t
     .typeText(
-      imageUrlInput,
+      urlInput,
       'https://www.deridet.com/photo/art/grande/8682609-13705793.jpg?v=1450665370',
       { replace: true }
     )
-    .click(imageUrlButton)
+    .click(urlButton)
 
   // then
   await t.expect(dropZoneDiv.exists).ok()
