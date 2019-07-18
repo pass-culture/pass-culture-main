@@ -10,7 +10,7 @@ from repository.offer_queries import department_or_national_offers, \
     find_offers_with_filter_parameters, \
     get_offers_for_recommendations_search, \
     get_active_offers, \
-    _has_remaining_stock_predicate
+    _has_remaining_stock_predicate, find_offers_by_venue_id
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_product_with_Event_type, \
@@ -821,6 +821,20 @@ def test_offer_remaining_stock_filter_filters_offer_with_one_full_stock_and_one_
     # Then
     assert nb_offers_with_remaining_stock == 1
 
+@clean_database
+def test_find_offers_by_venue_id_return_offers_matching_venue_id(app):
+    # Given
+    product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
+    offerer = create_offerer()
+    venue = create_venue(offerer, postal_code='34000', departement_code='34')
+    offer = create_offer_with_thing_product(venue, product)
+    PcObject.save(offer)
+
+    # When
+    offers = find_offers_by_venue_id(venue.id)
+
+    # Then
+    assert len(offers) == 1
 
 def _create_event_stock_and_offer_for_date(venue, date):
     product = create_product_with_Event_type()

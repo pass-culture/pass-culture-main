@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from typing import List
 
-from sqlalchemy import desc, func, and_, or_
-from sqlalchemy.orm import aliased, joinedload, Load
+from sqlalchemy import desc, func, or_
+from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy.orm.query import Query
 
 from domain.departments import ILE_DE_FRANCE_DEPT_CODES
@@ -14,10 +14,9 @@ from models import Booking, \
     Mediation, \
     Offer, \
     Offerer, \
-    Recommendation, \
     Stock, \
     ThingType, \
-    Venue,\
+    Venue, \
     Product
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.distance import get_sql_geo_distance_in_kilometers
@@ -76,7 +75,7 @@ def get_active_offers(user=None, departement_codes=None, offer_id=None, limit=No
 
     active_offers_query = active_offers_query.filter_by(isActive=True)
     logger.debug(lambda: '(reco) active offers count {}'.format(active_offers_query.count()))
-    
+
     active_offers_query = _with_stock(active_offers_query)
     logger.debug(lambda: '(reco) offers with stock count {}'.format(active_offers_query.count()))
 
@@ -355,9 +354,7 @@ def find_offer_by_id_at_providers(id_at_providers):
         .first()
 
 
-def find_first_offer_linked_to_event(event):
-    return Offer.query.join(Event).filter_by(id=event.id).first()
-
-
-def find_first_offer_linked_to_thing(thing):
-    return Offer.query.join(Thing).filter_by(id=thing.id).first()
+def find_offers_by_venue_id(venue_id: int) -> List[Offer]:
+    return Offer.query\
+        .filter_by(venueId=venue_id)\
+        .all()
