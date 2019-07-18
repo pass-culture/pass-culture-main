@@ -20,7 +20,7 @@ def save_venue(venue):
 
 
 def find_by_id(venue_id: int) -> Venue:
-    return Venue.query.get(venue_id)
+    return Venue.query.filter_by(id=venue_id).first()
 
 
 def find_by_siret(siret):
