@@ -101,8 +101,10 @@ test('Menu | Liens | Mes préférés', async t => {
   await t
     .expect(menuFavoris.exists)
     .ok()
-    .expect(menuFavoris.hasAttribute('disabled'))
-    .ok()
+    .click(menuFavoris)
+    .wait(2100)
+  const location = await t.eval(() => window.location)
+  await t.expect(location.pathname).eql('/favoris')
 })
 
 test('Menu | Liens | Mon compte', async t => {
