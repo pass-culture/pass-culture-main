@@ -1,4 +1,4 @@
-import { shallow } from 'enzyme/build/index'
+import { shallow } from 'enzyme'
 import FilterByVenue from '../FilterByVenue'
 import React from 'react'
 
