@@ -7,7 +7,7 @@ describe('src | components | pages | Offerer | CreationControl ', () => {
 
   beforeEach(() => {
     props = {
-      parseFormChild: (a) => { return a}
+      parseFormChild: (a) => { return a }
     }
   })
 

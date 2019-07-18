@@ -14,7 +14,7 @@ export const mapStateToProps = (state, ownProps) => {
   const {
     params: { offererId },
   } = match
-  const { id: currentUserId } = currentUser || {}
+  const { id: currentUserId } = currentUser
 
   return {
     adminUserOfferer: selectUserOffererByOffererIdAndUserIdAndRightsType(

@@ -4,7 +4,6 @@ import React, { Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
-
 import VenueItem from '../VenueItem/VenueItem'
 
 const ModificationControl = ({ adminUserOfferer, parseFormChild, offerer, query, venues }) => {
@@ -68,6 +67,10 @@ const ModificationControl = ({ adminUserOfferer, parseFormChild, offerer, query,
 
 ModificationControl.isParsedByForm = true
 
+ModificationControl.defaultProps = {
+  adminUserOfferer: false,
+}
+
 ModificationControl.propTypes = {
   adminUserOfferer: PropTypes.bool,
   offerer: PropTypes.shape({
@@ -77,10 +80,5 @@ ModificationControl.propTypes = {
   query: PropTypes.shape().isRequired,
   venues: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
-
-ModificationControl.defaultProps = {
-  adminUserOfferer: false,
-}
-
 
 export default ModificationControl

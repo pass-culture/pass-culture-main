@@ -25,7 +25,7 @@ const CreationControl = ({ parseFormChild }) =>
   )
 
 CreationControl.propTypes = {
-  parseFormChild: PropTypes.func
+  parseFormChild: PropTypes.func.isRequired
 }
 
 CreationControl.isParsedByForm = true
