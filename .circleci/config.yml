@@ -179,11 +179,11 @@ jobs:
     working_directory: ~/pass-culture
     steps:
       - checkout
+      - run: pyenv global 3.5.2
       - run: pip install requests
       - run: python scripts/check_ci_status.py $CIRCLE_SHA1 $CIRCLE_BRANCH
       - run: git submodule sync
       - run: git submodule update --init
-      - run: ./check_build_status.py
       - run:
           name: Deploy API
           command: |
@@ -274,24 +274,18 @@ workflows:
               only:
                 - master
                 - /hotfix-v.*/
-            tags:
-              only: /^v.*/
       - tests-webapp:
           filters:
             branches:
               only:
                 - master
                 - /hotfix-v.*/
-            tags:
-              only: /^v.*/
       - tests-pro:
           filters:
             branches:
               only:
                 - master
                 - /hotfix-v.*/
-            tags:
-              only: /^v.*/
       - tests-perf:
           filters:
             branches:
