@@ -69,11 +69,11 @@ const ModificationControl = ({ adminUserOfferer, parseFormChild, offerer, query,
 ModificationControl.isParsedByForm = true
 
 ModificationControl.propTypes = {
-  adminUserOfferer: PropTypes.bool(),
+  adminUserOfferer: PropTypes.bool,
   offerer: PropTypes.shape({
     id: PropTypes.string.isRequired,
   }),
-  parseFormChild: PropTypes.func().isRequired,
+  parseFormChild: PropTypes.func.isRequired,
   query: PropTypes.shape().isRequired,
   venues: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
