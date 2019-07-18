@@ -4,7 +4,7 @@ import { requestData } from 'redux-saga-data'
 import FeaturedRoute from './FeaturedRoute'
 import selectIsFeatureDisabled from './selectIsFeatureDisabled'
 
-const mapStateToProps = (state, ownProps) => {
+export const mapStateToProps = (state, ownProps) => {
   const { features } = state.data
   const { featureName } = ownProps
   return {
@@ -13,7 +13,7 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-const mapDispatchToProps = dispatch => ({
+export const mapDispatchToProps = dispatch => ({
   requestGetFeatures: () => dispatch(requestData({ apiPath: '/features' })),
 })
 
