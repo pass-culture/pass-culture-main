@@ -1,7 +1,6 @@
 import React from 'react'
 import { Redirect } from 'react-router'
 
-import Accouting from '../components/pages/Accounting'
 import BookingsContainer from '../components/pages/Bookings/BookingsContainer'
 import DeskContainer from '../components/pages/Desk/DeskContainer'
 import Home from '../components/pages/Home'
@@ -29,11 +28,6 @@ const routes = [
     component: Home,
     path: '/accueil',
     title: 'Accueil',
-  },
-  {
-    component: Accouting,
-    path: '/comptabilite',
-    title: 'Comptabilité',
   },
   {
     component: SigninContainer,
