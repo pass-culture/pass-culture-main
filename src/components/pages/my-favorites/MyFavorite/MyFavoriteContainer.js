@@ -22,8 +22,8 @@ export const updatePropsWithDateElements = (props, beginningDateTime, departemen
 export const urlOf = myFavorite => {
   const {mediationId, offer: id} = myFavorite
   const urlElements = ['', 'decouverte', id, 'verso']
-  if (myFavorite.mediationId) {
-    urlElements.splice(3, 0, myFavorite.mediationId)
+  if (mediationId) {
+    urlElements.splice(3, 0, mediationId)
   }
 
   return urlElements.join('/')
@@ -31,15 +31,15 @@ export const urlOf = myFavorite => {
 
 export const mapStateToProps = (state, ownProps) => {
   const { favorite } = ownProps
-  const { offer:name} = favorite
+  const { mediation, offer} = favorite || {}
+  const { name } = offer
+  const { thumbUrl } = mediation
 
-  let props = {
+  return {
     name: name,
     offerVersoUrl: urlOf(favorite),
-    thumbUrl: favorite.mediation.thumbUrl,
+    thumbUrl: thumbUrl,
   }
-
-  return props
 }
 
 export default connect(mapStateToProps)(MyFavorite)
