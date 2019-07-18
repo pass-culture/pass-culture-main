@@ -15,7 +15,7 @@ const initialState = {
 }
 
 // REDUCER
-function card(state = initialState, action) {
+function cardReducer(state = initialState, action) {
   switch (action.type) {
     case CLOSE_DETAILS_VIEW:
       return Object.assign({}, state, { areDetailsVisible: false, unFlippable: false })
@@ -54,4 +54,4 @@ export function closeCardDetails() {
 }
 
 // default
-export default card
+export default cardReducer

@@ -1,7 +1,7 @@
 const TOGGLE_MAIN_MENU = 'TOGGLE_MAIN_MENU'
 
 // REDUCER
-export const menu = (state = false, action) => {
+const menuReducer = (state = false, action) => {
   switch (action.type) {
     case TOGGLE_MAIN_MENU:
       return !state
@@ -14,3 +14,5 @@ export const menu = (state = false, action) => {
 export const toggleMainMenu = () => ({
   type: TOGGLE_MAIN_MENU,
 })
+
+export default menuReducer

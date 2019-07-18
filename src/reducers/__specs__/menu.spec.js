@@ -1,4 +1,4 @@
-import { menu, toggleMainMenu } from '../menu'
+import menu, { toggleMainMenu } from '../menu'
 
 describe('src | reducers | menu  ', () => {
   it('should return the initial state by default', () => {

@@ -1,4 +1,4 @@
-import { share, closeSharePopin, openSharePopin } from '../share'
+import share, { closeSharePopin, openSharePopin } from '../share'
 
 describe('src | reducers | share  ', () => {
   it('should return the initial state by default', () => {

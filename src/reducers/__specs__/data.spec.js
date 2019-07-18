@@ -1,4 +1,4 @@
-import { data, lastRecommendationsRequestTimestamp } from '../data'
+import data, { lastRecommendationsRequestTimestamp } from '../data'
 
 describe('src | reducers | data', () => {
   describe('data()', () => {
@@ -12,32 +12,30 @@ describe('src | reducers | data', () => {
       // then
       const expected = {
         bookings: [],
+        features: null,
         readRecommendations: [],
         recommendations: [],
         types: [],
         users: [],
       }
-      expect(updatedState).toEqual(expected)
+      expect(updatedState).toStrictEqual(expected)
     })
   })
 
   describe('lastRecommendationsRequestTimestamp()', () => {
     it('should return the date of now', () => {
       // given
-      global.Date.now = jest.fn(() => '31/05/1982')
+      jest.spyOn(Date, 'now').mockImplementation(() => '31/05/1982')
       const state = 0
       const action = {
         type: 'SAVE_RECOMMENDATIONS_REQUEST_TIMESTAMP',
       }
 
       // when
-      const lastRecommendations = lastRecommendationsRequestTimestamp(
-        state,
-        action
-      )
+      const lastRecommendations = lastRecommendationsRequestTimestamp(state, action)
 
       // then
-      expect(lastRecommendations).toEqual('31/05/1982')
+      expect(lastRecommendations).toStrictEqual('31/05/1982')
     })
 
     it('should return the initial state', () => {
@@ -48,13 +46,10 @@ describe('src | reducers | data', () => {
       }
 
       // when
-      const lastRecommendations = lastRecommendationsRequestTimestamp(
-        state,
-        action
-      )
+      const lastRecommendations = lastRecommendationsRequestTimestamp(state, action)
 
       // then
-      expect(lastRecommendations).toEqual(state)
+      expect(lastRecommendations).toStrictEqual(state)
     })
   })
 })

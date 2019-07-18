@@ -9,7 +9,7 @@ const initialState = {
 }
 
 // REDUCER
-function splash(state = initialState, action) {
+function splashReducer(state = initialState, action) {
   switch (action.type) {
     case CLOSE_SPLASH:
       return Object.assign({}, state, { isActive: false })
@@ -30,4 +30,4 @@ export function showSplash() {
 }
 
 // default
-export default splash
+export default splashReducer

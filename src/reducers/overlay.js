@@ -1,7 +1,7 @@
 const TOGGLE_OVERLAY = 'TOGGLE_OVERLAY'
 
 // REDUCER
-export const overlay = (state = false, action) => {
+const overlayReducer = (state = false, action) => {
   switch (action.type) {
     case TOGGLE_OVERLAY:
       return !state
@@ -14,3 +14,5 @@ export const overlay = (state = false, action) => {
 export const toggleOverlay = () => ({
   type: TOGGLE_OVERLAY,
 })
+
+export default overlayReducer

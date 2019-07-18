@@ -2,14 +2,10 @@ import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { createDataReducer } from 'redux-saga-data'
 
-export const SAVE_RECOMMENDATIONS_REQUEST_TIMESTAMP =
-  'SAVE_RECOMMENDATIONS_REQUEST_TIMESTAMP'
+export const SAVE_RECOMMENDATIONS_REQUEST_TIMESTAMP = 'SAVE_RECOMMENDATIONS_REQUEST_TIMESTAMP'
 
 const initialState = 0
-export const lastRecommendationsRequestTimestamp = (
-  state = initialState,
-  action
-) => {
+export const lastRecommendationsRequestTimestamp = (state = initialState, action) => {
   switch (action.type) {
     case SAVE_RECOMMENDATIONS_REQUEST_TIMESTAMP:
       return Date.now()
@@ -33,9 +29,11 @@ const dataReducer = createDataReducer({
   users: [],
 })
 
-export const data = persistReducer(dataPersistConfig, dataReducer)
+const persistDataReducer = persistReducer(dataPersistConfig, dataReducer)
 
 // ACTIONS CREATORS
 export const saveLastRecommendationsRequestTimestamp = () => ({
   type: SAVE_RECOMMENDATIONS_REQUEST_TIMESTAMP,
 })
+
+export default persistDataReducer
