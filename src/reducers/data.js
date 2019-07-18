@@ -25,6 +25,7 @@ const dataReducer = createDataReducer({
   features: [],
   readRecommendations: [],
   recommendations: [],
+  favorites: [],
   types: [],
   users: [],
 })

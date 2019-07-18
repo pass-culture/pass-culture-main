@@ -3,15 +3,10 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 
-const MyFavorite = ({ name, offerVersoUrl, stringifyDate, thumbUrl }) => (
-  <li
-    className="mf-my-favorite"
-  >
-    TOTO
-    <Link
-      className="mf-link"
-      to={offerVersoUrl}
-    >
+const MyFavorite = ({ name, offerVersoUrl, thumbUrl }) => (
+  <li className="mf-my-favorite">
+    <Link className="mf-link"
+      to={offerVersoUrl}>
       <div className="mf-thumb">
         {
           thumbUrl && <img alt="" src={thumbUrl}/>

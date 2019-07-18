@@ -20,20 +20,18 @@ class MyFavorites extends Component {
 
   componentDidMount = () => {
     const { getMyFavorites } = this.props
-
     getMyFavorites(this.handleFail, this.handleSuccess)
   }
 
-  build = myFavorites => (
-    <ul>
-      {myFavorites.map(myFavorite => (
-        <MyFavoriteContainer
-          favorite={myFavorite}
-          key={myFavorite.id}
-        />
-      ))}
-    </ul>
-  )
+  build = myFavorites => {
+    return (
+      <ul>
+        {myFavorites.map(myFavorite => (
+          <MyFavoriteContainer favorite={myFavorite}/>
+        ))}
+      </ul>
+    )
+  }
 
   handleFail = () => {
     this.setState({
