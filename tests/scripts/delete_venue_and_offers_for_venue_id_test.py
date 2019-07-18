@@ -42,16 +42,9 @@ class DeleteVenueAndOffersForVenueIdTest:
         delete_venue_and_offers_for_venue_id(humanize(venue1.id))
 
         # Then
-        venue1 = Venue.query.filter_by(id=venue1.id).first()
-        venue2 = Venue.query.filter_by(id=venue2.id).first()
-        offer1 = Offer.query.filter_by(id=offer1.id).first()
-        offer2 = Offer.query.filter_by(id=offer2.id).first()
-        offer3 = Offer.query.filter_by(id=offer3.id).first()
-        assert offer1 is None
-        assert offer3 is None
-        assert venue1 is None
-        assert offer2 is not None
-        assert venue2 is not None
+        offers = Offer.query.all()
+        assert all([o.venue == venue2 for o in offers])
+        assert Venue.query.get(venue1.id) is None
 
     @clean_database
     def test_delete_venue_and_offers_should_raise_an_attribute_error_when_at_least_one_offer_has_stocks(self, app):
