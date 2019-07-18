@@ -4,13 +4,15 @@ import { Field, Form, showNotification } from 'pass-culture-shared'
 import React, { Component } from 'react'
 import { requestData } from 'redux-saga-data'
 
-import CreationControl from './controls/CreationControl'
-import ModificationControl from './controls/ModificationControl'
-import { OFFERER_CREATION_PATCH_KEYS, OFFERER_MODIFICATION_PATCH_KEYS } from './utils'
+import CreationControl from './CreationControl/CreationControl'
+import ModificationControl from './ModificationControl/ModificationControl'
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import Main from '../../layout/Main'
 import { offererNormalizer } from '../../../utils/normalizers'
 import { formatPatch } from '../../../utils/formatPatch'
+
+const OFFERER_CREATION_PATCH_KEYS = ['address', 'city', 'name', 'siren', 'postalCode']
+const OFFERER_MODIFICATION_PATCH_KEYS = ['bic', 'iban', 'rib']
 
 class Offerer extends Component {
   onHandleDataRequest = (handleSuccess, handleFail) => {

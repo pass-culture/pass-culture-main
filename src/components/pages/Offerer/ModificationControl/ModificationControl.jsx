@@ -3,7 +3,7 @@ import { CancelButton, recursiveMap, SubmitButton } from 'pass-culture-shared'
 import React, { Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
 
-import VenueItem from './VenueItem'
+import VenueItem from '../VenueItem/VenueItem'
 
 const ModificationControl = ({ adminUserOfferer, parseFormChild, offerer, query, venues }) => {
   const { readOnly } = query.context()
