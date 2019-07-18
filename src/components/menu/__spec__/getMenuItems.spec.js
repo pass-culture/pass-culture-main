@@ -1,5 +1,5 @@
 import getMenuItems from '../getMenuItems'
-import DiscoveryPage from '../../pages/discovery'
+import DiscoveryContainer from '../../pages/discovery/DiscoveryContainer'
 import FavoritesPage from '../../pages/FavoritesPage'
 import MyBookingsContainer from '../../pages/my-bookings/MyBookingsContainer'
 import ProfilePage from '../../pages/profile'
@@ -33,49 +33,43 @@ describe('getMenuItems', () => {
     const items = getMenuItems(routes)
     const expected = [
       {
-        component: DiscoveryPage,
-        disabledInMenu: false,
+        component: DiscoveryContainer,
         icon: 'offres-w',
         path: '/decouverte',
         title: 'Les offres',
       },
       {
         component: SearchContainer,
-        disabledInMenu: false,
         icon: 'search-w',
         path: '/recherche',
         title: 'Recherche',
       },
       {
         component: MyBookingsContainer,
-        disabledInMenu: false,
         icon: 'calendar-w',
         path: '/reservations',
         title: 'Mes réservations',
       },
       {
         component: FavoritesPage,
-        disabledInMenu: true,
+        featureName: 'FAVORITE_OFFER',
         icon: 'like-w',
         path: '/favoris',
         title: 'Mes préférés',
       },
       {
         component: ProfilePage,
-        disabledInMenu: false,
         icon: 'user-w',
         path: '/profil',
         title: 'Mon compte',
       },
       {
-        disabledInMenu: false,
         href: 'https://docs.passculture.app/experimentateurs',
         icon: 'help-w',
         target: '_blank',
         title: 'Aide',
       },
       {
-        disabledInMenu: false,
         href:
           'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture',
         icon: 'txt-w',

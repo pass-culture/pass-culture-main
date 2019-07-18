@@ -1,0 +1,72 @@
+import { shallow } from 'enzyme'
+import React from 'react'
+import { Link } from 'react-router-dom'
+
+import Item from '../Item'
+import MenuItem from '../MenuItem'
+
+describe('src | components | menu | MenuItem', () => {
+  let props
+
+  beforeEach(() => {
+    props = {
+      item: {
+        icon: 'offres-w',
+        path: '/plop',
+        title: 'Fake title',
+      },
+    }
+  })
+
+  it('should match the snapshot', () => {
+    // given
+    const wrapper = shallow(<MenuItem {...props} />)
+
+    // then
+    expect(wrapper).toBeDefined()
+    expect(wrapper).toMatchSnapshot()
+  })
+
+  describe('render()', () => {
+    it('should render one Link and one Item when no href', () => {
+      // given
+      const wrapper = shallow(<MenuItem {...props} />)
+
+      // when
+      const link = wrapper.find(Link)
+      const item = wrapper.find(Item)
+
+      // then
+      expect(link).toHaveLength(1)
+      expect(item).toHaveLength(1)
+    })
+
+    it('should render one link and one Item when href', () => {
+      // given
+      props.item.href = 'https://foo.com'
+      props.item.target = '_blank'
+      const wrapper = shallow(<MenuItem {...props} />)
+
+      // when
+      const link = wrapper.find('a')
+      const item = wrapper.find(Item)
+
+      // then
+      expect(link).toHaveLength(1)
+      expect(item).toHaveLength(1)
+    })
+
+    it('should render a link with no rel if target not equal blank', () => {
+      // given
+      props.item.href = 'https://foo.com'
+      props.item.target = 'plop'
+      const wrapper = shallow(<MenuItem {...props} />)
+
+      // when
+      const { rel } = wrapper.find('a').props()
+
+      // then
+      expect(rel).toBeNull()
+    })
+  })
+})

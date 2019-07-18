@@ -4,9 +4,8 @@ import { Transition } from 'react-transition-group'
 
 import Header from './Header'
 import menuItems from './menuItems'
-import NavLink from './NavLink'
+import MenuItemContainer from './MenuItem'
 import SignoutButtonContainer from './SignoutButtonContainer'
-import SimpleLinkContainer from './SimpleLinkContainer'
 import CloseLink from '../layout/Header/CloseLink'
 
 class Menu extends PureComponent {
@@ -46,12 +45,16 @@ class Menu extends PureComponent {
                   closeTo={this.urlWithoutMenuElement(history)()}
                 />
                 {currentUser && <Header currentUser={currentUser} />}
-                <nav className="flex-rows pb0" id="main-menu-navigation">
-                  {menuItems.map(menuItem =>
-                    menuItem.href
-                      ? <SimpleLinkContainer item={menuItem} key={menuItem.href} />
-                      : <NavLink item={menuItem} key={menuItem.path} />
-                  )}
+                <nav
+                  className="flex-rows pb0"
+                  id="main-menu-navigation"
+                >
+                  {menuItems.map(menuItem => (
+                    <MenuItemContainer
+                      item={menuItem}
+                      key={menuItem.path}
+                    />
+                  ))}
                   <SignoutButtonContainer
                     history={history}
                     readRecommendations={readRecommendations}
@@ -73,9 +76,7 @@ Menu.defaultProps = {
 Menu.propTypes = {
   currentUser: PropTypes.shape(),
   history: PropTypes.shape().isRequired,
-  readRecommendations: PropTypes.arrayOf(PropTypes.shape().isRequired)
-    .isRequired,
-  routes: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  readRecommendations: PropTypes.arrayOf(PropTypes.shape().isRequired).isRequired,
   toggleOverlay: PropTypes.func.isRequired,
 }
 

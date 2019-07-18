@@ -16,7 +16,7 @@ describe('src | components | router | selectIsFeatureDisabled', () => {
 
   it('should return false when null featureName', () => {
     // when
-    const state = { data: { features: [{ name: 'FOO' }] } }
+    const state = { data: { features: [{ nameKey: 'FOO' }] } }
     const featureName = null
 
     // when
@@ -29,7 +29,7 @@ describe('src | components | router | selectIsFeatureDisabled', () => {
 
   it('should return false when selected feature is not found', () => {
     // when
-    const state = { data: { features: [{ name: 'FOO' }] } }
+    const state = { data: { features: [{ nameKey: 'FOO' }] } }
     const featureName = 'BAR'
 
     // when
@@ -42,7 +42,7 @@ describe('src | components | router | selectIsFeatureDisabled', () => {
 
   it('should return true when selected feature is not active', () => {
     // when
-    const state = { data: { features: [{ isActive: false, name: 'FOO' }] } }
+    const state = { data: { features: [{ isActive: false, nameKey: 'FOO' }] } }
     const featureName = 'FOO'
 
     // when

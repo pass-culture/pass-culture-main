@@ -2,16 +2,15 @@ import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { Router } from 'react-router-dom'
+import { Link, Router } from 'react-router-dom'
 import { Transition } from 'react-transition-group'
 import configureStore from 'redux-mock-store'
 
 import CloseLink from '../../layout/Header/CloseLink'
 import Header from '../Header'
 import Menu from '../Menu'
-import NavLink from '../NavLink'
+import MenuItem from '../MenuItem'
 import SignoutButtonContainer from '../SignoutButtonContainer'
-import SimpleLink from '../SimpleLink'
 
 jest.mock('../../../reducers/overlay', () => ({
   toggleOverlay: jest.fn(),
@@ -73,16 +72,16 @@ describe('src | components | menu | Menu', () => {
       const transition = wrapper.find(Transition)
       const closeLink = wrapper.find(CloseLink)
       const header = wrapper.find(Header)
-      const simpleLink = wrapper.find(SimpleLink)
-      const navLink = wrapper.find(NavLink)
+      const anchor = wrapper.find(MenuItem).find('a')
+      const link = wrapper.find(MenuItem).find(Link)
       const signoutButtonContainer = wrapper.find(SignoutButtonContainer)
 
       // then
       expect(transition).toHaveLength(1)
       expect(closeLink).toHaveLength(1)
       expect(header).toHaveLength(1)
-      expect(simpleLink).toHaveLength(2)
-      expect(navLink).toHaveLength(5)
+      expect(anchor).toHaveLength(7)
+      expect(link).toHaveLength(5)
       expect(signoutButtonContainer).toHaveLength(1)
       expect(props.toggleOverlay).toHaveBeenCalledWith()
     })

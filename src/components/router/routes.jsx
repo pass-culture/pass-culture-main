@@ -1,7 +1,6 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
 
-import { WEBAPP_CONTACT_EXTERNAL_PAGE } from './config'
 import ActivationRoutesContainer from '../pages/activation/ActivationRoutesContainer'
 import BetaPage from '../pages/BetaPage'
 import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
@@ -13,11 +12,16 @@ import TypeFormPage from '../pages/typeform/TypeFormContainer'
 import SearchContainer from '../pages/search/SearchContainer'
 import SigninContainer from '../pages/signin/SigninContainer'
 import SignupContainer from '../pages/signup/SignupContainer'
+import { WEBAPP_CONTACT_EXTERNAL_PAGE } from '../../utils/config'
+
+function redirectToBeta () {
+  return <Redirect to="/beta" />
+}
 
 const routes = [
   {
     path: '/',
-    render: () => <Redirect to="/beta" />,
+    render: redirectToBeta,
   },
   {
     component: BetaPage,
@@ -81,7 +85,7 @@ const routes = [
   },
   {
     component: FavoritesPage,
-    disabledInMenuByFeatureName: 'FAVORITE_OFFER',
+    featureName: 'FAVORITE_OFFER',
     icon: 'like-w',
     path: '/favoris',
     title: 'Mes préférés',

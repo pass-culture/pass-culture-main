@@ -14,9 +14,7 @@ const selectIsFeatureDisabled = createCachedSelector(
       return false
     }
 
-    const selectedFeature = features.find(
-      feature => feature.name === featureName
-    )
+    const selectedFeature = features.find(feature => feature.nameKey === featureName)
 
     if (!selectedFeature) {
       return false

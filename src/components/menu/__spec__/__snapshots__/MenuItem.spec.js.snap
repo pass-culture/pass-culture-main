@@ -1,15 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | menu | SimpleLink should match the snapshot 1`] = `
+exports[`src | components | menu | MenuItem should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <SimpleLink
+  Symbol(enzyme.__unrendered__): <MenuItem
     item={
       Object {
-        "href": "/decouverte",
         "icon": "offres-w",
-        "target": "_blank",
-        "title": "Decouverte",
+        "path": "/plop",
+        "title": "Fake title",
       }
     }
   />,
@@ -24,18 +23,18 @@ ShallowWrapper {
   },
   Symbol(enzyme.__node__): Object {
     "instance": null,
-    "key": "/decouverte",
-    "nodeType": "host",
+    "key": "/plop",
+    "nodeType": "class",
     "props": Object {
       "children": <Item
         icon="offres-w"
-        title="Decouverte"
+        title="Fake title"
       />,
-      "className": "navlink mx12 flex-columns",
+      "className": "flex-columns mx12 navlink",
       "disabled": undefined,
-      "href": "/decouverte",
-      "rel": "noopener noreferer",
-      "target": "_blank",
+      "replace": false,
+      "role": "menuitem",
+      "to": "/plop",
     },
     "ref": null,
     "rendered": Object {
@@ -44,29 +43,29 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "icon": "offres-w",
-        "title": "Decouverte",
+        "title": "Fake title",
       },
       "ref": null,
       "rendered": null,
       "type": [Function],
     },
-    "type": "a",
+    "type": [Function],
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
-      "key": "/decouverte",
-      "nodeType": "host",
+      "key": "/plop",
+      "nodeType": "class",
       "props": Object {
         "children": <Item
           icon="offres-w"
-          title="Decouverte"
+          title="Fake title"
         />,
-        "className": "navlink mx12 flex-columns",
+        "className": "flex-columns mx12 navlink",
         "disabled": undefined,
-        "href": "/decouverte",
-        "rel": "noopener noreferer",
-        "target": "_blank",
+        "replace": false,
+        "role": "menuitem",
+        "to": "/plop",
       },
       "ref": null,
       "rendered": Object {
@@ -75,13 +74,13 @@ ShallowWrapper {
         "nodeType": "function",
         "props": Object {
           "icon": "offres-w",
-          "title": "Decouverte",
+          "title": "Fake title",
         },
         "ref": null,
         "rendered": null,
         "type": [Function],
       },
-      "type": "a",
+      "type": [Function],
     },
   ],
   Symbol(enzyme.__options__): Object {
