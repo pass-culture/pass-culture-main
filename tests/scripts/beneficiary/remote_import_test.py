@@ -71,7 +71,7 @@ class RunTest:
         )
 
         # then
-        send_report_email.assert_called_with([], [], 'send@report.to', ANY)
+        send_report_email.assert_called_with([], [], ['send@report.to'], ANY)
 
     @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.parse_beneficiary_information')

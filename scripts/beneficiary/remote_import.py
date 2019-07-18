@@ -14,7 +14,7 @@ from repository.user_queries import find_by_civility, find_user_by_email, \
     has_already_been_created, save_new_beneficiary_import
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from utils.logger import logger
-from utils.mailing import send_raw_email, DEV_EMAIL_ADDRESS
+from utils.mailing import send_raw_email, DEV_EMAIL_ADDRESS, parse_email_addresses
 
 TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN', None)
 PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', None)
@@ -30,7 +30,6 @@ def run(
 ):
     error_messages = []
     new_beneficiaries = []
-    REPORT_RECIPIENTS = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_REPORT_RECIPIENTS', DEV_EMAIL_ADDRESS)
 
     logger.info('[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées')
     applications_ids = get_all_applications_ids(PROCEDURE_ID, TOKEN, process_applications_updated_after)
@@ -58,7 +57,10 @@ def run(
         if not already_imported(information['application_id']):
             process_beneficiary_application(information, error_messages, new_beneficiaries)
 
-    send_remote_beneficiaries_import_report_email(new_beneficiaries, error_messages, REPORT_RECIPIENTS, send_raw_email)
+
+    REPORT_RECIPIENTS = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_REPORT_RECIPIENTS', DEV_EMAIL_ADDRESS)
+    recipients = parse_email_addresses(REPORT_RECIPIENTS)
+    send_remote_beneficiaries_import_report_email(new_beneficiaries, error_messages, recipients, send_raw_email)
     logger.info('[BATCH][REMOTE IMPORT BENEFICIARIES] End import from Démarches Simplifiées')
 
 
