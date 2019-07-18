@@ -5,7 +5,13 @@ import Bookings from './Bookings'
 import { withRequiredLogin } from '../../hocs'
 import { API_URL } from '../../../utils/config'
 
-const buildPathToReservationFile = (isFilterByDigitalVenues, selectedVenue) => {
+const buildPathToBookingFile = (
+  isFilterByDigitalVenues,
+  selectedOffer,
+  selectOffersFrom,
+  selectOffersTo,
+  selectedVenue
+) => {
   let pathToFile = `${API_URL}/bookings/csv`
   let filtersToApply = []
 
@@ -17,6 +23,18 @@ const buildPathToReservationFile = (isFilterByDigitalVenues, selectedVenue) => {
     filtersToApply.push(`venueId=${selectedVenue}`)
   }
 
+  if (selectedOffer && selectedOffer !== 'all') {
+    filtersToApply.push(`offerId=${selectedOffer}`)
+  }
+
+  if (selectOffersFrom) {
+    filtersToApply.push(`dateFrom=${selectOffersFrom}`)
+  }
+
+  if (selectOffersTo) {
+    filtersToApply.push(`dateTo=${selectOffersTo}`)
+  }
+
   if (filtersToApply.length > 0) {
     pathToFile += `?${filtersToApply.join('&')}`
   }
@@ -26,15 +44,33 @@ const buildPathToReservationFile = (isFilterByDigitalVenues, selectedVenue) => {
 
 export const mapStateToProps = state => {
   const { bookingSummary = {} } = state
-  const { selectedVenue, isFilterByDigitalVenues } = bookingSummary
+  const {
+    isFilterByDigitalVenues,
+    selectedOffer,
+    selectOffersFrom,
+    selectOffersTo,
+    selectedVenue,
+  } = bookingSummary
 
-  const pathToCsvFile = buildPathToReservationFile(isFilterByDigitalVenues, selectedVenue)
+  const pathToCsvFile = buildPathToBookingFile(
+    isFilterByDigitalVenues,
+    selectedOffer,
+    selectOffersFrom,
+    selectOffersTo,
+    selectedVenue
+  )
 
-  const showButtons = !!(isFilterByDigitalVenues || selectedVenue)
+  const showButtons =
+    !!(isFilterByDigitalVenues && selectedOffer) ||
+    !!(selectedVenue && selectedOffer) ||
+    selectedVenue === 'all'
+
+  const showOfferSection = selectedVenue !== 'all' && (!!selectedVenue || !!isFilterByDigitalVenues)
 
   return {
     pathToCsvFile,
     showButtons,
+    showOfferSection,
   }
 }
 

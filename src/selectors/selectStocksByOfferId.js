@@ -12,6 +12,9 @@ const selectStocksByOfferId = createCachedSelector(
   (state, offerId) => offerId,
   selectOfferById,
   (stocks, offerId, offer) => {
+    if (!stocks) {
+      return []
+    }
     let filteredStocks = stocks.filter(stock => stock.offerId === offerId)
 
     if (offer && offer.isEvent) {

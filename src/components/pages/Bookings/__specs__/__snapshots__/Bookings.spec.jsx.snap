@@ -6,6 +6,7 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <Bookings
     pathToCsvFile=""
     showButtons={false}
+    showOfferSection={false}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -38,6 +39,16 @@ ShallowWrapper {
         <hr />,
         <withRouter(_withQueryRouter) />,
         false,
+<<<<<<< HEAD
+=======
+        <div
+          className="control flex-columns items-center flex-end"
+        />,
+        <br />,
+        <div
+          className="control flex-columns items-center flex-end"
+        />,
+>>>>>>> (PC-2129): added feature for filtering bookings CSV by : dates, offer, venue
       ],
       "name": "bookings",
     },
@@ -119,6 +130,42 @@ ShallowWrapper {
         "type": [Function],
       },
       false,
+<<<<<<< HEAD
+=======
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": false,
+          "className": "control flex-columns items-center flex-end",
+        },
+        "ref": null,
+        "rendered": false,
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {},
+        "ref": null,
+        "rendered": null,
+        "type": "br",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": false,
+          "className": "control flex-columns items-center flex-end",
+        },
+        "ref": null,
+        "rendered": false,
+        "type": "div",
+      },
+>>>>>>> (PC-2129): added feature for filtering bookings CSV by : dates, offer, venue
     ],
     "type": [Function],
   },
@@ -145,6 +192,16 @@ ShallowWrapper {
           <hr />,
           <withRouter(_withQueryRouter) />,
           false,
+<<<<<<< HEAD
+=======
+          <div
+            className="control flex-columns items-center flex-end"
+          />,
+          <br />,
+          <div
+            className="control flex-columns items-center flex-end"
+          />,
+>>>>>>> (PC-2129): added feature for filtering bookings CSV by : dates, offer, venue
         ],
         "name": "bookings",
       },
@@ -226,6 +283,42 @@ ShallowWrapper {
           "type": [Function],
         },
         false,
+<<<<<<< HEAD
+=======
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": false,
+            "className": "control flex-columns items-center flex-end",
+          },
+          "ref": null,
+          "rendered": false,
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {},
+          "ref": null,
+          "rendered": null,
+          "type": "br",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": false,
+            "className": "control flex-columns items-center flex-end",
+          },
+          "ref": null,
+          "rendered": false,
+          "type": "div",
+        },
+>>>>>>> (PC-2129): added feature for filtering bookings CSV by : dates, offer, venue
       ],
       "type": [Function],
     },

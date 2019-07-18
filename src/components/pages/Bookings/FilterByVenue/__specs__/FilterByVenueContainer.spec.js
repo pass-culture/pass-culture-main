@@ -20,6 +20,12 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
       // then
       expect(props).toMatchObject({
         isDigital: true,
+        venuesOptions: [
+          {
+            id: 'all',
+            name: 'Tous les lieux',
+          },
+        ],
       })
     })
   })

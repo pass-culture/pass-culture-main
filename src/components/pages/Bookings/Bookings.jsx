@@ -5,9 +5,11 @@ import DownloadButtonContainer from '../../layout/DownloadButton/DownloadButtonC
 import Main from '../../layout/Main'
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import FilterByVenueContainer from './FilterByVenue/FilterByVenueContainer'
-import CsvTableButtonContainer from '../../layout/CsvTableButton/CsvTableButtonContainer'
 
-const Bookings = ({ pathToCsvFile, showButtons }) => (
+import CsvTableButtonContainer from '../../layout/CsvTableButton/CsvTableButtonContainer'
+import FilterByOfferContainer from './FilterByOffer/FilterByOfferContainer'
+
+const Bookings = ({ pathToCsvFile, showButtons, showOfferSection }) => (
   <Main name="bookings">
     <HeroSection title="Suivi des réservations">
       <p className="subtitle">
@@ -19,6 +21,9 @@ const Bookings = ({ pathToCsvFile, showButtons }) => (
     </HeroSection>
     <hr />
     <FilterByVenueContainer />
+    {showOfferSection && (
+    <FilterByOfferContainer />
+    )}
     {showButtons && (
       <div id="buttons-container">
         <div className="control flex-columns items-center flex-end">
@@ -44,11 +49,13 @@ const Bookings = ({ pathToCsvFile, showButtons }) => (
 Bookings.defaultProps = {
   pathToCsvFile: '',
   showButtons: false,
+  showOfferSection: false,
 }
 
 Bookings.propTypes = {
   pathToCsvFile: PropTypes.string,
   showButtons: PropTypes.bool,
+  showOfferSection: PropTypes.bool,
 }
 
 export default Bookings

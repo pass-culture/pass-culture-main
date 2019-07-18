@@ -4,6 +4,7 @@ import { shallow } from 'enzyme'
 import Bookings from '../Bookings'
 import DownloadButtonContainer from '../../../layout/DownloadButton/DownloadButtonContainer'
 import CsvTableButtonContainer from '../../../layout/CsvTableButton/CsvTableButtonContainer'
+import FilterByOfferContainer from '../FilterByOffer/FilterByOfferContainer'
 
 describe('src | components | pages | Bookings', () => {
   let props
@@ -11,6 +12,7 @@ describe('src | components | pages | Bookings', () => {
   beforeEach(() => {
     props = {
       showButtons: false,
+      showOfferSection: false,
       pathToCsvFile: '/path/to/csv/file?with=query',
     }
   })
@@ -66,6 +68,36 @@ describe('src | components | pages | Bookings', () => {
       const displayButton = wrapper.find(CsvTableButtonContainer)
       expect(displayButton).toHaveLength(1)
       expect(displayButton.prop('href')).toBe('/path/to/csv/file?with=query')
+    })
+  })
+
+  describe('the offer section', () => {
+    it('should not be displayed when `all venues is selected', () => {
+      // given
+      const props = {
+        showOfferSection: false,
+      }
+
+      // when
+      const wrapper = shallow(<Bookings {...props} />)
+
+      // then
+      const filterByOfferContainer = wrapper.find(FilterByOfferContainer)
+      expect(filterByOfferContainer).toHaveLength(0)
+    })
+
+    it('should display offer section when a specific venue (or digital venues) is selected', () => {
+      // given
+      const props = {
+        showOfferSection: true,
+      }
+
+      // when
+      const wrapper = shallow(<Bookings {...props} />)
+
+      // then
+      const filterByOfferContainer = wrapper.find(FilterByOfferContainer)
+      expect(filterByOfferContainer).toHaveLength(1)
     })
   })
 })
