@@ -53,5 +53,5 @@ class BeneficiaryImportView(BaseAdminView):
         'status': 'Statut',
         'detail': 'Détails'
     }
-    column_filters = ['beneficiary.email', 'date', 'status']
+    column_filters = ['beneficiary.email', 'date', 'demarcheSimplifieeApplicationId', 'status']
     column_searchable_list = ['beneficiary.email', 'date', 'demarcheSimplifieeApplicationId', 'status']

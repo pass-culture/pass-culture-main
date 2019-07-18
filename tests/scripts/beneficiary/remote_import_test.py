@@ -26,7 +26,7 @@ ONE_WEEK_AGO = NOW - timedelta(days=7)
 class RunTest:
     @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
-    def test_only_closed_applications_are_processed(self, process_beneficiary_application, send_report_email):
+    def test_all_applications_are_processed_once(self, process_beneficiary_application, send_report_email):
         # given
         get_all_application_ids = Mock(return_value=[123, 456, 789])
         get_details = Mock()
@@ -45,7 +45,7 @@ class RunTest:
             get_all_applications_ids=get_all_application_ids,
             get_details=get_details,
             already_imported=has_already_been_imported,
-            already_created=has_already_been_created
+            already_existing_user=has_already_been_created
         )
 
         # then
@@ -67,7 +67,7 @@ class RunTest:
             get_all_applications_ids=get_all_application_ids,
             get_details=get_details,
             already_imported=has_already_been_imported,
-            already_created=has_already_been_created
+            already_existing_user=has_already_been_created
         )
 
         # then
@@ -95,7 +95,7 @@ class RunTest:
             get_all_applications_ids=get_all_application_ids,
             get_details=get_details,
             already_imported=has_already_been_imported,
-            already_created=has_already_been_created
+            already_existing_user=has_already_been_created
         )
 
         # then
@@ -115,7 +115,7 @@ class RunTest:
         user = User()
         user.email = 'john.doe@test.com'
         user.demarcheSimplifieeApplicationId = 123
-        has_already_been_imported = Mock()
+        has_already_been_imported = Mock(return_value=True)
         has_already_been_created = Mock(return_value=False)
 
         # when
@@ -124,7 +124,7 @@ class RunTest:
             get_all_applications_ids=get_all_application_ids,
             get_details=get_details,
             already_imported=has_already_been_imported,
-            already_created=has_already_been_created
+            already_existing_user=has_already_been_created
         )
 
         # then
@@ -151,7 +151,7 @@ class RunTest:
             get_all_applications_ids=get_all_application_ids,
             get_details=get_details,
             already_imported=has_already_been_imported,
-            already_created=has_already_been_created
+            already_existing_user=has_already_been_created
         )
 
         # then

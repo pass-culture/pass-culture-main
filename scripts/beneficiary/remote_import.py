@@ -11,7 +11,7 @@ from domain.user_emails import send_activation_notification_email
 from models import User, Deposit, ApiErrors, PcObject
 from models.beneficiary_import import ImportStatus
 from repository.user_queries import find_by_civility, find_user_by_email, \
-    has_already_been_created, save_new_beneficiary_import
+    is_already_imported, save_new_beneficiary_import
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from utils.logger import logger
 from utils.mailing import send_raw_email, DEV_EMAIL_ADDRESS, parse_email_addresses
@@ -25,8 +25,8 @@ def run(
         process_applications_updated_after: datetime,
         get_all_applications_ids: Callable[..., dict] = get_all_application_ids_for_procedure,
         get_details: Callable[..., dict] = get_application_details,
-        already_imported: Callable[..., User] = has_already_been_created,
-        already_created: Callable[..., User] = find_user_by_email
+        already_imported: Callable[..., bool] = is_already_imported,
+        already_existing_user: Callable[..., User] = find_user_by_email
 ):
     error_messages = []
     new_beneficiaries = []
@@ -46,7 +46,7 @@ def run(
             save_new_beneficiary_import(ImportStatus.ERROR, id, detail=error)
             continue
 
-        if already_created(information['email']):
+        if already_existing_user(information['email']):
             save_new_beneficiary_import(
                 ImportStatus.REJECTED,
                 information['application_id'],

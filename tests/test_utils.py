@@ -168,7 +168,7 @@ def create_user(public_name='John Doe', password=None, first_name='John', last_n
 
 
 def create_beneficiary_import(
-        user: User,
+        user: User = None,
         status=ImportStatus.CREATED,
         date=datetime.utcnow(),
         detail: str = None,

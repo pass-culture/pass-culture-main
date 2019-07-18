@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, MINYEAR
 from models import PcObject
 from models.beneficiary_import import ImportStatus
 from repository.user_queries import get_all_users_wallet_balances, find_by_civility, \
-    find_most_recent_beneficiary_creation_date, has_already_been_created
+    find_most_recent_beneficiary_creation_date, is_already_imported
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_deposit, \
     create_stock, create_booking, create_beneficiary_import
@@ -195,7 +195,7 @@ class FindByCivilityTest:
 
 class FindMostRecentBeneficiaryCreationDateTest:
     @clean_database
-    def test_returns_created_at_date_of_most_recent_beneficiary_import(
+    def test_returns_created_at_date_of_most_recent_beneficiary_import_with_created_status(
             self, app):
         # given
         now = datetime.utcnow()
@@ -207,18 +207,18 @@ class FindMostRecentBeneficiaryCreationDateTest:
         user1 = create_user(email='user1@test.com', date_created=yesterday)
         user2 = create_user(email='user2@test.com', date_created=two_days_ago)
         user3 = create_user(email='user3@test.com', date_created=three_days_ago)
-        beneficiary_import1 = create_beneficiary_import(user1, status=ImportStatus.CREATED, date=yesterday,
+        beneficiary_import2 = create_beneficiary_import(user2, status=ImportStatus.ERROR, date=two_days_ago,
                                                         demarche_simplifiee_application_id=1)
-        beneficiary_import2 = create_beneficiary_import(user3, status=ImportStatus.CREATED, date=three_days_ago,
+        beneficiary_import3 = create_beneficiary_import(user3, status=ImportStatus.CREATED, date=three_days_ago,
                                                         demarche_simplifiee_application_id=3)
 
-        PcObject.save(user2, beneficiary_import1, beneficiary_import2)
+        PcObject.save(user1, beneficiary_import2, beneficiary_import3)
 
         # when
         most_recent_creation_date = find_most_recent_beneficiary_creation_date()
 
         # then
-        assert most_recent_creation_date == yesterday
+        assert most_recent_creation_date == three_days_ago
 
     @clean_database
     def test_returns_min_year_if_no_beneficiary_import_exist(self, app):
@@ -234,7 +234,7 @@ class FindMostRecentBeneficiaryCreationDateTest:
         assert most_recent_creation_date == datetime(MINYEAR, 1, 1)
 
 
-class HasAlreadyBeenCreatedTest:
+class IsAlreadyImportedTest:
     @clean_database
     def test_returns_true_when_a_beneficiary_import_exist_with_status_created(self, app):
         # given
@@ -247,7 +247,7 @@ class HasAlreadyBeenCreatedTest:
         PcObject.save(beneficiary_import, user2)
 
         # when
-        result = has_already_been_created(123)
+        result = is_already_imported(123)
 
         # then
         assert result is True
@@ -264,7 +264,7 @@ class HasAlreadyBeenCreatedTest:
         PcObject.save(beneficiary_import, user2)
 
         # when
-        result = has_already_been_created(123)
+        result = is_already_imported(123)
 
         # then
         assert result is False
@@ -281,7 +281,7 @@ class HasAlreadyBeenCreatedTest:
         PcObject.save(beneficiary_import, user2)
 
         # when
-        result = has_already_been_created(456)
+        result = is_already_imported(456)
 
         # then
         assert result is False

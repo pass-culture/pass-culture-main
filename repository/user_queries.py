@@ -17,7 +17,7 @@ def find_user_by_email(email: str) -> User:
         .first()
 
 
-def has_already_been_created(application_id: int) -> bool:
+def is_already_imported(application_id: int) -> bool:
     return db.session.query(
         BeneficiaryImport.query \
             .filter(BeneficiaryImport.status == ImportStatus.CREATED) \
