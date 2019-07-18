@@ -3,7 +3,7 @@ import { capitalize } from 'react-final-form-utils'
 import { connect } from 'react-redux'
 
 import MyFavorite from './MyFavorite'
-import { getTimezone } from '../../../utils/timezone'
+import { getTimezone } from '../../../../utils/timezone'
 
 export const stringify = date => timeZone =>
   capitalize(

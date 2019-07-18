@@ -4,8 +4,8 @@ import React, { Component } from 'react'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import NavigationFooter from '../../layout/NavigationFooter'
 import PageHeader from '../../layout/Header/PageHeader'
-import NoFavorites from "./NoFavorites";
-import MyFavoriteContainer from "./MyFavoriteContainer";
+import NoFavorites from './NoFavorite/NoFavorites'
+import MyFavoriteContainer from './MyFavorite/MyFavoriteContainer'
 
 class MyFavorites extends Component {
   constructor(props) {
@@ -52,8 +52,6 @@ class MyFavorites extends Component {
   render() {
     const { myFavorites } = this.props
     const { isEmpty, isLoading, hasError } = this.state
-
-    console.log("favorites " + myFavorites.length)
 
     if (isLoading) {
       return (<LoaderContainer
