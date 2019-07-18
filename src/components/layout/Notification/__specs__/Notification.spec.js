@@ -48,7 +48,7 @@ describe('src | components | layout | Notification', () => {
         expect(icon).toHaveLength(1)
         expect(link).toHaveLength(0)
         expect(firstDiv.prop('className')).toBe('notification is-warning')
-        expect(icon.prop('svg')).toBe('picto-warning')
+        expect(icon.prop('svg')).toBe('picto-warning-orange')
         expect(button.text()).toStrictEqual('OK')
       })
     })

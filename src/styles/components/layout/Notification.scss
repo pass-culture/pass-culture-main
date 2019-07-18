@@ -15,27 +15,27 @@
 
   &.is-danger {
     background-color: #FF8097;
-    color: #000000;
+    color: $notification-text;
   }
 
   &.is-info {
     background-color: #B3E7FF;
-    color: #000000;
+    color: $notification-text;
   }
 
   &.is-success {
     background-color: #B8E986;
-    color: #000000;
+    color: $notification-text;
   }
 
   &.is-warning {
     background-color: #FFD580;
-    color: #000000;
+    color: $notification-text;
   }
 
   a.close,
   button.close {
-    color: #000000;
+    color: $notification-text;
     background: none;
     border: none;
     cursor: pointer;
