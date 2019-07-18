@@ -1,0 +1,91 @@
+.my-favorites {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.mf-main {
+  background-image: linear-gradient(to bottom right, $red, $purple-blue);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: auto;
+}
+
+.mf-no-favorites {
+  align-items: center;
+  justify-content: center;
+}
+
+
+.mf-link-offers {
+  border: 2px solid $white;
+  border-radius: 2px;
+  color: $white;
+  display: block;
+  font-weight: 500;
+  font-size: 1.4rem;
+  margin-bottom: 0.75rem;
+  padding: 0.4rem 1.5rem;
+
+  &:hover {
+    color: $white;
+  }
+}
+
+.mf-text {
+  color: $white;
+  text-align: center;
+}
+
+
+.mf-section {
+  margin-top: 2.25rem;
+  padding: 0 0.75rem;
+}
+
+.mf-header {
+  color: $white;
+  font-size: 1.2rem;
+  font-style: italic;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.mf-my-favorite {
+  background-color: $white;
+  border-radius: $radius-small;
+  margin-bottom: 0.75rem;
+}
+
+.mf-link {
+  display: flex;
+  height: 150px;
+}
+
+.mf-thumb {
+  display: flex;
+  width: 30%;
+}
+
+.mf-infos {
+  @include dotted($primary, left);
+
+  width: 55%;
+}
+
+.mf-heading {
+  display: flex;
+  flex-direction: column;
+  height: 50%;
+  justify-content: space-around;
+  padding: 0.5rem 1rem;
+}
+
+.mf-title {
+  @include multiLineEllipsis();
+
+  color: $black;
+  font-size: 1.1rem;
+  font-weight: 600;
+}

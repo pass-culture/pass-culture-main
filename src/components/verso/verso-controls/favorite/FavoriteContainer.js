@@ -40,7 +40,7 @@ export const mapDispatchToProps = dispatch => ({
   handleFavorite: (isFavorite, recommendation, showFailModal) => () => {
     dispatch(
       requestData({
-        apiPath: `/offers/favorites${
+        apiPath: `/favorites${
           isFavorite ? `/${recommendation.offerId}/${recommendation.mediationId}` : ''
         }`,
         body: {
@@ -50,7 +50,7 @@ export const mapDispatchToProps = dispatch => ({
         handleFail: showFailModal,
         handleSuccess: mergeDataWithStore(dispatch, isFavorite, recommendation),
         method: isFavorite ? 'DELETE' : 'POST',
-        stateKey: 'offersFavorites',
+        stateKey: 'favorites',
       })
     )
   },

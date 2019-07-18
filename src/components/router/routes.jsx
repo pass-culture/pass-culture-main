@@ -5,7 +5,7 @@ import ActivationRoutesContainer from '../pages/activation/ActivationRoutesConta
 import BetaPage from '../pages/BetaPage'
 import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
 import DiscoveryContainer from '../pages/discovery/DiscoveryContainer'
-import FavoritesPage from '../pages/FavoritesPage'
+import MyFavoritesContainer from '../pages/my-favorites/MyFavoritesContainer'
 import ForgotPasswordPage from '../pages/ForgotPasswordPage'
 import ProfilePage from '../pages/profile'
 import TypeFormPage from '../pages/typeform/TypeFormContainer'
@@ -84,11 +84,11 @@ const routes = [
     title: 'Mes réservations',
   },
   {
-    component: FavoritesPage,
-    featureName: 'FAVORITE_OFFER',
+    component: MyFavoritesContainer,
+    disabled: isFeatureDisabled('FAVORITE_OFFER'),
     icon: 'like-w',
     path: '/favoris',
-    title: 'Mes préférés',
+    title: 'Mes favoris',
   },
   {
     component: ProfilePage,

@@ -114,7 +114,7 @@ describe('src | components | verso | verso-controls | favorite | FavoriteContain
       // then
       expect(dispatch).toHaveBeenCalledWith({
         config: {
-          apiPath: '/offers/favorites',
+          apiPath: '/favorites',
           body: {
             mediationId: recommendation.mediationId,
             offerId: recommendation.offerId,
@@ -122,7 +122,7 @@ describe('src | components | verso | verso-controls | favorite | FavoriteContain
           handleFail: showFailModal,
           handleSuccess: expect.any(Function),
           method: 'POST',
-          stateKey: 'offersFavorites',
+          stateKey: 'favorites',
         },
         type: 'REQUEST_DATA_POST_OFFERSFAVORITES',
       })
@@ -144,7 +144,7 @@ describe('src | components | verso | verso-controls | favorite | FavoriteContain
       // then
       expect(dispatch).toHaveBeenCalledWith({
         config: {
-          apiPath: `/offers/favorites/${recommendation.offerId}/${recommendation.mediationId}`,
+          apiPath: `/favorites/${recommendation.offerId}/${recommendation.mediationId}`,
           body: {
             mediationId: recommendation.mediationId,
             offerId: recommendation.offerId,
@@ -152,7 +152,7 @@ describe('src | components | verso | verso-controls | favorite | FavoriteContain
           handleFail: showFailModal,
           handleSuccess: expect.any(Function),
           method: 'DELETE',
-          stateKey: 'offersFavorites',
+          stateKey: 'favorites',
         },
         type: 'REQUEST_DATA_DELETE_OFFERSFAVORITES',
       })
