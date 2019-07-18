@@ -1,6 +1,7 @@
 import { recursiveMap, SubmitButton } from 'pass-culture-shared'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
+import PropTypes from 'prop-types'
 
 const CreationControl = ({ parseFormChild }) =>
   recursiveMap(
@@ -22,6 +23,10 @@ const CreationControl = ({ parseFormChild }) =>
     </div>,
     parseFormChild
   )
+
+CreationControl.propTypes = {
+  parseFormChild: PropTypes.func
+}
 
 CreationControl.isParsedByForm = true
 

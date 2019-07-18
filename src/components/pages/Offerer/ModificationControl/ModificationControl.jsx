@@ -2,6 +2,8 @@ import get from 'lodash.get'
 import { CancelButton, recursiveMap, SubmitButton } from 'pass-culture-shared'
 import React, { Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
+import PropTypes from 'prop-types'
+
 
 import VenueItem from '../VenueItem/VenueItem'
 
@@ -65,5 +67,20 @@ const ModificationControl = ({ adminUserOfferer, parseFormChild, offerer, query,
 }
 
 ModificationControl.isParsedByForm = true
+
+ModificationControl.propTypes = {
+  adminUserOfferer: PropTypes.bool(),
+  offerer: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+  }),
+  parseFormChild: PropTypes.func().isRequired,
+  query: PropTypes.shape().isRequired,
+  venues: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+}
+
+ModificationControl.defaultProps = {
+  adminUserOfferer: false,
+}
+
 
 export default ModificationControl
