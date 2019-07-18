@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'
 
 import FilterByVenue from './FilterByVenue'
-import selectNonVirtualVenues from '../selectors/selectNonVirtualVenues'
+import selectNonVirtualVenues from './selectors/selectNonVirtualVenues'
 
 export const mapDispatchToProps = dispatch => ({
   loadVenues: () => {
