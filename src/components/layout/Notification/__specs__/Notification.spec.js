@@ -75,7 +75,7 @@ describe('src | components | layout | Notification', () => {
         // then
         expect(icon).toHaveLength(1)
         expect(firstDiv.prop('className')).toBe('notification is-info')
-        expect(icon.prop('svg')).toBe('picto-info')
+        expect(icon.prop('svg')).toBe('picto-info-purple')
         expect(link.props().href).toStrictEqual(props.notification.url)
         expect(link.text()).toStrictEqual(props.notification.urlLabel)
         expect(button.text()).toStrictEqual('Fermer')

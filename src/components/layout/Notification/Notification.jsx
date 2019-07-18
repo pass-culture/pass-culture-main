@@ -26,9 +26,9 @@ class Notification extends Component {
     if (type === 'success') {
       svg = 'picto-validation'
     } else if (type === 'warning') {
-      svg = 'picto-warning'
+      svg = 'picto-warning-orange'
     } else if (type === 'info') {
-      svg = 'picto-info'
+      svg = 'picto-info-purple'
     } else if (type === 'tip') {
       svg = 'picto-tip'
     } else {

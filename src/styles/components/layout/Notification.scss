@@ -13,12 +13,29 @@
     align-self: baseline;
   }
 
-  &.is-info {
-    background-color: #B3E7FF;
-    color: $black;
+  &.is-danger {
+    background-color: #FF8097;
+    color: #000000;
   }
 
-  a.close, button.close {
+  &.is-info {
+    background-color: #B3E7FF;
+    color: #000000;
+  }
+
+  &.is-success {
+    background-color: #B8E986;
+    color: #000000;
+  }
+
+  &.is-warning {
+    background-color: #FFD580;
+    color: #000000;
+  }
+
+  a.close,
+  button.close {
+    color: #000000;
     background: none;
     border: none;
     cursor: pointer;
