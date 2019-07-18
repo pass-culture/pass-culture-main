@@ -1,7 +1,6 @@
 import React from 'react'
 
-import Card from './Card'
-import { withRequiredLogin } from '../../hocs'
+import Card from './Card/Card'
 import Main from '../../layout/Main'
 
 const Home = () => (
@@ -26,4 +25,4 @@ const Home = () => (
   </Main>
 )
 
-export default withRequiredLogin(Home)
+export default Home

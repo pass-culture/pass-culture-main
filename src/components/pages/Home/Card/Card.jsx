@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
-import Icon from '../../layout/Icon'
+import Icon from '../../../layout/Icon'
 
 const Card = ({ svg, title, text, navLink }) => (
   <NavLink

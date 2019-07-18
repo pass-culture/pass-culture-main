@@ -3,7 +3,7 @@ import { Redirect } from 'react-router'
 
 import BookingsContainer from '../components/pages/Bookings/BookingsContainer'
 import DeskContainer from '../components/pages/Desk/DeskContainer'
-import Home from '../components/pages/Home'
+import HomeContainer from '../components/pages/Home/HomeContainer'
 import LostPassword from '../components/pages/LostPassword'
 import Mediation from '../components/pages/Mediation/MediationContainer'
 import Offers from '../components/pages/Offers'
@@ -25,7 +25,7 @@ const routes = [
     render: () => <Redirect to="/connexion" />,
   },
   {
-    component: Home,
+    component: HomeContainer,
     path: '/accueil',
     title: 'Accueil',
   },
