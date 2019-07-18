@@ -395,6 +395,32 @@ def test_get_active_offers_when_departement_code_00(app):
 
 
 @clean_database
+def test_should_return_all_active_offers_when_departement_is_none(app):
+    # Given
+    offerer = create_offerer()
+    venue_34 = create_venue(offerer, postal_code='34000', departement_code='34', siret=offerer.siren + '11111')
+    venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '22222')
+    venue_75 = create_venue(offerer, postal_code='75000', departement_code='75', siret=offerer.siren + '33333')
+    offer_34 = create_offer_with_thing_product(venue_34)
+    offer_93 = create_offer_with_thing_product(venue_93)
+    offer_75 = create_offer_with_thing_product(venue_75)
+    stock_34 = create_stock_from_offer(offer_34)
+    stock_93 = create_stock_from_offer(offer_93)
+    stock_75 = create_stock_from_offer(offer_75)
+    user = create_user(departement_code='00')
+
+    PcObject.save(user, stock_34, stock_93, stock_75)
+
+    # When
+    offers = get_active_offers(user=user, offer_id=None)
+
+    # Then
+    assert offer_34 in offers
+    assert offer_93 in offers
+    assert offer_75 in offers
+
+
+@clean_database
 def test_get_active_offers_only_returns_both_EventType_and_ThingType(app):
     # Given
     user = create_user(departement_code='93')

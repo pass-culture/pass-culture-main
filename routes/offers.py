@@ -3,15 +3,15 @@ from flask_login import current_user, login_required
 
 from domain.admin_emails import send_offer_creation_notification_to_administration
 from domain.favorites import create_favorite
-from domain.offers import add_stock_alert_message_to_offer
+from domain.offers import add_stock_alert_message_to_offer, update_is_active_status
 from domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
 from models import Offer, PcObject, Venue, RightsType, Mediation
-from models.api_errors import ResourceNotFound, ApiErrors
+from models.api_errors import ResourceNotFound
 from models.feature import FeatureToggle
 from repository import venue_queries, offer_queries
 from repository.favorite_queries import find_favorite_for_offer_mediation_and_user
 from repository.offer_queries import find_activation_offers, \
-    find_offers_with_filter_parameters
+    find_offers_with_filter_parameters, get_active_offers
 from repository.recommendation_queries import invalidate_recommendations
 from utils.config import PRO_URL
 from utils.feature import feature_required
@@ -70,6 +70,21 @@ def list_activation_offers():
         include=OFFER_INCLUDES,
         query=query
     )
+
+@app.route("/offers/deactivate", methods=["PUT"])
+@login_required
+def list_all_deactivated_offers():
+    offers = get_active_offers(user=current_user)
+    deactivaded_offers = update_is_active_status(offers, False)
+    return jsonify([b.as_dict(include=OFFER_INCLUDES) for b in deactivaded_offers]), 200
+
+
+@app.route("/offers/activate", methods=["PUT"])
+@login_required
+def list_all_activated_offers():
+    offers = get_active_offers(user=current_user)
+    activated_offers = update_is_active_status(offers, True)
+    return jsonify([b.as_dict(include=OFFER_INCLUDES) for b in activated_offers]), 200
 
 
 @app.route('/offers', methods=['POST'])

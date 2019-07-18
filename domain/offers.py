@@ -1,8 +1,6 @@
 from typing import List
 
 from models import Stock, Offer
-from repository import thing_queries
-from models.offer_type import ProductType
 
 
 class InconsistentOffer(Exception):
@@ -118,3 +116,10 @@ def add_stock_alert_message_to_offer(offer: Offer) -> Offer:
     offer.stockAlertMessage = stock_alert_message
 
     return offer
+
+
+def update_is_active_status(all_user_offers: List[Offer], status: bool) -> List[Offer]:
+    for offer in all_user_offers:
+        offer.isActive = status
+
+    return all_user_offers

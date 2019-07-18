@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest.mock import Mock
 
-from domain.offers import add_stock_alert_message_to_offer
+from domain.offers import add_stock_alert_message_to_offer, update_is_active_status
 from models import Offer
 from models import PcObject
 from tests.conftest import clean_database
@@ -388,3 +388,40 @@ class AddStockAlertMessageToOfferTest:
 
             # then
             assert result.stockAlertMessage == 'plus de places pour 2 offres'
+
+class ChangeOfferStatusTest:
+    class ThingOfferTest:
+        @clean_database
+        def test_activate_offer(self, app):
+            # given
+            user = create_user(email='user@test.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue)
+
+            PcObject.save(user, offer)
+            offers = Offer.query.all()
+
+            # when
+            result = update_is_active_status(offers, True)
+
+            # then
+            assert result[0].isActive == True
+
+        @clean_database
+        def test_deactivate_offer(self, app):
+            # given
+            user = create_user(email='user@test.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue)
+
+            PcObject.save(user, offer)
+            offers = Offer.query.all()
+
+            # when
+            result = update_is_active_status(offers, False)
+
+            # then
+            assert result[0].isActive == False
+
