@@ -17,9 +17,9 @@
 .home-cards {
   margin: auto;
   box-shadow: 0 0 60px 0 rgba(0, 0, 0, 0.2);
+  background-image: linear-gradient(to right, #EB0055, #320096);
   .home-card {
     color: $white;
-    background-color: $red;
     padding: 3rem;
     padding-bottom: 2.6rem;
     &:not(:last-child) {
