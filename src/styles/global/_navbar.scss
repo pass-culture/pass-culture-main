@@ -1,6 +1,6 @@
 .navbar {
   &.is-primary {
-    background-image: linear-gradient(to bottom right, #EB0055, #320096);
+    background-image: linear-gradient(to bottom right, $red, $purple-dark);
 
     .navbar-brand {
       & > .navbar-item:hover {

@@ -14,22 +14,22 @@
   }
 
   &.is-danger {
-    background-color: #FF8097;
+    background-color: $notification-background-is-danger;
     color: $notification-text;
   }
 
   &.is-info {
-    background-color: #B3E7FF;
+    background-color: $notification-background-is-info;
     color: $notification-text;
   }
 
   &.is-success {
-    background-color: #B8E986;
+    background-color: $notification-background-is-success;
     color: $notification-text;
   }
 
   &.is-warning {
-    background-color: #FFD580;
+    background-color: $notification-background-is-warning;
     color: $notification-text;
   }
 

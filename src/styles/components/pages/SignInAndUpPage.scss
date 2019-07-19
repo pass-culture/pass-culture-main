@@ -8,7 +8,7 @@
 
   .logo-side {
     // background-color: $primary;
-    background-image: linear-gradient(to bottom right, #EB0055, #320096);
+    background-image: linear-gradient(to bottom right, $red, $purple-dark);
     position: fixed;
     top: 0;
     bottom: 0;

@@ -23,6 +23,7 @@ $grey-darker: rgba(54, 54, 54, 0.3) !default;
 $grey-darkest: #404040;
 $orange:       hsl(14, 100%, 53%) !default;
 $purple:       hsl(271, 100%, 71%) !default;
+$purple-dark: #320096;
 $red: #EB0055;
 $turquoise:    hsl(171, 100%, 41%) !default;
 $violet: #BD10E0;
@@ -125,6 +126,10 @@ $box-shadow-hover: 0 0 10px rgba(0, 0, 0, 0.4);
 
 // Notification
 
+$notification-background-is-danger: #FF8097;
+$notification-background-is-info: #B3E7FF;
+$notification-background-is-success: #B8E986;
+$notification-background-is-warning: #FFD580;
 $notification-padding: 0.75rem;
 $notification-text: hsl(0, 0%, 0%);
 
