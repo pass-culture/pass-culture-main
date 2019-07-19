@@ -140,12 +140,25 @@ FAVORITE_INCLUDES = [
                 "sub_joins": ["managingOfferer"]
             },
             {
+                "key": "stocks",
+                "sub_joins": ['bookings']
+            },
+            {
                 "key": "product",
                 "sub_joins": ["thumbUrl", "offerType"]
             }
         ]
     },
-    "thumbUrl",
+    {
+        "key": "recommendation",
+        "sub_joins": [
+            "thumbUrl"
+        ]
+    },
+    {
+        "key": "mediation",
+        "sub_joins": ["thumbUrl"]
+    },
     "isFavorite"
 ]
 
