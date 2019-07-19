@@ -210,6 +210,17 @@ BOOKING_INCLUDES = [
     {
         "key": "recommendation",
         "sub_joins": [
+            {
+                "key": "offer",
+                "sub_joins": [
+                    "favorites",
+                    "isFinished",
+                    "isFullyBooked",
+                    "product",
+                    "venue",
+                ]
+            },
+            "mediation",
             "thumbUrl"
         ]
     },
