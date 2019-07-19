@@ -42,7 +42,7 @@ const CONDITIONAL_FIELDS = {
   visa: ['EventType.CINEMA'],
   isbn: ['ThingType.LIVRE_EDITION'],
   musicType: ['EventType.MUSIQUE', 'ThingType.MUSIQUE', 'ThingType.MUSIQUE_ABO'],
-  showType: ['EventType.SPECTACLE_VIVANT'],
+  showType: ['EventType.SPECTACLE_VIVANT', 'ThingType.SPECTACLE_VIVANT_ABO'],
   stageDirector: ['EventType.CINEMA', 'EventType.SPECTACLE_VIVANT'],
   performer: ['EventType.MUSIQUE', 'ThingType.MUSIQUE', 'EventType.SPECTACLE_VIVANT'],
 }
@@ -255,6 +255,7 @@ class Offer extends Component {
 
   hasConditionalField(fieldName) {
     const { selectedOfferType } = this.props
+    console.log('selectedOfferType : ', selectedOfferType)
     if (!selectedOfferType) {
       return false
     }

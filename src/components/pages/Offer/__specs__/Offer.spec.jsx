@@ -122,6 +122,64 @@ describe('src | components | pages | Offer | Offer ', () => {
     })
   })
 
+  describe('hasConditionalField', () => {
+    let dispatch
+    let props
+
+    beforeEach(() => {
+      dispatch = jest.fn()
+
+      props = {
+        location: {
+          search: '?lieu=AQ',
+        },
+        match: {
+          params: {
+            offerId: 'creation',
+          },
+        },
+        currentUser: {
+          isAdmin: false,
+        },
+        query: {
+          context: () => ({}),
+          parse: () => ({ lieu: 'AQ' }),
+          translate: () => ({ venue: 'AQ ' }),
+        },
+        dispatch: dispatch,
+        venues: [],
+      }
+    })
+
+    it('should return false whithout selected offer type', () => {
+      // given
+      props.selectedOfferType = null
+      const wrapper = shallow(<Offer {...props} />)
+
+      // when
+      const result = wrapper.instance().hasConditionalField(null)
+
+      // then
+      expect(result).toBe(false)
+    })
+
+    describe('when offer type is a subscription on show', () => {
+      it('should show event type', () => {
+        // given
+        props.selectedOfferType = {
+          value: 'ThingType.SPECTACLE_VIVANT_ABO'
+        }
+        const wrapper = shallow(<Offer {...props} />)
+
+        // when
+        const result = wrapper.instance().hasConditionalField('showType')
+
+        // then
+        expect(result).toBe(true)
+      })
+    })
+  })
+
   describe('render', () => {
     describe('mediationsManager', () => {
       it("should be displayed when it's not a new offer", () => {
