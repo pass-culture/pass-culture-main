@@ -1,7 +1,7 @@
 import currentRecommendationSelector from '../../../../../selectors/currentRecommendation/currentRecommendation'
 import { mergeDataWithStore, mapStateToProps, mapDispatchToProps } from '../FavoriteContainer'
 
-jest.mock('../../../../../selectors/currentRecommendation')
+jest.mock('../../../../../selectors/currentRecommendation/currentRecommendation')
 
 describe('src | components | verso | verso-controls | favorite | FavoriteContainer', () => {
   describe('mergeDataWithStore()', () => {
