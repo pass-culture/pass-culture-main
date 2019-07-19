@@ -7,6 +7,19 @@ ShallowWrapper {
     areDetailsVisible={false}
     handleClickRecommendation={[MockFunction]}
     handleReadRecommendation={[MockFunction]}
+    loadRecommendation={
+      [MockFunction] {
+        "calls": Array [
+          Array [],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
     position="position"
     recommendation={null}
     width={500}

@@ -49,9 +49,13 @@ export class RawCard extends PureComponent {
   }
 
   render() {
-    const { position, recommendation, width } = this.props
+    const { position, recommendation, width, loadRecommendation } = this.props
     const firstThumbDominantColor = recommendation && recommendation.firstThumbDominantColor
     const headerColor = getHeaderColor(firstThumbDominantColor)
+
+    if (!recommendation) {
+      loadRecommendation()
+    }
 
     const { index } = recommendation || {}
     const isCurrent = position === 'current'
@@ -83,6 +87,7 @@ RawCard.propTypes = {
   areDetailsVisible: PropTypes.bool,
   handleClickRecommendation: PropTypes.func.isRequired,
   handleReadRecommendation: PropTypes.func.isRequired,
+  loadRecommendation: PropTypes.func.isRequired,
   position: PropTypes.string.isRequired,
   recommendation: PropTypes.shape(),
   width: PropTypes.number.isRequired,

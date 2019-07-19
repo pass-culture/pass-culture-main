@@ -46,5 +46,29 @@ describe('src | components | pages | discovery | card | connect', () => {
         true
       )
     })
+
+    describe('loadRecommendation', () => {
+      describe('when recommendation is not loaded yet', () => {
+        it('should load a recommendation using an offer id', () => {
+          // Given
+          const dispatch = jest.fn()
+          const ownProps = {
+            match: { params: { offerId: 'HAMA' } },
+          }
+
+          // When
+          mapDispatchToProps(dispatch, ownProps).loadRecommendation()
+
+          // Then
+          expect(dispatch).toHaveBeenCalledWith({
+            config: {
+              apiPath: `recommendations/offers/HAMA`,
+              method: 'GET',
+            },
+            type: 'REQUEST_DATA_GET_RECOMMENDATIONS/OFFERS/HAMA',
+          })
+        })
+      })
+    })
   })
 })

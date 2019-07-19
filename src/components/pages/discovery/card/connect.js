@@ -30,7 +30,7 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export const mapDispatchToProps = dispatch => ({
+export const mapDispatchToProps = (dispatch, ownProps) => ({
   handleClickRecommendation: recommendation => {
     const config = {
       apiPath: `recommendations/${recommendation.id}`,
@@ -50,6 +50,17 @@ export const mapDispatchToProps = dispatch => ({
     dispatch(
       mergeData({
         readRecommendations: [readRecommendation],
+      })
+    )
+  },
+
+  loadRecommendation: () => {
+    const offerId = ownProps.match.params.offerId
+
+    dispatch(
+      requestData({
+        apiPath: `recommendations/offers/${offerId}`,
+        method: 'GET',
       })
     )
   },
