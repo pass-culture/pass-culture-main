@@ -17,6 +17,10 @@ textarea.textarea {
   }
 }
 
+:not(output):-moz-ui-invalid {
+  box-shadow: none;
+}
+
 .field-profil-input {
   width: 100%;
 }

@@ -64,7 +64,7 @@ ShallowWrapper {
               disabled={false}
               format={[Function]}
               id={null}
-              innerClassName="col-50"
+              innerClassName={null}
               label=""
               name="siret"
               parse={null}
@@ -202,7 +202,7 @@ ShallowWrapper {
                 disabled={false}
                 format={[Function]}
                 id={null}
-                innerClassName="col-50"
+                innerClassName={null}
                 label=""
                 name="siret"
                 parse={null}
@@ -326,7 +326,7 @@ ShallowWrapper {
                   disabled={false}
                   format={[Function]}
                   id={null}
-                  innerClassName="col-50"
+                  innerClassName={null}
                   label=""
                   name="siret"
                   parse={null}
@@ -434,7 +434,7 @@ ShallowWrapper {
                   "disabled": false,
                   "format": [Function],
                   "id": null,
-                  "innerClassName": "col-50",
+                  "innerClassName": null,
                   "label": "",
                   "name": "siret",
                   "parse": null,
@@ -601,7 +601,7 @@ ShallowWrapper {
                 disabled={false}
                 format={[Function]}
                 id={null}
-                innerClassName="col-50"
+                innerClassName={null}
                 label=""
                 name="siret"
                 parse={null}
@@ -739,7 +739,7 @@ ShallowWrapper {
                   disabled={false}
                   format={[Function]}
                   id={null}
-                  innerClassName="col-50"
+                  innerClassName={null}
                   label=""
                   name="siret"
                   parse={null}
@@ -863,7 +863,7 @@ ShallowWrapper {
                     disabled={false}
                     format={[Function]}
                     id={null}
-                    innerClassName="col-50"
+                    innerClassName={null}
                     label=""
                     name="siret"
                     parse={null}
@@ -971,7 +971,7 @@ ShallowWrapper {
                     "disabled": false,
                     "format": [Function],
                     "id": null,
-                    "innerClassName": "col-50",
+                    "innerClassName": null,
                     "label": "",
                     "name": "siret",
                     "parse": null,

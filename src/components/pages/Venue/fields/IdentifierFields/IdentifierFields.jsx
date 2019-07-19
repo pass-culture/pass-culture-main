@@ -96,7 +96,6 @@ class IdentifierFields extends Component {
             </label>
             <TextField
               format={formatSirenOrSiret}
-              innerClassName="col-50"
               name="siret"
               readOnly={readOnly || initialSiret !== null}
               renderValue={this.handleRenderValue(fieldReadOnlyBecauseFrozenFormSiret, readOnly)}
