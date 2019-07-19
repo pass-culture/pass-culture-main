@@ -20,7 +20,7 @@ class GetFormattedEventOrThingTypesTest:
             'proLabel': 'Cinéma — projections, séances, évènements',
             'appLabel': 'Projections, Séances, Évènements',
         }
-        assert len(types) == 20
+        assert len(types) == 21
 
     def test_returns_all_types_including_activations_if_user_is_admin(self):
         # given
@@ -54,7 +54,7 @@ class GetFormattedEventOrThingTypesTest:
         # then
         assert activation_event_product in types
         assert activation_thing_product in types
-        assert len(types) == 22
+        assert len(types) == 23
 
     def test_does_not_return_thing_type_jeux(self):
         # given

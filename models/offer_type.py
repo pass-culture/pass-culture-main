@@ -242,7 +242,15 @@ class ThingType(SearchableType):
         'description': "Jamais osé monter sur les planches ? Tenter d’apprendre la guitare, le piano ou la photographie ? Partir cinq jours découvrir un autre monde ? Bricoler dans un fablab, ou pourquoi pas, enregistrer votre premier titre ?",
         'conditionalFields': []
     }
-
+    SPECTACLE_VIVANT_ABO = {
+        'proLabel': "Spectacle vivant — Abonnements",
+        'appLabel': "Spectacle vivant — Abonnements",
+        'offlineOnly': True,
+        'onlineOnly': False,
+        'sublabel': "Applaudir",
+        'description': "Suivre un géant de 12 mètres dans la ville ? Rire aux éclats devant un stand up ? Rêver le temps d’un opéra ou d’un spectacle de danse ? Assister à une pièce de théâtre, ou se laisser conter une histoire ?",
+        'conditionalFields': ["showType"]
+    }
 
 class ProductType:
     @classmethod
