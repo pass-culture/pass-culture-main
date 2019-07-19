@@ -1,7 +1,7 @@
 from models.pc_object import PcObject
 from repository.keywords_queries import get_keywords_analyzer
 from tests.conftest import clean_database
-from tests.test_utils import create_product_with_Event_type, \
+from tests.test_utils import create_product_with_event_type, \
     create_offer_with_event_product, \
     create_offerer, \
     create_venue
@@ -11,7 +11,7 @@ from tests.test_utils import create_product_with_Event_type, \
 def test_get_keywords_analyzer(app):
     # given
     event_name = "Rencontre avec Jacques Nuance"
-    product_event = create_product_with_Event_type(event_name=event_name)
+    product_event = create_product_with_event_type(event_name=event_name)
     offerer_name = "L'atelier du nuage"
     offerer = create_offerer(name=offerer_name)
     venue = create_venue(offerer, name="Le nuage magique")

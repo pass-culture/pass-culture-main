@@ -4,7 +4,7 @@ from models import PcObject
 from repository.offer_queries import filter_offers_with_keywords_string, build_offer_search_base_query, \
     get_offers_for_recommendations_search
 from tests.conftest import clean_database
-from tests.test_utils import create_product_with_Event_type, create_product_with_Thing_type, create_offerer, \
+from tests.test_utils import create_product_with_event_type, create_product_with_thing_type, create_offerer, \
     create_venue, create_offer_with_event_product, \
     create_offer_with_thing_product, create_event_occurrence, create_stock_from_event_occurrence, create_stock, \
     create_booking, \
@@ -14,9 +14,9 @@ from tests.test_utils import create_product_with_Event_type, create_product_with
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_event_or_thing_level(app):
     # given
-    ok_event1 = create_product_with_Event_type(event_name='Rencontre avec Jacques Martin')
-    event2 = create_product_with_Event_type(event_name='Concert de contrebasse')
-    ok_thing = create_product_with_Thing_type(thing_name='Rencontre avec Belle du Seigneur')
+    ok_event1 = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
+    event2 = create_product_with_event_type(event_name='Concert de contrebasse')
+    ok_thing = create_product_with_thing_type(thing_name='Rencontre avec Belle du Seigneur')
     offerer = create_offerer()
     venue = create_venue(offerer)
     ok_offer1 = create_offer_with_event_product(venue, ok_event1)
@@ -38,9 +38,9 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_e
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyword_at_event_or_thing_level(app):
     # given
-    ok_event1 = create_product_with_Event_type(event_name='Rencontre avec Jacques Martin')
-    event2 = create_product_with_Event_type(event_name='Concert de contrebasse')
-    ok_thing = create_product_with_Thing_type(thing_name='Rencontre avec Belle du Seigneur')
+    ok_event1 = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
+    event2 = create_product_with_event_type(event_name='Concert de contrebasse')
+    ok_thing = create_product_with_thing_type(thing_name='Rencontre avec Belle du Seigneur')
     offerer = create_offerer()
     venue = create_venue(offerer)
     ok_offer1 = create_offer_with_event_product(venue, ok_event1)
@@ -62,11 +62,11 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords_at_just_event_or_just_thing_level(app):
     # given
-    ok_event1 = create_product_with_Event_type(event_name='Rencontre avec Jacques Martin')
-    event2 = create_product_with_Event_type(event_name='Concert de contrebasse')
-    ok_thing1 = create_product_with_Thing_type(thing_name='Rencontre avec vous savez qui',
+    ok_event1 = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
+    event2 = create_product_with_event_type(event_name='Concert de contrebasse')
+    ok_thing1 = create_product_with_thing_type(thing_name='Rencontre avec vous savez qui',
                                                description='Il s\'agit de Jacques')
-    thing2 = create_product_with_Thing_type(thing_name='Rencontre avec Belle du Seigneur')
+    thing2 = create_product_with_thing_type(thing_name='Rencontre avec Belle du Seigneur')
     offerer = create_offerer()
     venue = create_venue(offerer)
     ok_offer1 = create_offer_with_event_product(venue, ok_event1)
@@ -91,11 +91,11 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
 def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_keywords_at_just_event_or_just_thing_level(
         app):
     # given
-    ok_event1 = create_product_with_Event_type(event_name='Rencontre avec Jacques Martin')
-    event2 = create_product_with_Event_type(event_name='Concert de contrebasse')
-    ok_thing1 = create_product_with_Thing_type(thing_name='Rencontre avec vous savez qui',
+    ok_event1 = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
+    event2 = create_product_with_event_type(event_name='Concert de contrebasse')
+    ok_thing1 = create_product_with_thing_type(thing_name='Rencontre avec vous savez qui',
                                                description='Il s\'agit de Jacques')
-    thing2 = create_product_with_Thing_type(thing_name='Rencontre avec Belle du Seigneur')
+    thing2 = create_product_with_thing_type(thing_name='Rencontre avec Belle du Seigneur')
     offerer = create_offerer()
     venue = create_venue(offerer)
     ok_offer1 = create_offer_with_event_product(venue, ok_event1)
@@ -119,8 +119,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_venue_or_offerer_level(app):
     # given
-    event_product = create_product_with_Event_type()
-    thing_product = create_product_with_Thing_type()
+    event_product = create_product_with_event_type()
+    thing_product = create_product_with_thing_type()
     ok_offerer1 = create_offerer(name="La Rencontre")
     offerer2 = create_offerer(siren='123456788')
     offerer3 = create_offerer(siren='123456787')
@@ -162,8 +162,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_v
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_venue_public_name_level(app):
     # given
-    event = create_product_with_Event_type()
-    thing = create_product_with_Thing_type()
+    event = create_product_with_event_type()
+    thing = create_product_with_thing_type()
     ok_offerer1 = create_offerer(name="La Rencontre")
     offerer2 = create_offerer(siren='123456788')
     offerer3 = create_offerer(siren='123456787')
@@ -205,8 +205,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_keyword_at_v
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyword_at_venue_public_name_level(app):
     # given
-    event = create_product_with_Event_type()
-    thing = create_product_with_Thing_type()
+    event = create_product_with_event_type()
+    thing = create_product_with_thing_type()
     ok_offerer1 = create_offerer(name="La Rencontre")
     offerer2 = create_offerer(siren='123456788')
     offerer3 = create_offerer(siren='123456787')
@@ -248,8 +248,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords_at_venue_public_name_level(app):
     # given
-    event = create_product_with_Event_type()
-    thing = create_product_with_Thing_type()
+    event = create_product_with_event_type()
+    thing = create_product_with_thing_type()
     ok_offerer1 = create_offerer(name="La Rencontre")
     offerer2 = create_offerer(siren='123456788')
     offerer3 = create_offerer(siren='123456787')
@@ -292,8 +292,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
 def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_keywords_at_venue_public_name_level(
         app):
     # given
-    event = create_product_with_Event_type()
-    thing = create_product_with_Thing_type()
+    event = create_product_with_event_type()
+    thing = create_product_with_thing_type()
     ok_offerer1 = create_offerer(name="La Rencontre")
     offerer2 = create_offerer(siren='123456788')
     offerer3 = create_offerer(siren='123456787')
@@ -335,8 +335,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyword_at_venue_or_offerer_level(app):
     # given
-    event_product = create_product_with_Event_type()
-    thing_product = create_product_with_Thing_type()
+    event_product = create_product_with_event_type()
+    thing_product = create_product_with_thing_type()
     ok_offerer1 = create_offerer(name="La Rencontre")
     offerer2 = create_offerer(siren='123456788')
     offerer3 = create_offerer(siren='123456787')
@@ -379,8 +379,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
 def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords_at_just_venue_or_just_offerer_level(
         app):
     # given
-    event_product = create_product_with_Event_type()
-    thing_product = create_product_with_Thing_type()
+    event_product = create_product_with_event_type()
+    thing_product = create_product_with_thing_type()
     ok_offerer1 = create_offerer(name="Librairie La Rencontre")
     offerer2 = create_offerer(siren='123456788')
     offerer3 = create_offerer(siren='123456787')
@@ -422,8 +422,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
 @clean_database
 def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords_at_mixed_venue_or_offerer_level(app):
     # given
-    event_product = create_product_with_Event_type()
-    thing_product = create_product_with_Thing_type()
+    event_product = create_product_with_event_type()
+    thing_product = create_product_with_thing_type()
     offerer1 = create_offerer(name="Marx et Compagnie")
     offerer2 = create_offerer(name='Test', siren='123456788')
     offerer3 = create_offerer(name='Test', siren='123456787')
@@ -473,8 +473,8 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_keywords
 def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_keywords_at_mixed_venue_or_offerer_level(
         app):
     # given
-    event_product = create_product_with_Event_type()
-    thing_product = create_product_with_Thing_type()
+    event_product = create_product_with_event_type()
+    thing_product = create_product_with_thing_type()
     offerer1 = create_offerer(name="Marxisme et Compagnie")
     offerer2 = create_offerer(name='Test', siren='123456788')
     offerer3 = create_offerer(name='Test', siren='123456787')
@@ -523,9 +523,9 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
 @clean_database
 def test_create_filter_matching_all_keywords_with_one_keyword_at_mixed_event_or_thing_or_venue_or_offerer_level(app):
     # given
-    ok_event1 = create_product_with_Event_type(event_name='Rencontre avec Jacques Martin')
-    event2 = create_product_with_Event_type(event_name='Concert de contrebasse')
-    thing_product = create_product_with_Thing_type(thing_name='Belle du Seigneur')
+    ok_event1 = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
+    event2 = create_product_with_event_type(event_name='Concert de contrebasse')
+    thing_product = create_product_with_thing_type(thing_name='Belle du Seigneur')
     offerer = create_offerer()
     venue1 = create_venue(offerer, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
     ok_venue2 = create_venue(offerer, name='Librairie la Rencontre', city='Saint Denis', siret=offerer.siren + '54321')
@@ -549,9 +549,9 @@ def test_create_filter_matching_all_keywords_with_one_keyword_at_mixed_event_or_
 def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyword_at_mixed_event_or_thing_or_venue_or_offerer_level(
         app):
     # given
-    ok_event1 = create_product_with_Event_type(event_name='Rencontre avec Jacques Martin')
-    event2 = create_product_with_Event_type(event_name='Concert de contrebasse')
-    thing_product = create_product_with_Thing_type(thing_name='Belle du Seigneur')
+    ok_event1 = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
+    event2 = create_product_with_event_type(event_name='Concert de contrebasse')
+    thing_product = create_product_with_thing_type(thing_name='Belle du Seigneur')
     offerer = create_offerer()
     venue1 = create_venue(offerer, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
     ok_venue2 = create_venue(offerer, name='Librairie la Rencontre', city='Saint Denis', siret=offerer.siren + '54321')
@@ -575,10 +575,10 @@ def test_create_filter_matching_all_keywords_in_any_models_with_one_partial_keyw
 def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_keywords_at_event_or_thing_or_venue_or_offerer_level(
         app):
     # given
-    ok_event1 = create_product_with_Event_type(event_name='Rencontre avec Jacques Martin')
-    event2 = create_product_with_Event_type(event_name='Concert de contrebasse')
-    thing1 = create_product_with_Thing_type(thing_name='Jacques la fripouille')
-    thing2 = create_product_with_Thing_type(thing_name='Belle du Seigneur')
+    ok_event1 = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
+    event2 = create_product_with_event_type(event_name='Concert de contrebasse')
+    thing1 = create_product_with_thing_type(thing_name='Jacques la fripouille')
+    thing2 = create_product_with_thing_type(thing_name='Belle du Seigneur')
     offerer = create_offerer()
     venue1 = create_venue(offerer, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
     venue2 = create_venue(offerer, name='Librairie la Rencontre', city='Saint Denis', siret=offerer.siren + '54321')
@@ -604,10 +604,10 @@ def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_
 def test_create_filter_matching_all_keywords_in_any_models_with_several_partial_keywords_at_event_or_thing_or_venue_or_offerer_level(
         app):
     # given
-    ok_event1 = create_product_with_Event_type(event_name='Rencontre avec Jacques Martin')
-    event2 = create_product_with_Event_type(event_name='Concert de contrebasse')
-    thing1 = create_product_with_Thing_type(thing_name='Jacques la fripouille')
-    thing2 = create_product_with_Thing_type(thing_name='Belle du Seigneur')
+    ok_event1 = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
+    event2 = create_product_with_event_type(event_name='Concert de contrebasse')
+    thing1 = create_product_with_thing_type(thing_name='Jacques la fripouille')
+    thing2 = create_product_with_thing_type(thing_name='Belle du Seigneur')
     offerer = create_offerer()
     venue1 = create_venue(offerer, name='Bataclan', city='Paris', siret=offerer.siren + '12345')
     venue2 = create_venue(offerer, name='Librairie la Rencontre', city='Saint Denis', siret=offerer.siren + '54321')
@@ -637,7 +637,7 @@ def test_get_offers_for_recommendations_search_only_return_available_offers(app)
 
     offerer = create_offerer()
     venue = create_venue(offerer)
-    thing_product = create_product_with_Thing_type(thing_name='Lire un livre de Jazz')
+    thing_product = create_product_with_thing_type(thing_name='Lire un livre de Jazz')
     offer_available = create_offer_with_thing_product(venue, thing_product)
     offer_not_available = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
     event_occurrence = create_event_occurrence(offer_not_available, beginning_datetime=in_one_hour,

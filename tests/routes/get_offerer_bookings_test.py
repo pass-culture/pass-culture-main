@@ -15,7 +15,7 @@ from tests.test_utils import create_booking, \
     create_user, \
     create_user_offerer, \
     create_venue, \
-    create_product_with_Thing_type, create_product_with_Event_type, create_stock_from_event_occurrence, \
+    create_product_with_thing_type, create_product_with_event_type, create_stock_from_event_occurrence, \
     create_event_occurrence
 from utils.human_ids import dehumanize, humanize
 
@@ -156,12 +156,12 @@ class Get:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_pro, offerer)
             venue = create_venue(offerer)
-            thing_product = create_product_with_Thing_type(thing_type=ThingType.AUDIOVISUEL)
+            thing_product = create_product_with_thing_type(thing_type=ThingType.AUDIOVISUEL)
             offer_thing = create_offer_with_thing_product(venue, thing_product)
             stock_thing = create_stock_from_offer(offer_thing, price=0)
             booking_thing = create_booking(user, stock_thing, venue, recommendation=None, quantity=2,
                                            date_created=now - timedelta(days=5))
-            event_product = create_product_with_Event_type(event_type=EventType.MUSEES_PATRIMOINE)
+            event_product = create_product_with_event_type(event_type=EventType.MUSEES_PATRIMOINE)
             offer_event = create_offer_with_event_product(venue, event_product)
             stock_event = create_stock_from_event_occurrence(create_event_occurrence(offer_event), price=0)
             booking_event = create_booking(user, stock_event, venue, recommendation=None, quantity=2,

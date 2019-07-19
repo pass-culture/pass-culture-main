@@ -11,10 +11,10 @@ from tests.test_utils import create_event_occurrence, \
     create_recommendation, \
     create_stock, \
     create_stock_from_offer, \
-    create_product_with_Thing_type, \
+    create_product_with_thing_type, \
     create_offer_with_thing_product, \
     create_user, \
-    create_venue, create_product_with_Event_type
+    create_venue, create_product_with_event_type
 from utils.date import strftime
 
 TWENTY_DAYS_FROM_NOW = datetime.utcnow() + timedelta(days=20)
@@ -404,7 +404,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='The new film', event_type=EventType.CINEMA)
             offer2 = create_offer_with_event_product(venue, event_name='Spectacle',
                                                      event_type=EventType.SPECTACLE_VIVANT)
-            thing_product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
+            thing_product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
 
             thing_offer = create_offer_with_thing_product(venue, thing_product)
 
@@ -607,7 +607,7 @@ class Get:
                                                                      event_name='Activation de votre Pass Culture',
                                                                      event_type=EventType.ACTIVATION)
 
-            book_thing = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
+            book_thing = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
             book_thing_offer = create_offer_with_thing_product(venue, book_thing)
             cinema_event_occurrence = create_event_occurrence(cinema_event_offer,
                                                               beginning_datetime=self.three_days_from_now,
@@ -672,7 +672,7 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_name='The new film', event_type=EventType.CINEMA)
-            thing_product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
+            thing_product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
 
             thingOffer = create_offer_with_thing_product(venue, thing_product)
 

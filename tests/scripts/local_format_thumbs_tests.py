@@ -6,7 +6,7 @@ from models import PcObject
 from scripts.init_titelive.local_format_thumbs import get_files_from_folder, write_file_to_directory, \
     get_all_sub_directories, extract_book_ean13, format_all_thumbs
 from tests.conftest import clean_database
-from tests.test_utils import create_product_with_Thing_type
+from tests.test_utils import create_product_with_thing_type
 from utils.human_ids import humanize
 
 
@@ -22,7 +22,7 @@ class LocalFormatThumbsTest():
     @clean_database
     def test_format_all_thumbs(self, app):
         # given
-        product = create_product_with_Thing_type(id_at_providers='0002730757438')
+        product = create_product_with_thing_type(id_at_providers='0002730757438')
 
         source_directory = self.test_directory + "/images"
         source_subdirectory = self.test_directory + "/images/001"

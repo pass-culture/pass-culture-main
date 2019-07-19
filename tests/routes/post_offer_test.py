@@ -1,8 +1,8 @@
 from models import PcObject, EventType, Offer, ThingType, Product, Offerer
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, API_URL, create_offerer, create_venue, create_user_offerer, \
-    create_product_with_Thing_type, \
-    create_product_with_Event_type
+    create_product_with_thing_type, \
+    create_product_with_event_type
 from utils.human_ids import humanize, dehumanize
 
 
@@ -106,7 +106,7 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=False)
-            event_product = create_product_with_Event_type()
+            event_product = create_product_with_event_type()
             PcObject.save(user, venue, event_product, user_offerer)
             json = {
                 'type': '',
@@ -215,7 +215,7 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, is_virtual=True, siret=None)
-            thing_product = create_product_with_Thing_type()
+            thing_product = create_product_with_thing_type()
             PcObject.save(user, venue, thing_product, user_offerer)
             offerer_id = offerer.id
             json = {
@@ -272,7 +272,7 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            thing_product = create_product_with_Thing_type()
+            thing_product = create_product_with_thing_type()
             PcObject.save(user_offerer, venue, thing_product)
 
             data = {
@@ -294,7 +294,7 @@ class Post:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            event_product = create_product_with_Event_type()
+            event_product = create_product_with_event_type()
             PcObject.save(user_offerer, venue, event_product)
 
             data = {

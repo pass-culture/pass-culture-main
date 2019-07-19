@@ -15,7 +15,7 @@ from tests.test_utils import create_stock_with_event_offer, create_stock_with_th
     create_user, create_booking, create_user_offerer, \
     create_offerer, create_venue, create_offer_with_thing_product, create_offer_with_event_product, \
     create_stock_from_offer, \
-    create_stock_from_event_occurrence, create_event_occurrence, create_product_with_Thing_type, create_mocked_bookings, \
+    create_stock_from_event_occurrence, create_event_occurrence, create_product_with_thing_type, create_mocked_bookings, \
     create_email
 from utils.mailing import make_activation_notification_email, make_batch_cancellation_email, \
     make_beneficiaries_import_email, \
@@ -871,7 +871,7 @@ def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_ex
     offerer = create_offerer(name='Test offerer')
     venue = create_venue(offerer, name='La petite librairie', address='1 rue de la Libération', city='Montreuil',
                          postal_code='93100')
-    thing_product = create_product_with_Thing_type(thing_name='Le récit de voyage')
+    thing_product = create_product_with_thing_type(thing_name='Le récit de voyage')
     offer = create_offer_with_thing_product(venue, thing_product)
     stock = create_stock_from_offer(offer, price=0, available=10)
     booking = create_booking(user, stock, token='12346')

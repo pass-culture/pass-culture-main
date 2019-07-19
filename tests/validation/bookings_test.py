@@ -7,7 +7,7 @@ from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THING
 from models import ApiErrors, Booking, Stock, Offer, ThingType, PcObject
 from models.api_errors import ResourceGoneError, ForbiddenError
 from tests.conftest import clean_database
-from tests.test_utils import create_booking_for_thing, create_product_with_Thing_type, create_user, create_deposit, \
+from tests.test_utils import create_booking_for_thing, create_product_with_thing_type, create_user, create_deposit, \
     create_venue, create_offerer, create_offer_with_event_product, create_user_offerer
 from utils.human_ids import humanize
 from validation.bookings import check_expenses_limits, check_booking_is_cancellable, check_booking_is_usable, \
@@ -128,7 +128,7 @@ class CheckBookingIsCancellableTest:
         booking.isUsed = False
         booking.stock = Stock()
         booking.stock.offer = Offer()
-        booking.stock.offer.product = create_product_with_Thing_type()
+        booking.stock.offer.product = create_product_with_thing_type()
 
         # When
         check_output = check_booking_is_cancellable(booking, is_user_cancellation=False)

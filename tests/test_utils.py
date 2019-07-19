@@ -289,7 +289,7 @@ def create_stock_with_thing_offer(offerer, venue, offer=None, price=10, availabl
     return stock
 
 
-def create_product_with_Thing_type(
+def create_product_with_thing_type(
         thing_name='Test Book',
         thing_type=ThingType.LIVRE_EDITION,
         author_name='Test Author',
@@ -329,7 +329,7 @@ def create_product_with_Thing_type(
     return product
 
 
-def create_product_with_Event_type(
+def create_product_with_event_type(
         event_name='Test event',
         event_type=EventType.SPECTACLE_VIVANT,
         description=None,
@@ -371,7 +371,7 @@ def create_offer_with_thing_product(venue, product=None, date_created=datetime.u
         offer.isNational = product.isNational
         offer.description = product.description
     else:
-        offer.product = create_product_with_Thing_type(thing_name=thing_name, thing_type=thing_type,
+        offer.product = create_product_with_thing_type(thing_name=thing_name, thing_type=thing_type,
                                                        media_urls=media_urls,
                                                        author_name=author_name, url=url, thumb_count=thumb_count,
                                                        dominant_color=dominant_color, is_national=is_national,
@@ -405,7 +405,7 @@ def create_offer_with_event_product(venue=None, product=None, event_name='Test e
                                     idx=None, last_provider_id=None, id_at_providers=None, description=None) -> Offer:
     offer = Offer()
     if product is None:
-        product = create_product_with_Event_type(event_name=event_name, event_type=event_type,
+        product = create_product_with_event_type(event_name=event_name, event_type=event_type,
                                                  duration_minutes=duration_minutes,
                                                  thumb_count=thumb_count, dominant_color=dominant_color,
                                                  is_national=is_national)

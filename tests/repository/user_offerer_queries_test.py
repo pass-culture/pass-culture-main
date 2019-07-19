@@ -5,9 +5,9 @@ from repository.user_offerer_queries import find_one_or_none_by_user_id, \
     find_user_offerer_email, \
     filter_query_where_user_is_user_offerer_and_is_validated
 from tests.conftest import clean_database
-from tests.test_utils import create_product_with_Event_type, \
+from tests.test_utils import create_product_with_event_type, \
     create_offer_with_event_product, \
-    create_product_with_Thing_type, \
+    create_product_with_thing_type, \
     create_offer_with_thing_product, \
     create_offerer, \
     create_user, \
@@ -87,10 +87,10 @@ def test_filter_query_where_user_is_user_offerer_and_is_validated(app):
     user_offerer1 = create_user_offerer(user, offerer1)
     user_offerer2 = create_user_offerer(user, offerer2)
 
-    event1 = create_product_with_Event_type(event_name='Rencontre avec Jacques Martin')
-    event2 = create_product_with_Event_type(event_name='Concert de contrebasse')
-    thing1 = create_product_with_Thing_type(thing_name='Jacques la fripouille')
-    thing2 = create_product_with_Thing_type(thing_name='Belle du Seigneur')
+    event1 = create_product_with_event_type(event_name='Rencontre avec Jacques Martin')
+    event2 = create_product_with_event_type(event_name='Concert de contrebasse')
+    thing1 = create_product_with_thing_type(thing_name='Jacques la fripouille')
+    thing2 = create_product_with_thing_type(thing_name='Belle du Seigneur')
     venue1 = create_venue(offerer1, name='Bataclan', city='Paris', siret=offerer1.siren + '12345')
     venue2 = create_venue(offerer2, name='Librairie la Rencontre', city='Saint Denis', siret=offerer2.siren + '54321')
     venue3 = create_venue(offerer3, name='Une librairie du méchant concurrent gripsou', city='Saint Denis',

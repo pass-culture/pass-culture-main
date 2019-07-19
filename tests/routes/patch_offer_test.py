@@ -4,8 +4,8 @@ from models import PcObject, Offer, Recommendation, Product
 from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
-    create_offer_with_thing_product, API_URL, create_product_with_Event_type, create_offer_with_event_product, \
-    create_product_with_Thing_type, create_recommendation
+    create_offer_with_thing_product, API_URL, create_product_with_event_type, create_offer_with_event_product, \
+    create_product_with_thing_type, create_recommendation
 from utils.human_ids import humanize
 
 
@@ -68,7 +68,7 @@ class Patch:
             owning_offerer = create_offerer()
             user_offerer = create_user_offerer(user, owning_offerer)
             venue = create_venue(owning_offerer)
-            product = create_product_with_Thing_type(thing_name='Old Name', owning_offerer=owning_offerer)
+            product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=owning_offerer)
             offer = create_offer_with_thing_product(venue, product)
             PcObject.save(offer, user_offerer)
             offer_id = offer.id
@@ -96,7 +96,7 @@ class Patch:
             editor_offerer = create_offerer(siren='123456780')
             editor_user_offerer = create_user_offerer(user, editor_offerer)
             venue = create_venue(editor_offerer)
-            product = create_product_with_Thing_type(thing_name='Old Name', owning_offerer=owning_offerer)
+            product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=owning_offerer)
             offer = create_offer_with_thing_product(venue, product)
             PcObject.save(offer, editor_user_offerer, owning_offerer)
             offer_id = offer.id
@@ -123,7 +123,7 @@ class Patch:
             offerer = create_offerer(siren='123456780')
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            product = create_product_with_Thing_type(thing_name='Old Name', owning_offerer=None)
+            product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=None)
             offer = create_offer_with_thing_product(venue, product)
             PcObject.save(offer, user_offerer)
             offer_id = offer.id
@@ -151,7 +151,7 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            thing_product = create_product_with_Thing_type(thing_name='Old Name', owning_offerer=None)
+            thing_product = create_product_with_thing_type(thing_name='Old Name', owning_offerer=None)
             offer = create_offer_with_thing_product(venue, thing_product)
 
             PcObject.save(offer, user, user_offerer)
@@ -187,7 +187,7 @@ class Patch:
             # Given
             user = create_user()
             offerer = create_offerer()
-            event_product = create_product_with_Event_type(event_name='Old name')
+            event_product = create_product_with_event_type(event_name='Old name')
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_product)
 

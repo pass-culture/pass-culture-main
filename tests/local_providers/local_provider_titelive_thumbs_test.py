@@ -9,7 +9,7 @@ from local_providers import TiteLiveThingThumbs
 from local_providers.titelive_thing_thumbs import THUMB_FOLDER_NAME_TITELIVE, extract_thumb_index
 from models import PcObject
 from tests.conftest import clean_database
-from tests.test_utils import provider_test, create_product_with_Thing_type
+from tests.test_utils import provider_test, create_product_with_thing_type
 
 
 class TiteliveThingThumbsTest:
@@ -43,8 +43,8 @@ class TiteliveThingThumbsTest:
                                                                        get_ordered_thumbs_zip_files,
                                                                        app):
         # given
-        product1 = create_product_with_Thing_type(id_at_providers='9780847858903', thumb_count=0)
-        product2 = create_product_with_Thing_type(id_at_providers='9782016261903', thumb_count=0)
+        product1 = create_product_with_thing_type(id_at_providers='9780847858903', thumb_count=0)
+        product2 = create_product_with_thing_type(id_at_providers='9782016261903', thumb_count=0)
         PcObject.save(product1, product2)
 
         # mock TiteliveThingThumb

@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from models import PcObject
 from tests.conftest import clean_database
-from tests.test_utils import create_recommendation, create_offer_with_thing_product, create_product_with_Thing_type, \
+from tests.test_utils import create_recommendation, create_offer_with_thing_product, create_product_with_thing_type, \
     create_venue, create_offerer, \
     create_mediation, create_user, create_offer_with_event_product, create_favorite
 
@@ -10,7 +10,7 @@ from tests.test_utils import create_recommendation, create_offer_with_thing_prod
 @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
 def test_model_should_have_thumbUrl_using_productId(get_storage_base_url):
     # given
-    product = create_product_with_Thing_type()
+    product = create_product_with_thing_type()
     product.id = 2
     offerer = create_offerer()
     venue = create_venue(offerer=offerer)

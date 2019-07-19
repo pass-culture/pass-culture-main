@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from models import Booking, Offer, Stock, User, Product
-from tests.test_utils import create_product_with_Thing_type
+from tests.test_utils import create_product_with_thing_type
 
 
 def test_booking_completed_url_gets_normalized():
@@ -50,7 +50,7 @@ class BookingIsCancellableTest:
         booking = Booking()
         booking.stock = Stock()
         booking.stock.offer = Offer()
-        booking.stock.offer.product = create_product_with_Thing_type()
+        booking.stock.offer.product = create_product_with_thing_type()
 
         # When
         is_cancellable = booking.isUserCancellable
