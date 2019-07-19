@@ -1,33 +1,22 @@
-const isValid = (location, user) =>
+import { isEmpty } from '../utils/strings'
+
+const isValid = user =>
   !(
-    !location ||
     !user ||
-    Array.isArray(location) ||
     Array.isArray(user) ||
-    typeof location !== 'object' ||
     typeof user !== 'object' ||
-    typeof location.search !== 'string' ||
     typeof user.id !== 'string' ||
     !user.id
   )
 
-/**
- * @param  {[type]}  location    React Router location object
- * @param  {[type]}  user        PC Store object
- * @param  {Boolean} [url=false] Only for Units Tests | window.location.href
- * @return {String}
- */
-export const getShareURL = (location, user, url = false) => {
-  if (!isValid(location, user)) return false
+export const getShareURL = (user, offerId = '', mediationId = '') => {
+  if (!isValid(user)) return false
+  if (isEmpty(offerId)) return false
+  if (isEmpty(mediationId)) return false
+
   const { id } = user
-  const { search } = location
-  const href = url || window.location.href
-  const hasQuery = href.indexOf('?') !== -1
-  const nextSearch = `${(hasQuery && '&') || '?'}shared_by=${id}`
-  const shareSearch = `${search || ''}${nextSearch}`
-  // suppr du search pour avoir la base
-  const baseShareURL = (hasQuery && href.replace(search, '')) || href
-  return `${baseShareURL}${shareSearch}`
+  const origin = window.location.origin
+  return `${origin}/decouverte/${offerId}/${mediationId}?shared_by=${id}`
 }
 
 export default getShareURL

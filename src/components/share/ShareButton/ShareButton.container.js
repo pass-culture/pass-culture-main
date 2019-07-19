@@ -10,7 +10,6 @@ import { getShare } from '../../../selectors/shareSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
-    location,
     match: {
       params: { mediationId, offerId },
     },
@@ -18,7 +17,7 @@ export const mapStateToProps = (state, ownProps) => {
   const offerName = getCurrentRecommendationOfferName(state, offerId, mediationId)
   const text = offerName && `Retrouvez ${offerName} sur le pass Culture`
   const user = selectCurrentUser(state)
-  const url = (user && getShareURL(location, user)) || null
+  const url = (user && getShareURL(user, offerId, mediationId)) || null
 
   return {
     offerName,
