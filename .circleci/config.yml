@@ -181,7 +181,6 @@ jobs:
       - checkout
       - run: pyenv global 3.5.2
       - run: pip install requests
-      - run: python scripts/check_ci_status.py $CIRCLE_SHA1 $CIRCLE_BRANCH
       - run: git submodule sync
       - run: git submodule update --init
       - run:
@@ -273,17 +272,20 @@ workflows:
             branches:
               only:
                 - master
+                - production
                 - /hotfix-v.*/
       - tests-webapp:
           filters:
             branches:
               only:
+                - production
                 - master
                 - /hotfix-v.*/
       - tests-pro:
           filters:
             branches:
               only:
+                - production
                 - master
                 - /hotfix-v.*/
       - tests-perf:
