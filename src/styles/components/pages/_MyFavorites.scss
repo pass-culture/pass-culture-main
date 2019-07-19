@@ -41,7 +41,6 @@
 
 .mf-section {
   margin-top: 2.25rem;
-  padding: 0 0.75rem;
 }
 
 .mf-header {
@@ -53,9 +52,9 @@
 }
 
 .mf-my-favorite {
+  @include dotted($primary, bottom);
+
   background-color: $white;
-  border-radius: $radius-small;
-  margin-bottom: 0.75rem;
 }
 
 .mf-link {
@@ -77,7 +76,6 @@
 .mf-heading {
   display: flex;
   flex-direction: column;
-  height: 50%;
   justify-content: space-around;
   padding: 0.5rem 1rem;
 }
@@ -86,6 +84,68 @@
   @include multiLineEllipsis();
 
   color: $black;
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding-bottom: 0.3rem;
+  padding-top: 0.2rem;
+}
+
+.mf-date-distance {
+  padding-top: 0.3rem;
+  padding-bottom: 0.1rem;
+}
+
+.mf-date-infos {
+  background-color: $blue;
+  padding: 0.2rem;
+  margin-right: 0.2rem;
+  font-size: 0.8rem;
+  color: $white;
+}
+
+.mf-distance {
+  color: $grey;
+  font-size: 0.8rem;
+}
+
+.mf-relative-date {
+  color: $black;
+  background-color: $ribbon-yellow;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.2rem;
+  margin-right: 0.2rem;
+}
+
+.mf-eneded {
+  color: $white;
+  background-color: $grey-darker;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.2rem;
+  margin-right: 0.2rem;
+}
+
+.mf-booked {
+  color: $white;
+  background-color: $ribbon-green;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.2rem;
+  margin-right: 0.2rem;
+}
+
+.mf-type {
+  color: $grey
+}
+
+.mf-arrow {
+  align-items: center;
+  display: flex;
+  position: relative;
+  width: 15%;
+}
+
+.mf-arrow-img {
+  margin: auto;
 }

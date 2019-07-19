@@ -63,13 +63,12 @@ class MyFavorites extends Component {
         className="page is-relative flex-rows"
         id="my-favorites"
       >
-        <PageHeader title="Mes préférés" />
+        <PageHeader title="Mes favoris" />
         <main className={isEmpty ? 'mf-main mf-no-favorites' : 'mf-main'}>
           {isEmpty && <NoFavorites />}
 
           {myFavorites.length > 0 && (
             <section className="mf-section">
-              <header className="mf-header">{'Favoris'}</header>
               {this.build(myFavorites)}
             </section>
           )}
