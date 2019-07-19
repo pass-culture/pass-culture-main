@@ -49,6 +49,7 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
                 )
 
         (activation_mediation_name, mediation) = activation_mediation_items[0]
+
         activation_recommendation_name = '{} / {}'.format(
             activation_mediation_name,
             user_name
@@ -83,14 +84,14 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
 
         # every (OFFER_WITH_RECOMMENDATION_PER_USER_MODULO_RATIO - 1)/OFFER_WITH_RECOMMENDATION_PER_USER_MODULO_RATIO
         # offers will have a recommendation for this user
-        already_recommended_offer_ids = remove_every(
+        recommended_offer_ids = remove_every(
             active_offer_ids,
             ACTIVE_OFFERS_WITH_RECOMMENDATION_PER_USER_REMOVE_MODULO
         )
 
         for (offer_name, offer) in list(offers_by_name.items()):
 
-            if offer.id not in already_recommended_offer_ids:
+            if offer.id not in recommended_offer_ids:
                 continue
             elif offer.venue.managingOfferer.validationToken:
                 continue
@@ -99,8 +100,15 @@ def create_industrial_recommendations(mediations_by_name, offers_by_name, users_
                 offer_name,
                 user_name
             )
+
+            if offer.mediations:
+                mediation = offer.mediations[0]
+            else:
+                mediation = None
+
             recommendations_by_name[recommendation_name] = \
                 create_recommendation(
+                    mediation=mediation,
                     offer=offer,
                     user=user
                 )
