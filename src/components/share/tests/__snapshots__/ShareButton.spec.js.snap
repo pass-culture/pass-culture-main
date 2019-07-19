@@ -91,3 +91,119 @@ ShallowWrapper {
   },
 }
 `;
+
+exports[`src | components | share | ShareButtonContent should match the snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <ShareButtonContent
+    dispatch={[MockFunction]}
+    email={null}
+    id="verso-share-button"
+    offerName="Fake offer name"
+    text="Fake text"
+    url="http://www.fake-url.com"
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": <span
+        aria-hidden={true}
+        className="font-icon icon-ico-share"
+        title="Partager cette offre"
+      />,
+      "className": "no-border no-background",
+      "disabled": false,
+      "id": "verso-share-button",
+      "onClick": [Function],
+      "type": "button",
+    },
+    "ref": null,
+    "rendered": Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "aria-hidden": true,
+        "className": "font-icon icon-ico-share",
+        "title": "Partager cette offre",
+      },
+      "ref": null,
+      "rendered": null,
+      "type": "span",
+    },
+    "type": "button",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <span
+          aria-hidden={true}
+          className="font-icon icon-ico-share"
+          title="Partager cette offre"
+        />,
+        "className": "no-border no-background",
+        "disabled": false,
+        "id": "verso-share-button",
+        "onClick": [Function],
+        "type": "button",
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "aria-hidden": true,
+          "className": "font-icon icon-ico-share",
+          "title": "Partager cette offre",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": "span",
+      },
+      "type": "button",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
+}
+`;

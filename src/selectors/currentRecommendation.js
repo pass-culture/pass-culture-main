@@ -2,7 +2,7 @@ import createCachedSelector from 're-reselect'
 
 import selectRecommendationsForDiscovery from './recommendationsForDiscovery'
 
-const selectCurrentRecommendation = createCachedSelector(
+export const selectCurrentRecommendation = createCachedSelector(
   selectRecommendationsForDiscovery,
   (state, offerId) => offerId,
   (state, offerId, mediationId) => mediationId,

@@ -4,11 +4,11 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { selectCurrentUser } from 'with-react-redux-login'
 
-import ShareButtonContent from './ShareButtonContent'
-import { getShareURL } from '../../helpers'
-import currentRecommendationSelector from '../../selectors/currentRecommendation'
+import ShareButton from './ShareButton'
+import { getShareURL } from '../../../helpers'
+import currentRecommendationSelector from '../../../selectors/currentRecommendation'
 
-const mapStateToProps = (state, ownProps) => {
+export const mapStateToProps = (state, ownProps) => {
   const { location } = ownProps
   const { mediationId, offerId } = ownProps.match.params
   const recommendation = currentRecommendationSelector(state, offerId, mediationId)
@@ -19,9 +19,9 @@ const mapStateToProps = (state, ownProps) => {
   return { offerName, text, url, ...state.share }
 }
 
-export const ShareButton = compose(
+export const ShareButtonContainer = compose(
   withRouter,
   connect(mapStateToProps)
-)(ShareButtonContent)
+)(ShareButton)
 
-export default ShareButton
+export default ShareButtonContainer

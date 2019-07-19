@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import Finishable from '../../layout/Finishable'
-import { ShareButton } from '../../share/ShareButton'
+import { ShareButtonContainer } from '../../share/ShareButton/ShareButton.container'
 import VersoWallet from './wallet/VersoWalletContainer'
 import Favorite from './favorite/FavoriteContainer'
 import CancelThisLinkContainer from './booking/cancel-this-link/CancelThisLinkContainer'
@@ -18,7 +18,7 @@ const VersoControl = ({ booking, isFinished }) => (
         <Favorite />
       </li>
       <li>
-        <ShareButton />
+        <ShareButtonContainer />
       </li>
       <li className="is-relative">
         {booking && <CancelThisLinkContainer
