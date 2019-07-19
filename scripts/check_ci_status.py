@@ -28,6 +28,9 @@ def main():
     commit_sha1 = sys.argv[1]
     branch_name = sys.argv[2]
 
+    if not branch_name.startswith('hotfix-'):
+        branch_name = "master"
+
     project_jobs_infos = get_project_jobs_infos(branch_name)
 
     if not project_jobs_infos:
