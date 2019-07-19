@@ -90,7 +90,7 @@ describe('src | components | pages | discovery | RawCard', () => {
     })
 
     describe('when the recommendation is loaded', () => {
-      it('loads recommendation linked to the offer', () => {
+      it('does not load recommendation linked to the offer', () => {
         // given
         const loadRecommendation = jest.fn()
         const props = {

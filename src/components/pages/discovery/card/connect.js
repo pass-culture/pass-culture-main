@@ -55,7 +55,9 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
   },
 
   loadRecommendation: () => {
-    const offerId = ownProps.match.params.offerId
+    const { match } = ownProps
+    const { params } = match
+    const { offerId } = params
 
     dispatch(
       requestData({

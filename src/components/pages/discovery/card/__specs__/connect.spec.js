@@ -5,7 +5,7 @@ import { configureStore } from '../../../../../utils/store'
 
 navigator.geolocation = {}
 
-describe('src | components | pages | discovery | card | connect', () => {
+describe('src | components | pages | discovery | CardContainer', () => {
   describe('mapStateToProps', () => {
     it('default return', () => {
       // given
@@ -50,16 +50,16 @@ describe('src | components | pages | discovery | card | connect', () => {
     describe('loadRecommendation', () => {
       describe('when recommendation is not loaded yet', () => {
         it('should load a recommendation using an offer id', () => {
-          // Given
+          // given
           const dispatch = jest.fn()
           const ownProps = {
             match: { params: { offerId: 'HAMA' } },
           }
 
-          // When
+          // when
           mapDispatchToProps(dispatch, ownProps).loadRecommendation()
 
-          // Then
+          // then
           expect(dispatch).toHaveBeenCalledWith({
             config: {
               apiPath: `recommendations/offers/HAMA`,
