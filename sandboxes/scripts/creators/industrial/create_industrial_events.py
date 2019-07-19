@@ -10,7 +10,7 @@ from sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_DESCRIPTION, \
 from sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES, \
                                                MOCK_LAST_NAMES
 from utils.logger import logger
-from tests.test_utils import create_product_with_Event_type
+from tests.test_utils import create_product_with_event_type
 
 
 EVENT_COUNTS_PER_TYPE = 7
@@ -25,27 +25,29 @@ def create_industrial_events():
         if t['type'] == 'Event'
     ]
 
+    activation_index = 0
+
     for type_index in range(0, EVENT_COUNTS_PER_TYPE):
 
         for (event_type_dict_index, event_type_dict) in enumerate(event_type_dicts):
 
             mock_index = (type_index + event_type_dict_index) % len(MOCK_NAMES)
-
             if event_type_dict['value'] == str(EventType.ACTIVATION):
-                event_name = MOCK_ACTIVATION_NAME
+                event_name = '{} {}'.format(MOCK_ACTIVATION_NAME, activation_index)
                 description = MOCK_ACTIVATION_DESCRIPTION
+                activation_index += 1
             else:
                 event_name = MOCK_NAMES[mock_index]
                 description = MOCK_DESCRIPTIONS[mock_index]
 
             event_type = event_type_dict['value']
 
-            name = "{} / {}".format(event_type_dict['value'], MOCK_NAMES[mock_index])
-            event_product = create_product_with_Event_type(
+            name = "{} / {}".format(event_type_dict['value'], event_name)
+            event_product = create_product_with_event_type(
                 description=description,
+                duration_minutes=60,
                 event_name=event_name,
                 event_type=event_type,
-                duration_minutes=60
             )
 
             extraData = {}
