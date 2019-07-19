@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, MINYEAR
 
 from models import PcObject
-from models.beneficiary_import import ImportStatus
+from models import ImportStatus
 from repository.user_queries import get_all_users_wallet_balances, find_by_civility, \
     find_most_recent_beneficiary_creation_date, is_already_imported
 from tests.conftest import clean_database

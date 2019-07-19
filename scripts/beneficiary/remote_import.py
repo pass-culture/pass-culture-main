@@ -8,8 +8,8 @@ from domain.admin_emails import send_remote_beneficiaries_import_report_email
 from domain.demarches_simplifiees import get_all_application_ids_for_procedure
 from domain.password import generate_reset_token, random_password
 from domain.user_emails import send_activation_notification_email
-from models import User, Deposit, ApiErrors, PcObject
-from models.beneficiary_import import ImportStatus
+from models import User, Deposit, ApiErrors, PcObject, BeneficiaryImport
+from models import ImportStatus
 from repository.user_queries import find_by_civility, find_user_by_email, \
     is_already_imported, save_new_beneficiary_import
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS

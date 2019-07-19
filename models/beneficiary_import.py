@@ -1,32 +1,16 @@
-import enum
-from datetime import datetime
-
-from sqlalchemy import Column, DateTime, BigInteger, String, ForeignKey, Enum
+from sqlalchemy import Column, BigInteger, ForeignKey, desc
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
-from models import PcObject
-from models.db import Model
-
-
-class ImportStatus(enum.Enum):
-    DUPLICATE = 'DUPLICATE'
-    ERROR = 'ERROR'
-    CREATED = 'CREATED'
-    REJECTED = 'REJECTED'
+from models.beneficiary_import_status import BeneficiaryImportStatus
+from models.db import Model, db
+from models.pc_object import PcObject
 
 
 class BeneficiaryImport(PcObject, Model):
     demarcheSimplifieeApplicationId = Column(BigInteger,
-                                             unique=False,
+                                             unique=True,
                                              nullable=False)
-
-    status = Column(Enum(ImportStatus), nullable=False)
-
-    date = Column(DateTime,
-                  nullable=False,
-                  default=datetime.utcnow)
-
-    detail = Column(String(255), nullable=True)
 
     beneficiaryId = Column(BigInteger,
                            ForeignKey("user.id"),
@@ -36,3 +20,39 @@ class BeneficiaryImport(PcObject, Model):
     beneficiary = relationship('User',
                                foreign_keys=[beneficiaryId],
                                backref='beneficiaryImports')
+
+    @hybrid_property
+    def currentStatus(self):
+        return self._last_status().status
+
+    @currentStatus.expression
+    def currentStatus(cls):
+        return cls._query_column(BeneficiaryImportStatus.status)
+
+    @hybrid_property
+    def updatedAt(self):
+        return self._last_status().date
+
+    @updatedAt.expression
+    def updatedAt(cls):
+        return cls._query_column(BeneficiaryImportStatus.date)
+
+    @hybrid_property
+    def detail(self):
+        return self._last_status().detail
+
+    @detail.expression
+    def detail(cls):
+        return cls._query_column(BeneficiaryImportStatus.detail)
+
+    @classmethod
+    def _query_column(cls, column: Column):
+        return db.session \
+            .query(column) \
+            .filter(BeneficiaryImportStatus.beneficiaryImportId == cls.id) \
+            .order_by(desc(BeneficiaryImportStatus.date)) \
+            .limit(1) \
+            .as_scalar()
+
+    def _last_status(self):
+        return sorted(self.statuses, key=lambda x: x.date, reverse=True)[0]

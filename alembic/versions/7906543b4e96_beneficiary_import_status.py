@@ -10,7 +10,7 @@ from alembic import op
 # revision identifiers, used by Alembic.
 from sqlalchemy import func, ForeignKey
 
-from models.beneficiary_import import ImportStatus
+from models import ImportStatus
 
 revision = '7906543b4e96'
 down_revision = '8388f49ba035'

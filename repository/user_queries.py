@@ -5,8 +5,8 @@ from sqlalchemy import func, Column
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
+from models import BeneficiaryImport, ImportStatus, BeneficiaryImportStatus
 from models import User, UserOfferer, Offerer, RightsType, PcObject
-from models.beneficiary_import import BeneficiaryImport, ImportStatus
 from models.db import db
 from models.user import WalletBalance
 
@@ -20,7 +20,7 @@ def find_user_by_email(email: str) -> User:
 def is_already_imported(application_id: int) -> bool:
     return db.session.query(
         BeneficiaryImport.query \
-            .filter(BeneficiaryImport.status == ImportStatus.CREATED) \
+            .filter(BeneficiaryImport.currentStatus == ImportStatus.CREATED) \
             .filter(BeneficiaryImport.demarcheSimplifieeApplicationId == application_id) \
             .exists()
     ).scalar()
@@ -115,9 +115,9 @@ def keep_only_webapp_users(query):
 
 
 def find_most_recent_beneficiary_creation_date() -> datetime:
-    most_recent_creation = BeneficiaryImport.query \
-        .filter(BeneficiaryImport.status == ImportStatus.CREATED) \
-        .order_by(BeneficiaryImport.date.desc()) \
+    most_recent_creation = BeneficiaryImportStatus.query \
+        .filter(BeneficiaryImportStatus.status == ImportStatus.CREATED) \
+        .order_by(BeneficiaryImportStatus.date.desc()) \
         .first()
 
     if not most_recent_creation:
@@ -133,11 +133,14 @@ def save_new_beneficiary_import(
         user: User = None,
         detail=None,
 ):
+    import_status = BeneficiaryImportStatus()
+    import_status.date = date
+    import_status.detail = detail
+    import_status.status = status
+
     beneficiary_import = BeneficiaryImport()
     beneficiary_import.beneficiary = user
-    beneficiary_import.status = status
-    beneficiary_import.date = date
-    beneficiary_import.detail = detail
+    beneficiary_import.statuses = [import_status]
     beneficiary_import.demarcheSimplifieeApplicationId = demarche_simplifiee_application_id
     PcObject.save(beneficiary_import)
 

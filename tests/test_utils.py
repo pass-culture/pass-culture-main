@@ -27,7 +27,8 @@ from models import Booking, \
     UserOfferer, \
     BankInformation, \
     Venue, PaymentMessage, VenueProvider, Product, Favorite
-from models.beneficiary_import import BeneficiaryImport, ImportStatus
+from models.beneficiary_import import BeneficiaryImport
+from models.beneficiary_import_status import ImportStatus, BeneficiaryImportStatus
 from models.db import db
 from models.email import Email, EmailStatus
 from models.payment import PaymentDetails
@@ -174,12 +175,16 @@ def create_beneficiary_import(
         detail: str = None,
         demarche_simplifiee_application_id: int = None
 ):
+    import_status = BeneficiaryImportStatus()
+    import_status.date = date
+    import_status.detail = detail
+    import_status.status = status
+
     beneficiary_import = BeneficiaryImport()
     beneficiary_import.beneficiary = user
-    beneficiary_import.status = status
-    beneficiary_import.date = date
-    beneficiary_import.detail = detail
+    beneficiary_import.statuses = [import_status]
     beneficiary_import.demarcheSimplifieeApplicationId = demarche_simplifiee_application_id
+
     return beneficiary_import
 
 

@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch, ANY
 import pytest
 from mailjet_rest import Client
 
-from models import User, ApiErrors
-from models.beneficiary_import import BeneficiaryImport, ImportStatus
+from models import User, ApiErrors, BeneficiaryImportStatus
+from models import BeneficiaryImport, ImportStatus
 from scripts.beneficiary import remote_import
 from scripts.beneficiary.remote_import import parse_beneficiary_information, create_beneficiary_from_application, \
     DuplicateBeneficiaryError
@@ -100,7 +100,7 @@ class RunTest:
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()
-        assert beneficiary_import.status == ImportStatus.ERROR
+        assert beneficiary_import.currentStatus == ImportStatus.ERROR
         assert beneficiary_import.demarcheSimplifieeApplicationId == 123
         assert beneficiary_import.detail == 'Le dossier 123 contient des erreurs et a été ignoré'
 
@@ -114,7 +114,6 @@ class RunTest:
         get_details = Mock(return_value=make_application_detail(123, 'closed'))
         user = User()
         user.email = 'john.doe@test.com'
-        user.demarcheSimplifieeApplicationId = 123
         has_already_been_imported = Mock(return_value=True)
         has_already_been_created = Mock(return_value=False)
 
@@ -137,11 +136,10 @@ class RunTest:
                                                                 process_beneficiary_application,
                                                                 send_report_email, app):
         # given
-        get_all_application_ids = Mock(return_value=[123, 456])
+        get_all_application_ids = Mock(return_value=[123])
         get_details = Mock(return_value=make_application_detail(123, 'closed'))
         user = User()
         user.email = 'john.doe@test.com'
-        user.demarcheSimplifieeApplicationId = 123
         has_already_been_imported = Mock(return_value=False)
         has_already_been_created = Mock(return_value=True)
 
@@ -156,7 +154,7 @@ class RunTest:
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()
-        assert beneficiary_import.status == ImportStatus.REJECTED
+        assert beneficiary_import.currentStatus == ImportStatus.REJECTED
         assert beneficiary_import.demarcheSimplifieeApplicationId == 123
         assert beneficiary_import.detail == 'Compte existant avec cet email'
         process_beneficiary_application.assert_not_called()
@@ -209,14 +207,15 @@ class ProcessBeneficiaryApplicationTest:
         # then
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.beneficiary.email == 'jane.doe@test.com'
-        assert beneficiary_import.status == ImportStatus.CREATED
+        assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert beneficiary_import.demarcheSimplifieeApplicationId == 123
 
     @patch('scripts.beneficiary.remote_import.create_beneficiary_from_application')
     @patch('scripts.beneficiary.remote_import.PcObject')
     @patch('scripts.beneficiary.remote_import.send_activation_notification_email')
+    @clean_database
     def test_account_activation_email_is_sent(self, send_activation_notification_email, PcObject,
-                                              create_beneficiary_from_application):
+                                              create_beneficiary_from_application, app):
         # given
         information = {
             'department': '67',
@@ -240,9 +239,10 @@ class ProcessBeneficiaryApplicationTest:
     @patch('scripts.beneficiary.remote_import.create_beneficiary_from_application')
     @patch('scripts.beneficiary.remote_import.PcObject')
     @patch('scripts.beneficiary.remote_import.send_activation_notification_email')
+    @clean_database
     def test_error_is_collected_if_beneficiary_could_not_be_saved(self,
                                                                   send_activation_notification_email, PcObject,
-                                                                  create_beneficiary_from_application):
+                                                                  create_beneficiary_from_application, app):
         # given
         information = {
             'department': '67',
@@ -270,9 +270,10 @@ class ProcessBeneficiaryApplicationTest:
     @patch('scripts.beneficiary.remote_import.create_beneficiary_from_application')
     @patch('scripts.beneficiary.remote_import.PcObject')
     @patch('scripts.beneficiary.remote_import.send_activation_notification_email')
+    @clean_database
     def test_beneficiary_is_not_created_if_duplicates_are_found(self,
                                                                 send_activation_notification_email, PcObject,
-                                                                create_beneficiary_from_application):
+                                                                create_beneficiary_from_application, app):
         # given
         information = {
             'department': '67',
@@ -314,7 +315,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()
-        assert beneficiary_import.status == ImportStatus.DUPLICATE
+        assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
         assert beneficiary_import.demarcheSimplifieeApplicationId == 123
         assert beneficiary_import.detail == "Utilisateur en doublon : 11, 22"
 

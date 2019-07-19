@@ -1,11 +1,9 @@
 import csv
-from datetime import datetime
 from io import StringIO
 from typing import Iterable
 from urllib.parse import urlencode
 
 from models import Deposit, EventType, ThingType, ApiErrors, User
-from models.beneficiary_import import ImportStatus, BeneficiaryImport
 from models.booking import ActivationUser
 
 

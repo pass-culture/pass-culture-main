@@ -45,13 +45,14 @@ class FeatureAdminView(BaseAdminView):
 
 class BeneficiaryImportView(BaseAdminView):
     can_edit = False
-    column_list = ['beneficiary.email', 'date', 'demarcheSimplifieeApplicationId', 'status', 'detail']
+    column_list = ['beneficiary.email', 'demarcheSimplifieeApplicationId', 'currentStatus', 'updatedAt', 'detail']
     column_labels = {
+        'demarcheSimplifieeApplicationId': 'Dossier DMS',
         'beneficiary.email': 'Bénéficiaire',
-        'date': "Date d'import",
-        'demarcheSimplifieeApplicationId': 'id dossier DMS',
-        'status': 'Statut',
-        'detail': 'Détails'
+        'currentStatus': "Statut",
+        'updatedAt': "Date",
+        'detail': "Détail",
     }
-    column_filters = ['beneficiary.email', 'date', 'demarcheSimplifieeApplicationId', 'status']
-    column_searchable_list = ['beneficiary.email', 'date', 'demarcheSimplifieeApplicationId', 'status']
+    column_searchable_list = ['beneficiary.email', 'demarcheSimplifieeApplicationId']
+    column_sortable_list = ['beneficiary.email', 'demarcheSimplifieeApplicationId', 'currentStatus', 'updatedAt',
+                            'detail']
