@@ -1,0 +1,53 @@
+#csv-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#csv-table tr:hover {
+  background-color: #ddd;
+}
+
+#csv-table {
+  thead {
+    th {
+      padding: 10px;
+    }
+  }
+  tbody {
+    td {
+      color: $grey-darkest;
+      line-height: normal;
+      padding: 10px;
+      vertical-align: middle;
+    }
+
+    tr {
+      @include dotted($red);
+    }
+  }
+}
+
+#csv-print-container {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+@media print {
+  @page {
+    size: landscape
+  }
+
+  body {
+    font-size: xx-small;
+
+    #csv-print-button {
+      display: none;
+    }
+
+    header {
+      display: none;
+    }
+  }
+}

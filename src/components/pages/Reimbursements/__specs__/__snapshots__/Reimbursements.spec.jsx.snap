@@ -46,6 +46,16 @@ ShallowWrapper {
             Télécharger la liste des remboursements
           </Connect(DownloadButton)>
         </div>,
+        <br />,
+        <div
+          className="control flex-columns items-center flex-end"
+        >
+          <withRouter(Connect(DisplayButton))
+            href="http://localhost/reimbursements/csv"
+          >
+            Afficher la liste des remboursements
+          </withRouter(Connect(DisplayButton))>
+        </div>,
       ],
       "name": "reimbursements",
     },
@@ -140,6 +150,42 @@ ShallowWrapper {
         },
         "type": "div",
       },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {},
+        "ref": null,
+        "rendered": null,
+        "type": "br",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <withRouter(Connect(DisplayButton))
+            href="http://localhost/reimbursements/csv"
+          >
+            Afficher la liste des remboursements
+          </withRouter(Connect(DisplayButton))>,
+          "className": "control flex-columns items-center flex-end",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "children": "Afficher la liste des remboursements",
+            "href": "http://localhost/reimbursements/csv",
+          },
+          "ref": null,
+          "rendered": "Afficher la liste des remboursements",
+          "type": [Function],
+        },
+        "type": "div",
+      },
     ],
     "type": [Function],
   },
@@ -176,6 +222,16 @@ ShallowWrapper {
             >
               Télécharger la liste des remboursements
             </Connect(DownloadButton)>
+          </div>,
+          <br />,
+          <div
+            className="control flex-columns items-center flex-end"
+          >
+            <withRouter(Connect(DisplayButton))
+              href="http://localhost/reimbursements/csv"
+            >
+              Afficher la liste des remboursements
+            </withRouter(Connect(DisplayButton))>
           </div>,
         ],
         "name": "reimbursements",
@@ -267,6 +323,42 @@ ShallowWrapper {
             },
             "ref": null,
             "rendered": "Télécharger la liste des remboursements",
+            "type": [Function],
+          },
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {},
+          "ref": null,
+          "rendered": null,
+          "type": "br",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <withRouter(Connect(DisplayButton))
+              href="http://localhost/reimbursements/csv"
+            >
+              Afficher la liste des remboursements
+            </withRouter(Connect(DisplayButton))>,
+            "className": "control flex-columns items-center flex-end",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "children": "Afficher la liste des remboursements",
+              "href": "http://localhost/reimbursements/csv",
+            },
+            "ref": null,
+            "rendered": "Afficher la liste des remboursements",
             "type": [Function],
           },
           "type": "div",

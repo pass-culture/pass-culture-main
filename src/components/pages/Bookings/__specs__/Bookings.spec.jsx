@@ -3,23 +3,28 @@ import { shallow } from 'enzyme'
 
 import Bookings from '../Bookings'
 import DownloadButtonContainer from '../../../layout/DownloadButton/DownloadButtonContainer'
+import DisplayButtonContainer from '../../../layout/DisplayButton/DisplayButtonContainer'
 
 describe('src | components | pages | Bookings', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<Bookings />)
+  let props
 
-      // then
-      expect(wrapper).toMatchSnapshot()
-    })
+  beforeEach(() => {
+    props = {
+      showButtons: false,
+      pathToCsvFile: '/path/to/csv/file?with=query',
+    }
   })
 
-  describe('the download button', () => {
-    it('should not be visible by default', () => {
-      // given
-      const props = {}
+  it('should match snapshot', () => {
+    // when
+    const wrapper = shallow(<Bookings/>)
 
+    // then
+    expect(wrapper).toMatchSnapshot()
+  })
+
+  describe('render', () => {
+    it('should not render a download button by default', () => {
       // when
       const wrapper = shallow(<Bookings {...props} />)
 
@@ -28,12 +33,9 @@ describe('src | components | pages | Bookings', () => {
       expect(downloadButton).toHaveLength(0)
     })
 
-    it('should use the pathToCsvFile property when displayed', () => {
+    it('should render a download button with the right props when displayed', () => {
       // given
-      const props = {
-        showDownloadButton: true,
-        pathToCsvFile: '/path/to/csv/file?with=query',
-      }
+      props.showButtons = true
 
       // when
       const wrapper = shallow(<Bookings {...props} />)
@@ -42,6 +44,28 @@ describe('src | components | pages | Bookings', () => {
       const downloadButton = wrapper.find(DownloadButtonContainer)
       expect(downloadButton).toHaveLength(1)
       expect(downloadButton.prop('href')).toBe('/path/to/csv/file?with=query')
+    })
+
+    it('should not render a display button by default', () => {
+      // when
+      const wrapper = shallow(<Bookings {...props} />)
+
+      // then
+      const displayButton = wrapper.find(DisplayButtonContainer)
+      expect(displayButton).toHaveLength(0)
+    })
+
+    it('should render a display button with the right props when displayed', () => {
+      // given
+      props.showButtons = true
+
+      // when
+      const wrapper = shallow(<Bookings {...props} />)
+
+      // then
+      const displayButton = wrapper.find(DisplayButtonContainer)
+      expect(displayButton).toHaveLength(1)
+      expect(displayButton.prop('href')).toBe('/path/to/csv/file?with=query')
     })
   })
 })

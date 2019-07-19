@@ -19,7 +19,7 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
           // then
           expect(props).toStrictEqual({
             pathToCsvFile: 'http://localhost/bookings/csv?venueId=F51',
-            showDownloadButton: true,
+            showButtons: true,
           })
         })
 
@@ -38,7 +38,7 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
           // then
           expect(props).toStrictEqual({
             pathToCsvFile: 'http://localhost/bookings/csv',
-            showDownloadButton: true,
+            showButtons: true,
           })
         })
       })
@@ -59,12 +59,12 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
           // then
           expect(props).toStrictEqual({
             pathToCsvFile: 'http://localhost/bookings/csv?onlyDigitalVenues=true',
-            showDownloadButton: true,
+            showButtons: true,
           })
         })
       })
 
-      describe('showDownloadButton', () => {
+      describe('showButtons', () => {
         it('should be displayed when downloading digital venues', () => {
           // given
           const state = {
@@ -80,7 +80,7 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
           // then
           expect(props).toStrictEqual({
             pathToCsvFile: 'http://localhost/bookings/csv?onlyDigitalVenues=true',
-            showDownloadButton: true,
+            showButtons: true,
           })
         })
 
@@ -99,7 +99,7 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
           // then
           expect(props).toStrictEqual({
             pathToCsvFile: 'http://localhost/bookings/csv?venueId=G2YU',
-            showDownloadButton: true,
+            showButtons: true,
           })
         })
 
@@ -118,7 +118,7 @@ describe('src | components | pages | Bookings | BookingsContainer', () => {
           // then
           expect(props).toStrictEqual({
             pathToCsvFile: 'http://localhost/bookings/csv',
-            showDownloadButton: true,
+            showButtons: true,
           })
         })
       })

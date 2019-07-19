@@ -30,11 +30,11 @@ export const mapStateToProps = state => {
 
   const pathToCsvFile = buildPathToReservationFile(isFilterByDigitalVenues, selectedVenue)
 
-  const showDownloadButton = !!(isFilterByDigitalVenues || selectedVenue)
+  const showButtons = !!(isFilterByDigitalVenues || selectedVenue)
 
   return {
     pathToCsvFile,
-    showDownloadButton,
+    showButtons,
   }
 }
 
