@@ -1,4 +1,4 @@
-import currentRecommendationSelector from '../../../../../selectors/currentRecommendation'
+import currentRecommendationSelector from '../../../../../selectors/currentRecommendation/currentRecommendation'
 import { mergeDataWithStore, mapStateToProps, mapDispatchToProps } from '../FavoriteContainer'
 
 jest.mock('../../../../../selectors/currentRecommendation')

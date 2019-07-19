@@ -1,7 +1,7 @@
 import set from 'lodash.set'
 import { getSelectorByCardPosition, mapStateToProps } from '../RectoContainer'
 
-import currentRecommendationSelector from '../../../selectors/currentRecommendation'
+import currentRecommendationSelector from '../../../selectors/currentRecommendation/currentRecommendation'
 import nextRecommendationSelector from '../../../selectors/nextRecommendation'
 import previousRecommendationSelector from '../../../selectors/previousRecommendation'
 

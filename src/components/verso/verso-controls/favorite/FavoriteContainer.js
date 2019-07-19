@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { mergeData, requestData } from 'redux-saga-data'
 
-import currentRecommendationSelector from '../../../../selectors/currentRecommendation'
+import currentRecommendationSelector from '../../../../selectors/currentRecommendation/currentRecommendation'
 import Favorite from './Favorite'
 
 export const mergeDataWithStore = (dispatch, isFavorite, recommendation) => (state, action) => {

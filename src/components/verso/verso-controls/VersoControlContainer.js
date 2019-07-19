@@ -8,7 +8,7 @@ import VersoControl from './VersoControl'
 import { isRecommendationOfferFinished } from '../../../helpers'
 
 import { selectBookings } from '../../../selectors/selectBookings'
-import currentRecommendation from '../../../selectors/currentRecommendation'
+import currentRecommendation from '../../../selectors/currentRecommendation/currentRecommendation'
 
 export const mapStateToProps = (state, { match }) => {
   const { mediationId, offerId } = match.params

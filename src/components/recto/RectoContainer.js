@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 
 import Recto from './Recto'
-import currentRecommendationSelector from '../../selectors/currentRecommendation'
+import currentRecommendationSelector from '../../selectors/currentRecommendation/currentRecommendation'
 import nextRecommendationSelector from '../../selectors/nextRecommendation'
 import previousRecommendationSelector from '../../selectors/previousRecommendation'
 

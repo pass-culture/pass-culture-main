@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom'
 
 import BookThisLink from './BookThisLink'
 import { getPriceRangeFromStocks } from '../../../../../helpers'
-import currentRecommendation from '../../../../../selectors/currentRecommendation'
+import currentRecommendation from '../../../../../selectors/currentRecommendation/currentRecommendation'
 
 export const getLinkDestination = (url, search) => {
   const isValid = url && typeof url === 'string'

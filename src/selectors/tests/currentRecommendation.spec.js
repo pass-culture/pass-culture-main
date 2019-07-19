@@ -1,4 +1,4 @@
-import currentRecommendationSelector from '../currentRecommendation'
+import currentRecommendationSelector from '../currentRecommendation/currentRecommendation'
 import state from '../../mocks/reduxState'
 
 describe('currentRecommendationSelector', () => {

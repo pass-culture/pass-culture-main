@@ -6,12 +6,12 @@ import { shallow } from 'enzyme'
 import { ShareButtonContainer } from '../ShareButton/ShareButton'
 import { mapStateToProps } from '../ShareButton/ShareButton.container'
 
-import { selectCurrentRecommendation } from '../../../selectors/currentRecommendation'
+import { selectCurrentRecommendation } from '../../../selectors/currentRecommendation/currentRecommendation'
 import { selectCurrentUser } from 'with-react-redux-login'
 
 import { getShareURL } from '../../../helpers'
 
-jest.mock('../../../selectors/currentRecommendation')
+jest.mock('../../../selectors/currentRecommendation/currentRecommendation')
 jest.mock('with-react-redux-login')
 jest.mock('../../../helpers')
 
@@ -20,7 +20,7 @@ const mockStore = configureStore(middlewares)
 
 const dispatchMock = jest.fn()
 
-describe('src | components | share | ShareButton', () => {
+describe('src | components | share | ShareButton.container', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given

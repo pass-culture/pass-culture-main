@@ -6,7 +6,7 @@ import selectShowTypeByCode from './selectors/selectShowTypeByCode'
 import selectShowSubTypeByCodeAndSubCode from './selectors/selectShowSubTypeByCodeAndSubCode'
 import { isRecommendationOfferFinished } from '../../../../helpers'
 import { selectBookables } from '../../../../selectors/selectBookables'
-import currentRecommendationSelector from '../../../../selectors/currentRecommendation'
+import currentRecommendationSelector from '../../../../selectors/currentRecommendation/currentRecommendation'
 
 const getOnlineUrl = (recommendation, state) => {
   const stocks = get(recommendation, 'offer.stocks')

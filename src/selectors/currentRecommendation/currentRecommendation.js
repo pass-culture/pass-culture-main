@@ -1,6 +1,6 @@
 import createCachedSelector from 're-reselect'
 
-import selectRecommendationsForDiscovery from './recommendationsForDiscovery'
+import selectRecommendationsForDiscovery from '../recommendationsForDiscovery'
 
 export const selectCurrentRecommendation = createCachedSelector(
   selectRecommendationsForDiscovery,

@@ -1,7 +1,7 @@
 import get from 'lodash.get'
 import createCachedSelector from 're-reselect'
 
-import currentRecommendationSelector from './currentRecommendation'
+import currentRecommendationSelector from './currentRecommendation/currentRecommendation'
 import selectRecommendationsForDiscovery from './recommendationsForDiscovery'
 
 const previousRecommendationSelector = createCachedSelector(
