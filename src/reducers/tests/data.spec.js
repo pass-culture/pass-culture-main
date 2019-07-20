@@ -6,6 +6,7 @@ describe('src | reducers | data ', () => {
     const action = {}
     const expected = {
       bookings: [],
+      favorites: [],
       features: [],
       readRecommendations: [],
       recommendations: [],

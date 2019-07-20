@@ -2,10 +2,10 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
-import NavigationFooter from '../../layout/NavigationFooter'
-import PageHeader from '../../layout/Header/PageHeader'
-import NoFavorites from './NoFavorite/NoFavorites'
 import MyFavoriteContainer from './MyFavorite/MyFavoriteContainer'
+import NavigationFooter from '../../layout/NavigationFooter'
+import NoItems from '../../layout/NoItems/NoItems'
+import PageHeader from '../../layout/Header/PageHeader'
 
 class MyFavorites extends Component {
   constructor(props) {
@@ -13,7 +13,6 @@ class MyFavorites extends Component {
 
     this.state = {
       hasError: false,
-      isEmpty: false,
       isLoading: true,
     }
   }
@@ -23,16 +22,6 @@ class MyFavorites extends Component {
     getMyFavorites(this.handleFail, this.handleSuccess)
   }
 
-  build = myFavorites => {
-    return (
-      <ul>
-        {myFavorites.map(myFavorite => (
-          <MyFavoriteContainer favorite={myFavorite}/>
-        ))}
-      </ul>
-    )
-  }
-
   handleFail = () => {
     this.setState({
       hasError: true,
@@ -40,16 +29,16 @@ class MyFavorites extends Component {
     })
   }
 
-  handleSuccess = (state, action) => {
+  handleSuccess = () => {
     this.setState({
-      isEmpty: action.payload.data.length === 0,
       isLoading: false,
     })
   }
 
   render() {
     const { myFavorites } = this.props
-    const { isEmpty, isLoading, hasError } = this.state
+    const { isLoading, hasError } = this.state
+    const isEmpty = myFavorites.length === 0
 
     if (isLoading) {
       return (<LoaderContainer
@@ -59,17 +48,21 @@ class MyFavorites extends Component {
     }
 
     return (
-      <div
-        className="page is-relative flex-rows"
-        id="my-favorites"
-      >
+      <div className="teaser-list">
         <PageHeader title="Mes favoris" />
-        <main className={isEmpty ? 'mf-main mf-no-favorites' : 'mf-main'}>
-          {isEmpty && <NoFavorites />}
+        <main className={isEmpty ? 'teaser-main teaser-no-teasers' : 'teaser-main'}>
+          {isEmpty && <NoItems sentence="Dès que vous aurez ajouté une offre en favori," />}
 
-          {myFavorites.length > 0 && (
-            <section className="mf-section">
-              {this.build(myFavorites)}
+          {!isEmpty && (
+            <section>
+              <ul>
+                {myFavorites.map(myFavorite => (
+                  <MyFavoriteContainer
+                    favorite={myFavorite}
+                    key={myFavorite.id}
+                  />
+                ))}
+              </ul>
             </section>
           )}
         </main>
@@ -82,9 +75,13 @@ class MyFavorites extends Component {
   }
 }
 
+MyFavorites.defaultProps = {
+  myFavorites: [],
+}
+
 MyFavorites.propTypes = {
   getMyFavorites: PropTypes.func.isRequired,
-  myFavorites: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  myFavorites: PropTypes.arrayOf(PropTypes.shape()),
 }
 
 export default MyFavorites

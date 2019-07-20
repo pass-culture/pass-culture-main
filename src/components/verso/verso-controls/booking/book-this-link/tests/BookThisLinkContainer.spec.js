@@ -15,7 +15,13 @@ set(mockedState, 'data', {
   recommendations: [
     {
       mediationId,
-      offer: { stocks },
+      offer: {
+        stocks,
+        venue: {
+          latitude: 48.91683,
+          longitude: 2.4388,
+        },
+      },
       offerId,
       uniqId,
     },

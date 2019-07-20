@@ -14,7 +14,7 @@ import SigninContainer from '../pages/signin/SigninContainer'
 import SignupContainer from '../pages/signup/SignupContainer'
 import { WEBAPP_CONTACT_EXTERNAL_PAGE } from '../../utils/config'
 
-function redirectToBeta () {
+function redirectToBeta() {
   return <Redirect to="/beta" />
 }
 
@@ -66,8 +66,7 @@ const routes = [
     icon: 'offres-w',
     // exemple d'URL optimale qui peut être partagée
     // par les sous composants
-    path:
-      '/decouverte/:offerId?/:mediationId?/:view(booking|verso)?/:bookingId?/:view(cancelled)?',
+    path: '/decouverte/:offerId?/:mediationId?/:view(booking|verso)?/:bookingId?/:view(cancelled)?',
     title: 'Les offres',
   },
   {
@@ -85,7 +84,7 @@ const routes = [
   },
   {
     component: MyFavoritesContainer,
-    disabled: isFeatureDisabled('FAVORITE_OFFER'),
+    featureName: 'FAVORITE_OFFER',
     icon: 'like-w',
     path: '/favoris',
     title: 'Mes favoris',

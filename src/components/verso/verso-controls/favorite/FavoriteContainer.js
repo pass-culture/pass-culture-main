@@ -29,10 +29,10 @@ export const mapStateToProps = (state, ownProps) => {
   } = ownProps
   const { mediationId, offerId } = params
   const isFeatureDisabled = selectIsFeatureDisabled(state, 'FAVORITE_OFFER')
-  const recommendation = currentRecommendationSelector(state, offerId, mediationId) || {}
+
   return {
     isFeatureDisabled,
-    recommendation,
+    recommendation: currentRecommendationSelector(state, offerId, mediationId) || {},
   }
 }
 

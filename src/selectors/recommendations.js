@@ -2,7 +2,7 @@ import get from 'lodash.get'
 import uniqBy from 'lodash.uniqby'
 import { createSelector } from 'reselect'
 
-import { computeDistanceInMeters, humanizeDistance } from '../utils/geolocation'
+import { humanizeRelativeDistance } from '../utils/geolocation'
 import { getTimezone } from '../utils/timezone'
 import { setUniqIdOnRecommendation } from '../utils/recommendation'
 
@@ -26,34 +26,25 @@ export const selectRecommendations = createSelector(
     filteredRecommendations = filteredRecommendations.map((recommendation, index) => {
       const { mediation, offer } = recommendation
       const { product, venue } = offer || {}
+      let distance = ''
 
       // FIXME Report the property computation on API side
       const firstThumbDominantColor =
         get(mediation, 'firstThumbDominantColor') || get(product, 'firstThumbDominantColor')
 
-      let distance
-      if (!latitude || !longitude || !offer || !venue) {
-        distance = '-'
-      } else {
-        const distanceInMeters = computeDistanceInMeters(
-          latitude,
-          longitude,
-          venue.latitude,
-          venue.longitude
-        )
-        distance = humanizeDistance(distanceInMeters)
+      // Les cartes tuto n'ont pas d'offre.
+      if (offer) {
+        distance = humanizeRelativeDistance(venue.latitude, venue.longitude, latitude, longitude)
       }
 
-      // timezone
-      const tz = getTimezone(get(venue, 'departementCode'))
+      const venueTimeZone = getTimezone(get(venue, 'departementCode'))
 
-      // return
       return Object.assign(
         {
           distance,
           firstThumbDominantColor,
           index,
-          tz,
+          tz: venueTimeZone,
         },
         recommendation
       )

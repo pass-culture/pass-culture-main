@@ -1,10 +1,3 @@
-import {createSelector} from "reselect";
+export const selectFavorites = state => state.data.favorites
 
-export const selectMyFavorites = createSelector(
-  state => state.data.favorites,
-  favorites => {
-    return favorites
-  }
-)
-
-export default selectMyFavorites
+export default selectFavorites

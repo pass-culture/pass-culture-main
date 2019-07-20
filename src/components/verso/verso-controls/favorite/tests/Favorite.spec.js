@@ -9,6 +9,7 @@ describe('src | components | verso | verso-controls | favorite | Favorite', () =
   beforeEach(() => {
     props = {
       handleFavorite: jest.fn(),
+      isFeatureDisabled: false,
       recommendation: {
         offer: {
           favorites: [],

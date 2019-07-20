@@ -16,7 +16,7 @@ Ribbon.defaultProps = {
 Ribbon.propTypes = {
   label: PropTypes.string,
   placement: PropTypes.string,
-  type: PropTypes.oneOf(['cancelled', 'today', 'tomorrow']),
+  type: PropTypes.oneOf(['cancelled', 'finished', 'today', 'tomorrow']),
 }
 
 export default Ribbon

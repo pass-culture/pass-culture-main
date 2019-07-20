@@ -25,6 +25,7 @@ ShallowWrapper {
         ],
       }
     }
+    isFeatureDisabled={false}
     recommendation={
       Object {
         "offer": Object {
@@ -53,7 +54,7 @@ ShallowWrapper {
         title="Ajouter aux favoris"
       />,
       "className": "fav-button",
-      "disabled": undefined,
+      "disabled": false,
       "onClick": undefined,
       "type": "button",
     },
@@ -85,7 +86,7 @@ ShallowWrapper {
           title="Ajouter aux favoris"
         />,
         "className": "fav-button",
-        "disabled": undefined,
+        "disabled": false,
         "onClick": undefined,
         "type": "button",
       },

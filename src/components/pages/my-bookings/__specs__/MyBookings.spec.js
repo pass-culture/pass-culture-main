@@ -2,9 +2,10 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import LoaderContainer from '../../../layout/Loader/LoaderContainer'
+import MyBookingContainer from '../MyBooking/MyBookingContainer'
 import MyBookings from '../MyBookings'
 import NavigationFooter from '../../../layout/NavigationFooter'
-import NoBookings from '../NoBookings'
+import NoItems from '../../../layout/NoItems/NoItems'
 import PageHeader from '../../../layout/Header/PageHeader'
 
 describe('src | components | pages | my-bookings | MyBookings', () => {
@@ -26,8 +27,16 @@ describe('src | components | pages | my-bookings | MyBookings', () => {
     }
   })
 
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<MyBookings {...props} />)
+
+    // then
+    expect(wrapper).toMatchSnapshot()
+  })
+
   describe('handleFail()', () => {
-    it('should handle fail', () => {
+    it('should set hasError and isLoading to true in component state', () => {
       // given
       const wrapper = shallow(<MyBookings {...props} />)
 
@@ -41,7 +50,7 @@ describe('src | components | pages | my-bookings | MyBookings', () => {
   })
 
   describe('handleSuccess()', () => {
-    it('should handle success', () => {
+    it('should set isLoading to false in component state', () => {
       // given
       const wrapper = shallow(<MyBookings {...props} />)
 
@@ -49,7 +58,6 @@ describe('src | components | pages | my-bookings | MyBookings', () => {
       wrapper.instance().handleSuccess({}, { payload: { data: [] } })
 
       // then
-      expect(wrapper.state('isEmpty')).toBe(true)
       expect(wrapper.state('isLoading')).toBe(false)
     })
   })
@@ -69,30 +77,35 @@ describe('src | components | pages | my-bookings | MyBookings', () => {
       expect(navigationFooter).toHaveLength(1)
     })
 
-    it('should render the Loader when there is something wrong with API', () => {
-      // when
-      const wrapper = shallow(<MyBookings {...props} />)
+    describe('when there is something wrong with API', () => {
+      it('should render the Loader', () => {
+        // when
+        const wrapper = shallow(<MyBookings {...props} />)
 
-      // then
-      const loaderContainer = wrapper.find(LoaderContainer)
-      expect(loaderContainer).toHaveLength(1)
+        // then
+        const loaderContainer = wrapper.find(LoaderContainer)
+        expect(loaderContainer).toHaveLength(1)
+      })
     })
 
-    it('should not render my bookings when there are no bookings', () => {
-      // given
-      props.myBookings = []
-      props.soonBookings = []
+    describe('when there are no bookings', () => {
+      it('should not render my bookings', () => {
+        // given
+        props.myBookings = []
+        props.soonBookings = []
 
-      // when
-      const wrapper = shallow(<MyBookings {...props} />)
-      wrapper.setState({
-        isEmpty: true,
-        isLoading: false,
+        // when
+        const wrapper = shallow(<MyBookings {...props} />)
+        wrapper.setState({
+          isLoading: false,
+        })
+
+        // then
+        const noItems = wrapper.find(NoItems)
+        expect(noItems).toHaveLength(1)
+        const myBookingContainer = wrapper.find(MyBookingContainer)
+        expect(myBookingContainer).toHaveLength(0)
       })
-
-      // then
-      const noBookings = wrapper.find(NoBookings)
-      expect(noBookings).toHaveLength(1)
     })
   })
 })

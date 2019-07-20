@@ -28,6 +28,10 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
               id: 2,
               isFinished: false,
               stocks: [{}],
+              venue: {
+                latitude: 48.91683,
+                longitude: 2.4388,
+              },
             },
             offerId: 2,
             uniqId: 3,

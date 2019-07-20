@@ -209,6 +209,7 @@ describe('selectRecommendations', () => {
         expect(result[0].distance).toStrictEqual('6 m')
       })
     })
+
     describe('when recommendation and user are less than 100 meters away', () => {
       it('should return 65 meters when distance is 66.79 meters', () => {
         // given
@@ -243,6 +244,7 @@ describe('selectRecommendations', () => {
         expect(result[0].distance).toStrictEqual('65 m')
       })
     })
+
     describe('when recommendation and user are less than 1000 meters away', () => {
       it('should return 470 meters when distance is 473.10 meters', () => {
         // given
@@ -373,168 +375,6 @@ describe('selectRecommendations', () => {
           geolocation: {
             latitude: null,
             longitude: null,
-            watchId: 0,
-          },
-        }
-
-        // when
-        const result = selectRecommendations(state)
-
-        // then
-        expect(result[0].distance).toStrictEqual('-')
-      })
-    })
-
-    describe('when there is no offer for the recommendation', () => {
-      it('returns "-" as distance', () => {
-        // given
-        const state = {
-          data: {
-            recommendations: [
-              {
-                bookingsIds: [],
-                dateCreated: '2018-10-10T14:19:27.410551Z',
-                dateRead: null,
-                dateUpdated: '2018-10-10T14:19:27.410609Z',
-                id: 'AEWPS',
-                inviteforEventOccurrenceId: null,
-                isClicked: true,
-                isFavorite: false,
-                isFirst: false,
-                mediation: {
-                  authorId: 'AMTQ',
-                  backText: null,
-                  credit: 'undefined',
-                  dateCreated: '2018-09-12T08:35:27.948370Z',
-                  dateModifiedAtLastProvider: '2018-09-12T08:35:27.948349Z',
-                  firstThumbDominantColor: [237, 235, 231],
-                  frontText: null,
-                  id: 'AKSA',
-                  idAtProviders: null,
-                  isActive: true,
-                  lastProviderId: null,
-                  modelName: 'Mediation',
-                  offerId: 'AKLA',
-                  thumbCount: 1,
-                  tutoIndex: null,
-                },
-                mediationId: 'AKSA',
-                modelName: 'Recommendation',
-                search: 'page=1',
-                shareMedium: null,
-                userId: 'AQBA',
-                validUntilDate: '2018-10-13T14:19:27.442986Z',
-              },
-            ],
-          },
-          geolocation: {
-            latitude: 48.8637,
-            longitude: 2.3374,
-            watchId: 0,
-          },
-        }
-
-        // when
-        const result = selectRecommendations(state)
-
-        // then
-        expect(result[0].distance).toStrictEqual('-')
-      })
-    })
-
-    describe('when there is no venue for the recommendation', () => {
-      it('returns "-" as distance', () => {
-        // given
-        const state = {
-          data: {
-            recommendations: [
-              {
-                bookingsIds: [],
-                dateCreated: '2018-10-10T14:19:27.410551Z',
-                dateRead: null,
-                dateUpdated: '2018-10-10T14:19:27.410609Z',
-                id: 'AEWPS',
-                inviteforEventOccurrenceId: null,
-                isClicked: true,
-                isFavorite: false,
-                isFirst: false,
-                mediation: {
-                  authorId: 'AMTQ',
-                  backText: null,
-                  credit: 'undefined',
-                  dateCreated: '2018-09-12T08:35:27.948370Z',
-                  dateModifiedAtLastProvider: '2018-09-12T08:35:27.948349Z',
-                  firstThumbDominantColor: [237, 235, 231],
-                  frontText: null,
-                  id: 'AKSA',
-                  idAtProviders: null,
-                  isActive: true,
-                  lastProviderId: null,
-                  modelName: 'Mediation',
-                  offerId: 'AKLA',
-                  thumbCount: 1,
-                  tutoIndex: null,
-                },
-                mediationId: 'AKSA',
-                modelName: 'Recommendation',
-                offer: {
-                  bookingEmail: null,
-                  dateCreated: '2018-09-12T08:19:01.614549Z',
-                  dateModifiedAtLastProvider: '2018-09-12T08:19:01.614532Z',
-                  dateRange: [],
-                  id: 'AKLA',
-                  idAtProviders: null,
-                  isActive: true,
-                  lastProviderId: null,
-                  modelName: 'Offer',
-                  product: {
-                    dateModifiedAtLastProvider: '2018-09-12T08:19:01.612018Z',
-                    description:
-                      'LA TOILE est une plateforme VOD qui vous propose une programmation complémentaire en lien avec VOTRE salle de cinéma. ',
-                    extraData: null,
-                    firstThumbDominantColor: null,
-                    id: 'BE',
-                    idAtProviders: null,
-                    isNational: false,
-                    lastProviderId: null,
-                    mediaUrls: [],
-                    modelName: 'Product',
-                    name: 'La Toile VOD',
-                    thumbCount: 0,
-                    type: 'AUDIOVISUEL',
-                    url: 'https://www.la-toile-vod.com/login',
-                  },
-                  stocks: [
-                    {
-                      available: 200,
-                      beginningDatetime: null,
-                      bookingLimitDatetime: null,
-                      bookingRecapSent: null,
-                      dateModified: '2018-09-12T15:13:50.187143Z',
-                      dateModifiedAtLastProvider: '2018-09-12T15:13:50.187134Z',
-                      endDatetime: null,
-                      groupSize: 1,
-                      id: 'C8PA',
-                      idAtProviders: null,
-                      isSoftDeleted: false,
-                      lastProviderId: null,
-                      modelName: 'Stock',
-                      offerId: 'AKLA',
-                      price: 3,
-                    },
-                  ],
-                },
-                offerId: 'AKLA',
-                search: 'page=1',
-                shareMedium: null,
-                userId: 'AQBA',
-                validUntilDate: '2018-10-13T14:19:27.442986Z',
-              },
-            ],
-          },
-          geolocation: {
-            latitude: 48.8637,
-            longitude: 2.3374,
             watchId: 0,
           },
         }

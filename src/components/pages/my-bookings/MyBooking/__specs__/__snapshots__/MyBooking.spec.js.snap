@@ -1,0 +1,602 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | my-bookings | MyBooking | MyBooking should match the snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <MyBooking
+    name="Fake booking to much longer"
+    ribbon={
+      Object {
+        "label": "Demain",
+        "type": "tomorrow",
+      }
+    }
+    stringifyDate="Permanent"
+    thumbUrl={null}
+    token="g9g9g9"
+    type="thing"
+    versoUrl="https://example.net/decouverte/ME/FA/verso"
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": <Link
+        className="teaser-link"
+        replace={false}
+        to="https://example.net/decouverte/ME/FA/verso"
+      >
+        <div
+          className="teaser-thumb"
+        />
+        <div
+          className="teaser-wrapper"
+        >
+          <div
+            className="mb-heading"
+          >
+            <div
+              className="teaser-title"
+            >
+              Fake booking to much longer
+            </div>
+            <div
+              className="teaser-sub-title"
+            >
+              Permanent
+            </div>
+          </div>
+          <div
+            className="mb-token"
+          >
+            g9g9g9
+          </div>
+        </div>
+        <div
+          className="teaser-arrow"
+        >
+          <Ribbon
+            label="Demain"
+            placement="right"
+            type="tomorrow"
+          />
+          <Icon
+            alt={null}
+            className="teaser-arrow-img"
+            src={null}
+            svg="ico-next-S"
+          />
+        </div>
+      </Link>,
+      "className": "mb-my-booking",
+      "data-token": "g9g9g9",
+    },
+    "ref": null,
+    "rendered": Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "class",
+      "props": Object {
+        "children": Array [
+          <div
+            className="teaser-thumb"
+          />,
+          <div
+            className="teaser-wrapper"
+          >
+            <div
+              className="mb-heading"
+            >
+              <div
+                className="teaser-title"
+              >
+                Fake booking to much longer
+              </div>
+              <div
+                className="teaser-sub-title"
+              >
+                Permanent
+              </div>
+            </div>
+            <div
+              className="mb-token"
+            >
+              g9g9g9
+            </div>
+          </div>,
+          <div
+            className="teaser-arrow"
+          >
+            <Ribbon
+              label="Demain"
+              placement="right"
+              type="tomorrow"
+            />
+            <Icon
+              alt={null}
+              className="teaser-arrow-img"
+              src={null}
+              svg="ico-next-S"
+            />
+          </div>,
+        ],
+        "className": "teaser-link",
+        "replace": false,
+        "to": "https://example.net/decouverte/ME/FA/verso",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": null,
+            "className": "teaser-thumb",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <div
+                className="mb-heading"
+              >
+                <div
+                  className="teaser-title"
+                >
+                  Fake booking to much longer
+                </div>
+                <div
+                  className="teaser-sub-title"
+                >
+                  Permanent
+                </div>
+              </div>,
+              <div
+                className="mb-token"
+              >
+                g9g9g9
+              </div>,
+            ],
+            "className": "teaser-wrapper",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <div
+                    className="teaser-title"
+                  >
+                    Fake booking to much longer
+                  </div>,
+                  <div
+                    className="teaser-sub-title"
+                  >
+                    Permanent
+                  </div>,
+                ],
+                "className": "mb-heading",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Fake booking to much longer",
+                    "className": "teaser-title",
+                  },
+                  "ref": null,
+                  "rendered": "Fake booking to much longer",
+                  "type": "div",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Permanent",
+                    "className": "teaser-sub-title",
+                  },
+                  "ref": null,
+                  "rendered": "Permanent",
+                  "type": "div",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "g9g9g9",
+                "className": "mb-token",
+              },
+              "ref": null,
+              "rendered": "g9g9g9",
+              "type": "div",
+            },
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <Ribbon
+                label="Demain"
+                placement="right"
+                type="tomorrow"
+              />,
+              <Icon
+                alt={null}
+                className="teaser-arrow-img"
+                src={null}
+                svg="ico-next-S"
+              />,
+            ],
+            "className": "teaser-arrow",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "label": "Demain",
+                "placement": "right",
+                "type": "tomorrow",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "alt": null,
+                "className": "teaser-arrow-img",
+                "src": null,
+                "svg": "ico-next-S",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+          ],
+          "type": "div",
+        },
+      ],
+      "type": [Function],
+    },
+    "type": "li",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <Link
+          className="teaser-link"
+          replace={false}
+          to="https://example.net/decouverte/ME/FA/verso"
+        >
+          <div
+            className="teaser-thumb"
+          />
+          <div
+            className="teaser-wrapper"
+          >
+            <div
+              className="mb-heading"
+            >
+              <div
+                className="teaser-title"
+              >
+                Fake booking to much longer
+              </div>
+              <div
+                className="teaser-sub-title"
+              >
+                Permanent
+              </div>
+            </div>
+            <div
+              className="mb-token"
+            >
+              g9g9g9
+            </div>
+          </div>
+          <div
+            className="teaser-arrow"
+          >
+            <Ribbon
+              label="Demain"
+              placement="right"
+              type="tomorrow"
+            />
+            <Icon
+              alt={null}
+              className="teaser-arrow-img"
+              src={null}
+              svg="ico-next-S"
+            />
+          </div>
+        </Link>,
+        "className": "mb-my-booking",
+        "data-token": "g9g9g9",
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "children": Array [
+            <div
+              className="teaser-thumb"
+            />,
+            <div
+              className="teaser-wrapper"
+            >
+              <div
+                className="mb-heading"
+              >
+                <div
+                  className="teaser-title"
+                >
+                  Fake booking to much longer
+                </div>
+                <div
+                  className="teaser-sub-title"
+                >
+                  Permanent
+                </div>
+              </div>
+              <div
+                className="mb-token"
+              >
+                g9g9g9
+              </div>
+            </div>,
+            <div
+              className="teaser-arrow"
+            >
+              <Ribbon
+                label="Demain"
+                placement="right"
+                type="tomorrow"
+              />
+              <Icon
+                alt={null}
+                className="teaser-arrow-img"
+                src={null}
+                svg="ico-next-S"
+              />
+            </div>,
+          ],
+          "className": "teaser-link",
+          "replace": false,
+          "to": "https://example.net/decouverte/ME/FA/verso",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": null,
+              "className": "teaser-thumb",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <div
+                  className="mb-heading"
+                >
+                  <div
+                    className="teaser-title"
+                  >
+                    Fake booking to much longer
+                  </div>
+                  <div
+                    className="teaser-sub-title"
+                  >
+                    Permanent
+                  </div>
+                </div>,
+                <div
+                  className="mb-token"
+                >
+                  g9g9g9
+                </div>,
+              ],
+              "className": "teaser-wrapper",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <div
+                      className="teaser-title"
+                    >
+                      Fake booking to much longer
+                    </div>,
+                    <div
+                      className="teaser-sub-title"
+                    >
+                      Permanent
+                    </div>,
+                  ],
+                  "className": "mb-heading",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "Fake booking to much longer",
+                      "className": "teaser-title",
+                    },
+                    "ref": null,
+                    "rendered": "Fake booking to much longer",
+                    "type": "div",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "Permanent",
+                      "className": "teaser-sub-title",
+                    },
+                    "ref": null,
+                    "rendered": "Permanent",
+                    "type": "div",
+                  },
+                ],
+                "type": "div",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "g9g9g9",
+                  "className": "mb-token",
+                },
+                "ref": null,
+                "rendered": "g9g9g9",
+                "type": "div",
+              },
+            ],
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <Ribbon
+                  label="Demain"
+                  placement="right"
+                  type="tomorrow"
+                />,
+                <Icon
+                  alt={null}
+                  className="teaser-arrow-img"
+                  src={null}
+                  svg="ico-next-S"
+                />,
+              ],
+              "className": "teaser-arrow",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "label": "Demain",
+                  "placement": "right",
+                  "type": "tomorrow",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "alt": null,
+                  "className": "teaser-arrow-img",
+                  "src": null,
+                  "svg": "ico-next-S",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+            ],
+            "type": "div",
+          },
+        ],
+        "type": [Function],
+      },
+      "type": "li",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+}
+`;

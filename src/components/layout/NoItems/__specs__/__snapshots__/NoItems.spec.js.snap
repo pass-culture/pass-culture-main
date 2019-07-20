@@ -1,9 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | my-bookings | NoBookings should match the snapshot 1`] = `
+exports[`src | components | layout | NoItems should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <NoBookings />,
+  Symbol(enzyme.__unrendered__): <NoItems
+    sentence="Une phrase d'accroche"
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -20,16 +22,16 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <Link
-          className="mb-link-offers"
+          className="teaser-link-offers"
           replace={false}
           to="/decouverte"
         >
           Lancez-vous
         </Link>,
         <p
-          className="mb-text"
+          className="teaser-text"
         >
-          Dès que vous aurez réservé une offre,
+          Une phrase d'accroche
           <br />
           vous la retrouverez ici.
         </p>,
@@ -43,7 +45,7 @@ ShallowWrapper {
         "nodeType": "class",
         "props": Object {
           "children": "Lancez-vous",
-          "className": "mb-link-offers",
+          "className": "teaser-link-offers",
           "replace": false,
           "to": "/decouverte",
         },
@@ -57,15 +59,15 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            "Dès que vous aurez réservé une offre,",
+            "Une phrase d'accroche",
             <br />,
             "vous la retrouverez ici.",
           ],
-          "className": "mb-text",
+          "className": "teaser-text",
         },
         "ref": null,
         "rendered": Array [
-          "Dès que vous aurez réservé une offre,",
+          "Une phrase d'accroche",
           Object {
             "instance": null,
             "key": undefined,
@@ -90,16 +92,16 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <Link
-            className="mb-link-offers"
+            className="teaser-link-offers"
             replace={false}
             to="/decouverte"
           >
             Lancez-vous
           </Link>,
           <p
-            className="mb-text"
+            className="teaser-text"
           >
-            Dès que vous aurez réservé une offre,
+            Une phrase d'accroche
             <br />
             vous la retrouverez ici.
           </p>,
@@ -113,7 +115,7 @@ ShallowWrapper {
           "nodeType": "class",
           "props": Object {
             "children": "Lancez-vous",
-            "className": "mb-link-offers",
+            "className": "teaser-link-offers",
             "replace": false,
             "to": "/decouverte",
           },
@@ -127,15 +129,15 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              "Dès que vous aurez réservé une offre,",
+              "Une phrase d'accroche",
               <br />,
               "vous la retrouverez ici.",
             ],
-            "className": "mb-text",
+            "className": "teaser-text",
           },
           "ref": null,
           "rendered": Array [
-            "Dès que vous aurez réservé une offre,",
+            "Une phrase d'accroche",
             Object {
               "instance": null,
               "key": undefined,

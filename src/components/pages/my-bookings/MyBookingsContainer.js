@@ -6,11 +6,10 @@ import { withRequiredLogin } from '../../hocs'
 import MyBookings from './MyBookings'
 import { selectSoonBookings, selectMyBookings } from '../../../selectors'
 
-export const mapStateToProps = state => {
-  const myBookings = selectMyBookings(state)
-  const soonBookings = selectSoonBookings(state)
-  return { myBookings, soonBookings }
-}
+export const mapStateToProps = state => ({
+  myBookings: selectMyBookings(state),
+  soonBookings: selectSoonBookings(state),
+})
 
 export const mapDispatchToProps = dispatch => ({
   getMyBookings: (handleFail, handleSuccess) => {

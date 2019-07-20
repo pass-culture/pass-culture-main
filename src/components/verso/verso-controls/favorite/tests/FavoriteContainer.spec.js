@@ -124,7 +124,7 @@ describe('src | components | verso | verso-controls | favorite | FavoriteContain
           method: 'POST',
           stateKey: 'favorites',
         },
-        type: 'REQUEST_DATA_POST_OFFERSFAVORITES',
+        type: 'REQUEST_DATA_POST_FAVORITES',
       })
     })
 
@@ -154,7 +154,7 @@ describe('src | components | verso | verso-controls | favorite | FavoriteContain
           method: 'DELETE',
           stateKey: 'favorites',
         },
-        type: 'REQUEST_DATA_DELETE_OFFERSFAVORITES',
+        type: 'REQUEST_DATA_DELETE_FAVORITES',
       })
     })
   })

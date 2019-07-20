@@ -1,29 +1,3 @@
-.pc-background-white {
-  background-color: $white;
-}
-
-.pc-background-black {
-  background-color: $black;
-}
-
-.pc-background-red,
-.pc-background-primary {
-  background-color: $primary;
-}
-
-.pc-background-dark-red,
-.pc-background-dark-primary {
-  background-color: $red-dark;
-}
-
-.pc-background-green {
-  background-color: $ribbon-green;
-}
-
-.pc-background-yellow {
-  background-color: $ribbon-yellow;
-}
-
 .pc-theme-purple {
   @extend .is-white-text;
 
@@ -50,7 +24,8 @@
 
 .pc-theme-default {
   @extend .is-black-text;
-  @extend .pc-background-white;
+
+  background-color: $white;
 
   [class*='border-'] {
     border-color: $black;
@@ -59,7 +34,8 @@
 
 .pc-theme-black {
   @extend .is-white-text;
-  @extend .pc-background-black;
+
+  background-color: $black;
 
   [class*='border-'] {
     border-color: $white;
@@ -78,17 +54,8 @@
 .pc-theme-red,
 .pc-theme-primary {
   @extend .is-white-text;
-  @extend .pc-background-primary;
 
-  [class*='border-'] {
-    border-color: $white;
-  }
-}
-
-.pc-theme-dark-red,
-.pc-theme-dark-primary {
-  @extend .is-white-text;
-  @extend .pc-background-dark-primary;
+  background-color: $primary;
 
   [class*='border-'] {
     border-color: $white;

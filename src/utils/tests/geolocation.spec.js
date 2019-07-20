@@ -1,0 +1,123 @@
+import { computeDistanceInMeters, humanizeDistance, humanizeRelativeDistance } from '../geolocation'
+
+describe('src | utils | geolocation', () => {
+  describe('humanizeRelativeDistance()', () => {
+    describe('when there are no user latitude and longitude', () => {
+      it('should return "-"', () => {
+        // given
+        const venueLatitude = 48.92763
+        const venueLongitude = 2.49043
+
+        // when
+        const distance = humanizeRelativeDistance(venueLatitude, venueLongitude)
+
+        // then
+        expect(distance).toBe('-')
+      })
+    })
+
+    describe('when the user is geolocalized', () => {
+      it('should return 13 km', () => {
+        // given
+        const venueLatitude = 48.92763
+        const venueLongitude = 2.49043
+        const userLatitude = 48.863654499999996
+        const userLongitude = 2.3371120999999997
+
+        // when
+        const distance = humanizeRelativeDistance(
+          venueLatitude,
+          venueLongitude,
+          userLatitude,
+          userLongitude
+        )
+
+        // then
+        expect(distance).toBe('13 km')
+      })
+    })
+  })
+
+  describe('computeDistanceInMeters()', () => {
+    it('should return the difference between two geolocalized points', () => {
+      // given
+      const latitudeA = -48.92763
+      const longitudeA = 2.49043
+      const latitudeB = 58.92763
+      const longitudeB = 12.49043
+
+      // when
+      const distance = computeDistanceInMeters(latitudeA, longitudeA, latitudeB, longitudeB)
+
+      // then
+      expect(distance).toBe(12040943.568007572)
+    })
+  })
+
+  describe('humanizeDistance()', () => {
+    describe('when raw distance is less than 30', () => {
+      it('should return "10 m"', () => {
+        // given
+        const rawDistance = 10
+
+        // when
+        const distance = humanizeDistance(rawDistance)
+
+        // then
+        expect(distance).toBe('10 m')
+      })
+    })
+
+    describe('when raw distance is less than 100', () => {
+      it('should return "50 m"', () => {
+        // given
+        const rawDistance = 50
+
+        // when
+        const distance = humanizeDistance(rawDistance)
+
+        // then
+        expect(distance).toBe('50 m')
+      })
+    })
+
+    describe('when raw distance is less than 1000', () => {
+      it('should return "500 m"', () => {
+        // given
+        const rawDistance = 500
+
+        // when
+        const distance = humanizeDistance(rawDistance)
+
+        // then
+        expect(distance).toBe('500 m')
+      })
+    })
+
+    describe('when raw distance is less than 5000', () => {
+      it('should return "2.5 km"', () => {
+        // given
+        const rawDistance = 2500
+
+        // when
+        const distance = humanizeDistance(rawDistance)
+
+        // then
+        expect(distance).toBe('2.5 km')
+      })
+    })
+
+    describe('when raw distance is more than 5000', () => {
+      it('should return "13 km"', () => {
+        // given
+        const rawDistance = 12500
+
+        // when
+        const distance = humanizeDistance(rawDistance)
+
+        // then
+        expect(distance).toBe('13 km')
+      })
+    })
+  })
+})

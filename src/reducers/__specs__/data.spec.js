@@ -12,6 +12,7 @@ describe('src | reducers | data', () => {
       // then
       const expected = {
         bookings: [],
+        favorites: [],
         features: [],
         readRecommendations: [],
         recommendations: [],
@@ -25,7 +26,7 @@ describe('src | reducers | data', () => {
   describe('lastRecommendationsRequestTimestamp()', () => {
     it('should return the date of now', () => {
       // given
-      jest.spyOn(Date, 'now').mockImplementation(() => '31/05/1982')
+      jest.spyOn(global.Date, 'now').mockImplementation(() => '31/05/1982')
       const state = 0
       const action = {
         type: 'SAVE_RECOMMENDATIONS_REQUEST_TIMESTAMP',
@@ -35,7 +36,7 @@ describe('src | reducers | data', () => {
       const lastRecommendations = lastRecommendationsRequestTimestamp(state, action)
 
       // then
-      expect(lastRecommendations).toStrictEqual('31/05/1982')
+      expect(lastRecommendations).toBe('31/05/1982')
     })
 
     it('should return the initial state', () => {
@@ -49,7 +50,7 @@ describe('src | reducers | data', () => {
       const lastRecommendations = lastRecommendationsRequestTimestamp(state, action)
 
       // then
-      expect(lastRecommendations).toStrictEqual(state)
+      expect(lastRecommendations).toBe(state)
     })
   })
 })

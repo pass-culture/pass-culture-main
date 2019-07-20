@@ -4,6 +4,7 @@ exports[`src | components | menu | MenuItem should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <MenuItem
+    disabled={false}
     item={
       Object {
         "icon": "offres-w",
@@ -31,7 +32,7 @@ ShallowWrapper {
         title="Fake title"
       />,
       "className": "flex-columns mx12 navlink",
-      "disabled": undefined,
+      "disabled": false,
       "replace": false,
       "role": "menuitem",
       "to": "/plop",
@@ -62,7 +63,7 @@ ShallowWrapper {
           title="Fake title"
         />,
         "className": "flex-columns mx12 navlink",
-        "disabled": undefined,
+        "disabled": false,
         "replace": false,
         "role": "menuitem",
         "to": "/plop",

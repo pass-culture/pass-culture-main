@@ -24,6 +24,10 @@ describe('src | components | verso | verso-controls | VersoControlContainer', ()
               isFinished: false,
               productId: 'BAFA',
               stocks: [{ id: 'AB' }, { id: 'BA' }],
+              venue: {
+                latitude: 48.91683,
+                longitude: 2.4388,
+              },
             },
             offerId: 'AE',
           },

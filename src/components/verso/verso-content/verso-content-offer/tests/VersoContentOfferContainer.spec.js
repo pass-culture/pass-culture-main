@@ -13,6 +13,10 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
               offer: {
                 isFinished: false,
                 stocks: [{}],
+                venue: {
+                  latitude: 48.91683,
+                  longitude: 2.4388,
+                },
               },
               offerId: 1,
               uniqId: 3,

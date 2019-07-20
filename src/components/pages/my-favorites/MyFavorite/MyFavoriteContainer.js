@@ -1,88 +1,101 @@
-import moment from 'moment'
-import { capitalize } from 'react-final-form-utils'
 import { connect } from 'react-redux'
 
 import MyFavorite from './MyFavorite'
-import get from "lodash.get";
-import {computeDistanceInMeters, humanizeDistance} from "../../../../utils/geolocation";
-import {humanizeBeginningDate, markAsBooked} from "../../../../selectors/selectBookables";
+import { humanizeRelativeDate } from '../../../../utils/date/date'
+import { humanizeRelativeDistance } from '../../../../utils/geolocation'
+import { versoUrl } from '../../../../utils/url/url'
 
-export const stringify = date => timeZone =>
-  capitalize(
-    moment(date)
-      .tz(timeZone)
-      .format('dddd DD/MM/YYYY à H:mm')
-  )
+export const hasBookings = offer => offer.stocks.some(stock => stock.bookings.length > 0)
 
+export const isBooked = offer => {
+  let flag = false
 
-export const urlOf = myFavorite => {
-  const {mediationId, offerId} = myFavorite
-  const urlElements = ['', 'decouverte', offerId, 'verso']
-  if (mediationId) {
-    urlElements.splice(3, 0, mediationId)
+  offer.stocks.forEach(stock => {
+    stock.bookings.forEach(booking => {
+      if (!booking.isCancelled) {
+        flag = true
+      }
+    })
+  })
+
+  return flag
+}
+
+export const reservationStatus = (
+  isFinished,
+  isFullyBooked,
+  hasBookings,
+  isBooked,
+  humanizeRelativeDate = ''
+) => {
+  if (isFinished) {
+    return {
+      label: 'Terminé',
+      class: 'finished',
+    }
+  } else if (isFullyBooked) {
+    return {
+      label: 'Épuisé',
+      class: 'fully-booked',
+    }
+  } else if (hasBookings) {
+    if (isBooked) {
+      return {
+        label: 'Réservé',
+        class: 'booked',
+      }
+    } else {
+      return {
+        label: 'Annulé',
+        class: 'cancelled',
+      }
+    }
+  } else if (humanizeRelativeDate) {
+    if (humanizeRelativeDate === 'Demain') {
+      return {
+        label: humanizeRelativeDate,
+        class: 'tomorrow',
+      }
+    } else {
+      return {
+        label: humanizeRelativeDate,
+        class: 'today',
+      }
+    }
   }
 
-  return urlElements.join('/')
+  return null
 }
 
 export const mapStateToProps = (state, ownProps) => {
   const { favorite } = ownProps
-  const { mediation, offer } = favorite || {}
-  const { name, venue, isFinished, stocks, isFullyBooked } = offer
-  const type = get(offer.product, 'offerType.appLabel')
-  const { thumbUrl } = mediation
-
-  const offerDateInfos = get(offer, 'dateRange[0]')
-  const latitude = state.geolocation.latitude
-  const longitude = state.geolocation.longitude
-
-  const isBooked = stocks.some( stock => {
-    return stock.bookings.length > 0
-  })
-
-  const offerDate = new Date(offerDateInfos)
-  const today = new Date()
-  const delta = Math.round((offerDate.getTime() - today.getTime()) / 1000)
-
-  const minute = 60,
-    hour = minute * 60,
-    day = hour * 24,
-    week = day * 7
-
-  let relativeDate
-
-  if (delta > 0 && delta < day) {
-    relativeDate = "AUJOURD'HUI";
-  } else if (delta > day * 1) {
-    relativeDate = 'DEMAIN';
-  } else if (delta > week) {
-    relativeDate = 'SEMAINE PROCHAINE';
-  }
-
-  let distance
-  if (!latitude || !longitude || !offer || !venue) {
-    distance = '-'
-  } else {
-    const distanceInMeters = computeDistanceInMeters(
-      latitude,
-      longitude,
-      venue.latitude,
-      venue.longitude
-    )
-    distance = humanizeDistance(distanceInMeters)
-  }
+  const { mediation, offer } = favorite
+  const { latitude, longitude } = state.geolocation
+  const offerBeginningDate = offer.dateRange[0] || null
+  const {
+    product: {
+      offerType: { appLabel = '' },
+    },
+  } = offer
 
   return {
-    name: name,
-    type: type,
-    dateInfos: offerDateInfos,
-    distance: distance,
-    isFinished: isFinished,
-    isBooked: isBooked,
-    isFullyBooked: isFullyBooked,
-    relativeDate: relativeDate,
-    offerVersoUrl: urlOf(favorite),
-    thumbUrl: thumbUrl,
+    humanizeRelativeDistance: humanizeRelativeDistance(
+      offer.venue.latitude,
+      offer.venue.longitude,
+      latitude,
+      longitude
+    ),
+    name: offer.name,
+    offerTypeLabel: appLabel,
+    status: reservationStatus(
+      offer.isFinished,
+      offer.isFullyBooked,
+      hasBookings(offer),
+      isBooked(offer),
+      offerBeginningDate ? humanizeRelativeDate(offerBeginningDate) : null
+    ),
+    thumbUrl: mediation.thumbUrl,
+    versoUrl: versoUrl(favorite.offerId, favorite.mediationId),
   }
 }
 

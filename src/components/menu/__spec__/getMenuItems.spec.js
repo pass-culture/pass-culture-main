@@ -1,6 +1,6 @@
 import getMenuItems from '../getMenuItems'
 import DiscoveryContainer from '../../pages/discovery/DiscoveryContainer'
-import FavoritesPage from '../../pages/FavoritesPage'
+import MyFavoritesContainer from '../../pages/my-favorites/MyFavoritesContainer'
 import MyBookingsContainer from '../../pages/my-bookings/MyBookingsContainer'
 import ProfilePage from '../../pages/profile'
 import SearchContainer from '../../pages/search/SearchContainer'
@@ -51,11 +51,11 @@ describe('getMenuItems', () => {
         title: 'Mes réservations',
       },
       {
-        component: FavoritesPage,
+        component: MyFavoritesContainer,
         featureName: 'FAVORITE_OFFER',
         icon: 'like-w',
         path: '/favoris',
-        title: 'Mes préférés',
+        title: 'Mes favoris',
       },
       {
         component: ProfilePage,

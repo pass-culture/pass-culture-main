@@ -2,9 +2,9 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
-import MyBookingContainer from './MyBookingContainer'
+import MyBookingContainer from './MyBooking/MyBookingContainer'
 import NavigationFooter from '../../layout/NavigationFooter'
-import NoBookings from './NoBookings'
+import NoItems from '../../layout/NoItems/NoItems'
 import PageHeader from '../../layout/Header/PageHeader'
 
 class MyBookings extends Component {
@@ -13,7 +13,6 @@ class MyBookings extends Component {
 
     this.state = {
       hasError: false,
-      isEmpty: false,
       isLoading: true,
     }
   }
@@ -42,16 +41,16 @@ class MyBookings extends Component {
     })
   }
 
-  handleSuccess = (state, action) => {
+  handleSuccess = () => {
     this.setState({
-      isEmpty: action.payload.data.length === 0,
       isLoading: false,
     })
   }
 
   render() {
     const { soonBookings, myBookings } = this.props
-    const { isEmpty, isLoading, hasError } = this.state
+    const { isLoading, hasError } = this.state
+    const isEmpty = soonBookings.length === 0 && myBookings.length === 0
 
     if (isLoading) {
       return (<LoaderContainer
@@ -61,10 +60,10 @@ class MyBookings extends Component {
     }
 
     return (
-      <div className="my-bookings">
+      <div className="teaser-list">
         <PageHeader title="Mes réservations" />
-        <main className={isEmpty ? 'mb-main mb-no-bookings' : 'mb-main'}>
-          {isEmpty && <NoBookings />}
+        <main className={isEmpty ? 'teaser-main teaser-no-teasers' : 'teaser-main'}>
+          {isEmpty && <NoItems sentence="Dès que vous aurez réservé une offre," />}
 
           {soonBookings.length > 0 && (
             <section className="mb-section">

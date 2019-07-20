@@ -96,8 +96,8 @@ test('Menu | Liens | Mes réservations', async t => {
   await t.expect(location.pathname).eql('/reservations')
 })
 
-test('Menu | Liens | Mes préférés', async t => {
-  const menuFavoris = Selector('.navlink').withText('Mes préférés')
+test('Menu | Liens | Mes favoris', async t => {
+  const menuFavoris = Selector('.navlink').withText('Mes favoris')
   await t
     .expect(menuFavoris.exists)
     .ok()

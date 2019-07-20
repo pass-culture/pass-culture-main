@@ -1,0 +1,79 @@
+.teaser-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.teaser-main {
+  background-image: linear-gradient(to bottom right, $red, $purple-blue);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: auto;
+}
+
+.teaser-link {
+  display: flex;
+  height: 150px;
+}
+
+.teaser-thumb {
+  display: flex;
+  width: 30%;
+}
+
+.teaser-wrapper {
+  @include dotted($primary, left);
+
+  width: 55%;
+}
+
+.teaser-title {
+  @include multiLineEllipsis();
+
+  color: $black;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.teaser-sub-title {
+  color: $grey;
+  font-size: 0.8rem;
+  padding-top: 0.3rem;
+}
+
+.teaser-arrow {
+  align-items: center;
+  display: flex;
+  position: relative;
+  width: 15%;
+}
+
+.teaser-arrow-img {
+  margin: auto;
+}
+
+.teaser-no-teasers {
+  align-items: center;
+  justify-content: center;
+}
+
+.teaser-link-offers {
+  border: 2px solid $white;
+  border-radius: 2px;
+  color: $white;
+  display: block;
+  font-weight: 500;
+  font-size: 1.4rem;
+  margin-bottom: 0.75rem;
+  padding: 0.4rem 1.5rem;
+
+  &:hover {
+    color: $white;
+  }
+}
+
+.teaser-text {
+  color: $white;
+  text-align: center;
+}

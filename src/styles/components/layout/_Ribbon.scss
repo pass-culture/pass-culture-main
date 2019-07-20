@@ -43,14 +43,20 @@
 }
 
 .ribbon-today span {
-  @extend .pc-background-green;
+  background-color: $ribbon-blue;
+  color: white;
 }
 
 .ribbon-tomorrow span {
-  @extend .pc-background-yellow;
+  background-color: $ribbon-yellow;
 }
 
 .ribbon-cancelled span {
-  @extend .pc-background-red;
+  background-color: $ribbon-red;
+  color: white;
+}
+
+.ribbon-finished span {
+  background-color: $grey-finished;
   color: white;
 }
