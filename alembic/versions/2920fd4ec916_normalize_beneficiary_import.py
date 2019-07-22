@@ -15,9 +15,11 @@ down_revision = '7906543b4e96'
 branch_labels = None
 depends_on = None
 
-values = ('DUPLICATE', 'CREATED', 'ERROR', 'REJECTED')
-temporary_enum = sa.Enum(*values, name='tmp_importstatus')
-previous_enum = sa.Enum(*values, name='importstatus')
+previous_values = ('DUPLICATE', 'CREATED', 'ERROR', 'REJECTED')
+new_values = ('DUPLICATE', 'CREATED', 'ERROR', 'REJECTED', 'RETRY')
+previous_enum = sa.Enum(*previous_values, name='importstatus')
+temporary_enum = sa.Enum(*new_values, name='tmp_importstatus')
+new_enum = sa.Enum(*new_values, name='importstatus')
 
 
 def upgrade():
@@ -27,28 +29,62 @@ def upgrade():
         sa.Column('status', temporary_enum, nullable=False),
         sa.Column('date', sa.DateTime, nullable=False, server_default=func.now()),
         sa.Column('detail', sa.VARCHAR(255), nullable=True),
-        sa.Column('beneficiaryImportId', sa.BigInteger, ForeignKey('beneficiary_import.id'), nullable=False)
+        sa.Column('beneficiaryImportId', sa.BigInteger, ForeignKey('beneficiary_import.id'), nullable=False),
+        sa.Column('demarcheSimplifieeApplicationId', sa.BigInteger, nullable=False)
     )
 
-    op.execute('ALTER TABLE beneficiary_import ALTER COLUMN status TYPE tmp_importstatus'
-               ' USING status::text::tmp_importstatus')
+    op.execute("""
+    ALTER TABLE beneficiary_import
+    ALTER COLUMN status
+    TYPE tmp_importstatus
+    USING status::text::tmp_importstatus
+    ;
+    """)
 
     op.execute("""
     INSERT INTO
-        beneficiary_import_status("beneficiaryImportId", status, date, detail)
+        beneficiary_import_status("beneficiaryImportId", status, date, detail, "demarcheSimplifieeApplicationId")
     SELECT
-        id, status, date, detail
+        id, status, date, detail, "demarcheSimplifieeApplicationId"
     FROM
         beneficiary_import
     ;
     """)
 
+    op.execute("""
+    UPDATE beneficiary_import_status a
+    SET "beneficiaryImportId" = b."beneficiaryImportId"
+    FROM beneficiary_import_status b
+    WHERE a."demarcheSimplifieeApplicationId" = b."demarcheSimplifieeApplicationId"
+    AND a.id > b.id
+    ;
+    """)
+
+    op.execute("""
+    DELETE FROM beneficiary_import a
+    USING beneficiary_import b
+    WHERE
+        a.id > b.id
+        AND a."demarcheSimplifieeApplicationId" = b."demarcheSimplifieeApplicationId"
+    ;
+    """)
+
+    op.drop_column('beneficiary_import_status', 'demarcheSimplifieeApplicationId')
+
     op.drop_column('beneficiary_import', 'status')
     op.drop_column('beneficiary_import', 'date')
     op.drop_column('beneficiary_import', 'detail')
 
-    op.execute('ALTER TABLE beneficiary_import_status ALTER COLUMN status TYPE importstatus'
-               ' USING status::text::importstatus')
+    previous_enum.drop(op.get_bind(), checkfirst=False)
+    new_enum.create(op.get_bind(), checkfirst=False)
+
+    op.execute("""
+    ALTER TABLE beneficiary_import_status
+    ALTER COLUMN status
+    TYPE importstatus
+    USING status::text::importstatus
+    """)
+
     temporary_enum.drop(op.get_bind(), checkfirst=False)
 
     op.create_unique_constraint(
@@ -66,8 +102,13 @@ def downgrade():
     op.add_column('beneficiary_import', sa.Column('date', sa.DateTime, nullable=True, server_default=func.now()))
     op.add_column('beneficiary_import', sa.Column('detail', sa.VARCHAR(255), nullable=True))
 
-    op.execute('ALTER TABLE beneficiary_import_status ALTER COLUMN status TYPE tmp_importstatus'
-               ' USING status::text::tmp_importstatus')
+    op.execute("""
+    ALTER TABLE beneficiary_import_status
+    ALTER COLUMN status
+    TYPE tmp_importstatus
+    USING status::text::tmp_importstatus
+    ;
+    """)
 
     op.execute("""
     INSERT INTO
@@ -97,6 +138,10 @@ def downgrade():
 
     op.alter_column('beneficiary_import', 'status', nullable=False)
     op.alter_column('beneficiary_import', 'date', nullable=False)
+
+
+    new_enum.drop(op.get_bind(), checkfirst=False)
+    previous_enum.create(op.get_bind(), checkfirst=False)
 
     op.execute('ALTER TABLE beneficiary_import ALTER COLUMN status TYPE importstatus'
                ' USING status::text::importstatus')
