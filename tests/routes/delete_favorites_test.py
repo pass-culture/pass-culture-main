@@ -24,7 +24,8 @@ class Delete:
                 f'{API_URL}/favorites/{humanize(offer.id)}/{humanize(mediation.id)}')
 
             # Then
-            assert response.status_code == 204
+            assert response.status_code == 200
+            assert 'id' in response.json
             deleted_favorite = Favorite.query.first()
             assert deleted_favorite is None
 

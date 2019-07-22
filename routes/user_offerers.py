@@ -6,6 +6,7 @@ from models.pc_object import PcObject
 from models.user_offerer import UserOfferer
 from utils.human_ids import dehumanize
 
+
 @app.route('/userOfferers/<offererId>', methods=['GET'])
 @login_required
 def get_user_offerer(offererId):
