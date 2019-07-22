@@ -4,6 +4,7 @@ from sqlalchemy import Column, BigInteger, ForeignKey, desc
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
+from models.user import User
 from models.beneficiary_import_status import BeneficiaryImportStatus, ImportStatus
 from models.db import Model, db
 from models.pc_object import PcObject
@@ -23,11 +24,13 @@ class BeneficiaryImport(PcObject, Model):
                                foreign_keys=[beneficiaryId],
                                backref='beneficiaryImports')
 
-    def setStatus(self, status: ImportStatus, detail: str = None):
+    def setStatus(self, status: ImportStatus, detail: str = None, author: User = None):
         new_status = BeneficiaryImportStatus()
         new_status.status = status
         new_status.detail = detail
         new_status.date = datetime.utcnow()
+        new_status.author = author
+
         if self.statuses:
             self.statuses.append(new_status)
         else:
@@ -56,6 +59,15 @@ class BeneficiaryImport(PcObject, Model):
     @detail.expression
     def detail(cls):
         return cls._query_column(BeneficiaryImportStatus.detail)
+
+    @hybrid_property
+    def authorEmail(self):
+        author = self._last_status().author
+        return author.email or None
+
+    @authorEmail.expression
+    def authorEmail(cls):
+        return cls._query_column(BeneficiaryImportStatus.author)
 
     @classmethod
     def _query_column(cls, column: Column):

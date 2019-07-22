@@ -30,6 +30,7 @@ def upgrade():
         sa.Column('date', sa.DateTime, nullable=False, server_default=func.now()),
         sa.Column('detail', sa.VARCHAR(255), nullable=True),
         sa.Column('beneficiaryImportId', sa.BigInteger, ForeignKey('beneficiary_import.id'), nullable=False),
+        sa.Column('authorId', sa.BigInteger, ForeignKey('user.id'), nullable=True),
         sa.Column('demarcheSimplifieeApplicationId', sa.BigInteger, nullable=False)
     )
 
@@ -139,10 +140,11 @@ def downgrade():
     op.alter_column('beneficiary_import', 'status', nullable=False)
     op.alter_column('beneficiary_import', 'date', nullable=False)
 
-
-    new_enum.drop(op.get_bind(), checkfirst=False)
-    previous_enum.create(op.get_bind(), checkfirst=False)
-
-    op.execute('ALTER TABLE beneficiary_import ALTER COLUMN status TYPE importstatus'
-               ' USING status::text::importstatus')
+    op.execute("""
+    ALTER TABLE beneficiary_import
+    ALTER COLUMN status
+    TYPE importstatus
+    USING status::text::importstatus
+    ;
+    """)
     temporary_enum.drop(op.get_bind(), checkfirst=False)

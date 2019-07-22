@@ -4,8 +4,8 @@ from datetime import datetime
 from sqlalchemy import Column, DateTime, BigInteger, String, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
-from models.pc_object import PcObject
 from models.db import Model
+from models.pc_object import PcObject
 
 
 class ImportStatus(enum.Enum):
@@ -33,3 +33,11 @@ class BeneficiaryImportStatus(PcObject, Model):
     beneficiaryImport = relationship('BeneficiaryImport',
                                      foreign_keys=[beneficiaryImportId],
                                      backref='statuses')
+
+    authorId = Column(BigInteger,
+                      ForeignKey("user.id"),
+                      index=True,
+                      nullable=True)
+
+    author = relationship('User',
+                          foreign_keys=[authorId])

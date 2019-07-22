@@ -1,4 +1,5 @@
 from flask_admin.helpers import get_form_data
+from flask_login import current_user
 from wtforms import Form, SelectField, StringField
 
 from admin.base_configuration import BaseAdminView
@@ -50,24 +51,25 @@ class FeatureAdminView(BaseAdminView):
 
 class BeneficiaryImportView(BaseAdminView):
     can_edit = True
-    column_list = ['beneficiary.email', 'demarcheSimplifieeApplicationId', 'currentStatus', 'updatedAt', 'detail']
+    column_list = ['beneficiary.email', 'demarcheSimplifieeApplicationId', 'currentStatus', 'updatedAt', 'detail', 'authorEmail']
     column_labels = {
         'demarcheSimplifieeApplicationId': 'Dossier DMS',
         'beneficiary.email': 'Bénéficiaire',
         'currentStatus': "Statut",
         'updatedAt': "Date",
         'detail': "Détail",
+        'authorEmail': 'Statut modifié par'
     }
     column_searchable_list = ['beneficiary.email', 'demarcheSimplifieeApplicationId']
     column_sortable_list = ['beneficiary.email', 'demarcheSimplifieeApplicationId', 'currentStatus', 'updatedAt',
-                            'detail']
+                            'detail', 'authorEmail']
 
     def edit_form(self, obj=None):
         class _NewStatusForm(Form):
             beneficiary = StringField('Bénéficiaire', default=obj.beneficiary.email, render_kw={'readonly': True})
             dms_id = StringField(
-                'Dossier DMS', default=obj.demarcheSimplifieeApplicationId, render_kw={'readonly': True})
-
+                'Dossier DMS', default=obj.demarcheSimplifieeApplicationId, render_kw={'readonly': True}
+            )
             detail = StringField('Raison du changement de statut')
             status = SelectField('Nouveau statut', choices=[(s.name, s.value) for s in ImportStatus])
 
@@ -77,7 +79,7 @@ class BeneficiaryImportView(BaseAdminView):
         new_status = ImportStatus(form.status.data)
 
         if is_import_status_change_allowed(model.currentStatus, new_status):
-            model.setStatus(new_status, detail=form.detail.data)
+            model.setStatus(new_status, detail=form.detail.data, author=current_user)
             PcObject.save(model)
         else:
             form.status.errors.append(IMPORT_STATUS_MODIFICATION_RULE)
