@@ -28,7 +28,7 @@ def add_to_favorite():
     favorite = create_favorite(mediation, offer, current_user)
     PcObject.save(favorite)
 
-    return jsonify(favorite.as_dict()), 201
+    return jsonify(_serialize_favorite(favorite)), 201
 
 
 @app.route('/favorites/<offer_id>/<mediation_id>', methods=['DELETE'])
