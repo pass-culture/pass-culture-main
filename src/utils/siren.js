@@ -66,7 +66,7 @@ export const getSirenOrSiretInfo = createCachedSelector(
     }
 
     try {
-      const sireneUrl = `https://sirene.entreprise.api.gouv.fr/v1/${type}/${withoutWhiteSpacesSiretOrSiren}`
+      const sireneUrl = `https://entreprise.data.gouv.fr/api/sirene/v1/${type}/${withoutWhiteSpacesSiretOrSiren}`
 
       const response = await fetch(sireneUrl)
 
