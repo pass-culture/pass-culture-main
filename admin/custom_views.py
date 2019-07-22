@@ -1,4 +1,8 @@
+from flask_admin.helpers import get_form_data
+from wtforms import Form, SelectField, StringField
+
 from admin.base_configuration import BaseAdminView
+from models import ImportStatus, PcObject
 
 
 class OffererAdminView(BaseAdminView):
@@ -44,7 +48,7 @@ class FeatureAdminView(BaseAdminView):
 
 
 class BeneficiaryImportView(BaseAdminView):
-    can_edit = False
+    can_edit = True
     column_list = ['beneficiary.email', 'demarcheSimplifieeApplicationId', 'currentStatus', 'updatedAt', 'detail']
     column_labels = {
         'demarcheSimplifieeApplicationId': 'Dossier DMS',
@@ -56,3 +60,18 @@ class BeneficiaryImportView(BaseAdminView):
     column_searchable_list = ['beneficiary.email', 'demarcheSimplifieeApplicationId']
     column_sortable_list = ['beneficiary.email', 'demarcheSimplifieeApplicationId', 'currentStatus', 'updatedAt',
                             'detail']
+
+    def edit_form(self, obj=None):
+        class _NewStatusForm(Form):
+            beneficiary = StringField('Bénéficiaire', default=obj.beneficiary.email, render_kw={'readonly': True})
+            dms_id = StringField(
+                'Dossier DMS', default=obj.demarcheSimplifieeApplicationId, render_kw={'readonly': True})
+
+            detail = StringField('Raison du changement de statut')
+            status = SelectField('Nouveau statut', choices=[(s.name, s.value) for s in ImportStatus])
+
+        return _NewStatusForm(get_form_data())
+
+    def update_model(self, form, model):
+        model.setStatus(ImportStatus(form.status.data), detail=form.detail.data)
+        PcObject.save(model)

@@ -1,8 +1,10 @@
+from datetime import datetime
+
 from sqlalchemy import Column, BigInteger, ForeignKey, desc
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
-from models.beneficiary_import_status import BeneficiaryImportStatus
+from models.beneficiary_import_status import BeneficiaryImportStatus, ImportStatus
 from models.db import Model, db
 from models.pc_object import PcObject
 
@@ -20,6 +22,16 @@ class BeneficiaryImport(PcObject, Model):
     beneficiary = relationship('User',
                                foreign_keys=[beneficiaryId],
                                backref='beneficiaryImports')
+
+    def setStatus(self, status: ImportStatus, detail: str = None):
+        new_status = BeneficiaryImportStatus()
+        new_status.status = status
+        new_status.detail = detail
+        new_status.date = datetime.utcnow()
+        if self.statuses:
+            self.statuses.append(new_status)
+        else:
+            self.statuses = [new_status]
 
     @hybrid_property
     def currentStatus(self):
