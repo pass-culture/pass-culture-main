@@ -253,9 +253,9 @@ class Search extends PureComponent {
 
     const { keywordsKey, keywordsValue, isFilterVisible } = this.state
 
-    const whithoutFilters = isInitialQueryWithoutFilters(INITIAL_FILTER_PARAMS, queryParams)
+    const withoutFilters = isInitialQueryWithoutFilters(INITIAL_FILTER_PARAMS, queryParams)
 
-    const iconFilterName = whithoutFilters ? 'filter' : 'filter-active'
+    const iconFilterName = withoutFilters ? 'filter' : 'filter-active'
 
     const filtersToggleButtonClass = (isFilterVisible && 'filters-are-opened') || ''
 
