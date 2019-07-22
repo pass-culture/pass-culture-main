@@ -13,6 +13,7 @@ class ImportStatus(enum.Enum):
     ERROR = 'ERROR'
     CREATED = 'CREATED'
     REJECTED = 'REJECTED'
+    RETRY = 'RETRY'
 
 
 class BeneficiaryImportStatus(PcObject, Model):
