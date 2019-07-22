@@ -116,39 +116,6 @@ describe('src | components | share | ShareButtonContainer', () => {
     })
 
     describe('when mapping url', () => {
-      describe('when user is not logged in', () => {
-        it('should return null', () => {
-          const ownprops = {
-            match: {
-              params: {
-                mediationId: 'CA',
-                offerId: 'B4',
-              },
-            },
-          }
-          const state = {
-            data: {
-              recommendations: [
-                {
-                  id: 'PA',
-                  mediationId: 'CA',
-                  offerId: 'B4',
-                  offer: {
-                    name: 'offerName',
-                  },
-                },
-              ],
-            },
-          }
-
-          selectCurrentRecommendation.mockReturnValue(state.data.recommendations[0])
-          selectCurrentUser.mockReturnValue(undefined)
-          getShareURL.mockReturnValue('http://fake_shared_url')
-
-          expect(mapStateToProps(state, ownprops).url).toStrictEqual(null)
-        })
-      })
-
       describe('when user is logged in', () => {
         it('should getShareURL with location and user', () => {
           const ownprops = {

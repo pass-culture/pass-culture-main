@@ -17,7 +17,7 @@ export const mapStateToProps = (state, ownProps) => {
   const offerName = getCurrentRecommendationOfferName(state, offerId, mediationId)
   const text = offerName && `Retrouvez ${offerName} sur le pass Culture`
   const user = selectCurrentUser(state)
-  const url = (user && getShareURL(user, offerId, mediationId)) || null
+  const url = getShareURL(user, offerId, mediationId)
 
   return {
     offerName,
