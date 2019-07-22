@@ -74,8 +74,10 @@ class BeneficiaryImportView(BaseAdminView):
         return _NewStatusForm(get_form_data())
 
     def update_model(self, form, model):
-        if is_import_status_change_allowed(model.currentStatus, form.status.data):
-            model.setStatus(ImportStatus(form.status.data), detail=form.detail.data)
+        new_status = ImportStatus(form.status.data)
+
+        if is_import_status_change_allowed(model.currentStatus, new_status):
+            model.setStatus(new_status, detail=form.detail.data)
             PcObject.save(model)
         else:
             form.status.errors.append(IMPORT_STATUS_MODIFICATION_RULE)
