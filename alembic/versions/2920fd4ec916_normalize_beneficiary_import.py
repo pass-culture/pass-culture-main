@@ -7,9 +7,9 @@ Create Date: 2019-07-19 08:23:50.213592
 """
 import sqlalchemy as sa
 from alembic import op
-# revision identifiers, used by Alembic.
 from sqlalchemy import func, ForeignKey
 
+# revision identifiers, used by Alembic.
 revision = '2920fd4ec916'
 down_revision = '7906543b4e96'
 branch_labels = None

@@ -42,7 +42,7 @@ class BeneficiaryImport(PcObject, Model):
 
     @currentStatus.expression
     def currentStatus(cls):
-        return cls._query_column(BeneficiaryImportStatus.status)
+        return cls._query_last_status(BeneficiaryImportStatus.status)
 
     @hybrid_property
     def updatedAt(self):
@@ -50,7 +50,7 @@ class BeneficiaryImport(PcObject, Model):
 
     @updatedAt.expression
     def updatedAt(cls):
-        return cls._query_column(BeneficiaryImportStatus.date)
+        return cls._query_last_status(BeneficiaryImportStatus.date)
 
     @hybrid_property
     def detail(self):
@@ -58,7 +58,7 @@ class BeneficiaryImport(PcObject, Model):
 
     @detail.expression
     def detail(cls):
-        return cls._query_column(BeneficiaryImportStatus.detail)
+        return cls._query_last_status(BeneficiaryImportStatus.detail)
 
     @hybrid_property
     def authorEmail(self):
@@ -67,10 +67,10 @@ class BeneficiaryImport(PcObject, Model):
 
     @authorEmail.expression
     def authorEmail(cls):
-        return cls._query_column(BeneficiaryImportStatus.author)
+        return cls._query_last_status(BeneficiaryImportStatus.author)
 
     @classmethod
-    def _query_column(cls, column: Column):
+    def _query_last_status(cls, column: Column):
         return db.session \
             .query(column) \
             .filter(BeneficiaryImportStatus.beneficiaryImportId == cls.id) \

@@ -4,7 +4,7 @@ from wtforms import Form, SelectField, StringField
 
 from admin.base_configuration import BaseAdminView
 from domain.user_activation import is_import_status_change_allowed, IMPORT_STATUS_MODIFICATION_RULE
-from models import ImportStatus, PcObject
+from models import ImportStatus, PcObject, BeneficiaryImport
 
 
 class OffererAdminView(BaseAdminView):
@@ -67,7 +67,7 @@ class BeneficiaryImportView(BaseAdminView):
     def edit_form(self, obj=None):
         class _NewStatusForm(Form):
             beneficiary = StringField('Bénéficiaire', default=obj.beneficiary.email, render_kw={'readonly': True})
-            dms_id = StringField(
+            demarche_simplifiee_application_id = StringField(
                 'Dossier DMS', default=obj.demarcheSimplifieeApplicationId, render_kw={'readonly': True}
             )
             detail = StringField('Raison du changement de statut')
@@ -75,11 +75,11 @@ class BeneficiaryImportView(BaseAdminView):
 
         return _NewStatusForm(get_form_data())
 
-    def update_model(self, form, model):
-        new_status = ImportStatus(form.status.data)
+    def update_model(self, new_status_form: Form, beneficiary_import: BeneficiaryImport):
+        new_status = ImportStatus(new_status_form.status.data)
 
-        if is_import_status_change_allowed(model.currentStatus, new_status):
-            model.setStatus(new_status, detail=form.detail.data, author=current_user)
-            PcObject.save(model)
+        if is_import_status_change_allowed(beneficiary_import.currentStatus, new_status):
+            beneficiary_import.setStatus(new_status, detail=new_status_form.detail.data, author=current_user)
+            PcObject.save(beneficiary_import)
         else:
-            form.status.errors.append(IMPORT_STATUS_MODIFICATION_RULE)
+            new_status_form.status.errors.append(IMPORT_STATUS_MODIFICATION_RULE)
