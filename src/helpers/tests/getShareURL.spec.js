@@ -3,42 +3,42 @@ import { getShareURL } from '../getShareURL'
 describe('src | helpers | getShareURL', () => {
   describe('when user is not defined', () => {
     it('should return null', () => {
-      expect(getShareURL()).toStrictEqual(null)
+      expect(getShareURL()).toBeNull()
     })
   })
 
   describe('when user is null', () => {
     it('should return null', () => {
       const user = null
-      expect(getShareURL(user)).toStrictEqual(null)
+      expect(getShareURL(user)).toBeNull()
     })
   })
 
   describe('when user is an empty object', () => {
     it('should return null', () => {
       const user = {}
-      expect(getShareURL(user)).toStrictEqual(null)
+      expect(getShareURL(user)).toBeNull()
     })
   })
 
   describe('when user has no id', () => {
     it('should return null', () => {
       const user = { prop: 'a string' }
-      expect(getShareURL(user)).toStrictEqual(null)
+      expect(getShareURL(user)).toBeNull()
     })
   })
 
   describe('when user id is not valid', () => {
     it('should return null', () => {
       const user = { id: [] }
-      expect(getShareURL(user)).toStrictEqual(null)
+      expect(getShareURL(user)).toBeNull()
     })
   })
 
   describe('when user id is an empty string', () => {
     it('should return null', () => {
       const user = { id: '' }
-      expect(getShareURL(user)).toStrictEqual(null)
+      expect(getShareURL(user)).toBeNull()
     })
   })
 
@@ -48,7 +48,7 @@ describe('src | helpers | getShareURL', () => {
         it('should return null', () => {
           const user = { id: 'myId' }
           const offerId = 'AB'
-          expect(getShareURL(user, offerId)).toStrictEqual(null)
+          expect(getShareURL(user, offerId)).toBeNull()
         })
       })
 
