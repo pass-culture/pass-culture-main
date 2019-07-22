@@ -14,10 +14,10 @@ class CsvDetailView extends Component {
   printCurrentView = () => () => window.print()
 
   render() {
-    const {currentUser, location} = this.props
-    const {state} = location
-    const {data, headers} = state
-    const {publicName} = currentUser
+    const { currentUser, location } = this.props
+    const { state } = location
+    const { data, headers } = state
+    const { publicName } = currentUser
 
     return (
       <React.Fragment>
@@ -29,33 +29,28 @@ class CsvDetailView extends Component {
           <div id="csv-container">
             <table id="csv-table">
               <thead>
-              <tr>
-                {headers.map((header, index) => (
-                  <th key={this.buildUniqueKey(index, header)}>
-                    {header}
-                  </th>
-                ))}
-              </tr>
+                <tr>
+                  {headers.map((header, index) => (
+                    <th key={this.buildUniqueKey(index, header)}>{header}</th>
+                  ))}
+                </tr>
               </thead>
               <tbody>
-              {data.map((line, index) => (
+                {data.map((line, index) => (
                   <tr key={this.buildUniqueKey(index, line)}>
                     {line.map((content, index) => (
-                      <td key={this.buildUniqueKey(index, content)}>
-                        {content}
-                      </td>
+                      <td key={this.buildUniqueKey(index, content)}>{content}</td>
                     ))}
                   </tr>
-                )
-              )}
+                ))}
               </tbody>
             </table>
           </div>
-          <hr/>
+          <hr />
           <div id="csv-print-container">
             <button
-              id="csv-print-button"
               className="button is-primary"
+              id="csv-print-button"
               onClick={this.printCurrentView()}
             >
               Imprimer
@@ -69,7 +64,7 @@ class CsvDetailView extends Component {
 
 CsvDetailView.propTypes = {
   location: PropTypes.shape({
-    state: PropTypes.shape().isRequired
+    state: PropTypes.shape().isRequired,
   }).isRequired,
 }
 

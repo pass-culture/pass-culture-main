@@ -17,7 +17,7 @@ describe('src | components | pages | Bookings', () => {
 
   it('should match snapshot', () => {
     // when
-    const wrapper = shallow(<Bookings/>)
+    const wrapper = shallow(<Bookings />)
 
     // then
     expect(wrapper).toMatchSnapshot()

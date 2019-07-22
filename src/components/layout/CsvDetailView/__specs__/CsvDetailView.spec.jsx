@@ -10,16 +10,16 @@ describe('src | components | Layout | CsvDetailView', () => {
   beforeEach(() => {
     props = {
       currentUser: {
-        publicName: 'super nom'
+        publicName: 'super nom',
       },
       location: {
         state: {
           data: [['data1', 'data2'], ['data3', 'data4']],
-          headers: ['column1', 'column2']
-        }
-      }
+          headers: ['column1', 'column2'],
+        },
+      },
     }
-    global.print = jest.fn()
+    jest.spyOn(global, 'print')
   })
 
   it('should match snapshot', () => {

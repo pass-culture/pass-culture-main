@@ -6,22 +6,17 @@ class DisplayButton extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      isLoading: false
+      isLoading: false,
     }
   }
 
   handleRequestData = () => {
-    const {
-      downloadFileOrNotifyAnError,
-      history,
-      location,
-      showFailureNotification
-    } = this.props
-    this.setState({isLoading: true}, async () => {
+    const { downloadFileOrNotifyAnError, history, location, showFailureNotification } = this.props
+    this.setState({ isLoading: true }, async () => {
       const dataFromCsv = await downloadFileOrNotifyAnError()
-      const {data} = dataFromCsv
-      this.setState({isLoading: false})
-      const {pathname} = location
+      const { data } = dataFromCsv
+      this.setState({ isLoading: false })
+      const { pathname } = location
       const redirectUrl = pathname + '/detail'
       const hasAtLeastData = data.length > 0
 
@@ -34,8 +29,8 @@ class DisplayButton extends Component {
   }
 
   render() {
-    const {children} = this.props
-    const {isLoading} = this.state
+    const { children } = this.props
+    const { isLoading } = this.state
 
     return (
       <button
@@ -56,7 +51,7 @@ DisplayButton.propTypes = {
   downloadFileOrNotifyAnError: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   location: PropTypes.shape().isRequired,
-  showFailureNotification: PropTypes.func.isRequired
+  showFailureNotification: PropTypes.func.isRequired,
 }
 
 export default DisplayButton

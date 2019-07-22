@@ -7,13 +7,13 @@ import { compose } from 'redux'
 import { withRouter } from 'react-router-dom'
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
-  const {href} = ownProps
+  const { href } = ownProps
 
   return {
     downloadFileOrNotifyAnError: async () => {
       try {
-        const result = await fetch(href, {credentials: 'include'})
-        const {status} = result
+        const result = await fetch(href, { credentials: 'include' })
+        const { status } = result
 
         if (status === 200) {
           const text = await result.text()
@@ -33,11 +33,11 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     showFailureNotification: () => {
       dispatch(
         showNotification({
-          text: 'Il n\'y a pas de données à afficher.',
+          text: "Il n'y a pas de données à afficher.",
           type: 'danger',
         })
       )
-    }
+    },
   }
 }
 

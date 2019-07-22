@@ -1,6 +1,6 @@
 const CSV_SEMI_COLON_SEPARATOR = ';'
 
-const convertFromCsvToObject = (csv) => {
+const convertFromCsvToObject = csv => {
   const lines = csv.split('\n')
   const headers = lines[0].split(CSV_SEMI_COLON_SEPARATOR)
   const data = []
@@ -15,7 +15,7 @@ const convertFromCsvToObject = (csv) => {
 
   return {
     headers,
-    data
+    data,
   }
 }
 

@@ -7,18 +7,18 @@ import HeroSection from '../../layout/HeroSection/HeroSection'
 import FilterByVenueContainer from './FilterByVenue/FilterByVenueContainer'
 import DisplayButtonContainer from '../../layout/DisplayButton/DisplayButtonContainer'
 
-const Bookings = ({pathToCsvFile, showButtons}) => (
+const Bookings = ({ pathToCsvFile, showButtons }) => (
   <Main name="bookings">
     <HeroSection title="Suivi des réservations">
       <p className="subtitle">
         {'Téléchargez le récapitulatif des réservations de vos offres.'}
-        <br/>
-        <br/>
+        <br />
+        <br />
         {'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'}
       </p>
     </HeroSection>
-    <hr/>
-    <FilterByVenueContainer/>
+    <hr />
+    <FilterByVenueContainer />
     <div className="control flex-columns items-center flex-end">
       {showButtons && (
         <DownloadButtonContainer
@@ -30,12 +30,10 @@ const Bookings = ({pathToCsvFile, showButtons}) => (
         </DownloadButtonContainer>
       )}
     </div>
-    <br/>
+    <br />
     <div className="control flex-columns items-center flex-end">
       {showButtons && (
-        <DisplayButtonContainer
-          href={pathToCsvFile}
-        >
+        <DisplayButtonContainer href={pathToCsvFile}>
           {'Afficher la liste des réservations'}
         </DisplayButtonContainer>
       )}

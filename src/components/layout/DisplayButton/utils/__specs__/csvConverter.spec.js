@@ -11,7 +11,7 @@ describe('src | components | layout | DisplayButton | utils', () => {
     // then
     expect(result).toStrictEqual({
       data: [['Data1', 'Data2'], ['Data3', 'Data4']],
-      headers: ['Column1', 'Column2']
+      headers: ['Column1', 'Column2'],
     })
   })
 
@@ -25,7 +25,7 @@ describe('src | components | layout | DisplayButton | utils', () => {
     // then
     expect(result).toStrictEqual({
       data: [['Data1', 'Data2'], ['Data3', 'Data4']],
-      headers: ['Column1', 'Column2']
+      headers: ['Column1', 'Column2'],
     })
   })
 })

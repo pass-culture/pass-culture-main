@@ -9,14 +9,12 @@ import DisplayButtonContainer from '../../layout/DisplayButton/DisplayButtonCont
 const Reimbursements = () => (
   <Main name="reimbursements">
     <HeroSection title="Suivi des remboursements">
-      <p className="subtitle">
-        {'Téléchargez le récapitulatif des remboursements de vos offres.'}
-      </p>
+      <p className="subtitle">{'Téléchargez le récapitulatif des remboursements de vos offres.'}</p>
       <p className="subtitle">
         {'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'}
       </p>
     </HeroSection>
-    <hr/>
+    <hr />
     <div className="control flex-columns items-center flex-end">
       <DownloadButtonContainer
         filename="remboursements_pass_culture"
@@ -26,11 +24,9 @@ const Reimbursements = () => (
         {'Télécharger la liste des remboursements'}
       </DownloadButtonContainer>
     </div>
-    <br/>
+    <br />
     <div className="control flex-columns items-center flex-end">
-      <DisplayButtonContainer
-        href={`${API_URL}/reimbursements/csv`}
-      >
+      <DisplayButtonContainer href={`${API_URL}/reimbursements/csv`}>
         {'Afficher la liste des remboursements'}
       </DisplayButtonContainer>
     </div>

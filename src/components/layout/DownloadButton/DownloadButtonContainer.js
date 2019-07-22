@@ -4,18 +4,18 @@ import DownloadButton from './DownloadButton'
 import { showNotification } from 'pass-culture-shared'
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
-  const {filename, href, mimeType} = ownProps
+  const { filename, href, mimeType } = ownProps
 
   return {
     downloadFileOrNotifyAnError: async () => {
       try {
-        const result = await fetch(href, {credentials: 'include'})
-        const {status} = result
+        const result = await fetch(href, { credentials: 'include' })
+        const { status } = result
 
         if (status === 200) {
           const text = await result.text()
           const fakeLink = document.createElement('a')
-          const blob = new Blob([text], {type: mimeType})
+          const blob = new Blob([text], { type: mimeType })
           const date = new Date().toISOString()
 
           // Ce n'est pas terrible mais nous n'avons pas trouvé mieux.

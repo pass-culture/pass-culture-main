@@ -22,7 +22,7 @@ describe('src | components | pages | Reimbursements', () => {
   describe('render', () => {
     it('should a Main component with the right props', () => {
       // when
-      const wrapper = shallow(<Reimbursements/>)
+      const wrapper = shallow(<Reimbursements />)
 
       // then
       expect(wrapper.prop('name')).toBe('reimbursements')
@@ -30,7 +30,7 @@ describe('src | components | pages | Reimbursements', () => {
 
     it('should render a HeroSection containing two paragraphs with the right information', () => {
       // when
-      const wrapper = shallow(<Reimbursements/>)
+      const wrapper = shallow(<Reimbursements />)
 
       // then
       const heroSection = wrapper.find(HeroSection)
@@ -39,14 +39,18 @@ describe('src | components | pages | Reimbursements', () => {
       const paragraphs = heroSection.find('p')
       expect(paragraphs).toHaveLength(2)
       expect(paragraphs.at(0).prop('className')).toBe('subtitle')
-      expect(paragraphs.at(0).text()).toBe('Téléchargez le récapitulatif des remboursements de vos offres.')
+      expect(paragraphs.at(0).text()).toBe(
+        'Téléchargez le récapitulatif des remboursements de vos offres.'
+      )
       expect(paragraphs.at(1).prop('className')).toBe('subtitle')
-      expect(paragraphs.at(1).text()).toBe('Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.')
+      expect(paragraphs.at(1).text()).toBe(
+        'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'
+      )
     })
 
     it('should render a DownloadButtonContainer with the right props', () => {
       // when
-      const wrapper = shallow(<Reimbursements/>)
+      const wrapper = shallow(<Reimbursements />)
 
       // then
       const downloadButtonContainer = wrapper.find(DownloadButtonContainer)
@@ -54,12 +58,14 @@ describe('src | components | pages | Reimbursements', () => {
       expect(downloadButtonContainer.prop('filename')).toBe('remboursements_pass_culture')
       expect(downloadButtonContainer.prop('href')).toBe(`${API_URL}/reimbursements/csv`)
       expect(downloadButtonContainer.prop('mimeType')).toBe('text/csv')
-      expect(downloadButtonContainer.prop('children')).toBe('Télécharger la liste des remboursements')
+      expect(downloadButtonContainer.prop('children')).toBe(
+        'Télécharger la liste des remboursements'
+      )
     })
 
     it('should render a DisplayButtonContainer with the right props', () => {
       // when
-      const wrapper = shallow(<Reimbursements/>)
+      const wrapper = shallow(<Reimbursements />)
 
       // then
       const displayButtonContainer = wrapper.find(DisplayButtonContainer)
