@@ -155,24 +155,6 @@ describe('src | components | pages | Offers | RawOffers', () => {
     })
 
     describe('componentDidMount', () => {
-      describe('when there is pagination', () => {
-        it.skip('should call query change with good params', () => {
-          // given
-          const parseMock = () => ({ page: 1 })
-          initialProps.query.parse = parseMock
-          initialProps.query.change = queryChangeMock
-
-          // when
-          const wrapper = shallow(<RawOffers {...initialProps} />)
-
-          wrapper.instance().componentDidMount()
-
-          // then
-          expect(queryChangeMock.mock.call).toStrictEqual({ page: null })
-          queryChangeMock.mockClear()
-        })
-      })
-
       describe('when there is no pagination', () => {
         it('should dispatch handle RequestData', () => {
           // given
