@@ -1,5 +1,7 @@
-from domain.user_activation import generate_activation_users_csv
-from models import ThingType
+import pytest
+
+from domain.user_activation import generate_activation_users_csv, is_import_status_change_allowed
+from models import ThingType, ImportStatus
 from models.booking import ActivationUser
 from tests.test_utils import create_booking, create_user, create_stock, create_offer_with_thing_product, create_venue, \
     create_offerer
@@ -30,3 +32,34 @@ class GenerateActivationUsersCsvTest:
         assert csv_list_format[0] == ['"Prénom"', '"Nom"', '"Email"', '"Contremarque d\'activation"']
         assert csv_list_format[1] == ['"Pedro"', '"Gutierrez"', '"email1@test.com"', '"abc"']
         assert csv_list_format[2] == ['"Pablo"', '"Rodriguez"', '"email2+alias@test.com"', '"def"']
+
+
+class IsImportStatusChangeAllowedTest:
+    @pytest.mark.parametrize(
+        ['new_status', 'allowed'],
+        [
+            (ImportStatus.REJECTED, True),
+            (ImportStatus.ERROR, False),
+            (ImportStatus.CREATED, False)
+        ]
+    )
+    def test_duplicate_can_only_be_rejected(self, new_status, allowed):
+        assert is_import_status_change_allowed(ImportStatus.DUPLICATE, new_status) is allowed
+
+    @pytest.mark.parametrize(
+        'new_status', [ImportStatus.DUPLICATE, ImportStatus.REJECTED, ImportStatus.CREATED]
+    )
+    def test_error_cannot_be_changed(self, new_status):
+        assert is_import_status_change_allowed(ImportStatus.ERROR, new_status) is False
+
+    @pytest.mark.parametrize(
+        'new_status', [ImportStatus.DUPLICATE, ImportStatus.REJECTED, ImportStatus.ERROR]
+    )
+    def test_created_cannot_be_changed(self, new_status):
+        assert is_import_status_change_allowed(ImportStatus.CREATED, new_status) is False
+
+    @pytest.mark.parametrize(
+        'new_status', [ImportStatus.DUPLICATE, ImportStatus.CREATED, ImportStatus.ERROR]
+    )
+    def test_rejected_cannot_be_changed(self, new_status):
+        assert is_import_status_change_allowed(ImportStatus.REJECTED, new_status) is False

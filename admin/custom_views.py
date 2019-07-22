@@ -2,6 +2,7 @@ from flask_admin.helpers import get_form_data
 from wtforms import Form, SelectField, StringField
 
 from admin.base_configuration import BaseAdminView
+from domain.user_activation import is_import_status_change_allowed, IMPORT_STATUS_MODIFICATION_RULE
 from models import ImportStatus, PcObject
 
 
@@ -73,5 +74,8 @@ class BeneficiaryImportView(BaseAdminView):
         return _NewStatusForm(get_form_data())
 
     def update_model(self, form, model):
-        model.setStatus(ImportStatus(form.status.data), detail=form.detail.data)
-        PcObject.save(model)
+        if is_import_status_change_allowed(model.currentStatus, form.status.data):
+            model.setStatus(ImportStatus(form.status.data), detail=form.detail.data)
+            PcObject.save(model)
+        else:
+            form.status.errors.append(IMPORT_STATUS_MODIFICATION_RULE)
