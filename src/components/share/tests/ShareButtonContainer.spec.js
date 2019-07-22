@@ -35,6 +35,7 @@ describe('src | components | share | ShareButtonContainer', () => {
       const props = {
         dispatch: dispatchMock,
       }
+
       // when
       const wrapper = shallow(
         <Provider store={store}>
