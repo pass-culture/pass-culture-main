@@ -189,7 +189,7 @@ jobs:
             export SCALINGO_APP_NAME=$(./scripts/compute_app_name.sh ${CIRCLE_BRANCH})
             cd api
             git remote add scalingo git@scalingo.com:${SCALINGO_APP_NAME}.git
-            git push -f scalingo master
+            git push -f scalingo HEAD:master
       - run:
           name: Check deployed version
           command: |
@@ -272,21 +272,30 @@ workflows:
             branches:
               only:
                 - master
+                - staging
                 - production
+                - integration
+                - demo
                 - /hotfix-v.*/
       - tests-webapp:
           filters:
             branches:
               only:
-                - production
                 - master
+                - staging
+                - production
+                - integration
+                - demo
                 - /hotfix-v.*/
       - tests-pro:
           filters:
             branches:
               only:
-                - production
                 - master
+                - staging
+                - production
+                - integration
+                - demo
                 - /hotfix-v.*/
       - tests-perf:
           filters:
@@ -301,6 +310,10 @@ workflows:
               - staging
               - integration
               - demo
+          requires:
+            - tests-webapp
+            - tests-pro
+            - tests-api
       - deploy-pro:
           requires:
             - deploy-api
