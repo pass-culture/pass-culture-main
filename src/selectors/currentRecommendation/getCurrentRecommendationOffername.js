@@ -1,8 +1,10 @@
-import get from 'lodash.get'
 import { compose } from 'redux'
 import selectCurrentRecommendation from './currentRecommendation'
 
-const getRecommendationOfferName = recommendation => get(recommendation, 'offer.name')
+const getRecommendationOfferName = recommendation => {
+  const { offer: { name = '' } = {} } = recommendation
+  return name
+}
 
 export const getCurrentRecommendationOfferName = compose(
   getRecommendationOfferName,

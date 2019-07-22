@@ -6,22 +6,22 @@ jest.mock('../currentRecommendation/currentRecommendation')
 describe('getCurrentRecommendationOfferName', () => {
   describe('when current recommendation does exist', () => {
     describe('when offer not defined', () => {
-      it('should return undefined', () => {
+      it('should return empty string', () => {
         // given
         selectCurrentRecommendation.mockReturnValue({})
         // then
-        expect(getCurrentRecommendationOfferName({})).toStrictEqual(undefined)
+        expect(getCurrentRecommendationOfferName({})).toStrictEqual('')
       })
     })
 
     describe('when offer name not defined', () => {
-      it('should return undefined', () => {
+      it('should return empty string', () => {
         // given
         selectCurrentRecommendation.mockReturnValue({
           offer: {},
         })
         // then
-        expect(getCurrentRecommendationOfferName({})).toStrictEqual(undefined)
+        expect(getCurrentRecommendationOfferName({})).toStrictEqual('')
       })
     })
 
