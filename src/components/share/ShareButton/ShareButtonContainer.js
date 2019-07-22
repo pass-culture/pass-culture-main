@@ -32,4 +32,7 @@ export const ShareButtonContainer = compose(
   connect(mapStateToProps)
 )(ShareButton)
 
-export default ShareButtonContainer
+export default compose(
+  withRouter,
+  connect(mapStateToProps)
+)(ShareButton)
