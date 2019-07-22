@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import Finishable from '../../layout/Finishable'
-import { ShareButtonContainer } from '../../share/ShareButton/ShareButton.container'
+import { ShareButtonContainer } from '../../share/ShareButton/ShareButtonContainer'
 import VersoWallet from './wallet/VersoWalletContainer'
 import Favorite from './favorite/FavoriteContainer'
 import CancelThisLinkContainer from './booking/cancel-this-link/CancelThisLinkContainer'

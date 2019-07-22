@@ -5,7 +5,7 @@ import CopyToClipboardButton from '../CopyToClipboardButton'
 import MailToLink from '../../layout/MailToLink'
 import { openSharePopin, closeSharePopin } from '../../../reducers/share'
 
-class ShareButtonContent extends React.PureComponent {
+class ShareButton extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = { iscopied: false }
@@ -109,7 +109,7 @@ class ShareButtonContent extends React.PureComponent {
   }
 }
 
-ShareButtonContent.defaultProps = {
+ShareButton.defaultProps = {
   email: null,
   id: 'verso-share-button',
   offerName: null,
@@ -117,7 +117,7 @@ ShareButtonContent.defaultProps = {
   url: null,
 }
 
-ShareButtonContent.propTypes = {
+ShareButton.propTypes = {
   dispatch: PropTypes.func.isRequired,
   email: PropTypes.string,
   id: PropTypes.string,
@@ -126,4 +126,4 @@ ShareButtonContent.propTypes = {
   url: PropTypes.string,
 }
 
-export default ShareButtonContent
+export default ShareButton
