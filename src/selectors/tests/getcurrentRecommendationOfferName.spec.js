@@ -1,5 +1,5 @@
 import { selectCurrentRecommendation } from '../currentRecommendation/currentRecommendation'
-import { getCurrentRecommendationOfferName } from '../currentRecommendation/getCurrentRecommendationOffername'
+import { getCurrentRecommendationOfferName } from '../currentRecommendation/getCurrentRecommendationOfferName'
 
 jest.mock('../currentRecommendation/currentRecommendation')
 
@@ -30,11 +30,11 @@ describe('getCurrentRecommendationOfferName', () => {
         // given
         selectCurrentRecommendation.mockReturnValue({
           offer: {
-            name: 'offerName',
+            name: 'Fake name',
           },
         })
         // then
-        expect(getCurrentRecommendationOfferName({})).toStrictEqual('offerName')
+        expect(getCurrentRecommendationOfferName({})).toStrictEqual('Fake name')
       })
     })
   })
