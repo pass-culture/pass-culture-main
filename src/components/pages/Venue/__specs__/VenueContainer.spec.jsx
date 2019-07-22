@@ -89,7 +89,7 @@ global.fetch = url => {
     const response = new Response(JSON.stringify(mockSuccessLonLatInfo))
     return response
   }
-  if (url.includes('sirene.entreprise') && url.includes(SIRET)) {
+  if (url.includes('entreprise') && url.includes(SIRET)) {
     const response = new Response(JSON.stringify(mockSuccessSiretInfo))
     return response
   }
