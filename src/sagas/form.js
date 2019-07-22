@@ -41,8 +41,9 @@ const fromWatchSirenInput = sireType =>
     try {
       const response = yield call(
         fetch,
-        `https://sirene.entreprise.api.gouv.fr/v1/${sireType}/${patch[sireType]}`
+        `https://entreprise.data.gouv.fr/api/sirene/v1/${sireType}/${patch[sireType]}`
       )
+
       if (response.status === 404) {
         yield put(
           mergeErrors(name, {
