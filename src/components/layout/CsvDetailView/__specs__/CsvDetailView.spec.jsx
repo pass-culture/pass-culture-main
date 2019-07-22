@@ -37,6 +37,7 @@ describe('src | components | Layout | CsvDetailView', () => {
     // then
     const header = wrapper.find(Header)
     expect(header).toHaveLength(1)
+    expect(header.prop('isSmall')).toBe(true)
     expect(header.prop('name')).toBe('super nom')
     expect(header.prop('offerers')).toStrictEqual([])
   })

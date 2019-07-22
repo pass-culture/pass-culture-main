@@ -12,7 +12,9 @@
 }
 
 header.navbar {
-  height: $header-display-height;
+  &:not(.is-small) {
+    height: $header-display-height;
+  }
   align-items: start;
   z-index: initial;
 

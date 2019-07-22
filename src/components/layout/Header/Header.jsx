@@ -24,11 +24,15 @@ class Header extends Component {
   }
 
   render() {
-    const { name, whiteHeader, offerers } = this.props
+    const { isSmall, name, whiteHeader, offerers } = this.props
     const { showMobileMenu } = this.state
 
     return (
-      <header className={classnames('navbar', { 'is-primary': !whiteHeader })}>
+      <header className={classnames('navbar', {
+        'is-primary': !whiteHeader,
+        'is-small': isSmall
+      })}
+      >
         <div className="container">
           <div className="navbar-brand">
             <Logo
@@ -175,13 +179,15 @@ class Header extends Component {
 }
 
 Header.defaultProps = {
-  whiteHeader: null,
+  isSmall: false,
+  whiteHeader: false,
 }
 
 Header.propTypes = {
+  isSmall: PropTypes.bool,
   name: PropTypes.string.isRequired,
   offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  whiteHeader: PropTypes.string,
+  whiteHeader: PropTypes.bool,
 }
 
 export default Header

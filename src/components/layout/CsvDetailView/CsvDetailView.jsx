@@ -22,6 +22,7 @@ class CsvDetailView extends Component {
     return (
       <React.Fragment>
         <Header
+          isSmall
           name={publicName}
           offerers={[]}
         />
@@ -63,6 +64,7 @@ class CsvDetailView extends Component {
 }
 
 CsvDetailView.propTypes = {
+  currentUser: PropTypes.shape().isRequired,
   location: PropTypes.shape({
     state: PropTypes.shape().isRequired,
   }).isRequired,

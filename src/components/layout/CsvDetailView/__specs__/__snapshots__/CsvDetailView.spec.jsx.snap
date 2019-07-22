@@ -46,9 +46,10 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <Header
+          isSmall={true}
           name="super nom"
           offerers={Array []}
-          whiteHeader={null}
+          whiteHeader={false}
         />,
         <div
           id="main-container"
@@ -111,9 +112,10 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "class",
         "props": Object {
+          "isSmall": true,
           "name": "super nom",
           "offerers": Array [],
-          "whiteHeader": null,
+          "whiteHeader": false,
         },
         "ref": null,
         "rendered": null,
@@ -485,9 +487,10 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <Header
+            isSmall={true}
             name="super nom"
             offerers={Array []}
-            whiteHeader={null}
+            whiteHeader={false}
           />,
           <div
             id="main-container"
@@ -550,9 +553,10 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "class",
           "props": Object {
+            "isSmall": true,
             "name": "super nom",
             "offerers": Array [],
-            "whiteHeader": null,
+            "whiteHeader": false,
           },
           "ref": null,
           "rendered": null,

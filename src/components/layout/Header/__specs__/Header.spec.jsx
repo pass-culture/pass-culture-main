@@ -5,30 +5,47 @@ import Header from '../Header'
 import Icon from '../../Icon'
 
 describe('src | components | Layout | Header', () => {
-  it('should match the snapshot', () => {
-    // given
-    const props = {
-      name: 'Fake Name',
-      offerers: [{}],
-    }
+  let props
 
+  beforeEach(() => {
+    props = {
+      isSmall: false,
+      name: 'fake name',
+      offerers: [{}],
+      whiteHeader: false
+    }
+  })
+
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<Header {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('render()', () => {
+  describe('render', () => {
+    it('should render a header element with the right css classes when is not small', () => {
+      // when
+      const wrapper = shallow(<Header {...props} />)
+
+      // then
+      expect(wrapper.prop('className')).toBe('navbar is-primary')
+    })
+
+    it('should render a header element with the right css classes when is small', () => {
+      // given
+      props.isSmall = true
+
+      // when
+      const wrapper = shallow(<Header {...props} />)
+
+      // then
+      expect(wrapper.prop('className')).toBe('navbar is-primary is-small')
+    })
+
     describe('should pluralize offerers menu link', () => {
       it('should display Votre structure when one offerer', () => {
-        // given
-        const props = {
-          name: 'Fake Name',
-          offerers: [{}],
-        }
-
         // when
         const wrapper = shallow(<Header {...props} />)
         const navLinks = wrapper.find('NavLink')
@@ -45,10 +62,7 @@ describe('src | components | Layout | Header', () => {
 
       it('should display Vos structures when many offerers', () => {
         // given
-        const props = {
-          name: 'Fake Name',
-          offerers: [{}, {}],
-        }
+        props.offerers = [{}, {}]
 
         // when
         const wrapper = shallow(<Header {...props} />)
@@ -65,11 +79,6 @@ describe('src | components | Layout | Header', () => {
     })
 
     describe('help link', () => {
-      const props = {
-        name: 'Fake Name',
-        offerers: [{}, {}],
-      }
-
       it('should display a "help" link in the header', () => {
         // when
         const wrapper = shallow(<Header {...props} />)
