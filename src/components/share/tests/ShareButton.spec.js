@@ -5,7 +5,7 @@ import ShareButton from '../ShareButton/ShareButton'
 
 const dispatchMock = jest.fn()
 
-describe('src | components | share | ShareButtonContent', () => {
+describe('src | components | share | ShareButton', () => {
   it('should match the snapshot', () => {
     // given
     const props = {
@@ -19,7 +19,6 @@ describe('src | components | share | ShareButtonContent', () => {
     const wrapper = shallow(<ShareButton {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 
