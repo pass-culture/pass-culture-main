@@ -14,7 +14,7 @@ describe('src | helpers | getShareURL', () => {
     })
   })
 
-  describe('when user is an empty objects', () => {
+  describe('when user is an empty object', () => {
     it('should return null', () => {
       const user = {}
       expect(getShareURL(user)).toStrictEqual(null)
