@@ -7,6 +7,10 @@ class CsvDetailView extends Component {
     super(props)
   }
 
+  buildUniqueKey = (index, value) => {
+    return `${index + '_' + value}`
+  }
+
   printCurrentView = () => () => window.print()
 
   render() {
@@ -26,18 +30,18 @@ class CsvDetailView extends Component {
             <table id="csv-table">
               <thead>
               <tr>
-                {headers.map(header => (
-                  <th>
+                {headers.map((header, index) => (
+                  <th key={this.buildUniqueKey(index, header)}>
                     {header}
                   </th>
                 ))}
               </tr>
               </thead>
               <tbody>
-              {data.map(line => (
-                  <tr>
-                    {line.map(content => (
-                      <td>
+              {data.map((line, index) => (
+                  <tr key={this.buildUniqueKey(index, line)}>
+                    {line.map((content, index) => (
+                      <td key={this.buildUniqueKey(index, content)}>
                         {content}
                       </td>
                     ))}
@@ -65,9 +69,7 @@ class CsvDetailView extends Component {
 
 CsvDetailView.propTypes = {
   location: PropTypes.shape({
-    state: PropTypes.shape({
-      detail: PropTypes.shape().isRequired
-    }).isRequired
+    state: PropTypes.shape().isRequired
   }).isRequired,
 }
 

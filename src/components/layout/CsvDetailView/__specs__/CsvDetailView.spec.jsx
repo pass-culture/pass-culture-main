@@ -4,7 +4,6 @@ import { shallow } from 'enzyme'
 import CsvDetailView from '../CsvDetailView'
 import Header from '../../Header/Header'
 
-global.print = jest.fn()
 describe('src | components | Layout | CsvDetailView', () => {
   let props
 
@@ -20,6 +19,7 @@ describe('src | components | Layout | CsvDetailView', () => {
         }
       }
     }
+    global.print = jest.fn()
   })
 
   it('should match snapshot', () => {
@@ -76,6 +76,7 @@ describe('src | components | Layout | CsvDetailView', () => {
     expect(printButton).toHaveLength(1)
     expect(printButton.prop('className')).toBe('button is-primary')
     expect(printButton.prop('onClick')).toStrictEqual(expect.any(Function))
+    expect(printButton.text()).toBe('Imprimer')
   })
 
   it('should open a new window for printing when clicking on print button', () => {

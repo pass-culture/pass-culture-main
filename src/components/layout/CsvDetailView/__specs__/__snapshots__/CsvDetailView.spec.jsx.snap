@@ -290,7 +290,7 @@ ShallowWrapper {
                     "rendered": Array [
                       Object {
                         "instance": null,
-                        "key": undefined,
+                        "key": "0_column1",
                         "nodeType": "host",
                         "props": Object {
                           "children": "column1",
@@ -301,7 +301,7 @@ ShallowWrapper {
                       },
                       Object {
                         "instance": null,
-                        "key": undefined,
+                        "key": "1_column2",
                         "nodeType": "host",
                         "props": Object {
                           "children": "column2",
@@ -343,7 +343,7 @@ ShallowWrapper {
                   "rendered": Array [
                     Object {
                       "instance": null,
-                      "key": undefined,
+                      "key": "0_data1,data2",
                       "nodeType": "host",
                       "props": Object {
                         "children": Array [
@@ -359,7 +359,7 @@ ShallowWrapper {
                       "rendered": Array [
                         Object {
                           "instance": null,
-                          "key": undefined,
+                          "key": "0_data1",
                           "nodeType": "host",
                           "props": Object {
                             "children": "data1",
@@ -370,7 +370,7 @@ ShallowWrapper {
                         },
                         Object {
                           "instance": null,
-                          "key": undefined,
+                          "key": "1_data2",
                           "nodeType": "host",
                           "props": Object {
                             "children": "data2",
@@ -384,7 +384,7 @@ ShallowWrapper {
                     },
                     Object {
                       "instance": null,
-                      "key": undefined,
+                      "key": "1_data3,data4",
                       "nodeType": "host",
                       "props": Object {
                         "children": Array [
@@ -400,7 +400,7 @@ ShallowWrapper {
                       "rendered": Array [
                         Object {
                           "instance": null,
-                          "key": undefined,
+                          "key": "0_data3",
                           "nodeType": "host",
                           "props": Object {
                             "children": "data3",
@@ -411,7 +411,7 @@ ShallowWrapper {
                         },
                         Object {
                           "instance": null,
-                          "key": undefined,
+                          "key": "1_data4",
                           "nodeType": "host",
                           "props": Object {
                             "children": "data4",
@@ -729,7 +729,7 @@ ShallowWrapper {
                       "rendered": Array [
                         Object {
                           "instance": null,
-                          "key": undefined,
+                          "key": "0_column1",
                           "nodeType": "host",
                           "props": Object {
                             "children": "column1",
@@ -740,7 +740,7 @@ ShallowWrapper {
                         },
                         Object {
                           "instance": null,
-                          "key": undefined,
+                          "key": "1_column2",
                           "nodeType": "host",
                           "props": Object {
                             "children": "column2",
@@ -782,7 +782,7 @@ ShallowWrapper {
                     "rendered": Array [
                       Object {
                         "instance": null,
-                        "key": undefined,
+                        "key": "0_data1,data2",
                         "nodeType": "host",
                         "props": Object {
                           "children": Array [
@@ -798,7 +798,7 @@ ShallowWrapper {
                         "rendered": Array [
                           Object {
                             "instance": null,
-                            "key": undefined,
+                            "key": "0_data1",
                             "nodeType": "host",
                             "props": Object {
                               "children": "data1",
@@ -809,7 +809,7 @@ ShallowWrapper {
                           },
                           Object {
                             "instance": null,
-                            "key": undefined,
+                            "key": "1_data2",
                             "nodeType": "host",
                             "props": Object {
                               "children": "data2",
@@ -823,7 +823,7 @@ ShallowWrapper {
                       },
                       Object {
                         "instance": null,
-                        "key": undefined,
+                        "key": "1_data3,data4",
                         "nodeType": "host",
                         "props": Object {
                           "children": Array [
@@ -839,7 +839,7 @@ ShallowWrapper {
                         "rendered": Array [
                           Object {
                             "instance": null,
-                            "key": undefined,
+                            "key": "0_data3",
                             "nodeType": "host",
                             "props": Object {
                               "children": "data3",
@@ -850,7 +850,7 @@ ShallowWrapper {
                           },
                           Object {
                             "instance": null,
-                            "key": undefined,
+                            "key": "1_data4",
                             "nodeType": "host",
                             "props": Object {
                               "children": "data4",
