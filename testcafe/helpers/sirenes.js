@@ -3,7 +3,7 @@ import { RequestMock } from 'testcafe'
 export const getSirenRequestMockAs = offerer => {
   const { address, city, latitude, longitude, name, postalCode, siren } = offerer
   return RequestMock()
-    .onRequestTo(`https://entreprise.api.gouv.fr/sirene/v1/siren/${siren}`)
+    .onRequestTo(`https://entreprise.data.gouv.fr/api/sirene/v1/siren/${siren}`)
     .respond(
       {
         siege_social: {
@@ -24,7 +24,7 @@ export const getSirenRequestMockAs = offerer => {
 export const getSiretRequestMockAs = venue => {
   const { address, city, latitude, longitude, name, postalCode, siret } = venue
   return RequestMock()
-    .onRequestTo(`https://sirene.entreprise.api.gouv.fr/v1/siret/${siret}`)
+    .onRequestTo(`https://entreprise.data.gouv.fr/api/sirene/v1/siret/${siret}`)
     .respond(
       {
         etablissement: {

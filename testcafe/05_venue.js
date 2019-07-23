@@ -1,136 +1,96 @@
-import { parse } from 'query-string'
 import { Selector } from 'testcafe'
 
 import { fetchSandbox } from './helpers/sandboxes'
-import { navigateToOfferAs } from './helpers/navigations'
+import { navigateAfterVenueSubmit, navigateToNewVenueAs } from './helpers/navigations'
+import { getSiretRequestMockAs } from './helpers/sirenes'
 import { createUserRole } from './helpers/roles'
 
-const addAnchor = Selector('#add-stock')
-const manageStockAnchor = Selector('.manage-stock')
-const submitButton = Selector('button.button.submitStep')
-const priceInput = Selector('input[name="price"]')
-const addStockButton = Selector('#add-stock')
-const stockItem = Selector('.stock-item')
+const addressInput = Selector('input[name="address"]')
+const addressSuggestion = Selector('.location-viewer .menu .item')
+const cityInput = Selector('input[name="city"]')
+const commentInput = Selector('textarea[name="comment"]')
+const latitudeInput = Selector('input[name="latitude"]')
+const longitudeInput = Selector('input[name="longitude"]')
+const nameInput = Selector('input[name="name"]')
+const postalCodeInput = Selector('input[name="postalCode"]')
+const siretInput = Selector('input[name="siret"]')
 
-fixture("En étant sur la page de détail d'une offre")
+fixture("En étant sur la page de création d'un lieu")
 
-test('Je peux créer un stock pour un événement', async t => {
+test('Je peux créer un lieu avec un SIRET valide', async t => {
   // given
-  const { offer, user } = await fetchSandbox(
-    'pro_08_stocks',
-    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_no_stock'
+  const { offerer, user } = await fetchSandbox(
+    'pro_05_venue',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue'
   )
-  await navigateToOfferAs(user, offer, createUserRole(user))(t)
-  await t.click(manageStockAnchor).click(addStockButton)
-  let location = await t.eval(() => window.location)
-  let queryParams = parse(location.search)
+  const { address, city, name, postalCode, siren } = offerer
+  const latitude = '48.862923'
+  const longitude = '2.287896'
+  const venueName = `${name} - Lieu`
+  const siret = `${siren}12345`
+  const venue = {
+    address,
+    city,
+    latitude,
+    longitude,
+    name: venueName,
+    postalCode,
+    siret,
+  }
+  await t.addRequestHooks(getSiretRequestMockAs(venue))
+  await navigateToNewVenueAs(user, offerer, createUserRole(user))(t)
 
   // when
-  await t
-    .expect(queryParams.stock)
-    .eql('creation')
-    .click(submitButton)
+  await t.typeText(siretInput, siret)
 
   // then
-  location = await t.eval(() => window.location)
-  queryParams = parse(location.search)
   await t
-    .expect(queryParams.stock)
-    .eql(undefined)
-    .expect(stockItem.count)
-    .eql(1)
+    .expect(nameInput.value)
+    .eql(venueName)
+    .expect(addressInput.value)
+    .eql(address)
+    .expect(postalCodeInput.value)
+    .eql(postalCode)
+    .expect(cityInput.value)
+    .eql(city)
+    .expect(latitudeInput.value)
+    .eql(latitude)
+    .expect(longitudeInput.value)
+    .eql(longitude)
+  await navigateAfterVenueSubmit('creation')(t)
 })
 
-test('Je ne peux pas créer un nouveau stock pour un objet ayant déjà un stock', async t => {
+test('Je peux créer un lieu sans SIRET', async t => {
   // given
-  const { offer, user } = await fetchSandbox(
-    'pro_08_stocks',
-    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_thing_offer_with_stock'
+  const { offerer, user } = await fetchSandbox(
+    'pro_05_venue',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue'
   )
-  await navigateToOfferAs(user, offer, createUserRole(user))(t)
-
-  // when
-  await t.click(manageStockAnchor)
-
-  // then
-  await t.expect(addAnchor.visible).notOk()
-})
-
-test('Je peux modifier un stock pour un événement', async t => {
-  // given
-  const { offer, stock, user } = await fetchSandbox(
-    'pro_08_stocks',
-    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock'
-  )
-  const beginInput = Selector('input.date')
-  const datePicker = Selector('.react-datepicker')
-  const datePickerLastDay = Selector(
-    '.react-datepicker__week:last-child .react-datepicker__day:last-child'
-  )
-  const editAnchor = Selector(`#edit-stock-${stock.id}-button`)
-  await navigateToOfferAs(user, offer, createUserRole(user))(t)
-
-  await t.click(manageStockAnchor).click(editAnchor)
-  let location = await t.eval(() => window.location)
-  let queryParams = parse(location.search)
+  const address = '1 place du trocadéro Paris'
+  const city = 'Paris 16e Arrondissement'
+  const comment = 'Test sans SIRET'
+  const latitude = '48.862412'
+  const longitude = '2.282002'
+  const name = 'Le lieu sympa de type sans siret'
+  const postalCode = '75016'
+  await navigateToNewVenueAs(user, offerer, createUserRole(user))(t)
 
   // when
   await t
-    .expect(queryParams.gestion)
-    .eql(null)
-    .expect(queryParams[`stock${stock.id}`])
-    .eql('modification')
-    .expect(beginInput.exists)
-    .ok()
-    .expect(datePicker.exists)
-    .notOk()
-    .click(beginInput)
-    .expect(datePicker.exists)
-    .ok()
-    .click(datePickerLastDay)
-    .expect(datePicker.exists)
-    .notOk()
-    .typeText(priceInput, '15')
-    .click(submitButton)
+    .typeText(nameInput, name)
+    .typeText(commentInput, comment)
+    .typeText(addressInput, address)
 
   // then
-  location = await t.eval(() => window.location)
-  queryParams = parse(location.search)
   await t
-    .expect(queryParams.gestion)
-    .eql(null)
-    .expect(queryParams.stock)
-    .eql(undefined)
-})
-
-test('Je peux supprimer un stock pour un événement', async t => {
-  // given
-  const { offer, user } = await fetchSandbox(
-    'pro_08_stocks',
-    'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock'
-  )
-  await navigateToOfferAs(user, offer, createUserRole(user))(t)
-  const beginInput = Selector('input.date')
-  const datePicker = Selector('.react-datepicker')
-  const deleteButton = Selector('button.delete-stock')
-  const deleteButtonConfirmation = Selector('button').withText('Oui')
-
-  // when
-  await t
-    .click(manageStockAnchor)
-    .click(deleteButton)
-    .click(deleteButtonConfirmation)
-
-  // then
-  let location = await t.eval(() => window.location)
-  let queryParams = parse(location.search)
-  await t
-    .expect(queryParams.gestion)
-    .eql(null)
-    .expect(beginInput.exists)
-    .notOk()
-    .expect(datePicker.exists)
-    .notOk()
-    .expect(queryParams.stock)
-    .eql(undefined)
+    .click(addressSuggestion)
+    .expect(postalCodeInput.value)
+    .eql(postalCode)
+    .expect(cityInput.value)
+    .eql(city)
+    .expect(latitudeInput.value)
+    .eql(latitude)
+    .expect(longitudeInput.value)
+    .eql(longitude)
+  await navigateAfterVenueSubmit('creation')(t)
 })
