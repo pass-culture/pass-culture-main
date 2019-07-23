@@ -11,13 +11,13 @@ MOCK_FIRST_NAMES = [
     "Roberto",
     "Kevin",
     "Catherine",
-    "Véronique",
-    "François",
+    "Virginie",
+    "Frank",
     "Mortimer",
     "Cassidy",
     "Napoleon",
     "Lilou",
-    "Gégé"
+    "Gege"
     "X"
 ]
 

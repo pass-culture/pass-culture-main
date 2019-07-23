@@ -73,6 +73,6 @@ def save_industrial_sandbox():
         users_by_name
     )
 
-    bookings_by_name = create_industrial_bookings(recommendations_by_name, stocks_by_name)
+    create_industrial_bookings(recommendations_by_name, stocks_by_name)
 
     create_industrial_payments()
