@@ -2,16 +2,14 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Header from '../Header/Header'
 
-class CsvDetailView extends Component {
+class CsvTable extends Component {
   constructor(props) {
     super(props)
   }
 
-  buildUniqueKey = (index, value) => {
-    return `${index + '_' + value}`
-  }
+  buildUniqueKey = (index, value) => `${index + '_' + value}`
 
-  printCurrentView = () => () => window.print()
+  printCurrentView = () => window.print()
 
   render() {
     const { currentUser, location } = this.props
@@ -52,7 +50,7 @@ class CsvDetailView extends Component {
             <button
               className="button is-primary"
               id="csv-print-button"
-              onClick={this.printCurrentView()}
+              onClick={this.printCurrentView}
             >
               Imprimer
             </button>
@@ -63,11 +61,11 @@ class CsvDetailView extends Component {
   }
 }
 
-CsvDetailView.propTypes = {
+CsvTable.propTypes = {
   currentUser: PropTypes.shape().isRequired,
   location: PropTypes.shape({
     state: PropTypes.shape().isRequired,
   }).isRequired,
 }
 
-export default CsvDetailView
+export default CsvTable

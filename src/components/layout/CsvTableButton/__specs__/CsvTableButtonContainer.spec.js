@@ -1,6 +1,6 @@
-import { mapDispatchToProps } from '../DisplayButtonContainer'
+import { mapDispatchToProps } from '../CsvTableButtonContainer'
 
-describe('src | components | layout | DisplayButton | DisplayButtonContainer', () => {
+describe('src | components | layout | CsvTableButton | DisplayButtonContainer', () => {
   let dispatch
   let props
 

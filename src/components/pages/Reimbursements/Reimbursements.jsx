@@ -4,7 +4,7 @@ import DownloadButtonContainer from '../../layout/DownloadButton/DownloadButtonC
 import Main from '../../layout/Main'
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import { API_URL } from '../../../utils/config'
-import DisplayButtonContainer from '../../layout/DisplayButton/DisplayButtonContainer'
+import DisplayButtonContainer from '../../layout/CsvTableButton/CsvTableButtonContainer'
 
 const Reimbursements = () => (
   <Main name="reimbursements">

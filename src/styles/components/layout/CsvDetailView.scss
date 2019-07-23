@@ -1,3 +1,5 @@
+$grey: #ddd;
+
 #csv-container {
   display: flex;
   flex-direction: column;
@@ -5,7 +7,7 @@
 }
 
 #csv-table tr:hover {
-  background-color: #ddd;
+  background-color: $grey;
 }
 
 #csv-table {
@@ -42,11 +44,7 @@
   body {
     font-size: xx-small;
 
-    #csv-print-button {
-      display: none;
-    }
-
-    header {
+    header, #csv-print-button {
       display: none;
     }
   }

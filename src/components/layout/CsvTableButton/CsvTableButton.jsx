@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import classnames from 'classnames'
 
-class DisplayButton extends Component {
+class CsvTableButton extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -46,7 +46,7 @@ class DisplayButton extends Component {
   }
 }
 
-DisplayButton.propTypes = {
+CsvTableButton.propTypes = {
   children: PropTypes.string,
   downloadFileOrNotifyAnError: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
@@ -54,4 +54,4 @@ DisplayButton.propTypes = {
   showFailureNotification: PropTypes.func.isRequired,
 }
 
-export default DisplayButton
+export default CsvTableButton

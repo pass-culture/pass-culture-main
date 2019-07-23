@@ -35,6 +35,9 @@ describe('src | components | pages | Offers', () => {
         },
         modal: {},
         tracker: {},
+        user: {
+          publicName: 'super nom'
+        }
       })
       const history = createBrowserHistory()
       history.push('/offres?lieu=AE')

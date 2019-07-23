@@ -17,7 +17,7 @@ import SignupContainer from '../components/pages/Signup/SignupContainer'
 import SignupValidationContainer from '../components/pages/Signup/SignupValidation/SignupValidationContainer'
 import Terms from '../components/pages/Terms'
 import VenueContainer from '../components/pages/Venue/VenueContainer'
-import CsvDetailViewContainer from '../components/layout/CsvDetailView/CsvDetailViewContainer'
+import CsvDetailViewContainer from '../components/layout/CsvTable/CsvTableContainer'
 
 // NOTE: routes are sorted by PATH alphabetical order
 const routes = [
@@ -128,12 +128,12 @@ const routes = [
   {
     component: CsvDetailViewContainer,
     path: '/reservations/detail',
-    title: 'reservations',
+    title: 'Réservations',
   },
   {
     component: CsvDetailViewContainer,
     path: '/remboursements/detail',
-    title: 'remboursements',
+    title: 'Remboursements',
   },
 ]
 

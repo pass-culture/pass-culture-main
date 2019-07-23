@@ -4,12 +4,14 @@ import { compose } from 'redux'
 
 import Header from './Header'
 
-const mapStateToProps = state => {
-  const name = state.user && state.user.publicName
+export const mapStateToProps = state => {
+  const { user, data } = state
+  const { publicName: name } = user
+  const { offerers } = data
 
   return {
     name,
-    offerers: state.data.offerers,
+    offerers,
   }
 }
 

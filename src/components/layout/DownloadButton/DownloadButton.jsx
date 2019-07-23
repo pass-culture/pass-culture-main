@@ -36,6 +36,10 @@ class DownloadButton extends PureComponent {
   }
 }
 
+DownloadButton.defaultProps = {
+  children: '',
+}
+
 DownloadButton.propTypes = {
   children: PropTypes.string,
   downloadFileOrNotifyAnError: PropTypes.func.isRequired,

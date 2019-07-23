@@ -1,5 +1,5 @@
 import { compose } from 'redux'
-import CsvDetailView from './CsvDetailView'
+import CsvTable from './CsvTable'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 
-export default compose(withRequiredLogin)(CsvDetailView)
+export default compose(withRequiredLogin)(CsvTable)

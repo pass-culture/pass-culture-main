@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | layout | DisplayButton should match snapshot 1`] = `
+exports[`src | components | layout | CsvTableButton should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <DisplayButton
+  Symbol(enzyme.__unrendered__): <CsvTableButton
     downloadFileOrNotifyAnError={[MockFunction]}
     history={
       Object {
@@ -18,7 +18,7 @@ ShallowWrapper {
     showFailureNotification={[MockFunction]}
   >
     foobar
-  </DisplayButton>,
+  </CsvTableButton>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],

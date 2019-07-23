@@ -28,10 +28,11 @@ class Header extends Component {
     const { showMobileMenu } = this.state
 
     return (
-      <header className={classnames('navbar', {
-        'is-primary': !whiteHeader,
-        'is-small': isSmall
-      })}
+      <header
+        className={classnames('navbar', {
+          'is-primary': !whiteHeader,
+          'is-small': isSmall,
+        })}
       >
         <div className="container">
           <div className="navbar-brand">

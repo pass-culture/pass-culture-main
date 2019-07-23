@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 
 import Bookings from '../Bookings'
 import DownloadButtonContainer from '../../../layout/DownloadButton/DownloadButtonContainer'
-import DisplayButtonContainer from '../../../layout/DisplayButton/DisplayButtonContainer'
+import DisplayButtonContainer from '../../../layout/CsvTableButton/CsvTableButtonContainer'
 
 describe('src | components | pages | Bookings', () => {
   let props

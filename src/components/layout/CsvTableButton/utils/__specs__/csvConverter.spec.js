@@ -1,6 +1,6 @@
 import csvConverter from '../csvConverter'
 
-describe('src | components | layout | DisplayButton | utils', () => {
+describe('src | components | layout | CsvTableButton | utils', () => {
   it('should return an object containing csv headers and data', () => {
     // given
     const csv = 'Column1;Column2\nData1;Data2\nData3;Data4'

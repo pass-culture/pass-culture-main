@@ -1,8 +1,8 @@
-import DisplayButton from '../DisplayButton'
+import CsvTableButton from '../CsvTableButton'
 import { shallow } from 'enzyme'
 import React from 'react'
 
-describe('src | components | layout | DisplayButton', () => {
+describe('src | components | layout | CsvTableButton', () => {
   let props
 
   beforeEach(() => {
@@ -21,16 +21,16 @@ describe('src | components | layout | DisplayButton', () => {
 
   it('should match snapshot', () => {
     // when
-    const wrapper = shallow(<DisplayButton {...props} />)
+    const wrapper = shallow(<CsvTableButton {...props} />)
 
     // then
     expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {
-    it('should render a DisplayButton component with the default state', () => {
+    it('should render a CsvTableButton component with the default state', () => {
       // when
-      const wrapper = shallow(<DisplayButton {...props} />)
+      const wrapper = shallow(<CsvTableButton {...props} />)
 
       // then
       expect(wrapper.state()).toStrictEqual({ isLoading: false })
@@ -38,7 +38,7 @@ describe('src | components | layout | DisplayButton', () => {
 
     it('should render a button with the default props', () => {
       // when
-      const wrapper = shallow(<DisplayButton {...props} />)
+      const wrapper = shallow(<CsvTableButton {...props} />)
 
       // then
       expect(wrapper.prop('className')).toBe('button is-primary')
@@ -49,7 +49,7 @@ describe('src | components | layout | DisplayButton', () => {
 
     it('should render a button with the right css classes when state isLoading value is true', () => {
       // when
-      const wrapper = shallow(<DisplayButton {...props} />)
+      const wrapper = shallow(<CsvTableButton {...props} />)
       wrapper.setState({ isLoading: true })
 
       // then
@@ -64,7 +64,7 @@ describe('src | components | layout | DisplayButton', () => {
         data: [['data1', 'data2']],
         headers: ['column1', 'column2'],
       })
-      const wrapper = shallow(<DisplayButton {...props} />)
+      const wrapper = shallow(<CsvTableButton {...props} />)
 
       // when
       await wrapper.instance().handleRequestData()
@@ -82,7 +82,7 @@ describe('src | components | layout | DisplayButton', () => {
         data: [],
         headers: ['column1', 'column2'],
       })
-      const wrapper = shallow(<DisplayButton {...props} />)
+      const wrapper = shallow(<CsvTableButton {...props} />)
 
       // when
       await wrapper.instance().handleRequestData()
@@ -97,7 +97,7 @@ describe('src | components | layout | DisplayButton', () => {
         data: [],
         headers: ['column1', 'column2'],
       })
-      const wrapper = shallow(<DisplayButton {...props} />)
+      const wrapper = shallow(<CsvTableButton {...props} />)
 
       // when
       await wrapper.instance().handleRequestData()

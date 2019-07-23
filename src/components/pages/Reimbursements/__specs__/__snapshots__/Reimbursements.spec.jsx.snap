@@ -50,11 +50,11 @@ ShallowWrapper {
         <div
           className="control flex-columns items-center flex-end"
         >
-          <withRouter(Connect(DisplayButton))
+          <withRouter(Connect(CsvTableButton))
             href="http://localhost/reimbursements/csv"
           >
             Afficher la liste des remboursements
-          </withRouter(Connect(DisplayButton))>
+          </withRouter(Connect(CsvTableButton))>
         </div>,
       ],
       "name": "reimbursements",
@@ -164,11 +164,11 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": <withRouter(Connect(DisplayButton))
+          "children": <withRouter(Connect(CsvTableButton))
             href="http://localhost/reimbursements/csv"
           >
             Afficher la liste des remboursements
-          </withRouter(Connect(DisplayButton))>,
+          </withRouter(Connect(CsvTableButton))>,
           "className": "control flex-columns items-center flex-end",
         },
         "ref": null,
@@ -227,11 +227,11 @@ ShallowWrapper {
           <div
             className="control flex-columns items-center flex-end"
           >
-            <withRouter(Connect(DisplayButton))
+            <withRouter(Connect(CsvTableButton))
               href="http://localhost/reimbursements/csv"
             >
               Afficher la liste des remboursements
-            </withRouter(Connect(DisplayButton))>
+            </withRouter(Connect(CsvTableButton))>
           </div>,
         ],
         "name": "reimbursements",
@@ -341,11 +341,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <withRouter(Connect(DisplayButton))
+            "children": <withRouter(Connect(CsvTableButton))
               href="http://localhost/reimbursements/csv"
             >
               Afficher la liste des remboursements
-            </withRouter(Connect(DisplayButton))>,
+            </withRouter(Connect(CsvTableButton))>,
             "className": "control flex-columns items-center flex-end",
           },
           "ref": null,

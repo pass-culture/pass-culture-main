@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 
-import DisplayButton from './DisplayButton'
+import CsvTableButton from './CsvTableButton'
 import { showNotification } from 'pass-culture-shared'
 import csvConverter from './utils/csvConverter'
 import { compose } from 'redux'
@@ -47,4 +47,4 @@ export default compose(
     null,
     mapDispatchToProps
   )
-)(DisplayButton)
+)(CsvTableButton)

@@ -1,10 +1,10 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import CsvDetailView from '../CsvDetailView'
+import CsvTable from '../CsvTable'
 import Header from '../../Header/Header'
 
-describe('src | components | Layout | CsvDetailView', () => {
+describe('src | components | Layout | CsvTable', () => {
   let props
 
   beforeEach(() => {
@@ -24,7 +24,7 @@ describe('src | components | Layout | CsvDetailView', () => {
 
   it('should match snapshot', () => {
     // when
-    const wrapper = shallow(<CsvDetailView {...props} />)
+    const wrapper = shallow(<CsvTable {...props} />)
 
     // then
     expect(wrapper).toMatchSnapshot()
@@ -32,7 +32,7 @@ describe('src | components | Layout | CsvDetailView', () => {
 
   it('should render a Header component with the right props', () => {
     // when
-    const wrapper = shallow(<CsvDetailView {...props} />)
+    const wrapper = shallow(<CsvTable {...props} />)
 
     // then
     const header = wrapper.find(Header)
@@ -44,7 +44,7 @@ describe('src | components | Layout | CsvDetailView', () => {
 
   it('should render a table header with 2 columns when csv contains 2 elements in header', () => {
     // when
-    const wrapper = shallow(<CsvDetailView {...props} />)
+    const wrapper = shallow(<CsvTable {...props} />)
 
     // then
     const thElements = wrapper.find('thead tr th')
@@ -53,7 +53,7 @@ describe('src | components | Layout | CsvDetailView', () => {
 
   it('should render a tbody with two lines, containing two columns when csv containes 2 elements in headers and 2 lines of data', () => {
     // when
-    const wrapper = shallow(<CsvDetailView {...props} />)
+    const wrapper = shallow(<CsvTable {...props} />)
 
     // then
     const trElements = wrapper.find('tbody tr')
@@ -70,7 +70,7 @@ describe('src | components | Layout | CsvDetailView', () => {
 
   it('should render a print button with the right props', () => {
     // when
-    const wrapper = shallow(<CsvDetailView {...props} />)
+    const wrapper = shallow(<CsvTable {...props} />)
 
     // then
     const printButton = wrapper.find('#csv-print-button')
@@ -82,7 +82,7 @@ describe('src | components | Layout | CsvDetailView', () => {
 
   it('should open a new window for printing when clicking on print button', () => {
     // given
-    const wrapper = shallow(<CsvDetailView {...props} />)
+    const wrapper = shallow(<CsvTable {...props} />)
     const printButton = wrapper.find('#csv-print-button')
 
     // then
