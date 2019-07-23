@@ -3,10 +3,11 @@ from flask import current_app as app, jsonify, request
 from flask_login import login_required, current_user
 
 from domain.admin_emails import send_venue_validation_email
+from domain.offers import update_is_active_status
 from models.user_offerer import RightsType
 from models.venue import Venue
 from repository.venue_queries import save_venue, find_by_managing_user
-from utils.includes import VENUE_INCLUDES
+from utils.includes import OFFER_INCLUDES, VENUE_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
@@ -60,4 +61,16 @@ def edit_venue(venueId):
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     venue.populate_from_dict(request.json)
     save_venue(venue)
-    return jsonify(venue.as_dict(include=VENUE_INCLUDES)), 200
+    return jsonify(venue.as_dict(include=VENUE_INCLUDES)), 400
+
+
+@app.route('/venues', methods=['PUT'])
+@login_required
+def put_venue_offers():
+    venue_id = request.args.get('venueId')
+    offers_action = request.args.get('action')
+    venue = load_or_404(Venue, venue_id)
+    offers_active_status = True if offers_action == 'validate_offers' else False
+    offers = venue.offers
+    activated_offers = update_is_active_status(offers, offers_active_status)
+    return jsonify([b.as_dict(include=OFFER_INCLUDES) for b in activated_offers]), 200

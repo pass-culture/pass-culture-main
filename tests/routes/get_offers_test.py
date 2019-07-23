@@ -135,6 +135,7 @@ class Get:
                 assert 'event' in offer['name'].lower()
                 assert 'event' in offer['product']['name'].lower()
 
+
         @clean_database
         def test_can_be_searched_using_multiple_search_terms(self, app):
             # given
@@ -185,6 +186,7 @@ class Get:
             assert response.status_code == 200
             assert humanize(offer2.productId) in event_ids
             assert humanize(offer3.productId) in event_ids
+
 
         @clean_database
         def test_returns_list_of_offers_with_thing_or_event_with_type_details(self, app):
