@@ -22,3 +22,5 @@ scripts/recreate_where_not_first_tuto.py
 __pycache__/
 *.py[cod]
 *$py.class
+
+pc_env/

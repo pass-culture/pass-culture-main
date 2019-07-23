@@ -207,12 +207,23 @@ Checkout de master sur pass-culture-main, pass-culture-api, pass-culture-webapp 
 pc -t I.P.S tag
 ```
 
-Les seuls branches devant être taguées sont master et hotfix-vI.P.S
+La seule branche devant être taguée de cette façon est master. Pour les hotfixes, voir plus bas.
 
 Le fichier version.txt de l'API est mis à jours ainsi que le package.json de Webapp et Pro. 
 Le tag est posé sur les branches locales checkout (de préférence master): Api, Webapp et Pro. 
 Elles sont ensuite poussées sur le repository distant. 
 Les tests sont enfin joués et on déploie sur Testing.
+
+## Hotfixes
+
+Pour tagguer les hotfixes, commencer par se placer sur la dernière version déployée en production où en staging à
+l'aide d'un ```git checkout I.P.S```, commiter le fix du bug puis lancer la commande de création de branches de hotfixes
+et de tag pour chacun des projets :
+
+```pc -t I.P.S tag-hotfix```.
+
+On peut alors déployer ce tag.
+
 
 ## Deploy
 
