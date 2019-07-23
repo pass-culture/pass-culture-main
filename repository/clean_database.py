@@ -17,7 +17,15 @@ from models import Booking, \
     UserSession, \
     Venue, \
     Provider, \
-    VenueProvider, PaymentMessage, BankInformation, LocalProviderEvent, Feature, Favorite, BeneficiaryImportStatus
+    VenueProvider, \
+    PaymentMessage,\
+    BankInformation, \
+    LocalProviderEvent, \
+    Feature, \
+    Favorite, \
+    BeneficiaryImportStatus, \
+    OfferCriterion, \
+    Criterion
 from models.email import Email
 from models.install import install_features
 
@@ -35,6 +43,8 @@ def clean_all_database(*args, **kwargs):
     Favorite.query.delete()
     Recommendation.query.delete()
     Mediation.query.delete()
+    OfferCriterion.query.delete()
+    Criterion.query.delete()
     Offer.query.delete()
     Product.query.delete()
     BankInformation.query.delete()

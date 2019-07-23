@@ -4,6 +4,7 @@ from models.beneficiary_import import BeneficiaryImport
 from models.beneficiary_import_status import BeneficiaryImportStatus
 from models.beneficiary_import_status import ImportStatus
 from models.booking import Booking
+from models.criterion import Criterion
 from models.deactivable_mixin import DeactivableMixin
 from models.deposit import Deposit
 from models.email import Email
@@ -16,6 +17,7 @@ from models.local_provider_event import LocalProviderEvent
 from models.mediation import Mediation
 from models.needs_validation_mixin import NeedsValidationMixin
 from models.offer import Offer
+from models.offer_criterion import OfferCriterion
 from models.offer_type import ThingType, EventType
 from models.offerer import Offerer
 from models.payment import Payment
@@ -45,6 +47,7 @@ __all__ = (
     'BankInformation',
     'BeneficiaryImport',
     'BeneficiaryImportStatus',
+    'Criterion',
     'PcObject',
     'DeactivableMixin',
     'Deposit',
@@ -64,6 +67,7 @@ __all__ = (
     'Offerer',
     'VenueProvider',
     'LocalProviderEvent',
+    'OfferCriterion',
     'Offer',
     'Payment',
     'PaymentStatus',
