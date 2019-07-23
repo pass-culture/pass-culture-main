@@ -41,7 +41,7 @@ def department_or_national_offers(query, departement_codes):
     return query
 
 
-def bookable_offers(query):
+def _bookable_offers(query):
     beginning_date_is_in_the_future = (Stock.beginningDatetime > datetime.utcnow())
     no_beginning_date = Stock.beginningDatetime == None
     query = query.filter(beginning_date_is_in_the_future | no_beginning_date)
@@ -52,22 +52,35 @@ def bookable_offers(query):
     return query
 
 
-def with_active_and_validated_offerer(query):
+def _with_active_and_validated_offerer(query):
     query = query.join(Offerer, Offerer.id == Venue.managingOffererId) \
-                 .filter((Offerer.isActive == True)
-                         & (Offerer.validationToken == None))
+        .filter((Offerer.isActive == True)
+                & (Offerer.validationToken == None))
     logger.debug(lambda: '(reco) from active and validated offerer .count' + str(query.count()))
     return query
 
 
-def not_activation_offers(query):
+def _not_activation_offers(query):
     query = query.filter(Offer.type != str(EventType.ACTIVATION))
     return query.filter(Offer.type != str(ThingType.ACTIVATION))
 
 
-def get_active_offers(user=None, departement_codes=None, offer_id=None, limit=None):
-    active_offers_query = Offer.query.distinct(Offer.id)\
-                                     .order_by(Offer.id)
+def order_offers_for_recommendations_with_criteria():
+    order_offers = order_offers_for_recommendations_randomly()[:]
+    order_by_criteria = desc(Offer.baseScore)
+    order_offers.insert(-1, order_by_criteria)
+    return order_offers
+
+
+def order_offers_for_recommendations_randomly():
+    return [desc(_build_occurs_soon_or_is_thing_predicate()),
+            func.random()]
+
+
+def get_active_offers(departement_codes=None, offer_id=None, limit=None,
+                      order_offers_for_recommendations: [] = order_offers_for_recommendations_randomly):
+    active_offers_query = Offer.query.distinct(Offer.id) \
+        .order_by(Offer.id)
 
     if offer_id is not None:
         active_offers_query = active_offers_query.filter(Offer.id == offer_id)
@@ -91,18 +104,20 @@ def get_active_offers(user=None, departement_codes=None, offer_id=None, limit=No
     logger.debug(lambda:
                  '(reco) department or national {} in {}'.format(str(departement_codes),
                                                                  active_offers_query.count()))
-    active_offers_query = bookable_offers(active_offers_query)
+    active_offers_query = _bookable_offers(active_offers_query)
     logger.debug(lambda: '(reco) bookable_offers {}'.format(active_offers_query.count()))
-    active_offers_query = with_active_and_validated_offerer(active_offers_query)
+    active_offers_query = _with_active_and_validated_offerer(active_offers_query)
     logger.debug(lambda: '(reco) active and validated {}'.format(active_offers_query.count()))
-    active_offers_query = not_activation_offers(active_offers_query)
+    active_offers_query = _not_activation_offers(active_offers_query)
     logger.debug(lambda: '(reco) not_currently_recommended and not_activation {}'.format(active_offers_query.count()))
 
     active_offer_ids = active_offers_query.with_entities(Offer.id).subquery()
 
     query = Offer.query.filter(Offer.id.in_(active_offer_ids))
-    query = query.order_by(desc(_build_has_active_mediation_predicate()),
-                           _round_robin_by_type_and_onlineness())
+
+    query = query.order_by(desc(_build_has_active_mediation_predicate()))
+
+    query = query.order_by(_round_robin_by_type_onlineness_and_criteria(order_offers_for_recommendations))
 
     query = query.options(joinedload('mediations'),
                           joinedload('product'))
@@ -113,11 +128,11 @@ def get_active_offers(user=None, departement_codes=None, offer_id=None, limit=No
     return query.all()
 
 
-def _round_robin_by_type_and_onlineness():
-    return func.row_number()\
-               .over(partition_by=[Offer.type, Offer.url == None],
-                     order_by=[desc(_build_occurs_soon_or_is_thing_predicate()),
-                               func.random()])
+
+def _round_robin_by_type_onlineness_and_criteria(order_offers_for_recommendations: []):
+    return func.row_number() \
+        .over(partition_by=[Offer.type, Offer.url == None],
+              order_by=order_offers_for_recommendations())
 
 
 def _with_stock(offer_query):
@@ -127,12 +142,13 @@ def _with_stock(offer_query):
 def _with_image(offer_query):
     has_image_predicate = (Product.thumbCount > 0) | _build_has_active_mediation_predicate()
     return offer_query.join(Product, Offer.productId == Product.id) \
-                      .filter(has_image_predicate)
+        .filter(has_image_predicate)
+
 
 
 def _with_validated_venue(offer_query):
     return offer_query.join(Venue, Offer.venueId == Venue.id) \
-                      .filter(Venue.validationToken == None)
+        .filter(Venue.validationToken == None)
 
 
 def _build_occurs_soon_or_is_thing_predicate():
@@ -147,7 +163,7 @@ def _build_occurs_soon_or_is_thing_predicate():
 def _build_has_active_mediation_predicate():
     return Mediation.query.filter((Mediation.offerId == Offer.id)
                                   & Mediation.isActive) \
-                          .exists()
+        .exists()
 
 
 def _date_interval_to_filter(date_interval):

@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 
 import dateutil.parser
 from sqlalchemy import func
-from sqlalchemy.sql.expression import literal
 
 from domain.types import get_event_or_thing_type_values_from_sublabels
 from models import ApiErrors, Recommendation, Offer, Mediation, PcObject
@@ -13,6 +12,7 @@ from repository.mediation_queries import get_all_tuto_mediations
 from repository.offer_queries import get_offers_for_recommendations_search, find_searchable_offer
 from repository.recommendation_queries import count_read_recommendations_for_user
 from utils.logger import logger
+
 
 class OfferNotFoundException(Exception):
     pass
@@ -30,7 +30,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     return recommendation
 
 
-def create_recommendations_for_discovery(limit=3, user=None, coords=None):
+def create_recommendations_for_discovery(limit=3, user=None):
 
     recommendations = []
     tuto_mediations_by_index = {}
@@ -46,8 +46,7 @@ def create_recommendations_for_discovery(limit=3, user=None, coords=None):
     inserted_tuto_mediations = 0
     offers = get_offers_for_recommendations_discovery(
         limit,
-        user=user,
-        coords=coords
+        user=user
     )
 
     for (index, offer) in enumerate(offers):

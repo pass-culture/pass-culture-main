@@ -1,9 +1,9 @@
 from datetime import datetime
 
 from sqlalchemy import BigInteger, Column, DateTime, desc, ForeignKey, String
-from sqlalchemy import ARRAY, Boolean, cast, CheckConstraint,  false, Integer, Text, TEXT
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql.functions import coalesce
+from sqlalchemy import and_, ARRAY, Boolean, cast, CheckConstraint, false, Integer, Text, TEXT
+from sqlalchemy.orm import column_property, relationship
+from sqlalchemy.sql import coalesce, expression, select, func
 
 from domain.keywords import create_ts_vector_and_table_args
 from models import ExtraDataMixin
@@ -14,6 +14,8 @@ from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.stock import Stock
 from models.venue import Venue
+from models.offer_criterion import OfferCriterion
+from models.criterion import Criterion
 from utils.date import DateTimes
 
 
@@ -22,6 +24,10 @@ class Offer(PcObject,
             ExtraDataMixin,
             DeactivableMixin,
             ProvidableMixin):
+    id = Column(BigInteger,
+                primary_key=True,
+                autoincrement=True)
+
     productId = Column(BigInteger,
                        ForeignKey("product.id"),
                        index=True,
@@ -76,6 +82,13 @@ class Offer(PcObject,
                          nullable=False,
                          default=datetime.utcnow)
 
+    baseScore = column_property(
+        select([Criterion.scoreDelta]).
+            where(and_(Criterion.id == OfferCriterion.criterionId,
+                       (OfferCriterion.offerId == id))
+                  )
+    )
+
     def errors(self):
         api_errors = super(Offer, self).errors()
         if self.venue:
@@ -84,7 +97,7 @@ class Offer(PcObject,
             venue = Venue.query.get(self.venueId)
         if self.isDigital and not venue.isVirtual:
             api_errors.add_error('venue',
-                                'Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"')
+                                 'Une offre numérique doit obligatoirement être associée au lieu "Offre en ligne"')
         elif not self.isDigital and venue.isVirtual:
             api_errors.add_error('venue', 'Une offre physique ne peut être associée au lieu "Offre en ligne"')
         if self.isDigital and self._type_can_only_be_offline():
@@ -181,6 +194,5 @@ ts_indexes = [('idx_offer_fts_name', Offer.name),
               ('idx_offer_fts_author', Offer.extraData['author'].cast(TEXT)),
               ('idx_offer_fts_byArtist', Offer.extraData['byArtist'].cast(TEXT)),
               ('idx_offer_fts_description', Offer.description)]
-
 
 (Offer.__ts_vectors__, Offer.__table_args__) = create_ts_vector_and_table_args(ts_indexes)
