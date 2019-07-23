@@ -1,7 +1,7 @@
 from sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
 from sandboxes.scripts.creators.industrial.create_industrial_bookings import *
 from sandboxes.scripts.creators.industrial.create_industrial_deposits import *
-from sandboxes.scripts.creators.industrial.create_industrial_events import *
+from sandboxes.scripts.creators.industrial.create_industrial_event_products import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_stocks import *
@@ -12,7 +12,7 @@ from sandboxes.scripts.creators.industrial.create_industrial_pro_users import *
 from sandboxes.scripts.creators.industrial.create_industrial_recommendations import *
 from sandboxes.scripts.creators.industrial.create_industrial_thing_offers import *
 from sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import *
-from sandboxes.scripts.creators.industrial.create_industrial_things import *
+from sandboxes.scripts.creators.industrial.create_industrial_thing_products import *
 from sandboxes.scripts.creators.industrial.create_industrial_venues import *
 from sandboxes.scripts.creators.industrial.create_industrial_webapp_users import *
 
@@ -34,17 +34,17 @@ def save_industrial_sandbox():
 
     venues_by_name = create_industrial_venues(offerers_by_name)
 
-    events_by_name = create_industrial_events()
+    event_products_by_name = create_industrial_event_products()
 
-    things_by_name = create_industrial_things()
+    thing_products_by_name = create_industrial_thing_products()
 
     event_offers_by_name = create_industrial_event_offers(
-        events_by_name,
+        event_products_by_name,
         offerers_by_name
     )
 
     thing_offers_by_name = create_industrial_thing_offers(
-        things_by_name,
+        thing_products_by_name,
         offerers_by_name,
         venues_by_name
     )

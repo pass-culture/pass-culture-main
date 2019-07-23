@@ -13,10 +13,10 @@ from tests.test_utils import create_product_with_thing_type
 
 THINGS_PER_TYPE = 7
 
-def create_industrial_things():
-    logger.info('create_industrial_things')
+def create_industrial_thing_products():
+    logger.info('create_industrial_thing_products')
 
-    things_by_name = {}
+    thing_products_by_name = {}
 
     thing_type_dicts = [
         t for t in get_formatted_event_or_thing_types()
@@ -41,6 +41,7 @@ def create_industrial_things():
                 is_national=is_national,
                 thing_name=MOCK_NAMES[mock_index],
                 thing_type=thing_type_dict['value'],
+                thumb_count=0,
                 url=url
             )
 
@@ -67,14 +68,14 @@ def create_industrial_things():
                 extra_data_index += 1
             thing_product.extraData = extraData
 
-            things_by_name[name] = thing_product
+            thing_products_by_name[name] = thing_product
 
             id_at_providers += 1
 
         type_index += len(thing_type_dicts)
 
-    PcObject.save(*things_by_name.values())
+    PcObject.save(*thing_products_by_name.values())
 
-    logger.info('created {} things'.format(len(things_by_name)))
+    logger.info('created {} thing products'.format(len(thing_products_by_name)))
 
-    return things_by_name
+    return thing_products_by_name

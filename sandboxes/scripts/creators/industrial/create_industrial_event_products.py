@@ -15,10 +15,10 @@ from tests.test_utils import create_product_with_event_type
 
 EVENT_COUNTS_PER_TYPE = 7
 
-def create_industrial_events():
-    logger.info('create_industrial_events')
+def create_industrial_event_products():
+    logger.info('create_industrial_event_products')
 
-    events_by_name = {}
+    event_products_by_name = {}
 
     event_type_dicts = [
         t for t in get_formatted_event_or_thing_types(with_activation_type=True)
@@ -48,6 +48,7 @@ def create_industrial_events():
                 duration_minutes=60,
                 event_name=event_name,
                 event_type=event_type,
+                thumb_count=0
             )
 
             extraData = {}
@@ -80,12 +81,12 @@ def create_industrial_events():
                 extra_data_index += 1
             event_product.extraData = extraData
 
-            events_by_name[name] = event_product
+            event_products_by_name[name] = event_product
 
         type_index += len(event_type_dicts)
 
-    PcObject.save(*events_by_name.values())
+    PcObject.save(*event_products_by_name.values())
 
-    logger.info('created {} events'.format(len(events_by_name)))
+    logger.info('created {} event products'.format(len(event_products_by_name)))
 
-    return events_by_name
+    return event_products_by_name
