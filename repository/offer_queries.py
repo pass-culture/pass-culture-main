@@ -68,7 +68,6 @@ def not_activation_offers(query):
     return query.filter(Offer.type != str(ThingType.ACTIVATION))
 
 
-
 def get_active_offers(user=None, departement_codes=None, offer_id=None, limit=None):
     active_offers_query = Offer.query.distinct(Offer.id)\
                                      .order_by(Offer.id)
@@ -133,6 +132,7 @@ def _with_image(offer_query):
     return offer_query.join(Product, Offer.productId == Product.id) \
                       .filter(has_image_predicate)
 
+
 def _with_validated_venue(offer_query):
     return offer_query.join(Venue, Offer.venueId == Venue.id) \
                       .filter(Venue.validationToken == None)
@@ -145,6 +145,7 @@ def _build_occurs_soon_or_is_thing_predicate():
                                  | ((Stock2.beginningDatetime > datetime.utcnow())
                               & (Stock2.beginningDatetime < (datetime.utcnow() + timedelta(days=10)))))) \
                       .exists()
+
 
 def _build_has_active_mediation_predicate():
     return Mediation.query.filter((Mediation.offerId == Offer.id)

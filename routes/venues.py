@@ -2,6 +2,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import login_required, current_user
 
+from models.api_errors import ApiErrors
 from domain.admin_emails import send_venue_validation_email
 from domain.offers import update_is_active_status
 from models.user_offerer import RightsType
@@ -13,6 +14,7 @@ from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
     load_or_404
 from validation.venues import validate_coordinates, check_valid_edition
+from validation.offers import check_venue_exists_when_requested
 
 
 @app.route('/venues/<venueId>', methods=['GET'])
@@ -70,7 +72,18 @@ def put_venue_offers():
     venue_id = request.args.get('venueId')
     offers_action = request.args.get('action')
     venue = load_or_404(Venue, venue_id)
-    offers_active_status = True if offers_action == 'validate_offers' else False
+    ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
+
+    if offers_action == 'active_venue_offers':
+        offers_active_status = True
+    elif offers_action == 'deactive_venue_offers':
+        offers_active_status = False
+    else:
+        errors = ApiErrors()
+        errors.status_code = 401
+        errors.add_error('venueOffersAction', "Cette action n'est pas authorisée")
+        errors.maybe_raise()
+
     offers = venue.offers
     activated_offers = update_is_active_status(offers, offers_active_status)
     return jsonify([b.as_dict(include=OFFER_INCLUDES) for b in activated_offers]), 200
