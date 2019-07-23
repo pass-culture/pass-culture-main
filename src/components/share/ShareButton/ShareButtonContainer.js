@@ -5,7 +5,7 @@ import { selectCurrentUser } from 'with-react-redux-login'
 
 import ShareButton from './ShareButton'
 import { getShareURL } from '../../../helpers'
-import { getCurrentRecommendationOfferName } from '../../../selectors/currentRecommendation/getCurrentRecommendationOffername'
+import { getCurrentRecommendationOfferName } from '../../../selectors/currentRecommendation/getCurrentRecommendationOfferName'
 import { getShare } from '../../../selectors/shareSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
