@@ -255,7 +255,6 @@ class Offer extends Component {
 
   hasConditionalField(fieldName) {
     const { selectedOfferType } = this.props
-    console.log('selectedOfferType : ', selectedOfferType)
     if (!selectedOfferType) {
       return false
     }
