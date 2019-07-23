@@ -73,20 +73,45 @@ def find_offerer_bookings_paginated(offerer_id, search=None, order_by=None, page
     return bookings
 
 
-def find_all_offerer_bookings_by_venue_id(offerer_id, venue_id=None) -> List[Booking]:
+def find_all_offerer_bookings_by_venue_id(offerer_id, venue_id=None, offer_id=None, date_from=None, date_to=None) -> List[Booking]:
     query = filter_bookings_by_offerer_id(offerer_id)
 
     if venue_id:
         query = query.filter(Venue.id == venue_id)
 
+    if offer_id:
+        query = query.filter(Offer.id == offer_id)
+
+    offer = Offer.query.filter(Offer.id == offer_id).first()
+
+    if (offer and offer.isEvent and date_from):
+        query=query.filter(Stock.beginningDatetime == date_from)
+
+    if (offer and offer.isThing):
+        if date_from:
+            query=query.filter(Booking.dateCreated >= date_from)
+        if date_to:
+            query=query.filter(Booking.dateCreated <= date_to)
+
     bookings = query.all()
 
     return bookings
 
-def find_all_digital_bookings_for_offerer(offerer_id) -> List[Booking]:
+def find_all_digital_bookings_for_offerer(offerer_id, offer_id=None, date_from=None, date_to=None) -> List[Booking]:
     query = filter_bookings_by_offerer_id(offerer_id)
 
-    return query.filter(Venue.isVirtual == True).all()
+    query = query.filter(Venue.isVirtual == True)
+
+    if offer_id:
+        query = query.filter(Offer.id == offer_id)
+
+    if date_from:
+        query=query.filter(Booking.dateCreated >= date_from)
+
+    if date_to:
+        query=query.filter(Booking.dateCreated <= date_to)
+
+    return query.all()
 
 
 def find_bookings_from_recommendation(reco, user):

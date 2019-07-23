@@ -2,6 +2,7 @@
 
 from itertools import chain
 
+import dateutil
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
@@ -50,6 +51,15 @@ def get_bookings_csv():
 
     try:
         venue_id = dehumanize(request.args.get('venueId', None))
+        offer_id = dehumanize(request.args.get('offerId', None))
+        if request.args.get('dateFrom', None):
+            date_from = dateutil.parser.parse(request.args.get('dateFrom'))
+        else:
+            date_from = None
+        if request.args.get('dateTo', None):
+            date_to = dateutil.parser.parse(request.args.get('dateTo'))
+        else:
+            date_to = None
     except ValueError:
         errors = ApiErrors()
         errors.add_error(
@@ -64,10 +74,10 @@ def get_bookings_csv():
     query = filter_query_where_user_is_user_offerer_and_is_validated(Offerer.query,
                                                                      current_user)
     if only_digital_venues:
-        bookings = chain(*list(map(lambda offerer: find_all_digital_bookings_for_offerer(offerer.id),
+        bookings = chain(*list(map(lambda offerer: find_all_digital_bookings_for_offerer(offerer.id, offer_id, date_from, date_to),
                                    query)))
     else:
-        bookings = chain(*list(map(lambda offerer: find_all_offerer_bookings_by_venue_id(offerer.id, venue_id),
+        bookings = chain(*list(map(lambda offerer: find_all_offerer_bookings_by_venue_id(offerer.id, venue_id, offer_id, date_from, date_to),
                                    query)))
 
     bookings_csv = generate_bookings_details_csv(bookings)

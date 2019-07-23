@@ -6,7 +6,7 @@ from tests.test_utils import create_stock_with_thing_offer, \
     create_deposit, create_venue, create_offerer, \
     create_user, create_booking, create_user_offerer, create_offer_with_thing_product, create_stock_from_offer, \
     create_offer_with_event_product
-from utils.human_ids import humanize
+from utils.human_ids import humanize, dehumanize
 
 
 class Get:
@@ -110,15 +110,15 @@ class Get:
             offerer1 = create_offerer()
             user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
 
-            virtual_venue = create_venue(offerer1, is_virtual=True, siret=None)
+            virtual_venue = create_venue(offerer1, name='virtual venue', is_virtual=True, siret=None)
             physical_venue = create_venue(offerer1, siret='12345678912346')
             offer1 = create_offer_with_event_product(virtual_venue)
             offer2 = create_offer_with_thing_product(physical_venue)
 
             stock1 = create_stock_from_offer(offer1, available=100, price=20)
             stock2 = create_stock_from_offer(offer2, available=150, price=16)
-            booking_on_physical_venue = create_booking(user, stock1, venue=virtual_venue, token='ABCDEF')
-            booking_on_digital_venue = create_booking(user, stock2, venue=physical_venue, token='ABCDEH')
+            booking_on_physical_venue = create_booking(user, stock1, venue=physical_venue, token='ABCDEF')
+            booking_on_digital_venue = create_booking(user, stock2, venue=virtual_venue, token='ABCDEH')
 
             PcObject.save(deposit, booking_on_physical_venue, booking_on_digital_venue, user_offerer1)
 
@@ -132,3 +132,39 @@ class Get:
             assert response.headers['Content-type'] == 'text/csv; charset=utf-8;'
             assert response.headers['Content-Disposition'] == 'attachment; filename=reservations_pass_culture.csv'
             assert len(content_lines) == 1
+            assert 'virtual venue' in content_lines[0]
+
+        @clean_database
+        def when_user_is_filtering_on_digital_venues_and_offer_and_date(self, app):
+            # Given
+            user = create_user(email='user+plus@email.fr')
+            deposit = create_deposit(user, datetime.utcnow(), amount=500, source='public')
+
+            offerer1 = create_offerer()
+            user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
+
+            virtual_venue = create_venue(offerer1, is_virtual=True, siret=None, name='virtual venue')
+            physical_venue = create_venue(offerer1, siret='12345678912346')
+            offer1 = create_offer_with_thing_product(virtual_venue, idx=dehumanize('CY'), thing_name='thing')
+            offer2 = create_offer_with_thing_product(physical_venue)
+
+            stock1 = create_stock_from_offer(offer1, available=100, price=20)
+            stock2 = create_stock_from_offer(offer2, available=150, price=16)
+            booking_on_physical_venue = create_booking(user, stock2, venue=physical_venue, token='ABCDEF')
+            booking_on_digital_venue1 = create_booking(user, stock1, venue=virtual_venue, token='ABCDEH', date_created=datetime.strptime("2020-05-01T00:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ"))
+            booking_on_digital_venue2 = create_booking(user, stock1, venue=virtual_venue, token='ABCDEG', date_created=datetime.strptime("2020-04-30T00:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ"))
+
+            PcObject.save(deposit, booking_on_physical_venue, booking_on_digital_venue1, booking_on_digital_venue2, user_offerer1)
+
+            # When
+            url = '/bookings/csv?onlyDigitalVenues=true&offerId=CY&dateFrom=2020-05-01T00:00:00.000Z&dateTo=2020-05-01T00:00:00.000Z'
+            response = TestClient(app.test_client()).with_auth(user.email).get(url)
+            content_lines = response.data.decode('utf-8').split('\n')[1:-1]
+
+            # Then
+            assert response.status_code == 200
+            assert response.headers['Content-type'] == 'text/csv; charset=utf-8;'
+            assert response.headers['Content-Disposition'] == 'attachment; filename=reservations_pass_culture.csv'
+            assert len(content_lines) == 1
+            assert 'virtual venue' in content_lines[0]
+            assert 'thing' in content_lines[0]
