@@ -11,8 +11,8 @@ import { selectCurrentUser } from 'with-react-redux-login'
 
 import { getShareURL } from '../../../helpers'
 
-jest.mock('../../../selectors/currentRecommendation/currentRecommendation')
 jest.mock('with-react-redux-login')
+jest.mock('../../../selectors/currentRecommendation/currentRecommendation')
 jest.mock('../../../helpers')
 
 const middlewares = []
@@ -52,6 +52,7 @@ describe('src | components | share | ShareButtonContainer', () => {
   describe('mapStateToProps', () => {
     describe('when mapping offerName', () => {
       it('should get offerName from current recommendation', () => {
+        // given
         const ownprops = {
           match: {
             params: {
@@ -60,30 +61,32 @@ describe('src | components | share | ShareButtonContainer', () => {
             },
           },
         }
+        const currentRecommendation = {
+          id: 'PA',
+          mediationId: 'CA',
+          offerId: 'B4',
+          offer: {
+            name: 'offerName',
+          },
+        }
         const state = {
           data: {
-            recommendations: [
-              {
-                id: 'PA',
-                mediationId: 'CA',
-                offerId: 'B4',
-                offer: {
-                  name: 'offerName',
-                },
-              },
-            ],
+            recommendations: [currentRecommendation],
           },
         }
 
-        selectCurrentRecommendation.mockReturnValue(state.data.recommendations[0])
+        // when
+        selectCurrentRecommendation.mockReturnValue(currentRecommendation)
         selectCurrentUser.mockReturnValue({})
 
+        // then
         expect(mapStateToProps(state, ownprops).offerName).toBe('offerName')
       })
     })
 
     describe('when mapping text', () => {
       it('should build text from recommendation offerName', () => {
+        // given
         const ownprops = {
           match: {
             params: {
@@ -92,24 +95,25 @@ describe('src | components | share | ShareButtonContainer', () => {
             },
           },
         }
+        const currentRecommendation = {
+          id: 'PA',
+          mediationId: 'CA',
+          offerId: 'B4',
+          offer: {
+            name: 'offerName',
+          },
+        }
         const state = {
           data: {
-            recommendations: [
-              {
-                id: 'PA',
-                mediationId: 'CA',
-                offerId: 'B4',
-                offer: {
-                  name: 'offerName',
-                },
-              },
-            ],
+            recommendations: [currentRecommendation],
           },
         }
 
-        selectCurrentRecommendation.mockReturnValue(state.data.recommendations[0])
+        // when
+        selectCurrentRecommendation.mockReturnValue(currentRecommendation)
         selectCurrentUser.mockReturnValue({})
 
+        // then
         expect(mapStateToProps(state, ownprops).text).toBe(
           'Retrouvez offerName sur le pass Culture'
         )
@@ -119,6 +123,7 @@ describe('src | components | share | ShareButtonContainer', () => {
     describe('when mapping url', () => {
       describe('when user is logged in', () => {
         it('should getShareURL with location and user', () => {
+          // given
           const ownprops = {
             match: {
               params: {
@@ -127,25 +132,26 @@ describe('src | components | share | ShareButtonContainer', () => {
               },
             },
           }
+          const currentRecommendation = {
+            id: 'PA',
+            mediationId: 'CA',
+            offerId: 'B4',
+            offer: {
+              name: 'offerName',
+            },
+          }
           const state = {
             data: {
-              recommendations: [
-                {
-                  id: 'PA',
-                  mediationId: 'CA',
-                  offerId: 'B4',
-                  offer: {
-                    name: 'offerName',
-                  },
-                },
-              ],
+              recommendations: [currentRecommendation],
             },
           }
 
-          selectCurrentRecommendation.mockReturnValue(state.data.recommendations[0])
+          // when
+          selectCurrentRecommendation.mockReturnValue(currentRecommendation)
           selectCurrentUser.mockReturnValue({ id: 'myId' })
           getShareURL.mockReturnValue('http://fake_shared_url')
 
+          // then
           expect(mapStateToProps(state, ownprops).url).toBe('http://fake_shared_url')
         })
       })
@@ -153,6 +159,7 @@ describe('src | components | share | ShareButtonContainer', () => {
 
     describe('when mapping share data', () => {
       it('should explode all attributes from share', () => {
+        // given
         const ownprops = {
           match: {
             params: {
@@ -161,18 +168,17 @@ describe('src | components | share | ShareButtonContainer', () => {
             },
           },
         }
+        const currentRecommendation = {
+          id: 'PA',
+          mediationId: 'CA',
+          offerId: 'B4',
+          offer: {
+            name: 'offerName',
+          },
+        }
         const state = {
           data: {
-            recommendations: [
-              {
-                id: 'PA',
-                mediationId: 'CA',
-                offerId: 'B4',
-                offer: {
-                  name: 'offerName',
-                },
-              },
-            ],
+            recommendations: [currentRecommendation],
           },
           share: {
             options: false,
@@ -180,9 +186,11 @@ describe('src | components | share | ShareButtonContainer', () => {
           },
         }
 
-        selectCurrentRecommendation.mockReturnValue(state.data.recommendations[0])
+        // when
+        selectCurrentRecommendation.mockReturnValue(currentRecommendation)
         selectCurrentUser.mockReturnValue({})
 
+        // then
         expect(mapStateToProps(state, ownprops).options).toBe(false)
         expect(mapStateToProps(state, ownprops).visible).toBe(true)
       })
