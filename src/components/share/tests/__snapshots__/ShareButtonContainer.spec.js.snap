@@ -15,7 +15,7 @@ ShallowWrapper {
       }
     }
   >
-    <UNDEFINED
+    <withRouter(Connect(ShareButton))
       dispatch={[MockFunction]}
     />
   </Provider>,
@@ -37,7 +37,7 @@ ShallowWrapper {
     },
     "ref": null,
     "rendered": null,
-    "type": undefined,
+    "type": [Function],
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
@@ -49,7 +49,7 @@ ShallowWrapper {
       },
       "ref": null,
       "rendered": null,
-      "type": undefined,
+      "type": [Function],
     },
   ],
   Symbol(enzyme.__options__): Object {

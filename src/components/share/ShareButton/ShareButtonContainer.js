@@ -27,11 +27,6 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export const ShareButtonContainer = compose(
-  withRouter,
-  connect(mapStateToProps)
-)(ShareButton)
-
 export default compose(
   withRouter,
   connect(mapStateToProps)

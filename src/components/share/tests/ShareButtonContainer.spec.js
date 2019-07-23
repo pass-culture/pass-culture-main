@@ -3,8 +3,7 @@ import { Provider } from 'react-redux'
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import { ShareButtonContainer } from '../ShareButton/ShareButton'
-import { mapStateToProps } from '../ShareButton/ShareButtonContainer'
+import ShareButtonContainer, { mapStateToProps } from '../ShareButton/ShareButtonContainer'
 
 import { selectCurrentRecommendation } from '../../../selectors/currentRecommendation/currentRecommendation'
 import { selectCurrentUser } from 'with-react-redux-login'
@@ -44,7 +43,6 @@ describe('src | components | share | ShareButtonContainer', () => {
       )
 
       // then
-      expect(wrapper).toBeDefined()
       expect(wrapper).toMatchSnapshot()
     })
   })
