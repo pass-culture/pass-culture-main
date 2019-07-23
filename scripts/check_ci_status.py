@@ -4,7 +4,7 @@ from typing import List, Optional
 
 def extract_commit_status(commit_sha1: str, project_jobs_infos: str, test_name:str) -> Optional[str]:
     for job in project_jobs_infos :
-        if job['build_parameters']['CIRCLE_JOB'] == test_name and job['all_commit_details'][0]['commit'] == commit_sha1 :
+        if job['build_parameters']['CIRCLE_JOB'] == test_name and job['vcs_revision'] == commit_sha1 :
             return job['status']
     return None
 
@@ -18,20 +18,23 @@ def get_project_jobs_infos(branch_name: str) -> Optional[str]:
 
 
 def main():
-    project_name = "pass-culture-main"
     tests_names = ["tests-script-pc", "tests-api", "tests-webapp", "tests-pro"]
 
     if len(sys.argv) < 3:
-        print('Error : Scripts needs to be called with 2 arguments, a commit hash and a branch name')
+        print('Error : Scripts needs to be called with 2 arguments, a commit hash and a tag name')
         sys.exit(1)
 
     commit_sha1 = sys.argv[1]
-    branch_name = sys.argv[2]
+    tag_name = sys.argv[2]
 
-    if not branch_name.startswith('hotfix-'):
-        branch_name = "master"
-
+    branch_name = 'hotfix-v' + tag_name
+    print(branch_name)
     project_jobs_infos = get_project_jobs_infos(branch_name)
+
+    if not project_jobs_infos:
+        print('Could not find projects jobs informations on tag branch, trying in master branch')
+        branch_name = "master"
+        project_jobs_infos = get_project_jobs_infos(branch_name)
 
     if not project_jobs_infos:
         print('Error : Could not find projects jobs informations')
@@ -44,6 +47,7 @@ def main():
             print('Error, job ', test_name, " has status ", commit_status, "for commit ", commit_sha1)
             sys.exit(1)
 
+    print('Found all previous successfull build job, ready to deploy ')
     sys.exit(0)
 
 
