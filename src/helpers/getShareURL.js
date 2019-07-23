@@ -1,13 +1,6 @@
 import { isEmpty } from '../utils/strings'
 
-const isValid = user =>
-  !(
-    !user ||
-    Array.isArray(user) ||
-    typeof user !== 'object' ||
-    typeof user.id !== 'string' ||
-    !user.id
-  )
+const isValid = user => user && typeof user === 'object' && user.id && typeof user.id === 'string'
 
 export const getShareURL = (user = {}, offerId = '', mediationId = '') => {
   if (!isValid(user)) return null
