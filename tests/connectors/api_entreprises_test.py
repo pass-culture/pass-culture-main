@@ -39,7 +39,7 @@ class GetByOffererTest:
         response = get_by_offerer(offerer)
 
         # Then
-        requests_get.assert_called_once_with("https://sirene.entreprise.api.gouv.fr/v1/siren/732075312",
+        requests_get.assert_called_once_with("https://entreprise.data.gouv.fr/api/sirene/v1/siren/732075312",
                                              verify=False)
         assert response == mocked_api_response
 
@@ -71,6 +71,6 @@ class GetBySiretTest:
         response = get_by_siret(siret)
 
         # Then
-        requests_get.assert_called_once_with("https://sirene.entreprise.api.gouv.fr/v1/siret/12345678912345",
+        requests_get.assert_called_once_with("https://entreprise.data.gouv.fr/api/sirene/v1/siret/12345678912345",
                                              verify=False)
         assert response == mocked_api_response
