@@ -835,6 +835,7 @@ def test_find_offers_by_venue_id_return_offers_matching_venue_id(app):
 
     # Then
     assert len(offers) == 1
+    assert offers[0].venueId == venue.id
 
 def _create_event_stock_and_offer_for_date(venue, date):
     product = create_product_with_Event_type()
