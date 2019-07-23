@@ -65,7 +65,7 @@ describe('src | helpers | getShareURL', () => {
           const mediationId = 'CD'
 
           const expected = 'http://localhost/decouverte/AB/CD?shared_by=v9'
-          expect(getShareURL(user, offerId, mediationId)).toStrictEqual(expected)
+          expect(getShareURL(user, offerId, mediationId)).toBe(expected)
         })
       })
     })
