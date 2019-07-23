@@ -183,8 +183,8 @@ describe('src | components | share | ShareButtonContainer', () => {
         selectCurrentRecommendation.mockReturnValue(state.data.recommendations[0])
         selectCurrentUser.mockReturnValue({})
 
-        expect(mapStateToProps(state, ownprops).options).toStrictEqual(false)
-        expect(mapStateToProps(state, ownprops).visible).toStrictEqual(true)
+        expect(mapStateToProps(state, ownprops).options).toBe(false)
+        expect(mapStateToProps(state, ownprops).visible).toBe(true)
       })
     })
   })
