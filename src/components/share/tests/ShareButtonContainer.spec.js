@@ -78,7 +78,7 @@ describe('src | components | share | ShareButtonContainer', () => {
         selectCurrentRecommendation.mockReturnValue(state.data.recommendations[0])
         selectCurrentUser.mockReturnValue({})
 
-        expect(mapStateToProps(state, ownprops).offerName).toStrictEqual('offerName')
+        expect(mapStateToProps(state, ownprops).offerName).toBe('offerName')
       })
     })
 
@@ -110,7 +110,7 @@ describe('src | components | share | ShareButtonContainer', () => {
         selectCurrentRecommendation.mockReturnValue(state.data.recommendations[0])
         selectCurrentUser.mockReturnValue({})
 
-        expect(mapStateToProps(state, ownprops).text).toStrictEqual(
+        expect(mapStateToProps(state, ownprops).text).toBe(
           'Retrouvez offerName sur le pass Culture'
         )
       })
@@ -146,7 +146,7 @@ describe('src | components | share | ShareButtonContainer', () => {
           selectCurrentUser.mockReturnValue({ id: 'myId' })
           getShareURL.mockReturnValue('http://fake_shared_url')
 
-          expect(mapStateToProps(state, ownprops).url).toStrictEqual('http://fake_shared_url')
+          expect(mapStateToProps(state, ownprops).url).toBe('http://fake_shared_url')
         })
       })
     })

@@ -10,7 +10,7 @@ describe('getCurrentRecommendationOfferName', () => {
         // given
         selectCurrentRecommendation.mockReturnValue({})
         // then
-        expect(getCurrentRecommendationOfferName({})).toStrictEqual('')
+        expect(getCurrentRecommendationOfferName({})).toBe('')
       })
     })
 
@@ -21,7 +21,7 @@ describe('getCurrentRecommendationOfferName', () => {
           offer: {},
         })
         // then
-        expect(getCurrentRecommendationOfferName({})).toStrictEqual('')
+        expect(getCurrentRecommendationOfferName({})).toBe('')
       })
     })
 
@@ -34,7 +34,7 @@ describe('getCurrentRecommendationOfferName', () => {
           },
         })
         // then
-        expect(getCurrentRecommendationOfferName({})).toStrictEqual('Fake name')
+        expect(getCurrentRecommendationOfferName({})).toBe('Fake name')
       })
     })
   })
