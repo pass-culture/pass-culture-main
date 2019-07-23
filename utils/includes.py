@@ -83,6 +83,7 @@ OFFER_INCLUDES = [
     },
     "stockAlertMessage",
     "isEvent",
+    "isDigital",
     "isThing",
     {
         "key": "product",
