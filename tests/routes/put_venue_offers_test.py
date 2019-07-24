@@ -10,7 +10,7 @@ from tests.test_utils import create_event_occurrence, \
     create_offer_with_thing_product
 from utils.human_ids import humanize
 
-API_URL = '/venues'
+API_URL = '/venues/'
 
 
 class Put:
@@ -29,7 +29,7 @@ class Put:
                 stock1, user_offerer, venue
             )
 
-            api_url = API_URL + '?venueId=' + humanize(venue.id) + '&action=fake'
+            api_url = API_URL + humanize(venue.id) + '/offers/activate'
 
             # when
             response = TestClient(app.test_client()).put(api_url)
@@ -52,7 +52,7 @@ class Put:
                 stock1, user_offerer, venue
             )
 
-            api_url = API_URL + '?venueId=' + humanize(venue.id) + '&action=fake'
+            api_url = API_URL + humanize(venue.id) + '/offers/activate'
 
             # When
             response = TestClient(app.test_client()).with_auth('test2@email.com') \
@@ -80,7 +80,7 @@ class Put:
                 offer2, stock1, user_offerer, venue
             )
 
-            api_url = API_URL + '?venueId=6TT67RTE&action=active_venue_offers'
+            api_url = API_URL + '6TT67RTE/offers/activate'
 
             # When
             response = TestClient(app.test_client()).with_auth('test@email.com') \
@@ -108,7 +108,7 @@ class Put:
                 offer2, stock1, user_offerer, venue
             )
 
-            api_url = API_URL + '?venueId=' + humanize(venue.id) + '&action=active_venue_offers'
+            api_url = API_URL + humanize(venue.id) + '/offers/activate'
 
             # When
             response = TestClient(app.test_client()).with_auth('test@email.com') \
@@ -135,7 +135,7 @@ class Put:
                 offer2, stock1, user_offerer, venue
             )
 
-            api_url = API_URL + '?venueId=' + humanize(venue.id) + '&action=deactive_venue_offers'
+            api_url = API_URL + humanize(venue.id) + '/offers/deactivate'
 
             # When
             response = TestClient(app.test_client()).with_auth('test@email.com') \
