@@ -40,7 +40,7 @@ const VenueItem = ({ venue }) => {
             <li>
               <NavLink
                 className="has-text-primary"
-                to={`/offres?lieu=${id}`}
+                to={`/offres?lieu=${id}&structure=${managingOffererId}`}
               >
                 <Icon svg="ico-offres-r" />
                 {pluralize(venue.nOffers, 'offres')}
