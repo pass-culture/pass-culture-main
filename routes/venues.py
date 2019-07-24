@@ -4,6 +4,7 @@ from flask_login import login_required, current_user
 
 from domain.admin_emails import send_venue_validation_email
 from domain.offers import update_is_active_status
+from models import PcObject
 from models.user_offerer import RightsType
 from models.venue import Venue
 from repository.venue_queries import save_venue, find_by_managing_user
@@ -71,6 +72,9 @@ def activate_venue_offers(venueId):
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     offers = venue.offers
     activated_offers = update_is_active_status(offers, True)
+    venue.offers = activated_offers
+    PcObject.save(venue)
+
     return jsonify([b.as_dict(include=OFFER_INCLUDES) for b in activated_offers]), 200
 
 
@@ -81,4 +85,6 @@ def deactivate_venue_offers(venueId):
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     offers = venue.offers
     activated_offers = update_is_active_status(offers, False)
+    venue.offers = activated_offers
+    PcObject.save(venue)
     return jsonify([b.as_dict(include=OFFER_INCLUDES) for b in activated_offers]), 200
