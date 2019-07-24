@@ -18,12 +18,14 @@ def find_user_by_email(email: str) -> User:
 
 
 def is_already_imported(application_id: int) -> bool:
-    return db.session.query(
-        BeneficiaryImport.query \
-            .filter(BeneficiaryImport.currentStatus == ImportStatus.CREATED) \
-            .filter(BeneficiaryImport.demarcheSimplifieeApplicationId == application_id) \
-            .exists()
-    ).scalar()
+    beneficiary_import = BeneficiaryImport.query \
+        .filter(BeneficiaryImport.demarcheSimplifieeApplicationId == application_id) \
+        .first()
+
+    if beneficiary_import is None:
+        return False
+
+    return beneficiary_import.currentStatus != ImportStatus.RETRY
 
 
 def find_by_civility(first_name: str, last_name: str, birth_date: datetime) -> List[User]:

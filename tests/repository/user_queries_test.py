@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, MINYEAR
 
-from models import PcObject
 from models import ImportStatus
+from models import PcObject
 from repository.user_queries import get_all_users_wallet_balances, find_by_civility, \
     find_most_recent_beneficiary_creation_date, is_already_imported
 from tests.conftest import clean_database
@@ -253,12 +253,63 @@ class IsAlreadyImportedTest:
         assert result is True
 
     @clean_database
-    def test_returns_false_when_a_beneficiary_import_exist_with_status_duplicate(self, app):
+    def test_returns_true_when_a_beneficiary_import_exist_with_status_duplicate(self, app):
         # given
         now = datetime.utcnow()
         user1 = create_user(email='user1@test.com', date_created=now)
         user2 = create_user(email='user2@test.com', date_created=now)
         beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.DUPLICATE,
+                                                       demarche_simplifiee_application_id=123)
+
+        PcObject.save(beneficiary_import, user2)
+
+        # when
+        result = is_already_imported(123)
+
+        # then
+        assert result is True
+
+    @clean_database
+    def test_returns_true_when_a_beneficiary_import_exist_with_status_rejected(self, app):
+        # given
+        now = datetime.utcnow()
+        user1 = create_user(email='user1@test.com', date_created=now)
+        user2 = create_user(email='user2@test.com', date_created=now)
+        beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.REJECTED,
+                                                       demarche_simplifiee_application_id=123)
+
+        PcObject.save(beneficiary_import, user2)
+
+        # when
+        result = is_already_imported(123)
+
+        # then
+        assert result is True
+
+    @clean_database
+    def test_returns_true_when_a_beneficiary_import_exist_with_status_error(self, app):
+        # given
+        now = datetime.utcnow()
+        user1 = create_user(email='user1@test.com', date_created=now)
+        user2 = create_user(email='user2@test.com', date_created=now)
+        beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.ERROR,
+                                                       demarche_simplifiee_application_id=123)
+
+        PcObject.save(beneficiary_import, user2)
+
+        # when
+        result = is_already_imported(123)
+
+        # then
+        assert result is True
+
+    @clean_database
+    def test_returns_false_when_a_beneficiary_import_exist_with_status_retry(self, app):
+        # given
+        now = datetime.utcnow()
+        user1 = create_user(email='user1@test.com', date_created=now)
+        user2 = create_user(email='user2@test.com', date_created=now)
+        beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.RETRY,
                                                        demarche_simplifiee_application_id=123)
 
         PcObject.save(beneficiary_import, user2)
