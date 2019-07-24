@@ -46,7 +46,7 @@ class User(PcObject,
 
     departementCode = Column(String(3), nullable=False)
 
-    firstName = Column(String(35), nullable=True)
+    firstName = Column(String(128), nullable=True)
 
     isAdmin = Column(Boolean,
                      CheckConstraint('("canBookFreeOffers" IS FALSE AND "isAdmin" IS TRUE)'
@@ -56,7 +56,7 @@ class User(PcObject,
                      server_default=expression.false(),
                      default=False)
 
-    lastName = Column(String(35), nullable=True)
+    lastName = Column(String(128), nullable=True)
 
     needsToFillCulturalSurvey = Column(Boolean,
         server_default=expression.true(),
@@ -71,7 +71,7 @@ class User(PcObject,
 
     postalCode = Column(String(5), nullable=True)
 
-    publicName = Column(String(100), nullable=False)
+    publicName = Column(String(255), nullable=False)
 
     resetPasswordToken = Column(String(10), unique=True)
 
