@@ -219,8 +219,18 @@ Booking.trig_ddl = """
     RETURNS TRIGGER AS $$
     BEGIN
       IF EXISTS (SELECT "available" FROM stock WHERE id=NEW."stockId" AND "available" IS NOT NULL)
-         AND ((SELECT "available" FROM stock WHERE id=NEW."stockId")
-              < (SELECT SUM(quantity) FROM booking WHERE "stockId"=NEW."stockId" AND NOT "isCancelled")) THEN
+         AND (
+            (SELECT "available" FROM stock WHERE id=NEW."stockId") < 
+            (
+              SELECT SUM(quantity) 
+              FROM booking 
+              WHERE "stockId"=NEW."stockId" 
+              AND (
+                NOT "isCancelled" AND NOT "isUsed"
+                OR ("isUsed" AND "dateCreated" > (SELECT "dateModified" FROM stock WHERE id=NEW."stockId"))
+              )
+            )
+          ) THEN
           RAISE EXCEPTION 'tooManyBookings'
                 USING HINT = 'Number of bookings cannot exceed "stock.available"';
       END IF;

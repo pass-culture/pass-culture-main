@@ -1,10 +1,13 @@
 """ repository booking queries test """
 from datetime import datetime, timedelta
+from os import wait
+from time import sleep
 
 import pytest
 
 from models import PcObject, ThingType, Booking
 from models.api_errors import ResourceNotFound, ApiErrors
+from models.db import db
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_offerer_bookings_paginated, \
     find_final_offerer_bookings, \
@@ -13,9 +16,9 @@ from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     get_existing_tokens, \
     find_active_bookings_by_user_id, \
     find_by, \
-    find_all_offerer_bookings, \
     find_all_digital_bookings_for_offerer, count_non_cancelled_bookings, count_all_bookings, \
-    count_all_cancelled_bookings
+    count_all_cancelled_bookings, \
+    find_all_offerer_bookings
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -85,7 +88,6 @@ class FindAllOffererBookingsByVenueIdTest:
 
         # then
         assert len(bookings) == 2
-
 
     @clean_database
     def test_returns_bookings_on_given_venue(self, app):
@@ -740,8 +742,8 @@ class SaveBookingTest:
         user_cancelled = create_user(email='cancelled@booking.com')
         user_booked = create_user(email='booked@email.com')
         cancelled_booking = create_booking(user_cancelled, stock, is_cancelled=True)
-        booking = create_booking(user_booked, stock, is_cancelled=False)
         PcObject.save(cancelled_booking)
+        booking = create_booking(user_booked, stock, is_cancelled=False)
 
         # When
         PcObject.save(booking)
@@ -769,7 +771,6 @@ class SaveBookingTest:
 
         # Then
         assert e.value.errors['global'] == ['la quantité disponible pour cette offre est atteinte']
-
 
 class CountNonCancelledBookingsTest:
     @clean_database
@@ -867,6 +868,34 @@ class CountAllBookingsTest:
         assert number_of_bookings == 0
 
     @clean_database
+    def test_saves_booking_when_existing_booking_is_used_and_booking_date_is_before_last_update_on_stock(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_from_offer(offer, price=0, available=1)
+        user1 = create_user(email='used_booking@booking.com')
+        user2 = create_user(email='booked@email.com')
+        one_day_before_stock_last_update = datetime.utcnow() - timedelta(days=2)
+        booking1 = create_booking(user1,
+                                  stock,
+                                  is_cancelled=False,
+                                  is_used=True,
+                                  date_created=one_day_before_stock_last_update)
+        PcObject.save(booking1)
+
+        # When
+        booking2 = create_booking(user2,
+                                  stock,
+                                  is_cancelled=False,
+                                  is_used=False)
+        PcObject.save(booking2)
+
+        # Then
+        assert Booking.query.filter_by(stock=stock).count() == 2
+
+
+    @clean_database
     def test_returns_2_when_bookings_cancelled_or_not(self, app):
         # Given
         offerer = create_offerer()
@@ -883,3 +912,34 @@ class CountAllBookingsTest:
 
         # Then
         assert number_of_bookings == 2
+
+    @clean_database
+    def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_is_after_last_update_on_stock(self, app):
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_from_offer(offer, price=0, available=1)
+        user1 = create_user(email='used_booking@booking.com')
+        user2 = create_user(email='booked@email.com')
+        PcObject.save(stock)
+        date_after_stock_last_update = datetime.utcnow()
+        booking1 = create_booking(user1,
+                                  stock,
+                                  date_created=date_after_stock_last_update,
+                                  is_cancelled=False,
+                                  is_used=True)
+        PcObject.save(booking1)
+
+        # When
+        date_after_last_booking = datetime.utcnow()
+        booking2 = create_booking(user2,
+                                  stock,
+                                  date_created=date_after_last_booking,
+                                  is_cancelled=False,
+                                  is_used=False)
+
+        with pytest.raises(ApiErrors) as e:
+            PcObject.save(booking2)
+
+        # Then
+        assert e.value.errors['global'] == ['la quantité disponible pour cette offre est atteinte']
