@@ -62,7 +62,7 @@ def edit_venue(venueId):
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     venue.populate_from_dict(request.json)
     save_venue(venue)
-    return jsonify(venue.as_dict(include=VENUE_INCLUDES)), 400
+    return jsonify(venue.as_dict(include=VENUE_INCLUDES)), 200
 
 
 @app.route('/venues/<venueId>/offers/activate', methods=['PUT'])
