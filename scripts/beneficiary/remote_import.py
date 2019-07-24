@@ -11,7 +11,7 @@ from domain.user_emails import send_activation_notification_email
 from models import User, Deposit, ApiErrors, PcObject, BeneficiaryImport
 from models import ImportStatus
 from repository.user_queries import find_by_civility, find_user_by_email, \
-    is_already_imported, save_new_beneficiary_import
+    is_already_imported, save_beneficiary_import_with_status
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from utils.logger import logger
 from utils.mailing import send_raw_email, DEV_EMAIL_ADDRESS, parse_email_addresses
@@ -43,11 +43,11 @@ def run(
             error = f"Le dossier {id} contient des erreurs et a été ignoré"
             logger.error(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {error}')
             error_messages.append(error)
-            save_new_beneficiary_import(ImportStatus.ERROR, id, detail=error)
+            save_beneficiary_import_with_status(ImportStatus.ERROR, id, detail=error)
             continue
 
         if already_existing_user(information['email']):
-            save_new_beneficiary_import(
+            save_beneficiary_import_with_status(
                 ImportStatus.REJECTED,
                 information['application_id'],
                 detail='Compte existant avec cet email'
@@ -82,7 +82,7 @@ def process_beneficiary_application(
     except DuplicateBeneficiaryError as e:
         logger.warning(f'[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : {e.message}')
         error_messages.append(e.message)
-        save_new_beneficiary_import(
+        save_beneficiary_import_with_status(
             ImportStatus.DUPLICATE,
             information['application_id'],
             detail=f"Utilisateur en doublon : {e.duplicate_ids}"
@@ -95,7 +95,7 @@ def process_beneficiary_application(
                            f"{information['application_id']}, because of error : {str(e)}")
             error_messages.append(str(e))
         else:
-            save_new_beneficiary_import(
+            save_beneficiary_import_with_status(
                 ImportStatus.CREATED,
                 information['application_id'],
                 user=new_beneficiary

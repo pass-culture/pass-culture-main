@@ -128,7 +128,7 @@ def find_most_recent_beneficiary_creation_date() -> datetime:
     return most_recent_creation.date
 
 
-def save_new_beneficiary_import(
+def save_beneficiary_import_with_status(
         status: ImportStatus,
         demarche_simplifiee_application_id: int,
         date=datetime.utcnow(),
@@ -140,10 +140,15 @@ def save_new_beneficiary_import(
     import_status.detail = detail
     import_status.status = status
 
-    beneficiary_import = BeneficiaryImport()
+    existing_import = BeneficiaryImport.query \
+        .filter_by(demarcheSimplifieeApplicationId=demarche_simplifiee_application_id) \
+        .first()
+
+    beneficiary_import = existing_import or BeneficiaryImport()
     beneficiary_import.beneficiary = user
-    beneficiary_import.statuses = [import_status]
+    beneficiary_import.statuses.append(import_status)
     beneficiary_import.demarcheSimplifieeApplicationId = demarche_simplifiee_application_id
+
     PcObject.save(beneficiary_import)
 
 
