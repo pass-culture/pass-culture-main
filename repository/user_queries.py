@@ -131,12 +131,11 @@ def find_most_recent_beneficiary_creation_date() -> datetime:
 def save_beneficiary_import_with_status(
         status: ImportStatus,
         demarche_simplifiee_application_id: int,
-        date=datetime.utcnow(),
         user: User = None,
         detail=None,
 ):
     import_status = BeneficiaryImportStatus()
-    import_status.date = date
+    import_status.date = datetime.utcnow()
     import_status.detail = detail
     import_status.status = status
 

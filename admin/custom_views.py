@@ -66,7 +66,7 @@ class BeneficiaryImportView(BaseAdminView):
 
     def edit_form(self, obj=None):
         class _NewStatusForm(Form):
-            beneficiary = StringField('Bénéficiaire', default=obj.beneficiary.email, render_kw={'readonly': True})
+            beneficiary = StringField('Bénéficiaire', default=obj.beneficiary.email if obj.beneficiary else 'N/A', render_kw={'readonly': True})
             demarche_simplifiee_application_id = StringField(
                 'Dossier DMS', default=obj.demarcheSimplifieeApplicationId, render_kw={'readonly': True}
             )
