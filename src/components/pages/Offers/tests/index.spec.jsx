@@ -8,13 +8,13 @@ import { compose } from 'redux'
 import configureStore from 'redux-mock-store'
 
 import withFrenchQueryRouter from '../../../../components/hocs/withFrenchQueryRouter'
-import RawOffers from '../RawOffers'
-import { mapStateToProps } from '../index'
+import Offers from '../Offers'
+import { mapStateToProps } from '../OffersContainer'
 
 const Offers = compose(
   withFrenchQueryRouter,
   connect(mapStateToProps)
-)(RawOffers)
+)(Offers)
 
 describe('src | components | pages | Offers', () => {
   describe('click on ui filters', () => {
@@ -53,14 +53,14 @@ describe('src | components | pages | Offers', () => {
 
       // when
       wrapper
-        .find('RawOffers')
+        .find('Offers')
         .find('.delete')
         .props()
         .onClick()
 
       // then
       const queryParams = wrapper
-        .find('RawOffers')
+        .find('Offers')
         .props()
         .query.parse()
       expect(queryParams).toEqual({})

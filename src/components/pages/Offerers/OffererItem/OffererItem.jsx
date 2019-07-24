@@ -6,7 +6,12 @@ import PropTypes from 'prop-types'
 const OffererItem = ({ offerer, physicalVenues, venues }) => {
   const { id, name, nOffers, isValidated } = offerer || {}
 
+
   const showPath = `/structures/${id}`
+
+
+
+
 
   const $offersCount =
     nOffers && nOffers > 0 ? (
@@ -52,8 +57,13 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
   const $venueActions = (
     <Fragment>
       <li>
+        <NavLink
+          className="has-text-primary"
+          to={`/structures/${id}/`}
+        >
         <Icon svg="ico-venue" />
         {pluralize(physicalVenues.length, 'lieux')}
+      </NavLink>
       </li>
       <li>
         <NavLink

@@ -2,7 +2,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 import { NavLink } from 'react-router-dom'
 
-import RawOffers from '../RawOffers'
+import Offers from '../Offers'
 import OfferItem from '../OfferItem/OfferItemContainer'
 import mockedOffers from './offersMock'
 
@@ -31,11 +31,11 @@ const initialProps = {
   types: [],
 }
 
-describe('src | components | pages | Offers | RawOffers', () => {
+describe('src | components | pages | Offers | Offers', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // when
-      const wrapper = shallow(<RawOffers {...initialProps} />)
+      const wrapper = shallow(<Offers {...initialProps} />)
 
       // then
       expect(wrapper).toBeDefined()
@@ -55,7 +55,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
         }
 
         // when
-        const wrapper = shallow(<RawOffers {...initialProps} />)
+        const wrapper = shallow(<Offers {...initialProps} />)
 
         // then
         expect(wrapper.state()).toStrictEqual(expected)
@@ -69,7 +69,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
         initialProps.offers = mockedOffers
 
         // when
-        const wrapper = shallow(<RawOffers {...initialProps} />)
+        const wrapper = shallow(<Offers {...initialProps} />)
         const offerItem = wrapper.find(OfferItem)
 
         // then
@@ -86,7 +86,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
             }
 
             // when
-            const wrapper = shallow(<RawOffers {...initialProps} />)
+            const wrapper = shallow(<Offers {...initialProps} />)
             const navLink = wrapper.find(NavLink)
 
             // then
@@ -103,7 +103,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
             initialProps.query.parse = parseMock
 
             // when
-            const wrapper = shallow(<RawOffers {...initialProps} />)
+            const wrapper = shallow(<Offers {...initialProps} />)
 
             const navLink = wrapper.find(NavLink)
 
@@ -122,7 +122,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
             initialProps.query.parse = parseMock
 
             // when
-            const wrapper = shallow(<RawOffers {...initialProps} />)
+            const wrapper = shallow(<Offers {...initialProps} />)
 
             const navLink = wrapper.find(NavLink)
 
@@ -139,7 +139,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
     describe('constructor', () => {
       it('should dispatch assignData when component is constructed', () => {
         // when
-        shallow(<RawOffers {...initialProps} />)
+        shallow(<Offers {...initialProps} />)
         const expectedAssignData = {
           patch: {
             offers: [],
@@ -165,7 +165,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
           initialProps.query.parse = parseMock
 
           // when
-          const wrapper = shallow(<RawOffers {...initialProps} />)
+          const wrapper = shallow(<Offers {...initialProps} />)
           wrapper.instance().componentDidMount()
           const expected = {
             config: {
@@ -194,7 +194,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
           }
 
           // when
-          const wrapper = shallow(<RawOffers {...initialProps} />)
+          const wrapper = shallow(<Offers {...initialProps} />)
           wrapper.instance().componentDidUpdate(prevProps)
 
           const expectedAssignData = {
@@ -215,7 +215,7 @@ describe('src | components | pages | Offers | RawOffers', () => {
 
     describe('handleOnSubmit', () => {
       // when
-      const wrapper = shallow(<RawOffers {...initialProps} />)
+      const wrapper = shallow(<Offers {...initialProps} />)
       const event = Object.assign(jest.fn(), {
         preventDefault: () => {},
         target: {

@@ -14,15 +14,19 @@ import Main from '../../layout/Main'
 import { offerNormalizer } from '../../../utils/normalizers'
 import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
 
-class RawOffers extends Component {
+
+class Offers extends Component {
   constructor(props) {
     super(props)
+
+    const { dispatch } = props
 
     this.state = {
       hasMore: false,
       isLoading: false,
     }
-    props.dispatch(assignData({ offers: [] }))
+
+    dispatch(assignData({ offers: [] }))
   }
 
   componentDidMount() {
@@ -101,6 +105,32 @@ class RawOffers extends Component {
     })
   }
 
+  handleOnDeactivateAllVenueOffersClick = () => {
+    const { dispatch, venue } = this.props
+
+    console.log('VENUE', venue)
+
+   dispatch(
+    requestData({
+      apiPath: `/venues/${venue.id}/offers/deactivate`,
+      method: 'PUT'
+    })
+   )
+  }
+
+  handleOnActivateAllVenueOffersClick = () => {
+    const { dispatch, venue } = this.props
+    console.log('VENUE', venue)
+
+
+    dispatch(
+      requestData({
+        apiPath: `/venues/${venue.id}/offers/activate`,
+        method: 'PUT'
+      })
+     )
+  }
+
   handleOnOffererClick = query => () => {
     query.change({
       [mapApiToBrowser.offererId]: null,
@@ -120,6 +150,8 @@ class RawOffers extends Component {
 
   render() {
     const { currentUser, offers, offerer, query, venue } = this.props
+
+    console.log(this.props)
     const { isAdmin } = currentUser || {}
 
     const queryParams = query.parse()
@@ -192,29 +224,28 @@ class RawOffers extends Component {
         </form>
 
         <ul className="section">
-          {offerer ? (
-            <li className="tag is-rounded is-medium">
-              {'Structure :'}
-              <span className="has-text-weight-semibold">&nbsp;{offerer.name}</span>
-              <button
-                className="delete is-small"
-                onClick={this.handleOnOffererClick(query)}
-                type="button"
-              />
-            </li>
-          ) : (
-            venue && (
-              <li className="tag is-rounded is-medium">
-                {'Lieu : '}
-                <span className="has-text-weight-semibold">{venue.name}</span>
-                <button
-                  className="delete is-small"
-                  onClick={this.handleOnVenueClick(query)}
-                  type="button"
-                />
-              </li>
-            )
-          )}
+          {offerer &&
+          <li className="tag is-rounded is-medium">
+            {'Structure :'}
+            <span className="has-text-weight-semibold">&nbsp;{offerer.name}</span>
+            <button
+              className="delete is-small"
+              onClick={this.handleOnOffererClick(query)}
+              type="button"
+            />
+          </li>
+          }
+          {venue &&
+          <li className="tag is-rounded is-medium">
+            {'Lieu : '}
+            <span className="has-text-weight-semibold">{venue.name}</span>
+            <button
+              className="delete is-small"
+              onClick={this.handleOnVenueClick(query)}
+              type="button"
+            />
+          </li>
+          }
         </ul>
         <div className="section">
           {false && (
@@ -248,6 +279,35 @@ class RawOffers extends Component {
               </div>
             </div>
           )}
+
+          {
+            offers && venue && (
+              <div>
+                <button
+                  className="button is-secondary is-small activ-switch"
+                  onClick={this.handleOnDeactivateAllVenueOffersClick}
+                  type="button"
+                >
+                    <span>
+                    <Icon svg="ico-close-r" />
+                      {'Désactiver toutes les offres'}
+                  </span>
+                </button>
+                <button
+                  className="button is-secondary is-small activ-switch"
+                  onClick={this.handleOnActivateAllVenueOffersClick}
+                  type="button"
+                >
+                    <span>
+                    <Icon svg="ico-close-r" />
+                      {'Activer toutes les offres'}
+                  </span>
+                </button>
+
+              </div>
+            )
+          }
+
           <LoadingInfiniteScroll
             className="offers-list main-list"
             element="ul"
@@ -269,9 +329,9 @@ class RawOffers extends Component {
   }
 }
 
-RawOffers.propTypes = {
+Offers.propTypes = {
   currentUser: PropTypes.shape().isRequired,
   offers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
-export default RawOffers
+export default Offers
