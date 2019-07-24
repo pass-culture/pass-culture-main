@@ -72,10 +72,17 @@ ShallowWrapper {
             </React.Fragment>
             <React.Fragment>
               <li>
-                <Icon
-                  svg="ico-venue"
-                />
-                1 lieu
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="has-text-primary"
+                  to="/structures/undefined/"
+                >
+                  <Icon
+                    svg="ico-venue"
+                  />
+                  1 lieu
+                </NavLink>
               </li>
               <li>
                 <NavLink
@@ -156,10 +163,17 @@ ShallowWrapper {
               </React.Fragment>
               <React.Fragment>
                 <li>
-                  <Icon
-                    svg="ico-venue"
-                  />
-                  1 lieu
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/structures/undefined/"
+                  >
+                    <Icon
+                      svg="ico-venue"
+                    />
+                    1 lieu
+                  </NavLink>
                 </li>
                 <li>
                   <NavLink
@@ -250,10 +264,17 @@ ShallowWrapper {
                 </React.Fragment>,
                 <React.Fragment>
                   <li>
-                    <Icon
-                      svg="ico-venue"
-                    />
-                    1 lieu
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="has-text-primary"
+                      to="/structures/undefined/"
+                    >
+                      <Icon
+                        svg="ico-venue"
+                      />
+                      1 lieu
+                    </NavLink>
                   </li>
                   <li>
                     <NavLink
@@ -380,10 +401,17 @@ ShallowWrapper {
                 "props": Object {
                   "children": Array [
                     <li>
-                      <Icon
-                        svg="ico-venue"
-                      />
-                      1 lieu
+                      <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="has-text-primary"
+                        to="/structures/undefined/"
+                      >
+                        <Icon
+                          svg="ico-venue"
+                        />
+                        1 lieu
+                      </NavLink>
                     </li>,
                     <li>
                       <NavLink
@@ -407,28 +435,52 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": Array [
+                      "children": <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="has-text-primary"
+                        to="/structures/undefined/"
+                      >
                         <Icon
                           svg="ico-venue"
-                        />,
-                        "1 lieu",
-                      ],
+                        />
+                        1 lieu
+                      </NavLink>,
                     },
                     "ref": null,
-                    "rendered": Array [
-                      Object {
-                        "instance": null,
-                        "key": undefined,
-                        "nodeType": "function",
-                        "props": Object {
-                          "svg": "ico-venue",
-                        },
-                        "ref": null,
-                        "rendered": null,
-                        "type": [Function],
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "activeClassName": "active",
+                        "aria-current": "page",
+                        "children": Array [
+                          <Icon
+                            svg="ico-venue"
+                          />,
+                          "1 lieu",
+                        ],
+                        "className": "has-text-primary",
+                        "to": "/structures/undefined/",
                       },
-                      "1 lieu",
-                    ],
+                      "ref": null,
+                      "rendered": Array [
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "svg": "ico-venue",
+                          },
+                          "ref": null,
+                          "rendered": null,
+                          "type": [Function],
+                        },
+                        "1 lieu",
+                      ],
+                      "type": [Function],
+                    },
                     "type": "li",
                   },
                   Object {
@@ -590,10 +642,17 @@ ShallowWrapper {
               </React.Fragment>
               <React.Fragment>
                 <li>
-                  <Icon
-                    svg="ico-venue"
-                  />
-                  1 lieu
+                  <NavLink
+                    activeClassName="active"
+                    aria-current="page"
+                    className="has-text-primary"
+                    to="/structures/undefined/"
+                  >
+                    <Icon
+                      svg="ico-venue"
+                    />
+                    1 lieu
+                  </NavLink>
                 </li>
                 <li>
                   <NavLink
@@ -674,10 +733,17 @@ ShallowWrapper {
                 </React.Fragment>
                 <React.Fragment>
                   <li>
-                    <Icon
-                      svg="ico-venue"
-                    />
-                    1 lieu
+                    <NavLink
+                      activeClassName="active"
+                      aria-current="page"
+                      className="has-text-primary"
+                      to="/structures/undefined/"
+                    >
+                      <Icon
+                        svg="ico-venue"
+                      />
+                      1 lieu
+                    </NavLink>
                   </li>
                   <li>
                     <NavLink
@@ -768,10 +834,17 @@ ShallowWrapper {
                   </React.Fragment>,
                   <React.Fragment>
                     <li>
-                      <Icon
-                        svg="ico-venue"
-                      />
-                      1 lieu
+                      <NavLink
+                        activeClassName="active"
+                        aria-current="page"
+                        className="has-text-primary"
+                        to="/structures/undefined/"
+                      >
+                        <Icon
+                          svg="ico-venue"
+                        />
+                        1 lieu
+                      </NavLink>
                     </li>
                     <li>
                       <NavLink
@@ -898,10 +971,17 @@ ShallowWrapper {
                   "props": Object {
                     "children": Array [
                       <li>
-                        <Icon
-                          svg="ico-venue"
-                        />
-                        1 lieu
+                        <NavLink
+                          activeClassName="active"
+                          aria-current="page"
+                          className="has-text-primary"
+                          to="/structures/undefined/"
+                        >
+                          <Icon
+                            svg="ico-venue"
+                          />
+                          1 lieu
+                        </NavLink>
                       </li>,
                       <li>
                         <NavLink
@@ -925,28 +1005,52 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": Array [
+                        "children": <NavLink
+                          activeClassName="active"
+                          aria-current="page"
+                          className="has-text-primary"
+                          to="/structures/undefined/"
+                        >
                           <Icon
                             svg="ico-venue"
-                          />,
-                          "1 lieu",
-                        ],
+                          />
+                          1 lieu
+                        </NavLink>,
                       },
                       "ref": null,
-                      "rendered": Array [
-                        Object {
-                          "instance": null,
-                          "key": undefined,
-                          "nodeType": "function",
-                          "props": Object {
-                            "svg": "ico-venue",
-                          },
-                          "ref": null,
-                          "rendered": null,
-                          "type": [Function],
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "activeClassName": "active",
+                          "aria-current": "page",
+                          "children": Array [
+                            <Icon
+                              svg="ico-venue"
+                            />,
+                            "1 lieu",
+                          ],
+                          "className": "has-text-primary",
+                          "to": "/structures/undefined/",
                         },
-                        "1 lieu",
-                      ],
+                        "ref": null,
+                        "rendered": Array [
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "function",
+                            "props": Object {
+                              "svg": "ico-venue",
+                            },
+                            "ref": null,
+                            "rendered": null,
+                            "type": [Function],
+                          },
+                          "1 lieu",
+                        ],
+                        "type": [Function],
+                      },
                       "type": "li",
                     },
                     Object {

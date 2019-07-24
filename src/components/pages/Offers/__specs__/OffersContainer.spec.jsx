@@ -8,13 +8,13 @@ import { compose } from 'redux'
 import configureStore from 'redux-mock-store'
 
 import withFrenchQueryRouter from '../../../../components/hocs/withFrenchQueryRouter'
-import Offers from '../Offers'
+import OffersContainer from '../Offers'
 import { mapStateToProps } from '../OffersContainer'
 
 const Offers = compose(
   withFrenchQueryRouter,
   connect(mapStateToProps)
-)(Offers)
+)(OffersContainer)
 
 describe('src | components | pages | Offers', () => {
   describe('click on ui filters', () => {

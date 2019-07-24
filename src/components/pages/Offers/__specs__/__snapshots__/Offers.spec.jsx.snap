@@ -578,11 +578,17 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": undefined,
+          "children": Array [
+            undefined,
+            undefined,
+          ],
           "className": "section",
         },
         "ref": null,
-        "rendered": null,
+        "rendered": Array [
+          undefined,
+          undefined,
+        ],
         "type": "ul",
       },
       Object {
@@ -592,6 +598,7 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             false,
+            undefined,
             <withRouter(_withQueryRouter)
               className="offers-list main-list"
               element="ul"
@@ -614,6 +621,7 @@ ShallowWrapper {
         "ref": null,
         "rendered": Array [
           false,
+          undefined,
           Object {
             "instance": null,
             "key": undefined,
@@ -1061,11 +1069,17 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": undefined,
+            "children": Array [
+              undefined,
+              undefined,
+            ],
             "className": "section",
           },
           "ref": null,
-          "rendered": null,
+          "rendered": Array [
+            undefined,
+            undefined,
+          ],
           "type": "ul",
         },
         Object {
@@ -1075,6 +1089,7 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               false,
+              undefined,
               <withRouter(_withQueryRouter)
                 className="offers-list main-list"
                 element="ul"
@@ -1097,6 +1112,7 @@ ShallowWrapper {
           "ref": null,
           "rendered": Array [
             false,
+            undefined,
             Object {
               "instance": null,
               "key": undefined,

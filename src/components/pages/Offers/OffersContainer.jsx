@@ -20,7 +20,7 @@ export function mapStateToProps(state, ownProps) {
     offers: selectOffersByOffererIdAndVenueId(state, offererId, venueId),
     offerer: selectOffererById(state, offererId),
     types: state.data.types,
-    venue: selectVenueById(state, venueId),pu
+    venue: selectVenueById(state, venueId),
   }
 }
 
