@@ -18,6 +18,7 @@ import {
   translateBrowserUrlToApiUrl,
 } from './utils'
 import Icon from '../../layout/Icon'
+import Spinner from '../../layout/Spinner'
 
 class Search extends PureComponent {
   constructor(props) {
@@ -27,6 +28,7 @@ class Search extends PureComponent {
     const queryParams = query.parse()
 
     this.state = {
+      isLoading: false,
       hasMore: false,
       isFilterVisible: false,
       keywordsKey: 0,
@@ -96,13 +98,14 @@ class Search extends PureComponent {
     const apiParams = translateBrowserUrlToApiUrl(queryParams)
     const apiParamsString = stringify(apiParams)
     const apiPath = `/recommendations?${apiParamsString}`
+    this.setState({ isLoading: true })
     dispatch(
       requestData({
         apiPath,
         handleSuccess: (state, action) => {
           const { data } = action.payload
           const hasMore = data.length > 0
-          this.setState({ hasMore })
+          this.setState({ hasMore, isLoading: false })
         },
         stateKey: 'searchRecommendations',
       })
@@ -128,6 +131,7 @@ class Search extends PureComponent {
     const { keywordsKey } = this.state
 
     this.setState({
+      isLoading: false,
       hasMore: false,
       isFilterVisible: false,
       // https://stackoverflow.com/questions/37946229/how-do-i-reset-the-defaultvalue-for-a-react-input
@@ -203,8 +207,9 @@ class Search extends PureComponent {
       typeSublabels,
       typeSublabelsAndDescription,
     } = this.props
-    const queryParams = query.parse()
     const { hasMore } = this.state
+
+    const queryParams = query.parse()
     const keywords = queryParams[`mots-cles`]
     let description
     const category = decodeURIComponent(queryParams.categories)
@@ -223,7 +228,6 @@ class Search extends PureComponent {
           hasMore={hasMore}
           items={recommendations}
           keywords={keywords}
-          loadMoreHandler={this.loadMoreHandler}
           typeSublabels={typeSublabels}
         />
       </Fragment>
@@ -251,7 +255,7 @@ class Search extends PureComponent {
     const { location, query, typeSublabels } = this.props
     const queryParams = query.parse()
 
-    const { keywordsKey, keywordsValue, isFilterVisible } = this.state
+    const { keywordsKey, keywordsValue, isFilterVisible, isLoading } = this.state
 
     const withoutFilters = isInitialQueryWithoutFilters(INITIAL_FILTER_PARAMS, queryParams)
 
@@ -342,11 +346,18 @@ class Search extends PureComponent {
               path="/recherche/:menu(menu)?"
               render={this.renderNavByOfferTypeContainer(typeSublabels)}
             />
-            <Route
-              path="/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?"
-              render={this.renderResults}
-              sensitive
-            />
+            {isLoading ? (
+              <Spinner
+                key="loader"
+                label="Recherche en cours"
+              />
+            ) : (
+              <Route
+                path="/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?"
+                render={this.renderResults}
+                sensitive
+              />
+            )}
             <Route
               path="/recherche/resultats/:menu(menu)?"
               render={this.renderSearchResultsContainer}

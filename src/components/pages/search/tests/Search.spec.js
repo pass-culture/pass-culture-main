@@ -3,6 +3,7 @@ import React from 'react'
 import { Switch } from 'react-router-dom'
 
 import Search from '../Search'
+import Spinner from '../../../layout/Spinner'
 import PageHeader from '../../../layout/Header/PageHeader'
 
 const getPageContentRoute = wrapper =>
@@ -25,6 +26,9 @@ const getPageContentFilter = wrapper =>
 const getPageContentSwitch = wrapper =>
   getPageContentDiv(wrapper).props.children.find(child => child.type === Switch)
 
+const getPageContentSpinner = wrapper =>
+  getPageContentSwitch(wrapper).props.children.find(child => child.type === Spinner)
+
 const getSwitchedPageContent = path => wrapper =>
   getPageContentSwitch(wrapper)
     .props.children.find(child => child.props.path === path)
@@ -32,6 +36,8 @@ const getSwitchedPageContent = path => wrapper =>
 
 const getSearchResults = wrapper =>
   getSwitchedPageContent('/recherche/resultats/:menu(menu)?')(wrapper)
+
+const getSearchSpinner = wrapper => getPageContentSpinner(wrapper)
 
 const getSearchResultsFromCategory = wrapper =>
   getSwitchedPageContent('/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?')(wrapper).props
@@ -105,7 +111,7 @@ describe('src | components | pages | Search', () => {
         expect(wrapper.find(PageHeader).props().title).toBe('Recherche')
       })
 
-      it('submitButton form is disabled', () => {
+      it('submitButton form is disabled', async () => {
         // when
         const button = getPageContentForm(wrapper).props.children[0].props.children.find(
           child => child.props.id === 'search-page-keywords-field'
@@ -188,21 +194,37 @@ describe('src | components | pages | Search', () => {
         ]
         const wrapper = shallow(<Search {...initialProps} />)
 
-        it('navResultsHeader & SearchResults with path="/recherche/resultats/:categorie"', () => {
-          // when
-          const ResultsRoute = getSwitchedPageContent(
-            '/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?'
-          )(wrapper)
-          const NavResultsHeader = ResultsRoute.props.children[0]
-          const SearchResults = getSearchResultsFromCategory(wrapper)
+        describe('when search has finished loading', () => {
+          it('should mount navResultsHeader & SearchResults with path="/recherche/resultats/:categorie"', () => {
+            // given
+            wrapper.setState({ isLoading: false })
+            // when
+            const ResultsRoute = getSwitchedPageContent(
+              '/recherche/resultats/:categorie([A-Z][a-z]+)/:menu(menu)?'
+            )(wrapper)
+            const NavResultsHeader = ResultsRoute.props.children[0]
+            const SearchResults = getSearchResultsFromCategory(wrapper)
 
-          // then
-          expect(NavResultsHeader.props.category).toBe('Jouer')
-          expect(NavResultsHeader.props.description).toBe(
-            'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?'
-          )
-          expect(SearchResults.props.keywords).toBe('Fake')
-          expect(SearchResults.props.cameFromOfferTypesPage).toBe(true)
+            // then
+            expect(NavResultsHeader.props.category).toBe('Jouer')
+            expect(NavResultsHeader.props.description).toBe(
+              'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?'
+            )
+            expect(SearchResults.props.keywords).toBe('Fake')
+            expect(SearchResults.props.cameFromOfferTypesPage).toBe(true)
+          })
+        })
+
+        describe('when search is loading', () => {
+          it('should mount loading spinner', () => {
+            // given
+            wrapper.setState({ isLoading: true })
+            // when
+            const Spinner = getSearchSpinner(wrapper)
+            // then
+            expect(Spinner.key).toBe('loader')
+            expect(Spinner.props.label).toBe('Recherche en cours')
+          })
         })
       })
     })
@@ -220,6 +242,7 @@ describe('src | components | pages | Search', () => {
         // when
         const wrapper = shallow(<Search {...initialProps} />)
         const expected = {
+          isLoading: false,
           hasMore: false,
           isFilterVisible: false,
           keywordsKey: 0,
@@ -248,28 +271,6 @@ describe('src | components | pages | Search', () => {
           // then
           expect(dispatchMock.mock.calls[1][0]).toStrictEqual(expectedRequestedGetTypes)
         })
-      })
-    })
-
-    describe('loadMoreHandler', () => {
-      it.skip('should change history location', () => {
-        // given
-        const initialProps = Object.assign({}, baseInitialProps)
-        initialProps.query = Object.assign(baseInitialProps.query, {
-          parse: () => ({
-            categories: 'Jouer',
-            orderBy: 'offer.id+desc',
-            page: '1',
-          }),
-        })
-
-        // when
-        const wrapper = shallow(<Search {...initialProps} />)
-        wrapper.instance().loadMoreHandler()
-        const expected = '/recherche?page=2&categories=Jouer&orderBy=offer.id+desc'
-
-        // then
-        expect(historyMock.push).toHaveBeenCalledWith(expected)
       })
     })
 
@@ -311,6 +312,7 @@ describe('src | components | pages | Search', () => {
 
             // then
             expect(wrapper.state()).toStrictEqual({
+              isLoading: false,
               hasMore: false,
               isFilterVisible: false,
               keywordsKey: 1,
@@ -346,12 +348,14 @@ describe('src | components | pages | Search', () => {
       })
       const wrapperInstance = wrapper.instance()
       wrapperInstance.setState({ isFilterVisible: true })
+
       describe('when keywords is not an empty string', () => {
         it('should update state with mots-clés set to value given', () => {
           // when
           wrapperInstance.handleOnSubmit(event)
 
           const expected = {
+            isLoading: false,
             hasMore: false,
             isFilterVisible: false,
             keywordsKey: 0,
@@ -435,6 +439,7 @@ describe('src | components | pages | Search', () => {
           button.props.onClick()
 
           const expected = {
+            isLoading: false,
             hasMore: false,
             isFilterVisible: false,
             keywordsKey: 1,
@@ -476,6 +481,7 @@ describe('src | components | pages | Search', () => {
 
         // then
         const expected = {
+          isLoading: false,
           hasMore: false,
           isFilterVisible: true,
           keywordsKey: 0,
@@ -500,6 +506,7 @@ describe('src | components | pages | Search', () => {
 
         it('isFilterVisible state is false', () => {
           const expected = {
+            isLoading: false,
             hasMore: false,
             isFilterVisible: false,
             keywordsKey: 0,
@@ -521,6 +528,7 @@ describe('src | components | pages | Search', () => {
 
         it('should update isFilterVisible state to true', () => {
           const expected = {
+            isLoading: false,
             hasMore: false,
             isFilterVisible: true,
             keywordsKey: 0,
