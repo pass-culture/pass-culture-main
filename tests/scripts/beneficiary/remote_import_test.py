@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch, ANY
 import pytest
 from mailjet_rest import Client
 
-from models import User, ApiErrors, BeneficiaryImportStatus
 from models import BeneficiaryImport, ImportStatus
+from models import User, ApiErrors
 from scripts.beneficiary import remote_import
 from scripts.beneficiary.remote_import import parse_beneficiary_information, create_beneficiary_from_application, \
     DuplicateBeneficiaryError
@@ -29,6 +29,8 @@ class RunTest:
     def test_all_applications_are_processed_once(self, process_beneficiary_application, send_report_email):
         # given
         get_all_application_ids = Mock(return_value=[123, 456, 789])
+        find_applications_ids_to_retry = Mock(return_value=[])
+
         get_details = Mock()
         get_details.side_effect = [
             make_application_detail(123, 'closed'),
@@ -43,6 +45,37 @@ class RunTest:
         remote_import.run(
             ONE_WEEK_AGO,
             get_all_applications_ids=get_all_application_ids,
+            get_applications_ids_to_retry=find_applications_ids_to_retry,
+            get_details=get_details,
+            already_imported=has_already_been_imported,
+            already_existing_user=has_already_been_created
+        )
+
+        # then
+        assert process_beneficiary_application.call_count == 3
+
+    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
+    @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
+    def test_applications_to_retry_are_processed(self, process_beneficiary_application, send_report_email):
+        # given
+        get_all_application_ids = Mock(return_value=[123])
+        find_applications_ids_to_retry = Mock(return_value=[456, 789])
+
+        get_details = Mock()
+        get_details.side_effect = [
+            make_application_detail(123, 'closed'),
+            make_application_detail(456, 'closed'),
+            make_application_detail(789, 'closed')
+        ]
+
+        has_already_been_imported = Mock(return_value=False)
+        has_already_been_created = Mock(return_value=False)
+
+        # when
+        remote_import.run(
+            ONE_WEEK_AGO,
+            get_all_applications_ids=get_all_application_ids,
+            get_applications_ids_to_retry=find_applications_ids_to_retry,
             get_details=get_details,
             already_imported=has_already_been_imported,
             already_existing_user=has_already_been_created
@@ -57,6 +90,8 @@ class RunTest:
     def test_a_report_email_is_sent(self, process_beneficiary_application, send_report_email):
         # given
         get_all_application_ids = Mock(return_value=[123])
+        find_applications_ids_to_retry = Mock(return_value=[])
+
         get_details = Mock(side_effect=[make_application_detail(123, 'closed')])
         has_already_been_imported = Mock(return_value=False)
         has_already_been_created = Mock(return_value=False)
@@ -65,6 +100,7 @@ class RunTest:
         remote_import.run(
             ONE_WEEK_AGO,
             get_all_applications_ids=get_all_application_ids,
+            get_applications_ids_to_retry=find_applications_ids_to_retry,
             get_details=get_details,
             already_imported=has_already_been_imported,
             already_existing_user=has_already_been_created
@@ -84,6 +120,8 @@ class RunTest:
     ):
         # given
         get_all_application_ids = Mock(return_value=[123])
+        find_applications_ids_to_retry = Mock(return_value=[])
+
         get_details = Mock(side_effect=[make_application_detail(123, 'closed')])
         has_already_been_imported = Mock(return_value=False)
         has_already_been_created = Mock(return_value=False)
@@ -93,6 +131,7 @@ class RunTest:
         remote_import.run(
             ONE_WEEK_AGO,
             get_all_applications_ids=get_all_application_ids,
+            get_applications_ids_to_retry=find_applications_ids_to_retry,
             get_details=get_details,
             already_imported=has_already_been_imported,
             already_existing_user=has_already_been_created
@@ -111,6 +150,8 @@ class RunTest:
                                                                                          send_report_email):
         # given
         get_all_application_ids = Mock(return_value=[123, 456])
+        find_applications_ids_to_retry = Mock(return_value=[])
+
         get_details = Mock(return_value=make_application_detail(123, 'closed'))
         user = User()
         user.email = 'john.doe@test.com'
@@ -121,6 +162,7 @@ class RunTest:
         remote_import.run(
             ONE_WEEK_AGO,
             get_all_applications_ids=get_all_application_ids,
+            get_applications_ids_to_retry=find_applications_ids_to_retry,
             get_details=get_details,
             already_imported=has_already_been_imported,
             already_existing_user=has_already_been_created
@@ -137,6 +179,8 @@ class RunTest:
                                                                 send_report_email, app):
         # given
         get_all_application_ids = Mock(return_value=[123])
+        find_applications_ids_to_retry = Mock(return_value=[])
+
         get_details = Mock(return_value=make_application_detail(123, 'closed'))
         user = User()
         user.email = 'john.doe@test.com'
@@ -147,6 +191,7 @@ class RunTest:
         remote_import.run(
             ONE_WEEK_AGO,
             get_all_applications_ids=get_all_application_ids,
+            get_applications_ids_to_retry=find_applications_ids_to_retry,
             get_details=get_details,
             already_imported=has_already_been_imported,
             already_existing_user=has_already_been_created

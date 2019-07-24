@@ -5,8 +5,8 @@ from sqlalchemy import func, Column
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
-from models import BeneficiaryImport, ImportStatus, BeneficiaryImportStatus
-from models import User, UserOfferer, Offerer, RightsType, PcObject
+from models import ImportStatus, BeneficiaryImportStatus
+from models import User, UserOfferer, Offerer, RightsType
 from models.db import db
 from models.user import WalletBalance
 
@@ -15,17 +15,6 @@ def find_user_by_email(email: str) -> User:
     return User.query \
         .filter(func.lower(User.email) == email.strip().lower()) \
         .first()
-
-
-def is_already_imported(application_id: int) -> bool:
-    beneficiary_import = BeneficiaryImport.query \
-        .filter(BeneficiaryImport.demarcheSimplifieeApplicationId == application_id) \
-        .first()
-
-    if beneficiary_import is None:
-        return False
-
-    return beneficiary_import.currentStatus != ImportStatus.RETRY
 
 
 def find_by_civility(first_name: str, last_name: str, birth_date: datetime) -> List[User]:
@@ -126,29 +115,6 @@ def find_most_recent_beneficiary_creation_date() -> datetime:
         return datetime(MINYEAR, 1, 1)
 
     return most_recent_creation.date
-
-
-def save_beneficiary_import_with_status(
-        status: ImportStatus,
-        demarche_simplifiee_application_id: int,
-        user: User = None,
-        detail=None,
-):
-    import_status = BeneficiaryImportStatus()
-    import_status.date = datetime.utcnow()
-    import_status.detail = detail
-    import_status.status = status
-
-    existing_import = BeneficiaryImport.query \
-        .filter_by(demarcheSimplifieeApplicationId=demarche_simplifiee_application_id) \
-        .first()
-
-    beneficiary_import = existing_import or BeneficiaryImport()
-    beneficiary_import.beneficiary = user
-    beneficiary_import.statuses.append(import_status)
-    beneficiary_import.demarcheSimplifieeApplicationId = demarche_simplifiee_application_id
-
-    PcObject.save(beneficiary_import)
 
 
 def _matching(column: Column, search_value: str) -> BinaryExpression:

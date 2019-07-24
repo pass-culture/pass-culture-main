@@ -8,10 +8,11 @@ from domain.admin_emails import send_remote_beneficiaries_import_report_email
 from domain.demarches_simplifiees import get_all_application_ids_for_procedure
 from domain.password import generate_reset_token, random_password
 from domain.user_emails import send_activation_notification_email
-from models import User, Deposit, ApiErrors, PcObject, BeneficiaryImport
 from models import ImportStatus
-from repository.user_queries import find_by_civility, find_user_by_email, \
-    is_already_imported, save_beneficiary_import_with_status
+from models import User, Deposit, ApiErrors, PcObject
+from repository.beneficiary_import_queries import is_already_imported, save_beneficiary_import_with_status, \
+    find_applications_ids_to_retry
+from repository.user_queries import find_by_civility, find_user_by_email
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from utils.logger import logger
 from utils.mailing import send_raw_email, DEV_EMAIL_ADDRESS, parse_email_addresses
@@ -23,7 +24,8 @@ VALIDATED_APPLICATION = 'closed'
 
 def run(
         process_applications_updated_after: datetime,
-        get_all_applications_ids: Callable[..., dict] = get_all_application_ids_for_procedure,
+        get_all_applications_ids: Callable[..., List[int]] = get_all_application_ids_for_procedure,
+        get_applications_ids_to_retry: Callable[..., List[int]] = find_applications_ids_to_retry,
         get_details: Callable[..., dict] = get_application_details,
         already_imported: Callable[..., bool] = is_already_imported,
         already_existing_user: Callable[..., User] = find_user_by_email
@@ -33,9 +35,10 @@ def run(
 
     logger.info('[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées')
     applications_ids = get_all_applications_ids(PROCEDURE_ID, TOKEN, process_applications_updated_after)
+    retry_ids = get_applications_ids_to_retry()
     logger.info(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {len(applications_ids)} applications to process')
 
-    for id in applications_ids:
+    for id in (applications_ids + retry_ids):
         details = get_details(id, PROCEDURE_ID, TOKEN)
         try:
             information = parse_beneficiary_information(details)
@@ -56,7 +59,6 @@ def run(
 
         if not already_imported(information['application_id']):
             process_beneficiary_application(information, error_messages, new_beneficiaries)
-
 
     REPORT_RECIPIENTS = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_REPORT_RECIPIENTS', DEV_EMAIL_ADDRESS)
     recipients = parse_email_addresses(REPORT_RECIPIENTS)

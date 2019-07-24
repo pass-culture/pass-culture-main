@@ -1,0 +1,51 @@
+from datetime import datetime
+from typing import List
+
+from sqlalchemy import asc
+
+from models import BeneficiaryImport, ImportStatus, User, BeneficiaryImportStatus, PcObject
+from models.db import db
+
+
+def is_already_imported(application_id: int) -> bool:
+    beneficiary_import = BeneficiaryImport.query \
+        .filter(BeneficiaryImport.demarcheSimplifieeApplicationId == application_id) \
+        .first()
+
+    if beneficiary_import is None:
+        return False
+
+    return beneficiary_import.currentStatus != ImportStatus.RETRY
+
+
+def save_beneficiary_import_with_status(
+        status: ImportStatus,
+        demarche_simplifiee_application_id: int,
+        user: User = None,
+        detail=None,
+):
+    import_status = BeneficiaryImportStatus()
+    import_status.date = datetime.utcnow()
+    import_status.detail = detail
+    import_status.status = status
+
+    existing_import = BeneficiaryImport.query \
+        .filter_by(demarcheSimplifieeApplicationId=demarche_simplifiee_application_id) \
+        .first()
+
+    beneficiary_import = existing_import or BeneficiaryImport()
+    beneficiary_import.beneficiary = user
+    beneficiary_import.statuses.append(import_status)
+    beneficiary_import.demarcheSimplifieeApplicationId = demarche_simplifiee_application_id
+
+    PcObject.save(beneficiary_import)
+
+
+def find_applications_ids_to_retry() -> List[int]:
+    ids = db.session \
+        .query(BeneficiaryImport.demarcheSimplifieeApplicationId) \
+        .filter(BeneficiaryImport.currentStatus == ImportStatus.RETRY) \
+        .order_by(asc(BeneficiaryImport.demarcheSimplifieeApplicationId)) \
+        .all()
+
+    return sorted(list(map(lambda result_set: result_set[0], ids)))
