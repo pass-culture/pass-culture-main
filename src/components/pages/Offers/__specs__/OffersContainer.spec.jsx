@@ -54,7 +54,7 @@ describe('src | components | pages | Offers', () => {
       // when
       wrapper
         .find('Offers')
-        .find('.delete')
+        .find('.venue-filter')
         .props()
         .onClick()
 

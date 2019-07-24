@@ -1,4 +1,4 @@
-import { Icon, resolveIsNew } from 'pass-culture-shared'
+import { Icon, resolveIsNew, showNotification } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import { stringify } from 'query-string'
 import React, { Component } from 'react'
@@ -7,12 +7,12 @@ import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 import { assignData } from 'fetch-normalize-data'
 
-import OfferItemContainer from './OfferItem/OfferItemContainer'
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import Spinner from '../../layout/Spinner'
 import Main from '../../layout/Main'
 import { offerNormalizer } from '../../../utils/normalizers'
 import { mapApiToBrowser, translateQueryParamsToApiParams } from '../../../utils/translate'
+import OfferItemContainer from './OfferItem/OfferItemContainer'
 
 
 class Offers extends Component {
@@ -105,30 +105,37 @@ class Offers extends Component {
     })
   }
 
+  handleSubmitRequestSuccess = (notificationMessage) => {
+    const { dispatch } = this.props
+    dispatch(
+      showNotification({
+        text: notificationMessage,
+        type: 'success',
+      })
+    )
+  }
+
   handleOnDeactivateAllVenueOffersClick = () => {
     const { dispatch, venue } = this.props
-
-    console.log('VENUE', venue)
-
-   dispatch(
-    requestData({
-      apiPath: `/venues/${venue.id}/offers/deactivate`,
-      method: 'PUT'
-    })
-   )
+    dispatch(
+      requestData({
+        apiPath: `/venues/${venue.id}/offers/deactivate`,
+        method: 'PUT',
+        handleSuccess: this.handleSubmitRequestSuccess('Toutes les offres de ce lieu ont été désactivées avec succès')
+      })
+    )
   }
 
   handleOnActivateAllVenueOffersClick = () => {
     const { dispatch, venue } = this.props
-    console.log('VENUE', venue)
-
-
     dispatch(
       requestData({
         apiPath: `/venues/${venue.id}/offers/activate`,
-        method: 'PUT'
+        method: 'PUT',
+        handleSuccess: this.handleSubmitRequestSuccess('Toutes les offres de ce lieu ont été activées avec succès')
+
       })
-     )
+    )
   }
 
   handleOnOffererClick = query => () => {
@@ -150,8 +157,6 @@ class Offers extends Component {
 
   render() {
     const { currentUser, offers, offerer, query, venue } = this.props
-
-    console.log(this.props)
     const { isAdmin } = currentUser || {}
 
     const queryParams = query.parse()
@@ -224,28 +229,31 @@ class Offers extends Component {
         </form>
 
         <ul className="section">
-          {offerer &&
-          <li className="tag is-rounded is-medium">
-            {'Structure :'}
-            <span className="has-text-weight-semibold">&nbsp;{offerer.name}</span>
-            <button
-              className="delete is-small"
-              onClick={this.handleOnOffererClick(query)}
-              type="button"
-            />
-          </li>
+
+          { offerer &&
+              <button
+                className="offerer-filter tag is-rounded is-medium"
+                onClick={this.handleOnOffererClick(query)}
+                type="button"
+              >
+                {'Structure :'}
+                <span className="name">&nbsp;{offerer.name}</span>
+                <Icon svg="ico-close-r" />
+                </button>
           }
-          {venue &&
-          <li className="tag is-rounded is-medium">
-            {'Lieu : '}
-            <span className="has-text-weight-semibold">{venue.name}</span>
+
+          { venue &&
             <button
-              className="delete is-small"
+              className="venue-filter tag is-rounded is-medium"
               onClick={this.handleOnVenueClick(query)}
               type="button"
-            />
-          </li>
+            >
+                {'Lieu : '}
+                <span className="name">{venue.name}</span>
+                <Icon svg="ico-close-r" />
+              </button>
           }
+
         </ul>
         <div className="section">
           {false && (
@@ -282,28 +290,22 @@ class Offers extends Component {
 
           {
             offers && venue && (
-              <div>
+              <div className="offers-list-actions">
                 <button
-                  className="button is-secondary is-small activ-switch"
+                  className="button is-secondary is-small"
                   onClick={this.handleOnDeactivateAllVenueOffersClick}
                   type="button"
                 >
-                    <span>
-                    <Icon svg="ico-close-r" />
-                      {'Désactiver toutes les offres'}
-                  </span>
+                Désactiver toutes les offres
                 </button>
+
                 <button
-                  className="button is-secondary is-small activ-switch"
+                  className="button is-secondary is-small"
                   onClick={this.handleOnActivateAllVenueOffersClick}
                   type="button"
                 >
-                    <span>
-                    <Icon svg="ico-close-r" />
-                      {'Activer toutes les offres'}
-                  </span>
+                Activer toutes les offres
                 </button>
-
               </div>
             )
           }

@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import configureStore from 'redux-mock-store'
 
 import OfferItem from '../OfferItem'
-import mockedOffers from '../../tests/offersMock'
+import mockedOffers from '../../__specs__/offersMock'
 
 const middlewares = []
 const mockStore = configureStore(middlewares)

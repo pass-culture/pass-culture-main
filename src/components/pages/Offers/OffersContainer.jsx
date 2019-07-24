@@ -24,7 +24,6 @@ export function mapStateToProps(state, ownProps) {
   }
 }
 
-
 export default compose(
   withRequiredLogin,
   connect(mapStateToProps)

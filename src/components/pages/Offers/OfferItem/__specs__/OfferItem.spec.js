@@ -1,6 +1,5 @@
 import React from 'react'
 import { mount, shallow } from 'enzyme'
-import offersMock from '../../tests/offersMock'
 import { Icon } from 'pass-culture-shared'
 
 import { NavLink } from 'react-router-dom'
@@ -8,6 +7,7 @@ import Dotdotdot from 'react-dotdotdot'
 import Thumb from '../../../../../components/layout/Thumb'
 
 import OfferItem from '../OfferItem'
+import offersMock from '../../__specs__/offersMock'
 
 describe('src | components | pages | Offers | OfferItem', () => {
   let dispatch = jest.fn()
