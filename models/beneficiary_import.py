@@ -4,10 +4,10 @@ from sqlalchemy import Column, BigInteger, ForeignKey, desc
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
-from models.user import User
 from models.beneficiary_import_status import BeneficiaryImportStatus, ImportStatus
 from models.db import Model, db
 from models.pc_object import PcObject
+from models.user import User
 
 
 class BeneficiaryImport(PcObject, Model):
@@ -68,6 +68,10 @@ class BeneficiaryImport(PcObject, Model):
     @authorEmail.expression
     def authorEmail(cls):
         return cls._query_last_status(BeneficiaryImportStatus.author)
+
+    @property
+    def history(self):
+        return '\n'.join([repr(s) for s in self.statuses])
 
     @classmethod
     def _query_last_status(cls, column: Column):

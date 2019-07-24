@@ -15,7 +15,7 @@ from repository.beneficiary_import_queries import is_already_imported, save_bene
 from repository.user_queries import find_by_civility, find_user_by_email
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from utils.logger import logger
-from utils.mailing import send_raw_email, DEV_EMAIL_ADDRESS, parse_email_addresses
+from utils.mailing import send_raw_email, parse_email_addresses, DEV_EMAIL_ADDRESS
 
 TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN', None)
 PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', None)
@@ -36,7 +36,8 @@ def run(
     logger.info('[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées')
     applications_ids = get_all_applications_ids(PROCEDURE_ID, TOKEN, process_applications_updated_after)
     retry_ids = get_applications_ids_to_retry()
-    logger.info(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {len(applications_ids)} applications to process')
+    logger.info(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {len(applications_ids)} new applications to process')
+    logger.info(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {len(retry_ids)} preivous applications to retry')
 
     for id in (applications_ids + retry_ids):
         details = get_details(id, PROCEDURE_ID, TOKEN)
@@ -66,30 +67,32 @@ def run(
     logger.info('[BATCH][REMOTE IMPORT BENEFICIARIES] End import from Démarches Simplifiées')
 
 
-class DuplicateBeneficiaryError(Exception):
-    def __init__(self, application_id: int, duplicate_beneficiaries: List[User]):
-        number_of_beneficiaries = len(duplicate_beneficiaries)
-        self.duplicate_ids = ", ".join([str(u.id) for u in duplicate_beneficiaries])
-        self.message = '%s utilisateur(s) en doublons (%s) pour le dossier %s' % (
-            number_of_beneficiaries, self.duplicate_ids, application_id
-        )
-
-
 def process_beneficiary_application(
         information: dict, error_messages: List[str], new_beneficiaries,
-        find_duplicate_users: Callable[[str, str, str], User] = find_by_civility
+        find_duplicate_users: Callable[..., List[User]] = find_by_civility
 ):
-    try:
-        new_beneficiary = create_beneficiary_from_application(information, find_duplicate_users=find_duplicate_users)
-    except DuplicateBeneficiaryError as e:
-        logger.warning(f'[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : {e.message}')
-        error_messages.append(e.message)
+    duplicate_users = find_duplicate_users(
+        information['first_name'],
+        information['last_name'],
+        information['birth_date']
+    )
+
+    if duplicate_users:
+        number_of_beneficiaries = len(duplicate_users)
+        duplicate_ids = ", ".join([str(u.id) for u in duplicate_users])
+        message = '%s utilisateur(s) en doublons (%s) pour le dossier %s' % (
+            number_of_beneficiaries, duplicate_ids, information['application_id']
+        )
+        logger.warning(f'[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : {message}')
+        error_messages.append(message)
         save_beneficiary_import_with_status(
             ImportStatus.DUPLICATE,
             information['application_id'],
-            detail=f"Utilisateur en doublon : {e.duplicate_ids}"
+            detail=f"Utilisateur en doublon : {duplicate_ids}"
         )
     else:
+        new_beneficiary = create_beneficiary_from_application(information)
+
         try:
             PcObject.save(new_beneficiary)
         except ApiErrors as e:
@@ -133,19 +136,7 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
     return information
 
 
-def create_beneficiary_from_application(
-        application_detail: dict,
-        find_duplicate_users: Callable = find_by_civility
-) -> User:
-    duplicate_users = find_duplicate_users(
-        application_detail['first_name'],
-        application_detail['last_name'],
-        application_detail['birth_date']
-    )
-
-    if duplicate_users:
-        raise DuplicateBeneficiaryError(application_detail['application_id'], duplicate_users)
-
+def create_beneficiary_from_application(application_detail: dict) -> User:
     beneficiary = User()
     beneficiary.lastName = application_detail['last_name']
     beneficiary.firstName = application_detail['first_name']

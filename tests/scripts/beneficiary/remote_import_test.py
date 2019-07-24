@@ -2,14 +2,12 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from unittest.mock import Mock, patch, ANY
 
-import pytest
 from mailjet_rest import Client
 
 from models import BeneficiaryImport, ImportStatus
 from models import User, ApiErrors
 from scripts.beneficiary import remote_import
-from scripts.beneficiary.remote_import import parse_beneficiary_information, create_beneficiary_from_application, \
-    DuplicateBeneficiaryError
+from scripts.beneficiary.remote_import import parse_beneficiary_information, create_beneficiary_from_application
 from tests.conftest import clean_database
 from tests.scripts.beneficiary.fixture import make_application_detail, \
     APPLICATION_DETAIL_STANDARD_RESPONSE
@@ -312,13 +310,11 @@ class ProcessBeneficiaryApplicationTest:
         assert error_messages == ['{\n  "postalCode": [\n    "baaaaad value"\n  ]\n}']
         assert not new_beneficiaries
 
-    @patch('scripts.beneficiary.remote_import.create_beneficiary_from_application')
     @patch('scripts.beneficiary.remote_import.PcObject')
     @patch('scripts.beneficiary.remote_import.send_activation_notification_email')
     @clean_database
-    def test_beneficiary_is_not_created_if_duplicates_are_found(self,
-                                                                send_activation_notification_email, PcObject,
-                                                                create_beneficiary_from_application, app):
+    def test_beneficiary_is_not_created_if_duplicates_are_found(self, send_activation_notification_email, PcObject,
+                                                                app):
         # given
         information = {
             'department': '67',
@@ -330,14 +326,18 @@ class ProcessBeneficiaryApplicationTest:
             'postal_code': '67200',
             'application_id': 123
         }
-        create_beneficiary_from_application.side_effect = DuplicateBeneficiaryError(123, [User()])
+        existing_user = create_user(first_name='Jane', last_name='Doe', date_of_birth=datetime(2000, 5, 1))
+        PcObject.save(existing_user)
+        mock = Mock(return_value=[existing_user])
 
         # when
-        remote_import.process_beneficiary_application(information, [], [])
+        remote_import.process_beneficiary_application(information, [], [], find_duplicate_users=mock)
 
         # then
         send_activation_notification_email.assert_not_called()
         PcObject.assert_not_called()
+        beneficiary_import = BeneficiaryImport.query.filter_by(demarcheSimplifieeApplicationId=123).first()
+        assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
 
     @clean_database
     def test_an_import_status_is_saved_if_beneficiary_is_a_duplicate(self, app):
@@ -352,8 +352,7 @@ class ProcessBeneficiaryApplicationTest:
             'postal_code': '67200',
             'application_id': 123
         }
-        duplicates = [create_user(idx=11), create_user(idx=22)]
-        mocked_query = Mock(side_effect=DuplicateBeneficiaryError(123, duplicates))
+        mocked_query = Mock(return_value=[create_user(idx=11), create_user(idx=22)])
 
         # when
         remote_import.process_beneficiary_application(information, [], [], find_duplicate_users=mocked_query)
@@ -451,12 +450,9 @@ class ParseBeneficiaryInformationTest:
 
 
 class CreateBeneficiaryFromApplicationTest:
-    def test_return_newly_created_user_if_no_duplicate_are_found(self):
+    def test_return_newly_created_user(self):
         # given
         THIRTY_DAYS_FROM_NOW = (datetime.utcnow() + timedelta(days=30)).date()
-        find_duplicate_users = Mock()
-        find_duplicate_users.return_value = []
-
         beneficiary_information = {
             'department': '67',
             'last_name': 'Doe',
@@ -469,7 +465,7 @@ class CreateBeneficiaryFromApplicationTest:
         }
 
         # when
-        beneficiary = create_beneficiary_from_application(beneficiary_information, find_duplicate_users)
+        beneficiary = create_beneficiary_from_application(beneficiary_information)
 
         # then
         assert beneficiary.lastName == 'Doe'
@@ -488,9 +484,6 @@ class CreateBeneficiaryFromApplicationTest:
 
     def test_a_deposit_is_made_for_the_new_beneficiary(self):
         # given
-        find_duplicate_users = Mock()
-        find_duplicate_users.return_value = []
-
         beneficiary_information = {
             'department': '67',
             'last_name': 'Doe',
@@ -502,36 +495,9 @@ class CreateBeneficiaryFromApplicationTest:
             'application_id': 123
         }
         # when
-        beneficiary = create_beneficiary_from_application(beneficiary_information, find_duplicate_users)
+        beneficiary = create_beneficiary_from_application(beneficiary_information)
 
         # then
         assert len(beneficiary.deposits) == 1
         assert beneficiary.deposits[0].amount == Decimal(500)
         assert beneficiary.deposits[0].source == 'démarches simplifiées dossier [123]'
-
-    def test_raise_an_error_with_duplicate_users_if_any_are_found(self):
-        # given
-        user1 = User()
-        user1.id = 123
-        user2 = User()
-        user2.id = 456
-        find_duplicate_users = Mock()
-        find_duplicate_users.return_value = [
-            user1, user2
-        ]
-        beneficiary_information = {
-            'department': '67',
-            'last_name': 'Doe',
-            'first_name': 'Jane',
-            'birth_date': datetime(2000, 5, 1),
-            'email': 'jane.doe@test.com',
-            'phone': '0612345678',
-            'postal_code': '67200',
-            'application_id': 123
-        }
-        # when
-        with pytest.raises(DuplicateBeneficiaryError) as e:
-            create_beneficiary_from_application(beneficiary_information, find_duplicate_users)
-
-        # then
-        assert e.value.message == '2 utilisateur(s) en doublons (123, 456) pour le dossier 123'

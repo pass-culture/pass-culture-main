@@ -1,6 +1,6 @@
 from flask_admin.helpers import get_form_data
 from flask_login import current_user
-from wtforms import Form, SelectField, StringField
+from wtforms import Form, SelectField, StringField, TextAreaField
 
 from admin.base_configuration import BaseAdminView
 from domain.user_activation import is_import_status_change_allowed, IMPORT_STATUS_MODIFICATION_RULE
@@ -70,6 +70,7 @@ class BeneficiaryImportView(BaseAdminView):
             demarche_simplifiee_application_id = StringField(
                 'Dossier DMS', default=obj.demarcheSimplifieeApplicationId, render_kw={'readonly': True}
             )
+            statuses = TextAreaField('Status précédents', default=obj.history, render_kw={'readonly': True, 'rows': len(obj.statuses)})
             detail = StringField('Raison du changement de statut')
             status = SelectField('Nouveau statut', choices=[(s.name, s.value) for s in ImportStatus])
 

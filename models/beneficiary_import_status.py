@@ -17,6 +17,11 @@ class ImportStatus(enum.Enum):
 
 
 class BeneficiaryImportStatus(PcObject, Model):
+    def __repr__(self):
+        author = self.author.publicName if self.author else 'import automatisé'
+        updated_at = datetime.strftime(self.date, '%d/%m/%Y')
+        return f"{self.status.value}, le {updated_at} par {author}"
+
     status = Column(Enum(ImportStatus), nullable=False)
 
     date = Column(DateTime,

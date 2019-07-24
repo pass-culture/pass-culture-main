@@ -1,9 +1,8 @@
-from datetime import datetime
 from typing import List
 
 from sqlalchemy import asc
 
-from models import BeneficiaryImport, ImportStatus, User, BeneficiaryImportStatus, PcObject
+from models import BeneficiaryImport, ImportStatus, User, PcObject
 from models.db import db
 
 
@@ -24,20 +23,14 @@ def save_beneficiary_import_with_status(
         user: User = None,
         detail=None,
 ):
-    import_status = BeneficiaryImportStatus()
-    import_status.date = datetime.utcnow()
-    import_status.detail = detail
-    import_status.status = status
-
     existing_import = BeneficiaryImport.query \
         .filter_by(demarcheSimplifieeApplicationId=demarche_simplifiee_application_id) \
         .first()
 
     beneficiary_import = existing_import or BeneficiaryImport()
     beneficiary_import.beneficiary = user
-    beneficiary_import.statuses.append(import_status)
     beneficiary_import.demarcheSimplifieeApplicationId = demarche_simplifiee_application_id
-
+    beneficiary_import.setStatus(status=status, detail=detail, author=None)
     PcObject.save(beneficiary_import)
 
 
