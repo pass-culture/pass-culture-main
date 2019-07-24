@@ -73,14 +73,6 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm use v8.15.1
             cd ~/pass-culture-main/webapp
-            yarn test:visual
-      - run:
-          name: Running tests
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use v8.15.1
-            cd ~/pass-culture-main/webapp
             yarn test:cafe
       - store_artifacts:
           path: ~/pass-culture-main/webapp/testcafe_screenshots

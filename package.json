@@ -162,8 +162,7 @@
     "format:js": "prettier-eslint --write '{src,testcafe}/**/*.{js,jsx}'",
     "test:cafe": "testcafe --assertion-timeout 8000 --selector-timeout 20000 -S -s testcafe_screenshots 'chrome:headless' testcafe",
     "test:unit": "jest --env=jsdom",
-    "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
-    "test:visual": "./scripts/tests/visual.sh"
+    "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls"
   },
   "husky": {
     "hooks": {
