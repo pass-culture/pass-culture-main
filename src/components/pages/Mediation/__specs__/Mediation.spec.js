@@ -178,7 +178,7 @@ describe('src | components | pages | Mediation', () => {
       expect(props.history.push).toHaveBeenCalledWith('/offres/offerId')
     })
 
-    it('should show fail data notification', () => {
+    it('should show fail data notification when error from thumb occurs', () => {
       // given
       action = {
         payload: {
@@ -194,6 +194,26 @@ describe('src | components | pages | Mediation', () => {
 
       // then
       expect(showFailDataNotification).toHaveBeenCalledWith('erreur')
+    })
+
+    it('should show fail data notification when other error occurs', () => {
+      // given
+      action = {
+        payload: {
+          errors: {
+            otherError: ['erreur'],
+          },
+        },
+      }
+      const wrapper = shallow(<Mediation {...props} />)
+
+      // when
+      wrapper.instance().handleFailData(wrapper.state(), action)
+
+      // then
+      expect(showFailDataNotification).toHaveBeenCalledWith(
+        "Votre médiation n'a pas pu être ajoutée"
+      )
     })
   })
 

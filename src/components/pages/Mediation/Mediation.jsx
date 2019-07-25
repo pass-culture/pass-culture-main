@@ -64,7 +64,10 @@ class Mediation extends PureComponent {
 
     this.setState({ isLoading: false }, () => {
       history.push(`/offres/${offer.id}`)
-      showFailDataNotification(errors.thumb[0])
+      const error = errors && errors.thumb && errors.thumb[0]
+       ? errors.thumb[0]
+       : "Votre médiation n'a pas pu être ajoutée"
+      showFailDataNotification(error)
     })
   }
 
