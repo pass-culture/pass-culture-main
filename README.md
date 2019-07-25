@@ -47,7 +47,7 @@ Pour lancer l'API:
 pc start-backend
 ```
 
-Pour lancer l'appli Web:
+Pour lancer l'appli webapp:
 ```bash
 pc start-webapp
 ```
@@ -95,12 +95,12 @@ pc alembic upgrade
 
 ### Test
 
-Pour tester les apis du backend:
+Pour tester le backend:
 ```bash
 pc test-backend
 ```
 
-Pour tester les apis du frontend:
+Pour tester le frontend:
 ```bash
 pc test-frontend
 ```
