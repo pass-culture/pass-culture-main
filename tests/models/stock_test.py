@@ -131,7 +131,7 @@ def test_available_stocks_can_be_changed_even_when_bookings_with_cancellations_e
 
 
 @clean_database
-def test_available_stocks_cannot_be_changed_when_exceeding_bookings_quantity_2(app):
+def test_update_available_stocks_with_value_less_than_number_of_bookings(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -144,5 +144,7 @@ def test_available_stocks_cannot_be_changed_when_exceeding_bookings_quantity_2(a
     stock.available = 1
 
     # When
-    with pytest.raises(ApiErrors):
-        PcObject.save(stock)
+    PcObject.save(stock)
+
+    # Then
+    assert Stock.query.get(stock.id).available == 1
