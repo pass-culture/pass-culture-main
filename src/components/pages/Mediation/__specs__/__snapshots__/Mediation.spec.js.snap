@@ -4,6 +4,14 @@ exports[`src | components | pages | Mediation should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Mediation
+    createOrUpdateMediation={[MockFunction]}
+    getMediation={[MockFunction]}
+    getOffer={[MockFunction]}
+    history={
+      Object {
+        "push": [MockFunction],
+      }
+    }
     match={
       Object {
         "params": Object {
@@ -12,6 +20,10 @@ ShallowWrapper {
       }
     }
     mediation={Object {}}
+    offer={Object {}}
+    offerer={Object {}}
+    showFailDataNotification={[MockFunction]}
+    showSuccessDataNotification={[MockFunction]}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -514,7 +526,7 @@ ShallowWrapper {
                   "onChange": [Function],
                   "type": "file",
                 },
-                "ref": [Function],
+                "ref": null,
                 "rendered": null,
                 "type": "input",
               },
@@ -1021,7 +1033,7 @@ ShallowWrapper {
                     "onChange": [Function],
                     "type": "file",
                   },
-                  "ref": [Function],
+                  "ref": null,
                   "rendered": null,
                   "type": "input",
                 },

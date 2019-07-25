@@ -1,14 +1,12 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { showNotification } from 'pass-culture-shared'
-import React, { Fragment, PureComponent } from 'react'
 import { NavLink } from 'react-router-dom'
-import { requestData } from 'redux-saga-data'
+import PropTypes from 'prop-types'
+import React, { Fragment, PureComponent } from 'react'
 
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import Main from '../../layout/Main'
 import UploadThumb from '../../layout/UploadThumb'
-import {mediationNormalizer, offerNormalizer} from '../../../utils/normalizers'
 import CanvasTools from '../../../utils/canvas'
 
 const IMAGE_UPLOAD_SIZE = 400
@@ -42,63 +40,40 @@ class Mediation extends PureComponent {
 
   onHandleDataRequest = (handleSuccess, handleFail) => {
     const {
-      dispatch,
+      getMediation,
+      getOffer,
       match: {
         params: { mediationId, offerId },
       },
       offer,
     } = this.props
     const { isNew } = this.state
-    !offer &&
-      dispatch(
-        requestData({
-          apiPath: `/offers/${offerId}`,
-          normalizer: offerNormalizer,
-        })
-      )
+    !offer && getOffer(offerId)
     if (!isNew) {
-      dispatch(
-        requestData({
-          apiPath: `/mediations/${mediationId}`,
-          handleSuccess,
-          handleFail,
-          normalizer: mediationNormalizer,
-        })
-      )
+      getMediation(mediationId, handleSuccess, handleFail)
       return
     }
     handleSuccess()
   }
 
   handleFailData = (state, action) => {
-    const { dispatch, history, offer } = this.props
+    const { history, offer, showFailDataNotification } = this.props
     const {
       payload: { errors },
     } = action
 
     this.setState({ isLoading: false }, () => {
       history.push(`/offres/${offer.id}`)
-      dispatch(
-        showNotification({
-          text: errors.thumb[0],
-          type: 'fail',
-        })
-      )
+      showFailDataNotification(errors.thumb[0])
     })
   }
 
   handleSuccessData = () => {
-    const { dispatch, history, offer } = this.props
+    const { history, offer, showSuccessDataNotification } = this.props
 
     this.setState({ isLoading: false }, () => {
       history.push(`/offres/${offer.id}`)
-      dispatch(
-        showNotification({
-          tag: 'mediations-manager',
-          text: 'Votre accroche a bien été enregistrée',
-          type: 'success',
-        })
-      )
+      showSuccessDataNotification()
     })
   }
 
@@ -191,7 +166,7 @@ class Mediation extends PureComponent {
   }
 
   handleOnSubmit = () => {
-    const { dispatch, match, mediation, offerer } = this.props
+    const { match, mediation, offerer, createOrUpdateMediation } = this.props
     const { croppingRect, image, credit, isNew } = this.state
 
     const offererId = get(offerer, 'id')
@@ -212,17 +187,12 @@ class Mediation extends PureComponent {
     body.append('croppingRect[height]', croppingRect.height)
 
     this.setState({ isLoading: true })
-
-    dispatch(
-      requestData({
-        apiPath: `/mediations${isNew ? '' : `/${get(mediation, 'id')}`}`,
-        body,
-        encode: 'multipart/form-data',
-        handleFail: this.handleFailData,
-        handleSuccess: this.handleSuccessData,
-        method: isNew ? 'POST' : 'PATCH',
-        stateKey: 'mediations',
-      })
+    createOrUpdateMediation(
+      isNew,
+      mediation,
+      body,
+      this.handleFailData,
+      this.handleSuccessData
     )
   }
 
@@ -230,9 +200,9 @@ class Mediation extends PureComponent {
     this.setState({ inputUrl: event.target.value })
   }
 
-  handleOnUploadClick = () => {
+  handleOnUploadClick = event => {
     this.setState({
-      image: this.$uploadInput.files[0],
+      image: event.target.files[0],
       imageUrl: null,
       inputUrl: '',
     })
@@ -443,7 +413,6 @@ class Mediation extends PureComponent {
             <input
               hidden
               onChange={this.handleOnUploadClick}
-              ref={$element => (this.$uploadInput = $element)}
               type="file"
             />
           </label>
@@ -452,6 +421,19 @@ class Mediation extends PureComponent {
       </Main>
     )
   }
+}
+
+Mediation.propTypes = {
+  createOrUpdateMediation: PropTypes.func.isRequired,
+  getMediation: PropTypes.func.isRequired,
+  getOffer: PropTypes.func.isRequired,
+  history: PropTypes.shape().isRequired,
+  match: PropTypes.shape().isRequired,
+  mediation: PropTypes.shape().isRequired,
+  offer: PropTypes.shape().isRequired,
+  offerer: PropTypes.shape().isRequired,
+  showFailDataNotification: PropTypes.func.isRequired,
+  showSuccessDataNotification: PropTypes.func.isRequired,
 }
 
 export default Mediation
