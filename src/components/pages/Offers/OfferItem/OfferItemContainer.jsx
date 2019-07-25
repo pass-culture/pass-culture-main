@@ -12,7 +12,7 @@ import selectVenueById from '../../../../selectors/selectVenueById'
 import selectOffererById from '../../../../selectors/selectOffererById'
 import { getOfferTypeLabel } from '../../../../utils/offerItem'
 
-function mapStateToProps(state, ownProps) {
+export const mapStateToProps = (state, ownProps) => {
   const { offer } = ownProps
   const { id: offerId, productId, venueId } = offer
   const product = selectProductById(state, productId)

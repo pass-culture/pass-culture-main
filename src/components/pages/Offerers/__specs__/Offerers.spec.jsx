@@ -71,7 +71,7 @@ describe('src | components | pages | Offerers | Offerers', () => {
         expect(heroSection.title).toStrictEqual('Vos structures juridiques')
       })
     })
-
+    
     describe('when leaving page', () => {
       it('should not close notifcation', () => {
         // given

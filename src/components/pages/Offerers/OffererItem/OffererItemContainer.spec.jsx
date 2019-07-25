@@ -1,7 +1,7 @@
 import state from '../../../utils/mocks/state'
 import { mapStateToProps } from '../OffererItem/OffererItemContainer'
 
-describe('src | components | pages | Offerers | OffererItemContainer', () => {
+describe('src | components | pages | Offerers | OffererItem | OffererItemContainer', () => {
   describe('mapStateToProps', () => {
     it('should return an object of props', () => {
       // given

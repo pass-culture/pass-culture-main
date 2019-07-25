@@ -1,69 +1,128 @@
-import { mount } from 'enzyme'
-import { createBrowserHistory } from 'history'
-import { Provider } from 'react-redux'
 import React from 'react'
-import { connect } from 'react-redux'
-import { Route, Router } from 'react-router'
-import { compose } from 'redux'
-import configureStore from 'redux-mock-store'
 
-import withFrenchQueryRouter from '../../../../components/hocs/withFrenchQueryRouter'
-import OffersContainer from '../Offers'
 import { mapStateToProps } from '../OffersContainer'
 
-const Offers = compose(
-  withFrenchQueryRouter,
-  connect(mapStateToProps)
-)(OffersContainer)
+import state from '../../../utils/mocks/state'
 
-describe('src | components | pages | Offers', () => {
-  describe('click on ui filters', () => {
-    it('should redirect to /offres when click on venue flag', () => {
-      // given
-      const initialProps = {
-        currentUser: { id: 'AE', currentUserUUID: 'baba' },
-        dispatch: jest.fn(),
-        venue: {},
-      }
-      const store = configureStore()({
-        data: {
-          offers: [],
-          offerers: [],
-          venues: [{ id: 'AE' }],
-          types: [],
-          users: [{ id: 'AE', currentUserUUID: 'baba' }],
+describe('src | components | pages | Offers | OffersContainer', () => {
+  let change
+  let dispatch
+  let parse
+  let ownProps
+  let currentUser
+
+  beforeEach(() => {
+    change = jest.fn()
+    dispatch = jest.fn()
+    parse = () => ({lieu: "DA", structure: "BA"})
+    currentUser = {}
+
+    ownProps = {
+      currentUser,
+      dispatch,
+      offers: [],
+      location: {
+        pathname: '/offres',
+      },
+      pagination: {
+        apiQuery: {
+          keywords: null,
+          offererId: null,
+          orderBy: 'offer.id+desc',
+          venueId: null,
         },
-        modal: {},
-        tracker: {},
-        user: {
-          publicName: 'super nom'
-        }
-      })
-      const history = createBrowserHistory()
-      history.push('/offres?lieu=AE')
-      const wrapper = mount(
-        <Provider store={store}>
-          <Router history={history}>
-            <Route path="/offres">
-              <Offers {...initialProps} />
-            </Route>
-          </Router>
-        </Provider>
-      )
-
+      },
+      query: {
+        change,
+        parse,
+      },
+      search: '',
+      types: [],
+      venue: {}
+    }
+  })
+  describe('mapStateToProps', () => {
+    it('should return the value lastTrackerMoment', () => {
       // when
-      wrapper
-        .find('Offers')
-        .find('.venue-filter')
-        .props()
-        .onClick()
+      const result = mapStateToProps(state, ownProps)
+      const expected = -Infinity
 
       // then
-      const queryParams = wrapper
-        .find('Offers')
-        .props()
-        .query.parse()
-      expect(queryParams).toEqual({})
+      expect(result.lastTrackerMoment).toStrictEqual(expected)  
+    })
+
+    it('should return an object of prop offers', () => {
+      // when
+      const result = mapStateToProps(state, ownProps)
+      const expected = {
+        "bookingEmail": "booking.email@test.com",
+        "dateCreated": "2019-03-07T10:39:23.560392Z",
+        "dateModifiedAtLastProvider": "2019-03-07T10:40:05.443621Z",
+        "id": "UU",
+        "idAtProviders": null,
+        "isActive": true,
+        "isEvent": false,
+        "isThing": true ,
+        "lastProviderId": null,
+        "mediationsIds": ["H4"],
+        "modelName": "Offer",
+        "productId": "LY",
+        "stocksIds": ["MU"],
+        "venueId": "DA"
+      }
+
+      // then
+      expect(result.offers[0]).toStrictEqual(expected)
+    })
+
+    it('should return an object of prop offerer', () => {
+      // when
+      const result = mapStateToProps(state, ownProps)
+      const expected = {"address": "RUE DES SAPOTILLES", "bic": "QSDFGH8Z566", "city": "Cayenne", "dateCreated": "2019-03-07T10:39:23.560414Z", "dateModifiedAtLastProvider": "2019-03-07T10:39:57.823508Z", "firstThumbDominantColor": null, "iban": "FR7630001007941234567890185", "id": "BA", "idAtProviders": null, "isActive": true, "isValidated": true, "lastProviderId": null, "modelName": "Offerer", "nOffers": 5, "name": "Bar des amis", "postalCode": "97300", "siren": "222222233", "thumbCount": 0, "validationToken": null}
+
+      // then
+      expect(result.offerer).toStrictEqual(expected)
+    })
+
+    it('should return an object of prop types', () => {
+      // when
+      const result = mapStateToProps(state, ownProps)
+      const expected = {"appLabel": "pass Culture : activation évènementielle", "description": "Activez votre pass Culture grâce à cette offre", "id": 0, "offlineOnly": true, "onlineOnly": false, "proLabel": "pass Culture : activation évènementielle", "sublabel": "Activation", "type": "Event", "value": "EventType.ACTIVATION"}
+
+      // then
+      expect(result.types[0]).toStrictEqual(expected)
+    })
+
+    it('should return an object of prop venue', () => {
+      // when
+      const result = mapStateToProps(state, ownProps)
+      const expected = {
+        "address": null,
+        "bookingEmail": "john.doe@test.com",
+        "city": null,
+        "comment": null,
+        "dateModifiedAtLastProvider": "2019-03-07T10:40:03.234016Z",
+        "departementCode": null,
+        "firstThumbDominantColor": null,
+        "id": "DA",
+        "idAtProviders": null,
+        "isValidated": true,
+        "isVirtual": true,
+        "lastProviderId": null,
+        "latitude": 48.83638,
+        "longitude": 2.40027,
+        "managingOffererId": "BA",
+        "modelName": "Venue",
+        "name": "Le Sous-sol (Offre en ligne)",
+        "postalCode": null,
+        "siret": null,
+        "thumbCount": 0,
+        "validationToken": null
+      }
+
+      // then
+      expect(result.venue).toStrictEqual(expected)
+
     })
   })
 })

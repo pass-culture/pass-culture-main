@@ -98,13 +98,6 @@ class Offers extends Component {
     }
   }
 
-  handleOnVenueClick = query => () => {
-    query.change({
-      [mapApiToBrowser.venueId]: null,
-      page: null,
-    })
-  }
-
   handleSubmitRequestSuccess = (notificationMessage) => {
     const { dispatch } = this.props
     dispatch(
@@ -113,6 +106,20 @@ class Offers extends Component {
         type: 'success',
       })
     )
+  }
+
+  handleOnVenueClick = query => () => {
+    query.change({
+      [mapApiToBrowser.venueId]: null,
+      page: null,
+    })
+  }
+
+  handleOnOffererClick = query => () => {
+    query.change({
+      [mapApiToBrowser.offererId]: null,
+      page: null,
+    })
   }
 
   handleOnDeactivateAllVenueOffersClick = () => {
@@ -138,13 +145,6 @@ class Offers extends Component {
     )
   }
 
-  handleOnOffererClick = query => () => {
-    query.change({
-      [mapApiToBrowser.offererId]: null,
-      page: null,
-    })
-  }
-
   handleOnClick = () => {
     // TODO
     // query.change({ })}
@@ -158,11 +158,9 @@ class Offers extends Component {
   render() {
     const { currentUser, offers, offerer, query, venue } = this.props
     const { isAdmin } = currentUser || {}
-
     const queryParams = query.parse()
     const apiParams = translateQueryParamsToApiParams(queryParams)
     const { keywords, venueId, offererId, orderBy } = apiParams
-
     const { hasMore, isLoading } = this.state
 
     let createOfferTo = `/offres/creation`
@@ -173,11 +171,11 @@ class Offers extends Component {
     }
 
     const [orderName, orderDirection] = (orderBy || '').split('+')
-
     return (
       <Main
         handleRequestData={this.onHandleRequestData}
         name="offers"
+        id="offers"
       >
         <HeroSection title="Vos offres">
           {!isAdmin && (
@@ -292,7 +290,7 @@ class Offers extends Component {
             offers && venue && (
               <div className="offers-list-actions">
                 <button
-                  className="button is-secondary is-small"
+                  className="button deactivate is-secondary is-small"
                   onClick={this.handleOnDeactivateAllVenueOffersClick}
                   type="button"
                 >
@@ -300,7 +298,7 @@ class Offers extends Component {
                 </button>
 
                 <button
-                  className="button is-secondary is-small"
+                  className="button activate is-secondary is-small"
                   onClick={this.handleOnActivateAllVenueOffersClick}
                   type="button"
                 >

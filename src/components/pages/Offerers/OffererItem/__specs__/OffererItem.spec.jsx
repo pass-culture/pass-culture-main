@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 
 import OffererItem from '../OffererItem'
 
-describe('src | components | pages | Offerers | OffererItem', () => {
+describe('src | components | pages | Offerers | OffererItem | OffererItem', () => {
   let props
 
   const dispatchMock = jest.fn()

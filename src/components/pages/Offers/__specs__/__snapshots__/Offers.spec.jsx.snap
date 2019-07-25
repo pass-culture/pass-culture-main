@@ -4,7 +4,11 @@ exports[`src | components | pages | Offers | Offers snapshot should match snapsh
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Offers
-    currentUser={Object {}}
+    currentUser={
+      Object {
+        "isAdmin": false,
+      }
+    }
     dispatch={
       [MockFunction] {
         "calls": Array [
@@ -28,7 +32,7 @@ ShallowWrapper {
           Array [
             Object {
               "config": Object {
-                "apiPath": "/offers?orderBy=offer.id%20desc",
+                "apiPath": "/offers?",
                 "handleFail": [Function],
                 "handleSuccess": [Function],
                 "method": "GET",
@@ -50,68 +54,11 @@ ShallowWrapper {
                 },
                 "resolve": [Function],
               },
-              "type": "REQUEST_DATA_GET_/OFFERS?ORDERBY=OFFER.ID%20DESC",
-            },
-          ],
-          Array [
-            Object {
-              "patch": Object {
-                "offers": Array [],
-              },
-              "type": "ASSIGN_DATA",
-            },
-          ],
-          Array [
-            Object {
-              "config": Object {
-                "apiPath": "/types",
-                "method": "GET",
-              },
-              "type": "REQUEST_DATA_GET_/TYPES",
-            },
-          ],
-          Array [
-            Object {
-              "config": Object {
-                "apiPath": "/offers?orderBy=offer.id%20desc",
-                "handleFail": [Function],
-                "handleSuccess": [Function],
-                "method": "GET",
-                "normalizer": Object {
-                  "mediations": "mediations",
-                  "product": Object {
-                    "normalizer": Object {
-                      "offers": "offers",
-                    },
-                    "stateKey": "products",
-                  },
-                  "stocks": "stocks",
-                  "venue": Object {
-                    "normalizer": Object {
-                      "managingOfferer": "offerers",
-                    },
-                    "stateKey": "venues",
-                  },
-                },
-                "resolve": [Function],
-              },
-              "type": "REQUEST_DATA_GET_/OFFERS?ORDERBY=OFFER.ID%20DESC",
+              "type": "REQUEST_DATA_GET_/OFFERS?",
             },
           ],
         ],
         "results": Array [
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
           Object {
             "type": "return",
             "value": undefined,
@@ -130,6 +77,7 @@ ShallowWrapper {
     location={
       Object {
         "pathname": "/offres",
+        "search": "offres?lieu=AQ&structure=A4",
       }
     }
     offers={Array []}
@@ -149,8 +97,8 @@ ShallowWrapper {
         "parse": [Function],
       }
     }
-    search=""
     types={Array []}
+    venue={Object {}}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -236,10 +184,42 @@ ShallowWrapper {
         </form>,
         <ul
           className="section"
-        />,
+        >
+          <button
+            className="venue-filter tag is-rounded is-medium"
+            onClick={[Function]}
+            type="button"
+          >
+            Lieu : 
+            <span
+              className="name"
+            />
+            <Icon
+              svg="ico-close-r"
+            />
+          </button>
+        </ul>,
         <div
           className="section"
         >
+          <div
+            className="offers-list-actions"
+          >
+            <button
+              className="button deactivate is-secondary is-small"
+              onClick={[Function]}
+              type="button"
+            >
+              Désactiver toutes les offres
+            </button>
+            <button
+              className="button activate is-secondary is-small"
+              onClick={[Function]}
+              type="button"
+            >
+              Activer toutes les offres
+            </button>
+          </div>
           <withRouter(_withQueryRouter)
             className="offers-list main-list"
             element="ul"
@@ -259,6 +239,7 @@ ShallowWrapper {
         </div>,
       ],
       "handleRequestData": [Function],
+      "id": "offers",
       "name": "offers",
     },
     "ref": null,
@@ -580,14 +561,72 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             undefined,
-            undefined,
+            <button
+              className="venue-filter tag is-rounded is-medium"
+              onClick={[Function]}
+              type="button"
+            >
+              Lieu : 
+              <span
+                className="name"
+              />
+              <Icon
+                svg="ico-close-r"
+              />
+            </button>,
           ],
           "className": "section",
         },
         "ref": null,
         "rendered": Array [
           undefined,
-          undefined,
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                "Lieu : ",
+                <span
+                  className="name"
+                />,
+                <Icon
+                  svg="ico-close-r"
+                />,
+              ],
+              "className": "venue-filter tag is-rounded is-medium",
+              "onClick": [Function],
+              "type": "button",
+            },
+            "ref": null,
+            "rendered": Array [
+              "Lieu : ",
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": undefined,
+                  "className": "name",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": "span",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "svg": "ico-close-r",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+            ],
+            "type": "button",
+          },
         ],
         "type": "ul",
       },
@@ -598,7 +637,24 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             false,
-            undefined,
+            <div
+              className="offers-list-actions"
+            >
+              <button
+                className="button deactivate is-secondary is-small"
+                onClick={[Function]}
+                type="button"
+              >
+                Désactiver toutes les offres
+              </button>
+              <button
+                className="button activate is-secondary is-small"
+                onClick={[Function]}
+                type="button"
+              >
+                Activer toutes les offres
+              </button>
+            </div>,
             <withRouter(_withQueryRouter)
               className="offers-list main-list"
               element="ul"
@@ -621,7 +677,62 @@ ShallowWrapper {
         "ref": null,
         "rendered": Array [
           false,
-          undefined,
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <button
+                  className="button deactivate is-secondary is-small"
+                  onClick={[Function]}
+                  type="button"
+                >
+                  Désactiver toutes les offres
+                </button>,
+                <button
+                  className="button activate is-secondary is-small"
+                  onClick={[Function]}
+                  type="button"
+                >
+                  Activer toutes les offres
+                </button>,
+              ],
+              "className": "offers-list-actions",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Désactiver toutes les offres",
+                  "className": "button deactivate is-secondary is-small",
+                  "onClick": [Function],
+                  "type": "button",
+                },
+                "ref": null,
+                "rendered": "Désactiver toutes les offres",
+                "type": "button",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Activer toutes les offres",
+                  "className": "button activate is-secondary is-small",
+                  "onClick": [Function],
+                  "type": "button",
+                },
+                "ref": null,
+                "rendered": "Activer toutes les offres",
+                "type": "button",
+              },
+            ],
+            "type": "div",
+          },
           Object {
             "instance": null,
             "key": undefined,
@@ -727,10 +838,42 @@ ShallowWrapper {
           </form>,
           <ul
             className="section"
-          />,
+          >
+            <button
+              className="venue-filter tag is-rounded is-medium"
+              onClick={[Function]}
+              type="button"
+            >
+              Lieu : 
+              <span
+                className="name"
+              />
+              <Icon
+                svg="ico-close-r"
+              />
+            </button>
+          </ul>,
           <div
             className="section"
           >
+            <div
+              className="offers-list-actions"
+            >
+              <button
+                className="button deactivate is-secondary is-small"
+                onClick={[Function]}
+                type="button"
+              >
+                Désactiver toutes les offres
+              </button>
+              <button
+                className="button activate is-secondary is-small"
+                onClick={[Function]}
+                type="button"
+              >
+                Activer toutes les offres
+              </button>
+            </div>
             <withRouter(_withQueryRouter)
               className="offers-list main-list"
               element="ul"
@@ -750,6 +893,7 @@ ShallowWrapper {
           </div>,
         ],
         "handleRequestData": [Function],
+        "id": "offers",
         "name": "offers",
       },
       "ref": null,
@@ -1071,14 +1215,72 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               undefined,
-              undefined,
+              <button
+                className="venue-filter tag is-rounded is-medium"
+                onClick={[Function]}
+                type="button"
+              >
+                Lieu : 
+                <span
+                  className="name"
+                />
+                <Icon
+                  svg="ico-close-r"
+                />
+              </button>,
             ],
             "className": "section",
           },
           "ref": null,
           "rendered": Array [
             undefined,
-            undefined,
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  "Lieu : ",
+                  <span
+                    className="name"
+                  />,
+                  <Icon
+                    svg="ico-close-r"
+                  />,
+                ],
+                "className": "venue-filter tag is-rounded is-medium",
+                "onClick": [Function],
+                "type": "button",
+              },
+              "ref": null,
+              "rendered": Array [
+                "Lieu : ",
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": undefined,
+                    "className": "name",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "span",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "function",
+                  "props": Object {
+                    "svg": "ico-close-r",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+              ],
+              "type": "button",
+            },
           ],
           "type": "ul",
         },
@@ -1089,7 +1291,24 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               false,
-              undefined,
+              <div
+                className="offers-list-actions"
+              >
+                <button
+                  className="button deactivate is-secondary is-small"
+                  onClick={[Function]}
+                  type="button"
+                >
+                  Désactiver toutes les offres
+                </button>
+                <button
+                  className="button activate is-secondary is-small"
+                  onClick={[Function]}
+                  type="button"
+                >
+                  Activer toutes les offres
+                </button>
+              </div>,
               <withRouter(_withQueryRouter)
                 className="offers-list main-list"
                 element="ul"
@@ -1112,7 +1331,62 @@ ShallowWrapper {
           "ref": null,
           "rendered": Array [
             false,
-            undefined,
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <button
+                    className="button deactivate is-secondary is-small"
+                    onClick={[Function]}
+                    type="button"
+                  >
+                    Désactiver toutes les offres
+                  </button>,
+                  <button
+                    className="button activate is-secondary is-small"
+                    onClick={[Function]}
+                    type="button"
+                  >
+                    Activer toutes les offres
+                  </button>,
+                ],
+                "className": "offers-list-actions",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Désactiver toutes les offres",
+                    "className": "button deactivate is-secondary is-small",
+                    "onClick": [Function],
+                    "type": "button",
+                  },
+                  "ref": null,
+                  "rendered": "Désactiver toutes les offres",
+                  "type": "button",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Activer toutes les offres",
+                    "className": "button activate is-secondary is-small",
+                    "onClick": [Function],
+                    "type": "button",
+                  },
+                  "ref": null,
+                  "rendered": "Activer toutes les offres",
+                  "type": "button",
+                },
+              ],
+              "type": "div",
+            },
             Object {
               "instance": null,
               "key": undefined,
