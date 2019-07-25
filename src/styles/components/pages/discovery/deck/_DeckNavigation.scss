@@ -6,7 +6,6 @@
   bottom: 0;
   position: absolute;
 
-
   #dragButton {
     width: 100%;
     position: absolute;
@@ -35,8 +34,6 @@
     margin-bottom: 25px;
   }
 
-
-
   .button.after, .button.before {
     position: relative;
     z-index: $zindex-navigation-arrows;
@@ -61,6 +58,10 @@
     min-height: 4.5rem;
     min-width: 5rem;
     text-align: center;
+
+    &.finish-icon {
+      width: 80px;
+    }
 
     .separator {
       font-family: initial;

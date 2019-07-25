@@ -1,9 +1,6 @@
-@import '_typography.scss';
-@import '_colors.scss';
-@import '_variables.scss';
-@import '_zindex.scss';
+@import 'fonts/index.scss';
+@import 'variables/index.scss';
 @import 'vendors/index.scss';
-@import 'mixins/index.scss';
-@import 'helpers/index.scss';
 @import 'global/index.scss';
+
 @import 'components/index.scss';

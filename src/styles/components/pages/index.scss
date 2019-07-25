@@ -1,10 +1,11 @@
-@import 'activation.scss';
-@import 'discovery.scss';
+@import 'activation/index.scss';
+@import 'discovery/index.scss';
 @import 'FavoritesPage.scss';
-@import 'MyBookings.scss';
-@import './search/index.scss';
-@import 'Signin.scss';
-@import 'Signup.scss';
+@import 'my-bookings/index.scss';
+@import 'profile/index.scss';
+@import 'search/index.scss';
+@import 'signin/index.scss';
+@import 'signup/index.scss';
 
 #beta-page {
   color: $white;

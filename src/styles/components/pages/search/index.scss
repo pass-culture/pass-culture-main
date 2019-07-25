@@ -1,6 +1,7 @@
-@import 'SearchFilter.scss';
+@import 'NavResultsHeader.scss';
+@import 'searchFilters/index.scss';
+@import 'searchByType/index.scss';
 @import 'SearchResultItem.scss';
-@import 'NavByOfferType.scss';
 
 .search-page {
   form {
