@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from decimal import Decimal
 from unittest.mock import Mock, patch, ANY
 
 from mailjet_rest import Client
@@ -7,7 +6,7 @@ from mailjet_rest import Client
 from models import BeneficiaryImport, ImportStatus
 from models import User, ApiErrors
 from scripts.beneficiary import remote_import
-from scripts.beneficiary.remote_import import parse_beneficiary_information, create_beneficiary_from_application
+from scripts.beneficiary.remote_import import parse_beneficiary_information
 from tests.conftest import clean_database
 from tests.scripts.beneficiary.fixture import make_application_detail, \
     APPLICATION_DETAIL_STANDARD_RESPONSE
@@ -447,57 +446,3 @@ class ParseBeneficiaryInformationTest:
 
         # then
         assert information['department'] == '2a'
-
-
-class CreateBeneficiaryFromApplicationTest:
-    def test_return_newly_created_user(self):
-        # given
-        THIRTY_DAYS_FROM_NOW = (datetime.utcnow() + timedelta(days=30)).date()
-        beneficiary_information = {
-            'department': '67',
-            'last_name': 'Doe',
-            'first_name': 'Jane',
-            'birth_date': datetime(2000, 5, 1),
-            'email': 'jane.doe@test.com',
-            'phone': '0612345678',
-            'postal_code': '67200',
-            'application_id': 123
-        }
-
-        # when
-        beneficiary = create_beneficiary_from_application(beneficiary_information)
-
-        # then
-        assert beneficiary.lastName == 'Doe'
-        assert beneficiary.firstName == 'Jane'
-        assert beneficiary.publicName == 'Jane Doe'
-        assert beneficiary.email == 'jane.doe@test.com'
-        assert beneficiary.phoneNumber == '0612345678'
-        assert beneficiary.departementCode == '67'
-        assert beneficiary.postalCode == '67200'
-        assert beneficiary.dateOfBirth == datetime(2000, 5, 1)
-        assert beneficiary.canBookFreeOffers == True
-        assert beneficiary.isAdmin == False
-        assert beneficiary.password is not None
-        assert beneficiary.resetPasswordToken is not None
-        assert beneficiary.resetPasswordTokenValidityLimit.date() == THIRTY_DAYS_FROM_NOW
-
-    def test_a_deposit_is_made_for_the_new_beneficiary(self):
-        # given
-        beneficiary_information = {
-            'department': '67',
-            'last_name': 'Doe',
-            'first_name': 'Jane',
-            'birth_date': datetime(2000, 5, 1),
-            'email': 'jane.doe@test.com',
-            'phone': '0612345678',
-            'postal_code': '67200',
-            'application_id': 123
-        }
-        # when
-        beneficiary = create_beneficiary_from_application(beneficiary_information)
-
-        # then
-        assert len(beneficiary.deposits) == 1
-        assert beneficiary.deposits[0].amount == Decimal(500)
-        assert beneficiary.deposits[0].source == 'démarches simplifiées dossier [123]'

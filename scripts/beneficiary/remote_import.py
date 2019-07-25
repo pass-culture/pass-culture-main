@@ -6,14 +6,13 @@ from typing import Callable, List
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.admin_emails import send_remote_beneficiaries_import_report_email
 from domain.demarches_simplifiees import get_all_application_ids_for_procedure
-from domain.password import generate_reset_token, random_password
+from domain.user_activation import create_beneficiary_from_application
 from domain.user_emails import send_activation_notification_email
 from models import ImportStatus
-from models import User, Deposit, ApiErrors, PcObject
+from models import User, ApiErrors, PcObject
 from repository.beneficiary_import_queries import is_already_imported, save_beneficiary_import_with_status, \
     find_applications_ids_to_retry
 from repository.user_queries import find_by_civility, find_user_by_email
-from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from utils.logger import logger
 from utils.mailing import send_raw_email, parse_email_addresses, DEV_EMAIL_ADDRESS
 
@@ -134,29 +133,6 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
             information['postal_code'] = re.search('^[0-9]{5}', space_free).group(0)
 
     return information
-
-
-def create_beneficiary_from_application(application_detail: dict) -> User:
-    beneficiary = User()
-    beneficiary.lastName = application_detail['last_name']
-    beneficiary.firstName = application_detail['first_name']
-    beneficiary.publicName = '%s %s' % (application_detail['first_name'], application_detail['last_name'])
-    beneficiary.email = application_detail['email']
-    beneficiary.phoneNumber = application_detail['phone']
-    beneficiary.departementCode = application_detail['department']
-    beneficiary.postalCode = application_detail['postal_code']
-    beneficiary.dateOfBirth = application_detail['birth_date']
-    beneficiary.canBookFreeOffers = True
-    beneficiary.isAdmin = False
-    beneficiary.password = random_password()
-    generate_reset_token(beneficiary, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
-
-    deposit = Deposit()
-    deposit.amount = 500
-    deposit.source = 'démarches simplifiées dossier [%s]' % application_detail['application_id']
-    beneficiary.deposits = [deposit]
-
-    return beneficiary
 
 
 def _find_application_ids_to_process(applications: dict, process_applications_updated_after: datetime):

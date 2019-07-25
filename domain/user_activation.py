@@ -3,8 +3,10 @@ from io import StringIO
 from typing import Iterable
 from urllib.parse import urlencode
 
+from domain.password import random_password, generate_reset_token
 from models import Deposit, EventType, ThingType, ApiErrors, User, ImportStatus
 from models.booking import ActivationUser
+from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 
 IMPORT_STATUS_MODIFICATION_RULE = 'Seuls les dossiers au statut DUPLICATE peuvent être modifiés (aux statuts REJECTED ou RETRY uniquement)'
 
@@ -43,6 +45,29 @@ def generate_set_password_url(app_domain: str, user: User) -> str:
 
 def check_is_activation_booking(booking):
     return booking.stock.offer.product.type in [str(EventType.ACTIVATION), str(ThingType.ACTIVATION)]
+
+
+def create_beneficiary_from_application(application_detail: dict) -> User:
+    beneficiary = User()
+    beneficiary.lastName = application_detail['last_name']
+    beneficiary.firstName = application_detail['first_name']
+    beneficiary.publicName = '%s %s' % (application_detail['first_name'], application_detail['last_name'])
+    beneficiary.email = application_detail['email']
+    beneficiary.phoneNumber = application_detail['phone']
+    beneficiary.departementCode = application_detail['department']
+    beneficiary.postalCode = application_detail['postal_code']
+    beneficiary.dateOfBirth = application_detail['birth_date']
+    beneficiary.canBookFreeOffers = True
+    beneficiary.isAdmin = False
+    beneficiary.password = random_password()
+    generate_reset_token(beneficiary, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
+
+    deposit = Deposit()
+    deposit.amount = 500
+    deposit.source = 'démarches simplifiées dossier [%s]' % application_detail['application_id']
+    beneficiary.deposits = [deposit]
+
+    return beneficiary
 
 
 def is_import_status_change_allowed(current_status: ImportStatus, new_status: ImportStatus) -> bool:
