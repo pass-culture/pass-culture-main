@@ -89,6 +89,11 @@ class Search extends PureComponent {
     }
   }
 
+  isFirstPageRequest = queryParams => {
+    const { page = '' } = queryParams
+    return page === ''
+  }
+
   handleRecommendationsRequest = () => {
     const { dispatch, location, query } = this.props
     const isResultatsView = location.pathname.includes('resultats')
@@ -98,7 +103,9 @@ class Search extends PureComponent {
     const apiParams = translateBrowserUrlToApiUrl(queryParams)
     const apiParamsString = stringify(apiParams)
     const apiPath = `/recommendations?${apiParamsString}`
-    this.setState({ isLoading: true })
+    if (this.isFirstPageRequest(queryParams)) {
+      this.setState({ isLoading: true })
+    }
     dispatch(
       requestData({
         apiPath,

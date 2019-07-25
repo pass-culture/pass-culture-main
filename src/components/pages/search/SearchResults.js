@@ -47,7 +47,9 @@ class SearchResults extends PureComponent {
 
     if (isLoading) return
 
-    this.setState({ isLoading: true }, () => query.change({ page }, { historyMethod: 'replace' }))
+    this.setState({ isLoading: true }, () => {
+      query.change({ page }, { historyMethod: 'replace' })
+    })
   }
 
   getScrollParent = () => document.querySelector('.page-content')
