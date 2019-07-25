@@ -23,6 +23,13 @@ def find_by_id(venue_id: int) -> Venue:
     return Venue.query.filter_by(id=venue_id).first()
 
 
+def find_by_offer_id(offer_id):
+    return Venue.query\
+        .join(Offer) \
+        .filter(Offer.id == offer_id) \
+        .first()
+
+
 def find_by_siret(siret):
     return Venue.query.filter_by(siret=siret).first()
 

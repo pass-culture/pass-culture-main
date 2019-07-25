@@ -6,8 +6,7 @@ from models import ApiErrors, Booking, RightsType
 from models.api_errors import ResourceGoneError, ForbiddenError
 from repository.stock_queries import find_stock_by_id
 from utils.rest import ensure_current_user_has_rights
-from repository.venue_queries import find_by_id
-from repository.offerer_queries import get_by_offer_id, get_by_venue_id_and_offer_id
+from repository.venue_queries import find_by_id, find_by_offer_id
 
 
 def check_has_stock_id(stock_id):
@@ -171,7 +170,21 @@ def check_rights_for_activation_offer(user):
         raise ForbiddenError
 
 
-def check_rights_to_get_bookings_csv(user, venue_id):
+def check_rights_to_get_bookings_csv(user, venue_id=None, offer_id=None):
     if venue_id:
         venue = find_by_id(venue_id)
+        if venue is None:
+            api_errors = ApiErrors()
+            api_errors.add_error('venueId', "Ce lieu n'existe pas.")
+            raise api_errors
         ensure_current_user_has_rights(user=user, rights=RightsType.editor, offerer_id=venue.managingOffererId)
+
+    if offer_id:
+        venue = find_by_offer_id(offer_id)
+        if venue is None:
+            api_errors = ApiErrors()
+            api_errors.add_error('offerId', "Cette offre n'existe pas.")
+            raise api_errors
+        ensure_current_user_has_rights(user=user, rights=RightsType.editor, offerer_id=venue.managingOffererId)
+
+

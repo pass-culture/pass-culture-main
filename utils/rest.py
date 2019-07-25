@@ -175,7 +175,7 @@ def ensure_current_user_has_rights(rights, offerer_id, user=current_user):
         errors = ApiErrors()
         errors.add_error(
             'global',
-            "Cette structure n'est pas enregistrée chez cet utilisateur."
+            "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
         )
         errors.status_code = 403
         raise errors

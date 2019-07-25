@@ -205,7 +205,7 @@ class Patch:
 
             # Then
             assert response.status_code == 403
-            assert response.json['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
+            assert response.json['global'] == ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
 
     class Returns404:
         @clean_database

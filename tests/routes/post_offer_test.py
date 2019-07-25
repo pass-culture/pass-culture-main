@@ -408,4 +408,4 @@ class Post:
 
             # Then
             assert request.status_code == 403
-            assert request.json['global'] == ["Cette structure n'est pas enregistrée chez cet utilisateur."]
+            assert request.json['global'] == ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]

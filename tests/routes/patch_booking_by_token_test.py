@@ -230,7 +230,7 @@ class Patch:
 
                 # Then
                 assert response.status_code == 403
-                assert response.json['global'] == ["Cette structure n'est pas enregistr\u00e9e chez cet utilisateur."]
+                assert response.json['global'] == ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
                 assert Booking.query.get(booking_id).isUsed is False
 
             @clean_database

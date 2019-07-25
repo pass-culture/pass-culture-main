@@ -195,4 +195,4 @@ class Patch:
 
             # then
             assert response.status_code == 403
-            assert 'Cette structure n\'est pas enregistrée chez cet utilisateur.' in response.json['global']
+            assert "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information." in response.json['global']
