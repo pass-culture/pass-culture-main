@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch, ANY
 
 from mailjet_rest import Client
 
-from models import BeneficiaryImport, ImportStatus
+from models import BeneficiaryImport, ImportStatus, PcObject
 from models import User, ApiErrors
 from scripts.beneficiary import remote_import
 from scripts.beneficiary.remote_import import parse_beneficiary_information
@@ -220,7 +220,7 @@ class ProcessBeneficiaryApplicationTest:
         }
 
         # when
-        remote_import.process_beneficiary_application(information, [], [])
+        remote_import.process_beneficiary_application(information, [], [], [])
 
         # then
         first = User.query.first()
@@ -244,7 +244,7 @@ class ProcessBeneficiaryApplicationTest:
         }
 
         # when
-        remote_import.process_beneficiary_application(information, [], [])
+        remote_import.process_beneficiary_application(information, [], [], [])
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()
@@ -273,7 +273,7 @@ class ProcessBeneficiaryApplicationTest:
         create_beneficiary_from_application.return_value = create_user()
 
         # when
-        remote_import.process_beneficiary_application(information, [], [])
+        remote_import.process_beneficiary_application(information, [], [], [])
 
         # then
         send_activation_notification_email.assert_called()
@@ -302,7 +302,7 @@ class ProcessBeneficiaryApplicationTest:
         error_messages = []
 
         # when
-        remote_import.process_beneficiary_application(information, error_messages, new_beneficiaries)
+        remote_import.process_beneficiary_application(information, error_messages, new_beneficiaries, [])
 
         # then
         send_activation_notification_email.assert_not_called()
@@ -330,13 +330,41 @@ class ProcessBeneficiaryApplicationTest:
         mock = Mock(return_value=[existing_user])
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], find_duplicate_users=mock)
+        remote_import.process_beneficiary_application(information, [], [], [], find_duplicate_users=mock)
 
         # then
         send_activation_notification_email.assert_not_called()
         PcObject.assert_not_called()
         beneficiary_import = BeneficiaryImport.query.filter_by(demarcheSimplifieeApplicationId=123).first()
         assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
+
+    @patch('scripts.beneficiary.remote_import.send_activation_notification_email')
+    @clean_database
+    def test_beneficiary_is_created_if_duplicates_are_found_but_id_is_in_retry_list(
+            self, send_activation_notification_email, app):
+        # given
+        information = {
+            'department': '67',
+            'last_name': 'Doe',
+            'first_name': 'Jane',
+            'birth_date': datetime(2000, 5, 1),
+            'email': 'jane.doe@test.com',
+            'phone': '0612345678',
+            'postal_code': '67200',
+            'application_id': 123
+        }
+        existing_user = create_user(first_name='Jane', last_name='Doe', date_of_birth=datetime(2000, 5, 1))
+        PcObject.save(existing_user)
+        mock = Mock(return_value=[existing_user])
+        retry_ids = [123]
+
+        # when
+        remote_import.process_beneficiary_application(information, [], [], retry_ids, find_duplicate_users=mock)
+
+        # then
+        send_activation_notification_email.assert_called()
+        beneficiary_import = BeneficiaryImport.query.filter_by(demarcheSimplifieeApplicationId=123).first()
+        assert beneficiary_import.currentStatus == ImportStatus.CREATED
 
     @clean_database
     def test_an_import_status_is_saved_if_beneficiary_is_a_duplicate(self, app):
@@ -354,7 +382,7 @@ class ProcessBeneficiaryApplicationTest:
         mocked_query = Mock(return_value=[create_user(idx=11), create_user(idx=22)])
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], find_duplicate_users=mocked_query)
+        remote_import.process_beneficiary_application(information, [], [], [], find_duplicate_users=mocked_query)
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()

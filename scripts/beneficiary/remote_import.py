@@ -29,16 +29,16 @@ def run(
         already_imported: Callable[..., bool] = is_already_imported,
         already_existing_user: Callable[..., User] = find_user_by_email
 ):
+    logger.info('[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées')
     error_messages = []
     new_beneficiaries = []
     applications_ids = get_all_applications_ids(PROCEDURE_ID, TOKEN, process_applications_updated_after)
     retry_ids = get_applications_ids_to_retry()
 
-    logger.info('[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées')
     logger.info(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {len(applications_ids)} new applications to process')
-    logger.info(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {len(retry_ids)} preivous applications to retry')
+    logger.info(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {len(retry_ids)} previous applications to retry')
 
-    for id in (applications_ids + retry_ids):
+    for id in (retry_ids + applications_ids):
         details = get_details(id, PROCEDURE_ID, TOKEN)
         try:
             information = parse_beneficiary_information(details)
@@ -51,7 +51,7 @@ def run(
             continue
 
         if not already_imported(information['application_id']):
-            process_beneficiary_application(information, error_messages, new_beneficiaries)
+            process_beneficiary_application(information, error_messages, new_beneficiaries, retry_ids)
 
     REPORT_RECIPIENTS = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_REPORT_RECIPIENTS', DEV_EMAIL_ADDRESS)
     recipients = parse_email_addresses(REPORT_RECIPIENTS)
@@ -60,7 +60,8 @@ def run(
 
 
 def process_beneficiary_application(
-        information: dict, error_messages: List[str], new_beneficiaries,
+        information: dict, error_messages: List[str],
+        new_beneficiaries, retry_ids: List[int],
         find_duplicate_users: Callable[..., List[User]] = find_by_civility
 ):
     duplicate_users = find_duplicate_users(
@@ -69,10 +70,10 @@ def process_beneficiary_application(
         information['birth_date']
     )
 
-    if duplicate_users:
-        _process_duplication(duplicate_users, error_messages, information)
-    else:
+    if not duplicate_users or information['application_id'] in retry_ids:
         _process_creation(error_messages, information, new_beneficiaries)
+    else:
+        _process_duplication(duplicate_users, error_messages, information)
 
 
 def parse_beneficiary_information(application_detail: dict) -> dict:

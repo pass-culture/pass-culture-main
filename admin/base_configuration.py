@@ -21,7 +21,7 @@ class BaseAdminView(ModelView):
         else:
             logger.warning("[ADMIN] Tentative d'accès non autorisé à l'interface d'administation par %s" % current_user)
 
-        return True
+        return authorized
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('admin.index'))
