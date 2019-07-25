@@ -31,10 +31,10 @@ def run(
 ):
     error_messages = []
     new_beneficiaries = []
-
-    logger.info('[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées')
     applications_ids = get_all_applications_ids(PROCEDURE_ID, TOKEN, process_applications_updated_after)
     retry_ids = get_applications_ids_to_retry()
+
+    logger.info('[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées')
     logger.info(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {len(applications_ids)} new applications to process')
     logger.info(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {len(retry_ids)} preivous applications to retry')
 
@@ -43,18 +43,11 @@ def run(
         try:
             information = parse_beneficiary_information(details)
         except Exception:
-            error = f"Le dossier {id} contient des erreurs et a été ignoré"
-            logger.error(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {error}')
-            error_messages.append(error)
-            save_beneficiary_import_with_status(ImportStatus.ERROR, id, detail=error)
+            _process_error(error_messages, id)
             continue
 
         if already_existing_user(information['email']):
-            save_beneficiary_import_with_status(
-                ImportStatus.REJECTED,
-                information['application_id'],
-                detail='Compte existant avec cet email'
-            )
+            _process_rejection(information)
             continue
 
         if not already_imported(information['application_id']):
@@ -77,35 +70,9 @@ def process_beneficiary_application(
     )
 
     if duplicate_users:
-        number_of_beneficiaries = len(duplicate_users)
-        duplicate_ids = ", ".join([str(u.id) for u in duplicate_users])
-        message = '%s utilisateur(s) en doublons (%s) pour le dossier %s' % (
-            number_of_beneficiaries, duplicate_ids, information['application_id']
-        )
-        logger.warning(f'[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : {message}')
-        error_messages.append(message)
-        save_beneficiary_import_with_status(
-            ImportStatus.DUPLICATE,
-            information['application_id'],
-            detail=f"Utilisateur en doublon : {duplicate_ids}"
-        )
+        _process_duplication(duplicate_users, error_messages, information)
     else:
-        new_beneficiary = create_beneficiary_from_application(information)
-
-        try:
-            PcObject.save(new_beneficiary)
-        except ApiErrors as e:
-            logger.warning(f"[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application "
-                           f"{information['application_id']}, because of error : {str(e)}")
-            error_messages.append(str(e))
-        else:
-            save_beneficiary_import_with_status(
-                ImportStatus.CREATED,
-                information['application_id'],
-                user=new_beneficiary
-            )
-            new_beneficiaries.append(new_beneficiary)
-            send_activation_notification_email(new_beneficiary, send_raw_email)
+        _process_creation(error_messages, information, new_beneficiaries)
 
 
 def parse_beneficiary_information(application_detail: dict) -> dict:
@@ -133,6 +100,54 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
             information['postal_code'] = re.search('^[0-9]{5}', space_free).group(0)
 
     return information
+
+
+def _process_creation(error_messages, information, new_beneficiaries):
+    new_beneficiary = create_beneficiary_from_application(information)
+    try:
+        PcObject.save(new_beneficiary)
+    except ApiErrors as e:
+        logger.warning(f"[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application "
+                       f"{information['application_id']}, because of error : {str(e)}")
+        error_messages.append(str(e))
+    else:
+        save_beneficiary_import_with_status(
+            ImportStatus.CREATED,
+            information['application_id'],
+            user=new_beneficiary
+        )
+        new_beneficiaries.append(new_beneficiary)
+        send_activation_notification_email(new_beneficiary, send_raw_email)
+
+
+def _process_duplication(duplicate_users, error_messages, information):
+    number_of_beneficiaries = len(duplicate_users)
+    duplicate_ids = ", ".join([str(u.id) for u in duplicate_users])
+    message = '%s utilisateur(s) en doublons (%s) pour le dossier %s' % (
+        number_of_beneficiaries, duplicate_ids, information['application_id']
+    )
+    logger.warning(f'[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : {message}')
+    error_messages.append(message)
+    save_beneficiary_import_with_status(
+        ImportStatus.DUPLICATE,
+        information['application_id'],
+        detail=f"Utilisateur en doublon : {duplicate_ids}"
+    )
+
+
+def _process_rejection(information):
+    save_beneficiary_import_with_status(
+        ImportStatus.REJECTED,
+        information['application_id'],
+        detail='Compte existant avec cet email'
+    )
+
+
+def _process_error(error_messages, id):
+    error = f"Le dossier {id} contient des erreurs et a été ignoré"
+    logger.error(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {error}')
+    error_messages.append(error)
+    save_beneficiary_import_with_status(ImportStatus.ERROR, id, detail=error)
 
 
 def _find_application_ids_to_process(applications: dict, process_applications_updated_after: datetime):
