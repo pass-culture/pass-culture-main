@@ -3,12 +3,14 @@ import enum
 
 from sqlalchemy import BigInteger, \
     Boolean, \
+    CheckConstraint, \
     Column, \
+    ForeignKey, \
     Index, \
     Integer, \
     String, \
     Text, \
-    TEXT, ForeignKey
+    TEXT
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import cast, false
@@ -18,7 +20,7 @@ from domain.keywords import create_ts_vector_and_table_args
 from models.db import Model
 from models.extra_data_mixin import ExtraDataMixin
 from models.has_thumb_mixin import HasThumbMixin
-from models.offer_type import EventType, ThingType
+from models.offer_type import EventType, ThingType, ProductType
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 
@@ -38,8 +40,11 @@ class Product(PcObject,
               ExtraDataMixin,
               HasThumbMixin,
               ProvidableMixin):
+
     type = Column(String(50),
-                  nullable=True)
+                  CheckConstraint("type != 'None'"),
+                  index=True,
+                  nullable=False)
 
     name = Column(String(140), nullable=False)
 

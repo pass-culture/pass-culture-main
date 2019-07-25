@@ -252,6 +252,7 @@ class ThingType(SearchableType):
         'conditionalFields': ["showType"]
     }
 
+
 class ProductType:
     @classmethod
     def is_thing(cls, name: str) -> object:

@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import BigInteger, Column, DateTime, desc, ForeignKey, String
-from sqlalchemy import Text, Integer, ARRAY, Boolean, false, cast, TEXT
+from sqlalchemy import ARRAY, Boolean, cast, CheckConstraint,  false, Integer, Text, TEXT
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.functions import coalesce
 
@@ -43,7 +43,9 @@ class Offer(PcObject,
     bookingEmail = Column(String(120), nullable=True)
 
     type = Column(String(50),
-                  nullable=True)
+                  CheckConstraint("type != 'None'"),
+                  index=True,
+                  nullable=False)
 
     name = Column(String(140), nullable=False)
 
