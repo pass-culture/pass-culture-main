@@ -1,0 +1,197 @@
+.sign-up-page {
+  a {
+    color: $primary;
+  }
+
+  position: relative;
+
+  .logo-side {
+    background-image: linear-gradient(to bottom right, $red, $purple-dark);
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 50%;
+    z-index: 1;
+    box-shadow: inset -10px 0 20px 0 rgba(0, 0, 0, 0.1);
+
+    img {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      margin: auto;
+      padding: 0 2rem;
+      width: 456px;
+      height: auto;
+      max-height: 100%;
+      max-width: 100%;
+    }
+
+    @media (max-width: $tablet) {
+      position: relative;
+      height: 100px;
+
+      img {
+        left: 0;
+        padding: 1rem 0;
+      }
+    }
+  }
+
+  .page-content {
+    padding: 0;
+  }
+
+  .columns {
+    margin: 0;
+    width: 100%;
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: inherit;
+      justify-content: center;
+      padding: 0;
+    }
+  }
+
+  .has-no-padding {
+    padding: 0;
+  }
+
+  .title,
+  .subtitle {
+    font-style: italic;
+
+    span {
+      display: inline-block;
+    }
+  }
+
+  h1 {
+    font-weight: $weight-medium;
+  }
+
+  h2 {
+    margin-bottom: 12px;
+    font-weight: $weight-medium;
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  form {
+    margin-top: 2rem;
+
+    p {
+      text-align: left !important;
+      color: #7A7A7A;
+      margin-left: 0.5rem;
+    }
+  }
+
+  label {
+    margin-bottom: 0.5rem;
+
+    h3 {
+      position: relative;
+      font-size: $size-3;
+
+      &.with-subtitle {
+        float: left;
+      }
+    }
+
+    p {
+      font-size: 0.9rem;
+      text-align: right;
+    }
+
+    a {
+      text-decoration: underline;
+      color: $black;
+    }
+  }
+
+  .cgu-field {
+    font-weight: $weight-bold;
+  }
+
+  .buttons-field {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+  }
+
+  h4 {
+    font-size: $size-normal;
+    float: left;
+  }
+
+  .errors {
+    color: $primary;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 2em;
+    list-style-type: none;
+    text-align: left;
+    transition: transform 0.2s ease-in-out;
+
+    li {
+      margin-bottom: 1rem;
+    }
+
+    &.pop {
+      transform: scale(1.04);
+      transform-origin: 0 50%;
+    }
+
+    img {
+      vertical-align: middle;
+      padding-right: 5px;
+    }
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .field {
+    label {
+      display: block;
+    }
+
+    input {
+      font-weight: $weight-semibold;
+    }
+
+    .siren {
+      width: 50%;
+    }
+  }
+
+  .information-text {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: row;
+    margin-top: 24px;
+
+    img {
+      height: 21px;
+      margin-right: 6px;
+      margin-top: 3px;
+    }
+
+    p {
+      color: $grey-darkest;
+      font-size: 13px;
+      line-height: 16px;
+      text-align: justify;
+
+      a {
+        color: inherit;
+        text-decoration: underline;
+      }
+    }
+  }
+}

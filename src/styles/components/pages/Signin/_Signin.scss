@@ -1,5 +1,4 @@
-.sign-in-page,
-.sign-up-page {
+.sign-in-page {
   a {
     color: $primary;
   }
@@ -7,7 +6,6 @@
   position: relative;
 
   .logo-side {
-    // background-color: $primary;
     background-image: linear-gradient(to bottom right, $red, $purple-dark);
     position: fixed;
     top: 0;
@@ -21,7 +19,6 @@
       position: absolute;
       top: 0;
       bottom: 0;
-      // left: 0;
       right: 0;
       margin: auto;
       padding: 0 2rem;
@@ -90,7 +87,6 @@
       text-align: left !important;
       color: #7A7A7A;
       margin-left: 0.5rem;
-      // has-text-grey
     }
   }
 
@@ -136,7 +132,6 @@
     color: $primary;
     font-size: 0.9rem;
     font-weight: 500;
-    // height: 2rem;
     line-height: 2em;
     list-style-type: none;
     text-align: left;
@@ -169,29 +164,6 @@
     input {
       font-weight: $weight-semibold;
     }
-
-    // &.checkbox {
-    //   align-items: flex-start;
-    //   display: flex;
-    //   input {
-    //     margin-right: 0.5rem;
-    //     -webkit-appearance: none;
-    //     border-radius: $radius-small;
-    //     width: 1.5rem;
-    //     height: 1.5rem;
-    //     &:active, &:checked {
-    //       &:after {
-    //         content: '\2714';
-    //         font-size: 1.25rem;
-    //         position: absolute;
-    //         top: -5px;
-    //         left: 2px;
-    //         color: $primary;
-    //       }
-    //     }
-    //   }
-
-    // }
 
     .siren {
       width: 50%;

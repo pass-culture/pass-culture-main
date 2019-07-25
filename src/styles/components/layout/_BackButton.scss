@@ -1,16 +1,7 @@
 $button-margin: 0.75rem;
 $button-size: $header-height - 2 * $button-margin;
 
-button.close-button {
-  right: 0;
-
-  img {
-    left: 0;
-  }
-}
-
-button.back-button,
-button.close-button {
+button.back-button {
   position: absolute;
   width: $button-size;
   height: $button-size;

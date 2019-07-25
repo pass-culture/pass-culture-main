@@ -1,8 +1,2 @@
-@import 'LocationViewer.scss';
-@import './fields/IdentifierFields/IdentifierFields.scss';
-
-.venue-page {
-  .field-number {
-    text-align: left;
-  }
-}
+@import 'fields/index.scss';
+@import 'VenueProvidersManager/index.scss';
