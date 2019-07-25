@@ -10,6 +10,8 @@ development_env_file
 artillery/reports/*
 artillery/*.retry
 artillery/user_list_with_password
+infra/scalingo/files/data_staging.csv
+infra/scalingo/files/data_testing.csv
 
 scripts/remove_doublons_of_tuto_recommendation.py
 scripts/recreate_where_not_first_tuto.py
