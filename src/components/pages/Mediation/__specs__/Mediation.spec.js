@@ -103,6 +103,24 @@ describe('src | components | pages | Mediation', () => {
     })
   })
 
+  describe('handleOnChange', () => {
+    it('should update credit with input value', () => {
+      // given
+      const event = {
+        target: {
+          value: 'myCredit',
+        },
+      }
+      const wrapper = shallow(<Mediation {...props} />)
+
+      // when
+      wrapper.instance().handleOnChange(event)
+
+      // then
+      expect(wrapper.state('credit')).toBe('myCredit')
+    })
+  })
+
   describe('onHandleDataRequest', () => {
     let handleSuccess
     let handleFail
@@ -282,6 +300,68 @@ describe('src | components | pages | Mediation', () => {
         false,
         {},
         expect.any(Object),
+        expect.any(Function),
+        expect.any(Function)
+      )
+    })
+
+    it('should upload mediation from thumbUrl', () => {
+      // given
+      const wrapper = shallow(<Mediation {...props} />)
+      const state = {
+        croppingRect: { x: 1, y: 2 },
+        image: 'myImage',
+      }
+      wrapper.setState(state)
+      const expectedBody = new FormData()
+      expectedBody.append('offererId', undefined)
+      expectedBody.append('offerId', 'AGKA')
+      expectedBody.append('credit', undefined)
+      expectedBody.append('thumbUrl', 'myImage')
+      expectedBody.append('croppingRect[x]', state.croppingRect.x)
+      expectedBody.append('croppingRect[y]', state.croppingRect.y)
+      expectedBody.append('croppingRect[width]', undefined)
+      expectedBody.append('croppingRect[height]', undefined)
+
+      // when
+      wrapper.instance().handleOnSubmit()
+
+      // then
+      expect(createOrUpdateMediation).toHaveBeenCalledWith(
+        false,
+        {},
+        expectedBody,
+        expect.any(Function),
+        expect.any(Function)
+      )
+    })
+
+    it('should upload mediation from thumb', () => {
+      // given
+      const wrapper = shallow(<Mediation {...props} />)
+      const state = {
+        croppingRect: { x: 1, y: 2 },
+        image: { thumb: 'myImage' },
+      }
+      wrapper.setState(state)
+      const expectedBody = new FormData()
+      expectedBody.append('offererId', undefined)
+      expectedBody.append('offerId', 'AGKA')
+      expectedBody.append('credit', undefined)
+      expectedBody.append('thumb', { thumb: 'myImage' })
+      expectedBody.append('croppingRect[x]', state.croppingRect.x)
+      expectedBody.append('croppingRect[y]', state.croppingRect.y)
+      expectedBody.append('croppingRect[width]', undefined)
+      expectedBody.append('croppingRect[height]', undefined)
+
+      // when
+      wrapper.instance().handleOnSubmit()
+
+      // then
+      expect(createOrUpdateMediation).toHaveBeenCalledWith(
+        false,
+        {},
+        expectedBody,
         expect.any(Function),
         expect.any(Function)
       )

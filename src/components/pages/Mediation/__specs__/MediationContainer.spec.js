@@ -1,4 +1,5 @@
 import { mapDispatchToProps } from '../MediationContainer'
+import { mapStateToProps } from '../MediationContainer'
 
 describe('src | components | pages | MediationContainer', () => {
   let dispatch
@@ -29,14 +30,15 @@ describe('src | components | pages | MediationContainer', () => {
     it('should retrieve offer with offerId', () => {
       // given
       const { getOffer } = mapDispatchToProps(dispatch, props)
+      const offerId = 'offerId'
 
       // when
-      getOffer('OfferId')
+      getOffer(offerId)
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
         config: {
-          apiPath: '/offers/OfferId',
+          apiPath: '/offers/offerId',
           method: 'GET',
           normalizer: {
             mediations: 'mediations',
@@ -64,9 +66,12 @@ describe('src | components | pages | MediationContainer', () => {
     it('should retrieve mediation with mediationId', () => {
       // given
       const { getMediation } = mapDispatchToProps(dispatch, props)
+      const mediationId = 'mediationId'
+      const handleSuccess = jest.fn()
+      const handleFail = jest.fn()
 
       // when
-      getMediation('mediationId', jest.fn(), jest.fn())
+      getMediation(mediationId, handleSuccess, handleFail)
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
@@ -93,9 +98,10 @@ describe('src | components | pages | MediationContainer', () => {
     it('should dispatch an action to trigger fail data notification', () => {
       // given
       const { showFailDataNotification } = mapDispatchToProps(dispatch, props)
+      const error = 'my error'
 
       // when
-      showFailDataNotification('my error')
+      showFailDataNotification(error)
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
@@ -129,12 +135,17 @@ describe('src | components | pages | MediationContainer', () => {
   })
 
   describe('createOrUpdateMediation', () => {
-    it('should dispatch an action to trigger creation or update of mediation', () => {
+    it('should dispatch an action to trigger creation of mediation', () => {
       // given
       const { createOrUpdateMediation } = mapDispatchToProps(dispatch, props)
+      const isNew = true
+      const mediation = {}
+      const body = {}
+      const handleFailData = jest.fn()
+      const handleSucessData = jest.fn()
 
       // when
-      createOrUpdateMediation(true, {}, {}, jest.fn(), jest.fn())
+      createOrUpdateMediation(isNew, mediation, body, handleFailData, handleSucessData)
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
@@ -148,6 +159,72 @@ describe('src | components | pages | MediationContainer', () => {
           stateKey: 'mediations',
         },
         type: 'REQUEST_DATA_POST_MEDIATIONS',
+      })
+    })
+
+    it('should dispatch an action to trigger update of mediation', () => {
+      // given
+      const { createOrUpdateMediation } = mapDispatchToProps(dispatch, props)
+      const isNew = false
+      const mediation = { id: 'mediationId' }
+      const body = {}
+      const handleFailData = jest.fn()
+      const handleSucessData = jest.fn()
+
+      // when
+      createOrUpdateMediation(isNew, mediation, body, handleFailData, handleSucessData)
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith({
+        config: {
+          apiPath: '/mediations/mediationId',
+          body: {},
+          encode: 'multipart/form-data',
+          handleFail: expect.any(Function),
+          handleSuccess: expect.any(Function),
+          method: 'PATCH',
+          stateKey: 'mediations',
+        },
+        type: 'REQUEST_DATA_PATCH_MEDIATIONS',
+      })
+    })
+  })
+
+  describe('mapStateToProps', () => {
+    it('should return an object of props', () => {
+      // given
+      const state = {
+        data: {
+          offers: [],
+          venues: {
+            find: jest.fn(),
+          },
+          offerers: {
+            find: jest.fn(),
+          },
+          mediations: {
+            find: jest.fn(),
+          },
+        },
+      }
+
+      const ownProps = {
+        match: {
+          params: {
+            mediationId: 'mediationId',
+            offerId: 'offerId',
+          },
+        },
+      }
+
+      // when
+      const result = mapStateToProps(state, ownProps)
+
+      // then
+      expect(result).toStrictEqual({
+        mediation: undefined,
+        offer: undefined,
+        offerer: undefined,
       })
     })
   })

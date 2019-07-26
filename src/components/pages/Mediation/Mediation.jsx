@@ -48,7 +48,9 @@ class Mediation extends PureComponent {
       offer,
     } = this.props
     const { isNew } = this.state
-    !offer && getOffer(offerId)
+    if (!offer) {
+      getOffer(offerId)
+    }
     if (!isNew) {
       getMediation(mediationId, handleSuccess, handleFail)
       return
@@ -430,13 +432,17 @@ class Mediation extends PureComponent {
   }
 }
 
+Mediation.defaultProps = {
+  mediation: {},
+}
+
 Mediation.propTypes = {
   createOrUpdateMediation: PropTypes.func.isRequired,
   getMediation: PropTypes.func.isRequired,
   getOffer: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
-  mediation: PropTypes.shape().isRequired,
+  mediation: PropTypes.shape(),
   offer: PropTypes.shape().isRequired,
   offerer: PropTypes.shape().isRequired,
   showFailDataNotification: PropTypes.func.isRequired,

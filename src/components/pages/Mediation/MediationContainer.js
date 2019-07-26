@@ -13,7 +13,7 @@ import selectVenueById from '../../../selectors/selectVenueById'
 
 import { mediationNormalizer, offerNormalizer } from '../../../utils/normalizers'
 
-function mapStateToProps(state, ownProps) {
+export const mapStateToProps = (state, ownProps) => {
   const {
     match: {
       params: { mediationId, offerId },
@@ -30,14 +30,15 @@ function mapStateToProps(state, ownProps) {
 
 export const mapDispatchToProps = dispatch => {
   return {
-    getOffer: offerId =>
+    getOffer: offerId => {
       dispatch(
         requestData({
           apiPath: `/offers/${offerId}`,
           normalizer: offerNormalizer,
         })
-      ),
-    getMediation: (mediationId, handleSuccess, handleFail) =>
+      )
+    },
+    getMediation: (mediationId, handleSuccess, handleFail) => {
       dispatch(
         requestData({
           apiPath: `/mediations/${mediationId}`,
@@ -45,23 +46,26 @@ export const mapDispatchToProps = dispatch => {
           handleFail,
           normalizer: mediationNormalizer,
         })
-      ),
-    showFailDataNotification: error =>
+      )
+    },
+    showFailDataNotification: error => {
       dispatch(
         showNotification({
           text: error,
           type: 'fail',
         })
-      ),
-    showSuccessDataNotification: () =>
+      )
+    },
+    showSuccessDataNotification: () => {
       dispatch(
         showNotification({
           tag: 'mediations-manager',
           text: 'Votre accroche a bien été enregistrée',
           type: 'success',
         })
-      ),
-    createOrUpdateMediation: (isNew, mediation, body, handleFailData, handleSuccessData) =>
+      )
+    },
+    createOrUpdateMediation: (isNew, mediation, body, handleFailData, handleSuccessData) => {
       dispatch(
         requestData({
           apiPath: `/mediations${isNew ? '' : `/${get(mediation, 'id')}`}`,
@@ -72,7 +76,8 @@ export const mapDispatchToProps = dispatch => {
           method: isNew ? 'POST' : 'PATCH',
           stateKey: 'mediations',
         })
-      ),
+      )
+    },
   }
 }
 

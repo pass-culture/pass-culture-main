@@ -78,7 +78,6 @@ class UploadThumb extends Component {
     e.preventDefault()
     const formData = new FormData()
     formData.append('file', image)
-
     dispatch(
       requestData({
         apiPath: `/storage/thumb/${collectionName}/${entityId}/${index}`,
@@ -242,7 +241,7 @@ class UploadThumb extends Component {
                 !readOnly &&
                 image && (
                   <button
-                    className="button is-primary"
+                    className="button is-primary is-blabla"
                     disabled={isUploadDisabled}
                     onClick={this.handleOnUploadClick}
                     type="button"
@@ -284,6 +283,8 @@ class UploadThumb extends Component {
 UploadThumb.defaultProps = {
   border: 25,
   borderRadius: 250,
+  className: null,
+  entityId: null,
   height: 250,
   index: 0,
   maxSize: 10, // in MB
@@ -293,13 +294,16 @@ UploadThumb.defaultProps = {
 UploadThumb.propTypes = {
   border: PropTypes.number,
   borderRadius: PropTypes.number,
-  className: PropTypes.string.isRequired,
+  className: PropTypes.string,
   collectionName: PropTypes.string.isRequired,
   dispatch: PropTypes.func.isRequired,
-  entityId: PropTypes.string.isRequired,
+  entityId: PropTypes.string,
   hasExistingImage: PropTypes.bool.isRequired,
   height: PropTypes.number,
-  image: PropTypes.string.isRequired,
+  image: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.shape(),
+  ]).isRequired,
   index: PropTypes.number,
   maxSize: PropTypes.number,
   onImageChange: PropTypes.func.isRequired,
