@@ -1,7 +1,6 @@
 from typing import Callable
 
 import requests
-from requests.exceptions import SSLError
 
 from domain.mediations import DO_NOT_CROP, standardize_image, compute_dominant_color
 from models import ApiErrors
@@ -77,9 +76,9 @@ def _fetch_image(thumb_url: str) -> bytes:
 
     try:
         response = requests.get(thumb_url)
-    except SSLError as e:
+    except Exception as e:
         logger.error(e)
-        raise ApiErrors({'SSLCustomError': ['SSL error with URL : %s' % thumb_url]})
+        raise ApiErrors({'thumbUrl': ["Impossible de télécharger l'image à cette adresse"]})
     content_type = response.headers['Content-type']
     is_an_image = content_type.split('/')[0] == 'image'
 

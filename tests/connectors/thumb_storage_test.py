@@ -4,7 +4,6 @@ from pathlib import Path
 
 import pytest
 from unittest.mock import patch
-from requests.exceptions import SSLError
 from werkzeug.datastructures import FileStorage
 
 from connectors.thumb_storage import read_thumb
@@ -53,7 +52,7 @@ def test_read_thumb_returns_request_content_when_url_is_fine(mocked_requests_get
     # then
     assert result == "it works !"
 
-@patch('connectors.thumb_storage.requests.get', side_effect=SSLError)
+@patch('connectors.thumb_storage.requests.get', side_effect=Exception)
 def test_read_thumb_returns_api_error_when_request_raise_ssl_error(mocked_requests_get):
     # given
     form = {
@@ -64,6 +63,6 @@ def test_read_thumb_returns_api_error_when_request_raise_ssl_error(mocked_reques
         read_thumb(files={}, form=form)
 
     # then
-    assert api_errors.value.errors['SSLCustomError'] == [
-        'SSL error with URL : https://my-image-url.jpg'
+    assert api_errors.value.errors['thumbUrl'] == [
+        "Impossible de télécharger l'image à cette adresse"
     ]
