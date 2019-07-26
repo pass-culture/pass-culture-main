@@ -128,6 +128,7 @@ class Offers extends Component {
       requestData({
         apiPath: `/venues/${venue.id}/offers/deactivate`,
         method: 'PUT',
+        stateKey: 'offers',
         handleSuccess: this.handleSubmitRequestSuccess('Toutes les offres de ce lieu ont été désactivées avec succès')
       })
     )
@@ -139,8 +140,8 @@ class Offers extends Component {
       requestData({
         apiPath: `/venues/${venue.id}/offers/activate`,
         method: 'PUT',
+        stateKey: 'offers',
         handleSuccess: this.handleSubmitRequestSuccess('Toutes les offres de ce lieu ont été activées avec succès')
-
       })
     )
   }
@@ -156,7 +157,9 @@ class Offers extends Component {
   }
 
   render() {
+
     const { currentUser, offers, offerer, query, venue } = this.props
+
     const { isAdmin } = currentUser || {}
     const queryParams = query.parse()
     const apiParams = translateQueryParamsToApiParams(queryParams)

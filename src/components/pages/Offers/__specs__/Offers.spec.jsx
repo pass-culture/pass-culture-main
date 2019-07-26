@@ -298,9 +298,10 @@ describe('src | components | pages | Offers | Offers', () => {
           'config':
           { 'apiPath': '/venues/GY/offers/deactivate',
             'handleSuccess': undefined,
-            'method': 'PUT'
+            'method': 'PUT',
+            'stateKey': 'offers',
           },
-          'type': 'REQUEST_DATA_PUT_/VENUES/GY/OFFERS/DEACTIVATE'
+          'type': 'REQUEST_DATA_PUT_OFFERS'
         }
         expect(props.dispatch).toHaveBeenCalledWith(expected)
       })
@@ -364,8 +365,9 @@ describe('src | components | pages | Offers | Offers', () => {
             apiPath: '/venues/GY/offers/activate',
             handleSuccess: undefined,
             method: 'PUT',
+            stateKey: 'offers',
           },
-          type: 'REQUEST_DATA_PUT_/VENUES/GY/OFFERS/ACTIVATE'
+          type: 'REQUEST_DATA_PUT_OFFERS'
         }
         expect(props.dispatch).toHaveBeenCalledWith(expected)
       })
