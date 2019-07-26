@@ -1,6 +1,6 @@
 .offers-page {
   .search {
-    margin-bottom: 0.25rem;
+    @extend .mb4;
   }
 
   .recently-added {
@@ -9,15 +9,15 @@
     height: 0.5rem;
     border-radius: 50px;
     background-color: $blue;
-    margin-right: 0.5rem;
+    @extend .mr8;
   }
 
   .list-header {
     display: flex;
     border-bottom: 1px solid;
     justify-content: space-between;
-    margin-bottom: 2rem;
-    padding-bottom: 0.5rem;
+    @extend .mb32;
+    @extend .pb8;
     align-items: center;
 
     .select {
@@ -25,7 +25,7 @@
       vertical-align: middle;
 
       select {
-        margin-left: 0.5rem;
+        @extend .ml8;
         display: inline-block;
       }
     }
@@ -34,30 +34,30 @@
   .offers-list-actions {
     border-bottom: 1px solid #404040;
     font-size: 0.8rem;
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
+    @extend .pb8;
+    @extend .mb16;
     button {
-      margin-right: 0.5rem;
+      @extend .mr8;
       font-weight: 500;
       height: auto;
     }
     button:first-child {
       border-right: 1px solid #757575;
-      padding-right: 0.5rem;
+      @extend .pr8;
     }
   }
 
   .tag {
     font-size: 1rem;
-    margin-right: 0.5rem;
+    @extend .mr8;
     border-color: transparent;
     img {
-        margin-left: 0.5rem;
+        @extend .ml8;
         height: 0.7rem;
     }
     .name {
       font-weight: bold;
-      margin-left: 0.3rem;
+      @extend .ml5;
     }
   }
 }
