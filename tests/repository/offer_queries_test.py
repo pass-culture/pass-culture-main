@@ -1004,7 +1004,7 @@ def test_offer_remaining_stock_filter_filters_offer_with_one_full_stock_and_one_
 @clean_database
 def test_find_offers_by_venue_id_return_offers_matching_venue_id(app):
     # Given
-    product = create_product_with_Thing_type(thing_name='Lire un livre', is_national=True)
+    product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
     offerer = create_offerer()
     venue = create_venue(offerer, postal_code='34000', departement_code='34')
     offer = create_offer_with_thing_product(venue, product)
