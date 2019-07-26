@@ -30,21 +30,20 @@ def test_read_thumb_returns_api_error_when_no_extension_in_filename():
         "Cette image manque d'une extension (.png, .jpg, .jpeg, .gif) ou son format n'est pas autoris\u00e9"
     ]
 
-def mocked_requests_get(*args):
+
+
+@patch('connectors.thumb_storage.requests.get')
+def test_read_thumb_returns_request_content_when_url_is_fine(mocked_requests_get):
+    # given
     class MockResponse:
         def __init__(self):
             self.content = "it works !"
             self.status_code = 200
             self.headers = {'Content-type': 'image/kikou'}
-
-    return MockResponse()
-
-@patch('connectors.thumb_storage.requests.get', side_effect=mocked_requests_get)
-def test_read_thumb_returns_request_content_when_url_is_fine(mocked_requests_get):
-    # given
     form = {
         'thumbUrl': 'https://my-image-url.jpg'
     }
+    mocked_requests_get.return_value = MockResponse()
 
     # when
     result = read_thumb(files={}, form=form)
