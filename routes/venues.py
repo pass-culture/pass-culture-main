@@ -72,8 +72,7 @@ def activate_venue_offers(venueId):
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     offers = venue.offers
     activated_offers = update_is_active_status(offers, True)
-    venue.offers = activated_offers
-    PcObject.save(venue)
+    PcObject.save(*activated_offers)
 
     return jsonify([b.as_dict(include=OFFER_INCLUDES) for b in activated_offers]), 200
 
@@ -84,7 +83,7 @@ def deactivate_venue_offers(venueId):
     venue = load_or_404(Venue, venueId)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     offers = venue.offers
-    activated_offers = update_is_active_status(offers, False)
-    venue.offers = activated_offers
-    PcObject.save(venue)
-    return jsonify([b.as_dict(include=OFFER_INCLUDES) for b in activated_offers]), 200
+    deactivated_offers = update_is_active_status(offers, False)
+    PcObject.save(*deactivated_offers)
+
+    return jsonify([b.as_dict(include=OFFER_INCLUDES) for b in deactivated_offers]), 200

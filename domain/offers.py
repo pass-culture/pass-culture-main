@@ -118,8 +118,8 @@ def add_stock_alert_message_to_offer(offer: Offer) -> Offer:
     return offer
 
 
-def update_is_active_status(all_user_offers: List[Offer], status: bool) -> List[Offer]:
-    for offer in all_user_offers:
+def update_is_active_status(offers: List[Offer], status: bool) -> List[Offer]:
+    for offer in offers:
         offer.isActive = status
 
-    return all_user_offers
+    return offers

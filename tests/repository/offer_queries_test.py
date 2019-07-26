@@ -395,7 +395,7 @@ def test_get_active_offers_when_departement_code_00(app):
 
 
 @clean_database
-def test_should_return_all_active_offers_when_departement_is_none(app):
+def test_get_active_offers_when_departement_is_none(app):
     # Given
     offerer = create_offerer()
     venue_34 = create_venue(offerer, postal_code='34000', departement_code='34', siret=offerer.siren + '11111')
@@ -412,7 +412,7 @@ def test_should_return_all_active_offers_when_departement_is_none(app):
     PcObject.save(user, stock_34, stock_93, stock_75)
 
     # When
-    offers = get_active_offers(user=user, offer_id=None)
+    offers = get_active_offers(user=user, departement_codes=None, offer_id=None)
 
     # Then
     assert offer_34 in offers

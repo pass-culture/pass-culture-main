@@ -394,34 +394,27 @@ class ChangeOfferStatusTest:
         @clean_database
         def test_activate_offer(self, app):
             # given
-            user = create_user(email='user@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue)
-
-            PcObject.save(user, offer)
-            offers = Offer.query.all()
+            offers = [create_offer_with_event_product(venue, is_active=True), create_offer_with_event_product(venue, is_active=False)]
 
             # when
-            result = update_is_active_status(offers, True)
+            updated_offers = update_is_active_status(offers, True)
 
             # then
-            assert result[0].isActive == True
+            for offer in updated_offers:
+                assert offer.isActive == True
 
         @clean_database
         def test_deactivate_offer(self, app):
             # given
-            user = create_user(email='user@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue)
-
-            PcObject.save(user, offer)
-            offers = Offer.query.all()
+            offers = [create_offer_with_event_product(venue, is_active=True), create_offer_with_event_product(venue, is_active=False)]
 
             # when
-            result = update_is_active_status(offers, False)
+            updated_offers = update_is_active_status(offers, False)
 
             # then
-            assert result[0].isActive == False
-
+            for offer in updated_offers:
+                assert offer.isActive == False
