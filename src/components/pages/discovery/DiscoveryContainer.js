@@ -76,9 +76,10 @@ export const mapDispatchToProps = (dispatch, props) => ({
 
     if (!shouldRedirectToFirstRecommendationUrl) return
 
-    const firstRecommendation = loadedRecommendations[0] || false
-    const firstOfferId = (firstRecommendation && firstRecommendation.offerId) || 'tuto'
-    const firstMediationId = (firstRecommendation && firstRecommendation.mediationId) || 'vide'
+    const {
+      offerId: firstOfferId = 'tuto',
+      mediationId: firstMediationId = 'vide',
+    } = loadedRecommendations[0]
     // replace pluto qu'un push permet de recharger les données
     // quand on fait back dans le navigateur et qu'on revient
     // à l'URL /decouverte

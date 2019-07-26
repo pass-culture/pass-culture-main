@@ -8,7 +8,7 @@ describe('src | components | pages | signin | Signin', () => {
 
   beforeEach(() => {
     props = {
-      dispatch: jest.fn(),
+      submitSigninForm: jest.fn(),
       history: {},
       query: {},
     }
@@ -22,43 +22,41 @@ describe('src | components | pages | signin | Signin', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('constructor', () => {
-    it('should initialize state correctly', () => {
+  describe('handleOnFormSubmit', () => {
+    it('should set isLoading state to true', () => {
       // given
+      const formValues = {
+        identifier: 'name@email.com',
+        password: 'SomePassWord',
+      }
       const wrapper = shallow(<Signin {...props} />)
-      const expected = { isloading: false }
+
+      // when
+      wrapper.instance().handleOnFormSubmit(formValues)
 
       // then
-      expect(wrapper.state()).toStrictEqual(expected)
-    })
-  })
-
-  describe('handleOnFormSubmit', () => {
-    describe('with succes', () => {
-      it('should call data reducer', () => {
-        // given
-        const formValues = {
-          identifier: 'name@email.com',
-          password: 'SomePassWord',
-        }
-        const wrapper = shallow(<Signin {...props} />)
-
-        // when
-        wrapper.instance().handleOnFormSubmit(formValues)
-        const data = {
-          config: {
-            apiPath: '/users/signin',
-            body: formValues,
-            handleFail: expect.any(Function),
-            handleSuccess: expect.any(Function),
-            method: 'POST',
-          },
-          type: 'REQUEST_DATA_POST_/USERS/SIGNIN',
-        }
-
-        // then
-        expect(props.dispatch).toHaveBeenCalledWith(data)
+      expect(wrapper.state()).toStrictEqual({
+        isLoading: true,
       })
+    })
+
+    it('should call submitSigninForm from container', () => {
+      // given
+      const formValues = {
+        identifier: 'name@email.com',
+        password: 'SomePassWord',
+      }
+      const wrapper = shallow(<Signin {...props} />)
+
+      // when
+      wrapper.instance().handleOnFormSubmit(formValues)
+
+      // then
+      expect(props.submitSigninForm).toHaveBeenCalledWith(
+        formValues,
+        wrapper.instance().handleRequestFail,
+        wrapper.instance().handleRequestSuccess
+      )
     })
   })
 })

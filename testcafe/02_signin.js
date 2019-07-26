@@ -11,7 +11,7 @@ const userIdentifier = Selector(userId)
 const identifierErrors = Selector(`${userId}-error`).find(errorClass)
 const signInButton = Selector('#signin-submit-button')
 
-fixture("02_01 SignIn | J'ai un compte et je me connecte")
+fixture("Suite à l'activation de mon compte,")
   .page(`${ROOT_PATH}connexion`)
   .beforeEach(async t => {
     t.ctx.sandbox = await fetchSandbox(
@@ -20,7 +20,7 @@ fixture("02_01 SignIn | J'ai un compte et je me connecte")
     )
   })
 
-test("J'ai un compte valide, je suis redirigé·e vers la page /decouverte sans erreurs", async t => {
+test("Je me connecte et j'accède à la page découverte", async t => {
   // given
   const { user } = t.ctx.sandbox
   const { email, password } = user
@@ -34,7 +34,7 @@ test("J'ai un compte valide, je suis redirigé·e vers la page /decouverte sans 
     .typeText(userPassword, password)
 
   // when
-  await t.click(signInButton).wait(1000)
+  await t.click(signInButton)
 
   // then
   await t.expect(identifierErrors.count).eql(0)

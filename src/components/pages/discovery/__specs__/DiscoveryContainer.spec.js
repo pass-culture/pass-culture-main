@@ -6,12 +6,16 @@ jest.useFakeTimers()
 
 describe('src | components | pages | discovery | DiscoveryContainer', () => {
   let dispatch
+  let replace
   let props
 
   beforeEach(() => {
     dispatch = jest.fn()
+    replace = jest.fn()
     props = {
-      history: {},
+      history: {
+        replace,
+      },
       location: {
         search: '',
       },
@@ -25,109 +29,156 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
   })
 
   describe('mapDispatchToProps()', () => {
-    it('should load the recommendations with the right configuration', () => {
-      // given
-      const handleRequestSuccess = jest.fn()
-      const handleRequestFail = jest.fn()
-      const currentRecommendation = {}
-      const recommendations = []
-      const readRecommendations = null
-      const shouldReloadRecommendations = false
+    describe('when mapping loadRecommendations', () => {
+      it('should load the recommendations with the right configuration', () => {
+        // given
+        const handleRequestSuccess = jest.fn()
+        const handleRequestFail = jest.fn()
+        const currentRecommendation = {}
+        const recommendations = []
+        const readRecommendations = null
+        const shouldReloadRecommendations = false
 
-      // when
-      mapDispatchToProps(dispatch, props).loadRecommendations(
-        handleRequestSuccess,
-        handleRequestFail,
-        currentRecommendation,
-        recommendations,
-        readRecommendations,
-        shouldReloadRecommendations
-      )
+        // when
+        mapDispatchToProps(dispatch, props).loadRecommendations(
+          handleRequestSuccess,
+          handleRequestFail,
+          currentRecommendation,
+          recommendations,
+          readRecommendations,
+          shouldReloadRecommendations
+        )
 
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        config: {
-          apiPath: `/recommendations?`,
-          body: {
-            readRecommendations: null,
-            seenRecommendationIds: [],
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: {
+            apiPath: `/recommendations?`,
+            body: {
+              readRecommendations: null,
+              seenRecommendationIds: [],
+            },
+            handleFail: handleRequestFail,
+            handleSuccess: handleRequestSuccess,
+            method: 'PUT',
+            normalizer: recommendationNormalizer,
           },
-          handleFail: handleRequestFail,
-          handleSuccess: handleRequestSuccess,
-          method: 'PUT',
-          normalizer: recommendationNormalizer,
-        },
-        type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?',
+          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?',
+        })
       })
     })
 
-    it('should call setTimout 2000 times', () => {
-      // when
-      mapDispatchToProps(dispatch, props).onRequestFailRedirectToHome()
+    describe('when mapping onRequestFailRedirectToHome', () => {
+      it('should call setTimout 2000 times', () => {
+        // when
+        mapDispatchToProps(dispatch, props).onRequestFailRedirectToHome()
 
-      // then
-      expect(setTimeout).toHaveBeenCalledTimes(1)
-      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2000)
-    })
+        // then
+        expect(setTimeout).toHaveBeenCalledTimes(1)
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2000)
+      })
 
-    it('should return undefined when there are no recommendations', () => {
-      // given
-      const loadedRecommendations = []
+      it('should replace path by /connexion', () => {
+        // given
+        jest.useFakeTimers()
 
-      // when
-      const redirect = mapDispatchToProps(dispatch, props).redirectToFirstRecommendationIfNeeded(
-        loadedRecommendations
-      )
+        // when
+        mapDispatchToProps(dispatch, props).onRequestFailRedirectToHome()
+        jest.runAllTimers()
 
-      // then
-      expect(redirect).toBeUndefined()
-    })
-
-    it('should reset recommendations read with the right configuration', () => {
-      // when
-      mapDispatchToProps(dispatch, props).resetReadRecommendations()
-
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        patch: { readRecommendations: [] },
-        type: 'ASSIGN_DATA',
+        // then
+        expect(replace).toHaveBeenCalledTimes(1)
+        expect(replace).toHaveBeenLastCalledWith('/connexion')
       })
     })
 
-    it('should reset recommendations and bookings with the right configuration', () => {
-      // when
-      mapDispatchToProps(dispatch, props).resetPageData()
+    describe('when mapping redirectToFirstRecommendationIfNeeded', () => {
+      describe('when there are no recommendations', () => {
+        it('should return undefined', () => {
+          // given
+          const loadedRecommendations = []
 
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        patch: {
-          bookings: [],
-          favorites: [],
-          mediations: [],
-          offers: [],
-          recommendations: [],
-          stocks: [],
-        },
-        type: 'ASSIGN_DATA',
+          // when
+          const redirect = mapDispatchToProps(
+            dispatch,
+            props
+          ).redirectToFirstRecommendationIfNeeded(loadedRecommendations)
+
+          // then
+          expect(redirect).toBeUndefined()
+        })
+      })
+
+      describe('when not on discovery pathname', () => {
+        it('should return undefined', () => {
+          // given
+          const loadedRecommendations = [{ id: 'firstRecommendation' }]
+          props.location.pathname = ''
+
+          // when
+          const redirect = mapDispatchToProps(
+            dispatch,
+            props
+          ).redirectToFirstRecommendationIfNeeded(loadedRecommendations)
+
+          // then
+          expect(redirect).toBeUndefined()
+        })
       })
     })
 
-    it('should save recommendations loaded timestamp with the right configuration', () => {
-      // when
-      mapDispatchToProps(dispatch, props).saveLoadRecommendationsTimestamp()
+    describe('when mapping resetPageData', () => {
+      it('should reset recommendations and bookings with the right configuration', () => {
+        // when
+        mapDispatchToProps(dispatch, props).resetPageData()
 
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        type: 'SAVE_RECOMMENDATIONS_REQUEST_TIMESTAMP',
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          patch: {
+            bookings: [],
+            favorites: [],
+            mediations: [],
+            offers: [],
+            recommendations: [],
+            stocks: [],
+          },
+          type: 'ASSIGN_DATA',
+        })
       })
     })
 
-    it('should return undefined when there is no password', () => {
-      // when
-      const popin = mapDispatchToProps(dispatch, props).showPasswordChangedPopin()
+    describe('when mapping resetReadRecommendations', () => {
+      it('should reset recommendations with the right configuration', () => {
+        // when
+        mapDispatchToProps(dispatch, props).resetReadRecommendations()
 
-      // then
-      expect(popin).toBeUndefined()
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          patch: { readRecommendations: [] },
+          type: 'ASSIGN_DATA',
+        })
+      })
+    })
+
+    describe('when mapping saveLoadRecommendationsTimestamp', () => {
+      it('should save recommendations loaded timestamp with the right configuration', () => {
+        // when
+        mapDispatchToProps(dispatch, props).saveLoadRecommendationsTimestamp()
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          type: 'SAVE_RECOMMENDATIONS_REQUEST_TIMESTAMP',
+        })
+      })
+    })
+
+    describe('when mapping showPasswordChangedPopin', () => {
+      it('should return undefined when there is no password', () => {
+        // when
+        const popin = mapDispatchToProps(dispatch, props).showPasswordChangedPopin()
+
+        // then
+        expect(popin).toBeUndefined()
+      })
     })
   })
 })

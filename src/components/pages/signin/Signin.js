@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Form } from 'react-final-form'
-import { requestData } from 'redux-saga-data'
 
 import FormInputs from './FormInputs'
 import FormHeader from './FormHeader'
+import canSubmitForm from './canSubmitForm'
 
 import { FormFooter } from '../../forms'
 import { parseSubmitErrors } from '../../forms/utils'
@@ -18,12 +18,12 @@ const submitButtonOptions = {
 class Signin extends React.PureComponent {
   constructor(props) {
     super(props)
-    this.state = { isloading: false }
+    this.state = { isLoading: false }
   }
 
   handleRequestFail = formResolver => (state, action) => {
     // on retourne les erreurs API au formulaire
-    const nextstate = { isloading: false }
+    const nextstate = { isLoading: false }
     const {
       payload: { errors },
     } = action
@@ -34,7 +34,7 @@ class Signin extends React.PureComponent {
 
   handleRequestSuccess = formResolver => () => {
     const { history, query } = this.props
-    const nextstate = { isloading: false }
+    const nextstate = { isLoading: false }
     const queryParams = query.parse()
     this.setState(nextstate, () => {
       formResolver()
@@ -44,42 +44,22 @@ class Signin extends React.PureComponent {
   }
 
   handleOnFormSubmit = formValues => {
-    const routeMethod = 'POST'
-    const routePath = '/users/signin'
-    const { dispatch } = this.props
-    this.setState({ isloading: true })
-    // NOTE: on retourne une promise au formulaire
-    // pour pouvoir gérer les erreurs de l'API
-    // directement dans les champs du formulaire
-    const formSubmitPromise = new Promise(resolve => {
-      const config = {
-        apiPath: routePath,
-        body: { ...formValues },
-        handleFail: this.handleRequestFail(resolve),
-        handleSuccess: this.handleRequestSuccess(resolve),
-        method: routeMethod,
-      }
-      dispatch(requestData(config))
-    })
-    return formSubmitPromise
+    const { submitSigninForm } = this.props
+
+    this.setState({ isLoading: true })
+
+    return submitSigninForm(formValues, this.handleRequestFail, this.handleRequestSuccess)
   }
 
-  renderForm = ({
-    dirtySinceLastSubmit,
-    handleSubmit,
-    hasSubmitErrors,
-    hasValidationErrors,
-    pristine,
-  }) => {
-    const { isloading } = this.state
-    const canSubmit =
-      (!pristine && !hasSubmitErrors && !hasValidationErrors && !isloading) ||
-      (!hasValidationErrors && hasSubmitErrors && dirtySinceLastSubmit)
+  renderForm = formProps => {
+    const { isLoading } = this.state
+    const canSubmit = !isLoading && canSubmitForm(formProps)
+    const { handleSubmit } = formProps
     return (
       <form
         autoComplete="off"
         className="pc-final-form flex-rows is-full-layout"
-        disabled={isloading}
+        disabled={isLoading}
         noValidate
         onSubmit={handleSubmit}
       >
@@ -111,9 +91,9 @@ class Signin extends React.PureComponent {
 }
 
 Signin.propTypes = {
-  dispatch: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
+  submitSigninForm: PropTypes.func.isRequired,
 }
 
 export default Signin

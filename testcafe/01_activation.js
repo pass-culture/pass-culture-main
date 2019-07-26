@@ -12,9 +12,9 @@ const submitButton = Selector("button[type='submit']")
 
 const baseURL = `${ROOT_PATH}activation`
 
-fixture(`01_01 Activation | succès de l'activation`)
+fixture(`Activation d'un compte utilisateur·trice`)
 
-test.skip('Je suis redirigé·e vers le typeform', async t => {
+test('Lorsque je clique sur le lien reçu par mail et que je saisis mon premier mot de passe, je suis redirigé vers le TypeForm', async t => {
   // given
   const { user } = await fetchSandbox(
     'webapp_01_activation',
@@ -23,15 +23,15 @@ test.skip('Je suis redirigé·e vers le typeform', async t => {
   const { email, password, resetPasswordToken } = user
   const url = `${baseURL}/${resetPasswordToken}?email=${email}`
 
+  // when
   await t
     .navigateTo(url)
-    .expect(activationEmailSpan.innerText)
-    .eql(email)
+    .expect(activationEmailSpan.innerText).eql(email)
     .typeText(newPasswordInput, password)
     .typeText(newPasswordConfirm, password)
     .click(cguInput)
     .click(submitButton)
-    .wait(10000)
-    .expect(getPageUrl())
-    .eql(`${ROOT_PATH}typeform`)
+
+  // then
+  await t.expect(getPageUrl()).eql(`${ROOT_PATH}typeform`)
 })

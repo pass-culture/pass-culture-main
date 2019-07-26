@@ -29,6 +29,7 @@ const FormInputs = () => (
     />
     <Link
       className="is-white-text is-underline fs16"
+      id="lost-password-link"
       to="/mot-de-passe-perdu"
     >
       <span>{'Mot de passe oublié ?'}</span>

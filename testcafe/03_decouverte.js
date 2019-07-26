@@ -12,7 +12,7 @@ const closeVersoLink = Selector('#deck .close-link')
 
 let userRole
 
-fixture('O3_03 Découverte | exploration | Recommendations').beforeEach(async t => {
+fixture('Sur la page découverte,').beforeEach(async t => {
   if (!userRole) {
     userRole = await createUserRoleFromUserSandbox(
       'webapp_03_decouverte',
@@ -22,7 +22,7 @@ fixture('O3_03 Découverte | exploration | Recommendations').beforeEach(async t 
   await t.useRole(userRole)
 })
 
-test('Je peux passer de carte en carte en glissant les cartes vers les cotés', async t => {
+test('Je peux parcourir les offres de gauche à droite et de droite à gauche', async t => {
   await t.navigateTo(`${ROOT_PATH}decouverte`)
   await t.expect(nextButton.visible).ok()
 

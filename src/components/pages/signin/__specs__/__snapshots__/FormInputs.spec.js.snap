@@ -49,6 +49,7 @@ ShallowWrapper {
         />,
         <Link
           className="is-white-text is-underline fs16"
+          id="lost-password-link"
           replace={false}
           to="/mot-de-passe-perdu"
         >
@@ -121,6 +122,7 @@ ShallowWrapper {
             Mot de passe oublié ?
           </span>,
           "className": "is-white-text is-underline fs16",
+          "id": "lost-password-link",
           "replace": false,
           "to": "/mot-de-passe-perdu",
         },
@@ -178,6 +180,7 @@ ShallowWrapper {
           />,
           <Link
             className="is-white-text is-underline fs16"
+            id="lost-password-link"
             replace={false}
             to="/mot-de-passe-perdu"
           >
@@ -250,6 +253,7 @@ ShallowWrapper {
               Mot de passe oublié ?
             </span>,
             "className": "is-white-text is-underline fs16",
+            "id": "lost-password-link",
             "replace": false,
             "to": "/mot-de-passe-perdu",
           },

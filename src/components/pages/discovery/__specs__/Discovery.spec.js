@@ -8,10 +8,6 @@ describe('src | components | pages | discovery | Discovery', () => {
 
   beforeEach(() => {
     props = {
-      backLink: true,
-      dispatch: jest.fn(),
-      fromPassword: true,
-      history: {},
       loadRecommendations: jest.fn(),
       location: {
         pathname: '',
@@ -21,6 +17,7 @@ describe('src | components | pages | discovery | Discovery', () => {
         params: {},
       },
       onRequestFailRedirectToHome: jest.fn(),
+      readRecommendations: [],
       recommendations: [],
       redirectToFirstRecommendationIfNeeded: jest.fn(),
       resetPageData: jest.fn(),

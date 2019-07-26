@@ -4,11 +4,7 @@ exports[`src | components | pages | discovery | Discovery should match the snaps
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Discovery
-    backLink={true}
     currentRecommendation={null}
-    dispatch={[MockFunction]}
-    fromPassword={true}
-    history={Object {}}
     loadRecommendations={[MockFunction]}
     location={
       Object {
@@ -22,7 +18,7 @@ ShallowWrapper {
       }
     }
     onRequestFailRedirectToHome={[MockFunction]}
-    readRecommendations={null}
+    readRecommendations={Array []}
     recommendations={Array []}
     redirectToFirstRecommendationIfNeeded={
       [MockFunction] {

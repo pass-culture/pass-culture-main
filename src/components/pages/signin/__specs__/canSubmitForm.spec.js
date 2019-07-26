@@ -1,6 +1,6 @@
 import canSubmitForm from '../canSubmitForm'
 
-describe('src | components | pages | activation | canSubmitForm', () => {
+describe('src | components | pages | signin | canSubmitForm', () => {
   describe('when missing arguments', () => {
     it('should throw when missing arguments', () => {
       expect(() => {
