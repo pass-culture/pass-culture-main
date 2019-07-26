@@ -73,7 +73,7 @@ def find_offerer_bookings_paginated(offerer_id, search=None, order_by=None, page
     return bookings
 
 
-def find_all_offerer_bookings_by_venue_id(offerer_id, venue_id=None, offer_id=None, date_from=None, date_to=None) -> List[Booking]:
+def find_all_offerer_bookings(offerer_id, venue_id=None, offer_id=None, date_from=None, date_to=None) -> List[Booking]:
     query = filter_bookings_by_offerer_id(offerer_id)
 
     if venue_id:
@@ -82,16 +82,16 @@ def find_all_offerer_bookings_by_venue_id(offerer_id, venue_id=None, offer_id=No
     if offer_id:
         query = query.filter(Offer.id == offer_id)
 
-    offer = Offer.query.filter(Offer.id == offer_id).first()
+        offer = Offer.query.filter(Offer.id == offer_id).first()
 
-    if (offer and offer.isEvent and date_from):
-        query=query.filter(Stock.beginningDatetime == date_from)
+        if (offer and offer.isEvent and date_from):
+            query = query.filter(Stock.beginningDatetime == date_from)
 
-    if (offer and offer.isThing):
-        if date_from:
-            query=query.filter(Booking.dateCreated >= date_from)
-        if date_to:
-            query=query.filter(Booking.dateCreated <= date_to)
+        if (offer and offer.isThing):
+            if date_from:
+                query = query.filter(Booking.dateCreated >= date_from)
+            if date_to:
+                query = query.filter(Booking.dateCreated <= date_to)
 
     bookings = query.all()
 

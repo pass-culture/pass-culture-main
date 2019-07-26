@@ -18,7 +18,7 @@ from models.pc_object import serialize
 from repository import booking_queries
 from repository.booking_queries import find_active_bookings_by_user_id, \
     find_all_bookings_for_stock_and_user, \
-    find_all_offerer_bookings_by_venue_id, find_all_digital_bookings_for_offerer
+    find_all_offerer_bookings, find_all_digital_bookings_for_offerer
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.human_ids import dehumanize, humanize
 from utils.includes import BOOKING_INCLUDES
@@ -52,6 +52,16 @@ def get_bookings_csv():
     try:
         venue_id = dehumanize(request.args.get('venueId', None))
         offer_id = dehumanize(request.args.get('offerId', None))
+    except ValueError:
+        errors = ApiErrors()
+        errors.add_error(
+            'global',
+            'Les identifiants sont incorrects'
+        )
+        errors.status_code = 400
+        raise errors
+
+    try:
         if request.args.get('dateFrom', None):
             date_from = dateutil.parser.parse(request.args.get('dateFrom'))
         else:
@@ -64,11 +74,10 @@ def get_bookings_csv():
         errors = ApiErrors()
         errors.add_error(
             'global',
-            'Les identifiants sont incorrects'
+            'Les dates sont incorrectes'
         )
         errors.status_code = 400
         raise errors
-
     check_rights_to_get_bookings_csv(current_user, venue_id, offer_id)
 
     query = filter_query_where_user_is_user_offerer_and_is_validated(Offerer.query,
@@ -77,7 +86,7 @@ def get_bookings_csv():
         bookings = chain(*list(map(lambda offerer: find_all_digital_bookings_for_offerer(offerer.id, offer_id, date_from, date_to),
                                    query)))
     else:
-        bookings = chain(*list(map(lambda offerer: find_all_offerer_bookings_by_venue_id(offerer.id, venue_id, offer_id, date_from, date_to),
+        bookings = chain(*list(map(lambda offerer: find_all_offerer_bookings(offerer.id, venue_id, offer_id, date_from, date_to),
                                    query)))
 
     bookings_csv = generate_bookings_details_csv(bookings)
