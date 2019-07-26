@@ -43,14 +43,6 @@ export const navigateToOffererAs = (user, offerer) => async t => {
     .click(offererAnchor)
 }
 
-export const navigateToNewVenueAs = (user, offerer, userRole) => async t => {
-  await navigateToOfferersAs(user, userRole)(t)
-
-  const newVenueAnchor = Selector('a.button.is-secondary').withText('+ Ajouter un lieu')
-  const offererAnchor = Selector("a[href^='/structures/']").withText(offerer.name)
-  await t.click(offererAnchor).click(newVenueAnchor)
-}
-
 export const navigateAfterVenueSubmit = creationOrModification => async t => {
   const closeAnchor = Selector('button.close').withText('OK')
   const notificationError = Selector('.notification.is-danger')

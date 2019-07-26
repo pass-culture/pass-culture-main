@@ -14,6 +14,7 @@ const longitudeInput = Selector('input[name="longitude"]')
 const nameInput = Selector('input[name="name"]')
 const postalCodeInput = Selector('input[name="postalCode"]')
 const siretInput = Selector('input[name="siret"]')
+const newVenueButton = Selector('a.button.is-secondary').withText('+ Ajouter un lieu')
 
 fixture("En étant sur la page de création d'un lieu")
 
@@ -40,7 +41,8 @@ test('Je peux créer un lieu avec un SIRET valide', async t => {
   await t
     .addRequestHooks(getSiretRequestMockAs(venue))
     .useRole(createUserRole(user))
-    .navigateTo('/structures/' + offererId + '/lieux/creation')
+    .navigateTo('/structures/' + offererId)
+    .click(newVenueButton)
 
   // when
   await t.typeText(siretInput, siret)
@@ -76,7 +78,10 @@ test('Je peux créer un lieu sans SIRET', async t => {
   const longitude = '2.282002'
   const name = 'Le lieu sympa de type sans siret'
   const postalCode = '75016'
-  await t.useRole(createUserRole(user)).navigateTo('/structures/' + offererId + '/lieux/creation')
+  await t
+    .useRole(createUserRole(user))
+    .navigateTo('/structures/' + offererId)
+    .click(newVenueButton)
 
   // when
   await t
