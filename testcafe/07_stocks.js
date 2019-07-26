@@ -20,6 +20,8 @@ test('Je peux créer un stock pour un événement', async t => {
     'pro_08_stocks',
     'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_no_stock'
   )
+  const bookingLimitDatetime = Selector('#bookingLimitDatetime')
+  const datePickerLastDay = Selector('.react-datepicker__day--today')
   await navigateToOfferAs(user, offer, createUserRole(user))(t)
   await t.click(manageStockAnchor).click(addStockButton)
   let location = await t.eval(() => window.location)
@@ -29,6 +31,8 @@ test('Je peux créer un stock pour un événement', async t => {
   await t
     .expect(queryParams.stock)
     .eql('creation')
+    .click(bookingLimitDatetime)
+    .click(datePickerLastDay)
     .click(submitButton)
 
   // then

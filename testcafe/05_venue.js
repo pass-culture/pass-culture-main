@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe'
 
 import { fetchSandbox } from './helpers/sandboxes'
-import { navigateAfterVenueSubmit, navigateToNewVenueAs } from './helpers/navigations'
+import { navigateAfterVenueSubmit } from './helpers/navigations'
 import { getSiretRequestMockAs } from './helpers/sirenes'
 import { createUserRole } from './helpers/roles'
 
@@ -23,7 +23,7 @@ test('Je peux créer un lieu avec un SIRET valide', async t => {
     'pro_05_venue',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue'
   )
-  const { address, city, name, postalCode, siren } = offerer
+  const { address, city, id: offererId, name, postalCode, siren } = offerer
   const latitude = '48.862923'
   const longitude = '2.287896'
   const venueName = `${name} - Lieu`
@@ -37,8 +37,10 @@ test('Je peux créer un lieu avec un SIRET valide', async t => {
     postalCode,
     siret,
   }
-  await t.addRequestHooks(getSiretRequestMockAs(venue))
-  await navigateToNewVenueAs(user, offerer, createUserRole(user))(t)
+  await t
+    .addRequestHooks(getSiretRequestMockAs(venue))
+    .useRole(createUserRole(user))
+    .navigateTo('/structures/' + offererId + '/lieux/creation')
 
   // when
   await t.typeText(siretInput, siret)
@@ -66,6 +68,7 @@ test('Je peux créer un lieu sans SIRET', async t => {
     'pro_05_venue',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue'
   )
+  const { id: offererId } = offerer
   const address = '1 place du trocadéro Paris'
   const city = 'Paris 16e Arrondissement'
   const comment = 'Test sans SIRET'
@@ -73,7 +76,7 @@ test('Je peux créer un lieu sans SIRET', async t => {
   const longitude = '2.282002'
   const name = 'Le lieu sympa de type sans siret'
   const postalCode = '75016'
-  await navigateToNewVenueAs(user, offerer, createUserRole(user))(t)
+  await t.useRole(createUserRole(user)).navigateTo('/structures/' + offererId + '/lieux/creation')
 
   // when
   await t

@@ -14,22 +14,6 @@ export const navigateToOfferersAs = (user, userRole) => async t => {
   await t.click(navbarAnchor).click(offerersNavbarAnchor)
 }
 
-export const navigateToReimbursementsAs = user => async t => {
-  const navbarAnchor = Selector('a.navbar-link, span.navbar-burger').filterVisible()
-  const reimbursementsNavbarAnchor = Selector("a.navbar-item[href='/remboursements']")
-
-  await t.useRole(createUserRole(user))
-  await t.click(navbarAnchor).click(reimbursementsNavbarAnchor)
-}
-
-export const navigateToBookingsAs = user => async t => {
-  const navbarAnchor = Selector('a.navbar-link, span.navbar-burger').filterVisible()
-  const bookingsNavbarAnchor = Selector("a.navbar-item[href='/reservations']")
-
-  await t.useRole(createUserRole(user))
-  await t.click(navbarAnchor).click(bookingsNavbarAnchor)
-}
-
 export const navigateToOffersAs = user => async t => {
   const navbarAnchor = Selector('a.navbar-link, span.navbar-burger').filterVisible()
   const offersNavbarAnchor = Selector("a.navbar-item[href='/offres']")
@@ -60,21 +44,11 @@ export const navigateToOffererAs = (user, offerer) => async t => {
 }
 
 export const navigateToNewVenueAs = (user, offerer, userRole) => async t => {
+  await navigateToOfferersAs(user, userRole)(t)
+
   const newVenueAnchor = Selector('a.button.is-secondary').withText('+ Ajouter un lieu')
   const offererAnchor = Selector("a[href^='/structures/']").withText(offerer.name)
-
-  await navigateToOfferersAs(user, userRole)(t)
-
   await t.click(offererAnchor).click(newVenueAnchor)
-}
-
-export const navigateToVenueAs = (user, offerer, venue, userRole) => async t => {
-  const offererAnchor = Selector("a[href^='/structures/']").withText(offerer.name)
-  const venueAnchor = Selector("a[href^='/structures/']").withText(venue.name)
-
-  await navigateToOfferersAs(user, userRole)(t)
-
-  await t.click(offererAnchor).click(venueAnchor)
 }
 
 export const navigateAfterVenueSubmit = creationOrModification => async t => {
