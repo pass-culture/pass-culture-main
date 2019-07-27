@@ -19,7 +19,8 @@ from repository.booking_queries import find_active_bookings_by_user_id, \
     find_all_offerer_bookings, find_all_digital_bookings_for_offerer
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.human_ids import dehumanize, humanize
-from utils.includes import BOOKING_INCLUDES, BOOKING_WITH_USER_INCLUDES
+from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, \
+                           WEBAPP_PATCH_POST_BOOKING_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data
@@ -99,7 +100,7 @@ def get_bookings_csv():
 @login_required
 def get_bookings():
     bookings = Booking.query.filter_by(userId=current_user.id).all()
-    return jsonify([booking.as_dict(include=BOOKING_INCLUDES)
+    return jsonify([booking.as_dict(include=WEBAPP_GET_BOOKING_INCLUDES)
                     for booking in bookings]), 200
 
 
@@ -107,7 +108,7 @@ def get_bookings():
 @login_required
 def get_booking(booking_id):
     booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
-    return jsonify(booking.as_dict(include=BOOKING_INCLUDES)), 200
+    return jsonify(booking.as_dict(include=WEBAPP_GET_BOOKING_INCLUDES)), 200
 
 
 @app.route('/bookings', methods=['POST'])
@@ -160,7 +161,11 @@ def create_booking():
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
-    return jsonify(new_booking.as_dict(include=BOOKING_WITH_USER_INCLUDES)), 201
+    new_booking_dict = new_booking.as_dict(
+        include=WEBAPP_PATCH_POST_BOOKING_INCLUDES
+    )
+
+    return jsonify(new_booking_dict), 201
 
 
 @app.route('/bookings/<booking_id>', methods=['PATCH'])
@@ -195,7 +200,11 @@ def patch_booking(booking_id):
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
-    return jsonify(booking.as_dict(include=BOOKING_WITH_USER_INCLUDES)), 200
+    booking_dict = booking.as_dict(
+        include=WEBAPP_PATCH_POST_BOOKING_INCLUDES
+    )
+
+    return jsonify(booking_dict), 200
 
 
 @app.route('/bookings/token/<token>', methods=["GET"])

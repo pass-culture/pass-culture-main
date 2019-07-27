@@ -14,7 +14,7 @@ from repository.booking_queries import find_bookings_from_recommendation
 from repository.recommendation_queries import update_read_recommendations
 from utils.config import BLOB_SIZE
 from utils.human_ids import dehumanize
-from utils.includes import BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
+from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
 from utils.logger import logger
 from utils.rest import expect_json_data
 
@@ -147,4 +147,4 @@ def _serialize_bookings(bookings):
 
 
 def _serialize_booking(booking):
-    return booking.as_dict(include=BOOKING_INCLUDES)
+    return booking.as_dict(include=WEBAPP_GET_BOOKING_INCLUDES)
