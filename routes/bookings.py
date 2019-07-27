@@ -1,5 +1,3 @@
-""" bookings routes """
-
 from itertools import chain
 
 import dateutil
@@ -21,7 +19,7 @@ from repository.booking_queries import find_active_bookings_by_user_id, \
     find_all_offerer_bookings, find_all_digital_bookings_for_offerer
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from utils.human_ids import dehumanize, humanize
-from utils.includes import BOOKING_INCLUDES
+from utils.includes import BOOKING_INCLUDES, BOOKING_WITH_USER_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data
@@ -162,7 +160,7 @@ def create_booking():
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
-    return jsonify(new_booking.as_dict(include=BOOKING_INCLUDES)), 201
+    return jsonify(new_booking.as_dict(include=BOOKING_WITH_USER_INCLUDES)), 201
 
 
 @app.route('/bookings/<booking_id>', methods=['PATCH'])
@@ -197,7 +195,7 @@ def patch_booking(booking_id):
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
-    return jsonify(booking.as_dict(include=BOOKING_INCLUDES)), 200
+    return jsonify(booking.as_dict(include=BOOKING_WITH_USER_INCLUDES)), 200
 
 
 @app.route('/bookings/token/<token>', methods=["GET"])

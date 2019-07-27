@@ -14,6 +14,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
+from domain.expenses import get_expenses
 from models.versioned_mixin import VersionedMixin
 from models.db import Model, db
 from models.needs_validation_mixin import NeedsValidationMixin
@@ -143,6 +144,10 @@ class User(PcObject,
         self.password = bcrypt.hashpw(newpass.encode('utf-8'), bcrypt.gensalt())
         self.resetPasswordToken = None
         self.resetPasswordTokenValidityLimit = None
+
+    @property
+    def expenses(self):
+        return get_expenses(self.userBookings)
 
     @property
     def real_wallet_balance(self):
