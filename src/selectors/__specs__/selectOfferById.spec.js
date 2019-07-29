@@ -2066,7 +2066,7 @@ describe('selectOfferById', () => {
     expect(offer.id).toStrictEqual(offerId)
   })
 
-  it('should return no offer when there is no offer related to the offer id given', () => {
+  it('should return no offer when there is no offer related to the given offer id', () => {
     // given
     const state = mockState
     const offerId = 'M4'

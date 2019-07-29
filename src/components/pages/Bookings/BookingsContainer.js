@@ -6,33 +6,33 @@ import { withRequiredLogin } from '../../hocs'
 import { API_URL } from '../../../utils/config'
 
 const buildPathToBookingFile = (
-  isFilterByDigitalVenues,
-  selectedOffer,
-  selectOffersFrom,
-  selectOffersTo,
-  selectedVenue
+  bookingsFrom,
+  bookingsTo,
+  isFilteredByDigitalVenues,
+  offerId,
+  venueId
 ) => {
   let pathToFile = `${API_URL}/bookings/csv`
   let filtersToApply = []
 
-  if (isFilterByDigitalVenues) {
+  if (isFilteredByDigitalVenues) {
     filtersToApply.push('onlyDigitalVenues=true')
   }
 
-  if (selectedVenue && selectedVenue !== 'all') {
-    filtersToApply.push(`venueId=${selectedVenue}`)
+  if (venueId && venueId !== 'all') {
+    filtersToApply.push(`venueId=${venueId}`)
   }
 
-  if (selectedOffer && selectedOffer !== 'all') {
-    filtersToApply.push(`offerId=${selectedOffer}`)
+  if (offerId && offerId !== 'all') {
+    filtersToApply.push(`offerId=${offerId}`)
   }
 
-  if (selectOffersFrom) {
-    filtersToApply.push(`dateFrom=${selectOffersFrom}`)
+  if (bookingsFrom) {
+    filtersToApply.push(`dateFrom=${bookingsFrom}`)
   }
 
-  if (selectOffersTo) {
-    filtersToApply.push(`dateTo=${selectOffersTo}`)
+  if (bookingsTo) {
+    filtersToApply.push(`dateTo=${bookingsTo}`)
   }
 
   if (filtersToApply.length > 0) {
@@ -44,28 +44,23 @@ const buildPathToBookingFile = (
 
 export const mapStateToProps = state => {
   const { bookingSummary = {} } = state
-  const {
-    isFilterByDigitalVenues,
-    selectedOffer,
-    selectOffersFrom,
-    selectOffersTo,
-    selectedVenue,
-  } = bookingSummary
+  const { bookingsFrom, bookingsTo, isFilteredByDigitalVenues, offerId, venueId } = bookingSummary
 
   const pathToCsvFile = buildPathToBookingFile(
-    isFilterByDigitalVenues,
-    selectedOffer,
-    selectOffersFrom,
-    selectOffersTo,
-    selectedVenue
+    bookingsFrom,
+    bookingsTo,
+    isFilteredByDigitalVenues,
+    offerId,
+    venueId
   )
 
   const showButtons =
-    !!(isFilterByDigitalVenues && selectedOffer) ||
-    !!(selectedVenue && selectedOffer) ||
-    selectedVenue === 'all'
+    !!(isFilteredByDigitalVenues && offerId && bookingsFrom && bookingsTo) ||
+    !!(venueId && offerId && bookingsFrom && bookingsTo) ||
+    venueId === 'all' ||
+    offerId === 'all'
 
-  const showOfferSection = selectedVenue !== 'all' && (!!selectedVenue || !!isFilterByDigitalVenues)
+  const showOfferSection = venueId !== 'all' && (!!venueId || !!isFilteredByDigitalVenues)
 
   return {
     pathToCsvFile,

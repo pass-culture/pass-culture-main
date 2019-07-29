@@ -2,12 +2,13 @@ import { mapStateToProps, mapDispatchToProps } from '../FilterByOfferContainer'
 
 describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
   describe('mapStateToProps', () => {
-    it('should return an object of props that keep the state information : filter by offer', () => {
+    it('should return an object of props', () => {
       // given
       const state = {
         bookingSummary: {
-          isFilterByDigitalVenues: false,
-          selectedVenue: 'CY',
+          isFilteredByDigitalVenues: false,
+          offerId: '',
+          venueId: 'CY',
         },
         data: {
           offers: [],
@@ -19,26 +20,31 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
       const props = mapStateToProps(state)
 
       // then
-      expect(props).toMatchObject({
-        isFilterByDigitalVenues: false,
+      expect(props).toStrictEqual({
+        isFilteredByDigitalVenues: false,
         offersOptions: [
           {
             id: 'all',
             name: 'Toutes les offres',
           },
         ],
-        selectedVenue: 'CY',
+        offerId: '',
+        venueId: 'CY',
+        showDateSection: false,
       })
     })
 
     describe('showDateSection', () => {
-      it('should be hidden by default', () => {
+      it('should be false by default', () => {
         // given
         const state = {
           bookingSummary: {
-            isFilterByDigitalVenues: false,
-            selectedOffer: '',
-            selectedVenue: '',
+            isFilteredByDigitalVenues: false,
+            offerId: '',
+            venueId: '',
+          },
+          data: {
+            offers: [],
           },
         }
 
@@ -49,13 +55,16 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
         expect(props).toHaveProperty('showDateSection', false)
       })
 
-      it('should be displayed when a specific offer is selected', () => {
+      it('should be true when a specific offer is selected', () => {
         // given
         const state = {
           bookingSummary: {
-            isFilterByDigitalVenues: false,
-            selectedOffer: 'CY',
-            selectedVenue: '',
+            isFilteredByDigitalVenues: false,
+            offerId: 'CY',
+            venueId: '',
+          },
+          data: {
+            offers: [],
           },
         }
 
@@ -66,13 +75,36 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
         expect(props).toHaveProperty('showDateSection', true)
       })
 
-      it('should be hidden when `all offers is selected', () => {
+      it('should be false when offerId is `all`', () => {
         // given
         const state = {
           bookingSummary: {
-            isFilterByDigitalVenues: false,
-            selectedOffer: 'all',
-            selectedVenue: '',
+            isFilteredByDigitalVenues: false,
+            offerId: 'all',
+            venueId: '',
+          },
+          data: {
+            offers: [],
+          },
+        }
+
+        // when
+        const props = mapStateToProps(state)
+
+        // then
+        expect(props).toHaveProperty('showDateSection', false)
+      })
+
+      it('should be false when offerId is null', () => {
+        // given
+        const state = {
+          bookingSummary: {
+            isFilteredByDigitalVenues: false,
+            offerId: null,
+            venueId: '',
+          },
+          data: {
+            offers: [],
           },
         }
 
@@ -85,12 +117,13 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
     })
 
     describe('offerOptions', () => {
-      it('should return only digital offer when is filtered by digital venues', () => {
+      it('should return an array of digital offers when isFilteredByDigitalVenues is true', () => {
         // given
         const state = {
           bookingSummary: {
-            isFilterByDigitalVenues: true,
-            selectedVenue: '',
+            isFilteredByDigitalVenues: true,
+            offerId: '',
+            venueId: '',
           },
           data: {
             offers: [
@@ -113,7 +146,8 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
         const props = mapStateToProps(state)
 
         // then
-        expect(props).toMatchObject({
+        expect(props).toStrictEqual({
+          isFilteredByDigitalVenues: true,
           offersOptions: [
             {
               id: 'all',
@@ -125,15 +159,19 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
               isDigital: true,
             },
           ],
+          offerId: '',
+          venueId: '',
+          showDateSection: false,
         })
       })
 
-      it('should return only non digital offer when `all venues`are selected', () => {
+      it('should return an empty array when venueId is `all`', () => {
         // given
         const state = {
           bookingSummary: {
-            isFilterByDigitalVenues: false,
-            selectedVenue: 'all',
+            isFilteredByDigitalVenues: false,
+            offerId: '',
+            venueId: 'all',
           },
           data: {
             offers: [
@@ -161,32 +199,22 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
         const props = mapStateToProps(state)
 
         // then
-        expect(props).toMatchObject({
-          offersOptions: [
-            {
-              id: 'all',
-              name: 'Toutes les offres',
-            },
-            {
-              id: 'DA',
-              name: 'livre en librairie',
-              isDigital: false,
-            },
-            {
-              id: 'BA',
-              name: 'place de cinéma',
-              isDigital: false,
-            },
-          ],
+        expect(props).toStrictEqual({
+          isFilteredByDigitalVenues: false,
+          offersOptions: [],
+          offerId: '',
+          venueId: 'all',
+          showDateSection: false,
         })
       })
 
-      it('should return proper offers when is filtered by a specific venue', () => {
+      it('should return an array of physical offers related to the given venueId ', () => {
         // given
         const state = {
           bookingSummary: {
-            isFilterByDigitalVenues: false,
-            selectedVenue: 'AB',
+            isFilteredByDigitalVenues: false,
+            offerId: '',
+            venueId: 'AB',
           },
           data: {
             offers: [
@@ -209,7 +237,8 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
         const props = mapStateToProps(state)
 
         // then
-        expect(props).toMatchObject({
+        expect(props).toStrictEqual({
+          isFilteredByDigitalVenues: false,
           offersOptions: [
             {
               id: 'all',
@@ -221,6 +250,9 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
               venueId: 'AB',
             },
           ],
+          offerId: '',
+          venueId: 'AB',
+          showDateSection: false,
         })
       })
     })
@@ -233,25 +265,37 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
       dispatch = jest.fn()
     })
 
-    it('ebnable to load offers', () => {
-      //when
-      mapDispatchToProps(dispatch).loadOffers()
+    describe('loadOffers', () => {
+      it('should load offers using API', () => {
+        // given
+        const functions = mapDispatchToProps(dispatch)
+        const { loadOffers } = functions
 
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        config: { apiPath: '/offers', method: 'GET', stateKey: 'offers' },
-        type: 'REQUEST_DATA_GET_OFFERS',
+        //when
+        loadOffers()
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          config: { apiPath: '/offers', method: 'GET', stateKey: 'offers' },
+          type: 'REQUEST_DATA_GET_OFFERS',
+        })
       })
     })
 
-    it('preserve selected offer', () => {
-      // when
-      mapDispatchToProps(dispatch).selectBookingsForOffers({ target: { value: 'AVJA' } })
+    describe('updateOfferId', () => {
+      it('should update offerId from store', () => {
+        // given
+        const functions = mapDispatchToProps(dispatch)
+        const { updateOfferId } = functions
 
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        payload: 'AVJA',
-        type: 'BOOKING_SUMMARY_SELECT_OFFER',
+        // when
+        updateOfferId({ target: { value: 'AVJA' } })
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          payload: 'AVJA',
+          type: 'BOOKING_SUMMARY_UPDATE_OFFER_ID',
+        })
       })
     })
   })

@@ -1,10 +1,7 @@
 #filter-thing-by-date {
-  div {
-    font-size: 16px;
-    margin-bottom: rem(6px);
-  }
-
   .pc-selectbox {
+    @extend .pl24, .py5;
+
     border-radius: 18px;
     width: 139px;
     height: 36px;
@@ -13,6 +10,7 @@
     font-size: 16px;
     margin-right: rem(12px);
     margin-bottom: rem(54px);
+    margin-top: rem(6px);
     -webkit-appearance: none;
     -moz-appearance: none;
   }
@@ -24,6 +22,8 @@
   }
 
   .pc-selectbox {
+    @extend .pl24, .py5;
+
     display: block;
     border-radius: 18px;
     width: 259px;

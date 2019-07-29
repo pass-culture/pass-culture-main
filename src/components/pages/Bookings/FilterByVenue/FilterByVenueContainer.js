@@ -16,16 +16,16 @@ export const mapDispatchToProps = dispatch => ({
       })
     )
   },
-  selectOnlyDigitalVenues: payload => {
+  updateIsFilteredByDigitalVenues: payload => {
     dispatch({
       payload,
-      type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE',
+      type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUES',
     })
   },
-  selectBookingsForVenues: event => {
+  updateVenueId: event => {
     dispatch({
       payload: event.target.value,
-      type: 'BOOKING_SUMMARY_SELECT_VENUE',
+      type: 'BOOKING_SUMMARY_UPDATE_VENUE_ID',
     })
   },
 })
@@ -34,6 +34,7 @@ export const mapStateToProps = state => {
   const { data = {} } = state
   const { venues } = data
   const { bookingSummary = {} } = state
+  const { isFilteredByDigitalVenues, venueId } = bookingSummary
 
   const allVenuesOption = {
     name: 'Tous les lieux',
@@ -44,8 +45,8 @@ export const mapStateToProps = state => {
   const venuesOptions = [allVenuesOption, ...nonVirtualVenues]
 
   return {
-    isDigital: state.bookingSummary.isFilterByDigitalVenues,
-    venueId: bookingSummary.selectedVenue,
+    isDigital: isFilteredByDigitalVenues,
+    venueId,
     venuesOptions,
   }
 }

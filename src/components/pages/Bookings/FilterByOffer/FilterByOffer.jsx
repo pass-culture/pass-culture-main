@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import FilterByDateContainer from '../FilterByDate/FilterByDateContainer'
 
-export class FilterByOffer extends PureComponent {
+class FilterByOffer extends PureComponent {
   componentDidMount() {
     const { loadOffers } = this.props
     loadOffers()
@@ -11,36 +11,37 @@ export class FilterByOffer extends PureComponent {
 
   render() {
     const {
-      isFilterByDigitalVenues,
+      isFilteredByDigitalVenues,
       offerId,
       offersOptions,
-      selectBookingsForOffers,
       showDateSection,
+      updateOfferId,
     } = this.props
 
     return (
       <Fragment>
         <div className="section">
           <h2 className="main-list-title">
-            {isFilterByDigitalVenues ? 'Offre numérique' : 'Offre'}
+            {isFilteredByDigitalVenues ? 'Offre numérique' : 'Offre'}
           </h2>
         </div>
         <div id="filter-by-offer">
           <label htmlFor="offers">
             {"Télécharger les réservations pour l'offre "}
-            {isFilterByDigitalVenues ? 'numérique' : ''}
+            {isFilteredByDigitalVenues ? 'numérique ' : ''}
             {':'}
           </label>
           <select
-            className="pc-selectbox pl24 py5 fs19"
+            className="pc-selectbox"
             id="offers"
-            onBlur={selectBookingsForOffers}
-            onChange={selectBookingsForOffers}
+            onBlur={updateOfferId}
+            onChange={updateOfferId}
             value={offerId}
           >
             <option
               disabled
-              label=" "
+              label=" - Choisissez une offre - "
+              selected
             />
             {offersOptions.map(({ name, id }) => (
               <option
@@ -63,10 +64,12 @@ FilterByOffer.defaultProps = {
 }
 
 FilterByOffer.propTypes = {
-  isFilterByDigitalVenues: PropTypes.bool.isRequired,
+  isFilteredByDigitalVenues: PropTypes.bool.isRequired,
   loadOffers: PropTypes.func.isRequired,
   offerId: PropTypes.string,
   offersOptions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  selectBookingsForOffers: PropTypes.func.isRequired,
   showDateSection: PropTypes.bool.isRequired,
+  updateOfferId: PropTypes.func.isRequired,
 }
+
+export default FilterByOffer

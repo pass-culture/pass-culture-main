@@ -1,7 +1,7 @@
 import selectOffersByVenueId from '../selectOffersByVenueId'
 
 describe('src | components | pages | Bookings | selectors | selectOffersByVenueId', () => {
-  it('should return an empty list of offers when state contains no offers', () => {
+  it('should return an empty array when state contains no offers', () => {
     // given
     const venueId = 'CU'
     const state = {
@@ -11,13 +11,13 @@ describe('src | components | pages | Bookings | selectors | selectOffersByVenueI
     }
 
     // when
-    const offersToDisplay = selectOffersByVenueId(state, venueId)
+    const result = selectOffersByVenueId(state, venueId)
 
     // then
-    expect(offersToDisplay).toStrictEqual([])
+    expect(result).toStrictEqual([])
   })
 
-  it('should return only the offers from to a specific venue', () => {
+  it('should return an array of physical offers matching venueId', () => {
     // given
     const venueId = 'CU'
     const state = {
@@ -40,10 +40,10 @@ describe('src | components | pages | Bookings | selectors | selectOffersByVenueI
     }
 
     // when
-    const offersToDisplay = selectOffersByVenueId(state, venueId)
+    const result = selectOffersByVenueId(state, venueId)
 
     // then
-    const offersListExpected = [
+    expect(result).toStrictEqual([
       {
         id: 'A8HQ',
         venueId: 'CU',
@@ -52,23 +52,6 @@ describe('src | components | pages | Bookings | selectors | selectOffersByVenueI
         id: 'A8RQ',
         venueId: 'CU',
       },
-    ]
-
-    expect(offersToDisplay).toStrictEqual(offersListExpected)
-  })
-
-  it('should return an empty list of offers when state is not initialized', () => {
-    // given
-    const venueId = 'CU'
-    const state = {
-      data: {},
-    }
-
-    // when
-    const offersToDisplay = selectOffersByVenueId(state, venueId)
-
-    // then
-    const offersListExpected = []
-    expect(offersToDisplay).toStrictEqual(offersListExpected)
+    ])
   })
 })

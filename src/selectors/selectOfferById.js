@@ -7,7 +7,7 @@ const selectOfferById = createCachedSelector(
   (state, offerId) => offerId,
   (offers, offerId) => {
     if (offers) {
-      return offers.find(o => o.id === offerId)
+      return offers.find(offer => offer.id === offerId)
     }
   }
 )(mapArgsToCacheKey)

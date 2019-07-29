@@ -1,9 +1,13 @@
-const selectOffersByVenueId = (state, venueId) => {
-  let offers = []
-  if (state.data) {
-    offers = state.data.offers || []
-  }
-  return offers.filter(offer => offer.venueId === venueId)
+import createCachedSelector from 're-reselect'
+
+function mapArgsToCacheKey(state, venueId) {
+  return venueId || ''
 }
+
+const selectOffersByVenueId = createCachedSelector(
+  state => state.data.offers || [],
+  (state, venueId) => venueId,
+  (offers, venueId) => offers.filter(offer => offer.venueId === venueId)
+)(mapArgsToCacheKey)
 
 export default selectOffersByVenueId

@@ -1,7 +1,7 @@
 import selectStocksByOfferId from '../selectStocksByOfferId'
 
 describe('src | selectors | selectStocksByOfferId', () => {
-  it('should return an empty list of stock when there is no stock related to the offer selected', () => {
+  it('should return an empty array when there is no stock related to the offer id', () => {
     // given
     const offerId = 'M4'
     const state = {
@@ -12,13 +12,13 @@ describe('src | selectors | selectStocksByOfferId', () => {
     }
 
     // when
-    const stocksToDisplay = selectStocksByOfferId(state, offerId)
+    const result = selectStocksByOfferId(state, offerId)
 
     // then
-    expect(stocksToDisplay).toStrictEqual([])
+    expect(result).toStrictEqual([])
   })
 
-  it('should return only stock related to the offer selected', () => {
+  it('should return an array of stocks related to given offer id', () => {
     // given
     const offerId = 'M4'
     const state = {
@@ -56,7 +56,7 @@ describe('src | selectors | selectStocksByOfferId', () => {
     }
 
     // when
-    const stocksToDisplay = selectStocksByOfferId(state, offerId)
+    const result = selectStocksByOfferId(state, offerId)
 
     // then
     const stockListExpected = [
@@ -72,21 +72,6 @@ describe('src | selectors | selectStocksByOfferId', () => {
       },
     ]
 
-    expect(stocksToDisplay).toStrictEqual(stockListExpected)
-  })
-
-  it('should return an empty list of stock when state is not initialized', () => {
-    // given
-    const offerId = 'M4'
-    const state = {
-      data: {},
-    }
-
-    // when
-    const stocksToDisplay = selectStocksByOfferId(state, offerId)
-
-    // then
-    const stockListExpected = []
-    expect(stocksToDisplay).toStrictEqual(stockListExpected)
+    expect(result).toStrictEqual(stockListExpected)
   })
 })

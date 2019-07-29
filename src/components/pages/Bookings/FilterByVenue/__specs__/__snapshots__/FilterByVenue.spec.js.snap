@@ -18,8 +18,8 @@ ShallowWrapper {
         ],
       }
     }
-    selectBookingsForVenues={[MockFunction]}
-    selectOnlyDigitalVenues={[MockFunction]}
+    updateIsFilteredByDigitalVenues={[MockFunction]}
+    updateVenueId={[MockFunction]}
     venueId=""
     venuesOptions={
       Array [
@@ -59,7 +59,7 @@ ShallowWrapper {
             Sélectionnez un lieu :
           </label>
           <select
-            className="pc-selectbox pl24 py5 fs19"
+            className="pc-selectbox"
             disabled={false}
             id="venues"
             onBlur={[MockFunction]}
@@ -68,7 +68,8 @@ ShallowWrapper {
           >
             <option
               disabled={true}
-              label=" "
+              label=" - Choisissez un lieu - "
+              selected={true}
             />
             <option
               value={1}
@@ -118,7 +119,7 @@ ShallowWrapper {
               Sélectionnez un lieu :
             </label>,
             <select
-              className="pc-selectbox pl24 py5 fs19"
+              className="pc-selectbox"
               disabled={false}
               id="venues"
               onBlur={[MockFunction]}
@@ -127,7 +128,8 @@ ShallowWrapper {
             >
               <option
                 disabled={true}
-                label=" "
+                label=" - Choisissez un lieu - "
+                selected={true}
               />
               <option
                 value={1}
@@ -166,7 +168,8 @@ ShallowWrapper {
               "children": Array [
                 <option
                   disabled={true}
-                  label=" "
+                  label=" - Choisissez un lieu - "
+                  selected={true}
                 />,
                 Array [
                   <option
@@ -181,7 +184,7 @@ ShallowWrapper {
                   </option>,
                 ],
               ],
-              "className": "pc-selectbox pl24 py5 fs19",
+              "className": "pc-selectbox",
               "disabled": false,
               "id": "venues",
               "onBlur": [MockFunction],
@@ -196,7 +199,8 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "disabled": true,
-                  "label": " ",
+                  "label": " - Choisissez un lieu - ",
+                  "selected": true,
                 },
                 "ref": null,
                 "rendered": null,
@@ -319,7 +323,7 @@ ShallowWrapper {
               Sélectionnez un lieu :
             </label>
             <select
-              className="pc-selectbox pl24 py5 fs19"
+              className="pc-selectbox"
               disabled={false}
               id="venues"
               onBlur={[MockFunction]}
@@ -328,7 +332,8 @@ ShallowWrapper {
             >
               <option
                 disabled={true}
-                label=" "
+                label=" - Choisissez un lieu - "
+                selected={true}
               />
               <option
                 value={1}
@@ -378,7 +383,7 @@ ShallowWrapper {
                 Sélectionnez un lieu :
               </label>,
               <select
-                className="pc-selectbox pl24 py5 fs19"
+                className="pc-selectbox"
                 disabled={false}
                 id="venues"
                 onBlur={[MockFunction]}
@@ -387,7 +392,8 @@ ShallowWrapper {
               >
                 <option
                   disabled={true}
-                  label=" "
+                  label=" - Choisissez un lieu - "
+                  selected={true}
                 />
                 <option
                   value={1}
@@ -426,7 +432,8 @@ ShallowWrapper {
                 "children": Array [
                   <option
                     disabled={true}
-                    label=" "
+                    label=" - Choisissez un lieu - "
+                    selected={true}
                   />,
                   Array [
                     <option
@@ -441,7 +448,7 @@ ShallowWrapper {
                     </option>,
                   ],
                 ],
-                "className": "pc-selectbox pl24 py5 fs19",
+                "className": "pc-selectbox",
                 "disabled": false,
                 "id": "venues",
                 "onBlur": [MockFunction],
@@ -456,7 +463,8 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "disabled": true,
-                    "label": " ",
+                    "label": " - Choisissez un lieu - ",
+                    "selected": true,
                   },
                   "ref": null,
                   "rendered": null,

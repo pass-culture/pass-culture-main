@@ -2,45 +2,50 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { withFrenchQueryRouter } from '../../../hocs'
 
-import { FilterByDate } from './FilterByDate'
+import FilterByDate from './FilterByDate'
 import selectStocksByOfferId from '../../../../selectors/selectStocksByOfferId'
 import selectOfferById from '../../../../selectors/selectOfferById'
 
 export const mapDispatchToProps = dispatch => ({
-  selectBookingsDateFrom: date => {
+  updateBookingsFrom: date => {
     dispatch({
       payload: date,
-      type: 'BOOKING_SUMMARY_SELECT_DATE_FROM',
+      type: 'BOOKING_SUMMARY_UPDATE_BOOKINGS_FROM',
     })
   },
-  selectBookingsDateTo: date => {
+  updateBookingsTo: date => {
     dispatch({
       payload: date,
-      type: 'BOOKING_SUMMARY_SELECT_DATE_TO',
+      type: 'BOOKING_SUMMARY_UPDATE_BOOKINGS_TO',
     })
   },
 })
 
 export const mapStateToProps = state => {
   const { bookingSummary = {} } = state
-  const { selectedOffer } = bookingSummary
+  const { offerId } = bookingSummary
 
-  let stocksOptions = []
+  let stocks = []
   let showEventDateSection = false
   let showThingDateSection = false
-  if (selectedOffer && selectedOffer !== 'all') {
-    stocksOptions = selectStocksByOfferId(state, selectedOffer)
-    const offer = selectOfferById(state, selectedOffer)
-    showEventDateSection = offer.isEvent
-    showThingDateSection = offer.isThing
+
+  if (offerId && offerId !== 'all') {
+    const offer = selectOfferById(state, offerId)
+
+    if (offer.isThing) {
+      showThingDateSection = true
+    }
+
+    if (offer.isEvent) {
+      stocks = selectStocksByOfferId(state, offerId)
+      showEventDateSection = true
+    }
   }
 
   return {
-    selectBookingsDateFrom: state.bookingSummary.selectBookingsDateFrom,
-    selectBookingsDateTo: state.bookingSummary.selectBookingsDateTo,
     showEventDateSection,
     showThingDateSection,
-    stocksOptions,
+    stocks,
   }
 }
 

@@ -1,10 +1,8 @@
-import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
-import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'
 
-import { FilterByOffer } from './FilterByOffer'
-import selectOffers from '../selectors/selectOffers'
+import FilterByOffer from './FilterByOffer'
+import selectDigitalOffers from '../selectors/selectDigitalOffers'
 import selectOffersByVenueId from '../selectors/selectOffersByVenueId'
 
 export const mapDispatchToProps = dispatch => ({
@@ -12,60 +10,54 @@ export const mapDispatchToProps = dispatch => ({
     dispatch(
       requestData({
         apiPath: `/offers`,
-        stateKey: 'offers',
         method: 'GET',
+        stateKey: 'offers',
       })
     )
   },
-  selectBookingsForOffers: event => {
+  updateOfferId: event => {
     dispatch({
       payload: event.target.value,
-      type: 'BOOKING_SUMMARY_SELECT_OFFER',
+      type: 'BOOKING_SUMMARY_UPDATE_OFFER_ID',
     })
   },
 })
 
 export const mapStateToProps = state => {
   const { bookingSummary = {} } = state
-  const { isFilterByDigitalVenues, selectedOffer, selectedVenue } = bookingSummary
+  const { isFilteredByDigitalVenues, offerId, venueId } = bookingSummary
 
   const allOffersOption = {
-    name: 'Toutes les offres',
     id: 'all',
+    name: 'Toutes les offres',
   }
 
   let offersOptions
 
-  if (isFilterByDigitalVenues) {
-    const isDigital = true
-    const digitalOffers = selectOffers(state, isDigital)
+  if (isFilteredByDigitalVenues) {
+    const digitalOffers = selectDigitalOffers(state)
     offersOptions = [allOffersOption, ...digitalOffers]
   } else {
-    if (selectedVenue === 'all') {
-      const isDigital = false
-      const allOffers = selectOffers(state, isDigital)
-      offersOptions = [allOffersOption, ...allOffers]
+    if (venueId === 'all') {
+      offersOptions = []
     } else {
-      const offersFromSpecificVenue = selectOffersByVenueId(state, selectedVenue)
+      const offersFromSpecificVenue = selectOffersByVenueId(state, venueId)
       offersOptions = [allOffersOption, ...offersFromSpecificVenue]
     }
   }
 
-  const showDateSection = selectedOffer !== 'all' && !!selectedOffer
+  const showDateSection = offerId !== 'all' && !!offerId
 
   return {
-    isFilterByDigitalVenues,
-    offerId: state.bookingSummary.selectedOffer,
+    isFilteredByDigitalVenues,
+    offerId,
     offersOptions,
-    selectedVenue: state.bookingSummary.selectedVenue,
     showDateSection,
+    venueId,
   }
 }
 
-export default compose(
-  withFrenchQueryRouter,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
 )(FilterByOffer)

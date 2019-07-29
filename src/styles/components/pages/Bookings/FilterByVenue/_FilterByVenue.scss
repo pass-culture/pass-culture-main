@@ -35,6 +35,8 @@
 
 #filter-by-venue {
   .pc-selectbox {
+    @extend .pl24, .py5;
+
     border-radius: 18px;
     width: 488px;
     height: 36px;

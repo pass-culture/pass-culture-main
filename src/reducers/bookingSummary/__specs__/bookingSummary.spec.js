@@ -7,25 +7,25 @@ describe('src | reducers | bookingSummary', () => {
 
     // then
     expect(nextState).toStrictEqual({
-      isFilterByDigitalVenues: false,
-      selectedVenue: '',
-      selectedOffer: '',
-      selectOffersFrom: '',
-      selectOffersTo: '',
+      bookingsFrom: '',
+      bookingsTo: '',
+      isFilteredByDigitalVenues: false,
+      offerId: '',
+      venueId: '',
     })
   })
 
-  describe('bOOKING_SUMMARY_SELECT_VENUE', () => {
-    it('should change state when action BOOKING_SUMMARY_SELECT_VENUE occured', () => {
+  describe('when BOOKING_SUMMARY_UPDATE_VENUE_ID', () => {
+    it('should change state when action BOOKING_SUMMARY_UPDATE_VENUE_ID occurred', () => {
       // given
       const initialState = {
-        isFilterByDigitalVenues: false,
-        selectedVenue: '',
-        selectedOffer: '',
+        isFilteredByDigitalVenues: false,
+        offerId: '',
+        venueId: '',
       }
       const action = {
         payload: 'A8KQ',
-        type: 'BOOKING_SUMMARY_SELECT_VENUE',
+        type: 'BOOKING_SUMMARY_UPDATE_VENUE_ID',
       }
 
       // when
@@ -33,22 +33,24 @@ describe('src | reducers | bookingSummary', () => {
 
       // then
       expect(nextState).toStrictEqual({
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'A8KQ',
-        selectedOffer: '',
+        bookingsFrom: '',
+        bookingsTo: '',
+        isFilteredByDigitalVenues: false,
+        offerId: '',
+        venueId: 'A8KQ',
       })
     })
 
-    it('should reinitialize selectedVenue when action BOOKING_SUMMARY_SELECT_VENUE occured', () => {
+    it('should reinitialize venueId when action BOOKING_SUMMARY_UPDATE_VENUE_ID occurred', () => {
       // given
       const initialState = {
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'AGAQ',
-        selectedOffer: '',
+        isFilteredByDigitalVenues: false,
+        offerId: '',
+        venueId: 'AGAQ',
       }
       const action = {
         payload: 'A8KQ',
-        type: 'BOOKING_SUMMARY_SELECT_VENUE',
+        type: 'BOOKING_SUMMARY_UPDATE_VENUE_ID',
       }
 
       // when
@@ -56,22 +58,24 @@ describe('src | reducers | bookingSummary', () => {
 
       // then
       expect(nextState).toStrictEqual({
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'A8KQ',
-        selectedOffer: '',
+        bookingsFrom: '',
+        bookingsTo: '',
+        isFilteredByDigitalVenues: false,
+        offerId: '',
+        venueId: 'A8KQ',
       })
     })
 
     it('should reinitialize selected offer when selecting another venue', () => {
       // given
       const initialState = {
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'VYZU',
-        selectedOffer: 'A8KQ',
+        isFilteredByDigitalVenues: false,
+        offerId: 'A8KQ',
+        venueId: 'VYZU',
       }
       const action = {
         payload: 'AD4',
-        type: 'BOOKING_SUMMARY_SELECT_VENUE',
+        type: 'BOOKING_SUMMARY_UPDATE_VENUE_ID',
       }
 
       // when
@@ -79,24 +83,26 @@ describe('src | reducers | bookingSummary', () => {
 
       // then
       expect(nextState).toStrictEqual({
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'AD4',
-        selectedOffer: '',
+        bookingsFrom: '',
+        bookingsTo: '',
+        isFilteredByDigitalVenues: false,
+        offerId: '',
+        venueId: 'AD4',
       })
     })
 
     it('should reinitialize selected offer and dates when selecting `all venues` option', () => {
       // given
       const initialState = {
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'VYZU',
-        selectedOffer: 'A8KQ',
-        selectOffersFrom: new Date(2018, 1, 1),
-        selectOffersTo: new Date(2018, 1, 31),
+        bookingsFrom: new Date(2018, 1, 1),
+        bookingsTo: new Date(2018, 1, 31),
+        isFilteredByDigitalVenues: false,
+        offerId: 'A8KQ',
+        venueId: 'VYZU',
       }
       const action = {
         payload: 'all',
-        type: 'BOOKING_SUMMARY_SELECT_VENUE',
+        type: 'BOOKING_SUMMARY_UPDATE_VENUE_ID',
       }
 
       // when
@@ -104,26 +110,26 @@ describe('src | reducers | bookingSummary', () => {
 
       // then
       expect(nextState).toStrictEqual({
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'all',
-        selectedOffer: '',
-        selectOffersFrom: '',
-        selectOffersTo: '',
+        bookingsFrom: '',
+        bookingsTo: '',
+        isFilteredByDigitalVenues: false,
+        offerId: '',
+        venueId: 'all',
       })
     })
   })
 
-  describe('bOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE', () => {
-    it('should reinitialize selected offer and venue when filtering on digital venues', () => {
+  describe('when BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUES', () => {
+    it('should reinitialize bookingFrom, bookingTo, offerId and venueId when filtering on digital venues', () => {
       // given
       const initialState = {
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'VYZU',
-        selectedOffer: 'A8KQ',
+        isFilteredByDigitalVenues: false,
+        offerId: 'A8KQ',
+        venueId: 'VYZU',
       }
       const action = {
         payload: true,
-        type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE',
+        type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUES',
       }
 
       // when
@@ -131,22 +137,24 @@ describe('src | reducers | bookingSummary', () => {
 
       // then
       expect(nextState).toStrictEqual({
-        isFilterByDigitalVenues: true,
-        selectedVenue: '',
-        selectedOffer: '',
+        bookingsFrom: '',
+        bookingsTo: '',
+        isFilteredByDigitalVenues: true,
+        offerId: '',
+        venueId: '',
       })
     })
 
     it('should change state when not filtering on digital venues anymore', () => {
       // given
       const initialState = {
-        isFilterByDigitalVenues: true,
-        selectedVenue: '',
-        selectedOffer: '',
+        isFilteredByDigitalVenues: true,
+        offerId: '',
+        venueId: '',
       }
       const action = {
         payload: false,
-        type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE',
+        type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUES',
       }
 
       // when
@@ -154,24 +162,26 @@ describe('src | reducers | bookingSummary', () => {
 
       // then
       expect(nextState).toStrictEqual({
-        isFilterByDigitalVenues: false,
-        selectedVenue: '',
-        selectedOffer: '',
+        bookingsFrom: '',
+        bookingsTo: '',
+        isFilteredByDigitalVenues: false,
+        offerId: '',
+        venueId: '',
       })
     })
   })
 
-  describe('bOOKING_SUMMARY_SELECT_OFFER', () => {
-    it('should change state when action BOOKING_SUMMARY_SELECT_OFFER occured', () => {
+  describe('when BOOKING_SUMMARY_UPDATE_OFFER_ID', () => {
+    it('should change state when action BOOKING_SUMMARY_UPDATE_OFFER_ID occurred', () => {
       // given
       const initialState = {
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'CY',
-        selectedOffer: '',
+        isFilteredByDigitalVenues: false,
+        offerId: '',
+        venueId: 'CY',
       }
       const action = {
         payload: 'A8KQ',
-        type: 'BOOKING_SUMMARY_SELECT_OFFER',
+        type: 'BOOKING_SUMMARY_UPDATE_OFFER_ID',
       }
 
       // when
@@ -179,22 +189,22 @@ describe('src | reducers | bookingSummary', () => {
 
       // then
       expect(nextState).toStrictEqual({
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'CY',
-        selectedOffer: 'A8KQ',
+        isFilteredByDigitalVenues: false,
+        offerId: 'A8KQ',
+        venueId: 'CY',
       })
     })
 
-    it('should reinitialize selectedOffer when action BOOKING_SUMMARY_SELECT_OFFER occured', () => {
+    it('should reinitialize offerId when action BOOKING_SUMMARY_UPDATE_OFFER_ID occurred', () => {
       // given
       const initialState = {
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'CY',
-        selectedOffer: 'AGAQ',
+        isFilteredByDigitalVenues: false,
+        offerId: 'AGAQ',
+        venueId: 'CY',
       }
       const action = {
         payload: 'A8KQ',
-        type: 'BOOKING_SUMMARY_SELECT_OFFER',
+        type: 'BOOKING_SUMMARY_UPDATE_OFFER_ID',
       }
 
       // when
@@ -202,24 +212,24 @@ describe('src | reducers | bookingSummary', () => {
 
       // then
       expect(nextState).toStrictEqual({
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'CY',
-        selectedOffer: 'A8KQ',
+        isFilteredByDigitalVenues: false,
+        offerId: 'A8KQ',
+        venueId: 'CY',
       })
     })
 
     it('should reinitialize selected dates when selecting `all offers` option', () => {
       // given
       const initialState = {
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'VYZU',
-        selectedOffer: 'A8KQ',
-        selectOffersFrom: new Date(2018, 1, 1),
-        selectOffersTo: new Date(2018, 1, 31),
+        bookingsFrom: new Date(2018, 1, 1),
+        bookingsTo: new Date(2018, 1, 31),
+        isFilteredByDigitalVenues: false,
+        offerId: 'A8KQ',
+        venueId: 'VYZU',
       }
       const action = {
         payload: 'all',
-        type: 'BOOKING_SUMMARY_SELECT_OFFER',
+        type: 'BOOKING_SUMMARY_UPDATE_OFFER_ID',
       }
 
       // when
@@ -227,29 +237,29 @@ describe('src | reducers | bookingSummary', () => {
 
       // then
       expect(nextState).toStrictEqual({
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'VYZU',
-        selectedOffer: 'all',
-        selectOffersFrom: '',
-        selectOffersTo: '',
+        bookingsFrom: '',
+        bookingsTo: '',
+        isFilteredByDigitalVenues: false,
+        offerId: 'all',
+        venueId: 'VYZU',
       })
     })
   })
 
-  describe('bOOKING_SUMMARY_SELECT_DATE_FROM', () => {
-    it('should change state when action bOOKING_SUMMARY_SELECT_DATE_FROM occured', () => {
+  describe('when BOOKING_SUMMARY_SELECT_DATE_FROM', () => {
+    it('should change state when action bOOKING_SUMMARY_SELECT_DATE_FROM occurred', () => {
       // given
       const initialState = {
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'CY',
-        selectedOffer: 'A8KQ',
-        selectOffersFrom: new Date(2018, 1, 1),
-        selectOffersTo: new Date(2018, 1, 31),
+        bookingsFrom: new Date(2018, 1, 1),
+        bookingsTo: new Date(2018, 1, 31),
+        isFilteredByDigitalVenues: false,
+        offerId: 'A8KQ',
+        venueId: 'CY',
       }
       const date = new Date(2019, 6, 1)
       const action = {
         payload: date,
-        type: 'BOOKING_SUMMARY_SELECT_DATE_FROM',
+        type: 'BOOKING_SUMMARY_UPDATE_BOOKINGS_FROM',
       }
 
       // when
@@ -258,29 +268,29 @@ describe('src | reducers | bookingSummary', () => {
       // then
       const expectedDate = new Date(2019, 6, 1)
       expect(nextState).toStrictEqual({
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'CY',
-        selectedOffer: 'A8KQ',
-        selectOffersFrom: expectedDate,
-        selectOffersTo: new Date(2018, 1, 31),
+        bookingsFrom: expectedDate,
+        bookingsTo: new Date(2018, 1, 31),
+        isFilteredByDigitalVenues: false,
+        offerId: 'A8KQ',
+        venueId: 'CY',
       })
     })
   })
 
-  describe('bOOKING_SUMMARY_SELECT_DATE_TO', () => {
-    it('should change state when action bOOKING_SUMMARY_SELECT_DATE_TO occured', () => {
+  describe('when BOOKING_SUMMARY_SELECT_DATE_TO', () => {
+    it('should change state when action BOOKING_SUMMARY_SELECT_DATE_TO occurred', () => {
       // given
       const initialState = {
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'CY',
-        selectedOffer: 'A8KQ',
-        selectOffersFrom: new Date(2018, 1, 1),
-        selectOffersTo: new Date(2018, 1, 31),
+        bookingsFrom: new Date(2018, 1, 1),
+        bookingsTo: new Date(2018, 1, 31),
+        isFilteredByDigitalVenues: false,
+        offerId: 'A8KQ',
+        venueId: 'CY',
       }
       const date = new Date(2019, 6, 1)
       const action = {
         payload: date,
-        type: 'BOOKING_SUMMARY_SELECT_DATE_TO',
+        type: 'BOOKING_SUMMARY_UPDATE_BOOKINGS_TO',
       }
 
       // when
@@ -289,11 +299,11 @@ describe('src | reducers | bookingSummary', () => {
       // then
       const expectedDate = new Date(2019, 6, 1)
       expect(nextState).toStrictEqual({
-        isFilterByDigitalVenues: false,
-        selectedVenue: 'CY',
-        selectedOffer: 'A8KQ',
-        selectOffersFrom: new Date(2018, 1, 1),
-        selectOffersTo: expectedDate,
+        bookingsFrom: new Date(2018, 1, 1),
+        bookingsTo: expectedDate,
+        isFilteredByDigitalVenues: false,
+        offerId: 'A8KQ',
+        venueId: 'CY',
       })
     })
   })

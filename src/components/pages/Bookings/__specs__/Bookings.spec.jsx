@@ -26,78 +26,108 @@ describe('src | components | pages | Bookings', () => {
   })
 
   describe('render', () => {
-    it('should not render a download button by default', () => {
+    it('should render a Bookings component with default props', () => {
       // when
-      const wrapper = shallow(<Bookings {...props} />)
+      const wrapper = shallow(<Bookings />)
 
       // then
-      const downloadButton = wrapper.find(DownloadButtonContainer)
-      expect(downloadButton).toHaveLength(0)
+      expect(wrapper.prop('pathToCsvFile')).toBe()
+      expect(wrapper.prop('showButtons')).toBe()
+      expect(wrapper.prop('showOfferSection')).toBe()
     })
 
-    it('should render a download button with the right props when displayed', () => {
-      // given
-      props.showButtons = true
+    describe('the download and display section', () => {
+      it('should not render a DownloadButtonContainer component when showButtons is false', () => {
+        // when
+        const wrapper = shallow(<Bookings {...props} />)
 
-      // when
-      const wrapper = shallow(<Bookings {...props} />)
+        // then
+        const downloadButton = wrapper.find(DownloadButtonContainer)
+        expect(downloadButton).toHaveLength(0)
+      })
 
-      // then
-      const downloadButton = wrapper.find(DownloadButtonContainer)
-      expect(downloadButton).toHaveLength(1)
-      expect(downloadButton.prop('href')).toBe('/path/to/csv/file?with=query')
+      it('should render a DownloadButtonContainer component with the right props when showButtons is true', () => {
+        // given
+        props.showButtons = true
+
+        // when
+        const wrapper = shallow(<Bookings {...props} />)
+
+        // then
+        const downloadButton = wrapper.find(DownloadButtonContainer)
+        expect(downloadButton).toHaveLength(1)
+        expect(downloadButton.prop('href')).toBe('/path/to/csv/file?with=query')
+      })
+
+      it('should not render a DisplayButtonContainer component when showButtons is false', () => {
+        // when
+        const wrapper = shallow(<Bookings {...props} />)
+
+        // then
+        const displayButton = wrapper.find(DisplayButtonContainer)
+        expect(displayButton).toHaveLength(0)
+      })
+
+      it('should render a display button with the right props when showButtons is true', () => {
+        // given
+        props.showButtons = true
+
+        // when
+        const wrapper = shallow(<Bookings {...props} />)
+
+        // then
+        const displayButton = wrapper.find(DisplayButtonContainer)
+        expect(displayButton).toHaveLength(1)
+        expect(displayButton.prop('href')).toBe('/path/to/csv/file?with=query')
+      })
+
+      it('should not render a CsvTableButtonContainer by default', () => {
+        // when
+        const wrapper = shallow(<Bookings {...props} />)
+
+        // then
+        const displayButton = wrapper.find(CsvTableButtonContainer)
+        expect(displayButton).toHaveLength(0)
+      })
+
+      it('should render CsvTableButtonContainer with the right props when displayed', () => {
+        // given
+        props.showButtons = true
+
+        // when
+        const wrapper = shallow(<Bookings {...props} />)
+
+        // then
+        const displayButton = wrapper.find(CsvTableButtonContainer)
+        expect(displayButton).toHaveLength(1)
+        expect(displayButton.prop('href')).toBe('/path/to/csv/file?with=query')
+      })
     })
-
-    it('should not render a CsvTableButtonContainer by default', () => {
-      // when
-      const wrapper = shallow(<Bookings {...props} />)
-
-      // then
-      const displayButton = wrapper.find(CsvTableButtonContainer)
-      expect(displayButton).toHaveLength(0)
-    })
-
-    it('should render CsvTableButtonContainer with the right props when displayed', () => {
-      // given
-      props.showButtons = true
-
-      // when
-      const wrapper = shallow(<Bookings {...props} />)
-
-      // then
-      const displayButton = wrapper.find(CsvTableButtonContainer)
-      expect(displayButton).toHaveLength(1)
-      expect(displayButton.prop('href')).toBe('/path/to/csv/file?with=query')
-    })
-  })
 
   describe('the offer section', () => {
-    it('should not be displayed when `all venues is selected', () => {
-      // given
-      const props = {
-        showOfferSection: false,
-      }
+      it('should not render a FilterByOfferContainer component when showOfferSection is false', () => {
+        // given
+        props.showOfferSection = false
 
-      // when
-      const wrapper = shallow(<Bookings {...props} />)
+        // when
+        const wrapper = shallow(<Bookings {...props} />)
 
-      // then
-      const filterByOfferContainer = wrapper.find(FilterByOfferContainer)
-      expect(filterByOfferContainer).toHaveLength(0)
-    })
+        // then
+        const filterByOfferContainer = wrapper.find(FilterByOfferContainer)
+        expect(filterByOfferContainer).toHaveLength(0)
+      })
 
-    it('should display offer section when a specific venue (or digital venues) is selected', () => {
-      // given
-      const props = {
-        showOfferSection: true,
-      }
+      it('should render a FilterByOfferContainer component when showOfferSection is true', () => {
+        // given
+        props.showOfferSection = true
 
-      // when
-      const wrapper = shallow(<Bookings {...props} />)
+        //when
+        const wrapper = shallow(<Bookings {...props} />)
 
-      // then
-      const filterByOfferContainer = wrapper.find(FilterByOfferContainer)
-      expect(filterByOfferContainer).toHaveLength(1)
+        // then
+        const filterByOfferContainer = wrapper.find(FilterByOfferContainer)
+        expect(filterByOfferContainer).toHaveLength(1)
+      })
     })
   })
 })

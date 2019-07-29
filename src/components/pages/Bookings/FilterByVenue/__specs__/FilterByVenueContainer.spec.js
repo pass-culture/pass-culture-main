@@ -2,11 +2,12 @@ import { mapStateToProps, mapDispatchToProps } from '../FilterByVenueContainer'
 
 describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
   describe('mapStateToProps', () => {
-    it('should return an object of props that keep the state information : filter on digital venues', () => {
+    it('should return an object of props', () => {
       // given
       const state = {
         bookingSummary: {
-          isFilterByDigitalVenues: true,
+          isFilteredByDigitalVenues: false,
+          venueId: 'AYJA',
         },
         data: {
           offers: [],
@@ -18,8 +19,9 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
       const props = mapStateToProps(state)
 
       // then
-      expect(props).toMatchObject({
-        isDigital: true,
+      expect(props).toStrictEqual({
+        isDigital: false,
+        venueId: 'AYJA',
         venuesOptions: [
           {
             id: 'all',
@@ -39,7 +41,7 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
       props = mapDispatchToProps(dispatch)
     })
 
-    it('ebnable to load venues', () => {
+    it('should load venues using API', () => {
       //when
       props.loadVenues()
 
@@ -50,36 +52,36 @@ describe('src | components | pages | Bookings | FilterByVenueContainer', () => {
       })
     })
 
-    it('preserve venue filter when select only digital venues', () => {
+    it('should update isFilteredByDigitalVenues value from store to true', () => {
       //when
-      props.selectOnlyDigitalVenues(true)
+      props.updateIsFilteredByDigitalVenues(true)
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
         payload: true,
-        type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE',
+        type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUES',
       })
     })
 
-    it('preserve venue filter when select only digital venues (réécrire)', () => {
+    it('should update isFilteredByDigitalVenues value from store to false', () => {
       //when
-      props.selectOnlyDigitalVenues(false)
+      props.updateIsFilteredByDigitalVenues(false)
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
         payload: false,
-        type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUE',
+        type: 'BOOKING_SUMMARY_IS_FILTERED_BY_DIGITAL_VENUES',
       })
     })
 
-    it('preserve selected venue', () => {
+    it('should update venueId value from store to given value', () => {
       //when
-      props.selectBookingsForVenues({ target: { value: 'AVJA' } })
+      props.updateVenueId({ target: { value: 'AVJA' } })
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
         payload: 'AVJA',
-        type: 'BOOKING_SUMMARY_SELECT_VENUE',
+        type: 'BOOKING_SUMMARY_UPDATE_VENUE_ID',
       })
     })
   })

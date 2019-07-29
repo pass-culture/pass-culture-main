@@ -9,8 +9,8 @@ describe('src | components | pages | Bookings | FilterByVenue', () => {
     props = {
       isDigital: false,
       loadVenues: jest.fn(),
-      selectBookingsForVenues: jest.fn(),
-      selectOnlyDigitalVenues: jest.fn(),
+      updateVenueId: jest.fn(),
+      updateIsFilteredByDigitalVenues: jest.fn(),
       venuesOptions: [{ name: 'Babar', id: 1 }, { name: 'Céleste', id: 2 }],
     }
   })

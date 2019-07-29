@@ -8,12 +8,12 @@ class FilterByVenue extends PureComponent {
   }
 
   handleOnClick = () => {
-    const { isDigital, selectOnlyDigitalVenues } = this.props
-    selectOnlyDigitalVenues(!isDigital)
+    const { isDigital, updateIsFilteredByDigitalVenues } = this.props
+    updateIsFilteredByDigitalVenues(!isDigital)
   }
 
   render() {
-    const { venuesOptions, isDigital, selectBookingsForVenues, venueId } = this.props
+    const { isDigital, updateVenueId, venueId, venuesOptions } = this.props
     const labelClassName = isDigital ? 'has-text-grey' : 'has-text-black'
 
     return (
@@ -26,16 +26,17 @@ class FilterByVenue extends PureComponent {
             {'Sélectionnez un lieu :'}
           </label>
           <select
-            className="pc-selectbox pl24 py5 fs19"
+            className="pc-selectbox"
             disabled={isDigital}
             id="venues"
-            onBlur={selectBookingsForVenues}
-            onChange={selectBookingsForVenues}
+            onBlur={updateVenueId}
+            onChange={updateVenueId}
             value={venueId}
           >
             <option
               disabled
-              label=" "
+              label=" - Choisissez un lieu - "
+              selected
             />
             {venuesOptions.map(({ name, id }) => (
               <option
@@ -70,8 +71,8 @@ FilterByVenue.defaultProps = {
 FilterByVenue.propTypes = {
   isDigital: PropTypes.bool.isRequired,
   loadVenues: PropTypes.func.isRequired,
-  selectBookingsForVenues: PropTypes.func.isRequired,
-  selectOnlyDigitalVenues: PropTypes.func.isRequired,
+  updateIsFilteredByDigitalVenues: PropTypes.func.isRequired,
+  updateVenueId: PropTypes.func.isRequired,
   venueId: PropTypes.string,
   venuesOptions: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
