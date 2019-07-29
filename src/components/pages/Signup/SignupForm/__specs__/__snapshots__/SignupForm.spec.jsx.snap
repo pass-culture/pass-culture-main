@@ -99,16 +99,14 @@ ShallowWrapper {
               displayValue={[Function]}
               errors={null}
               info="
-                  <div>
-                    Votre mot de passe doit contenir au moins :
-                    <ul>
-                      <li>12 caractères</li>
-                      <li>une majuscule et une minuscule</li>
-                      <li>un chiffre</li>
-                      <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
-                    </ul>
-                  </div>
-                  "
+          <Fragment>Votre mot de passe doit contenir au moins :
+            <ul>
+              <li>12 caractères</li>
+              <li>une majuscule et une minuscule</li>
+              <li>un chiffre</li>
+              <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
+            </ul>
+          </Fragment>"
               label="Mot de passe"
               layout="horizontal"
               name="password"
@@ -142,6 +140,19 @@ ShallowWrapper {
               required={true}
               size="normal"
               storeValue={[Function]}
+            />
+            <Field
+              autoComplete="phone-number"
+              displayValue={[Function]}
+              errors={null}
+              label="Téléphone"
+              layout="horizontal"
+              name="phoneNumber"
+              placeholder="Mon numéro de téléphone"
+              required={true}
+              size="normal"
+              storeValue={[Function]}
+              sublabel="utilisé uniquement par l'équipe du pass Culture"
             />
             <Field
               disabling={[Function]}
@@ -312,16 +323,14 @@ ShallowWrapper {
                 displayValue={[Function]}
                 errors={null}
                 info="
-                  <div>
-                    Votre mot de passe doit contenir au moins :
-                    <ul>
-                      <li>12 caractères</li>
-                      <li>une majuscule et une minuscule</li>
-                      <li>un chiffre</li>
-                      <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
-                    </ul>
-                  </div>
-                  "
+          <Fragment>Votre mot de passe doit contenir au moins :
+            <ul>
+              <li>12 caractères</li>
+              <li>une majuscule et une minuscule</li>
+              <li>un chiffre</li>
+              <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
+            </ul>
+          </Fragment>"
                 label="Mot de passe"
                 layout="horizontal"
                 name="password"
@@ -355,6 +364,19 @@ ShallowWrapper {
                 required={true}
                 size="normal"
                 storeValue={[Function]}
+              />
+              <Field
+                autoComplete="phone-number"
+                displayValue={[Function]}
+                errors={null}
+                label="Téléphone"
+                layout="horizontal"
+                name="phoneNumber"
+                placeholder="Mon numéro de téléphone"
+                required={true}
+                size="normal"
+                storeValue={[Function]}
+                sublabel="utilisé uniquement par l'équipe du pass Culture"
               />
               <Field
                 disabling={[Function]}
@@ -563,16 +585,14 @@ ShallowWrapper {
                   displayValue={[Function]}
                   errors={null}
                   info="
-                  <div>
-                    Votre mot de passe doit contenir au moins :
-                    <ul>
-                      <li>12 caractères</li>
-                      <li>une majuscule et une minuscule</li>
-                      <li>un chiffre</li>
-                      <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
-                    </ul>
-                  </div>
-                  "
+          <Fragment>Votre mot de passe doit contenir au moins :
+            <ul>
+              <li>12 caractères</li>
+              <li>une majuscule et une minuscule</li>
+              <li>un chiffre</li>
+              <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
+            </ul>
+          </Fragment>"
                   label="Mot de passe"
                   layout="horizontal"
                   name="password"
@@ -606,6 +626,19 @@ ShallowWrapper {
                   required={true}
                   size="normal"
                   storeValue={[Function]}
+                />
+                <Field
+                  autoComplete="phone-number"
+                  displayValue={[Function]}
+                  errors={null}
+                  label="Téléphone"
+                  layout="horizontal"
+                  name="phoneNumber"
+                  placeholder="Mon numéro de téléphone"
+                  required={true}
+                  size="normal"
+                  storeValue={[Function]}
+                  sublabel="utilisé uniquement par l'équipe du pass Culture"
                 />
                 <Field
                   disabling={[Function]}
@@ -739,16 +772,14 @@ ShallowWrapper {
                     displayValue={[Function]}
                     errors={null}
                     info="
-                  <div>
-                    Votre mot de passe doit contenir au moins :
-                    <ul>
-                      <li>12 caractères</li>
-                      <li>une majuscule et une minuscule</li>
-                      <li>un chiffre</li>
-                      <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
-                    </ul>
-                  </div>
-                  "
+          <Fragment>Votre mot de passe doit contenir au moins :
+            <ul>
+              <li>12 caractères</li>
+              <li>une majuscule et une minuscule</li>
+              <li>un chiffre</li>
+              <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
+            </ul>
+          </Fragment>"
                     label="Mot de passe"
                     layout="horizontal"
                     name="password"
@@ -782,6 +813,19 @@ ShallowWrapper {
                     required={true}
                     size="normal"
                     storeValue={[Function]}
+                  />,
+                  <Field
+                    autoComplete="phone-number"
+                    displayValue={[Function]}
+                    errors={null}
+                    label="Téléphone"
+                    layout="horizontal"
+                    name="phoneNumber"
+                    placeholder="Mon numéro de téléphone"
+                    required={true}
+                    size="normal"
+                    storeValue={[Function]}
+                    sublabel="utilisé uniquement par l'équipe du pass Culture"
                   />,
                   <Field
                     disabling={[Function]}
@@ -881,16 +925,14 @@ ShallowWrapper {
                     "displayValue": [Function],
                     "errors": null,
                     "info": "
-                  <div>
-                    Votre mot de passe doit contenir au moins :
-                    <ul>
-                      <li>12 caractères</li>
-                      <li>une majuscule et une minuscule</li>
-                      <li>un chiffre</li>
-                      <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
-                    </ul>
-                  </div>
-                  ",
+          <Fragment>Votre mot de passe doit contenir au moins :
+            <ul>
+              <li>12 caractères</li>
+              <li>une majuscule et une minuscule</li>
+              <li>un chiffre</li>
+              <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
+            </ul>
+          </Fragment>",
                     "label": "Mot de passe",
                     "layout": "horizontal",
                     "name": "password",
@@ -940,6 +982,27 @@ ShallowWrapper {
                     "required": true,
                     "size": "normal",
                     "storeValue": [Function],
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "class",
+                  "props": Object {
+                    "autoComplete": "phone-number",
+                    "displayValue": [Function],
+                    "errors": null,
+                    "label": "Téléphone",
+                    "layout": "horizontal",
+                    "name": "phoneNumber",
+                    "placeholder": "Mon numéro de téléphone",
+                    "required": true,
+                    "size": "normal",
+                    "storeValue": [Function],
+                    "sublabel": "utilisé uniquement par l'équipe du pass Culture",
                   },
                   "ref": null,
                   "rendered": null,
@@ -1203,16 +1266,14 @@ ShallowWrapper {
                 displayValue={[Function]}
                 errors={null}
                 info="
-                  <div>
-                    Votre mot de passe doit contenir au moins :
-                    <ul>
-                      <li>12 caractères</li>
-                      <li>une majuscule et une minuscule</li>
-                      <li>un chiffre</li>
-                      <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
-                    </ul>
-                  </div>
-                  "
+          <Fragment>Votre mot de passe doit contenir au moins :
+            <ul>
+              <li>12 caractères</li>
+              <li>une majuscule et une minuscule</li>
+              <li>un chiffre</li>
+              <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
+            </ul>
+          </Fragment>"
                 label="Mot de passe"
                 layout="horizontal"
                 name="password"
@@ -1246,6 +1307,19 @@ ShallowWrapper {
                 required={true}
                 size="normal"
                 storeValue={[Function]}
+              />
+              <Field
+                autoComplete="phone-number"
+                displayValue={[Function]}
+                errors={null}
+                label="Téléphone"
+                layout="horizontal"
+                name="phoneNumber"
+                placeholder="Mon numéro de téléphone"
+                required={true}
+                size="normal"
+                storeValue={[Function]}
+                sublabel="utilisé uniquement par l'équipe du pass Culture"
               />
               <Field
                 disabling={[Function]}
@@ -1416,16 +1490,14 @@ ShallowWrapper {
                   displayValue={[Function]}
                   errors={null}
                   info="
-                  <div>
-                    Votre mot de passe doit contenir au moins :
-                    <ul>
-                      <li>12 caractères</li>
-                      <li>une majuscule et une minuscule</li>
-                      <li>un chiffre</li>
-                      <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
-                    </ul>
-                  </div>
-                  "
+          <Fragment>Votre mot de passe doit contenir au moins :
+            <ul>
+              <li>12 caractères</li>
+              <li>une majuscule et une minuscule</li>
+              <li>un chiffre</li>
+              <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
+            </ul>
+          </Fragment>"
                   label="Mot de passe"
                   layout="horizontal"
                   name="password"
@@ -1459,6 +1531,19 @@ ShallowWrapper {
                   required={true}
                   size="normal"
                   storeValue={[Function]}
+                />
+                <Field
+                  autoComplete="phone-number"
+                  displayValue={[Function]}
+                  errors={null}
+                  label="Téléphone"
+                  layout="horizontal"
+                  name="phoneNumber"
+                  placeholder="Mon numéro de téléphone"
+                  required={true}
+                  size="normal"
+                  storeValue={[Function]}
+                  sublabel="utilisé uniquement par l'équipe du pass Culture"
                 />
                 <Field
                   disabling={[Function]}
@@ -1667,16 +1752,14 @@ ShallowWrapper {
                     displayValue={[Function]}
                     errors={null}
                     info="
-                  <div>
-                    Votre mot de passe doit contenir au moins :
-                    <ul>
-                      <li>12 caractères</li>
-                      <li>une majuscule et une minuscule</li>
-                      <li>un chiffre</li>
-                      <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
-                    </ul>
-                  </div>
-                  "
+          <Fragment>Votre mot de passe doit contenir au moins :
+            <ul>
+              <li>12 caractères</li>
+              <li>une majuscule et une minuscule</li>
+              <li>un chiffre</li>
+              <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
+            </ul>
+          </Fragment>"
                     label="Mot de passe"
                     layout="horizontal"
                     name="password"
@@ -1710,6 +1793,19 @@ ShallowWrapper {
                     required={true}
                     size="normal"
                     storeValue={[Function]}
+                  />
+                  <Field
+                    autoComplete="phone-number"
+                    displayValue={[Function]}
+                    errors={null}
+                    label="Téléphone"
+                    layout="horizontal"
+                    name="phoneNumber"
+                    placeholder="Mon numéro de téléphone"
+                    required={true}
+                    size="normal"
+                    storeValue={[Function]}
+                    sublabel="utilisé uniquement par l'équipe du pass Culture"
                   />
                   <Field
                     disabling={[Function]}
@@ -1843,16 +1939,14 @@ ShallowWrapper {
                       displayValue={[Function]}
                       errors={null}
                       info="
-                  <div>
-                    Votre mot de passe doit contenir au moins :
-                    <ul>
-                      <li>12 caractères</li>
-                      <li>une majuscule et une minuscule</li>
-                      <li>un chiffre</li>
-                      <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
-                    </ul>
-                  </div>
-                  "
+          <Fragment>Votre mot de passe doit contenir au moins :
+            <ul>
+              <li>12 caractères</li>
+              <li>une majuscule et une minuscule</li>
+              <li>un chiffre</li>
+              <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
+            </ul>
+          </Fragment>"
                       label="Mot de passe"
                       layout="horizontal"
                       name="password"
@@ -1886,6 +1980,19 @@ ShallowWrapper {
                       required={true}
                       size="normal"
                       storeValue={[Function]}
+                    />,
+                    <Field
+                      autoComplete="phone-number"
+                      displayValue={[Function]}
+                      errors={null}
+                      label="Téléphone"
+                      layout="horizontal"
+                      name="phoneNumber"
+                      placeholder="Mon numéro de téléphone"
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+                      sublabel="utilisé uniquement par l'équipe du pass Culture"
                     />,
                     <Field
                       disabling={[Function]}
@@ -1985,16 +2092,14 @@ ShallowWrapper {
                       "displayValue": [Function],
                       "errors": null,
                       "info": "
-                  <div>
-                    Votre mot de passe doit contenir au moins :
-                    <ul>
-                      <li>12 caractères</li>
-                      <li>une majuscule et une minuscule</li>
-                      <li>un chiffre</li>
-                      <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
-                    </ul>
-                  </div>
-                  ",
+          <Fragment>Votre mot de passe doit contenir au moins :
+            <ul>
+              <li>12 caractères</li>
+              <li>une majuscule et une minuscule</li>
+              <li>un chiffre</li>
+              <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
+            </ul>
+          </Fragment>",
                       "label": "Mot de passe",
                       "layout": "horizontal",
                       "name": "password",
@@ -2044,6 +2149,27 @@ ShallowWrapper {
                       "required": true,
                       "size": "normal",
                       "storeValue": [Function],
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "class",
+                    "props": Object {
+                      "autoComplete": "phone-number",
+                      "displayValue": [Function],
+                      "errors": null,
+                      "label": "Téléphone",
+                      "layout": "horizontal",
+                      "name": "phoneNumber",
+                      "placeholder": "Mon numéro de téléphone",
+                      "required": true,
+                      "size": "normal",
+                      "storeValue": [Function],
+                      "sublabel": "utilisé uniquement par l'équipe du pass Culture",
                     },
                     "ref": null,
                     "rendered": null,

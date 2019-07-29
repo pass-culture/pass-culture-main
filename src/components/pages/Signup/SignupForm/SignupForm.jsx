@@ -6,12 +6,38 @@ import { Field, Form, SubmitButton } from 'pass-culture-shared'
 class SignupForm extends PureComponent {
   onHandleSuccessRedirect = () => '/inscription/confirmation'
 
-  handleFormatPatch = patch => Object.assign({ publicName: patch.firstName }, patch)
+  handleFormatPatch = patch => Object.assign({publicName: patch.firstName}, patch)
 
   isFieldDisabling = offererName => () => !offererName
 
+  renderCguContent = () => (
+    <Fragment>
+      {'J’ai lu et j’accepte les '}
+      <a
+        href="https://pass-culture.gitbook.io/documents/textes-normatifs"
+        id="accept-cgu-link"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        {'Conditions Générales d’Utilisation'}
+      </a>
+    </Fragment>
+  )
+
+  renderPasswordTooltip = () => {
+    return `
+          <Fragment>Votre mot de passe doit contenir au moins :
+            <ul>
+              <li>12 caractères</li>
+              <li>une majuscule et une minuscule</li>
+              <li>un chiffre</li>
+              <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
+            </ul>
+          </Fragment>`
+  }
+
   render() {
-    const { errors, patch, offererName } = this.props
+    const {errors, patch, offererName} = this.props
 
     return (
       <section>
@@ -54,17 +80,8 @@ class SignupForm extends PureComponent {
               />
               <Field
                 autoComplete="new-password"
-                info={`
-                  <div>
-                    Votre mot de passe doit contenir au moins :
-                    <ul>
-                      <li>12 caractères</li>
-                      <li>une majuscule et une minuscule</li>
-                      <li>un chiffre</li>
-                      <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
-                    </ul>
-                  </div>
-                  `}
+                info={this.renderPasswordTooltip()
+                }
                 label="Mot de passe"
                 name="password"
                 placeholder="Mon mot de passe"
@@ -84,6 +101,14 @@ class SignupForm extends PureComponent {
                 label="Prénom"
                 name="firstName"
                 placeholder="Mon prénom"
+                required
+              />
+              <Field
+                autoComplete="phone-number"
+                label="Téléphone"
+                name="phoneNumber"
+                placeholder="Mon numéro de téléphone"
+                sublabel="utilisé uniquement par l'équipe du pass Culture"
                 required
               />
               <Field
@@ -109,19 +134,7 @@ class SignupForm extends PureComponent {
               />
               <Field
                 className="cgu-field"
-                label={
-                  <Fragment>
-                    {'J’ai lu et j’accepte les '}
-                    <a
-                      href="https://pass-culture.gitbook.io/documents/textes-normatifs"
-                      id="accept-cgu-link"
-                      rel="noopener noreferrer"
-                      target="_blank"
-                    >
-                      {'Conditions Générales d’Utilisation'}
-                    </a>
-                  </Fragment>
-                }
+                label={this.renderCguContent()}
                 name="cgu_ok"
                 required
                 type="checkbox"
