@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { PersistGate } from 'redux-persist/integration/react'
 
 import App from './App'
-import NotMatchPage from './components/pages/NotMatchPage'
+import NoMatchPage from './components/pages/NoMatch/NoMatch'
 import routes from './utils/routes'
 import configureStore from './utils/store'
 import MatomoPageTracker from './components/matomo/MatomoPageTracker'
@@ -31,7 +31,7 @@ const Root = () => {
                     key={route.path}
                           />)
                 })}
-                <Route component={NotMatchPage} />
+                <Route component={NoMatchPage} />
               </Switch>
               <MatomoPageTracker />
             </App>

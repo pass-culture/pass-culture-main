@@ -2,10 +2,10 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
-import Main from '../layout/Main'
-import { LAST_DEPLOYED_COMMIT } from '../../utils/config'
+import Main from '../../layout/Main'
+import { LAST_DEPLOYED_COMMIT } from '../../../utils/config'
 
-const mardownContent = `
+const markdownContent = `
 # Titre section
 
 ## Titre Sous-section
@@ -49,7 +49,7 @@ Nam et consectetur nisl. Proin eget gravida ex. Pellentesque a leo enim. Aliquam
 feugiat orci ut diam ullamcorper consequat.
 `
 
-const TermsPage = ({ lastDeployedCommit }) => (
+const Terms = ({ lastDeployedCommit }) => (
   <Main
     backButton
     name="terms"
@@ -59,7 +59,7 @@ const TermsPage = ({ lastDeployedCommit }) => (
       <h1>{'Mentions légales'}</h1>
     </header>
     <div className="content">
-      <ReactMarkdown source={mardownContent} />
+      <ReactMarkdown source={markdownContent} />
       <div className="mt16">
         <p className="text-right">{`pass Culture - ${lastDeployedCommit}`}</p>
       </div>
@@ -67,14 +67,14 @@ const TermsPage = ({ lastDeployedCommit }) => (
   </Main>
 )
 
-TermsPage.defaultProps = {
+Terms.defaultProps = {
   lastDeployedCommit: LAST_DEPLOYED_COMMIT,
 }
 
-TermsPage.propTypes = {
+Terms.propTypes = {
   // NOTE -> `lastDeployedCommit`
   // `lastDeployedCommit` est rempli au build par le script PC
   lastDeployedCommit: PropTypes.string,
 }
 
-export default TermsPage
+export default Terms

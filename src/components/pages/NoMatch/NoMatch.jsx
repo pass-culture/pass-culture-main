@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Redirect } from 'react-router-dom'
 
-class NoMatchPage extends PureComponent {
+class NoMatch extends PureComponent {
   constructor(props) {
     super(props)
     this.timer = null
@@ -42,8 +42,8 @@ class NoMatchPage extends PureComponent {
   }
 }
 
-NoMatchPage.propTypes = {
+NoMatch.propTypes = {
   location: PropTypes.shape().isRequired,
 }
 
-export default NoMatchPage
+export default NoMatch

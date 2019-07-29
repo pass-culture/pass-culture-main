@@ -1,13 +1,12 @@
-import { Field, Form, searchSelector, SubmitButton } from 'pass-culture-shared'
+import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { connect } from 'react-redux'
 
-import Logo from '../layout/Logo'
-import Main from '../layout/Main'
+import Logo from '../../layout/Logo'
+import Main from '../../layout/Main'
 
-class LostPasswordPage extends Component {
+class LostPassword extends Component {
   onHandleSuccessRedirectForResetPassword = () => '/mot-de-passe-perdu?change=1'
 
   storeValue = token => () => token
@@ -15,7 +14,7 @@ class LostPasswordPage extends Component {
   onHandleSuccessRedirectForResetPasswordRequest = () => '/mot-de-passe-perdu?envoye=1'
 
   render() {
-    const { change, envoye, errors, token } = this.props
+    const {change, envoye, errors, token} = this.props
 
     return (
       <Main
@@ -81,7 +80,7 @@ class LostPasswordPage extends Component {
                       handleSuccessRedirect={this.onHandleSuccessRedirectForResetPassword}
                       layout="vertical"
                       name="user"
-                      patch={{ token }}
+                      patch={{token}}
                     >
                       <Field
                         name="token"
@@ -166,21 +165,11 @@ class LostPasswordPage extends Component {
   }
 }
 
-LostPasswordPage.propTypes = {
+LostPassword.propTypes = {
   change: PropTypes.bool.isRequired,
   envoye: PropTypes.bool.isRequired,
   errors: PropTypes.shape().isRequired,
   token: PropTypes.string.isRequired,
 }
 
-const mapStateToProps = (state, ownProps) => {
-  const { change, envoye, token } = searchSelector(state, ownProps.location.search)
-  return {
-    change,
-    errors: state.errors.user || [],
-    envoye,
-    token,
-  }
-}
-
-export default connect(mapStateToProps)(LostPasswordPage)
+export default (LostPassword)

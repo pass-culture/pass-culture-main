@@ -2,9 +2,10 @@ import React from 'react'
 import { Redirect } from 'react-router'
 
 import BookingsContainer from '../components/pages/Bookings/BookingsContainer'
+import CsvDetailViewContainer from '../components/layout/CsvTable/CsvTableContainer'
 import DeskContainer from '../components/pages/Desk/DeskContainer'
 import HomeContainer from '../components/pages/Home/HomeContainer'
-import LostPassword from '../components/pages/LostPassword'
+import LostPasswordContainer from '../components/pages/LostPassword/LostPasswordContainer'
 import Mediation from '../components/pages/Mediation/MediationContainer'
 import Offers from '../components/pages/Offers/OffersContainer'
 import Offer from '../components/pages/Offer/OfferContainer'
@@ -15,9 +16,8 @@ import ReimbursementsContainer from '../components/pages/Reimbursements/Reimburs
 import SigninContainer from '../components/pages/Signin/SigninContainer'
 import SignupContainer from '../components/pages/Signup/SignupContainer'
 import SignupValidationContainer from '../components/pages/Signup/SignupValidation/SignupValidationContainer'
-import Terms from '../components/pages/Terms'
+import Terms from '../components/pages/Terms/Terms'
 import VenueContainer from '../components/pages/Venue/VenueContainer'
-import CsvDetailViewContainer from '../components/layout/CsvTable/CsvTableContainer'
 
 // NOTE: routes are sorted by PATH alphabetical order
 const routes = [
@@ -56,7 +56,7 @@ const routes = [
     title: 'Mentions Légales',
   },
   {
-    component: LostPassword,
+    component: LostPasswordContainer,
     path: '/mot-de-passe-perdu',
     title: 'Mot de passe perdu',
   },
