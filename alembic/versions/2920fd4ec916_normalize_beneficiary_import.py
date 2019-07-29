@@ -65,7 +65,7 @@ def upgrade():
     DELETE FROM beneficiary_import a
     USING beneficiary_import b
     WHERE
-        a.id > b.id
+        a.id < b.id
         AND a."demarcheSimplifieeApplicationId" = b."demarcheSimplifieeApplicationId"
     ;
     """)
