@@ -234,10 +234,14 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
             {
                 "key": "offer",
                 "sub_joins": [
+                    "dateRange",
                     "favorites",
                     "isFinished",
                     "isFullyBooked",
-                    "product",
+                    {
+                        "key": "product",
+                        "sub_joins": ["offerType", "thumbUrl"]
+                    },
                     "stocks",
                     "venue",
                 ]
