@@ -16,11 +16,10 @@ class IsAlreadyImportedTest:
         # given
         now = datetime.utcnow()
         user1 = create_user(email='user1@test.com', date_created=now)
-        user2 = create_user(email='user2@test.com', date_created=now)
         beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.CREATED,
                                                        demarche_simplifiee_application_id=123)
 
-        PcObject.save(beneficiary_import, user2)
+        PcObject.save(beneficiary_import)
 
         # when
         result = is_already_imported(123)
@@ -33,11 +32,10 @@ class IsAlreadyImportedTest:
         # given
         now = datetime.utcnow()
         user1 = create_user(email='user1@test.com', date_created=now)
-        user2 = create_user(email='user2@test.com', date_created=now)
         beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.DUPLICATE,
                                                        demarche_simplifiee_application_id=123)
 
-        PcObject.save(beneficiary_import, user2)
+        PcObject.save(beneficiary_import)
 
         # when
         result = is_already_imported(123)
@@ -50,11 +48,10 @@ class IsAlreadyImportedTest:
         # given
         now = datetime.utcnow()
         user1 = create_user(email='user1@test.com', date_created=now)
-        user2 = create_user(email='user2@test.com', date_created=now)
         beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.REJECTED,
                                                        demarche_simplifiee_application_id=123)
 
-        PcObject.save(beneficiary_import, user2)
+        PcObject.save(beneficiary_import)
 
         # when
         result = is_already_imported(123)
@@ -67,11 +64,10 @@ class IsAlreadyImportedTest:
         # given
         now = datetime.utcnow()
         user1 = create_user(email='user1@test.com', date_created=now)
-        user2 = create_user(email='user2@test.com', date_created=now)
         beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.ERROR,
                                                        demarche_simplifiee_application_id=123)
 
-        PcObject.save(beneficiary_import, user2)
+        PcObject.save(beneficiary_import)
 
         # when
         result = is_already_imported(123)
@@ -84,11 +80,10 @@ class IsAlreadyImportedTest:
         # given
         now = datetime.utcnow()
         user1 = create_user(email='user1@test.com', date_created=now)
-        user2 = create_user(email='user2@test.com', date_created=now)
         beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.RETRY,
                                                        demarche_simplifiee_application_id=123)
 
-        PcObject.save(beneficiary_import, user2)
+        PcObject.save(beneficiary_import)
 
         # when
         result = is_already_imported(123)
@@ -101,11 +96,10 @@ class IsAlreadyImportedTest:
         # given
         now = datetime.utcnow()
         user1 = create_user(email='user1@test.com', date_created=now)
-        user2 = create_user(email='user2@test.com', date_created=now)
         beneficiary_import = create_beneficiary_import(user1, status=ImportStatus.CREATED,
                                                        demarche_simplifiee_application_id=123)
 
-        PcObject.save(beneficiary_import, user2)
+        PcObject.save(beneficiary_import)
 
         # when
         result = is_already_imported(456)
