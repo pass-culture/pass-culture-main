@@ -225,8 +225,8 @@ class ThingType(SearchableType):
         'conditionalFields': ['speaker']
     }
     PRESSE_ABO = {
-        'proLabel': "Presse — Abonnements",
-        'appLabel': "Presse — Abonnements",
+        'proLabel': "Presse — abonnements",
+        'appLabel': "Presse — abonnements",
         'offlineOnly': False,
         'onlineOnly': True,
         'sublabel': "Lire",
@@ -243,8 +243,8 @@ class ThingType(SearchableType):
         'conditionalFields': []
     }
     SPECTACLE_VIVANT_ABO = {
-        'proLabel': "Spectacle vivant — Abonnements",
-        'appLabel': "Spectacle vivant — Abonnements",
+        'proLabel': "Spectacle vivant — abonnements",
+        'appLabel': "Spectacle vivant — abonnements",
         'offlineOnly': True,
         'onlineOnly': False,
         'sublabel': "Applaudir",
