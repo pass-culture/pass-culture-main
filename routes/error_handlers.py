@@ -1,5 +1,6 @@
 """ error handlers """
 import traceback
+from pprint import pprint
 
 import simplejson as json
 from flask import current_app as app, jsonify, request

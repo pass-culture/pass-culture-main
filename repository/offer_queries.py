@@ -30,9 +30,7 @@ def build_offer_search_base_query():
 
 
 def department_or_national_offers(query, departement_codes):
-    search_in_all_departements = (departement_codes is None) or ('00' in departement_codes)
-
-    if search_in_all_departements:
+    if '00' in departement_codes:
         return query
 
     query = query.filter(

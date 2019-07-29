@@ -1,13 +1,11 @@
-from models import PcObject
+from models import PcObject, Offer
 from tests.conftest import clean_database, TestClient
-from tests.test_utils import create_event_occurrence, \
-    create_offer_with_event_product, \
+from tests.test_utils import create_offer_with_event_product, \
     create_offerer, \
-    create_stock_from_event_occurrence, \
     create_user, \
     create_user_offerer, \
     create_venue, \
-    create_offer_with_thing_product
+    create_offer_with_thing_product, create_stock, create_stock_from_offer
 from utils.human_ids import humanize
 
 API_URL = '/venues/'
@@ -16,17 +14,16 @@ API_URL = '/venues/'
 class Put:
     class Returns401:
         @clean_database
-        def test_user_not_logged_in(self, app):
+        def when_the_user_is_not_logged_in(self, app):
             # Given
-            user = create_user(email='test@email.com')
+            user = create_user(email='test@example.net')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            event_occurrence1 = create_event_occurrence(offer)
-            stock1 = create_stock_from_event_occurrence(event_occurrence1)
+            stock = create_stock(offer=offer)
             PcObject.save(
-                stock1, user_offerer, venue
+                stock, user_offerer, venue
             )
 
             api_url = API_URL + humanize(venue.id) + '/offers/activate'
@@ -37,43 +34,43 @@ class Put:
             # then
             assert response.status_code == 401
 
+    class Returns403:
         @clean_database
-        def test_user_is_not_venue_managing_offerer(self, app):
+        def when_the_user_is_not_venue_managing_offerer(self, app):
             # Given
-            user = create_user(email='test@email.com')
-            user2 = create_user(email='test2@email.com')
+            user = create_user(email='test@example.net')
+            user_with_no_rights = create_user(email='user_with_no_rights@example.net')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            event_occurrence1 = create_event_occurrence(offer)
-            stock1 = create_stock_from_event_occurrence(event_occurrence1)
+            stock = create_stock_from_offer(offer)
             PcObject.save(
-                stock1, user_offerer, venue
+                stock, user_offerer, venue, user_with_no_rights
             )
 
             api_url = API_URL + humanize(venue.id) + '/offers/activate'
 
             # When
-            response = TestClient(app.test_client()).with_auth('test2@email.com') \
-            .put(api_url)
+            response = TestClient(app.test_client())\
+                .with_auth('user_with_no_rights@example.net')\
+                .put(api_url)
 
             # Then
-            assert response.status_code == 401
+            assert response.status_code == 403
 
 
     class Returns404:
         @clean_database
-        def test_venue_does_not_exist(self, app):
+        def when_the_venue_does_not_exist(self, app):
             # Given
-            user = create_user(email='test@email.com')
+            user = create_user(email='test@example.net')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             offer2 = create_offer_with_thing_product(venue)
-            event_occurrence1 = create_event_occurrence(offer)
-            stock1 = create_stock_from_event_occurrence(event_occurrence1)
+            stock1 = create_stock_from_offer(offer)
             offer.isActive = False
             offer2.isActive = False
             PcObject.save(
@@ -83,7 +80,7 @@ class Put:
             api_url = API_URL + '6TT67RTE/offers/activate'
 
             # When
-            response = TestClient(app.test_client()).with_auth('test@email.com') \
+            response = TestClient(app.test_client()).with_auth('test@example.net') \
             .put(api_url)
 
             # Then
@@ -92,16 +89,15 @@ class Put:
 
     class Returns200:
         @clean_database
-        def test_activate_all_venue_offers(self, app):
+        def when_activating_all_venue_offers(self, app):
             # Given
-            user = create_user(email='test@email.com')
+            user = create_user(email='test@example.net')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             offer2 = create_offer_with_thing_product(venue)
-            event_occurrence1 = create_event_occurrence(offer)
-            stock1 = create_stock_from_event_occurrence(event_occurrence1)
+            stock1 = create_stock_from_offer(offer)
             offer.isActive = False
             offer2.isActive = False
             PcObject.save(
@@ -111,26 +107,30 @@ class Put:
             api_url = API_URL + humanize(venue.id) + '/offers/activate'
 
             # When
-            response = TestClient(app.test_client()).with_auth('test@email.com') \
-            .put(api_url)
+            response = TestClient(app.test_client())\
+                .with_auth('test@example.net') \
+                .put(api_url)
 
             # Then
             assert response.status_code == 200
             assert response.json[0]['isActive'] == True
             assert response.json[1]['isActive'] == True
 
+            offers = Offer.query.all()
+            assert offers[0].isActive == True
+            assert offers[1].isActive == True
+
 
         @clean_database
-        def test_deactivate_all_venue_offers(self, app):
+        def when_deactivating_all_venue_offers(self, app):
             # Given
-            user = create_user(email='test@email.com')
+            user = create_user(email='test@example.net')
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             offer2 = create_offer_with_thing_product(venue)
-            event_occurrence1 = create_event_occurrence(offer)
-            stock1 = create_stock_from_event_occurrence(event_occurrence1)
+            stock1 = create_stock_from_offer(offer)
             PcObject.save(
                 offer2, stock1, user_offerer, venue
             )
@@ -138,10 +138,14 @@ class Put:
             api_url = API_URL + humanize(venue.id) + '/offers/deactivate'
 
             # When
-            response = TestClient(app.test_client()).with_auth('test@email.com') \
+            response = TestClient(app.test_client()).with_auth('test@example.net') \
             .put(api_url)
 
             # Then
             assert response.status_code == 200
             assert response.json[0]['isActive'] == False
             assert response.json[1]['isActive'] == False
+
+            offers = Offer.query.all()
+            assert offers[0].isActive == False
+            assert offers[1].isActive == False
