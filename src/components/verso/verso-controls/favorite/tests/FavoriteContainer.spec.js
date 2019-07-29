@@ -10,7 +10,7 @@ describe('src | components | verso | verso-controls | favorite | FavoriteContain
       const dispatch = jest.fn()
       const isFavorite = true
       const recommendation = {}
-      const state = {}
+      const state = { data: { features: [] } }
       const action = {}
 
       // when
@@ -37,7 +37,7 @@ describe('src | components | verso | verso-controls | favorite | FavoriteContain
       const dispatch = jest.fn()
       const isFavorite = false
       const recommendation = {}
-      const state = {}
+      const state = { data: { features: [] } }
       const action = {
         payload: {
           datum: 'toto',
@@ -64,7 +64,7 @@ describe('src | components | verso | verso-controls | favorite | FavoriteContain
     })
   })
 
-  describe('mapStateToProps()', () => {
+  describe('mapStateToProps', () => {
     it('should return the right props', () => {
       // given
       const ownProps = {
@@ -75,7 +75,7 @@ describe('src | components | verso | verso-controls | favorite | FavoriteContain
           },
         },
       }
-      const state = {}
+      const state = { data: { features: [] } }
       currentRecommendationSelector.mockReturnValue({
         offer: {
           favorites: [],
@@ -87,6 +87,7 @@ describe('src | components | verso | verso-controls | favorite | FavoriteContain
 
       // then
       expect(props).toStrictEqual({
+        isFeatureDisabled: true,
         recommendation: {
           offer: {
             favorites: [],
@@ -96,7 +97,7 @@ describe('src | components | verso | verso-controls | favorite | FavoriteContain
     })
   })
 
-  describe('mapDispatchToProps()', () => {
+  describe('mapDispatchToProps', () => {
     it('should add to favorites', () => {
       // given
       const dispatch = jest.fn()

@@ -1,17 +1,16 @@
 import selectIsFeatureDisabled from '../selectIsFeatureDisabled'
 
 describe('src | components | router | selectIsFeatureDisabled', () => {
-  it('should return true when null features', () => {
+  it('should return true when features is Empty', () => {
     // when
-    const state = { data: { features: null } }
+    const state = { data: { features: [] } }
     const featureName = null
 
     // when
-    const result = selectIsFeatureDisabled(state, featureName)
+    const isFeatureDisabled = selectIsFeatureDisabled(state, featureName)
 
     // then
-    const expected = true
-    expect(result).toStrictEqual(expected)
+    expect(isFeatureDisabled).toStrictEqual(true)
   })
 
   it('should return false when null featureName', () => {
@@ -20,24 +19,22 @@ describe('src | components | router | selectIsFeatureDisabled', () => {
     const featureName = null
 
     // when
-    const result = selectIsFeatureDisabled(state, featureName)
+    const isFeatureDisabled = selectIsFeatureDisabled(state, featureName)
 
     // then
-    const expected = false
-    expect(result).toStrictEqual(expected)
+    expect(isFeatureDisabled).toStrictEqual(false)
   })
 
-  it('should return false when selected feature is not found', () => {
+  it('should return true when selected feature is not found', () => {
     // when
     const state = { data: { features: [{ nameKey: 'FOO' }] } }
     const featureName = 'BAR'
 
     // when
-    const result = selectIsFeatureDisabled(state, featureName)
+    const isFeatureDisabled = selectIsFeatureDisabled(state, featureName)
 
     // then
-    const expected = false
-    expect(result).toStrictEqual(expected)
+    expect(isFeatureDisabled).toStrictEqual(true)
   })
 
   it('should return true when selected feature is not active', () => {
@@ -46,10 +43,9 @@ describe('src | components | router | selectIsFeatureDisabled', () => {
     const featureName = 'FOO'
 
     // when
-    const result = selectIsFeatureDisabled(state, featureName)
+    const isFeatureDisabled = selectIsFeatureDisabled(state, featureName)
 
     // then
-    const expected = true
-    expect(result).toStrictEqual(expected)
+    expect(isFeatureDisabled).toStrictEqual(true)
   })
 })

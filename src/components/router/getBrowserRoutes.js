@@ -1,10 +1,6 @@
 import { pipe } from '../../utils/functionnals'
 
-const removeHrefRoutes = routes =>
-  routes.filter(route => !route.href)
-
-const removeDisabledRoutes = routes =>
-  routes.filter(route => !route.disabled)
+const removeHrefRoutes = routes => routes.filter(route => !route.href)
 
 const extendRoutesWithExact = routes =>
   routes.map(obj => {
@@ -22,11 +18,11 @@ const addMenuViewToRoutesWithPath = routes =>
     return clone
   })
 
-const getBrowserRoutes = routes => pipe(
-  addMenuViewToRoutesWithPath,
-  removeHrefRoutes,
-  removeDisabledRoutes,
-  extendRoutesWithExact,
-)(routes)
+const getBrowserRoutes = routes =>
+  pipe(
+    addMenuViewToRoutesWithPath,
+    removeHrefRoutes,
+    extendRoutesWithExact
+  )(routes)
 
 export default getBrowserRoutes

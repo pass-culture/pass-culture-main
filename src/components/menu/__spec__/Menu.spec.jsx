@@ -59,7 +59,8 @@ describe('src | components | menu | Menu', () => {
     it('should open the menu with one CloseLink, one Header, two SimpleLink, five NavLink and one SignoutButton', () => {
       // given
       const history = createBrowserHistory()
-      const store = configureStore([])({})
+      const initialState = { data: { features: [] } }
+      const store = configureStore([])(initialState)
       const wrapper = mount(
         <Provider store={store}>
           <Router history={history}>

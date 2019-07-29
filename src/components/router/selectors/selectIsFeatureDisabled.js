@@ -6,7 +6,7 @@ const selectIsFeatureDisabled = createCachedSelector(
   state => state.data.features,
   (state, featureName) => featureName,
   (features, featureName) => {
-    if (!features) {
+    if (features.length === 0) {
       return true
     }
 
@@ -14,10 +14,10 @@ const selectIsFeatureDisabled = createCachedSelector(
       return false
     }
 
-    const selectedFeature = features.find(feature => feature.nameKey === featureName)
-
+    const selectedFeature = features.find(feature =>
+      feature.nameKey === featureName)
     if (!selectedFeature) {
-      return false
+      return true
     }
 
     return !selectedFeature.isActive

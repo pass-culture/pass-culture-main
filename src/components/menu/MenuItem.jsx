@@ -42,10 +42,9 @@ const MenuItem = ({ disabled, item }) => {
 MenuItem.propTypes = {
   disabled: PropTypes.bool.isRequired,
   item: PropTypes.shape({
-    disabled: PropTypes.bool,
     href: PropTypes.string,
     icon: PropTypes.string.isRequired,
-    path: PropTypes.string.isRequired,
+    path: PropTypes.string,
     target: PropTypes.string,
     title: PropTypes.string.isRequired,
   }).isRequired,

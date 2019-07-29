@@ -3,6 +3,7 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { mergeData, requestData } from 'redux-saga-data'
 
+import selectIsFeatureDisabled from '../../../router/selectors/selectIsFeatureDisabled'
 import currentRecommendationSelector from '../../../../selectors/currentRecommendation/currentRecommendation'
 import Favorite from './Favorite'
 
@@ -22,11 +23,15 @@ export const mergeDataWithStore = (dispatch, isFavorite, recommendation) => (sta
   )
 }
 
-export const mapStateToProps = (state, { match: { params } }) => {
+export const mapStateToProps = (state, ownProps) => {
+  const {
+    match: { params },
+  } = ownProps
   const { mediationId, offerId } = params
+  const isFeatureDisabled = selectIsFeatureDisabled(state, 'FAVORITE_OFFER')
   const recommendation = currentRecommendationSelector(state, offerId, mediationId) || {}
-
   return {
+    isFeatureDisabled,
     recommendation,
   }
 }

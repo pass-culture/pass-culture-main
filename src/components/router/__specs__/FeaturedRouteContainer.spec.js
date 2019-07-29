@@ -1,7 +1,7 @@
 import { mapDispatchToProps, mapStateToProps } from '../FeaturedRouteContainer'
 
 describe('src | components | router | FeaturedRouteContainer', () => {
-  describe('mapStateToProps()', () => {
+  describe('mapStateToProps', () => {
     it('should return features and isFeatureDisabled', () => {
       // given
       const state = { data: { features: [{ isActive: false, nameKey: 'FOO' }] } }
@@ -12,7 +12,7 @@ describe('src | components | router | FeaturedRouteContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        features: [{ isActive: false, nameKey: 'FOO' }],
+        areFeaturesLoaded: true,
         isFeatureDisabled: true,
       })
     })

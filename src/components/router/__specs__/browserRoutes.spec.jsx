@@ -8,10 +8,9 @@ describe('filterRoutes', () => {
       { path: '/toto/:vars?' },
       { exact: true, path: '/toto/:vars?/vars2?' },
       { exact: false, path: '/toto/:vars?/:vars2?/:vars3?' },
-      { disabled: true, path: '/inscription' },
       { href: 'maitlo:mail.cool' },
     ]
-    const result = getBrowserRoutes(routes)
+    const browserRoutes = getBrowserRoutes(routes)
     const expected = [
       { exact: true, path: '//:menu(menu)?' },
       { exact: true, path: '/toto/:menu(menu)?' },
@@ -19,6 +18,6 @@ describe('filterRoutes', () => {
       { exact: true, path: '/toto/:vars?/vars2?/:menu(menu)?' },
       { exact: false, path: '/toto/:vars?/:vars2?/:vars3?/:menu(menu)?' }
     ]
-    expect(result).toStrictEqual(expected)
+    expect(browserRoutes).toStrictEqual(expected)
   })
 })

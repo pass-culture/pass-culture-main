@@ -4,14 +4,8 @@ exports[`src | components | router | FeaturedRoute should match the snapshot 1`]
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <FeaturedRoute
+    areFeaturesLoaded={true}
     component={[Function]}
-    features={
-      Array [
-        Object {
-          "name": "FOO",
-        },
-      ]
-    }
     isFeatureDisabled={true}
     requestGetFeatures={[MockFunction]}
   />,
@@ -30,6 +24,7 @@ ShallowWrapper {
     "nodeType": "class",
     "props": Object {
       "component": [Function],
+      "path": undefined,
     },
     "ref": null,
     "rendered": null,
@@ -42,6 +37,7 @@ ShallowWrapper {
       "nodeType": "class",
       "props": Object {
         "component": [Function],
+        "path": undefined,
       },
       "ref": null,
       "rendered": null,

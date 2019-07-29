@@ -12,7 +12,7 @@ describe('src | reducers | data', () => {
       // then
       const expected = {
         bookings: [],
-        features: null,
+        features: [],
         readRecommendations: [],
         recommendations: [],
         types: [],

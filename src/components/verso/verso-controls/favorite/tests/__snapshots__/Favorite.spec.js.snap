@@ -53,7 +53,7 @@ ShallowWrapper {
         title="Ajouter aux favoris"
       />,
       "className": "fav-button",
-      "disabled": true,
+      "disabled": undefined,
       "onClick": undefined,
       "type": "button",
     },
@@ -85,7 +85,7 @@ ShallowWrapper {
           title="Ajouter aux favoris"
         />,
         "className": "fav-button",
-        "disabled": true,
+        "disabled": undefined,
         "onClick": undefined,
         "type": "button",
       },

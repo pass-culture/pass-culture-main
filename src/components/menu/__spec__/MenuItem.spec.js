@@ -27,8 +27,8 @@ describe('src | components | menu | MenuItem', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('render()', () => {
-    it('should render one Link and one Item when no href', () => {
+  describe('render', () => {
+    it('should render a router Link and an Item when no href', () => {
       // given
       const wrapper = shallow(<MenuItem {...props} />)
 
@@ -41,7 +41,7 @@ describe('src | components | menu | MenuItem', () => {
       expect(item).toHaveLength(1)
     })
 
-    it('should render one link and one Item when href', () => {
+    it('should render a standard HTML link and an Item when href', () => {
       // given
       props.item.href = 'https://foo.com'
       props.item.target = '_blank'

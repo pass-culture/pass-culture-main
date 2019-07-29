@@ -2,8 +2,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { toast } from 'react-toastify'
 
-import { isFeatureDisabled } from '../../../../utils/featureFlipping'
-
 const iconClass = isFavorite => `icon-ico-like${isFavorite ? '-on' : ''}`
 
 const alternativeText = isFavorite => (isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris')
@@ -12,13 +10,13 @@ const showFailModal = () => {
   toast('La gestion des favoris ne fonctionne pas pour le moment, veuillez ré-essayer plus tard.')
 }
 
-const Favorite = ({ handleFavorite, recommendation }) => {
+const Favorite = ({ handleFavorite, isFeatureDisabled, recommendation }) => {
   const isFavorite = recommendation.offer && recommendation.offer.favorites.length > 0
 
   return (
     <button
       className="fav-button"
-      disabled={isFeatureDisabled('FAVORITE_OFFER')}
+      disabled={isFeatureDisabled}
       onClick={handleFavorite(isFavorite, recommendation, showFailModal)}
       type="button"
     >
@@ -33,6 +31,7 @@ const Favorite = ({ handleFavorite, recommendation }) => {
 
 Favorite.propTypes = {
   handleFavorite: PropTypes.func.isRequired,
+  isFeatureDisabled: PropTypes.bool.isRequired,
   recommendation: PropTypes.shape().isRequired,
 }
 

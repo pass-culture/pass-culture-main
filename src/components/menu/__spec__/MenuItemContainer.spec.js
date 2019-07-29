@@ -18,8 +18,19 @@ describe('src | components | menu | MenuItemContainer', () => {
   })
 
   describe('mapStateToProps()', () => {
+    it('should return disabled when features are empty', () => {
+      // when
+      const result = mapStateToProps(state, props)
+
+      // then
+      expect(result).toStrictEqual({
+        disabled: true,
+      })
+    })
+
     it('should return not disabled when no featureName', () => {
       // given
+      state.data.features.push({ id: 'AE', isActive: true, nameKey: 'FOO' })
       props.featureName = undefined
 
       // when
@@ -31,13 +42,13 @@ describe('src | components | menu | MenuItemContainer', () => {
       })
     })
 
-    it('should return not disabled when no matching feature', () => {
+    it('should return disabled when no matching feature', () => {
       // when
       const result = mapStateToProps(state, props)
 
       // then
       expect(result).toStrictEqual({
-        disabled: false,
+        disabled: true,
       })
     })
 

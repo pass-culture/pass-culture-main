@@ -2,13 +2,13 @@ import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
 
 import FeaturedRoute from './FeaturedRoute'
-import selectIsFeatureDisabled from './selectIsFeatureDisabled'
+import selectIsFeatureDisabled from './selectors/selectIsFeatureDisabled'
 
 export const mapStateToProps = (state, ownProps) => {
   const { features } = state.data
   const { featureName } = ownProps
   return {
-    features,
+    areFeaturesLoaded: features.length > 0,
     isFeatureDisabled: selectIsFeatureDisabled(state, featureName),
   }
 }

@@ -4,7 +4,7 @@ import { Transition } from 'react-transition-group'
 
 import Header from './Header'
 import menuItems from './menuItems'
-import MenuItemContainer from './MenuItem'
+import MenuItemContainer from './MenuItemContainer'
 import SignoutButtonContainer from './SignoutButtonContainer'
 import CloseLink from '../layout/Header/CloseLink'
 
@@ -19,7 +19,8 @@ class Menu extends PureComponent {
     toggleOverlay()
   }
 
-  urlWithoutMenuElement = history => () => history.location.pathname.replace('/menu', '')
+  urlWithoutMenuElement = history => () =>
+    history.location.pathname.replace('/menu', '')
 
   render() {
     const { currentUser, history, readRecommendations } = this.props
@@ -44,7 +45,7 @@ class Menu extends PureComponent {
                   closeTitle="Fermer la navigation"
                   closeTo={this.urlWithoutMenuElement(history)()}
                 />
-                {currentUser && <Header currentUser={currentUser} />}
+                <Header currentUser={currentUser} />
                 <nav
                   className="flex-rows pb0"
                   id="main-menu-navigation"
@@ -52,7 +53,7 @@ class Menu extends PureComponent {
                   {menuItems.map(menuItem => (
                     <MenuItemContainer
                       item={menuItem}
-                      key={menuItem.path}
+                      key={menuItem.key}
                     />
                   ))}
                   <SignoutButtonContainer

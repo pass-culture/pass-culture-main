@@ -20,10 +20,10 @@ describe('getMenuItems', () => {
     ]
     const items = getMenuItems(testRoutes)
     const expected = [
-      { icon: 'toto', path: '/toto' },
-      { href: '/toto/:vars?', icon: 'toto' },
-      { icon: 'toto', path: '/toto' },
-      { href: 'mailto:mail.cool', icon: 'toto' },
+      { icon: 'toto', key: '/toto', path: '/toto' },
+      { href: '/toto/:vars?', icon: 'toto', key: '/toto/:vars?' },
+      { icon: 'toto', key: '/toto', path: '/toto' },
+      { href: 'mailto:mail.cool', icon: 'toto', key: 'mailto:mail.cool' },
     ]
     expect(items).toStrictEqual(expected)
   })
@@ -35,24 +35,28 @@ describe('getMenuItems', () => {
       {
         component: DiscoveryContainer,
         icon: 'offres-w',
+        key: '/decouverte',
         path: '/decouverte',
         title: 'Les offres',
       },
       {
         component: SearchContainer,
         icon: 'search-w',
+        key: '/recherche',
         path: '/recherche',
         title: 'Recherche',
       },
       {
         component: MyBookingsContainer,
         icon: 'calendar-w',
+        key: '/reservations',
         path: '/reservations',
         title: 'Mes réservations',
       },
       {
         component: FavoritesPage,
         featureName: 'FAVORITE_OFFER',
+        key: '/favoris',
         icon: 'like-w',
         path: '/favoris',
         title: 'Mes préférés',
@@ -60,17 +64,21 @@ describe('getMenuItems', () => {
       {
         component: ProfilePage,
         icon: 'user-w',
+        key: '/profil',
         path: '/profil',
         title: 'Mon compte',
       },
       {
         href: 'https://docs.passculture.app/experimentateurs',
         icon: 'help-w',
+        key: 'https://docs.passculture.app/experimentateurs',
         target: '_blank',
         title: 'Aide',
       },
       {
         href:
+          'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture',
+        key:
           'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture',
         icon: 'txt-w',
         target: '_blank',
