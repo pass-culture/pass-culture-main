@@ -72,7 +72,7 @@ test('Je peux créer un lieu sans SIRET', async t => {
   )
   const { id: offererId } = offerer
   const address = '1 place du trocadéro Paris'
-  const city = 'Paris 16e Arrondissement'
+  const city = 'Paris'
   const comment = 'Test sans SIRET'
   const latitude = '48.862412'
   const longitude = '2.282002'
