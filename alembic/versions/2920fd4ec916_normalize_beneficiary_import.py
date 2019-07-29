@@ -62,11 +62,8 @@ def upgrade():
     """)
 
     op.execute("""
-    DELETE FROM beneficiary_import a
-    USING beneficiary_import b
-    WHERE
-        a.id < b.id
-        AND a."demarcheSimplifieeApplicationId" = b."demarcheSimplifieeApplicationId"
+    DELETE FROM beneficiary_import
+    WHERE id NOT IN (SELECT DISTINCT "beneficiaryImportId" FROM beneficiary_import_status)
     ;
     """)
 
