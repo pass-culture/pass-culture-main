@@ -54,10 +54,11 @@ def upgrade():
 
     op.execute("""
     UPDATE beneficiary_import_status a
-    SET "beneficiaryImportId" = b."beneficiaryImportId"
-    FROM beneficiary_import_status b
-    WHERE a."demarcheSimplifieeApplicationId" = b."demarcheSimplifieeApplicationId"
-    AND a.id > b.id
+    SET "beneficiaryImportId" = (
+        SELECT MIN(b."beneficiaryImportId")
+        FROM beneficiary_import_status b
+        WHERE a."demarcheSimplifieeApplicationId" = b."demarcheSimplifieeApplicationId"
+    )
     ;
     """)
 
