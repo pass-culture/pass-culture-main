@@ -490,7 +490,7 @@ def create_venue(
     return venue
 
 
-def create_deposit(user, date, amount=50, source='public'):
+def create_deposit(user, date='2019-01-01', amount=50, source='public'):
     deposit = Deposit()
     deposit.user = user
     deposit.source = source
