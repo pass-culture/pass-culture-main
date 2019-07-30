@@ -33,7 +33,7 @@ function tag_hotfix {
     echo --- Tag Main $TAG_VERSION---
     cd "$ROOT_PATH"
     git checkout -b hotfix-$TAG_VERSION
-    git add .
+    git add api doc pro pro-packed-staging shared webapp webapp-packed-staging
     git commit -m "🚀 $TAG_VERSION"
     git tag "$TAG_VERSION"
     git push origin $current_branch
@@ -41,5 +41,3 @@ function tag_hotfix {
 
     echo "New version tagged : $TAG_NAME"
 }
-
-

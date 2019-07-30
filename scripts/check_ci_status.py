@@ -28,16 +28,15 @@ def main():
     tag_name = sys.argv[2]
 
     branch_name = 'hotfix-v' + tag_name
-    print(branch_name)
     project_jobs_infos = get_project_jobs_infos(branch_name)
 
     if not project_jobs_infos:
-        print('Could not find projects jobs informations on tag branch, trying in master branch')
+        print('Could not find project jobs informations on tag branch, trying in master branch')
         branch_name = "master"
         project_jobs_infos = get_project_jobs_infos(branch_name)
 
     if not project_jobs_infos:
-        print('Error : Could not find projects jobs informations')
+        print('Error : Could not find project jobs informations')
         sys.exit(1)
 
     for test_name in tests_names:
@@ -47,7 +46,7 @@ def main():
             print('Error, job ', test_name, " has status ", commit_status, "for commit ", commit_sha1)
             sys.exit(1)
 
-    print('Found all previous successfull build job, ready to deploy ')
+    print('Found all previous successful jobs, ready to deploy ')
     sys.exit(0)
 
 
