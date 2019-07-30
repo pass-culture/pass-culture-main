@@ -44,3 +44,13 @@ class Get:
             # Then
             assert response.status_code == 200
             assert len(response.json) == 2
+
+    class Returns403:
+        @clean_database
+        def when_user_is_not_logged_in(self, app):
+            # When
+            response = TestClient(app.test_client()) \
+                .get(API_URL + '/favorites')
+
+            # Then
+            assert response.status_code == 401
