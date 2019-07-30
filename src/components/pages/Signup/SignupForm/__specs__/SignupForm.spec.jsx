@@ -201,26 +201,6 @@ describe('src | components | pages | Signup | SignupForm', () => {
       expect(field.prop('type')).toBe('checkbox')
     })
 
-    it('should render a Field component for cgu agreement with the right props', () => {
-      // when
-      const wrapper = shallow(<SignupForm {...props} />)
-
-      // then
-      const field = wrapper.find(Field).at(8)
-      expect(field.prop('label')).toStrictEqual(
-        <React.Fragment>{'J’ai lu et j’accepte les '}
-          <a
-            href="https://pass-culture.gitbook.io/documents/textes-normatifs"
-            id="accept-cgu-link"
-            rel="noopener noreferrer"
-            target="_blank">Conditions Générales d’Utilisation
-          </a>
-        </React.Fragment>)
-      expect(field.prop('name')).toBe('cgu_ok')
-      expect(field.prop('required')).toBe(true)
-      expect(field.prop('type')).toBe('checkbox')
-    })
-
     it('should render errors when provided', () => {
       // given
       props.errors = ['error1']
