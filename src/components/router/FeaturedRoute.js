@@ -16,14 +16,14 @@ class FeaturedRoute extends PureComponent {
   }
 
   render() {
-    const { areFeaturesLoaded, disabled, ...routeProps } = this.props
+    const { areFeaturesLoaded, isRouteDisabled, ...routeProps } = this.props
     const { path } = routeProps
 
     if (!areFeaturesLoaded) {
       return null
     }
 
-    if (disabled) {
+    if (isRouteDisabled) {
       return (<Route
         component={NotMatch}
         path={path}
@@ -36,7 +36,7 @@ class FeaturedRoute extends PureComponent {
 
 FeaturedRoute.propTypes = {
   areFeaturesLoaded: PropTypes.bool.isRequired,
-  disabled: PropTypes.bool.isRequired,
+  isRouteDisabled: PropTypes.bool.isRequired,
   requestGetFeatures: PropTypes.func.isRequired,
 }
 

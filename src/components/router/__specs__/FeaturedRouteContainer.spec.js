@@ -13,7 +13,7 @@ describe('src | components | router | FeaturedRouteContainer', () => {
       // then
       expect(result).toStrictEqual({
         areFeaturesLoaded: true,
-        disabled: true,
+        isRouteDisabled: true,
       })
     })
   })

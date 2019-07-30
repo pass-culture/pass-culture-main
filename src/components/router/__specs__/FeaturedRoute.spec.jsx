@@ -13,7 +13,7 @@ describe('src | components | router | FeaturedRoute', () => {
     const props = {
       areFeaturesLoaded: true,
       component: Foo,
-      disabled: false,
+      isRouteDisabled: false,
       requestGetFeatures: jest.fn()
     }
 
@@ -32,7 +32,7 @@ describe('src | components | router | FeaturedRoute', () => {
       const props = {
         areFeaturesLoaded: false,
         component: Foo,
-        disabled: false,
+        isRouteDisabled: false,
         requestGetFeatures: jest.fn()
       }
 
@@ -49,7 +49,7 @@ describe('src | components | router | FeaturedRoute', () => {
       const props = {
         areFeaturesLoaded: false,
         component: Foo,
-        disabled: false,
+        isRouteDisabled: false,
         requestGetFeatures: jest.fn()
       }
 
@@ -67,7 +67,7 @@ describe('src | components | router | FeaturedRoute', () => {
       const props = {
         areFeaturesLoaded: true,
         component: Foo,
-        disabled: true,
+        isRouteDisabled: true,
         requestGetFeatures: jest.fn()
       }
 
@@ -86,7 +86,7 @@ describe('src | components | router | FeaturedRoute', () => {
       const props = {
         areFeaturesLoaded: true,
         component: Foo,
-        disabled: true,
+        isRouteDisabled: true,
         requestGetFeatures: jest.fn()
       }
 
@@ -104,7 +104,7 @@ describe('src | components | router | FeaturedRoute', () => {
       const props = {
         areFeaturesLoaded: true,
         component: Foo,
-        disabled: false,
+        isRouteDisabled: false,
         requestGetFeatures: jest.fn()
       }
 
@@ -123,7 +123,7 @@ describe('src | components | router | FeaturedRoute', () => {
       const props = {
         areFeaturesLoaded: true,
         component: Foo,
-        disabled: false,
+        isRouteDisabled: false,
         requestGetFeatures: jest.fn()
       }
 
