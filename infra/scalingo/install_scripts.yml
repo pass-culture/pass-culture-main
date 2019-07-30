@@ -32,6 +32,7 @@
       loop:
         - "data_staging.csv"
         - "data_testing.csv"
+        - "import_users.py"
 
     - name: Create /usr/local/bin/curator directory
       file:
