@@ -24,6 +24,7 @@ def check_valid_signup(request):
     contact_ok = request.json.get('contact_ok')
     password = request.json.get('password')
     email = request.json.get('email')
+    phone_number = request.json.get('phoneNumber')
     if email is None:
         errors = ApiErrors()
         errors.add_error('email', 'Vous devez renseigner un email.')
@@ -36,6 +37,11 @@ def check_valid_signup(request):
     if not password:
         errors = ApiErrors()
         errors.add_error('password', 'Vous devez renseigner un mot de passe.')
+        raise errors
+
+    if phone_number is None:
+        errors = ApiErrors()
+        errors.add_error('phoneNumber', 'Vous devez renseigner un numéro de téléphone.')
         raise errors
 
 
