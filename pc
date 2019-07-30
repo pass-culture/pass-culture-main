@@ -375,6 +375,14 @@ elif [[ "$CMD" == "tag-version-backend" ]] \
     exit_success_restoring_branch
   fi
 
+# Tag new hotfix version using main repo
+elif [[ "$CMD" == "tag-hotfix" ]]; then
+  if [[ "$TAG_NAME" ]]; then
+    source "$ROOT_PATH"/infra/pc_scripts/pc_hotfix.sh
+    tag_hotfix $TAG_NAME
+    exit 0
+  fi
+
 # Tag new version using main repo
 elif [[ "$CMD" == "tag" ]]; then
 
