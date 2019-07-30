@@ -95,7 +95,6 @@ ShallowWrapper {
               type="email"
             />
             <Field
-              autoComplete="new-password"
               displayValue={[Function]}
               errors={null}
               info="
@@ -118,7 +117,6 @@ ShallowWrapper {
               type="password"
             />
             <Field
-              autoComplete="last-name"
               displayValue={[Function]}
               errors={null}
               label="Nom"
@@ -130,7 +128,6 @@ ShallowWrapper {
               storeValue={[Function]}
             />
             <Field
-              autoComplete="first-name"
               displayValue={[Function]}
               errors={null}
               label="Prénom"
@@ -142,7 +139,6 @@ ShallowWrapper {
               storeValue={[Function]}
             />
             <Field
-              autoComplete="phone-number"
               displayValue={[Function]}
               errors={null}
               label="Téléphone"
@@ -319,7 +315,6 @@ ShallowWrapper {
                 type="email"
               />
               <Field
-                autoComplete="new-password"
                 displayValue={[Function]}
                 errors={null}
                 info="
@@ -342,7 +337,6 @@ ShallowWrapper {
                 type="password"
               />
               <Field
-                autoComplete="last-name"
                 displayValue={[Function]}
                 errors={null}
                 label="Nom"
@@ -354,7 +348,6 @@ ShallowWrapper {
                 storeValue={[Function]}
               />
               <Field
-                autoComplete="first-name"
                 displayValue={[Function]}
                 errors={null}
                 label="Prénom"
@@ -366,7 +359,6 @@ ShallowWrapper {
                 storeValue={[Function]}
               />
               <Field
-                autoComplete="phone-number"
                 displayValue={[Function]}
                 errors={null}
                 label="Téléphone"
@@ -581,7 +573,6 @@ ShallowWrapper {
                   type="email"
                 />
                 <Field
-                  autoComplete="new-password"
                   displayValue={[Function]}
                   errors={null}
                   info="
@@ -604,7 +595,6 @@ ShallowWrapper {
                   type="password"
                 />
                 <Field
-                  autoComplete="last-name"
                   displayValue={[Function]}
                   errors={null}
                   label="Nom"
@@ -616,7 +606,6 @@ ShallowWrapper {
                   storeValue={[Function]}
                 />
                 <Field
-                  autoComplete="first-name"
                   displayValue={[Function]}
                   errors={null}
                   label="Prénom"
@@ -628,7 +617,6 @@ ShallowWrapper {
                   storeValue={[Function]}
                 />
                 <Field
-                  autoComplete="phone-number"
                   displayValue={[Function]}
                   errors={null}
                   label="Téléphone"
@@ -768,7 +756,6 @@ ShallowWrapper {
                     type="email"
                   />,
                   <Field
-                    autoComplete="new-password"
                     displayValue={[Function]}
                     errors={null}
                     info="
@@ -791,7 +778,6 @@ ShallowWrapper {
                     type="password"
                   />,
                   <Field
-                    autoComplete="last-name"
                     displayValue={[Function]}
                     errors={null}
                     label="Nom"
@@ -803,7 +789,6 @@ ShallowWrapper {
                     storeValue={[Function]}
                   />,
                   <Field
-                    autoComplete="first-name"
                     displayValue={[Function]}
                     errors={null}
                     label="Prénom"
@@ -815,7 +800,6 @@ ShallowWrapper {
                     storeValue={[Function]}
                   />,
                   <Field
-                    autoComplete="phone-number"
                     displayValue={[Function]}
                     errors={null}
                     label="Téléphone"
@@ -921,7 +905,6 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "class",
                   "props": Object {
-                    "autoComplete": "new-password",
                     "displayValue": [Function],
                     "errors": null,
                     "info": "
@@ -952,7 +935,6 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "class",
                   "props": Object {
-                    "autoComplete": "last-name",
                     "displayValue": [Function],
                     "errors": null,
                     "label": "Nom",
@@ -972,7 +954,6 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "class",
                   "props": Object {
-                    "autoComplete": "first-name",
                     "displayValue": [Function],
                     "errors": null,
                     "label": "Prénom",
@@ -992,7 +973,6 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "class",
                   "props": Object {
-                    "autoComplete": "phone-number",
                     "displayValue": [Function],
                     "errors": null,
                     "label": "Téléphone",
@@ -1262,7 +1242,6 @@ ShallowWrapper {
                 type="email"
               />
               <Field
-                autoComplete="new-password"
                 displayValue={[Function]}
                 errors={null}
                 info="
@@ -1285,7 +1264,6 @@ ShallowWrapper {
                 type="password"
               />
               <Field
-                autoComplete="last-name"
                 displayValue={[Function]}
                 errors={null}
                 label="Nom"
@@ -1297,7 +1275,6 @@ ShallowWrapper {
                 storeValue={[Function]}
               />
               <Field
-                autoComplete="first-name"
                 displayValue={[Function]}
                 errors={null}
                 label="Prénom"
@@ -1309,7 +1286,6 @@ ShallowWrapper {
                 storeValue={[Function]}
               />
               <Field
-                autoComplete="phone-number"
                 displayValue={[Function]}
                 errors={null}
                 label="Téléphone"
@@ -1486,7 +1462,6 @@ ShallowWrapper {
                   type="email"
                 />
                 <Field
-                  autoComplete="new-password"
                   displayValue={[Function]}
                   errors={null}
                   info="
@@ -1509,7 +1484,6 @@ ShallowWrapper {
                   type="password"
                 />
                 <Field
-                  autoComplete="last-name"
                   displayValue={[Function]}
                   errors={null}
                   label="Nom"
@@ -1521,7 +1495,6 @@ ShallowWrapper {
                   storeValue={[Function]}
                 />
                 <Field
-                  autoComplete="first-name"
                   displayValue={[Function]}
                   errors={null}
                   label="Prénom"
@@ -1533,7 +1506,6 @@ ShallowWrapper {
                   storeValue={[Function]}
                 />
                 <Field
-                  autoComplete="phone-number"
                   displayValue={[Function]}
                   errors={null}
                   label="Téléphone"
@@ -1748,7 +1720,6 @@ ShallowWrapper {
                     type="email"
                   />
                   <Field
-                    autoComplete="new-password"
                     displayValue={[Function]}
                     errors={null}
                     info="
@@ -1771,7 +1742,6 @@ ShallowWrapper {
                     type="password"
                   />
                   <Field
-                    autoComplete="last-name"
                     displayValue={[Function]}
                     errors={null}
                     label="Nom"
@@ -1783,7 +1753,6 @@ ShallowWrapper {
                     storeValue={[Function]}
                   />
                   <Field
-                    autoComplete="first-name"
                     displayValue={[Function]}
                     errors={null}
                     label="Prénom"
@@ -1795,7 +1764,6 @@ ShallowWrapper {
                     storeValue={[Function]}
                   />
                   <Field
-                    autoComplete="phone-number"
                     displayValue={[Function]}
                     errors={null}
                     label="Téléphone"
@@ -1935,7 +1903,6 @@ ShallowWrapper {
                       type="email"
                     />,
                     <Field
-                      autoComplete="new-password"
                       displayValue={[Function]}
                       errors={null}
                       info="
@@ -1958,7 +1925,6 @@ ShallowWrapper {
                       type="password"
                     />,
                     <Field
-                      autoComplete="last-name"
                       displayValue={[Function]}
                       errors={null}
                       label="Nom"
@@ -1970,7 +1936,6 @@ ShallowWrapper {
                       storeValue={[Function]}
                     />,
                     <Field
-                      autoComplete="first-name"
                       displayValue={[Function]}
                       errors={null}
                       label="Prénom"
@@ -1982,7 +1947,6 @@ ShallowWrapper {
                       storeValue={[Function]}
                     />,
                     <Field
-                      autoComplete="phone-number"
                       displayValue={[Function]}
                       errors={null}
                       label="Téléphone"
@@ -2088,7 +2052,6 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "class",
                     "props": Object {
-                      "autoComplete": "new-password",
                       "displayValue": [Function],
                       "errors": null,
                       "info": "
@@ -2119,7 +2082,6 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "class",
                     "props": Object {
-                      "autoComplete": "last-name",
                       "displayValue": [Function],
                       "errors": null,
                       "label": "Nom",
@@ -2139,7 +2101,6 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "class",
                     "props": Object {
-                      "autoComplete": "first-name",
                       "displayValue": [Function],
                       "errors": null,
                       "label": "Prénom",
@@ -2159,7 +2120,6 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "class",
                     "props": Object {
-                      "autoComplete": "phone-number",
                       "displayValue": [Function],
                       "errors": null,
                       "label": "Téléphone",

@@ -92,7 +92,6 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
       // then
       const field = wrapper.find(Field).at(1)
-      expect(field.prop('autoComplete')).toBe('new-password')
       expect(field.prop('info')).toBe(infoContent)
       expect(field.prop('label')).toBe('Mot de passe')
       expect(field.prop('name')).toBe('password')
@@ -108,7 +107,6 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
       // then
       const field = wrapper.find(Field).at(2)
-      expect(field.prop('autoComplete')).toBe('last-name')
       expect(field.prop('label')).toBe('Nom')
       expect(field.prop('name')).toBe('lastName')
       expect(field.prop('placeholder')).toBe('Mon nom')
@@ -121,7 +119,6 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
       // then
       const field = wrapper.find(Field).at(3)
-      expect(field.prop('autoComplete')).toBe('first-name')
       expect(field.prop('label')).toBe('Prénom')
       expect(field.prop('name')).toBe('firstName')
       expect(field.prop('placeholder')).toBe('Mon prénom')
@@ -134,7 +131,6 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
       // then
       const field = wrapper.find(Field).at(4)
-      expect(field.prop('autoComplete')).toBe('phone-number')
       expect(field.prop('label')).toBe('Téléphone')
       expect(field.prop('name')).toBe('phoneNumber')
       expect(field.prop('placeholder')).toBe('Mon numéro de téléphone')

@@ -79,7 +79,6 @@ class SignupForm extends PureComponent {
                 type="email"
               />
               <Field
-                autoComplete="new-password"
                 info={this.renderPasswordTooltip()
                 }
                 label="Mot de passe"
@@ -90,21 +89,18 @@ class SignupForm extends PureComponent {
                 type="password"
               />
               <Field
-                autoComplete="last-name"
                 label="Nom"
                 name="lastName"
                 placeholder="Mon nom"
                 required
               />
               <Field
-                autoComplete="first-name"
                 label="Prénom"
                 name="firstName"
                 placeholder="Mon prénom"
                 required
               />
               <Field
-                autoComplete="phone-number"
                 label="Téléphone"
                 name="phoneNumber"
                 placeholder="Mon numéro de téléphone"
