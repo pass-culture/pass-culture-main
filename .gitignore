@@ -7,9 +7,9 @@ development_env_file
 *.pgdump
 *.iml
 
-artillery/reports/*
-artillery/*.retry
-artillery/user_list_with_password
+infra/artillery/reports/*
+infra/artillery/*.retry
+infra/artillery/user_list_with_password
 infra/scalingo/files/data_staging.csv
 infra/scalingo/files/data_testing.csv
 

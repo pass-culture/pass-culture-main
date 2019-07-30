@@ -75,6 +75,7 @@ PGPASSWORD="$PG_PASSWORD" pg_restore --host 127.0.0.1 \
                                          --port 10000 \
                                          --username "$PG_USER" \
                                          --no-owner \
+                                         -j 2 \
                                          --no-privileges \
                                          --dbname "$PG_DATABASE" \
                                          "$DUMP_DIRECTORY"/"$BACKUP_FILE" 2>&1 | grep -v 'must be owner of extension' \
