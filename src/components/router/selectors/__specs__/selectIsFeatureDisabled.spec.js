@@ -13,7 +13,7 @@ describe('src | components | router | selectIsFeatureDisabled', () => {
     expect(isFeatureDisabled).toStrictEqual(true)
   })
 
-  it('should return false when null featureName', () => {
+  it('should return true when featureName is falsy', () => {
     // when
     const state = { data: { features: [{ nameKey: 'FOO' }] } }
     const featureName = null
@@ -22,7 +22,7 @@ describe('src | components | router | selectIsFeatureDisabled', () => {
     const isFeatureDisabled = selectIsFeatureDisabled(state, featureName)
 
     // then
-    expect(isFeatureDisabled).toStrictEqual(false)
+    expect(isFeatureDisabled).toStrictEqual(true)
   })
 
   it('should return true when selected feature is not found', () => {

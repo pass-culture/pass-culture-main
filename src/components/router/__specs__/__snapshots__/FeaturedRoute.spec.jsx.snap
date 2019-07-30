@@ -6,7 +6,7 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <FeaturedRoute
     areFeaturesLoaded={true}
     component={[Function]}
-    isFeatureDisabled={true}
+    disabled={false}
     requestGetFeatures={[MockFunction]}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -24,7 +24,7 @@ ShallowWrapper {
     "nodeType": "class",
     "props": Object {
       "component": [Function],
-      "path": undefined,
+      "requestGetFeatures": [MockFunction],
     },
     "ref": null,
     "rendered": null,
@@ -37,7 +37,7 @@ ShallowWrapper {
       "nodeType": "class",
       "props": Object {
         "component": [Function],
-        "path": undefined,
+        "requestGetFeatures": [MockFunction],
       },
       "ref": null,
       "rendered": null,

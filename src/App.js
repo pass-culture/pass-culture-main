@@ -24,10 +24,7 @@ const getBodyClass = obj => {
 }
 
 const App = ({ children, history, location }) => {
-  const currentRouteObj = getCurrentRouteObjectByPath(
-    browserRoutes,
-    location.pathname
-  )
+  const currentRouteObj = getCurrentRouteObjectByPath(browserRoutes, location.pathname)
   const bodyClass = getBodyClass(currentRouteObj)
   const pageTitle = getPageTitle(currentRouteObj)
   return (
@@ -41,7 +38,11 @@ const App = ({ children, history, location }) => {
           {/* TODO: mettre ici le composant from password */}
           {children}
           <Overlay />
-          <Route component={MenuContainer} history={history} path="*/menu" />
+          <Route
+            component={MenuContainer}
+            history={history}
+            path="*/menu"
+          />
           <Splash />
           <SharePopin />
           <Notifications />

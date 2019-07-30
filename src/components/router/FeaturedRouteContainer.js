@@ -7,9 +7,10 @@ import selectIsFeatureDisabled from './selectors/selectIsFeatureDisabled'
 export const mapStateToProps = (state, ownProps) => {
   const { features } = state.data
   const { featureName } = ownProps
+  const disabled = featureName ? selectIsFeatureDisabled(state, featureName) : false
   return {
     areFeaturesLoaded: features.length > 0,
-    isFeatureDisabled: selectIsFeatureDisabled(state, featureName),
+    disabled,
   }
 }
 

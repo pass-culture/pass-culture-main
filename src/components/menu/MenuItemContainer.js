@@ -6,7 +6,7 @@ import selectIsFeatureDisabled from '../router/selectors/selectIsFeatureDisabled
 export const mapStateToProps = (state, ownProps) => {
   const { item } = ownProps
   const { featureName } = item
-  const disabled = selectIsFeatureDisabled(state, featureName)
+  const disabled = featureName ? selectIsFeatureDisabled(state, featureName) : false
   return {
     disabled,
   }

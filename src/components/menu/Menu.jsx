@@ -53,7 +53,7 @@ class Menu extends PureComponent {
                   {menuItems.map(menuItem => (
                     <MenuItemContainer
                       item={menuItem}
-                      key={menuItem.key}
+                      key={menuItem.href || menuItem.path}
                     />
                   ))}
                   <SignoutButtonContainer

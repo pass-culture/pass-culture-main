@@ -13,6 +13,7 @@ describe('src | components | router | FeaturedRoute', () => {
     const props = {
       areFeaturesLoaded: true,
       component: Foo,
+      disabled: false,
       requestGetFeatures: jest.fn()
     }
 
@@ -26,11 +27,12 @@ describe('src | components | router | FeaturedRoute', () => {
 
 
   describe('when features are not yet loaded', () => {
-    it('should render null when features', () => {
+    it('should render null', () => {
       // given
       const props = {
         areFeaturesLoaded: false,
         component: Foo,
+        disabled: false,
         requestGetFeatures: jest.fn()
       }
 
@@ -42,11 +44,12 @@ describe('src | components | router | FeaturedRoute', () => {
       expect(routeWrapper).toHaveLength(0)
     })
 
-    it('should call requestGetFeatures when features', () => {
+    it('should call requestGetFeatures', () => {
       // given
       const props = {
         areFeaturesLoaded: false,
         component: Foo,
+        disabled: false,
         requestGetFeatures: jest.fn()
       }
 
@@ -58,13 +61,13 @@ describe('src | components | router | FeaturedRoute', () => {
     })
   })
 
-  describe('when features are loaded and isFeatureDisabled', () => {
-    it('should render NotMatch when features are loaded and isFeatureDisabled', () => {
+  describe('when features are loaded and disabled', () => {
+    it('should render NotMatch', () => {
       // given
       const props = {
         areFeaturesLoaded: true,
         component: Foo,
-        isFeatureDisabled: true,
+        disabled: true,
         requestGetFeatures: jest.fn()
       }
 
@@ -78,12 +81,12 @@ describe('src | components | router | FeaturedRoute', () => {
       expect(props.requestGetFeatures).toHaveBeenCalledTimes(0)
     })
 
-    it('should not call requestGetFeatures when features are loaded', () => {
+    it('should not call requestGetFeatures', () => {
       // given
       const props = {
         areFeaturesLoaded: true,
         component: Foo,
-        isFeatureDisabled: true,
+        disabled: true,
         requestGetFeatures: jest.fn()
       }
 
@@ -95,13 +98,13 @@ describe('src | components | router | FeaturedRoute', () => {
     })
   })
 
-  describe('when features are loaded and not isFeatureDisabled', () => {
+  describe('when features are loaded and not disabled', () => {
     it('should render Foo', () => {
       // given
       const props = {
         areFeaturesLoaded: true,
         component: Foo,
-        isFeatureDisabled: false,
+        disabled: false,
         requestGetFeatures: jest.fn()
       }
 
@@ -115,12 +118,12 @@ describe('src | components | router | FeaturedRoute', () => {
       expect(props.requestGetFeatures).toHaveBeenCalledTimes(0)
     })
 
-    it('should not call props.requestGetFeatures', () => {
+    it('should not call requestGetFeatures', () => {
       // given
       const props = {
         areFeaturesLoaded: true,
         component: Foo,
-        isFeatureDisabled: false,
+        disabled: false,
         requestGetFeatures: jest.fn()
       }
 
