@@ -7,7 +7,7 @@ const initGeolocation = store => {
   }
 
   const tenMinutes = 10 * 60 * 1000
-  const fiveSeconds = 5 * 1000
+  const oneMinute = 1 * 60 * 1000
   const watchId = navigator.geolocation.watchPosition(
     position => {
       store.dispatch(setGeolocationPosition(position.coords))
@@ -16,7 +16,7 @@ const initGeolocation = store => {
     {
       enableHighAccuracy: false,
       maximumAge: tenMinutes,
-      timeout: fiveSeconds,
+      timeout: oneMinute,
     }
   )
 
