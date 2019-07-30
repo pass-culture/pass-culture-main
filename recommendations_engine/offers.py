@@ -3,7 +3,7 @@ from typing import List
 
 from domain.departments import get_departement_codes_from_user
 from models import Offer
-from repository.offer_queries import get_active_offers, order_offers_for_recommendations_with_criteria
+from repository.offer_queries import get_active_offers, order_by_with_criteria
 from utils.logger import logger
 
 
@@ -15,7 +15,7 @@ def get_offers_for_recommendations_discovery(limit=3, user=None) -> List[Offer]:
 
     offers = get_active_offers(departement_codes=departement_codes,
                                limit=limit,
-                               order_offers_for_recommendations=order_offers_for_recommendations_with_criteria)
+                               order_by=order_by_with_criteria)
 
     logger.debug(lambda: '(reco) final offers (events + things) count (%i)',
                  len(offers))

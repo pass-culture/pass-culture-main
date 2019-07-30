@@ -13,10 +13,12 @@ from postgresql_audit.flask import versioning_manager
 
 import models
 from models import Booking, \
+    Criterion, \
     Deposit, \
     EventType, \
     Mediation, \
     Offer, \
+    OfferCriterion, \
     Offerer, \
     Payment, \
     Recommendation, \
@@ -131,6 +133,14 @@ def create_booking_for_event(
     booking.token = random_token()
     booking.dateCreated = date_created
     return booking
+
+
+def create_criterion(name='best offer', description=None, score_delta=1):
+    criterion = Criterion()
+    criterion.name = name
+    criterion.description = description
+    criterion.scoreDelta = score_delta
+    return criterion
 
 
 def create_user(public_name='John Doe', password=None, first_name='John', last_name='Doe', postal_code='93100',

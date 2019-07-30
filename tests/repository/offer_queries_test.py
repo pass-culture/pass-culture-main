@@ -12,9 +12,10 @@ from repository.offer_queries import department_or_national_offers, \
     get_active_offers, \
     _has_remaining_stock_predicate,\
     find_offers_by_venue_id, \
-    order_offers_for_recommendations_with_criteria
+    order_by_with_criteria
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
+    create_criterion, \
     create_product_with_Event_type, \
     create_event_occurrence, \
     create_offer_with_event_product, \
@@ -845,36 +846,24 @@ def _create_event_stock_and_offer_for_date(venue, date):
 
 
 @pytest.mark.standalone
-class GetBuildOrderByCriteriaTest:
+class BaseScoreTest:
 
     @clean_database
-    def test_build_order_by_criteria(self, app):
+    def test_order_by_base_score(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
-        criterion1 = Criterion()
-        criterion1.scoreDelta = -1
-        criterion1.name = 'Criterion1'
-        criterion1.description = 'Test Criterion 1'
-        criterion2 = Criterion()
-        criterion2.scoreDelta = 1
-        criterion2.name = 'Criterion2'
-        criterion2.description = 'Test Criterion 2'
+        criterion_negative = create_criterion(name='negative', score_delta=-1)
+        criterion_positive = create_criterion(name='positive', score_delta=1)
 
-        offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.JEUX_VIDEO, thumb_count=1)
-        offer2 = create_offer_with_thing_product(venue, thing_type=ThingType.JEUX_VIDEO, thumb_count=1)
+        offer1 = create_offer_with_thing_product(venue)
+        offer2 = create_offer_with_thing_product(venue)
 
-        PcObject.save(criterion1, criterion2, offer1, offer2)
+        offer1.criteria = [criterion_negative]
+        offer2.criteria = [criterion_negative, criterion_positive]
 
-        offer_criterion1 = OfferCriterion()
-        offer_criterion1.criterionId = criterion1.id
-        offer_criterion1.offerId = offer1.id
-        offer_criterion2 = OfferCriterion()
-        offer_criterion2.criterionId = criterion2.id
-        offer_criterion2.offerId = offer2.id
-
-        PcObject.save(offer_criterion1, offer_criterion2)
+        PcObject.save(offer1, offer2)
 
         # When
         offers = Offer.query \
@@ -886,9 +875,9 @@ class GetBuildOrderByCriteriaTest:
 
 
 @pytest.mark.standalone
-class GetActiveOffersOrderByCriteriaTest:
+class GetActiveOffersTest:
     @clean_database
-    def test_get_active_offers_with_no_function_should_return_same_number_of_recos(self, app):
+    def test_get_active_offers_with_no_order_by_should_return_same_number_of_recos(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
@@ -908,82 +897,53 @@ class GetActiveOffersOrderByCriteriaTest:
         assert len(offers) == 4
 
     @clean_database
-    def test_get_active_offers_with_1_offer_criterion_should_return_this_offer_first_in_category(self, app):
+    def test_get_active_offers_with_criteria_should_return_offer_with_highest_base_score_first(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
         offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.JEUX_VIDEO, thumb_count=1)
         stock1 = create_stock_from_offer(offer1, price=0)
+        offer1.criteria = [create_criterion(name='negative', score_delta=-1)]
+
         offer2 = create_offer_with_thing_product(venue, thing_type=ThingType.JEUX_VIDEO, thumb_count=1)
         stock2 = create_stock_from_offer(offer2, price=0)
+        offer2.criteria = [create_criterion(name='positive', score_delta=1)]
 
-        criterion1 = Criterion()
-        criterion1.scoreDelta = -1
-        criterion1.name = 'Criterion1'
-        criterion1.description = 'Test Criterion 1'
-        criterion2 = Criterion()
-        criterion2.scoreDelta = 1
-        criterion2.name = 'Criterion2'
-        criterion2.description = 'Test Criterion 2'
-
-        PcObject.save(stock1, stock2, criterion1, criterion2)
-
-        offer_criterion1 = OfferCriterion()
-        offer_criterion1.criterionId = criterion1.id
-        offer_criterion1.offerId = offer1.id
-        offer_criterion2 = OfferCriterion()
-        offer_criterion2.criterionId = criterion2.id
-        offer_criterion2.offerId = offer2.id
-
-        PcObject.save(offer_criterion1, offer_criterion2)
+        PcObject.save(stock1, stock2)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
                                    offer_id=None,
-                                   order_offers_for_recommendations=order_offers_for_recommendations_with_criteria)
+                                   order_by=order_by_with_criteria)
 
         # Then
         assert offers == [offer2, offer1]
 
     @clean_database
-    def test_get_active_offers_with_1_offer_criterion_should_return_this_offer_first_bust_keep_the_partition_by_type(self,
-                                                                                                                  app):
+    def test_get_active_offers_with_criteria_should_return_offer_with_highest_base_score_first_bust_keep_the_partition(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
         offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO, thumb_count=1)
         stock1 = create_stock_from_offer(offer1, price=0)
+        offer1.criteria = [create_criterion(name='negative', score_delta=1)]
+
         offer2 = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO, thumb_count=1)
         stock2 = create_stock_from_offer(offer2, price=0)
+        offer2.criteria = [create_criterion(name='positive', score_delta=2)]
+
         offer3 = create_offer_with_thing_product(venue, thing_type=ThingType.JEUX_VIDEO, thumb_count=1)
         stock3 = create_stock_from_offer(offer3, price=0)
+        offer3.criteria = []
 
-        criterion1 = Criterion()
-        criterion1.scoreDelta = -1
-        criterion1.name = 'Criterion1'
-        criterion1.description = 'Test Criterion 1'
-        criterion2 = Criterion()
-        criterion2.scoreDelta = 1
-        criterion2.name = 'Criterion2'
-        criterion2.description = 'Test Criterion 2'
-
-        PcObject.save(stock1, stock2, stock3, criterion1, criterion2)
-
-        offer_criterion1 = OfferCriterion()
-        offer_criterion1.criterionId = criterion1.id
-        offer_criterion1.offerId = offer1.id
-        offer_criterion2 = OfferCriterion()
-        offer_criterion2.criterionId = criterion2.id
-        offer_criterion2.offerId = offer2.id
-
-        PcObject.save(offer_criterion1, offer_criterion2)
+        PcObject.save(stock1, stock2, stock3)
 
         # When
         offers = get_active_offers(departement_codes=['00'],
                                    offer_id=None,
-                                   order_offers_for_recommendations=order_offers_for_recommendations_with_criteria)
+                                   order_by=order_by_with_criteria)
 
         # Then
         assert offers == [offer2, offer3, offer1]

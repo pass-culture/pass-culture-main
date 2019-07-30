@@ -65,20 +65,20 @@ def _not_activation_offers(query):
     return query.filter(Offer.type != str(ThingType.ACTIVATION))
 
 
-def order_offers_for_recommendations_with_criteria():
-    order_offers = order_offers_for_recommendations_randomly()[:]
+def order_by_with_criteria():
+    order_offers = _order_by_occurs_soon_or_is_thing_then_randomize()[:]
     order_by_criteria = desc(Offer.baseScore)
     order_offers.insert(-1, order_by_criteria)
     return order_offers
 
 
-def order_offers_for_recommendations_randomly():
+def _order_by_occurs_soon_or_is_thing_then_randomize():
     return [desc(_build_occurs_soon_or_is_thing_predicate()),
             func.random()]
 
 
 def get_active_offers(departement_codes=None, offer_id=None, limit=None,
-                      order_offers_for_recommendations: [] = order_offers_for_recommendations_randomly):
+                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize):
     active_offers_query = Offer.query.distinct(Offer.id) \
         .order_by(Offer.id)
 
@@ -117,7 +117,7 @@ def get_active_offers(departement_codes=None, offer_id=None, limit=None,
 
     query = query.order_by(desc(_build_has_active_mediation_predicate()))
 
-    query = query.order_by(_round_robin_by_type_onlineness_and_criteria(order_offers_for_recommendations))
+    query = query.order_by(_round_robin_by_type_onlineness_and_criteria(order_by))
 
     query = query.options(joinedload('mediations'),
                           joinedload('product'))
@@ -129,10 +129,10 @@ def get_active_offers(departement_codes=None, offer_id=None, limit=None,
 
 
 
-def _round_robin_by_type_onlineness_and_criteria(order_offers_for_recommendations: []):
+def _round_robin_by_type_onlineness_and_criteria(order_by: List):
     return func.row_number() \
         .over(partition_by=[Offer.type, Offer.url == None],
-              order_by=order_offers_for_recommendations())
+              order_by=order_by())
 
 
 def _with_stock(offer_query):

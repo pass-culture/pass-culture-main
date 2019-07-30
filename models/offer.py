@@ -3,11 +3,11 @@ from datetime import datetime
 from sqlalchemy import BigInteger, Column, DateTime, desc, ForeignKey, String
 from sqlalchemy import and_, ARRAY, Boolean, cast, CheckConstraint, false, Integer, Text, TEXT
 from sqlalchemy.orm import column_property, relationship
-from sqlalchemy.sql import coalesce, expression, select, func
+from sqlalchemy.sql import expression, select, func
 
 from domain.keywords import create_ts_vector_and_table_args
 from models import ExtraDataMixin
-from models.db import Model
+from models.db import db, Model
 from models.deactivable_mixin import DeactivableMixin
 from models.offer_type import ThingType, EventType, ProductType
 from models.pc_object import PcObject
@@ -24,6 +24,8 @@ class Offer(PcObject,
             ExtraDataMixin,
             DeactivableMixin,
             ProvidableMixin):
+
+    # We redefine this so we can reference it in the baseScore column_property
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
@@ -83,11 +85,15 @@ class Offer(PcObject,
                          default=datetime.utcnow)
 
     baseScore = column_property(
-        select([Criterion.scoreDelta]).
+        select([func.coalesce(func.sum(Criterion.scoreDelta), 0)]).
             where(and_(Criterion.id == OfferCriterion.criterionId,
                        (OfferCriterion.offerId == id))
                   )
     )
+
+    criteria = relationship('Criterion',
+                            backref=db.backref('criteria', lazy='dynamic'),
+                            secondary='offer_criterion')
 
     def errors(self):
         api_errors = super(Offer, self).errors()

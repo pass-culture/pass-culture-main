@@ -5,9 +5,14 @@ import pytest
 from models import Offer, PcObject, ApiErrors, ThingType, EventType, Product
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, create_user, create_mediation
-from tests.test_utils import create_offer_with_event_product, create_product_with_Event_type
-from tests.test_utils import create_product_with_Thing_type, create_offer_with_thing_product, create_offerer, \
-    create_stock, create_venue
+from tests.test_utils import create_offer_with_event_product, \
+    create_product_with_Event_type
+from tests.test_utils import create_criterion, \
+    create_offer_with_thing_product, \
+    create_offerer, \
+    create_product_with_Thing_type, \
+    create_stock, \
+    create_venue
 from utils.date import DateTimes
 
 now = datetime.utcnow()
@@ -15,6 +20,33 @@ two_days_ago = now - timedelta(days=2)
 four_days_ago = now - timedelta(days=4)
 five_days_from_now = now + timedelta(days=5)
 ten_days_from_now = now + timedelta(days=10)
+
+
+class BaseScoreTest:
+    @clean_database
+    def test_offer_base_score_with_no_criteria(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        offer.criteria = []
+        PcObject.save(offer)
+
+        # Then
+        assert offer.baseScore == 0
+
+    @clean_database
+    def test_offer_base_score_with_multiple_criteria(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        offer.criteria = [create_criterion(name='negative', score_delta=-1),
+                          create_criterion(name='positive', score_delta=2)]
+        PcObject.save(offer)
+
+        # Then
+        assert offer.baseScore == 1
 
 
 class DateRangeTest:
