@@ -1,3 +1,4 @@
+from domain.password import check_password_strength
 from models import ApiErrors, RightsType
 
 
@@ -20,29 +21,28 @@ def check_allowed_changes_for_user(data):
         raise api_errors
 
 
-def check_valid_signup(request):
+def check_valid_signup_pro(request):
     contact_ok = request.json.get('contact_ok')
     password = request.json.get('password')
     email = request.json.get('email')
     phone_number = request.json.get('phoneNumber')
-    if email is None:
-        errors = ApiErrors()
-        errors.add_error('email', 'Vous devez renseigner un email.')
-        raise errors
-    if not contact_ok or _contact_ok_is_not_checked(contact_ok):
-        errors = ApiErrors()
-        errors.add_error('contact_ok', 'Vous devez obligatoirement cocher cette case.')
-        raise errors
 
-    if not password:
-        errors = ApiErrors()
-        errors.add_error('password', 'Vous devez renseigner un mot de passe.')
-        raise errors
+    _check_email_is_present(email)
+    _check_valid_contact_ok(contact_ok)
+    _check_phone_number_is_present(phone_number)
+    _check_password_is_present(password)
+    check_password_strength('password', password)
 
-    if phone_number is None:
-        errors = ApiErrors()
-        errors.add_error('phoneNumber', 'Vous devez renseigner un numéro de téléphone.')
-        raise errors
+
+def check_valid_signup_webapp(request):
+    contact_ok = request.json.get('contact_ok')
+    password = request.json.get('password')
+    email = request.json.get('email')
+
+    _check_email_is_present(email)
+    _check_valid_contact_ok(contact_ok)
+    _check_password_is_present(password)
+    check_password_strength('password', password)
 
 
 def check_valid_signin(identifier: str, password: str):
@@ -55,6 +55,34 @@ def check_valid_signin(identifier: str, password: str):
         errors.add_error('password', 'Mot de passe manquant')
 
     errors.maybe_raise()
+
+
+def _check_phone_number_is_present(phone_number):
+    if phone_number is None:
+        errors = ApiErrors()
+        errors.add_error('phoneNumber', 'Vous devez renseigner un numéro de téléphone.')
+        raise errors
+
+
+def _check_password_is_present(password):
+    if not password:
+        errors = ApiErrors()
+        errors.add_error('password', 'Vous devez renseigner un mot de passe.')
+        raise errors
+
+
+def _check_valid_contact_ok(contact_ok):
+    if not contact_ok or _contact_ok_is_not_checked(contact_ok):
+        errors = ApiErrors()
+        errors.add_error('contact_ok', 'Vous devez obligatoirement cocher cette case.')
+        raise errors
+
+
+def _check_email_is_present(email):
+    if email is None:
+        errors = ApiErrors()
+        errors.add_error('email', 'Vous devez renseigner un email.')
+        raise errors
 
 
 def _contact_ok_is_not_checked(contact_ok):

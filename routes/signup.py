@@ -14,7 +14,7 @@ from utils.includes import USER_INCLUDES
 from utils.logger import logger
 from utils.mailing import \
     subscribe_newsletter, MailServiceException, send_raw_email
-from validation.users import check_valid_signup
+from validation.users import check_valid_signup_webapp, check_valid_signup_pro
 
 
 @app.route("/users/signup", methods=["POST"])
@@ -25,9 +25,7 @@ def signup_old():
 @feature_required(FeatureToggle.WEBAPP_SIGNUP)
 def signup_webapp():
     objects_to_save = []
-    password = request.json.get('password')
-    check_valid_signup(request)
-    check_password_strength('password', password)
+    check_valid_signup_webapp(request)
 
     new_user = User(from_dict=request.json)
 
@@ -57,11 +55,9 @@ def signup_webapp():
 @app.route("/users/signup/pro", methods=["POST"])
 def signup_pro():
     objects_to_save = []
-    password = request.json.get('password')
     app_origin_url = request.headers.get('origin')
 
-    check_valid_signup(request)
-    check_password_strength('password', password)
+    check_valid_signup_pro(request)
     new_user = User(from_dict=request.json)
 
     existing_offerer = Offerer.query.filter_by(siren=request.json['siren']).first()

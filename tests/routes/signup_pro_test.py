@@ -72,6 +72,7 @@ class Post:
                 'contact_ok': 'true',
                 'siren': '349974931',
                 'address': '12 boulevard de Pesaro',
+                'phoneNumber': '0102030405',
                 'postalCode': '92000',
                 'city': 'Nanterre',
                 'name': 'Crédit Coopératif',
