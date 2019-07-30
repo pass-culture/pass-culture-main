@@ -7,13 +7,13 @@ describe('src | components | pages | LostPassword', () => {
   beforeEach(() => {
     props = {
       location: {
-        search: '?change=1&token=ABC'
-      }
+        search: '?change=1&token=ABC',
+      },
     }
     state = {
       errors: {
-        user: null
-      }
+        user: null,
+      },
     }
   })
 
@@ -24,10 +24,10 @@ describe('src | components | pages | LostPassword', () => {
 
       // then
       expect(result).toStrictEqual({
-        "change": "1",
-        "envoye": undefined,
-        "errors": [],
-        "token": 'ABC'
+        change: '1',
+        envoye: undefined,
+        errors: [],
+        token: 'ABC',
       })
     })
   })

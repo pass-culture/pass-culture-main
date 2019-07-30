@@ -8,8 +8,8 @@ describe('src | components | pages | NoMatch', () => {
   beforeEach(() => {
     props = {
       location: {
-        pathname: '/fake-url'
-      }
+        pathname: '/fake-url',
+      },
     }
   })
 

@@ -14,7 +14,7 @@ class LostPassword extends Component {
   onHandleSuccessRedirectForResetPasswordRequest = () => '/mot-de-passe-perdu?envoye=1'
 
   render() {
-    const {change, envoye, errors, token} = this.props
+    const { change, envoye, errors, token } = this.props
 
     return (
       <Main
@@ -80,7 +80,7 @@ class LostPassword extends Component {
                       handleSuccessRedirect={this.onHandleSuccessRedirectForResetPassword}
                       layout="vertical"
                       name="user"
-                      patch={{token}}
+                      patch={{ token }}
                     >
                       <Field
                         name="token"
@@ -172,4 +172,4 @@ LostPassword.propTypes = {
   token: PropTypes.string.isRequired,
 }
 
-export default (LostPassword)
+export default LostPassword

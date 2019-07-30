@@ -10,7 +10,7 @@ describe('src | components | pages | LostPassword', () => {
       change: false,
       envoye: false,
       errors: {},
-      token: 'ABC'
+      token: 'ABC',
     }
   })
 
