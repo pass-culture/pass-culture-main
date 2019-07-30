@@ -1,10 +1,13 @@
-#Validation des données
-On utilise trois niveaux de validation des données entrantes. 
+# Validation des données
+
+On utilise trois niveaux de validation des données entrantes.
+
 1. Au niveau des routes, on utilise des fonctions de validation, regroupées dans le package `validation`
 2. Au niveau des modèles SQLAlchemy, dans les méthodes `errors`
 3. Au niveau de PostgreSQL, avec des `constraints` et des `triggers`
 
-Les critères utilisés pour définir à quel niveau il faut placer sa règle de validation sont :
+Les critères utilisés pour définir à quel niveau il faut placer des règles de validation sont :
+
 1. On utilisera `validation` : 
     - lorsqu'on cherche à éviter les usages malveillants, par exemple pour accéder à la liste de réservations d'un autre offreur;
     - si on a besoin de renvoyer des status HTTP précis (autre que 200, 400);
