@@ -216,7 +216,7 @@ Les tests sont enfin joués et on déploie sur Testing.
 
 ## Hotfixes
 
-Pour tagguer les hotfixes, commencer par se placer sur la dernière version déployée en production où en staging à
+Pour tagguer les hotfixes, commencer par se placer sur la dernière version déployée en production ou en staging à
 l'aide d'un ```git checkout I.P.S```, commiter le fix du bug puis lancer la commande de création de branches de hotfixes
 et de tag pour chacun des projets :
 
