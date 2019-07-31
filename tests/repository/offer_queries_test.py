@@ -754,8 +754,6 @@ def test_find_offers_with_filter_parameters_with_partial_keywords_and_filter_by_
 
 
 @clean_database
-<<<<<<< HEAD
-=======
 def test_get_active_offers_should_not_return_activation_event(app):
     # Given
     offerer = create_offerer()
@@ -934,7 +932,6 @@ def test_get_active_offers_should_not_return_offers_with_no_stock(app):
 
 
 @clean_database
->>>>>>> (pC-2139) renamed lower case test util create offers
 def test_offer_remaining_stock_filter_does_not_filter_offer_with_cancelled_bookings(app):
     # Given
     product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
