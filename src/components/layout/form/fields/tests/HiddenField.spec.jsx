@@ -6,7 +6,7 @@ import HiddenField from '../HiddenField'
 import TextField from '../TextField'
 
 describe('src | components | layout | form | HiddenField', () => {
-  it('should match snapchot', () => {
+  it('should match the snapchot', () => {
     // given
     const initialValues = {
       subtitle: 'Mais jamais sans mon cadis.',
@@ -34,7 +34,6 @@ describe('src | components | layout | form | HiddenField', () => {
     )
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

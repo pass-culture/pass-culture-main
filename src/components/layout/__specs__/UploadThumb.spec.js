@@ -18,7 +18,6 @@ describe('src | components | pages | Offer | UploadThumb | computeZoom', () => {
     const newZoom = computeNewZoom(current, min, max, step, factor, direction)
 
     // then
-    expect(newZoom).toBeDefined()
     expect(newZoom).toBeGreaterThan(current)
   })
 
@@ -31,7 +30,6 @@ describe('src | components | pages | Offer | UploadThumb | computeZoom', () => {
     const newZoom = computeNewZoom(current, min, max, step, factor, direction)
 
     // then
-    expect(newZoom).toBeDefined()
     expect(newZoom).toBeLessThan(current)
   })
 
@@ -45,7 +43,6 @@ describe('src | components | pages | Offer | UploadThumb | computeZoom', () => {
     const newZoom = computeNewZoom(current, min, max, step, factor, direction)
 
     // then
-    expect(newZoom).toBeDefined()
     expect(newZoom).toStrictEqual(current)
   })
 
@@ -58,7 +55,6 @@ describe('src | components | pages | Offer | UploadThumb | computeZoom', () => {
     const newZoom = computeNewZoom(current, min, max, step, factor, direction)
 
     // then
-    expect(newZoom).toBeDefined()
     expect(newZoom).toStrictEqual(current)
   })
 })

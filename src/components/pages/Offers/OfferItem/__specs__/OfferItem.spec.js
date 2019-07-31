@@ -83,7 +83,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         // then
         const thumbComponent = wrapper.find(Thumb)
-        expect(thumbComponent).toBeDefined()
         expect(thumbComponent.prop('alt')).toBe('offre')
         expect(thumbComponent.prop('src')).toBe('https://url.to/thumb')
       })
@@ -98,7 +97,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         // then
         const thumbComponent = wrapper.find(Thumb)
-        expect(thumbComponent).toBeDefined()
         expect(thumbComponent.prop('alt')).toBe('offre')
         expect(thumbComponent.prop('src')).toBe('')
       })
@@ -116,12 +114,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       // then
       const navLinkComponent = wrapper.find(NavLink).first()
-      expect(navLinkComponent).toBeDefined()
       expect(navLinkComponent.prop('className')).toBe('name')
       expect(navLinkComponent.prop('to')).toBe('/offres/M4?orderBy=offer.id+desc')
       expect(navLinkComponent.prop('title')).toBe('fake name')
       const dotdotdotComponent = navLinkComponent.find(Dotdotdot)
-      expect(dotdotdotComponent).toBeDefined()
       expect(dotdotdotComponent.prop('clamp')).toBe(1)
       expect(dotdotdotComponent.html()).toBe('<div>fake name</div>')
     })
@@ -194,7 +190,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
       expect(offerInfosSubElements.at(0).prop('title')).toBe('entre 1 et 5 personnes')
 
       const userPictoComponent = offerInfosSubElements.at(0).find(Icon)
-      expect(userPictoComponent).toBeDefined()
       expect(userPictoComponent.prop('svg')).toBe('picto-user')
     })
 
@@ -217,7 +212,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
       expect(offerInfosSubElements.at(0).prop('title')).toBe('entre 2 et 5 personnes')
 
       const userPictoComponent = offerInfosSubElements.at(0).find(Icon)
-      expect(userPictoComponent).toBeDefined()
       expect(userPictoComponent.prop('svg')).toBe('picto-group')
 
       const numberOfParticipantsLabel = offerInfosSubElements.at(0).find('p')

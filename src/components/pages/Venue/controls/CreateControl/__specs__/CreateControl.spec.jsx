@@ -12,12 +12,11 @@ describe('src | components | pages | Venue | controls | CreateControl ', () => {
     }
   })
 
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<CreateControl {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

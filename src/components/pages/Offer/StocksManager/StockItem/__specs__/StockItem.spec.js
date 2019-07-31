@@ -34,7 +34,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
     const wrapper = shallow(<StockItem {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

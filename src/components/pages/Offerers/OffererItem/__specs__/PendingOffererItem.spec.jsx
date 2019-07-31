@@ -12,14 +12,11 @@ describe('src | components | pages | Offerers | OffererItem | PendingOffererItem
     }
   })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<PendingOffererItem {...props} />)
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<PendingOffererItem {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 })

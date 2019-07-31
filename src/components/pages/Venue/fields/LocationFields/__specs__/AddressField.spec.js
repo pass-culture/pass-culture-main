@@ -14,15 +14,12 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
     }
   })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<AddressField {...props} />)
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<AddressField {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('addressFieldRender', () => {
@@ -48,12 +45,11 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
       meta = {}
     })
 
-    it('should match snapshot', () => {
+    it('should match the snapshot', () => {
       // when
       const wrapper = shallow(<AddressFieldRender {...props} />)
 
       // then
-      expect(wrapper).toBeDefined()
       expect(wrapper).toMatchSnapshot()
     })
 
@@ -63,7 +59,6 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
 
       // then
       const mainDiv = wrapper.find('div').first()
-      expect(mainDiv).toBeDefined()
       expect(mainDiv.prop('className')).toBe(
         'field text-field fake className is-label-aligned is-read-only'
       )
@@ -79,11 +74,9 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
 
       // then
       const label = wrapper.find('label')
-      expect(label).toBeDefined()
       expect(label.prop('htmlFor')).toBe('fake name')
       expect(label.prop('className')).toBe('field-label')
       const spans = label.find('span')
-      expect(spans).toBeDefined()
       expect(spans).toHaveLength(3)
       expect(spans.at(1).text()).toBe('fake label')
       expect(spans.at(2).prop('className')).toBe('field-asterisk')
@@ -137,7 +130,6 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
 
       // then
       const fieldErrors = wrapper.find(FieldErrors)
-      expect(fieldErrors).toBeDefined()
       expect(fieldErrors.prop('meta')).toStrictEqual({})
     })
   })

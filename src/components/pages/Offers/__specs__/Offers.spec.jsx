@@ -46,17 +46,14 @@ describe('src | components | pages | Offers | Offers', () => {
     }
   })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<Offers {...props} />)
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<Offers {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-      dispatch.mockClear()
-      change.mockClear()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
+    dispatch.mockClear()
+    change.mockClear()
   })
 
   describe('render', () => {
@@ -78,7 +75,7 @@ describe('src | components | pages | Offers | Offers', () => {
       })
     })
 
-    describe('Offerer filter button', () => {
+    describe('offerer filter button', () => {
       it('should be displayed when offerer is given', () => {
         // given
         props.offerer = {
@@ -487,7 +484,6 @@ describe('src | components | pages | Offers | Offers', () => {
 
     describe('componentDidMount', () => {
       it('should dispatch handleRequestData when there is no pagination', () => {
-        console.log();
         // when
         const wrapper = shallow(<Offers {...props} />)
         wrapper.instance().componentDidMount()

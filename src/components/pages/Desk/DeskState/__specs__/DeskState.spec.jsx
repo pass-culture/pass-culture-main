@@ -22,15 +22,12 @@ describe('src | components | pages | Desk | DeskState ', () => {
     }
   })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<DeskState {...props} />)
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<DeskState {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

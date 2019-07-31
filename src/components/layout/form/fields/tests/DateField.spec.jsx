@@ -6,7 +6,7 @@ import { Form } from 'react-final-form'
 import DateField from '../DateField'
 
 describe('src | components | layout | form | DateField', () => {
-  it('should match snapchot', () => {
+  it('should match the snapchot', () => {
     // given
     const initialValues = {
       myDate: '2019-04-27T20:00:00Z',
@@ -32,7 +32,6 @@ describe('src | components | layout | form | DateField', () => {
     )
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

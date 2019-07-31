@@ -21,15 +21,12 @@ describe('src | components | pages | Offerer | VenueItem', () => {
     history = createBrowserHistory()
   })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<VenueItem {...props} />)
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<VenueItem {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

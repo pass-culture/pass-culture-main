@@ -24,12 +24,11 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
     }
   })
 
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<VenueProviderItem {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 
@@ -83,11 +82,9 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
 
       // then
       const navLink = wrapper.find(NavLink)
-      expect(navLink).toBeDefined()
       expect(navLink.prop('to')).toBe('/offres?lieu=1')
       expect(navLink.prop('className')).toBe('has-text-primary')
       const icon = navLink.find(Icon)
-      expect(icon).toBeDefined()
       expect(icon.prop('svg')).toBe('ico-offres-r')
       const numberOfOffersLabel = navLink.find('.number-of-offers-label')
       expect(numberOfOffersLabel).toHaveLength(1)

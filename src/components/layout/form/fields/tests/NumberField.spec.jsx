@@ -5,7 +5,7 @@ import { Form } from 'react-final-form'
 import NumberField from '../NumberField'
 
 describe('src | components | layout | form | NumberField', () => {
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // given
     const initialValues = {
       bar: 3,
@@ -33,7 +33,6 @@ describe('src | components | layout | form | NumberField', () => {
     )
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

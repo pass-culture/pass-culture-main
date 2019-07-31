@@ -19,7 +19,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem | sub-com
     const wrapper = shallow(<ProductFields {...initialProps} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 })

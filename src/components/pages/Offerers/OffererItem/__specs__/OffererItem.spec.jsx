@@ -44,7 +44,6 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
     const wrapper = shallow(<OffererItem {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 })

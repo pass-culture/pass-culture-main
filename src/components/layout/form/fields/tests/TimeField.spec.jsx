@@ -6,7 +6,7 @@ import DateField from '../DateField'
 import TimeField from '../TimeField'
 
 describe('src | components | layout | form | TimeField', () => {
-  it('should match snapchot', () => {
+  it('should match the snapchot', () => {
     // given
     const initialValues = {
       myDate: '2019-04-27T20:00:00Z',
@@ -33,7 +33,6 @@ describe('src | components | layout | form | TimeField', () => {
     )
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

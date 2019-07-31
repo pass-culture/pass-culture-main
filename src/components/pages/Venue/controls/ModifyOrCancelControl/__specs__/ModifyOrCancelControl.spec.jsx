@@ -9,26 +9,23 @@ const history = {
 }
 
 describe('src | components | pages | Venue | controls | ModifyOrCancelControl ', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const props = {
-        form: {},
-        handleSubmit: jest.fn(),
-        history,
-        isCreatedEntity: true,
-        offererId: 'AE',
-        readOnly: false,
-        venueId: 'AE',
-      }
+  it('should match the snapshot', () => {
+    // given
+    const props = {
+      form: {},
+      handleSubmit: jest.fn(),
+      history,
+      isCreatedEntity: true,
+      offererId: 'AE',
+      readOnly: false,
+      venueId: 'AE',
+    }
 
-      // when
-      const wrapper = shallow(<ModifyOrCancelControl {...props} />)
+    // when
+    const wrapper = shallow(<ModifyOrCancelControl {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('mount', () => {

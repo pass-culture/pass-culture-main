@@ -4,21 +4,18 @@ import { shallow } from 'enzyme'
 import HeroSection from '../HeroSection'
 
 describe('src | components | layout | HeroSection', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const props = {
-        subtitle: 'Fake subtitle',
-        title: 'Fake title',
-      }
+  it('should match the snapshot', () => {
+    // given
+    const props = {
+      subtitle: 'Fake subtitle',
+      title: 'Fake title',
+    }
 
-      // when
-      const wrapper = shallow(<HeroSection {...props}> </HeroSection>)
+    // when
+    const wrapper = shallow(<HeroSection {...props}> </HeroSection>)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

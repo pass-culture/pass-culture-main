@@ -89,7 +89,6 @@ describe('src | components | Layout | Header', () => {
           .find('.navbar-end')
           .find('.navbar-item')
           .at(2)
-        expect(helpLink).toBeDefined()
         expect(helpLink.prop('href')).toBe('https://docs.passculture.app/structures-culturelles')
         expect(helpLink.prop('target')).toBe('_blank')
       })

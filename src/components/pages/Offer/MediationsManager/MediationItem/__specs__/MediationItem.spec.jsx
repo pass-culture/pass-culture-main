@@ -17,15 +17,12 @@ describe('src | components | pages | Offer | MediationItem', () => {
     }
   })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<MediationItem {...props} />)
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<MediationItem {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

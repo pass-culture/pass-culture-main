@@ -47,15 +47,12 @@ describe('src | components | pages | Venue', () => {
     }
   })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<Venue {...props} />)
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<Venue {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {
@@ -110,7 +107,6 @@ describe('src | components | pages | Venue', () => {
 
         // then
         const heroSection = wrapper.find(HeroSection)
-        expect(heroSection.find('p')).toBeDefined()
         expect(heroSection.find('p').prop('className')).toBe('subtitle')
         expect(heroSection.find('p').text()).toBe('Ajoutez un lieu où accéder à vos offres.')
       })

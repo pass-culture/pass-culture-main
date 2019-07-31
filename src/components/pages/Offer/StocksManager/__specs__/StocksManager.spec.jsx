@@ -49,7 +49,6 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
     const wrapper = shallow(<StocksManager {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

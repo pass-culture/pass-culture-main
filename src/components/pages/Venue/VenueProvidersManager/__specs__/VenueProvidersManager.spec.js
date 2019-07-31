@@ -84,7 +84,6 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
 
       // then
       const title = wrapper.find('h2')
-      expect(title).toBeDefined()
       const span = title.find('span')
       expect(span.text()).toBe(
         'Si vous avez plusieurs comptes auprès de la même source, ajoutez-les successivement.'
@@ -304,7 +303,6 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
 
       // then
       const form = wrapper.find(Form)
-      expect(form).toBeDefined()
       expect(form.prop('decorators')).toStrictEqual(expect.anything())
       expect(form.prop('initialValues')).toStrictEqual({ id: 'AB' })
       expect(form.prop('onSubmit')).toStrictEqual(expect.any(Function))

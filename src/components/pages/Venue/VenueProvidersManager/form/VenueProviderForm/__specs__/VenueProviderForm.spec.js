@@ -31,7 +31,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Venu
 
     // then
     const icon = wrapper.find(Icon).first()
-    expect(icon).toBeDefined()
     expect(icon.prop('svg')).toBe('picto-db-default')
     expect(icon.prop('alt')).toBe('Choix de la source')
   })
@@ -42,7 +41,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Venu
 
     // then
     const hiddenField = wrapper.find(HiddenField)
-    expect(hiddenField).toBeDefined()
     expect(hiddenField.prop('name')).toBe('id')
   })
 

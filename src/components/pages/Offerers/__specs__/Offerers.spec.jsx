@@ -32,12 +32,11 @@ describe('src | components | pages | Offerers | Offerers', () => {
     }
   })
 
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<Offerers {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 
@@ -71,7 +70,7 @@ describe('src | components | pages | Offerers | Offerers', () => {
         expect(heroSection.title).toStrictEqual('Vos structures juridiques')
       })
     })
-    
+
     describe('when leaving page', () => {
       it('should not close notifcation', () => {
         // given

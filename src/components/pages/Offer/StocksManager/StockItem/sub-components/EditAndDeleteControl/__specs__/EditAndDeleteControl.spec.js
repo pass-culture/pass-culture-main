@@ -44,7 +44,6 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
     )
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

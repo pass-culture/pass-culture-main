@@ -18,15 +18,12 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
     }
   })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<IdentifierFields {...props} />)
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<IdentifierFields {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

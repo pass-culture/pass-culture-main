@@ -20,15 +20,12 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
     fetch.resetMocks()
   })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<NotRequiredLogin />)
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<NotRequiredLogin />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('functions', () => {

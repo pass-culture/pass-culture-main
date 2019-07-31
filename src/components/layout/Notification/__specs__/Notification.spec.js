@@ -16,15 +16,12 @@ describe('src | components | layout | Notification', () => {
     }
   })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<Notification {...props} />)
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<Notification {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

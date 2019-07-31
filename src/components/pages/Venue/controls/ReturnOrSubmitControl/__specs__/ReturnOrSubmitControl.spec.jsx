@@ -16,15 +16,12 @@ describe('src | components | pages | Venue | controls | ReturnOrSubmitControl ',
     }
   })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<ReturnOrSubmitControl {...props} />)
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<ReturnOrSubmitControl {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

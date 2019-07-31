@@ -29,7 +29,6 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
     const wrapper = shallow(<MediationsManager {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 

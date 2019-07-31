@@ -5,23 +5,20 @@ import { Field, Form } from 'react-final-form'
 import SubmitAndCancelControl from '../SubmitAndCancelControl'
 
 describe('src | components | pages | Offer | StocksManagerContainer | StockItem | SubmitAndCancelControl ', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const initialProps = {
-        form: {},
-        handleSubmit: () => jest.fn(),
-        isRequestPending: false,
-        query: {},
-      }
+  it('should match the snapshot', () => {
+    // given
+    const initialProps = {
+      form: {},
+      handleSubmit: () => jest.fn(),
+      isRequestPending: false,
+      query: {},
+    }
 
-      // when
-      const wrapper = shallow(<SubmitAndCancelControl {...initialProps} />)
+    // when
+    const wrapper = shallow(<SubmitAndCancelControl {...initialProps} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('mount', () => {

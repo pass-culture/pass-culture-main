@@ -19,7 +19,6 @@ describe('src | components | layout | Main', () => {
     const wrapper = shallow(<Main {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 })

@@ -20,7 +20,7 @@ describe('src | components | pages | Desk | Desk ', () => {
     }
   })
 
-  it('should match snapshot', () => {
+  it('should match the snapshot', () => {
     // when
     const wrapper = shallow(<Desk {...props} />, options)
 

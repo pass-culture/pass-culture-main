@@ -8,15 +8,12 @@ import { API_URL } from '../../../../utils/config'
 import DisplayButtonContainer from '../../../layout/CsvTableButton/CsvTableButtonContainer'
 
 describe('src | components | pages | Reimbursements', () => {
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<Reimbursements />)
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<Reimbursements />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

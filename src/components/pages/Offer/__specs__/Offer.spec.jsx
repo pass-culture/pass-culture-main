@@ -8,38 +8,35 @@ import MediationsManager from '../MediationsManager/MediationsManagerContainer'
 describe('src | components | pages | Offer | Offer ', () => {
   const dispatch = jest.fn()
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // given
-      const initialProps = {
-        location: {
-          search: '?lieu=AQ',
+  it('should match the snapshot', () => {
+    // given
+    const initialProps = {
+      location: {
+        search: '?lieu=AQ',
+      },
+      match: {
+        params: {
+          offerId: 'N9',
         },
-        match: {
-          params: {
-            offerId: 'N9',
-          },
-        },
-        currentUser: {
-          isAdmin: false,
-        },
-        isEditableOffer: true,
-        query: {
-          context: () => ({}),
-          parse: () => ({ lieu: 'AQ' }),
-          translate: () => ({ venue: 'AQ ' }),
-        },
-        dispatch: dispatch,
-        venues: [],
-      }
+      },
+      currentUser: {
+        isAdmin: false,
+      },
+      isEditableOffer: true,
+      query: {
+        context: () => ({}),
+        parse: () => ({ lieu: 'AQ' }),
+        translate: () => ({ venue: 'AQ ' }),
+      },
+      dispatch: dispatch,
+      venues: [],
+    }
 
-      // when
-      const wrapper = shallow(<Offer {...initialProps} />)
+    // when
+    const wrapper = shallow(<Offer {...initialProps} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('handleSuccess', () => {

@@ -28,7 +28,6 @@ describe('src | components | pages | Signin | Signin ', () => {
     const wrapper = shallow(<Signin {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 
