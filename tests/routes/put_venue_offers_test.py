@@ -120,6 +120,31 @@ class Put:
             assert offers[0].isActive == True
             assert offers[1].isActive == True
 
+        @clean_database
+        def when_activating_all_venue_offers_returns_a_stock_alert_message(self, app):
+            # Given
+            user = create_user(email='test@example.net')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue)
+            stock = create_stock_from_offer(offer, available=22)
+            offer.isActive = False
+            PcObject.save(
+                stock, user_offerer, venue
+            )
+
+            api_url = API_URL + humanize(venue.id) + '/offers/activate'
+
+            # When
+            response = TestClient(app.test_client())\
+                .with_auth('test@example.net') \
+                .put(api_url)
+
+            # Then
+            assert response.status_code == 200
+            assert response.json[0]['stockAlertMessage'] == 'encore 22 places'
+
 
         @clean_database
         def when_deactivating_all_venue_offers(self, app):
@@ -149,3 +174,26 @@ class Put:
             offers = Offer.query.all()
             assert offers[0].isActive == False
             assert offers[1].isActive == False
+
+        @clean_database
+        def when_deactivating_all_venue_offers_returns_a_stock_alert_message(self, app):
+            # Given
+            user = create_user(email='test@example.net')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue)
+            stock = create_stock_from_offer(offer, available=0)
+            PcObject.save(
+                stock, user_offerer, venue
+            )
+
+            api_url = API_URL + humanize(venue.id) + '/offers/deactivate'
+
+            # When
+            response = TestClient(app.test_client()).with_auth('test@example.net') \
+            .put(api_url)
+
+            # Then
+            assert response.status_code == 200
+            assert response.json[0]['stockAlertMessage'] == 'plus de places pour toutes les dates'

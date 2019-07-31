@@ -3,7 +3,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import login_required, current_user
 
 from domain.admin_emails import send_venue_validation_email
-from domain.offers import update_is_active_status
+from domain.offers import update_is_active_status, add_stock_alert_message_to_offer
 from models import PcObject
 from models.user_offerer import RightsType
 from models.venue import Venue
@@ -74,7 +74,9 @@ def activate_venue_offers(venueId):
     activated_offers = update_is_active_status(offers, True)
     PcObject.save(*activated_offers)
 
-    return jsonify([b.as_dict(include=OFFER_INCLUDES) for b in activated_offers]), 200
+    activated_offers_with_stock_alert_message = [add_stock_alert_message_to_offer(offer) for offer in activated_offers]
+
+    return jsonify([b.as_dict(include=OFFER_INCLUDES) for b in activated_offers_with_stock_alert_message]), 200
 
 
 @app.route('/venues/<venueId>/offers/deactivate', methods=['PUT'])
@@ -86,4 +88,6 @@ def deactivate_venue_offers(venueId):
     deactivated_offers = update_is_active_status(offers, False)
     PcObject.save(*deactivated_offers)
 
-    return jsonify([b.as_dict(include=OFFER_INCLUDES) for b in deactivated_offers]), 200
+    deactivated_offers_with_stock_alert_message = [add_stock_alert_message_to_offer(offer) for offer in deactivated_offers]
+
+    return jsonify([b.as_dict(include=OFFER_INCLUDES) for b in deactivated_offers_with_stock_alert_message]), 200
