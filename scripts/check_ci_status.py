@@ -36,7 +36,7 @@ def main():
         project_jobs_infos = get_project_jobs_infos(branch_name)
 
     if not project_jobs_infos:
-        print('Error : Could not find project jobs informations')
+        print('Error: Could not find project jobs informations')
         sys.exit(1)
 
     for test_name in tests_names:

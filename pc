@@ -103,6 +103,7 @@ case "${UNAME_OUT}" in
 esac
 
 ROOT_PATH=$(realpath "$(dirname "$PRG")")
+INFRA_SCRIPTS_PATH="$ROOT_PATH"/infra/pc_scripts/
 
 function confirm {
  read -p "$1 (y/n) : " -n 1 -r
@@ -378,7 +379,7 @@ elif [[ "$CMD" == "tag-version-backend" ]] \
 # Tag new hotfix version using main repo
 elif [[ "$CMD" == "tag-hotfix" ]]; then
   if [[ "$TAG_NAME" ]]; then
-    source "$ROOT_PATH"/infra/pc_scripts/pc_hotfix.sh
+    source "$INFRA_SCRIPTS_PATH"/hotfix.sh
     tag_hotfix $TAG_NAME
     exit 0
   fi

@@ -15,9 +15,10 @@ project_jobs_infos_mock =[{
             'branch': 'master',
             'commit': '56ePe4eVerbd4e9c52bce2342a0e28aa3003500f7b',
             'committer_name': 'bobby',
-            'subject': ' v37.0.2',
+            'subject': '🚀 v40.0.9',
         }
     ],
+    'vcs_revision': '56ePe4eVerbd4e9c52bce2342a0e28aa3003500f7b',
     'outcome': 'success',
     'vcs_url': 'https://github.com/betagouv/pass-culture-api'
 }]
@@ -30,7 +31,7 @@ class CheckCIStatusTest:
         target_commit_sha1 = "56ePe4eVerbd4e9c52bce2342a0e28aa3003500f7b"
         actual_commit_sha1 = "fake_sha1"
         incorrect_commit_project_jobs_infos_mock = copy.deepcopy(project_jobs_infos_mock)
-        incorrect_commit_project_jobs_infos_mock[0]['all_commit_details'][0]['commit'] = actual_commit_sha1
+        incorrect_commit_project_jobs_infos_mock[0]['vcs_revision'] = actual_commit_sha1
 
         # When
         commit_status = extract_commit_status(target_commit_sha1, incorrect_commit_project_jobs_infos_mock, job_name)
