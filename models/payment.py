@@ -6,11 +6,12 @@ from sqlalchemy import BigInteger, \
     ForeignKey, \
     String, \
     Numeric, \
-    Text, CheckConstraint
+    Text, CheckConstraint, desc
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship, backref
 
-from models.db import Model
+from models.db import Model, db
 from models.payment_status import TransactionStatus, PaymentStatus
 from models.pc_object import PcObject
 
@@ -55,13 +56,13 @@ class Payment(PcObject, Model):
     transactionLabel = Column(String(140), nullable=True)
 
     paymentMessageId = Column(BigInteger,
-                           ForeignKey('payment_message.id'),
-                           index=True,
-                           nullable=True)
+                              ForeignKey('payment_message.id'),
+                              index=True,
+                              nullable=True)
 
     paymentMessage = relationship('PaymentMessage',
-                               foreign_keys=[paymentMessageId],
-                               backref=backref("payments"))
+                                  foreign_keys=[paymentMessageId],
+                                  backref=backref("payments"))
 
     @property
     def paymentMessageName(self):
@@ -71,10 +72,19 @@ class Payment(PcObject, Model):
     def paymentMessageChecksum(self):
         return self.paymentMessage.checksum if self.paymentMessage else None
 
-    @property
+    @hybrid_property
     def currentStatus(self):
         statuses_by_date_desc = sorted(self.statuses, key=lambda x: x.date, reverse=True)
         return statuses_by_date_desc[0]
+
+    @currentStatus.expression
+    def currentStatus(cls):
+        return db.session \
+            .query(PaymentStatus.status) \
+            .filter(PaymentStatus.paymentId == cls.id) \
+            .order_by(desc(PaymentStatus.date)) \
+            .limit(1) \
+            .as_scalar()
 
     def setStatus(self, status: TransactionStatus, detail: str = None):
         payment_status = PaymentStatus()
