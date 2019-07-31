@@ -1,5 +1,4 @@
-const rawDate = (date, delta = 0) =>
-  `${date.getFullYear()}${date.getMonth()}${date.getDate() + delta}`
+const rawDate = (date, delta = 0) => new Date(date).setDate(date.getDate() + delta)
 
 export const humanizeRelativeDate = offerDate => {
   if (offerDate === null) return null
