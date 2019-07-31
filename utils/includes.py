@@ -215,6 +215,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                     "isFinished",
                     "isFullyBooked",
                     "product",
+                    "stocks",
                     "venue",
                 ]
             },
