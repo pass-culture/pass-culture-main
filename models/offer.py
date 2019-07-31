@@ -158,6 +158,10 @@ class Offer(PcObject,
         return self.url is not None and self.url != ''
 
     @property
+    def isEditable(self):
+        return self.lastProviderId is None
+
+    @property
     def isFinished(self):
         return all(map(lambda s: not s.isBookable, self.stocks))
 

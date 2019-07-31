@@ -1,6 +1,6 @@
 from datetime import timedelta, datetime
 
-from models import Stock
+from models import Stock, Provider
 from models.pc_object import PcObject, serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, create_offerer, create_venue, \
@@ -186,6 +186,34 @@ class Post:
             assert response.json['global'] == [
                 'Impossible de mettre des dates de début et fin si l\'offre ne porte pas sur un évenement'
             ]
+
+        @clean_database
+        def when_stock_is_on_offer_coming_from_provider(self, app):
+            # given
+            tite_live_provider = Provider \
+                .query \
+                .filter(Provider.localClass == 'TiteLiveThings') \
+                .first()
+
+            user = create_user(email='test@email.fr')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue, last_provider_id=tite_live_provider.id)
+            PcObject.save(user_offerer, offer)
+
+            stock_data = {'price': 1222, 'offerId': humanize(offer.id)}
+            PcObject.save(user)
+
+            # When
+            response = TestClient(app.test_client()).with_auth('test@email.fr') \
+                .post('/stocks', json=stock_data)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json["global"] == ["Cette offre n'est pas modifiable"]
+
+
 
     class Returns403:
         @clean_database

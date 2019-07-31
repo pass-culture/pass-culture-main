@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from models import PcObject, Offer, Recommendation, Product
+from models import PcObject, Offer, Recommendation, Product, Provider
 from models.pc_object import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
@@ -180,6 +180,38 @@ class Patch:
             assert response.json['owningOffererId'] == ['Vous ne pouvez pas modifier cette information']
             for key in forbidden_keys:
                 assert key in response.json
+
+        @clean_database
+        def when_trying_to_patch_an_offer_than_cannot_be_updated(self, app):
+            # given
+            tite_live_provider = Provider \
+                .query \
+                .filter(Provider.localClass == 'TiteLiveThings') \
+                .first()
+
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue,
+                                                    booking_email='old@email.com',
+                                                    last_provider_id=tite_live_provider.id)
+
+            PcObject.save(offer, user, user_offerer)
+            json = {
+                'bookingEmail': 'offer@email.com',
+            }
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).patch(
+                f'{API_URL}/offers/{humanize(offer.id)}',
+                json=json)
+
+            # then
+            assert response.status_code == 400
+            assert Offer.query.get(offer.id).bookingEmail == 'old@email.com'
+            assert response.json['global'] == ["Cette offre n'est pas modifiable"]
+
 
     class Returns403:
         @clean_database

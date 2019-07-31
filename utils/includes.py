@@ -82,6 +82,7 @@ OFFER_INCLUDES = [
         "sub_joins": ["thumbUrl"]
     },
     "stockAlertMessage",
+    "isEditable",
     "isEvent",
     "isDigital",
     "isThing",

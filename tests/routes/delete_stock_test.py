@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 
-from models import Booking
+from models import Booking, Provider
 from models.pc_object import PcObject
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_booking, create_user, create_user_offerer, create_offerer, create_venue, \
-    create_stock_with_event_offer
+    create_stock_with_event_offer, create_offer_with_thing_product, create_stock
 from utils.human_ids import humanize
 
 NOW = datetime.utcnow()
@@ -76,6 +76,31 @@ class Delete:
             assert response.status_code == 400
             assert response.json['global'] == ["L'événement s'est terminé il y a plus de deux jours, " \
                                                "la suppression est impossible."]
+
+        @clean_database
+        def when_stock_is_on_an_offer_from_provider(self, app):
+            # given
+            tite_live_provider = Provider \
+                .query \
+                .filter(Provider.localClass == 'TiteLiveThings') \
+                .first()
+
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue, last_provider_id=tite_live_provider.id)
+            stock = create_stock(offer=offer)
+            PcObject.save(user, stock, user_offerer)
+
+            # when
+            response = TestClient(app.test_client()).with_auth('test@email.com') \
+                .delete('/stocks/' + humanize(stock.id))
+
+            # then
+            assert response.status_code == 400
+            assert response.json["global"] == ["Cette offre n'est pas modifiable"]
+
 
     class Returns403:
         @clean_database

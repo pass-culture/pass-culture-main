@@ -60,3 +60,11 @@ def check_offer_id_and_mediation_id_are_present_in_request(offer_id: str, mediat
         errors.add_error('global', "Les paramères offerId et mediationId sont obligatoires")
         errors.maybe_raise()
         raise errors
+
+
+def check_offer_is_editable(offer_is_editable):
+    if not offer_is_editable:
+        error = ApiErrors()
+        error.status_code = 400
+        error.add_error('global', "Cette offre n'est pas modifiable")
+        raise error

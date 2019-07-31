@@ -1,7 +1,7 @@
 import pytest
 
 from models import ApiErrors, ThingType, EventType
-from validation.offers import check_has_venue_id, check_offer_type_is_valid
+from validation.offers import check_has_venue_id, check_offer_type_is_valid, check_offer_is_editable
 
 
 class CheckHasVenueIdTest:
@@ -47,5 +47,22 @@ class CheckOfferTypeIsValidTest:
         # When
         try:
             check_offer_type_is_valid(str(EventType.ACTIVATION))
+        except:
+            assert False
+
+
+class CheckOfferIsEditableTest:
+    def test_raises_error_when_offer_is_not_editable(self):
+        # when
+        with pytest.raises(ApiErrors) as error:
+            check_offer_is_editable(False)
+
+        # then
+        assert error.value.errors['global'] == ["Cette offre n'est pas modifiable"]
+
+    def test_does_not_raise_error_when_offer_type_is_editable(self):
+        # when
+        try:
+            check_offer_is_editable(True)
         except:
             assert False

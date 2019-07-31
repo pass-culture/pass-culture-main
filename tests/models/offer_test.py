@@ -533,3 +533,20 @@ def test_date_range_is_empty_if_event_has_no_stocks():
 
     # then
     assert offer.dateRange == DateTimes()
+
+
+class isEditableTest:
+    def test_returns_false_if_offer_is_coming_from_provider(self, app):
+        # given
+        offer = Offer()
+        offer.lastProviderId = 21
+
+        # then
+        assert offer.isEditable == False
+
+    def test_returns_true_if_offer_is_not_coming_from_provider(self, app):
+        # given
+        offer = Offer()
+
+        # then
+        assert offer.isEditable == True

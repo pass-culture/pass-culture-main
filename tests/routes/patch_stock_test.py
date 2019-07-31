@@ -1,10 +1,10 @@
 from datetime import timedelta
 
-from models import Stock
+from models import Stock, Provider
 from models.pc_object import PcObject, serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_booking, create_user, create_user_offerer, create_offerer, create_venue, \
-    create_stock_with_event_offer, create_stock_with_thing_offer
+    create_stock_with_event_offer, create_stock_with_thing_offer, create_stock, create_offer_with_thing_product
 from utils.human_ids import humanize
 
 
@@ -178,6 +178,35 @@ class Patch:
             # then
             assert response.status_code == 400
             assert 'available' in response.json
+
+        @clean_database
+        def when_offer_come_from_provider(self, app):
+            # given
+            tite_live_provider = Provider \
+                .query \
+                .filter(Provider.localClass == 'TiteLiveThings') \
+                .first()
+
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue, last_provider_id=tite_live_provider.id)
+            stock = create_stock(offer=offer, available=10)
+            PcObject.save(user, user_offerer, stock)
+            humanized_stock_id = humanize(stock.id)
+
+            # when
+            request_update = TestClient(app.test_client()).with_auth('test@email.com') \
+                .patch('/stocks/' + humanized_stock_id, json={'available': 5})
+
+            # then
+            assert request_update.status_code == 400
+            request_after_update = TestClient(app.test_client()).with_auth('test@email.com').get(
+                '/stocks/' + humanized_stock_id)
+            assert request_after_update.json['available'] == 10
+            assert request_update.json["global"] == ["Cette offre n'est pas modifiable"]
+
 
     class Returns403:
         @clean_database

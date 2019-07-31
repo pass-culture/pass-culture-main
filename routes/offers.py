@@ -2,11 +2,10 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.admin_emails import send_offer_creation_notification_to_administration
-from domain.offers import add_stock_alert_message_to_offer
 from domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
-from models import Offer, PcObject, Venue, RightsType, Mediation
+from domain.offers import add_stock_alert_message_to_offer
+from models import Offer, PcObject, Venue, RightsType
 from models.api_errors import ResourceNotFound
-from models.feature import FeatureToggle
 from repository import venue_queries, offer_queries
 from repository.offer_queries import find_activation_offers, \
     find_offers_with_filter_parameters
@@ -19,7 +18,7 @@ from utils.rest import expect_json_data, \
     handle_rest_get_list, \
     load_or_404, login_or_api_key_required, load_or_raise_error, ensure_current_user_has_rights
 from validation.offers import check_venue_exists_when_requested, check_user_has_rights_for_query, check_valid_edition, \
-    check_has_venue_id, check_offer_type_is_valid
+    check_has_venue_id, check_offer_type_is_valid, check_offer_is_editable
 
 
 @app.route('/offers', methods=['GET'])
@@ -106,6 +105,7 @@ def patch_offer(id):
     if not offer:
         raise ResourceNotFound
     ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
+    check_offer_is_editable(offer.isEditable)
     offer.populate_from_dict(request.json)
     offer.update_with_product_data(thing_or_event_dict)
     PcObject.save(offer)
