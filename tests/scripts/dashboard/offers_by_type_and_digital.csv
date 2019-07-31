@@ -1,0 +1,30 @@
+Catégorie,Support,type
+Audiovisuel — films sur supports physiques et VOD,Numérique,ThingType.AUDIOVISUEL
+Audiovisuel — films sur supports physiques et VOD,Physique,ThingType.AUDIOVISUEL
+Cinéma — abonnements,Physique,ThingType.CINEMA_ABO
+"Cinéma — projections, séances, évènements",Physique,EventType.CINEMA
+"Conférences, rencontres et découverte des métiers",Physique,EventType.CONFERENCE_DEBAT_DEDICACE
+Jeux (support physique),Physique,ThingType.JEUX
+Jeux vidéo,Numérique,ThingType.JEUX_VIDEO
+Jeux — abonnements,Numérique,ThingType.JEUX_VIDEO_ABO
+"Jeux — évenements, rencontres, concours",Physique,EventType.JEUX
+"Livre - format papier ou numérique, abonnements lecture",Numérique,ThingType.LIVRE_EDITION
+"Livre - format papier ou numérique, abonnements lecture",Physique,ThingType.LIVRE_EDITION
+Livre audio numérique,Numérique,ThingType.LIVRE_AUDIO
+Musique (sur supports physiques ou en ligne),Numérique,ThingType.MUSIQUE
+Musique (sur supports physiques ou en ligne),Physique,ThingType.MUSIQUE
+Musique — abonnements concerts,Physique,ThingType.MUSIQUE_ABO
+"Musique — concerts, festivals",Physique,EventType.MUSIQUE
+"Musées, arts visuels & patrimoine",Physique,ThingType.MUSEES_PATRIMOINE_ABO
+"Musées, patrimoine — expositions, visites guidées, activités spécifiques",Physique,EventType.MUSEES_PATRIMOINE
+Pass Culture : activation en ligne,Numérique,ThingType.ACTIVATION
+Pass Culture : activation évènementielle,Physique,EventType.ACTIVATION
+Pratique artistique — abonnements,Physique,ThingType.PRATIQUE_ARTISTIQUE_ABO
+Pratique — séances d’essai et stages ponctuels,Physique,EventType.PRATIQUE_ARTISTIQUE
+Presse — Abonnements,Numérique,ThingType.PRESSE_ABO
+Spectacle vivant,Physique,EventType.SPECTACLE_VIVANT
+Spectacle vivant — Abonnements,Physique,ThingType.SPECTACLE_VIVANT_ABO
+Vente d'œuvres d'art,Numérique,ThingType.OEUVRE_ART
+Vente d'œuvres d'art,Physique,ThingType.OEUVRE_ART
+Vente d’instruments de musique,Numérique,ThingType.INSTRUMENT
+Vente d’instruments de musique,Physique,ThingType.INSTRUMENT

@@ -115,8 +115,9 @@ dev_env_file
 .idea/
 *.iml
 
-# No data should be versioned
+# No data should be versioned except on test
 *.csv
+!tests/**/*.csv
 
 # licenses
 licenses.html
