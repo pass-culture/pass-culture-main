@@ -11,11 +11,16 @@ export const isBooked = offer => {
   let flag = false
 
   offer.stocks.forEach(stock => {
-    stock.bookings.forEach(booking => {
-      if (!booking.isCancelled) {
+    const { bookings } = stock
+    const hasAtLeastOneBooking = bookings.length > 0
+
+    if (hasAtLeastOneBooking) {
+      const lastBooking = bookings.slice(-1)[0]
+
+      if (!lastBooking.isCancelled) {
         flag = true
       }
-    })
+    }
   })
 
   return flag

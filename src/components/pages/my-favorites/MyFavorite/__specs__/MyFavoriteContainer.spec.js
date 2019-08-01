@@ -10,13 +10,13 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
             {
               bookings: [
                 {
-                  isCancelled: true,
-                },
-                {
                   isCancelled: false,
                 },
                 {
                   isCancelled: true,
+                },
+                {
+                  isCancelled: false,
                 },
               ],
             },
@@ -38,6 +38,15 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
           stocks: [
             {
               bookings: [
+                {
+                  isCancelled: false,
+                },
+                {
+                  isCancelled: true,
+                },
+                {
+                  isCancelled: false,
+                },
                 {
                   isCancelled: true,
                 },

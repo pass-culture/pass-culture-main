@@ -43,7 +43,7 @@ describe('selectRecommendations', () => {
       dateCreated: '2018-10-10T14:19:27.410551Z',
       dateRead: null,
       dateUpdated: '2018-10-10T14:19:27.410609Z',
-      distance: '5444 km',
+      distance: '-',
       firstThumbDominantColor: [237, 235, 231],
       id: 'AEWPS',
       index: 0,

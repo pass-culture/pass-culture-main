@@ -2,7 +2,7 @@ import { computeDistanceInMeters, humanizeDistance, humanizeRelativeDistance } f
 
 describe('src | utils | geolocation', () => {
   describe('humanizeRelativeDistance()', () => {
-    describe('when there are no user latitude and longitude', () => {
+    describe('when the user is not geolocalized and the offer address is provided', () => {
       it('should return "-"', () => {
         // given
         const venueLatitude = 48.92763
@@ -16,7 +16,7 @@ describe('src | utils | geolocation', () => {
       })
     })
 
-    describe('when the user is geolocalized', () => {
+    describe('when the user is geolocalized and the offer address is provided', () => {
       it('should return 13 km', () => {
         // given
         const venueLatitude = 48.92763
@@ -34,6 +34,27 @@ describe('src | utils | geolocation', () => {
 
         // then
         expect(distance).toBe('13 km')
+      })
+    })
+
+    describe('when its a digital offer', () => {
+      it('should return "-"', () => {
+        // given
+        const venueLatitude = null
+        const venueLongitude = null
+        const userLatitude = 48.863654499999996
+        const userLongitude = 2.3371120999999997
+
+        // when
+        const distance = humanizeRelativeDistance(
+          venueLatitude,
+          venueLongitude,
+          userLatitude,
+          userLongitude
+        )
+
+        // then
+        expect(distance).toBe('-')
       })
     })
   })

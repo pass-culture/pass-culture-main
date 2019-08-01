@@ -10,14 +10,14 @@ describe('previousRecommendationSelector', () => {
       // given
       offerId = 'FAKEOFFERID'
 
-      const expected = undefined
-
+      // when
       const result = previousRecommendationSelector(state, offerId, mediationId)
 
       // then
-      expect(result).toStrictEqual(expected)
+      expect(result).toBeUndefined()
     })
   })
+
   describe('when there is offerId and no mediationId', () => {
     it('should select the previous recommendation corresponding to a mediation', () => {
       // given
@@ -28,7 +28,7 @@ describe('previousRecommendationSelector', () => {
         dateCreated: '2018-10-25T19:48:46.812732Z',
         dateRead: null,
         dateUpdated: '2018-10-25T19:48:46.812742Z',
-        distance: '5450 km',
+        distance: '-',
         firstThumbDominantColor: [245, 243, 237],
         id: 'AFNVK',
         index: 0,
@@ -155,6 +155,7 @@ describe('previousRecommendationSelector', () => {
         validUntilDate: '2018-10-28T19:48:46.809836Z',
       }
 
+      // when
       const result = previousRecommendationSelector(state, offerId, mediationId)
 
       // then

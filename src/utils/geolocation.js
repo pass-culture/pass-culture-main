@@ -1,18 +1,18 @@
 import { MOBILE_OS } from './config'
 
 export const humanizeRelativeDistance = (
-  venueLatitude,
-  venueLongitude,
+  venueLatitude = null,
+  venueLongitude = null,
   userLatitude = null,
   userLongitude = null
 ) => {
-  if (!userLatitude || !userLongitude) return '-'
+  if (!userLatitude || !userLongitude || !venueLatitude || !venueLongitude) return '-'
 
   const distanceInMeters = computeDistanceInMeters(
-    userLatitude,
-    userLongitude,
     venueLatitude,
-    venueLongitude
+    venueLongitude,
+    userLatitude,
+    userLongitude
   )
 
   return humanizeDistance(distanceInMeters)
