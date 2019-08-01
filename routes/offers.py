@@ -105,7 +105,7 @@ def patch_offer(id):
     if not offer:
         raise ResourceNotFound
     ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
-    check_offer_is_editable(offer.isEditable)
+    check_offer_is_editable(offer)
     offer.populate_from_dict(request.json)
     offer.update_with_product_data(thing_or_event_dict)
     PcObject.save(offer)

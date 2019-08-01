@@ -70,7 +70,7 @@ def create_stock():
     check_request_has_offer_id(request_data)
     offer_id = dehumanize(request_data.get('offerId', None))
     offer = find_offer_by_id(offer_id)
-    check_offer_is_editable(offer.isEditable)
+    check_offer_is_editable(offer)
     check_dates_are_allowed_on_new_stock(request_data, offer)
     offerer = offerer_queries.get_by_offer_id(offer_id)
     ensure_current_user_has_rights(RightsType.editor, offerer.id)
@@ -90,7 +90,7 @@ def edit_stock(stock_id):
     stock_data = request.json
     query = Stock.queryNotSoftDeleted().filter_by(id=dehumanize(stock_id))
     stock = query.first_or_404()
-    check_offer_is_editable(stock.offer.isEditable)
+    check_offer_is_editable(stock.offer)
     check_dates_are_allowed_on_existing_stock(stock_data, stock.offer)
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
@@ -105,7 +105,7 @@ def edit_stock(stock_id):
 @login_or_api_key_required
 def delete_stock(id):
     stock = load_or_404(Stock, id)
-    check_offer_is_editable(stock.offer.isEditable)
+    check_offer_is_editable(stock.offer)
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
     bookings = delete_stock_and_cancel_bookings(stock)

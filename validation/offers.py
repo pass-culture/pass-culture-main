@@ -1,6 +1,6 @@
 from flask import Request
 
-from models import RightsType
+from models import RightsType, Offer
 from models.api_errors import ResourceNotFound, ApiErrors
 from models.offer_type import ProductType
 from utils.rest import ensure_current_user_has_rights
@@ -62,8 +62,8 @@ def check_offer_id_and_mediation_id_are_present_in_request(offer_id: str, mediat
         raise errors
 
 
-def check_offer_is_editable(offer_is_editable):
-    if not offer_is_editable:
+def check_offer_is_editable(offer: Offer):
+    if not offer.isEditable:
         error = ApiErrors()
         error.status_code = 400
         error.add_error('global', "Cette offre n'est pas modifiable")
