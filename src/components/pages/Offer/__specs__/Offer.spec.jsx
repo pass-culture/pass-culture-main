@@ -23,6 +23,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         currentUser: {
           isAdmin: false,
         },
+        isEditableOffer: true,
         query: {
           context: () => ({}),
           parse: () => ({ lieu: 'AQ' }),
@@ -56,6 +57,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           currentUser: {
             isAdmin: false,
           },
+          isEditableOffer: true,
           query: {
             changeToReadOnly: queryChangeToReadOnly,
             context: () => ({}),
@@ -98,6 +100,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           currentUser: {
             isAdmin: false,
           },
+          isEditableOffer: true,
           query: {
             changeToReadOnly: queryChangeToReadOnly,
             context: () => ({}),
@@ -196,6 +199,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           currentUser: {
             isAdmin: false,
           },
+          isEditableOffer: true,
           query: {
             change: () => {},
             context: () => ({}),
@@ -243,6 +247,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           currentUser: {
             isAdmin: false,
           },
+          isEditableOffer: true,
           query: {
             change: () => {},
             context: () => ({
@@ -278,6 +283,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           currentUser: {
             isAdmin: false,
           },
+          isEditableOffer: true,
           query: {
             context: () => ({
               isCreatedEntity: true,
@@ -318,6 +324,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           currentUser: {
             isAdmin: false,
           },
+          isEditableOffer: true,
           query: {
             context: () => ({
               isCreatedEntity: false,
@@ -356,6 +363,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           currentUser: {
             isAdmin: false,
           },
+          isEditableOffer: true,
           query: {
             context: () => ({
               isCreatedEntity: false,
@@ -399,6 +407,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         currentUser: {
           isAdmin: false,
         },
+        isEditableOffer: true,
         query: {
           change: () => {},
           context: () => ({
@@ -499,6 +508,98 @@ describe('src | components | pages | Offer | Offer ', () => {
         const durationField = fieldGroupForUsefulInformation.find(Field).at(2)
         expect(fieldGroups).toHaveLength(3)
         expect(durationField.prop('name')).toStrictEqual('bookingEmail')
+      })
+    })
+
+    describe('when offer is not editable', () => {
+      const props = {
+        currentUser: {
+          isAdmin: false,
+        },
+        dispatch: dispatch,
+        location: {
+          search: '?lieu=AQ',
+        },
+        isEditableOffer: false,
+        query: {
+          context: () => ({
+            isCreatedEntity: false,
+            isModifiedEntity: false,
+            readOnly: true,
+          }),
+          parse: () => ({ lieu: 'AQ' }),
+          translate: () => ({ venue: 'AQ' }),
+        },
+        product: {},
+      }
+      it('should not be possible to manage stocks', () => {
+        // given
+        props.isEditableOffer = false
+
+        // when
+        const wrapper = shallow(<Offer {...props} />)
+
+        // then
+        const manageStockButton = wrapper.find('#manage-stocks')
+        expect(manageStockButton.prop('disabled')).toStrictEqual('disabled')
+      })
+
+      it('should not be possible to modify offer', () => {
+        // given
+        props.isEditableOffer = false
+
+        // when
+        const wrapper = shallow(<Offer {...props} />)
+
+        // then
+        const modifyOfferButton = wrapper.find('#modify-offer-button')
+        expect(modifyOfferButton.prop('disabled')).toStrictEqual('disabled')
+      })
+    })
+
+    describe('when offer is editable', () => {
+      const props = {
+        currentUser: {
+          isAdmin: false,
+        },
+        dispatch: dispatch,
+        location: {
+          search: '?lieu=AQ',
+        },
+        isEditableOffer: true,
+        query: {
+          context: () => ({
+            isCreatedEntity: false,
+            isModifiedEntity: false,
+            readOnly: true,
+          }),
+          parse: () => ({ lieu: 'AQ' }),
+          translate: () => ({ venue: 'AQ' }),
+        },
+        product: {},
+      }
+      it('should be possible to manage stocks', () => {
+        // given
+        props.isEditableOffer = true
+
+        // when
+        const wrapper = shallow(<Offer {...props} />)
+
+        // then
+        const manageStockButton = wrapper.find('#manage-stocks')
+        expect(manageStockButton.prop('disabled')).toStrictEqual('')
+      })
+
+      it('should not be possible to modify offer', () => {
+        // given
+        props.isEditableOffer = true
+
+        // when
+        const wrapper = shallow(<Offer {...props} />)
+
+        // then
+        const modifyOfferButton = wrapper.find('#modify-offer-button')
+        expect(modifyOfferButton.prop('disabled')).toStrictEqual('')
       })
     })
   })

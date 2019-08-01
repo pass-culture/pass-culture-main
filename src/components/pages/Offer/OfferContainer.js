@@ -28,6 +28,7 @@ export const mapStateToProps = (state, ownProps) => {
   const translatedQueryParams = query.translate()
   const providers = selectProviders(state)
   const offer = selectOfferById(state, offerId)
+  const isEditableOffer = get(offer, 'isEditable')
   const productId = get(offer, 'productId')
   const product = selectProductById(state, productId)
   const formVenueId = get(state, 'form.offer.venueId')
@@ -70,6 +71,7 @@ export const mapStateToProps = (state, ownProps) => {
     formInitialValues,
     formOffererId,
     formVenueId,
+    isEditableOffer,
     musicSubOptions,
     offer,
     offerer,

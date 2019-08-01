@@ -26,6 +26,7 @@ ShallowWrapper {
         ],
       }
     }
+    isEditableOffer={true}
     location={
       Object {
         "search": "?lieu=AQ",

@@ -272,6 +272,7 @@ class Offer extends Component {
     const {
       currentUser,
       formInitialValues,
+      isEditableOffer,
       musicSubOptions,
       offer,
       offerer,
@@ -449,6 +450,8 @@ class Offer extends Component {
                       </span>
                       <button
                         className="button is-primary is-outlined is-small manage-stock"
+                        disabled={isEditableOffer ? '' : 'disabled'}
+                        id="manage-stocks"
                         onClick={this.handleOnClick(query)}
                         type="button"
                       >
@@ -625,6 +628,8 @@ class Offer extends Component {
                 {readOnly ? (
                   <button
                     className="button is-secondary is-medium"
+                    disabled={isEditableOffer ? '' : 'disabled'}
+                    id='modify-offer-button'
                     onClick={this.handleChangeOnClick(query)}
                     type="button"
                   >
@@ -674,6 +679,7 @@ Offer.defaultProps = {
 Offer.propTypes = {
   currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
+  isEditableOffer: PropTypes.bool.isRequired,
   location: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
