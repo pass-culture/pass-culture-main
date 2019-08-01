@@ -13,8 +13,11 @@ class CsvTable extends Component {
   }
 
   async componentDidMount() {
-    const { downloadFileOrNotifyAnError } = this.props
+    await this.getCsvData()
+  }
 
+  async getCsvData(){
+    const { downloadFileOrNotifyAnError } = this.props
     const dataFromCsv = await downloadFileOrNotifyAnError()
     this.setState({
       dataFromCsv: dataFromCsv,
@@ -24,7 +27,7 @@ class CsvTable extends Component {
 
   buildUniqueKey = (index, value) => `${index + '_' + value}`
 
-  printCurrentView = () => window.print()
+  handlePrintCurrentView = () => window.print()
 
   render() {
     const { currentUser } = this.props
@@ -74,9 +77,10 @@ class CsvTable extends Component {
               <button
                 className="button is-primary"
                 id="csv-print-button"
-                onClick={this.printCurrentView}
+                onClick={this.handlePrintCurrentView}
+                type="button"
               >
-                Imprimer
+                {'Imprimer'}
               </button>
             </div>
           </div>
@@ -84,7 +88,7 @@ class CsvTable extends Component {
 
         {!hasAtLeastData && !isLoading && (
           <div id="no-data-container">
-            <p className="section">Il n'y a pas de données à afficher.</p>
+            <p className="section">{`Il n'y a pas de données à afficher.`}</p>
           </div>
         )}
       </React.Fragment>

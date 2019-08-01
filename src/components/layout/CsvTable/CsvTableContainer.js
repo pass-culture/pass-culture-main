@@ -20,7 +20,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
           return csvConverter(text)
         }
       } catch (error) {
-        console.log('error', error)
+        throw new Error('Erreur lors du téléchargement des données.')
       }
     },
   }

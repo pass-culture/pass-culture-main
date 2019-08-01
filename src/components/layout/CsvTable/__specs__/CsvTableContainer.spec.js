@@ -16,7 +16,7 @@ describe('src | components | layout | CsvTable | CsvTableContainer', () => {
       if (url.includes('reimbursements/csv')) {
         return new Response('foo;foo')
       }
-      return new Response(400)
+      throw new Error()
     }
   })
 
@@ -46,6 +46,21 @@ describe('src | components | layout | CsvTable | CsvTableContainer', () => {
           data: [],
           headers: ['foo', 'foo'],
         })
+      })
+
+      it('should throw an Error when data retrieval failed', async () => {
+        // given
+        props.location.state = '/fake-path'
+        const functions = mapDispatchToProps(dispatch, props)
+        const { downloadFileOrNotifyAnError } = functions
+
+        // when
+        try {
+          await downloadFileOrNotifyAnError()
+        } catch (e) {
+          // then
+          expect(e.message).toBe('Erreur lors du téléchargement des données.')
+        }
       })
     })
   })
