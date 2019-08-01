@@ -8,10 +8,14 @@ from utils.feature import feature_required
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
-from utils.human_ids import dehumanize
-from utils.includes import FAVORITE_INCLUDES
-from utils.rest import load_or_404
+from domain.favorites import find_first_matching_booking_from_favorite
+from repository.booking_queries import find_bookings_from_recommendation
 from validation.offers import check_offer_id_and_mediation_id_are_present_in_request
+from utils.human_ids import dehumanize
+from utils.includes import FAVORITE_INCLUDES, \
+                           RECOMMENDATION_INCLUDES, \
+                           WEBAPP_GET_BOOKING_INCLUDES
+from utils.rest import load_or_404
 
 
 @app.route('/favorites', methods=['POST'])
@@ -57,9 +61,26 @@ def get_favorites():
     return jsonify(_serialize_favorites(favorites)), 200
 
 
+@app.route('/favorites/<favorite_id>', methods=['GET'])
+@feature_required(FeatureToggle.FAVORITE_OFFER)
+@login_required
+def get_favorite(favorite_id):
+    favorite = load_or_404(Favorite, favorite_id)
+    return jsonify(_serialize_favorite(favorite)), 200
+
+
 def _serialize_favorites(favorites: List[Favorite]) -> List:
     return list(map(_serialize_favorite, favorites))
 
 
 def _serialize_favorite(favorite: Favorite) -> dict:
-    return favorite.as_dict(include=FAVORITE_INCLUDES)
+    dict_favorite = favorite.as_dict(include=FAVORITE_INCLUDES)
+
+    first_matching_booking = find_first_matching_booking_from_favorite(favorite, current_user)
+    if first_matching_booking:
+        dict_favorite['firstMatchingBooking'] = _serialize_booking(first_matching_booking)
+
+    return dict_favorite
+
+def _serialize_booking(booking):
+    return booking.as_dict(include=WEBAPP_GET_BOOKING_INCLUDES)

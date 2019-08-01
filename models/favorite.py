@@ -31,3 +31,11 @@ class Favorite(PcObject, Model):
     mediation = relationship('Mediation',
                              foreign_keys=[mediationId],
                              backref='favorites')
+
+    @property
+    def thumbUrl(self):
+        if self.mediationId:
+            return self.mediation.thumbUrl
+
+        if self.offer.product.thumbCount:
+            return self.offer.product.thumbUrl

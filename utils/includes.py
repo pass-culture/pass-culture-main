@@ -123,43 +123,32 @@ OFFER_INCLUDES = [
 
 FAVORITE_INCLUDES = [
     "-userId",
-    "mediation",
     {
-        "key": "offer",
-        "sub_joins": [
-            'favorites',
-            'isFinished',
-            'isFullyBooked',
-            "dateRange",
-            "isEvent",
-            "isThing",
-            "mediation",
-            "stocks",
-            {
-                "key": "venue",
-                "sub_joins": ["managingOfferer"]
-            },
-            {
-                "key": "stocks",
-                "sub_joins": ['bookings']
-            },
-            {
-                "key": "product",
-                "sub_joins": ["thumbUrl", "offerType"]
-            }
-        ]
-    },
-    {
-        "key": "recommendation",
+        "key": "mediation",
         "sub_joins": [
             "thumbUrl"
         ]
     },
     {
-        "key": "mediation",
-        "sub_joins": ["thumbUrl"]
+        "key": "offer",
+        "sub_joins": [
+            "dateRange",
+            "favorites",
+            "isEvent",
+            "isFinished",
+            "isThing",
+            "isFullyBooked",
+            {
+                "key": "product",
+                "sub_joins": [
+                    "thumbUrl"
+                ]
+            },
+            "stocks",
+            "venue",
+        ]
     },
-    "isFavorite"
+    "thumbUrl"
 ]
 
 RECOMMENDATION_INCLUDES = [
@@ -185,8 +174,7 @@ RECOMMENDATION_INCLUDES = [
             }
         ]
     },
-    "thumbUrl",
-    "isFavorite"
+    "thumbUrl"
 ]
 
 USER_INCLUDES = [
