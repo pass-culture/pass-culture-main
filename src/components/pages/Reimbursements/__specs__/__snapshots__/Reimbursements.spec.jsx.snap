@@ -50,11 +50,11 @@ ShallowWrapper {
         <div
           className="control flex-columns items-center flex-end"
         >
-          <withRouter(Connect(CsvTableButton))
+          <withRouter(CsvTableButton)
             href="http://localhost/reimbursements/csv"
           >
             Afficher la liste des remboursements
-          </withRouter(Connect(CsvTableButton))>
+          </withRouter(CsvTableButton)>
         </div>,
       ],
       "name": "reimbursements",
@@ -164,11 +164,11 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": <withRouter(Connect(CsvTableButton))
+          "children": <withRouter(CsvTableButton)
             href="http://localhost/reimbursements/csv"
           >
             Afficher la liste des remboursements
-          </withRouter(Connect(CsvTableButton))>,
+          </withRouter(CsvTableButton)>,
           "className": "control flex-columns items-center flex-end",
         },
         "ref": null,
@@ -227,11 +227,11 @@ ShallowWrapper {
           <div
             className="control flex-columns items-center flex-end"
           >
-            <withRouter(Connect(CsvTableButton))
+            <withRouter(CsvTableButton)
               href="http://localhost/reimbursements/csv"
             >
               Afficher la liste des remboursements
-            </withRouter(Connect(CsvTableButton))>
+            </withRouter(CsvTableButton)>
           </div>,
         ],
         "name": "reimbursements",
@@ -341,11 +341,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <withRouter(Connect(CsvTableButton))
+            "children": <withRouter(CsvTableButton)
               href="http://localhost/reimbursements/csv"
             >
               Afficher la liste des remboursements
-            </withRouter(Connect(CsvTableButton))>,
+            </withRouter(CsvTableButton)>,
             "className": "control flex-columns items-center flex-end",
           },
           "ref": null,

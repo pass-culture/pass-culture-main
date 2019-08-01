@@ -1,10 +1,25 @@
-import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Header from '../Header/Header'
+import PropTypes from 'prop-types'
+import Spinner from '../Spinner'
 
 class CsvTable extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      dataFromCsv: {},
+      isLoading: true,
+    }
+  }
+
+  async componentDidMount() {
+    const { downloadFileOrNotifyAnError } = this.props
+
+    const dataFromCsv = await downloadFileOrNotifyAnError()
+    this.setState({
+      dataFromCsv: dataFromCsv,
+      isLoading: false,
+    })
   }
 
   buildUniqueKey = (index, value) => `${index + '_' + value}`
@@ -12,10 +27,11 @@ class CsvTable extends Component {
   printCurrentView = () => window.print()
 
   render() {
-    const { currentUser, location } = this.props
-    const { state } = location
-    const { data, headers } = state
+    const { currentUser } = this.props
+    const { dataFromCsv, isLoading } = this.state
+    const { data = [], headers = [] } = dataFromCsv
     const { publicName } = currentUser
+    const hasAtLeastData = data.length > 0
 
     return (
       <React.Fragment>
@@ -24,38 +40,53 @@ class CsvTable extends Component {
           name={publicName}
           offerers={[]}
         />
-        <div id="main-container">
-          <div id="csv-container">
-            <table id="csv-table">
-              <thead>
-                <tr>
-                  {headers.map((header, index) => (
-                    <th key={this.buildUniqueKey(index, header)}>{header}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((line, index) => (
-                  <tr key={this.buildUniqueKey(index, line)}>
-                    {line.map((content, index) => (
-                      <td key={this.buildUniqueKey(index, content)}>{content}</td>
+        {isLoading && (
+          <div id="spinner-container">
+            <Spinner />
+          </div>
+        )}
+
+        {hasAtLeastData && !isLoading && (
+          <div id="main-container">
+            <div id="csv-container">
+              <table id="csv-table">
+                <thead>
+                  <tr>
+                    {headers.map((header, index) => (
+                      <th key={this.buildUniqueKey(index, header)}>{header}</th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {data &&
+                    data.map((line, index) => (
+                      <tr key={this.buildUniqueKey(index, line)}>
+                        {line.map((content, index) => (
+                          <td key={this.buildUniqueKey(index, content)}>{content}</td>
+                        ))}
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+            <hr />
+            <div id="csv-print-container">
+              <button
+                className="button is-primary"
+                id="csv-print-button"
+                onClick={this.printCurrentView}
+              >
+                Imprimer
+              </button>
+            </div>
           </div>
-          <hr />
-          <div id="csv-print-container">
-            <button
-              className="button is-primary"
-              id="csv-print-button"
-              onClick={this.printCurrentView}
-            >
-              Imprimer
-            </button>
+        )}
+
+        {!hasAtLeastData && !isLoading && (
+          <div id="no-data-container">
+            <p className="section">Il n'y a pas de données à afficher.</p>
           </div>
-        </div>
+        )}
       </React.Fragment>
     )
   }
@@ -63,9 +94,7 @@ class CsvTable extends Component {
 
 CsvTable.propTypes = {
   currentUser: PropTypes.shape().isRequired,
-  location: PropTypes.shape({
-    state: PropTypes.shape().isRequired,
-  }).isRequired,
+  downloadFileOrNotifyAnError: PropTypes.func.isRequired,
 }
 
 export default CsvTable

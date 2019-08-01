@@ -4,7 +4,7 @@ import DownloadButtonContainer from '../../layout/DownloadButton/DownloadButtonC
 import Main from '../../layout/Main'
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import { API_URL } from '../../../utils/config'
-import DisplayButtonContainer from '../../layout/CsvTableButton/CsvTableButtonContainer'
+import CsvTableButtonContainer from '../../layout/CsvTableButton/CsvTableButtonContainer'
 
 const Reimbursements = () => (
   <Main name="reimbursements">
@@ -26,9 +26,9 @@ const Reimbursements = () => (
     </div>
     <br />
     <div className="control flex-columns items-center flex-end">
-      <DisplayButtonContainer href={`${API_URL}/reimbursements/csv`}>
+      <CsvTableButtonContainer href={`${API_URL}/reimbursements/csv`}>
         {'Afficher la liste des remboursements'}
-      </DisplayButtonContainer>
+      </CsvTableButtonContainer>
     </div>
   </Main>
 )

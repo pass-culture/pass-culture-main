@@ -3,23 +3,25 @@ import { shallow } from 'enzyme'
 
 import CsvTable from '../CsvTable'
 import Header from '../../Header/Header'
+import Spinner from '../../Spinner'
 
+jest.spyOn(global, 'print').mockImplementation(() => {})
 describe('src | components | Layout | CsvTable', () => {
   let props
+  let dataFromCsv
 
   beforeEach(() => {
     props = {
       currentUser: {
         publicName: 'super nom',
       },
-      location: {
-        state: {
-          data: [['data1', 'data2'], ['data3', 'data4']],
-          headers: ['column1', 'column2'],
-        },
-      },
+      downloadFileOrNotifyAnError: jest.fn(),
     }
-    jest.spyOn(global, 'print')
+    dataFromCsv = {
+      data: [['data1', 'data2'], ['data3', 'data4']],
+      headers: ['column1', 'column2'],
+    }
+    props.downloadFileOrNotifyAnError.mockReturnValue(Promise.resolve().then(() => dataFromCsv))
   })
 
   it('should match snapshot', () => {
@@ -28,6 +30,17 @@ describe('src | components | Layout | CsvTable', () => {
 
     // then
     expect(wrapper).toMatchSnapshot()
+  })
+
+  it('should render a CsvTable component with default state', () => {
+    // when
+    const wrapper = shallow(<CsvTable {...props} />)
+
+    // then
+    expect(wrapper.state()).toStrictEqual({
+      dataFromCsv: {},
+      isLoading: true,
+    })
   })
 
   it('should render a Header component with the right props', () => {
@@ -42,18 +55,45 @@ describe('src | components | Layout | CsvTable', () => {
     expect(header.prop('offerers')).toStrictEqual([])
   })
 
-  it('should render a table header with 2 columns when csv contains 2 elements in header', () => {
+  it('should render a Spinner component by default when CsvTable is mounted', () => {
     // when
     const wrapper = shallow(<CsvTable {...props} />)
+
+    // then
+    const spinner = wrapper.find(Spinner)
+    expect(spinner).toHaveLength(1)
+  })
+
+  it('should not render a Spinner component when isLoading value from state is false', () => {
+    // when
+    const wrapper = shallow(<CsvTable {...props} />)
+    wrapper.setState({ isLoading: false })
+
+    // then
+    const spinner = wrapper.find(Spinner)
+    expect(spinner).toHaveLength(0)
+  })
+
+  it('should render a table header with 2 columns when data from csv is provided and isLoading value from state is false', () => {
+    // when
+    const wrapper = shallow(<CsvTable {...props} />)
+    wrapper.setState({
+      dataFromCsv: dataFromCsv,
+      isLoading: false,
+    })
 
     // then
     const thElements = wrapper.find('thead tr th')
     expect(thElements).toHaveLength(2)
   })
 
-  it('should render a tbody with two lines, containing two columns when csv containes 2 elements in headers and 2 lines of data', () => {
+  it('should render a tbody with two lines when data from csv is provided and isLoading value from state is false', () => {
     // when
     const wrapper = shallow(<CsvTable {...props} />)
+    wrapper.setState({
+      dataFromCsv: dataFromCsv,
+      isLoading: false,
+    })
 
     // then
     const trElements = wrapper.find('tbody tr')
@@ -68,9 +108,13 @@ describe('src | components | Layout | CsvTable', () => {
     expect(secondTrElement.at(1).text()).toBe('data4')
   })
 
-  it('should render a print button with the right props', () => {
+  it('should render a print button with the right props when data from csv is provided and isLoading value from state is false', () => {
     // when
     const wrapper = shallow(<CsvTable {...props} />)
+    wrapper.setState({
+      dataFromCsv: dataFromCsv,
+      isLoading: false,
+    })
 
     // then
     const printButton = wrapper.find('#csv-print-button')
@@ -83,6 +127,10 @@ describe('src | components | Layout | CsvTable', () => {
   it('should open a new window for printing when clicking on print button', () => {
     // given
     const wrapper = shallow(<CsvTable {...props} />)
+    wrapper.setState({
+      dataFromCsv: dataFromCsv,
+      isLoading: false,
+    })
     const printButton = wrapper.find('#csv-print-button')
 
     // then
@@ -90,5 +138,34 @@ describe('src | components | Layout | CsvTable', () => {
 
     // then
     expect(global.print).toHaveBeenCalledWith()
+  })
+
+  it('should display a message when there is no data to display and isLoading value from state is false', () => {
+    // when
+    const wrapper = shallow(<CsvTable {...props} />)
+    wrapper.setState({
+      dataFromCsv: {},
+      isLoading: false,
+    })
+
+    // then
+    const noDataContainer = wrapper.find('#no-data-container')
+    expect(noDataContainer).toHaveLength(1)
+    expect(noDataContainer.text()).toBe("Il n'y a pas de données à afficher.")
+  })
+
+  it('should load data from csv when CsvTable component is mounted', async () => {
+    // when
+    const wrapper = await shallow(<CsvTable {...props} />)
+
+    // then
+    expect(props.downloadFileOrNotifyAnError).toHaveBeenCalledWith()
+    expect(wrapper.state()).toStrictEqual({
+      dataFromCsv: {
+        data: [['data1', 'data2'], ['data3', 'data4']],
+        headers: ['column1', 'column2'],
+      },
+      isLoading: false,
+    })
   })
 })

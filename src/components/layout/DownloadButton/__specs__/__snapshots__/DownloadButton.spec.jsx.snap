@@ -23,7 +23,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": "Fake title",
-      "className": "button is-primary",
+      "className": "button is-primary is-flex-button",
       "disabled": false,
       "download": true,
       "onClick": [Function],
@@ -40,7 +40,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": "Fake title",
-        "className": "button is-primary",
+        "className": "button is-primary is-flex-button",
         "disabled": false,
         "download": true,
         "onClick": [Function],

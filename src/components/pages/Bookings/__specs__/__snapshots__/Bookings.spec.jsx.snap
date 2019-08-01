@@ -37,13 +37,7 @@ ShallowWrapper {
         </HeroSection>,
         <hr />,
         <withRouter(_withQueryRouter) />,
-        <div
-          className="control flex-columns items-center flex-end"
-        />,
-        <br />,
-        <div
-          className="control flex-columns items-center flex-end"
-        />,
+        false,
       ],
       "name": "bookings",
     },
@@ -124,39 +118,7 @@ ShallowWrapper {
         "rendered": null,
         "type": [Function],
       },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": false,
-          "className": "control flex-columns items-center flex-end",
-        },
-        "ref": null,
-        "rendered": false,
-        "type": "div",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {},
-        "ref": null,
-        "rendered": null,
-        "type": "br",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": false,
-          "className": "control flex-columns items-center flex-end",
-        },
-        "ref": null,
-        "rendered": false,
-        "type": "div",
-      },
+      false,
     ],
     "type": [Function],
   },
@@ -182,13 +144,7 @@ ShallowWrapper {
           </HeroSection>,
           <hr />,
           <withRouter(_withQueryRouter) />,
-          <div
-            className="control flex-columns items-center flex-end"
-          />,
-          <br />,
-          <div
-            className="control flex-columns items-center flex-end"
-          />,
+          false,
         ],
         "name": "bookings",
       },
@@ -269,39 +225,7 @@ ShallowWrapper {
           "rendered": null,
           "type": [Function],
         },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": false,
-            "className": "control flex-columns items-center flex-end",
-          },
-          "ref": null,
-          "rendered": false,
-          "type": "div",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {},
-          "ref": null,
-          "rendered": null,
-          "type": "br",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": false,
-            "className": "control flex-columns items-center flex-end",
-          },
-          "ref": null,
-          "rendered": false,
-          "type": "div",
-        },
+        false,
       ],
       "type": [Function],
     },

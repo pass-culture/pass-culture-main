@@ -22,7 +22,7 @@ class DownloadButton extends PureComponent {
 
     return (
       <button
-        className={classnames('button is-primary', {
+        className={classnames('button is-primary is-flex-button', {
           'is-loading': isLoading,
         })}
         disabled={isLoading}

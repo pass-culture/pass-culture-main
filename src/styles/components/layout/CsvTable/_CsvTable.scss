@@ -36,6 +36,22 @@ $grey: #ddd;
   justify-content: center;
 }
 
+#no-data-container {
+  @extend .fs20;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+#spinner-container {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
 @media print {
   @page {
     size: landscape

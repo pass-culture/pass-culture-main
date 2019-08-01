@@ -4,18 +4,17 @@ exports[`src | components | layout | CsvTableButton should match snapshot 1`] = 
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <CsvTableButton
-    downloadFileOrNotifyAnError={[MockFunction]}
     history={
       Object {
         "push": [MockFunction],
       }
     }
+    href="/path-to-csv"
     location={
       Object {
         "pathname": "/fake-url",
       }
     }
-    showFailureNotification={[MockFunction]}
   >
     foobar
   </CsvTableButton>,
@@ -34,9 +33,8 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": "foobar",
-      "className": "button is-primary",
+      "className": "button is-primary is-flex-button",
       "onClick": [Function],
-      "type": "button",
     },
     "ref": null,
     "rendered": "foobar",
@@ -49,9 +47,8 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": "foobar",
-        "className": "button is-primary",
+        "className": "button is-primary is-flex-button",
         "onClick": [Function],
-        "type": "button",
       },
       "ref": null,
       "rendered": "foobar",

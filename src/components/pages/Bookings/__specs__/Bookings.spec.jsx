@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 
 import Bookings from '../Bookings'
 import DownloadButtonContainer from '../../../layout/DownloadButton/DownloadButtonContainer'
-import DisplayButtonContainer from '../../../layout/CsvTableButton/CsvTableButtonContainer'
+import CsvTableButtonContainer from '../../../layout/CsvTableButton/CsvTableButtonContainer'
 
 describe('src | components | pages | Bookings', () => {
   let props
@@ -46,16 +46,16 @@ describe('src | components | pages | Bookings', () => {
       expect(downloadButton.prop('href')).toBe('/path/to/csv/file?with=query')
     })
 
-    it('should not render a display button by default', () => {
+    it('should not render a CsvTableButtonContainer by default', () => {
       // when
       const wrapper = shallow(<Bookings {...props} />)
 
       // then
-      const displayButton = wrapper.find(DisplayButtonContainer)
+      const displayButton = wrapper.find(CsvTableButtonContainer)
       expect(displayButton).toHaveLength(0)
     })
 
-    it('should render a display button with the right props when displayed', () => {
+    it('should render CsvTableButtonContainer with the right props when displayed', () => {
       // given
       props.showButtons = true
 
@@ -63,7 +63,7 @@ describe('src | components | pages | Bookings', () => {
       const wrapper = shallow(<Bookings {...props} />)
 
       // then
-      const displayButton = wrapper.find(DisplayButtonContainer)
+      const displayButton = wrapper.find(CsvTableButtonContainer)
       expect(displayButton).toHaveLength(1)
       expect(displayButton.prop('href')).toBe('/path/to/csv/file?with=query')
     })

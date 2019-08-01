@@ -1,13 +1,15 @@
-import { mapDispatchToProps } from '../CsvTableButtonContainer'
+import { mapDispatchToProps } from '../CsvTableContainer'
 
-describe('src | components | layout | CsvTableButton | DisplayButtonContainer', () => {
+describe('src | components | layout | CsvTable | CsvTableContainer', () => {
   let dispatch
   let props
 
   beforeEach(() => {
     dispatch = jest.fn()
     props = {
-      href: '/fake-url/fake-uri',
+      location: {
+        state: '/path-to-csv',
+      },
     }
 
     global.fetch = url => {
@@ -26,14 +28,13 @@ describe('src | components | layout | CsvTableButton | DisplayButtonContainer', 
       // then
       expect(result).toStrictEqual({
         downloadFileOrNotifyAnError: expect.any(Function),
-        showFailureNotification: expect.any(Function),
       })
     })
 
     describe('downloadFileOrNotifyAnError', () => {
       it('should return a csv parsed as an object when data fetching succeed', async () => {
         // given
-        props.href = 'reimbursements/csv'
+        props.location.state = 'reimbursements/csv'
         const functions = mapDispatchToProps(dispatch, props)
         const { downloadFileOrNotifyAnError } = functions
 
@@ -44,26 +45,6 @@ describe('src | components | layout | CsvTableButton | DisplayButtonContainer', 
         expect(result).toStrictEqual({
           data: [],
           headers: ['foo', 'foo'],
-        })
-      })
-    })
-
-    describe('showFailureNotification', () => {
-      it('should dispatch an action to trigger notification display', () => {
-        // given
-        const functions = mapDispatchToProps(dispatch, props)
-        const { showFailureNotification } = functions
-
-        // when
-        showFailureNotification()
-
-        // then
-        expect(dispatch).toHaveBeenCalledWith({
-          patch: {
-            text: "Il n'y a pas de données à afficher.",
-            type: 'danger',
-          },
-          type: 'SHOW_NOTIFICATION',
         })
       })
     })

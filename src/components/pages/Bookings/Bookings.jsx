@@ -5,7 +5,7 @@ import DownloadButtonContainer from '../../layout/DownloadButton/DownloadButtonC
 import Main from '../../layout/Main'
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import FilterByVenueContainer from './FilterByVenue/FilterByVenueContainer'
-import DisplayButtonContainer from '../../layout/CsvTableButton/CsvTableButtonContainer'
+import CsvTableButtonContainer from '../../layout/CsvTableButton/CsvTableButtonContainer'
 
 const Bookings = ({ pathToCsvFile, showButtons }) => (
   <Main name="bookings">
@@ -19,25 +19,25 @@ const Bookings = ({ pathToCsvFile, showButtons }) => (
     </HeroSection>
     <hr />
     <FilterByVenueContainer />
-    <div className="control flex-columns items-center flex-end">
-      {showButtons && (
-        <DownloadButtonContainer
-          filename="reservations_pass_culture"
-          href={pathToCsvFile}
-          mimeType="text/csv"
-        >
-          {'Télécharger la liste des réservations'}
-        </DownloadButtonContainer>
-      )}
-    </div>
-    <br />
-    <div className="control flex-columns items-center flex-end">
-      {showButtons && (
-        <DisplayButtonContainer href={pathToCsvFile}>
-          {'Afficher la liste des réservations'}
-        </DisplayButtonContainer>
-      )}
-    </div>
+    {showButtons && (
+      <div id="buttons-container">
+        <div className="control flex-columns items-center flex-end">
+          <DownloadButtonContainer
+            filename="reservations_pass_culture"
+            href={pathToCsvFile}
+            mimeType="text/csv"
+          >
+            {'Télécharger la liste des réservations'}
+          </DownloadButtonContainer>
+        </div>
+        <br />
+        <div className="control flex-columns items-center flex-end">
+          <CsvTableButtonContainer href={pathToCsvFile}>
+            {'Afficher la liste des réservations'}
+          </CsvTableButtonContainer>
+        </div>
+      </div>
+    )}
   </Main>
 )
 

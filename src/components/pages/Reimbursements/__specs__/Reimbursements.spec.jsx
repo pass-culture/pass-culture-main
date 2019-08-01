@@ -63,7 +63,7 @@ describe('src | components | pages | Reimbursements', () => {
       )
     })
 
-    it('should render a DisplayButtonContainer with the right props', () => {
+    it('should render a CsvTableButton with the right props', () => {
       // when
       const wrapper = shallow(<Reimbursements />)
 
