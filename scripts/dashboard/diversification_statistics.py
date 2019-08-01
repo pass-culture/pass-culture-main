@@ -7,17 +7,17 @@ from repository.offer_queries import active_offer_ids_query
 
 
 def get_offerer_count() -> int:
-    return query_offerers_with_user_offerer().count()
+    return _query_offerers_with_user_offerer().count()
 
 
-def query_offerers_with_user_offerer():
+def _query_offerers_with_user_offerer():
     return Offerer.query \
         .join(UserOfferer) \
         .distinct(Offerer.id)
 
 
 def get_offerer_with_stock_count() -> int:
-    return query_offerers_with_user_offerer() \
+    return _query_offerers_with_user_offerer() \
         .join(Venue, Venue.managingOffererId == Offerer.id) \
         .join(Offer) \
         .join(Stock) \
@@ -81,8 +81,8 @@ def get_all_cancelled_bookings_count():
     return Booking.query.filter_by(isCancelled=True).count()
 
 
-def get_counts_by_type_and_digital(query_get_counts_per_type_and_digital, counts_column_name):
-    offers_by_type_and_digital_table = get_offers_by_type_and_digital_table()
+def get_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_digital, counts_column_name):
+    offers_by_type_and_digital_table = _get_offers_grouped_by_type_and_medium()
     offer_counts_per_type_and_digital = query_get_counts_per_type_and_digital()
     offers_by_type_and_digital_table[counts_column_name] = 0
     for offer_counts in offer_counts_per_type_and_digital:
@@ -95,7 +95,7 @@ def get_counts_by_type_and_digital(query_get_counts_per_type_and_digital, counts
     offers_by_type_and_digital_table.sort_values(by=[counts_column_name, 'Catégorie', 'Support'], ascending=[False, True, True], inplace=True)
     return offers_by_type_and_digital_table.reset_index(drop=True)
 
-def get_offers_by_type_and_digital_table():
+def _get_offers_grouped_by_type_and_medium():
     human_types = []
     types = []
     digital_or_physical = []
@@ -122,7 +122,7 @@ def get_offers_by_type_and_digital_table():
     return type_and_digital_dataframe
 
 
-def query_get_offer_counts_per_type_and_digital():
+def _query_get_offer_counts_grouped_by_type_and_medium():
     return db.engine.execute(
         """
         SELECT type, url IS NOT NULL AS is_digital, count(offer.id) 
@@ -135,7 +135,7 @@ def query_get_offer_counts_per_type_and_digital():
         """)
 
 
-def query_get_booking_counts_per_type_and_digital():
+def _query_get_booking_counts_grouped_by_type_and_medium():
     return db.engine.execute(
         """
         SELECT type, url IS NOT NULL AS is_digital, SUM(booking.quantity)

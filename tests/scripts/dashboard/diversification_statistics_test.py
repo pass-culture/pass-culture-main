@@ -7,8 +7,8 @@ from scripts.dashboard.diversification_statistics import get_offerer_count, get_
     get_offerers_with_offer_available_on_discovery_count, get_offerers_with_non_cancelled_bookings_count, \
     get_offers_with_user_offerer_and_stock_count, get_offers_available_on_discovery_count, \
     get_offers_with_non_cancelled_bookings_count, get_all_bookings_count, get_all_used_bookings_count, \
-    get_all_cancelled_bookings_count, query_get_offer_counts_per_type_and_digital, get_offers_by_type_and_digital_table, \
-    get_counts_by_type_and_digital, query_get_booking_counts_per_type_and_digital
+    get_all_cancelled_bookings_count, _query_get_offer_counts_grouped_by_type_and_medium, _get_offers_grouped_by_type_and_medium, \
+    get_counts_grouped_by_type_and_medium, _query_get_booking_counts_grouped_by_type_and_medium
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_stock, \
     create_offer_with_thing_product, create_venue, create_mediation, create_offer_with_event_product, create_booking
@@ -870,7 +870,7 @@ class QueryGetOfferCountsPerTypeAndDigitalTest:
         PcObject.save(stock_cinema1, stock_cinema2, stock_musique_digital, stock_musique_physical, user_offerer)
 
         # When
-        offer_counts = query_get_offer_counts_per_type_and_digital().fetchall()
+        offer_counts = _query_get_offer_counts_grouped_by_type_and_medium().fetchall()
 
         # Then
         assert len(offer_counts) == 3
@@ -894,7 +894,7 @@ class QueryGetOfferCountsPerTypeAndDigitalTest:
         PcObject.save(offer_cinema1, offer_cinema2, offer_musique_digital, offer_musique_physical, user_offerer)
 
         # When
-        offer_counts = query_get_offer_counts_per_type_and_digital().fetchall()
+        offer_counts = _query_get_offer_counts_grouped_by_type_and_medium().fetchall()
 
         # Then
         assert offer_counts == []
@@ -917,7 +917,7 @@ class QueryGetOfferCountsPerTypeAndDigitalTest:
         PcObject.save(stock_cinema1, stock_cinema2, stock_musique_digital, stock_musique_physical)
 
         # When
-        offer_counts = query_get_offer_counts_per_type_and_digital().fetchall()
+        offer_counts = _query_get_offer_counts_grouped_by_type_and_medium().fetchall()
 
         # Then
         assert offer_counts == []
@@ -930,7 +930,7 @@ class GetOffersByTypeAndDigitalTableTest:
         expected_dataframe = pandas.read_csv('tests/scripts/dashboard/offers_by_type_and_digital.csv')
 
         # When
-        type_and_digital_dataframe = get_offers_by_type_and_digital_table()
+        type_and_digital_dataframe = _get_offers_grouped_by_type_and_medium()
 
         # Then
         print(expected_dataframe)
@@ -960,7 +960,7 @@ class GetCountsByTypeAndDigitalCountsTest:
         expected_dataframe = pandas.read_csv('tests/scripts/dashboard/offers_by_type_and_digital_counts.csv')
 
         # When
-        offers_by_type_and_digital_counts = get_counts_by_type_and_digital(query_get_offer_counts_per_type_and_digital,
+        offers_by_type_and_digital_counts = get_counts_grouped_by_type_and_medium(_query_get_offer_counts_grouped_by_type_and_medium,
                                                                            'Nombre d\'offres')
 
         # Then
@@ -993,7 +993,7 @@ class GetCountsByTypeAndDigitalCountsTest:
         expected_dataframe = pandas.read_csv('tests/scripts/dashboard/bookings_by_type_and_digital_counts.csv')
 
         # When
-        bookings_by_type_and_digital_counts = get_counts_by_type_and_digital(query_get_booking_counts_per_type_and_digital, 'Nombre de réservations')
+        bookings_by_type_and_digital_counts = get_counts_grouped_by_type_and_medium(_query_get_booking_counts_grouped_by_type_and_medium, 'Nombre de réservations')
 
         # Then
         assert bookings_by_type_and_digital_counts.equals(expected_dataframe)
@@ -1025,7 +1025,7 @@ class QueryGetBookingCountsPerTypeAndDigitalTest:
                       booking_musique_digital, user_offerer)
 
         # When
-        booking_counts = query_get_booking_counts_per_type_and_digital().fetchall()
+        booking_counts = _query_get_booking_counts_grouped_by_type_and_medium().fetchall()
 
         # Then
         assert len(booking_counts) == 2
@@ -1046,7 +1046,7 @@ class QueryGetBookingCountsPerTypeAndDigitalTest:
         PcObject.save(offer, user_offerer, cancelled_booking)
 
         # When
-        booking_counts = query_get_booking_counts_per_type_and_digital().fetchall()
+        booking_counts = _query_get_booking_counts_grouped_by_type_and_medium().fetchall()
 
         # Then
         assert booking_counts == []
@@ -1074,7 +1074,7 @@ class QueryGetBookingCountsPerTypeAndDigitalTest:
                       booking_musique_digital)
 
         # When
-        booking_counts = query_get_booking_counts_per_type_and_digital().fetchall()
+        booking_counts = _query_get_booking_counts_grouped_by_type_and_medium().fetchall()
 
         # Then
         assert booking_counts == []
