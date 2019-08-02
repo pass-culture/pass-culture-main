@@ -12,7 +12,7 @@ jobs:
             git clone https://github.com/betagouv/pass-culture-main.git
             cd pass-culture-main
             rm -rf shared
-            git clone https://github.com/betagouv/pass-culture-api.git api
+            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-api.git api || git clone https://github.com/betagouv/pass-culture-api.git api
             ./install_lib_ci.sh
       - checkout:
           path: ~/pass-culture-main/pro
