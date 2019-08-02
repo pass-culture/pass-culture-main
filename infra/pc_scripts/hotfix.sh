@@ -3,6 +3,7 @@
 function tag_hotfix {
 
     TAG_VERSION="v$TAG_NAME"
+    BRANCH_NAME="hotfix-$TAG_VERSION"
 
     echo --- Tag API $TAG_VERSION ---
     cd $ROOT_PATH/api
@@ -11,7 +12,7 @@ function tag_hotfix {
     git add version.txt
     git commit -m "🚀 $TAG_VERSION"
     git tag "$TAG_VERSION"
-    git push origin "$current_branch"
+    git push origin "$BRANCH_NAME"
     git push origin "$TAG_VERSION"
 
     echo --- Tag WebApp $TAG_VERSION ---
@@ -19,7 +20,7 @@ function tag_hotfix {
     git checkout -b hotfix-$TAG_VERSION
     yarn version --new-version "$TAG_NAME"
     git tag "$TAG_VERSION"
-    git push origin "$current_branch"
+    git push origin "$BRANCH_NAME"
     git push origin "$TAG_VERSION"
 
     echo --- Tag Pro $TAG_VERSION ---
@@ -27,7 +28,7 @@ function tag_hotfix {
     git checkout -b hotfix-$TAG_VERSION
     yarn version --new-version "$TAG_NAME"
     git tag "$TAG_VERSION"
-    git push origin "$current_branch"
+    git push origin "$BRANCH_NAME"
     git push origin "$TAG_VERSION"
 
     echo --- Tag Main $TAG_VERSION ---
@@ -36,7 +37,7 @@ function tag_hotfix {
     git add api doc pro shared webapp
     git commit -m "🚀 $TAG_VERSION"
     git tag "$TAG_VERSION"
-    git push origin $current_branch
+    git push origin "$BRANCH_NAME"
     git push origin "$TAG_VERSION"
 
     echo "New version tagged: $TAG_NAME"
