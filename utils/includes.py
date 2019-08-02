@@ -152,7 +152,11 @@ FAVORITE_INCLUDES = [
 ]
 
 RECOMMENDATION_INCLUDES = [
-    "mediation",
+    "discoveryIdentifier",
+    {
+        "key": "mediation",
+        "sub_joins": ["thumbUrl"]
+    },
     {
         "key": "offer",
         "sub_joins": [
@@ -162,7 +166,6 @@ RECOMMENDATION_INCLUDES = [
             "dateRange",
             "isEvent",
             "isThing",
-            "mediation",
             "stocks",
             {
                 "key": "venue",
@@ -202,16 +205,23 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                     "favorites",
                     "isFinished",
                     "isFullyBooked",
-                    "product",
+                    {
+                        "key": "product",
+                        "sub_joins": ["thumbUrl"]
+                    },
                     "stocks",
                     "venue",
                 ]
             },
-            "mediation",
+            {
+                "key": "mediation",
+                "sub_joins": ["thumbUrl"]
+            },
             "thumbUrl"
         ]
     },
-    "stock"
+    "stock",
+    "thumbUrl"
 ]
 
 WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
@@ -235,11 +245,15 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
                     "venue",
                 ]
             },
-            "mediation",
+            {
+                "key": "mediation",
+                "sub_joins": ["thumbUrl"]
+            },
             "thumbUrl"
         ]
     },
     "stock",
+    "thumbUrl",
     {
         "key": "user",
         "sub_joins": USER_INCLUDES

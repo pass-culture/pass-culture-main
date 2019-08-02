@@ -152,6 +152,14 @@ class Booking(PcObject, Model, VersionedMixin):
             self.statusLabel
         ]
 
+    @property
+    def thumbUrl(self):
+        if self.recommendation:
+            return self.recommendation.thumbUrl
+
+        if self.stock.offer.product.thumbCount:
+            return self.stock.offer.product.thumbUrl
+
 class ActivationUser:
     CSV_HEADER = [
         'Prénom',

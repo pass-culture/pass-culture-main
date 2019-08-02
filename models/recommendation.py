@@ -95,3 +95,10 @@ class Recommendation(PcObject, Model):
 
         if self.offer.product.thumbCount:
             return self.offer.product.thumbUrl
+
+    @property
+    def discoveryIdentifier(self):
+        if self.offer and self.offer.productId:
+            return 'product_{}'.format(self.offer.productId)
+        if self.mediation and self.mediation.tutoIndex != None:
+            return 'tuto_{}'.format(self.mediation.tutoIndex)
