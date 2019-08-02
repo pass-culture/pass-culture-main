@@ -14,7 +14,7 @@ jobs:
             sudo curl -L "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
             rm -rf shared
-            git clone https://github.com/betagouv/pass-culture-api.git api
+            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-api.git api || git clone https://github.com/betagouv/pass-culture-api.git api
             ./install_lib_ci.sh
       - checkout:
           path: ~/pass-culture-main/webapp
