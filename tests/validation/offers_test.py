@@ -62,7 +62,7 @@ class CheckOfferIsEditableTest:
             check_offer_is_editable(offer)
 
         # then
-        assert error.value.errors['global'] == ["Cette offre n'est pas modifiable"]
+        assert error.value.errors['global'] == ["Les offres importées ne sont pas modifiables"]
 
     def test_does_not_raise_error_when_offer_type_is_editable(self):
         # given

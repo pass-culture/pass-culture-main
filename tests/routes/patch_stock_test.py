@@ -205,7 +205,7 @@ class Patch:
             request_after_update = TestClient(app.test_client()).with_auth('test@email.com').get(
                 '/stocks/' + humanized_stock_id)
             assert request_after_update.json['available'] == 10
-            assert request_update.json["global"] == ["Cette offre n'est pas modifiable"]
+            assert request_update.json["global"] == ["Les offres importées ne sont pas modifiables"]
 
 
     class Returns403:

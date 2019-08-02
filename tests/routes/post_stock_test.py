@@ -211,7 +211,7 @@ class Post:
 
             # Then
             assert response.status_code == 400
-            assert response.json["global"] == ["Cette offre n'est pas modifiable"]
+            assert response.json["global"] == ["Les offres importées ne sont pas modifiables"]
 
 
 

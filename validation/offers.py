@@ -66,5 +66,5 @@ def check_offer_is_editable(offer: Offer):
     if not offer.isEditable:
         error = ApiErrors()
         error.status_code = 400
-        error.add_error('global', "Cette offre n'est pas modifiable")
+        error.add_error('global', "Les offres importées ne sont pas modifiables")
         raise error
