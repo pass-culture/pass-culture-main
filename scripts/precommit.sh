@@ -7,7 +7,7 @@
 # after committing, you may need to add a post-commit script
 # to update git's index as described in this issue.
 
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E "js|jsx$")
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E ".js$|.jsx$")
 if [[ "$STAGED_FILES" = "" ]]; then
     exit 0
 fi
