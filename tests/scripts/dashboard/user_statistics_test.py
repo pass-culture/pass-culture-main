@@ -110,6 +110,7 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         stock = create_stock(offer=offer, price=0)
         booking = create_booking(user_having_booked, stock, is_cancelled=False)
         PcObject.save(booking)
+
         # When
         mean_bookings = get_mean_number_of_bookings_per_user_having_booked()
 
