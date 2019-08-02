@@ -7,7 +7,8 @@ from scripts.dashboard.diversification_statistics import get_offerer_count, get_
     get_offerers_with_offer_available_on_discovery_count, get_offerers_with_non_cancelled_bookings_count, \
     get_offers_with_user_offerer_and_stock_count, get_offers_available_on_discovery_count, \
     get_offers_with_non_cancelled_bookings_count, get_all_bookings_count, get_all_used_bookings_count, \
-    get_all_cancelled_bookings_count, _query_get_offer_counts_grouped_by_type_and_medium, _get_offers_grouped_by_type_and_medium, \
+    get_all_cancelled_bookings_count, _query_get_offer_counts_grouped_by_type_and_medium, \
+    _get_offers_grouped_by_type_and_medium, \
     get_counts_grouped_by_type_and_medium, _query_get_booking_counts_grouped_by_type_and_medium
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_stock, \
@@ -507,10 +508,10 @@ class GetOffersAvailableOnDiscoveryCountTest:
         assert number_of_offers == 0
 
     @clean_database
-    def test_returns_0_if_only_offerer_without_mediation(self, app):
+    def test_returns_1_if_only_offerer_without_mediation(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=True)
         stock = create_stock(offer=offer)
         PcObject.save(stock)
@@ -519,14 +520,14 @@ class GetOffersAvailableOnDiscoveryCountTest:
         number_of_offers = get_offers_available_on_discovery_count()
 
         # Then
-        assert number_of_offers == 0
+        assert number_of_offers == 1
 
     @clean_database
     def test_returns_0_if_stock_passed(self, app):
         # Given
         yesterday = datetime.utcnow() - timedelta(days=1)
         offerer = create_offerer()
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, is_active=True)
         stock = create_stock(offer=offer, beginning_datetime=yesterday)
         PcObject.save(stock)
@@ -541,7 +542,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
     def test_returns_0_if_offerer_not_active(self, app):
         # Given
         offerer = create_offerer(is_active=False)
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, is_active=True)
         stock = create_stock(offer=offer)
         PcObject.save(stock)
@@ -556,7 +557,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
     def test_returns_0_if_offerer_not_validated(self, app):
         # Given
         offerer = create_offerer(validation_token='XDFCGHVJBKNL')
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
+        venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, is_active=True)
         stock = create_stock(offer=offer)
         PcObject.save(stock)
@@ -570,9 +571,9 @@ class GetOffersAvailableOnDiscoveryCountTest:
     @clean_database
     def test_returns_0_if_only_offerer_with_activation_offer(self, app):
         # Given
-        offerer = create_offerer(validation_token='XDFCGHVJBKNL')
-        venue = create_venue(offerer, validation_token='XDFCGHVJBK')
-        offer = create_offer_with_thing_product(venue, is_active=True, thing_type='ThingType.ACTIVATION')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, is_active=True, thing_type=str(ThingType.ACTIVATION))
         stock = create_stock(offer=offer)
         PcObject.save(stock)
 
@@ -848,7 +849,7 @@ class GetAllCancelledBookingsCountTest:
         assert number_of_bookings == 1
 
 
-class QueryGetOfferCountsPerTypeAndDigitalTest:
+class QueryGetOfferCountsPerTypeAndMediumTest:
     @clean_database
     def test_returns_2_cinema_physical_1_musique_physical_and_1_musique_digital_when_offers_with_stock_and_user_offerer(
             self, app):
@@ -997,6 +998,7 @@ class GetCountsByTypeAndDigitalCountsTest:
 
         # Then
         assert bookings_by_type_and_digital_counts.equals(expected_dataframe)
+
 
 class QueryGetBookingCountsPerTypeAndDigitalTest:
     @clean_database

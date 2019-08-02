@@ -5,9 +5,9 @@ import pandas
 from models import PcObject
 from models.payment_status import TransactionStatus
 from scripts.dashboard.finance_statistics import get_total_deposits, get_total_amount_spent, get_total_amount_to_pay, \
-    query_get_top_20_offers_by_number_of_bookings, get_top_20_offers_table, \
-    query_get_top_20_offerers_by_number_of_bookings, get_top_20_offerers_table, \
-    query_get_top_20_offerers_by_booking_amounts
+    _query_get_top_20_offers_by_number_of_bookings, get_top_20_offers_table, \
+    _query_get_top_20_offerers_by_number_of_bookings, get_top_20_offerers_table, \
+    _query_get_top_20_offerers_by_booking_amounts
 from tests.conftest import clean_database
 from tests.test_utils import create_deposit, create_user, create_booking, create_stock, create_offer_with_thing_product, \
     create_venue, create_offerer, create_payment
@@ -196,7 +196,7 @@ class QueryGetTop20OffersByNumberOfBookingsTest:
         ]
 
         # When
-        bookings_counts = query_get_top_20_offers_by_number_of_bookings().fetchall()
+        bookings_counts = _query_get_top_20_offers_by_number_of_bookings()
 
         # Then
         assert bookings_counts == expected_counts
@@ -213,7 +213,7 @@ class QueryGetTop20OffersByNumberOfBookingsTest:
         PcObject.save(booking)
 
         # When
-        bookings_counts = query_get_top_20_offers_by_number_of_bookings().fetchall()
+        bookings_counts = _query_get_top_20_offers_by_number_of_bookings()
 
         # Then
         assert bookings_counts == []
@@ -234,7 +234,7 @@ class QueryGetTop20OffersByNumberOfBookingsTest:
         PcObject.save(booking1, booking2)
 
         # When
-        bookings_counts = query_get_top_20_offers_by_number_of_bookings().fetchall()
+        bookings_counts = _query_get_top_20_offers_by_number_of_bookings().fetchall()
 
         # Then
         assert bookings_counts == [('Offer Name', 3, 50)]
@@ -293,7 +293,7 @@ class QueryGetTop20OfferersByNumberOfBookingsTest:
         ]
 
         # When
-        bookings_counts = query_get_top_20_offerers_by_number_of_bookings().fetchall()
+        bookings_counts = _query_get_top_20_offerers_by_number_of_bookings().fetchall()
 
         # Then
         assert bookings_counts == expected_counts
@@ -310,7 +310,7 @@ class QueryGetTop20OfferersByNumberOfBookingsTest:
         PcObject.save(booking)
 
         # When
-        bookings_counts = query_get_top_20_offerers_by_number_of_bookings().fetchall()
+        bookings_counts = _query_get_top_20_offerers_by_number_of_bookings().fetchall()
 
         # Then
         assert bookings_counts == []
@@ -331,7 +331,7 @@ class QueryGetTop20OfferersByNumberOfBookingsTest:
         PcObject.save(booking1, booking2, booking3)
 
         # When
-        bookings_counts = query_get_top_20_offerers_by_number_of_bookings().fetchall()
+        bookings_counts = _query_get_top_20_offerers_by_number_of_bookings().fetchall()
 
         # Then
         assert bookings_counts == [('Offerer Name', 3, 50)]
