@@ -170,7 +170,7 @@ jobs:
       - image: passcultureapp/artillery:0.2
     steps:
       - checkout
-      - run: sed -i 's/$/'$USER_PASSWORD_PERF_ENV'/' /root/project/artillery/user_list
+      - run: sed -i 's/$/'$USER_PASSWORD_PERF_ENV'/' /root/infra/project/artillery/user_list
       - run: artillery run artillery/scenario.yml
 
   deploy-api:
@@ -181,7 +181,7 @@ jobs:
       - checkout
       - run: pyenv global 3.5.2
       - run: pip install requests
-      - run: python scripts/check_ci_status.py $CIRCLE_SHA1 $CIRCLE_TAG
+      - run: python scripts/check_ci_status.py $CIRCLE_SHA1 $(git describe --contains)
       - run: git submodule sync
       - run: git submodule update --init
       - run:
