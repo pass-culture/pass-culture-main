@@ -4,37 +4,20 @@ exports[`src | components | pages | my-favorites | MyFavorite | MyFavorite shoul
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <MyFavorite
+    date="permanent"
     detailsUrl="fake/url"
-    favorite={
-      Object {
-        "id": "AE",
-        "thumbUrl": "",
-      }
-    }
     humanizeRelativeDistance="10 km"
-    location={
-      Object {
-        "pathname": "",
-        "search": "",
-      }
-    }
-    offer={
-      Object {
-        "id": "Fake id",
-        "name": "Fake offer name",
-        "product": Object {
-          "offerType": Object {
-            "appLabel": "Fake offer type label",
-          },
-        },
-      }
-    }
+    name="Fake offer name"
+    offerTypeLabel="Fake offer type label"
     status={
-      Object {
-        "class": "booked",
-        "label": "Réservé",
-      }
+      Array [
+        Object {
+          "class": "booked",
+          "label": "Réservé",
+        },
+      ]
     }
+    thumbUrl={null}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -57,9 +40,7 @@ ShallowWrapper {
       >
         <div
           className="teaser-thumb"
-        >
-          
-        </div>
+        />
         <div
           className="teaser-wrapper mf-wrapper"
         >
@@ -74,6 +55,11 @@ ShallowWrapper {
             Fake offer type label
           </div>
           <div
+            className="teaser-date"
+          >
+            permanent
+          </div>
+          <div
             className="mf-infos"
           >
             <span
@@ -82,7 +68,7 @@ ShallowWrapper {
               Réservé
             </span>
             <span
-              className="teaser-sub-title"
+              className="teaser-distance"
             >
               10 km
             </span>
@@ -110,9 +96,7 @@ ShallowWrapper {
         "children": Array [
           <div
             className="teaser-thumb"
-          >
-            
-          </div>,
+          />,
           <div
             className="teaser-wrapper mf-wrapper"
           >
@@ -127,6 +111,11 @@ ShallowWrapper {
               Fake offer type label
             </div>
             <div
+              className="teaser-date"
+            >
+              permanent
+            </div>
+            <div
               className="mf-infos"
             >
               <span
@@ -135,7 +124,7 @@ ShallowWrapper {
                 Réservé
               </span>
               <span
-                className="teaser-sub-title"
+                className="teaser-distance"
               >
                 10 km
               </span>
@@ -163,11 +152,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "",
+            "children": null,
             "className": "teaser-thumb",
           },
           "ref": null,
-          "rendered": "",
+          "rendered": null,
           "type": "div",
         },
         Object {
@@ -187,6 +176,11 @@ ShallowWrapper {
                 Fake offer type label
               </div>,
               <div
+                className="teaser-date"
+              >
+                permanent
+              </div>,
+              <div
                 className="mf-infos"
               >
                 <span
@@ -195,7 +189,7 @@ ShallowWrapper {
                   Réservé
                 </span>
                 <span
-                  className="teaser-sub-title"
+                  className="teaser-distance"
                 >
                   10 km
                 </span>
@@ -234,14 +228,28 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
+                "children": "permanent",
+                "className": "teaser-date",
+              },
+              "ref": null,
+              "rendered": "permanent",
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
                 "children": Array [
+                  Array [
+                    <span
+                      className="mf-status mf-booked"
+                    >
+                      Réservé
+                    </span>,
+                  ],
                   <span
-                    className="mf-status mf-booked"
-                  >
-                    Réservé
-                  </span>,
-                  <span
-                    className="teaser-sub-title"
+                    className="teaser-distance"
                   >
                     10 km
                   </span>,
@@ -252,7 +260,7 @@ ShallowWrapper {
               "rendered": Array [
                 Object {
                   "instance": null,
-                  "key": undefined,
+                  "key": "booked",
                   "nodeType": "host",
                   "props": Object {
                     "children": "Réservé",
@@ -268,7 +276,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": "10 km",
-                    "className": "teaser-sub-title",
+                    "className": "teaser-distance",
                   },
                   "ref": null,
                   "rendered": "10 km",
@@ -328,9 +336,7 @@ ShallowWrapper {
         >
           <div
             className="teaser-thumb"
-          >
-            
-          </div>
+          />
           <div
             className="teaser-wrapper mf-wrapper"
           >
@@ -345,6 +351,11 @@ ShallowWrapper {
               Fake offer type label
             </div>
             <div
+              className="teaser-date"
+            >
+              permanent
+            </div>
+            <div
               className="mf-infos"
             >
               <span
@@ -353,7 +364,7 @@ ShallowWrapper {
                 Réservé
               </span>
               <span
-                className="teaser-sub-title"
+                className="teaser-distance"
               >
                 10 km
               </span>
@@ -381,9 +392,7 @@ ShallowWrapper {
           "children": Array [
             <div
               className="teaser-thumb"
-            >
-              
-            </div>,
+            />,
             <div
               className="teaser-wrapper mf-wrapper"
             >
@@ -398,6 +407,11 @@ ShallowWrapper {
                 Fake offer type label
               </div>
               <div
+                className="teaser-date"
+              >
+                permanent
+              </div>
+              <div
                 className="mf-infos"
               >
                 <span
@@ -406,7 +420,7 @@ ShallowWrapper {
                   Réservé
                 </span>
                 <span
-                  className="teaser-sub-title"
+                  className="teaser-distance"
                 >
                   10 km
                 </span>
@@ -434,11 +448,11 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "",
+              "children": null,
               "className": "teaser-thumb",
             },
             "ref": null,
-            "rendered": "",
+            "rendered": null,
             "type": "div",
           },
           Object {
@@ -458,6 +472,11 @@ ShallowWrapper {
                   Fake offer type label
                 </div>,
                 <div
+                  className="teaser-date"
+                >
+                  permanent
+                </div>,
+                <div
                   className="mf-infos"
                 >
                   <span
@@ -466,7 +485,7 @@ ShallowWrapper {
                     Réservé
                   </span>
                   <span
-                    className="teaser-sub-title"
+                    className="teaser-distance"
                   >
                     10 km
                   </span>
@@ -505,14 +524,28 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
+                  "children": "permanent",
+                  "className": "teaser-date",
+                },
+                "ref": null,
+                "rendered": "permanent",
+                "type": "div",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
                   "children": Array [
+                    Array [
+                      <span
+                        className="mf-status mf-booked"
+                      >
+                        Réservé
+                      </span>,
+                    ],
                     <span
-                      className="mf-status mf-booked"
-                    >
-                      Réservé
-                    </span>,
-                    <span
-                      className="teaser-sub-title"
+                      className="teaser-distance"
                     >
                       10 km
                     </span>,
@@ -523,7 +556,7 @@ ShallowWrapper {
                 "rendered": Array [
                   Object {
                     "instance": null,
-                    "key": undefined,
+                    "key": "booked",
                     "nodeType": "host",
                     "props": Object {
                       "children": "Réservé",
@@ -539,7 +572,7 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": "10 km",
-                      "className": "teaser-sub-title",
+                      "className": "teaser-distance",
                     },
                     "ref": null,
                     "rendered": "10 km",

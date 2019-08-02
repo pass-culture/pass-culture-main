@@ -1,10 +1,179 @@
-import { mapStateToProps, reservationStatus } from '../MyFavoriteContainer'
+import { isReserved, mapStateToProps, reservationStatus } from '../MyFavoriteContainer'
 
 describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContainer', () => {
+  describe('isReserved()', () => {
+    describe('when the offer is reserved', () => {
+      it('should return true', () => {
+        // given
+        const status = [
+          {
+            class: 'booked',
+          },
+        ]
+
+        // when
+        const result = isReserved(status)
+
+        // then
+        expect(result).toBe(true)
+      })
+    })
+
+    describe('when the offer is cancelled, finished or fully-booked', () => {
+      it('should return false', () => {
+        // given
+        const status = [
+          {
+            class: 'cancelled',
+          },
+        ]
+
+        // when
+        const result = isReserved(status)
+
+        // then
+        expect(result).toBe(false)
+      })
+    })
+  })
+
   describe('reservationStatus()', () => {
+    describe('when the reservation is not booked, fully booked, finished and expired', () => {
+      describe('when the reservation is tomorrow', () => {
+        it('should return an object with "Demain" and "tomorrow"', () => {
+          // given
+          const isActive = true
+          const isFinished = false
+          const isFullyBooked = false
+          const hasBookings = false
+          const isBooked = false
+          const humanizeRelativeDate = 'Demain'
+
+          // when
+          const result = reservationStatus(
+            isActive,
+            isFinished,
+            isFullyBooked,
+            hasBookings,
+            isBooked,
+            humanizeRelativeDate
+          )
+
+          // then
+          expect(result).toStrictEqual([
+            {
+              label: 'Demain',
+              class: 'tomorrow',
+            },
+          ])
+        })
+      })
+
+      describe('when the reservation is today', () => {
+        it('should return an object with "Aujourd’hui" and "today"', () => {
+          // given
+          const isActive = true
+          const isFinished = false
+          const isFullyBooked = false
+          const hasBookings = false
+          const isBooked = false
+          const humanizeRelativeDate = 'Aujourd’hui'
+
+          // when
+          const result = reservationStatus(
+            isActive,
+            isFinished,
+            isFullyBooked,
+            hasBookings,
+            isBooked,
+            humanizeRelativeDate
+          )
+
+          // then
+          expect(result).toStrictEqual([
+            {
+              label: 'Aujourd’hui',
+              class: 'today',
+            },
+          ])
+        })
+      })
+    })
+
+    describe('when the reservation is booked', () => {
+      describe('when the reservation is tomorrow', () => {
+        it('should return an object with "Demain" and "tomorrow" and "Réservé" and "booked"', () => {
+          // given
+          const isActive = true
+          const isFinished = false
+          const isFullyBooked = false
+          const hasBookings = true
+          const isBooked = true
+          const humanizeRelativeDate = 'Demain'
+
+          // when
+          const result = reservationStatus(
+            isActive,
+            isFinished,
+            isFullyBooked,
+            hasBookings,
+            isBooked,
+            humanizeRelativeDate
+          )
+
+          // then
+          expect(result).toStrictEqual([
+            {
+              label: 'Réservé',
+              class: 'booked',
+            },
+            {
+              label: 'Demain',
+              class: 'tomorrow',
+            },
+          ])
+        })
+      })
+
+      describe('when the reservation is today', () => {
+        it('should return an object with "Aujourd’hui" and "today" and "Réservé" and "booked"', () => {
+          // given
+          const isActive = true
+          const isFinished = false
+          const isFullyBooked = false
+          const hasBookings = true
+          const isBooked = true
+          const humanizeRelativeDate = 'Aujourd’hui'
+
+          // when
+          const result = reservationStatus(
+            isActive,
+            isFinished,
+            isFullyBooked,
+            hasBookings,
+            isBooked,
+            humanizeRelativeDate
+          )
+
+          // then
+          expect(result).toStrictEqual([
+            {
+              label: 'Réservé',
+              class: 'booked',
+            },
+            {
+              label: 'Aujourd’hui',
+              class: 'today',
+            },
+          ])
+        })
+      })
+    })
+
     describe('when the reservation is finished', () => {
       it('should return an object with "Terminé" and "finished"', () => {
         // given
+        const isActive = true
         const isFinished = true
         const isFullyBooked = null
         const hasBookings = null
@@ -12,7 +181,8 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
         const humanizeRelativeDate = ''
 
         // when
-        const expected = reservationStatus(
+        const result = reservationStatus(
+          isActive,
           isFinished,
           isFullyBooked,
           hasBookings,
@@ -21,35 +191,73 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
         )
 
         // then
-        expect(expected).toStrictEqual({
-          label: 'Terminé',
-          class: 'finished',
-        })
+        expect(result).toStrictEqual([
+          {
+            label: 'Terminé',
+            class: 'finished',
+          },
+        ])
       })
     })
 
     describe('when the reservation is fully booked', () => {
-      it('should return an object with "Épuisé" and "fully-booked"', () => {
-        // given
-        const isFinished = false
-        const isFullyBooked = true
-        const hasBookings = null
-        const isBooked = null
-        const humanizeRelativeDate = ''
+      describe('when the reservation is not cancelled', () => {
+        it('should return an object with "Épuisé" and "fully-booked"', () => {
+          // given
+          const isActive = true
+          const isFinished = false
+          const isFullyBooked = true
+          const hasBookings = null
+          const isBooked = null
+          const humanizeRelativeDate = ''
 
-        // when
-        const expected = reservationStatus(
-          isFinished,
-          isFullyBooked,
-          hasBookings,
-          isBooked,
-          humanizeRelativeDate
-        )
+          // when
+          const result = reservationStatus(
+            isActive,
+            isFinished,
+            isFullyBooked,
+            hasBookings,
+            isBooked,
+            humanizeRelativeDate
+          )
 
-        // then
-        expect(expected).toStrictEqual({
-          label: 'Épuisé',
-          class: 'fully-booked',
+          // then
+          expect(result).toStrictEqual([
+            {
+              label: 'Épuisé',
+              class: 'fully-booked',
+            },
+          ])
+        })
+      })
+
+      describe('when the reservation is cancelled', () => {
+        it('should return an object with "Annulé" and "cancel"', () => {
+          // given
+          const isActive = true
+          const isFinished = false
+          const isFullyBooked = true
+          const hasBookings = true
+          const isBooked = false
+          const humanizeRelativeDate = ''
+
+          // when
+          const result = reservationStatus(
+            isActive,
+            isFinished,
+            isFullyBooked,
+            hasBookings,
+            isBooked,
+            humanizeRelativeDate
+          )
+
+          // then
+          expect(result).toStrictEqual([
+            {
+              label: 'Annulé',
+              class: 'cancelled',
+            },
+          ])
         })
       })
     })
@@ -57,6 +265,7 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
     describe('when the reservation has bookings and is booked', () => {
       it('should return an object with "Réservé" and "booked"', () => {
         // given
+        const isActive = true
         const isFinished = false
         const isFullyBooked = false
         const hasBookings = true
@@ -64,7 +273,8 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
         const humanizeRelativeDate = ''
 
         // when
-        const expected = reservationStatus(
+        const result = reservationStatus(
+          isActive,
           isFinished,
           isFullyBooked,
           hasBookings,
@@ -73,24 +283,28 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
         )
 
         // then
-        expect(expected).toStrictEqual({
-          label: 'Réservé',
-          class: 'booked',
-        })
+        expect(result).toStrictEqual([
+          {
+            label: 'Réservé',
+            class: 'booked',
+          },
+        ])
       })
     })
 
     describe('when the reservation has bookings and is not booked', () => {
-      it('should return an object with "Annulé" and "cancelled"', () => {
+      it('should return an object with "Annulé" and "cancelled" even if there is a date', () => {
         // given
+        const isActive = true
         const isFinished = false
         const isFullyBooked = false
         const hasBookings = true
         const isBooked = false
-        const humanizeRelativeDate = ''
+        const humanizeRelativeDate = 'Demain'
 
         // when
-        const expected = reservationStatus(
+        const result = reservationStatus(
+          isActive,
           isFinished,
           isFullyBooked,
           hasBookings,
@@ -99,24 +313,28 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
         )
 
         // then
-        expect(expected).toStrictEqual({
-          label: 'Annulé',
-          class: 'cancelled',
-        })
+        expect(result).toStrictEqual([
+          {
+            label: 'Annulé',
+            class: 'cancelled',
+          },
+        ])
       })
     })
 
-    describe('when the reservation is tomorrow', () => {
-      it('should return an object with "Demain" and "tomorrow"', () => {
+    describe('when the reservation is disabled', () => {
+      it('should return an object with "Annulé" and "cancelled" even if there is a date', () => {
         // given
+        const isActive = false
         const isFinished = false
         const isFullyBooked = false
-        const hasBookings = false
+        const hasBookings = true
         const isBooked = false
         const humanizeRelativeDate = 'Demain'
 
         // when
-        const expected = reservationStatus(
+        const result = reservationStatus(
+          isActive,
           isFinished,
           isFullyBooked,
           hasBookings,
@@ -125,36 +343,12 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
         )
 
         // then
-        expect(expected).toStrictEqual({
-          label: 'Demain',
-          class: 'tomorrow',
-        })
-      })
-    })
-
-    describe('when the reservation is today', () => {
-      it('should return an object with "Aujourd’hui" and "today"', () => {
-        // given
-        const isFinished = false
-        const isFullyBooked = false
-        const hasBookings = false
-        const isBooked = false
-        const humanizeRelativeDate = 'Aujourd’hui'
-
-        // when
-        const expected = reservationStatus(
-          isFinished,
-          isFullyBooked,
-          hasBookings,
-          isBooked,
-          humanizeRelativeDate
-        )
-
-        // then
-        expect(expected).toStrictEqual({
-          label: 'Aujourd’hui',
-          class: 'today',
-        })
+        expect(result).toStrictEqual([
+          {
+            label: 'Annulé',
+            class: 'cancelled',
+          },
+        ])
       })
     })
   })
@@ -162,38 +356,46 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
   describe('mapStateToProps()', () => {
     it('should return default props', () => {
       // given
-      const offerId = 'ME'
+      const ownProps = {
+        favorite: {
+          offerId: 'o1',
+          thumbUrl: 'fake/thumb/url',
+        },
+      }
       const offer = {
-        id: offerId,
+        dateRange: ['2030-07-21T20:00:00Z', '2030-08-21T20:00:00Z'],
+        id: 'o1',
+        isActive: true,
         isFinished: false,
-        name: 'Fake favorite name',
-        dateRange: ['2018-07-21T20:00:00Z', '2018-08-21T20:00:00Z'],
+        isFullyBooked: false,
+        name: 'Fake offer name',
         product: {
           offerType: {
             appLabel: 'Fake offer type',
           },
         },
-        stocks: [
-          {
-            available: 10,
-            bookings: [],
-          },
-        ],
         venue: {
           latitude: 48.91683,
           longitude: 2.4388,
         },
       }
-      const ownProps = {
-        favorite: {
-          offerId,
-        },
-      }
       const state = {
         data: {
-          bookings: [],
+          bookings: [
+            {
+              id: 'b1',
+              isCancelled: false,
+              stockId: 's1',
+            },
+          ],
           offers: [offer],
-          stocks: [],
+          stocks: [
+            {
+              id: 's1',
+              beginningDatetime: '2030-08-21T20:00:00Z',
+              offerId: 'o1',
+            },
+          ],
         },
         geolocation: {
           latitude: 48.8636537,
@@ -206,10 +408,13 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
 
       // then
       expect(props).toStrictEqual({
-        detailsUrl: '//details/ME',
+        date: 'du Sun 2030-7-21 au Wed 2030-8-21',
+        detailsUrl: '//details/o1',
         humanizeRelativeDistance: '10 km',
-        offer,
-        status: { class: 'cancelled', label: 'Annulé' },
+        name: 'Fake offer name',
+        offerTypeLabel: 'Fake offer type',
+        status: [{ class: 'booked', label: 'Réservé' }],
+        thumbUrl: 'fake/thumb/url',
       })
     })
   })

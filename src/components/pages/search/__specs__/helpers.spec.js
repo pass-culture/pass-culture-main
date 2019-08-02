@@ -1,7 +1,6 @@
 import {
   getDescriptionFromCategory,
   getFirstChangingKey,
-  getRecommendationDateString,
   INITIAL_FILTER_PARAMS,
   isInitialQueryWithoutFilters,
   searchResultsTitle,
@@ -10,62 +9,6 @@ import {
 } from '../helpers'
 
 describe('src | components | pages | search | utils', () => {
-  describe('getRecommendationDateString', () => {
-    it('should render permanent if there is no date given', () => {
-      // given
-      const recommendation = {
-        offer: {
-          dateRange: [],
-        },
-      }
-
-      // when
-      const result = getRecommendationDateString(recommendation.offer)
-
-      // then
-      expect(result).toBe('permanent')
-    })
-
-    it('should render date if there is a date range for Europe/Paris Timezone', () => {
-      // given
-      const recommendation = {
-        offer: {
-          dateRange: ['Thu, 25 Oct 2018 18:15:24 GMT', 'Fri, 26 Oct 2018 19:45:24 GMT'],
-          venue: {
-            departementCode: '93',
-          },
-        },
-      }
-
-      // when
-      const result = getRecommendationDateString(recommendation.offer)
-
-      // then
-      // https://github.com/nodejs/node-v0.x-archive/issues/4689
-      expect(result).toBe('du Thu 2018-10-25 au Fri 2018-10-26')
-    })
-
-    it('should render date if there is a date range for Cayenne Timezone', () => {
-      // given
-      const recommendation = {
-        offer: {
-          dateRange: ['Thu, 25 Oct 2018 12:15:24 GMT', 'Fri, 26 Oct 2018 1:45:24 GMT'],
-          venue: {
-            departementCode: '97',
-          },
-        },
-        offerId: 'ARCQ',
-      }
-
-      // when
-      const result = getRecommendationDateString(recommendation.offer)
-
-      // then
-      // https://github.com/nodejs/node-v0.x-archive/issues/4689
-      expect(result).toBe('du Thu 2018-10-25 au Thu 2018-10-26')
-    })
-  })
-
   describe('isInitialQueryWithoutFilters', () => {
     it('should return false if there is params changed with filter', () => {
       const queryParams = {

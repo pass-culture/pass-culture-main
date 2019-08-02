@@ -16,6 +16,9 @@ describe('src | components | pages | search | Result | RecommendationItem', () =
         offerType: {
           appLabel: 'Livres, cartes bibliothèque ou médiathèque',
         },
+        venue: {
+          departementCode: '',
+        },
       },
       recommendation: {
         id: 'QA',

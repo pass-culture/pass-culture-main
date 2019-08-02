@@ -1,5 +1,4 @@
 import { shallow } from 'enzyme'
-import moment from 'moment'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
@@ -25,8 +24,6 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
   let props
   let thumbUrl
   let token
-  const now = moment()
-  const twoDaysAfterNow = now.add(2, 'days').format()
 
   beforeEach(() => {
     token = 'g9g9g9'
@@ -58,7 +55,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
           departementCode: '93',
         },
       },
-      stock: { id: 'future stock 1', beginningDateTime: twoDaysAfterNow },
+      stock: { id: 'future stock 1', beginningDatetime: '2030-08-21T20:00:00Z' },
     }
   })
 
@@ -75,7 +72,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     const ribbon = wrapper.find(Ribbon)
     expect(link).toHaveLength(1)
     expect(img).toHaveLength(1)
-    expect(stringifyDate).toBe('Permanent')
+    expect(stringifyDate).toBe('Mercredi 21/08/2030 à 22:00')
     expect(token).toBe(token)
     expect(ribbon).toHaveLength(0)
     expect(icon).toHaveLength(1)

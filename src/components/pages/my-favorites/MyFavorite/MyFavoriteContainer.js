@@ -3,71 +3,90 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import MyFavorite from './MyFavorite'
+import { formatRecommendationDates } from '../../../../utils/date/date'
 import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
 import selectFirstMatchingBookingByStocks from '../../../../selectors/selectFirstMatchingBookingByStocks'
 import selectOfferById from '../../../../selectors/selectOfferById'
 import getHumanizeRelativeDate from '../../../../utils/date/getHumanizeRelativeDate'
 
+export const isReserved = status =>
+  !(status.length > 0 && status[0].class.match('cancelled|finished|fully-booked'))
+
 export const reservationStatus = (
+  isActive,
   isFinished,
   isFullyBooked,
   hasBookings,
   isBooked,
   humanizeRelativeDate
 ) => {
+  const status = []
+
   if (isFinished) {
-    return {
-      label: 'Terminé',
-      class: 'finished',
-    }
-  } else if (isFullyBooked) {
-    return {
-      label: 'Épuisé',
-      class: 'fully-booked',
-    }
-  } else if (hasBookings) {
-    if (isBooked) {
-      return {
-        label: 'Réservé',
-        class: 'booked',
-      }
-    } else {
-      return {
+    return [
+      {
+        label: 'Terminé',
+        class: 'finished',
+      },
+    ]
+  }
+
+  if (!isActive || (hasBookings && !isBooked)) {
+    return [
+      {
         label: 'Annulé',
         class: 'cancelled',
-      }
-    }
-  } else if (humanizeRelativeDate) {
+      },
+    ]
+  }
+
+  if (isFullyBooked) {
+    return [
+      {
+        label: 'Épuisé',
+        class: 'fully-booked',
+      },
+    ]
+  }
+
+  if (hasBookings && isBooked) {
+    status.push({
+      label: 'Réservé',
+      class: 'booked',
+    })
+  }
+
+  if (humanizeRelativeDate) {
     if (humanizeRelativeDate === 'Demain') {
-      return {
+      status.push({
         label: humanizeRelativeDate,
         class: 'tomorrow',
-      }
+      })
     } else {
-      return {
+      status.push({
         label: humanizeRelativeDate,
         class: 'today',
-      }
+      })
     }
   }
 
-  return null
+  return status
 }
 
 export const mapStateToProps = (state, ownProps) => {
   const { favorite } = ownProps
   const { offerId } = favorite
   const offer = selectOfferById(state, offerId)
-  const { venue } = offer
+  const { dateRange = [], isActive, isFinished, isFullyBooked, venue } = offer || {}
   const firstMatchingBooking = selectFirstMatchingBookingByStocks(state)
   const isBooked = firstMatchingBooking ? !firstMatchingBooking.isCancelled : false
   const hasBookings = typeof firstMatchingBooking !== 'undefined'
-  const { dateRange = [], isFinished, isFullyBooked } = offer || {}
   const offerBeginningDate = dateRange[0] || null
   const humanizeRelativeDate = offerBeginningDate
     ? getHumanizeRelativeDate(offerBeginningDate)
     : null
   const status = reservationStatus(
+    isActive,
     isFinished,
     isFullyBooked,
     hasBookings,
@@ -83,12 +102,18 @@ export const mapStateToProps = (state, ownProps) => {
   const { pathname, search } = location
   const mediationId = favorite.mediationId ? `/${favorite.mediationId}` : ''
   const detailsUrl = `${pathname}/details/${offer.id}${mediationId}${search}`
+  const date = isReserved(status)
+    ? formatRecommendationDates(venue.departementCode, dateRange)
+    : null
 
   return {
+    date,
     detailsUrl,
     humanizeRelativeDistance,
-    offer,
+    name: offer.name,
+    offerTypeLabel: offer.product.offerType.appLabel,
     status,
+    thumbUrl: favorite.thumbUrl,
   }
 }
 

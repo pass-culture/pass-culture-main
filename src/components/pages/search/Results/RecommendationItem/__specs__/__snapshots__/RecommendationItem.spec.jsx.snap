@@ -13,6 +13,9 @@ ShallowWrapper {
         "offerType": Object {
           "appLabel": "Livres, cartes bibliothèque ou médiathèque",
         },
+        "venue": Object {
+          "departementCode": "",
+        },
       }
     }
     recommendation={

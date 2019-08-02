@@ -1,4 +1,5 @@
 import getHumanizeRelativeDate from '../getHumanizeRelativeDate'
+import { formatRecommendationDates } from '../date'
 
 describe('src | utils | date | date', () => {
   describe('getHumanizeRelativeDate()', () => {
@@ -63,10 +64,56 @@ describe('src | utils | date | date', () => {
         offerDate.setDate(currentDateDay + 1)
 
         // when
-        const expected = getHumanizeRelativeDate(offerDate)
+        const expected = getHumanizeRelativeDate(offerDate.toISOString())
 
         // then
         expect(expected).toBe('Demain')
+      })
+    })
+  })
+
+  describe('formatRecommendationDates()', () => {
+    describe('when there is no date given', () => {
+      it('should return permanent', () => {
+        // given
+        const departementCode = '93'
+        const dateRange = []
+
+        // when
+        const result = formatRecommendationDates(departementCode, dateRange)
+
+        // then
+        expect(result).toBe('permanent')
+      })
+    })
+
+    describe('when there is a date range for Europe/Paris Timezone', () => {
+      it('should return the formated date', () => {
+        // given
+        const departementCode = '93'
+        const dateRange = ['2018-10-25T18:00:00Z', '2018-10-26T19:00:00Z']
+
+        // when
+        const result = formatRecommendationDates(departementCode, dateRange)
+
+        // then
+        // https://github.com/nodejs/node-v0.x-archive/issues/4689
+        expect(result).toBe('du Thu 2018-10-25 au Fri 2018-10-26')
+      })
+    })
+
+    describe('when there is a date range for Cayenne Timezone', () => {
+      it('should return the formated date', () => {
+        // given
+        const departementCode = '97'
+        const dateRange = ['2018-10-25T18:00:00Z', '2018-10-26T19:00:00Z']
+
+        // when
+        const result = formatRecommendationDates(departementCode, dateRange)
+
+        // then
+        // https://github.com/nodejs/node-v0.x-archive/issues/4689
+        expect(result).toBe('du Thu 2018-10-25 au Fri 2018-10-26')
       })
     })
   })

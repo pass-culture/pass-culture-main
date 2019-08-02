@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { getRecommendationDateString } from '../../helpers'
+import { formatRecommendationDates } from '../../../../../utils/date/date'
 import { ICONS_URL } from '../../../../../utils/config'
 
 const DEFAULT_THUMB_URL = `${ICONS_URL}/magnify.svg`
@@ -12,7 +12,7 @@ const RecommendationItem = ({
   recommendation,
 }) => {
   const { thumbUrl } = recommendation
-  const { name: offerName, offerType } = offer || {}
+  const { dateRange, name: offerName, offerType, venue } = offer || {}
 
   return (
     <li className="recommendation-list-item">
@@ -43,7 +43,7 @@ const RecommendationItem = ({
               className="fs13"
               id="recommendation-date"
             >
-              {offer && getRecommendationDateString(offer)}
+              {offer && formatRecommendationDates(venue.departementCode, dateRange)}
             </div>
           </div>
           <div className="flex-center items-center is-primary-text">

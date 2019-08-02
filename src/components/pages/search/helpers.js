@@ -1,7 +1,6 @@
 import { pluralize } from 'react-final-form-utils'
 import { getObjectWithMappedKeys } from 'with-query-router'
 
-import { getTimezone } from '../../../utils/timezone'
 import { isEmpty } from '../../../utils/strings'
 
 export const INITIAL_FILTER_PARAMS = {
@@ -77,29 +76,6 @@ export const searchResultsTitle = (
   }
 
   return resultTitle
-}
-
-const formatDate = (date, timeZone) => {
-  const options = {
-    timeZone,
-    weekday: 'long',
-  }
-
-  return `${date.toLocaleDateString('fr-FR', options)} ${date.toLocaleDateString()}`
-}
-
-export const getRecommendationDateString = offer => {
-  if (offer.dateRange.length === 0) return 'permanent'
-
-  const { departementCode } = offer.venue
-  const timeZone = getTimezone(departementCode)
-  const fromDate = new Date(offer.dateRange[0])
-  const toDate = new Date(offer.dateRange[1])
-  const fromFormated = formatDate(fromDate, timeZone)
-  const toFormated = formatDate(toDate, timeZone)
-  const formatedDate = `du ${fromFormated} au ${toFormated}`
-
-  return formatedDate
 }
 
 export const getDescriptionFromCategory = (categoryName, categories) => {

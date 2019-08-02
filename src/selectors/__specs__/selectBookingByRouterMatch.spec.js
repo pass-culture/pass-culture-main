@@ -33,7 +33,7 @@ describe('src | selectors | selectBookingByRouterMatch', () => {
       data: {
         bookings: [{ id: 'AE', stockId: 'CG' }],
         offers: [{ id: 'BF' }],
-        stocks: [{ id: 'CG', offerId: 'BF', beginningDateTime: twoDaysAfterNow }],
+        stocks: [{ id: 'CG', offerId: 'BF', beginningDatetime: twoDaysAfterNow }],
       },
     }
     const match = {

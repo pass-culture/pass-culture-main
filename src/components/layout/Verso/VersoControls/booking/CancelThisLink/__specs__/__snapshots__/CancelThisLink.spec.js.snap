@@ -31,7 +31,7 @@ ShallowWrapper {
     }
     offer={Object {}}
     openCancelPopin={[MockFunction]}
-    stock={Array []}
+    stock={Object {}}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

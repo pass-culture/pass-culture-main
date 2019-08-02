@@ -43,9 +43,9 @@ describe('src | selectors | selectFirstMatchingBookingByStocks', () => {
     const threeDaysAfterNow = now.add(3, 'days').format()
 
     const stocks = [
-      { id: 'past stock', beginningDateTime: oneDayBeforeNow },
-      { id: 'future stock 1', beginningDateTime: twoDaysAfterNow },
-      { id: 'future stock 2', beginningDateTime: threeDaysAfterNow },
+      { id: 'past stock', beginningDatetime: oneDayBeforeNow },
+      { id: 'future stock 1', beginningDatetime: twoDaysAfterNow },
+      { id: 'future stock 2', beginningDatetime: threeDaysAfterNow },
     ]
     const nextBooking = { id: 'AA', isCancelled: false, stockId: 'future stock 1' }
     const futureBooking = { id: 'BB', isCancelled: false, stockId: 'future stock 2' }

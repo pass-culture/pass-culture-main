@@ -25,7 +25,7 @@ describe('src | components | layout | Verso | VersoControls | booking | CancelTh
       match: { params: {} },
       offer: {},
       openCancelPopin: jest.fn(),
-      stock: [],
+      stock: {},
     }
   })
 

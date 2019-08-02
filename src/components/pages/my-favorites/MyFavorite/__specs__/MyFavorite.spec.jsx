@@ -9,29 +9,18 @@ describe('src | components | pages | my-favorites | MyFavorite | MyFavorite', ()
 
   beforeEach(() => {
     props = {
+      date: 'permanent',
       detailsUrl: 'fake/url',
-      favorite: {
-        id: 'AE',
-        thumbUrl: '',
-      },
       humanizeRelativeDistance: '10 km',
-      location: {
-        pathname: '',
-        search: '',
-      },
-      offer: {
-        id: 'Fake id',
-        name: 'Fake offer name',
-        product: {
-          offerType: {
-            appLabel: 'Fake offer type label',
-          },
+      name: 'Fake offer name',
+      offerTypeLabel: 'Fake offer type label',
+      status: [
+        {
+          label: 'Réservé',
+          class: 'booked',
         },
-      },
-      status: {
-        label: 'Réservé',
-        class: 'booked',
-      },
+      ],
+      thumbUrl: null,
     }
   })
 
@@ -52,12 +41,14 @@ describe('src | components | pages | my-favorites | MyFavorite | MyFavorite', ()
     const img = wrapper.find('img')
     const title = wrapper.find('.teaser-title').text()
     const type = wrapper.find('.mf-wrapper > .teaser-sub-title').text()
+    const date = wrapper.find('.mf-wrapper > .teaser-date').text()
     const booked = wrapper.find('.mf-booked').text()
-    const distance = wrapper.find('.mf-infos .teaser-sub-title').text()
+    const distance = wrapper.find('.mf-infos .teaser-distance').text()
     expect(link).toHaveLength(1)
     expect(img).toHaveLength(0)
     expect(title).toBe('Fake offer name')
     expect(type).toBe('Fake offer type label')
+    expect(date).toBe('permanent')
     expect(booked).toBe('Réservé')
     expect(distance).toBe('10 km')
   })
