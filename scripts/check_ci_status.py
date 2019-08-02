@@ -27,7 +27,7 @@ def main():
     commit_sha1 = sys.argv[1]
     tag_name = sys.argv[2]
 
-    branch_name = 'hotfix-v' + tag_name
+    branch_name = 'hotfix-' + tag_name
     project_jobs_infos = get_project_jobs_infos(branch_name)
 
     if not project_jobs_infos:

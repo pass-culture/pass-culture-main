@@ -171,7 +171,7 @@ jobs:
     steps:
       - checkout
       - run: sed -i 's/$/'$USER_PASSWORD_PERF_ENV'/' /root/project/infra/artillery/user_list
-      - run: artillery run artillery/scenario.yml
+      - run: artillery run /root/project/infra/artillery/scenario.yml
 
   deploy-api:
     machine:
@@ -181,7 +181,7 @@ jobs:
       - checkout
       - run: pyenv global 3.5.2
       - run: pip install requests
-      - run: python scripts/check_ci_status.py $CIRCLE_SHA1 $CIRCLE_TAG
+      - run: python scripts/check_ci_status.py $CIRCLE_SHA1 $(git describe --contains)
       - run: git submodule sync
       - run: git submodule update --init
       - run:
