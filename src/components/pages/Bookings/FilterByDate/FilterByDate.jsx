@@ -49,7 +49,7 @@ class FilterByDate extends PureComponent {
     const firstDayOfTheMonth = 1
     const date = moment().date(firstDayOfTheMonth).month(month).year(year).utc()
     const startDate = date.startOf('day').format()
-    const endDate = moment(date).endOf('month').format()
+    const endDate = date.endOf('month').format()
 
     updateBookingsFrom(startDate)
     updateBookingsTo(endDate)

@@ -59,28 +59,6 @@ describe('src | components | pages | Bookings', () => {
         expect(downloadButton.prop('href')).toBe('/path/to/csv/file?with=query')
       })
 
-      it('should not render a DisplayButtonContainer component when showButtons is false', () => {
-        // when
-        const wrapper = shallow(<Bookings {...props} />)
-
-        // then
-        const displayButton = wrapper.find(DisplayButtonContainer)
-        expect(displayButton).toHaveLength(0)
-      })
-
-      it('should render a display button with the right props when showButtons is true', () => {
-        // given
-        props.showButtons = true
-
-        // when
-        const wrapper = shallow(<Bookings {...props} />)
-
-        // then
-        const displayButton = wrapper.find(DisplayButtonContainer)
-        expect(displayButton).toHaveLength(1)
-        expect(displayButton.prop('href')).toBe('/path/to/csv/file?with=query')
-      })
-
       it('should not render a CsvTableButtonContainer by default', () => {
         // when
         const wrapper = shallow(<Bookings {...props} />)

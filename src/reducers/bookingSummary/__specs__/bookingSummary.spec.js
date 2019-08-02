@@ -246,8 +246,8 @@ describe('src | reducers | bookingSummary', () => {
     })
   })
 
-  describe('when BOOKING_SUMMARY_SELECT_DATE_FROM', () => {
-    it('should change state when action bOOKING_SUMMARY_SELECT_DATE_FROM occurred', () => {
+  describe('when BOOKING_SUMMARY_UPDATE_BOOKINGS_FROM', () => {
+    it('should change state when action BOOKING_SUMMARY_UPDATE_BOOKINGS_FROM occurred', () => {
       // given
       const initialState = {
         bookingsFrom: new Date(2018, 1, 1),
@@ -277,8 +277,8 @@ describe('src | reducers | bookingSummary', () => {
     })
   })
 
-  describe('when BOOKING_SUMMARY_SELECT_DATE_TO', () => {
-    it('should change state when action BOOKING_SUMMARY_SELECT_DATE_TO occurred', () => {
+  describe('when BOOKING_SUMMARY_UPDATE_BOOKINGS_TO', () => {
+    it('should change state when action BOOKING_SUMMARY_UPDATE_BOOKINGS_TO occurred', () => {
       // given
       const initialState = {
         bookingsFrom: new Date(2018, 1, 1),
