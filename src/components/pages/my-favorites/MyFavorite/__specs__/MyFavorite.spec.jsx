@@ -9,14 +9,27 @@ describe('src | components | pages | my-favorites | MyFavorite | MyFavorite', ()
 
   beforeEach(() => {
     props = {
+      favorite: {
+        id: "AE",
+        thumbUrl: ''
+      },
       humanizeRelativeDistance: '10 km',
-      name: 'Fake offer name',
-      offerTypeLabel: 'Fake offer type label',
+      location: {
+        pathname: '',
+        search: ''
+      },
+      offer: {
+        name: 'Fake offer name',
+        product: {
+          offerType: {
+            appLabel: 'Fake offer type label'
+          }
+        }
+      },
       status: {
         label: 'Réservé',
         class: 'booked',
-      },
-      versoUrl: 'https://example.net/decouverte/ME/FA/verso',
+      }
     }
   })
 

@@ -1,7 +1,7 @@
-import { isBooked, mapStateToProps, reservationStatus } from '../MyFavoriteContainer'
+import { getIsBooked, mapStateToProps, reservationStatus } from '../MyFavoriteContainer'
 
 describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContainer', () => {
-  describe('isBooked()', () => {
+  describe('getIsBooked()', () => {
     describe('when there is at least one booking', () => {
       it('should return true', () => {
         // given
@@ -24,7 +24,7 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
         }
 
         // when
-        const expected = isBooked(offer)
+        const expected = getIsBooked(offer)
 
         // then
         expect(expected).toBe(true)
@@ -56,7 +56,7 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
         }
 
         // when
-        const expected = isBooked(offer)
+        const expected = getIsBooked(offer)
 
         // then
         expect(expected).toBe(false)
@@ -225,36 +225,38 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
   describe('mapStateToProps()', () => {
     it('should return default props', () => {
       // given
+      const offerId = 'ME'
+      const offer = {
+        id: offerId,
+        isFinished: false,
+        name: 'Fake favorite name',
+        dateRange: ['2018-07-21T20:00:00Z', '2018-08-21T20:00:00Z'],
+        product: {
+          offerType: {
+            appLabel: 'Fake offer type',
+          },
+        },
+        stocks: [
+          {
+            available: 10,
+            bookings: [],
+          },
+        ],
+        venue: {
+          latitude: 48.91683,
+          longitude: 2.4388,
+        },
+      }
       const ownProps = {
         favorite: {
-          offerId: 'ME',
-          offer: {
-            id: 'ME',
-            name: 'Fake favorite name',
-            dateRange: ['2018-07-21T20:00:00Z', '2018-08-21T20:00:00Z'],
-            product: {
-              offerType: {
-                appLabel: 'Fake offer type',
-              },
-            },
-            stocks: [
-              {
-                bookings: [],
-              },
-            ],
-            venue: {
-              latitude: 48.91683,
-              longitude: 2.4388,
-            },
-          },
-          mediationId: 'FA',
-          mediation: {
-            id: 'FA',
-            thumbUrl: 'https://example.net/mediation/image',
-          },
+          offerId,
         },
       }
       const state = {
+        data: {
+          bookings: [],
+          offers: [offer],
+        },
         geolocation: {
           latitude: 48.8636537,
           longitude: 2.3371206000000004,
@@ -267,11 +269,8 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
       // then
       expect(props).toStrictEqual({
         humanizeRelativeDistance: '10 km',
-        name: 'Fake favorite name',
-        offerTypeLabel: 'Fake offer type',
+        offer,
         status: null,
-        thumbUrl: 'https://example.net/mediation/image',
-        versoUrl: '/decouverte/ME/FA/verso',
       })
     })
   })

@@ -1,5 +1,7 @@
 import { mapStateToProps, mapDispatchToProps } from '../MyFavoritesContainer'
 
+import { favoriteNormalizer } from '../../../../utils/normalizers'
+
 describe('src | components | pages | my-favorites | MyFavorites', () => {
   describe('mapStateToProps()', () => {
     it('should return my favorites', () => {
@@ -15,7 +17,7 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
 
       // then
       expect(myFavorites).toStrictEqual({
-        myFavorites: []
+        myFavorites: [],
       })
     })
   })
@@ -28,7 +30,7 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
       const handleSuccess = jest.fn()
 
       // when
-      mapDispatchToProps(dispatch).getMyFavorites(handleFail, handleSuccess)
+      mapDispatchToProps(dispatch).requestGetMyFavorites(handleFail, handleSuccess)
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
@@ -37,9 +39,9 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
           handleFail: expect.any(Function),
           handleSuccess: expect.any(Function),
           method: 'GET',
-          stateKey: 'favorites',
+          normalizer: favoriteNormalizer,
         },
-        type: 'REQUEST_DATA_GET_FAVORITES',
+        type: 'REQUEST_DATA_GET_/FAVORITES',
       })
     })
   })

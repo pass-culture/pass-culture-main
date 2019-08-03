@@ -1,13 +1,16 @@
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
+import { compose } from 'redux'
 
 import MyFavorite from './MyFavorite'
-import { humanizeRelativeDate } from '../../../../utils/date/date'
-import { humanizeRelativeDistance } from '../../../../utils/geolocation'
-import { versoUrl } from '../../../../utils/url/url'
 
-export const hasBookings = offer => offer.stocks.some(stock => stock.bookings.length > 0)
+import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
+import selectOfferById from '../../../../selectors/selectOfferById'
+import getHumanizeRelativeDate from '../../../../utils/date/getHumanizeRelativeDate'
 
-export const isBooked = offer => {
+export const getHasBookings = offer => offer.stocks.some(stock => stock.bookings.length > 0)
+
+export const getIsBooked = offer => {
   let flag = false
 
   offer.stocks.forEach(stock => {
@@ -31,7 +34,7 @@ export const reservationStatus = (
   isFullyBooked,
   hasBookings,
   isBooked,
-  humanizeRelativeDate = ''
+  humanizeRelativeDate
 ) => {
   if (isFinished) {
     return {
@@ -74,34 +77,38 @@ export const reservationStatus = (
 
 export const mapStateToProps = (state, ownProps) => {
   const { favorite } = ownProps
-  const { mediation, offer } = favorite
-  const { latitude, longitude } = state.geolocation
-  const offerBeginningDate = offer.dateRange[0] || null
-  const {
-    product: {
-      offerType: { appLabel = '' },
-    },
-  } = offer
+  const { offerId } = favorite
+  const offer = selectOfferById(state, offerId)
+  const { venue } = offer
+  const isBooked = getIsBooked(offer)
+  const hasBookings = getHasBookings(offer)
+  const { dateRange = [], isFinished, isFullyBooked } = offer || {}
+  const offerBeginningDate = dateRange[0] || null
+  const humanizeRelativeDate = offerBeginningDate
+    ? getHumanizeRelativeDate(offerBeginningDate)
+    : null
 
+  const status = reservationStatus(
+    isFinished,
+    isFullyBooked,
+    hasBookings,
+    isBooked,
+    humanizeRelativeDate
+  )
+  const humanizeRelativeDistance = getHumanizeRelativeDistance(
+    state.geolocation.latitude,
+    state.geolocation.longitude,
+    venue.latitude,
+    venue.longitude
+  )
   return {
-    humanizeRelativeDistance: humanizeRelativeDistance(
-      offer.venue.latitude,
-      offer.venue.longitude,
-      latitude,
-      longitude
-    ),
-    name: offer.name,
-    offerTypeLabel: appLabel,
-    status: reservationStatus(
-      offer.isFinished,
-      offer.isFullyBooked,
-      hasBookings(offer),
-      isBooked(offer),
-      offerBeginningDate ? humanizeRelativeDate(offerBeginningDate) : null
-    ),
-    thumbUrl: mediation.thumbUrl,
-    versoUrl: versoUrl(favorite.offerId, favorite.mediationId),
+    humanizeRelativeDistance,
+    offer,
+    status,
   }
 }
 
-export default connect(mapStateToProps)(MyFavorite)
+export default compose(
+  withRouter,
+  connect(mapStateToProps)
+)(MyFavorite)

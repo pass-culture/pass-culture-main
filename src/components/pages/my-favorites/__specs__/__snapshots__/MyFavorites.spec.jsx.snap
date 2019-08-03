@@ -4,22 +4,6 @@ exports[`src | components | pages | my-favorites | MyFavorites should match the 
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <MyFavorites
-    getMyFavorites={
-      [MockFunction] {
-        "calls": Array [
-          Array [
-            [Function],
-            [Function],
-          ],
-        ],
-        "results": Array [
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
-        ],
-      }
-    }
     myFavorites={
       Array [
         Object {
@@ -50,6 +34,23 @@ ShallowWrapper {
         },
       ]
     }
+    requestGetMyFavorites={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            [Function],
+            [Function],
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
+    resetPageData={[MockFunction]}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

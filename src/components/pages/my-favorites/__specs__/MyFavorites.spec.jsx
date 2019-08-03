@@ -4,16 +4,15 @@ import React from 'react'
 import LoaderContainer from '../../../layout/Loader/LoaderContainer'
 import MyFavoriteContainer from '../MyFavorite/MyFavoriteContainer'
 import MyFavorites from '../MyFavorites'
-import NavigationFooter from '../../../layout/NavigationFooter'
+import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import NoItems from '../../../layout/NoItems/NoItems'
-import PageHeader from '../../../layout/Header/PageHeader'
+import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 
 describe('src | components | pages | my-favorites | MyFavorites', () => {
   let props
 
   beforeEach(() => {
     props = {
-      getMyFavorites: jest.fn(),
       myFavorites: [
         {
           id: 1,
@@ -42,6 +41,8 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
           },
         },
       ],
+      requestGetMyFavorites: jest.fn(),
+      resetPageData: jest.fn()
     }
   })
 
@@ -87,12 +88,12 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
       wrapper.setState({ isLoading: false })
 
       // then
-      const pageHeader = wrapper.find(PageHeader)
+      const header = wrapper.find(HeaderContainer)
       const ul = wrapper.find('ul')
-      const navigationFooter = wrapper.find(NavigationFooter)
-      expect(pageHeader).toHaveLength(1)
+      const footer = wrapper.find(RelativeFooterContainer)
+      expect(header).toHaveLength(1)
       expect(ul).toHaveLength(1)
-      expect(navigationFooter).toHaveLength(1)
+      expect(footer).toHaveLength(1)
     })
 
     describe('when there is something wrong with API', () => {
@@ -114,6 +115,7 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
         // when
         const wrapper = shallow(<MyFavorites {...props} />)
         wrapper.setState({
+          isEmpty: true,
           isLoading: false,
         })
 

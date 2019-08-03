@@ -4,17 +4,35 @@ exports[`src | components | pages | my-favorites | MyFavorite | MyFavorite shoul
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <MyFavorite
+    favorite={
+      Object {
+        "id": "AE",
+        "thumbUrl": "",
+      }
+    }
     humanizeRelativeDistance="10 km"
-    name="Fake offer name"
-    offerTypeLabel="Fake offer type label"
+    location={
+      Object {
+        "pathname": "",
+        "search": "",
+      }
+    }
+    offer={
+      Object {
+        "name": "Fake offer name",
+        "product": Object {
+          "offerType": Object {
+            "appLabel": "Fake offer type label",
+          },
+        },
+      }
+    }
     status={
       Object {
         "class": "booked",
         "label": "Réservé",
       }
     }
-    thumbUrl={null}
-    versoUrl="https://example.net/decouverte/ME/FA/verso"
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -33,11 +51,13 @@ ShallowWrapper {
       "children": <Link
         className="teaser-link"
         replace={false}
-        to="https://example.net/decouverte/ME/FA/verso"
+        to="/details/AE"
       >
         <div
           className="teaser-thumb"
-        />
+        >
+          
+        </div>
         <div
           className="teaser-wrapper mf-wrapper"
         >
@@ -88,7 +108,9 @@ ShallowWrapper {
         "children": Array [
           <div
             className="teaser-thumb"
-          />,
+          >
+            
+          </div>,
           <div
             className="teaser-wrapper mf-wrapper"
           >
@@ -130,7 +152,7 @@ ShallowWrapper {
         ],
         "className": "teaser-link",
         "replace": false,
-        "to": "https://example.net/decouverte/ME/FA/verso",
+        "to": "/details/AE",
       },
       "ref": null,
       "rendered": Array [
@@ -139,11 +161,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": null,
+            "children": "",
             "className": "teaser-thumb",
           },
           "ref": null,
-          "rendered": null,
+          "rendered": "",
           "type": "div",
         },
         Object {
@@ -300,11 +322,13 @@ ShallowWrapper {
         "children": <Link
           className="teaser-link"
           replace={false}
-          to="https://example.net/decouverte/ME/FA/verso"
+          to="/details/AE"
         >
           <div
             className="teaser-thumb"
-          />
+          >
+            
+          </div>
           <div
             className="teaser-wrapper mf-wrapper"
           >
@@ -355,7 +379,9 @@ ShallowWrapper {
           "children": Array [
             <div
               className="teaser-thumb"
-            />,
+            >
+              
+            </div>,
             <div
               className="teaser-wrapper mf-wrapper"
             >
@@ -397,7 +423,7 @@ ShallowWrapper {
           ],
           "className": "teaser-link",
           "replace": false,
-          "to": "https://example.net/decouverte/ME/FA/verso",
+          "to": "/details/AE",
         },
         "ref": null,
         "rendered": Array [
@@ -406,11 +432,11 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": null,
+              "children": "",
               "className": "teaser-thumb",
             },
             "ref": null,
-            "rendered": null,
+            "rendered": "",
             "type": "div",
           },
           Object {

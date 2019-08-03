@@ -2,25 +2,28 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import { withRequiredLogin } from '../../hocs'
 import MyFavorites from './MyFavorites'
-import { selectFavorites } from '../../../selectors'
+import { withRequiredLogin } from '../../hocs'
+import { resetPageData } from '../../../reducers/data'
+import selectFavorites from '../../../selectors/selectFavorites'
+import { favoriteNormalizer } from '../../../utils/normalizers'
 
 export const mapStateToProps = state => ({
   myFavorites: selectFavorites(state),
 })
 
 export const mapDispatchToProps = dispatch => ({
-  getMyFavorites: (handleFail, handleSuccess) => {
+  requestGetMyFavorites: (handleFail, handleSuccess) => {
     dispatch(
       requestData({
         apiPath: '/favorites',
         handleFail,
         handleSuccess,
-        stateKey: 'favorites',
+        normalizer: favoriteNormalizer,
       })
     )
   },
+  resetPageData: () => dispatch(resetPageData()),
 })
 
 export default compose(
