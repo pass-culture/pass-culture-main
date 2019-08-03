@@ -1,6 +1,6 @@
 import { MOBILE_OS } from './config'
 
-export const humanizeRelativeDistance = (
+export const getHumanizeRelativeDistance = (
   venueLatitude = null,
   venueLongitude = null,
   userLatitude = null,

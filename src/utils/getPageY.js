@@ -3,6 +3,5 @@ export function getPageY(event) {
     const lastTouchIndex = event.changedTouches.length - 1
     return event.changedTouches[lastTouchIndex].pageY
   }
-
   return event.pageY
 }

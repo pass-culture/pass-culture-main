@@ -1,11 +1,11 @@
 import moment from 'moment'
-import get from 'lodash.get'
 import cloneDeep from 'lodash.clonedeep'
 import createCachedSelector from 're-reselect'
 
 import { pipe } from '../utils/functionnals'
-import { isEmpty, isString } from '../utils/strings'
 import { filterAvailableStocks } from '../helpers'
+import { getTimezone } from '../utils/timezone'
+import { isEmpty, isString } from '../utils/strings'
 
 const MODIFIER_STRING_ID = 'selectBookables'
 
@@ -82,16 +82,20 @@ export const sortByDate = () => items =>
     return 0
   })
 
-export const selectBookables = createCachedSelector(
+function mapArgsToCacheKey(state, offer) {
+  const key = (offer && offer.id) || ' '
+  return key
+}
+
+const selectBookables = createCachedSelector(
   state => state.data.bookings,
-  (state, recommendation) => recommendation,
-  (bookings, recommendation) => {
-    let stocks = get(recommendation, 'offer.stocks')
-    // stocks =u [stocks[0]]
-    // NOTE -> prevents state to be mutated
+  (state, offer) => offer,
+  (bookings, offer) => {
+    let { stocks, venue } = offer || {}
+    const { departementCode } = venue || {}
+    const tz = getTimezone(departementCode)
     stocks = (stocks && cloneDeep(stocks)) || null
     if (!stocks || !stocks.length) return []
-    const tz = get(recommendation, 'tz')
     return pipe(
       filterAvailableStocks,
       setTimezoneOnBeginningDatetime(tz),
@@ -102,4 +106,6 @@ export const selectBookables = createCachedSelector(
       sortByDate()
     )(stocks)
   }
-)((state, recommendation, match) => match.url)
+)(mapArgsToCacheKey)
+
+export default selectBookables
