@@ -1,7 +1,7 @@
 import { ClientFunction, Selector } from 'testcafe'
 import { ROOT_PATH } from '../src/utils/config'
 
-import distanceOptions from '../src/helpers/search/distanceOptions'
+import { distanceOptions } from '../src/components/pages/search/FilterControls/helpers'
 import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 
 const getPageUrl = ClientFunction(() => window.location.href.toString())

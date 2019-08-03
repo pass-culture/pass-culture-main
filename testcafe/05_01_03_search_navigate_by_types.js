@@ -37,27 +37,9 @@ test("Je clique sur la vignette 'Lire' et je suis redirigé vers la page de rés
     .ok()
     .click(firstResultLink)
     .expect(getPageUrl())
-    .contains('/item')
+    .contains('/details')
 
   const offerDetailsTitle = Selector('#verso-offer-name').textContent
 
   await t.expect(offerDetailsTitle).eql(firstResultTitle)
-})
-
-test.skip("Je suis sur la page 'Lire', je clique sur le bouton de retour et j'arrive sur la page des catégories", async t => {
-  const buttonNavByOfferType = Selector('button').withText('Lire')
-
-  await t
-    .click(buttonNavByOfferType)
-    .expect(getPageUrl())
-    .contains('/recherche/resultats/Lire')
-
-  const backButton = Selector('.back-link')
-
-  await t
-    .expect(backButton.exists)
-    .ok()
-    .click(backButton)
-    .expect(getPageUrl())
-    .eql(searchUrl)
 })

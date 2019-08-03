@@ -52,8 +52,8 @@ test("Je fais une recherche par mots-clés et j'ai plusieurs résultats", async 
     .wait(500)
 
   // then
-  const expected = `"${keywordUpper}" : 2 RÉSULTATS`
-  await t.expect(resultsTitle.innerText).eql(expected)
+  const expected = new RegExp(`"${keywordUpper}" : [0-9] RÉSULTATS`)
+  await t.expect(resultsTitle.innerText).match(expected)
 })
 
 test("Je fais une recherche par mots-clés et j'ai un seul résultat", async t => {
