@@ -125,9 +125,7 @@ FAVORITE_INCLUDES = [
     "-userId",
     {
         "key": "mediation",
-        "sub_joins": [
-            "thumbUrl"
-        ]
+        "sub_joins": ["thumbUrl"]
     },
     {
         "key": "offer",
@@ -140,9 +138,7 @@ FAVORITE_INCLUDES = [
             "isFullyBooked",
             {
                 "key": "product",
-                "sub_joins": [
-                    "thumbUrl"
-                ]
+                "sub_joins": ["thumbUrl", "offerType"]
             },
             "stocks",
             "venue",
