@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Form as FinalForm } from 'react-final-form'
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 const noop = () => {}
@@ -14,10 +13,9 @@ const withPasswordForm = (WrappedComponent, validator, routePath, routeMethod) =
   class ResetPasswordForm extends React.PureComponent {
     constructor(props) {
       super(props)
-      const { dispatch, initialValues } = this.props
+      const { initialValues } = this.props
       this.state = { isloading: false }
       this.initialValues = { ...initialValues }
-      this.actions = bindActionCreators({ requestData }, dispatch)
     }
 
     handleRequestFail = formResolver => (state, action) => {
@@ -41,6 +39,7 @@ const withPasswordForm = (WrappedComponent, validator, routePath, routeMethod) =
     }
 
     handleOnFormSubmit = formValues => {
+      const { dispatch } = this.props
       this.setState({ isloading: true })
       // NOTE: on retourne une promise au formulaire
       // pour pouvoir gérer les erreurs de l'API
@@ -53,7 +52,7 @@ const withPasswordForm = (WrappedComponent, validator, routePath, routeMethod) =
           handleSuccess: this.handleRequestSuccess(resolve),
           method: routeMethod,
         }
-        this.actions.requestData(config)
+        dispatch(requestData(config))
       })
       return formSubmitPromise
     }
