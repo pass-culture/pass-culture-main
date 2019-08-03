@@ -6,8 +6,8 @@ import { resolveCurrentUser } from 'with-react-redux-login'
 
 import { ROOT_PATH } from '../../../../utils/config'
 import { parseSubmitErrors } from '../../../forms/utils'
-import PageHeader from '../../../layout/Header/PageHeader'
-import NavigationFooter from '../../../layout/NavigationFooter'
+import Header from '../../../layout/Header/Header'
+import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 
 const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k.png')`
 
@@ -90,7 +90,7 @@ class ProfileForm extends React.PureComponent {
         onReset={this.handleOnFormReset}
         onSubmit={handleSubmit}
       >
-        <PageHeader
+        <Header
           backTo="/profil"
           closeTo={null}
           isLoading={isLoading}
@@ -127,7 +127,7 @@ class ProfileForm extends React.PureComponent {
           render={this.renderFinalForm}
           validate={validator}
         />
-        <NavigationFooter
+        <RelativeFooterContainer
           className="dotted-top-red"
           disabled={isLoading}
           theme="white"

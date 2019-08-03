@@ -49,7 +49,7 @@ ShallowWrapper {
           render={[Function]}
           validate={[Function]}
         />,
-        <withRouter(NavigationFooter)
+        <withRouter(withRouter(NavigationFooter))
           className="dotted-top-red"
           disabled={false}
           theme="white"
@@ -103,7 +103,7 @@ ShallowWrapper {
             render={[Function]}
             validate={[Function]}
           />,
-          <withRouter(NavigationFooter)
+          <withRouter(withRouter(NavigationFooter))
             className="dotted-top-red"
             disabled={false}
             theme="white"

@@ -1,18 +1,14 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import { Route, Switch } from 'react-router-dom'
-import { compose } from 'redux'
-import { selectCurrentUser } from 'with-react-redux-login'
 
 import { config } from './config'
 import ProfileMainView from './ProfileMainView'
 import ProfileUpdateSuccess from './ProfileUpdateSuccess'
 import NotMatch from '../NotMatch'
-import { withRequiredLogin } from '../../hocs'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 
-class ProfilePage extends Component {
+class Profile extends Component {
   parseRoutesWithComponent = () => {
     const components = config.filter(o => o.component)
     const routes = components.reduce((acc, o) => ({ ...acc, [o.routeName]: o }), {})
@@ -92,16 +88,9 @@ class ProfilePage extends Component {
   }
 }
 
-ProfilePage.propTypes = {
+Profile.propTypes = {
   currentUser: PropTypes.shape().isRequired,
   location: PropTypes.shape().isRequired,
 }
 
-const mapStateToProps = state => ({
-  currentUser: selectCurrentUser(state),
-})
-
-export default compose(
-  withRequiredLogin,
-  connect(mapStateToProps)
-)(ProfilePage)
+export default Profile

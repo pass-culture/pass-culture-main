@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
 import { ROOT_PATH } from '../../../utils/config'
-import PageHeader from '../../layout/Header/PageHeader'
-import NavigationFooter from '../../layout/NavigationFooter'
+import Header from '../../layout/Header/Header'
+import RelativeFooterContainer from '../../layout/RelativeFooter/RelativeFooterContainer'
 
 const BACKGROUND_IMAGE = `url('${ROOT_PATH}/mosaic-k.png')`
 
@@ -15,7 +15,7 @@ const ProfileUpdateSuccess = ({ config, match }) => {
       className="pc-page-view pc-theme-default flex-rows with-header"
       id="profile-page-main-view"
     >
-      <PageHeader
+      <Header
         backTo="/profil"
         closeTo={null}
         title={item.title}
@@ -43,7 +43,7 @@ const ProfileUpdateSuccess = ({ config, match }) => {
           </Link>
         </div>
       </main>
-      <NavigationFooter
+      <RelativeFooterContainer
         className="dotted-top-red"
         theme="white"
       />
