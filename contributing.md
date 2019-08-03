@@ -7,8 +7,6 @@
       1. Imports par ordre alphabétique
       2. Une ligne de séparation entre librairies externes et modules internes
       3. Ne pas utiliser les imports/exports "default" de façon à forcer à ce que tout soit nommé pareil partout et faciliter la lisibilité. Dans la plupart des cas, donc, ça revient à faire "import { fooSelector } from Bar" plutot que "import fooSelector from Bar".
-      4. On ne remonte pas dans la hiérarchie des dossier (pas de "../")
-
 
       ```
       import os
@@ -26,11 +24,10 @@
       import { compose } from 'redux'
 
       import OccasionItem from './OccasionItem'
-      import Icon from 'layout/Icon'
-      import { showModal } from 'components/reducers/modal'
-      import { THUMBS_URL } form 'utils/config'
+      import Icon from '../layout/Icon'
+      import { showModal } from '../components/reducers/modal'
+      import { THUMBS_URL } form '../utils/config'
       ```
-      
 
   - Nomination des variables, si possible:
     * arrays avec des pluriels, exemple : data, events
@@ -43,8 +40,6 @@
   - Casse: underscore case pour les variables, mais camelCase pour les clés des objets postgres
 
 ## Frontend Javascript
-
-  - [AirBNB React Good Practices](https://github.com/airbnb/javascript/tree/master/react#naming)
 
   - Casse: camelCase pour les variables, sauf CamelCase pour les classes
 
@@ -67,9 +62,33 @@
   - Container / Composant
     * Action de renommage + split si possible
     * Page "Stock" coté Pro a refaire aux nouvelles normes
-    
+
   - Container
     * Un container ne manipule pas le state
     * Pas d'accès direct au state
     * Il lit les informations via des selectors
     * On corrige de manière oportuniste
+
+## Les étapes avant de passer un ticket en code review
+
+- Respecter tous les points du `contributing.md` ;
+
+- Nommer les messages de commit de la façon suivante `(PC-XXXX) Ton message explicite` ;
+
+- Faire un nombre résonnable de commit ;
+
+- Faire un `rebase master` régulièrement ;
+
+- Poser des tests unitaires sur tout nouveau code quand c'est pertinent ;
+
+- Poser des tests end to end quand c'est un chemin critique (défini par le développeur) ;
+
+- Vérifier que tous les tests sont verts en local **ET** sur CircleCI ;
+
+- Recetter ce que l'on développe : UX/UI/Accessibilité/Sémantique ;
+
+- Recetter sur différents navigateurs : Chrome, Firefox, Edge et Safari mobile ;
+
+- Supprimer les erreurs JavaScript dans la console du navigateur et sur les tests unitaires ;
+
+- Mettre le lien de la pull request dans le ticket Jira.
