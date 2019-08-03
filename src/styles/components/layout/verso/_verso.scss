@@ -15,5 +15,22 @@
     // NOTE: permet de passer le verso au dessus du header
     // - dans la recherche
     margin-top: $header-height;
+
+    .verso-info {
+      padding-bottom: $header-height;
+    }
+  }
+
+  .footer {
+    position: absolute;
+    bottom: calc(#{$footer-height} - #{$page-padding});
+    left: 0;
+    right: 0;
+    height: $footer-height;
+    text-align: right;
+    padding: $footer-height-padding $page-padding;
+    display: flex;
+    align-items: center;
+    flex-direction: row-reverse;
   }
 }

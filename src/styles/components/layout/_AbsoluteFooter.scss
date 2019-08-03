@@ -1,6 +1,21 @@
-.footer {
-  z-index: $zindex-main-footer;
+.absolute-footer {
+  align-items: center;
   background-color: transparent;
+  bottom: 0;
+  display: flex;
+  height: $footer-height;
+  left: 0;
+  flex-direction: row-reverse;
+  position: absolute;
+  right: 0;
+  text-align: right;
+  padding: $footer-height-padding $page-padding;
+  z-index: $zindex-main-footer;
+
+  a,
+  button {
+    font-size: $size-medium;
+  }
 
   .button-wrapper {
     margin: 5px 0;
