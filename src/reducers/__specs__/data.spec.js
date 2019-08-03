@@ -14,6 +14,8 @@ describe('src | reducers | data', () => {
         bookings: [],
         favorites: [],
         features: [],
+        mediations: [],
+        offers: [],
         readRecommendations: [],
         recommendations: [],
         types: [],
