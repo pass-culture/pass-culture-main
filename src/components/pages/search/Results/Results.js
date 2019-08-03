@@ -3,11 +3,11 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 
-import SearchResultItemContainer from './SearchResultItemContainer'
-import { searchResultsTitle } from './utils'
-import Spinner from '../../layout/Spinner'
+import RecommendationItemContainer from './RecommendationItem/RecommendationItemContainer'
+import { searchResultsTitle } from '../helpers'
+import Spinner from '../../../layout/Spinner'
 
-class SearchResults extends PureComponent {
+class Results extends PureComponent {
   constructor() {
     super()
     this.state = {
@@ -92,7 +92,7 @@ class SearchResults extends PureComponent {
             useWindow={false}
           >
             {items.map(item => (
-              <SearchResultItemContainer
+              <RecommendationItemContainer
                 key={queryParams.page + item.id}
                 recommendation={item}
               />
@@ -104,13 +104,13 @@ class SearchResults extends PureComponent {
   }
 }
 
-SearchResults.defaultProps = {
+Results.defaultProps = {
   hasMore: false,
   items: [],
   keywords: '',
 }
 
-SearchResults.propTypes = {
+Results.propTypes = {
   cameFromOfferTypesPage: PropTypes.bool.isRequired,
   hasMore: PropTypes.bool,
   items: PropTypes.arrayOf(PropTypes.shape()),
@@ -118,4 +118,4 @@ SearchResults.propTypes = {
   query: PropTypes.shape().isRequired,
 }
 
-export default SearchResults
+export default Results

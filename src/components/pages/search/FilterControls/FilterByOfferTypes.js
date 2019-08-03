@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import SearchPicture from './SearchPicture'
+import SearchPicture from '../SearchPicture'
 
 class FilterByOfferTypes extends PureComponent {
   onChangeCategory = category => () => {

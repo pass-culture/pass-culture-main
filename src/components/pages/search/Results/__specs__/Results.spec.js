@@ -1,10 +1,10 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import SearchResults from '../SearchResults'
-import SearchResultItemContainer from '../SearchResultItemContainer'
+import Results from '../Results'
+import RecommendationItemContainer from '../RecommendationItem/RecommendationItemContainer'
 
-describe('src | components | pages | search | SearchResults', () => {
+describe('src | components | pages | search | Results', () => {
   let props
 
   beforeEach(() => {
@@ -28,7 +28,7 @@ describe('src | components | pages | search | SearchResults', () => {
     props.cameFromOfferTypesPage = false
 
     // when
-    const wrapper = shallow(<SearchResults {...props} />)
+    const wrapper = shallow(<Results {...props} />)
 
     // then
     expect(wrapper).toBeDefined()
@@ -38,7 +38,7 @@ describe('src | components | pages | search | SearchResults', () => {
   describe('handleSetHasReceivedFirstSuccessData()', () => {
     it('should return hasReceivedFirstSuccessData = true if there are data', () => {
       // given
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
       wrapper.setState({ hasReceivedFirstSuccessData: false })
 
       // when
@@ -50,7 +50,7 @@ describe('src | components | pages | search | SearchResults', () => {
 
     it('should return undefined if there are no data', () => {
       // given
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
 
       // when
       wrapper.setState({ hasReceivedFirstSuccessData: true })
@@ -66,7 +66,7 @@ describe('src | components | pages | search | SearchResults', () => {
   describe('handleShouldCancelLoading()', () => {
     it('should return isLoading = false if its loading', () => {
       // given
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
       wrapper.setState({ isLoading: true })
 
       // when
@@ -78,7 +78,7 @@ describe('src | components | pages | search | SearchResults', () => {
 
     it('should return undefined if its not loading', () => {
       // given
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
 
       // when
       const handleShouldCancelLoading = wrapper.instance().handleShouldCancelLoading()
@@ -93,7 +93,7 @@ describe('src | components | pages | search | SearchResults', () => {
 
     it('should return undefined if its loading', () => {
       // given
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
       wrapper.setState({ isLoading: true })
 
       // when
@@ -105,7 +105,7 @@ describe('src | components | pages | search | SearchResults', () => {
 
     it('should called query change if its not loading', () => {
       // given
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
 
       // when
       wrapper.instance().loadMore(page)
@@ -128,36 +128,36 @@ describe('src | components | pages | search | SearchResults', () => {
         it('should not render title', () => {
           // given
           props.items = items
-          const wrapper = shallow(<SearchResults {...props} />)
+          const wrapper = shallow(<Results {...props} />)
 
           // when
           const resultsTitle = wrapper.is('h2')
-          const SearchResultItemWrapper = wrapper.find(SearchResultItemContainer)
+          const SearchRecommendationItemWrapper = wrapper.find(RecommendationItemContainer)
           const item = {
             recommendation: items[0],
           }
 
           // then
           expect(resultsTitle).toBe(false)
-          expect(SearchResultItemWrapper.props()).toStrictEqual(item)
+          expect(SearchRecommendationItemWrapper.props()).toStrictEqual(item)
         })
       })
 
       describe('when there is no result', () => {
         it('should render properly the result title with no item', () => {
           // given
-          const wrapper = shallow(<SearchResults {...props} />)
+          const wrapper = shallow(<Results {...props} />)
 
           // when
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
-          const SearchResultItemWrapper = wrapper.find(SearchResultItemContainer)
+          const SearchRecommendationItemWrapper = wrapper.find(RecommendationItemContainer)
 
           // then
           expect(resultsTitle.children).toBe(
             'Il n’y a pas d’offres dans cette catégorie pour le moment.'
           )
-          expect(SearchResultItemWrapper).toHaveLength(0)
+          expect(SearchRecommendationItemWrapper).toHaveLength(0)
         })
       })
     })
@@ -168,19 +168,19 @@ describe('src | components | pages | search | SearchResults', () => {
           // given
           props.cameFromOfferTypesPage = false
           props.items = items
-          const wrapper = shallow(<SearchResults {...props} />)
+          const wrapper = shallow(<Results {...props} />)
 
           // when
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
-          const SearchResultItemWrapper = wrapper.find(SearchResultItemContainer)
+          const SearchRecommendationItemWrapper = wrapper.find(RecommendationItemContainer)
           const item = {
             recommendation: items[0],
           }
 
           // then
           expect(resultsTitle.children).toBe('"fakeKeywords" : 1 résultat')
-          expect(SearchResultItemWrapper.props()).toStrictEqual(item)
+          expect(SearchRecommendationItemWrapper.props()).toStrictEqual(item)
         })
       })
 
@@ -188,16 +188,16 @@ describe('src | components | pages | search | SearchResults', () => {
         it('should render properly the result title with no item', () => {
           // given
           props.cameFromOfferTypesPage = false
-          const wrapper = shallow(<SearchResults {...props} />)
+          const wrapper = shallow(<Results {...props} />)
 
           // when
           wrapper.setState({ hasReceivedFirstSuccessData: true })
           const resultsTitle = wrapper.find('h2').props()
-          const SearchResultItemWrapper = wrapper.find(SearchResultItemContainer)
+          const SearchRecommendationItemWrapper = wrapper.find(RecommendationItemContainer)
 
           // then
           expect(resultsTitle.children).toBe('"fakeKeywords" : 0 résultat')
-          expect(SearchResultItemWrapper).toHaveLength(0)
+          expect(SearchRecommendationItemWrapper).toHaveLength(0)
         })
       })
     })

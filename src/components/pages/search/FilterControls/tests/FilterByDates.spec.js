@@ -1,11 +1,11 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import { DatePickerField } from '../../../forms/inputs'
 import FilterByDates from '../FilterByDates'
-import { DAYS_CHECKBOXES } from '../utils'
+import { DAYS_CHECKBOXES } from '../../helpers'
+import { DatePickerField } from '../../../../forms/inputs'
 
-describe('src | components | pages | search | FilterByDates', () => {
+describe('src | components | pages | search | FilterControls | FilterByDates', () => {
   let props
 
   beforeEach(() => {
@@ -90,7 +90,7 @@ describe('src | components | pages | search | FilterByDates', () => {
 
         // then
         expect(wrapper.state(['pickedDate'])).toBeNull()
-        expect(props.filterActions.add).toHaveBeenCalled()
+        expect(props.filterActions.add).toHaveBeenCalledWith('jours', day, expect.any(Function))
       })
 
       it('should change date to null when more than one days checked', () => {
@@ -104,13 +104,12 @@ describe('src | components | pages | search | FilterByDates', () => {
 
         // then
         expect(wrapper.state(['pickedDate'])).toBeNull()
-        expect(props.filterActions.remove).toHaveBeenCalled()
+        expect(props.filterActions.remove).toHaveBeenCalledWith('jours', day, expect.any(Function))
       })
 
       it('should check another day, already checked', () => {
         // given
         const day = '0-1'
-        const callback = undefined
         props.filterState.params.jours = `${day},1-5`
         const wrapper = shallow(<FilterByDates {...props} />)
 
@@ -119,7 +118,7 @@ describe('src | components | pages | search | FilterByDates', () => {
 
         // then
         expect(wrapper.state(['pickedDate'])).toBeNull()
-        expect(props.filterActions.remove).toHaveBeenCalledWith('jours', day, callback)
+        expect(props.filterActions.remove).toHaveBeenCalledWith('jours', day, undefined)
       })
 
       it('shoud add another day not added yet to query with callback undefined ', () => {

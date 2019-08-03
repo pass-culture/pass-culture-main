@@ -1,5 +1,5 @@
-import withFrenchQueryRouter from '../../hocs/withFrenchQueryRouter'
+import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'
 
-import SearchResults from './SearchResults'
+import Results from './Results'
 
-export default withFrenchQueryRouter(SearchResults)
+export default withFrenchQueryRouter(Results)

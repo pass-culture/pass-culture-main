@@ -6,15 +6,15 @@ import { Route, Router } from 'react-router-dom'
 import { Transition } from 'react-transition-group'
 import configureStore from 'redux-mock-store'
 
-import FilterByDates from '../../FilterByDates'
-import FilterByDistanceContainer from '../../FilterByDistanceContainer'
-import FilterByOfferTypesContainer from '../../FilterByOfferTypesContainer'
-import SearchFilter from '../SearchFilter'
-import SearchFilterContainer from '../SearchFilterContainer'
-import { INITIAL_FILTER_PARAMS } from '../../utils'
+import FilterByDates from '../FilterByDates'
+import FilterByDistanceContainer from '../FilterByDistanceContainer'
+import FilterByOfferTypesContainer from '../FilterByOfferTypesContainer'
+import FilterControls from '../FilterControls'
+import FilterControlsContainer from '../FilterControlsContainer'
+import { INITIAL_FILTER_PARAMS } from '../../helpers'
 import REDUX_STATE from '../../../../../mocks/reduxState'
 
-describe('src | components | pages | search | searchFilters | SearchFilter', () => {
+describe('src | components | pages | search | FilterControls', () => {
   let props
 
   beforeEach(() => {
@@ -32,7 +32,7 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
 
   it('should match the snapshot', () => {
     // when
-    const wrapper = shallow(<SearchFilter {...props} />)
+    const wrapper = shallow(<FilterControls {...props} />)
 
     // then
     expect(wrapper).toBeDefined()
@@ -44,7 +44,7 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
       // given
       const queryParams = { prop: 'mocked object' }
       jest.spyOn(props.query, 'parse').mockImplementation(() => queryParams)
-      const wrapper = shallow(<SearchFilter {...props} />)
+      const wrapper = shallow(<FilterControls {...props} />)
 
       // when
       const { params } = wrapper.instance().state
@@ -65,7 +65,7 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
         <Provider store={store}>
           <Router history={history}>
             <Route path="/test">
-              <SearchFilterContainer
+              <FilterControlsContainer
                 isVisible
                 onClickFilterButton={mockOnClickFilterButton}
               />
@@ -78,7 +78,7 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
       history.push('/test?categories=Sourire')
 
       // then
-      const searchFilter = wrapper.find('SearchFilter')
+      const searchFilter = wrapper.find('FilterControls')
       expect(searchFilter.state('filterParamsMatchingQueryParams')).toBe(false)
       expect(searchFilter.state('initialDateParams')).toBe(true)
       expect(searchFilter.state('params')).toStrictEqual(expect.any(Object))
@@ -88,7 +88,7 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
   describe('handleOnClickFilterButton()', () => {
     it('should close the filters and change the URL by default', () => {
       // given
-      const wrapper = shallow(<SearchFilter {...props} />)
+      const wrapper = shallow(<FilterControls {...props} />)
 
       // when
       wrapper.instance().handleOnClickFilterButton()
@@ -99,7 +99,7 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
 
     it('should reset the store when filter params match the query params', () => {
       // given
-      const wrapper = shallow(<SearchFilter {...props} />)
+      const wrapper = shallow(<FilterControls {...props} />)
       wrapper.setState({ filterParamsMatchingQueryParams: true })
 
       // when
@@ -113,7 +113,7 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
   describe('handleOnClickReset()', () => {
     it('should initialize default filter params and reset the URL', () => {
       // given
-      const wrapper = shallow(<SearchFilter {...props} />)
+      const wrapper = shallow(<FilterControls {...props} />)
 
       // when
       wrapper.instance().handleOnClickReset()
@@ -136,7 +136,7 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
     it('should add filter parameters when I have not initial parameters', () => {
       // given
       props.query.parse = () => ({})
-      const wrapper = shallow(<SearchFilter {...props} />)
+      const wrapper = shallow(<FilterControls {...props} />)
 
       // when
       wrapper.instance().handleQueryAdd('jours', '0-1', jest.fn())
@@ -156,7 +156,7 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
       props.query.parse = () => ({
         categories: 'Jouer',
       })
-      const wrapper = shallow(<SearchFilter {...props} />)
+      const wrapper = shallow(<FilterControls {...props} />)
 
       // when
       wrapper.instance().handleQueryAdd('categories', 'Lire', undefined)
@@ -178,7 +178,7 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
       props.query.parse = () => ({
         categories: 'Jouer,Applaudir',
       })
-      const wrapper = shallow(<SearchFilter {...props} />)
+      const wrapper = shallow(<FilterControls {...props} />)
 
       // when
       wrapper.instance().handleQueryRemove('categories', 'Jouer', undefined)
@@ -200,7 +200,7 @@ describe('src | components | pages | search | searchFilters | SearchFilter', () 
       const store = configureStore([])(REDUX_STATE)
       const wrapper = mount(
         <Provider store={store}>
-          <SearchFilter {...props} />
+          <FilterControls {...props} />
         </Provider>
       )
 

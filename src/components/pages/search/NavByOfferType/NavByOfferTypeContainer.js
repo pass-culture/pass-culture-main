@@ -7,7 +7,7 @@ import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'
 
 export const mapDispatchToProps = (dispatch, ownProps) => ({
   resetSearchStore: () => {
-    dispatch(assignData({ searchRecommendations: [] }))
+    dispatch(assignData({ bookings: [], recommendations: [] }))
   },
 
   updateSearchQuery: categories => {

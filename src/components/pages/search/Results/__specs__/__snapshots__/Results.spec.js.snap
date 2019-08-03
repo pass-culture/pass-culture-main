@@ -1,9 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | search | Footer should match the snapshot 1`] = `
+exports[`src | components | pages | search | Results should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Footer />,
+  Symbol(enzyme.__unrendered__): <Results
+    cameFromOfferTypesPage={false}
+    hasMore={false}
+    items={Array []}
+    keywords="fakeKeywords"
+    query={
+      Object {
+        "add": [MockFunction],
+        "change": [MockFunction],
+        "clear": [MockFunction],
+        "parse": [Function],
+        "remove": [MockFunction],
+      }
+    }
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -16,27 +30,39 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "function",
+    "nodeType": "host",
     "props": Object {
-      "className": "dotted-top-red",
-      "theme": "white",
+      "children": Array [
+        "",
+        false,
+      ],
+      "className": "search-results",
     },
     "ref": null,
-    "rendered": null,
-    "type": [Function],
+    "rendered": Array [
+      "",
+      false,
+    ],
+    "type": "div",
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "function",
+      "nodeType": "host",
       "props": Object {
-        "className": "dotted-top-red",
-        "theme": "white",
+        "children": Array [
+          "",
+          false,
+        ],
+        "className": "search-results",
       },
       "ref": null,
-      "rendered": null,
-      "type": [Function],
+      "rendered": Array [
+        "",
+        false,
+      ],
+      "type": "div",
     },
   ],
   Symbol(enzyme.__options__): Object {
@@ -65,5 +91,6 @@ ShallowWrapper {
     Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
 }
 `;

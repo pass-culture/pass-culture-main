@@ -3,7 +3,7 @@ import React from 'react'
 
 import FilterByOfferTypes from '../FilterByOfferTypes'
 
-describe('src | components | pages | search | FilterByOfferTypes', () => {
+describe('src | components | pages | search | FilterControls | FilterByOfferTypes', () => {
   let props
 
   beforeEach(() => {

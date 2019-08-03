@@ -1,10 +1,10 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import options, { INFINITE_DISTANCE } from '../../../../helpers/search/distanceOptions'
+import { distanceOptions, INFINITE_DISTANCE } from '../helpers'
 import FilterByDistance from '../FilterByDistance'
 
-describe('src | components | pages | search | FilterByDistance', () => {
+describe('src | components | pages | search | FilterControls | FilterByDistance', () => {
   let props
 
   beforeEach(() => {
@@ -129,7 +129,7 @@ describe('src | components | pages | search | FilterByDistance', () => {
       // then
       expect(optionsMarkup).toHaveLength(4)
       optionsMarkup.forEach((option, index) => {
-        expect(option.props().value).toBe(options[index].value)
+        expect(option.props().value).toBe(distanceOptions[index].value)
       })
       expect(defaultValue).toBe(INFINITE_DISTANCE)
     })

@@ -1,93 +1,67 @@
 import PropTypes from 'prop-types'
-import React, { Component, Fragment } from 'react'
-import { requestData } from 'redux-saga-data'
+import React from 'react'
 
-import { getQueryURL } from '../../../helpers'
-import { recommendationNormalizer } from '../../../utils/normalizers'
-import { getRecommendationDateString } from './utils'
+import { getRecommendationDateString } from '../../helpers'
+import { ICONS_URL } from '../../../../../utils/config'
 
-class SearchResultItem extends Component {
-  onSuccessLoadRecommendationDetails = () => {
-    const { history, location, recommendation } = this.props
-    const offerId = recommendation && recommendation.offerId
-    const mediationId = recommendation && recommendation.mediationId
-    const queryURL = getQueryURL({ mediationId, offerId })
-    const linkURL = `${location.pathname}/item/${queryURL}${location.search}`
+const DEFAULT_THUMB_URL = `${ICONS_URL}/magnify.svg`
 
-    history.push(linkURL)
-  }
-
-  handleMarkSearchRecommendationsAsClicked = () => {
-    const { dispatch, recommendation } = this.props
-    const config = {
-      apiPath: `/recommendations/${recommendation.id}`,
-      body: { isClicked: true },
-      handleSuccess: this.onSuccessLoadRecommendationDetails,
-      method: 'PATCH',
-      normalizer: recommendationNormalizer,
-    }
-
-    dispatch(requestData(config))
-  }
-
-  render() {
-    const { recommendation } = this.props
-
-    return (
-      <li className="recommendation-list-item">
-        <div
-          className="to-details"
-          onClick={this.handleMarkSearchRecommendationsAsClicked}
-          onKeyPress={this.handleMarkSearchRecommendationsAsClicked}
-          role="button"
-          tabIndex={0}
-        >
-          <hr className="dotted-top-primary" />
-          <div className="flex-columns">
-            <div className="image flex-0 dotted-right-primary flex-rows flex-center">
-              <img
-                alt=""
-                src={recommendation.thumbUrl}
-              />
-            </div>
-            <div className="m18 flex-1">
-              {recommendation.offer && (
-                <Fragment>
-                  <h5
-                    className="fs18 is-bold"
-                    title={recommendation.offer.name}
-                  >
-                    {recommendation.offer.name}
-                  </h5>
-                  <div className="fs13">{recommendation.offer.product.offerType.appLabel}</div>
-                  <div
-                    className="fs13"
-                    id="recommendation-date"
-                  >
-                    {recommendation.offer && getRecommendationDateString(recommendation.offer)}
-                  </div>
-                </Fragment>
-              )}
-            </div>
-            <div className="flex-center items-center is-primary-text">
-              <span
-                aria-hidden
-                className="icon-legacy-next"
-                title=""
-              />
+const RecommendationItem = ({
+  handleMarkSearchRecommendationsAsClicked,
+  offer,
+  recommendation,
+}) => {
+  const { thumbUrl } = recommendation
+  const { name: offerName, product } = offer || {}
+  return (
+    <li className="recommendation-list-item">
+      <div
+        className="to-details"
+        onClick={handleMarkSearchRecommendationsAsClicked}
+        onKeyPress={handleMarkSearchRecommendationsAsClicked}
+        role="button"
+        tabIndex={0}
+      >
+        <hr className="dotted-top-primary" />
+        <div className="flex-columns">
+          <div className="image flex-0 dotted-right-primary flex-rows flex-center">
+            <img
+              alt=""
+              src={thumbUrl || DEFAULT_THUMB_URL}
+            />
+          </div>
+          <div className="m18 flex-1">
+            <h5
+              className="fs18 is-bold"
+              title={offerName}
+            >
+              {offerName}
+            </h5>
+            <div className="fs13">{product.offerType.appLabel}</div>
+            <div
+              className="fs13"
+              id="recommendation-date"
+            >
+              {offer && getRecommendationDateString(offer)}
             </div>
           </div>
+          <div className="flex-center items-center is-primary-text">
+            <span
+              aria-hidden
+              className="icon-legacy-next"
+              title=""
+            />
+          </div>
         </div>
-      </li>
-    )
-  }
+      </div>
+    </li>
+  )
 }
 
-SearchResultItem.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  history: PropTypes.shape().isRequired,
-  location: PropTypes.shape().isRequired,
+RecommendationItem.propTypes = {
+  handleMarkSearchRecommendationsAsClicked: PropTypes.func.isRequired,
+  offer: PropTypes.shape().isRequired,
   recommendation: PropTypes.shape().isRequired,
 }
 
-export default SearchResultItem
+export default RecommendationItem

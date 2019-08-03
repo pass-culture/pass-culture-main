@@ -3,18 +3,11 @@ import { compose } from 'redux'
 
 import Search from './Search'
 import { withRequiredLogin } from '../../hocs'
-import { selectRecommendations } from '../../../selectors'
-import selectTypeSublabels, { selectTypes } from '../../../selectors/selectTypes'
-
-const selectSearchRecommendations = state => {
-  const recommendations = state.data.searchRecommendations || []
-  const derivedState = { ...state, data: { ...state.data, recommendations } }
-
-  return selectRecommendations(derivedState)
-}
+import { resetPageData } from '../../../reducers/data'
+import selectTypeSublabels, { selectTypes } from './selectors/selectTypes'
 
 const mapStateToProps = state => {
-  const recommendations = selectSearchRecommendations(state)
+  const { recommendations } = state.data
   const typeSublabels = selectTypeSublabels(state)
   const typeSublabelsAndDescription = selectTypes(state)
   const { user } = state
@@ -27,7 +20,15 @@ const mapStateToProps = state => {
   }
 }
 
+const mapDispatchToProps = dispatch => ({
+  dispatch,
+  resetPageData: () => dispatch(resetPageData()),
+})
+
 export default compose(
   withRequiredLogin,
-  connect(mapStateToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(Search)

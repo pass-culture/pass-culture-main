@@ -7,7 +7,7 @@ import {
   searchResultsTitle,
   translateBrowserUrlToApiUrl,
   isDaysChecked,
-} from '../utils'
+} from '../helpers'
 
 describe('src | components | pages | search | utils', () => {
   describe('getRecommendationDateString', () => {

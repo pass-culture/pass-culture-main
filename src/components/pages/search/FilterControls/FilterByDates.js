@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import { DatePickerField } from '../../forms/inputs'
-import { DAYS_CHECKBOXES, isDaysChecked } from './utils'
+import { DatePickerField } from '../../../forms/inputs'
+import { DAYS_CHECKBOXES, isDaysChecked } from '../helpers'
 
 class FilterByDates extends PureComponent {
   constructor(props) {
@@ -31,17 +31,17 @@ class FilterByDates extends PureComponent {
     this.setPickedDate(null)
     const { filterActions, filterState } = this.props
     const pickedDaysInQuery = decodeURI(filterState.params.jours || '')
-    const isdayAlreadyChecked = pickedDaysInQuery.includes(day)
+    const isDayAlreadyChecked = pickedDaysInQuery.includes(day)
     let callback
 
     if (pickedDaysInQuery.length === 0) {
       const date = new Date().toISOString()
       callback = () => filterActions.change({ date })
-    } else if (isdayAlreadyChecked && pickedDaysInQuery.split(',').length === 1) {
+    } else if (isDayAlreadyChecked && pickedDaysInQuery.split(',').length === 1) {
       callback = () => filterActions.change({ date: null })
     }
 
-    if (isdayAlreadyChecked) {
+    if (isDayAlreadyChecked) {
       filterActions.remove('jours', day, callback)
       return
     }

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 
-import options, { INFINITE_DISTANCE } from '../../../helpers/search/distanceOptions'
+import { distanceOptions, INFINITE_DISTANCE } from './helpers'
 
 class FilterByDistance extends PureComponent {
   handleOnChangeDistance = event => {
@@ -34,7 +34,7 @@ class FilterByDistance extends PureComponent {
             name="distance"
             onBlur={this.handleOnChangeDistance}
           >
-            {options.map(({ label, value }) => (
+            {distanceOptions.map(({ label, value }) => (
               <option
                 key={value}
                 value={value}
