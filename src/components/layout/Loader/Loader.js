@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Transition } from 'react-transition-group'
 
 import Icon from '../Icon'
-import NavigationFooter from '../NavigationFooter'
+import RelativeFooterContainer from '../RelativeFooter/RelativeFooterContainer'
 
 const duration = 500
 
@@ -92,10 +92,12 @@ class Loader extends React.PureComponent {
                             />}
               <h2 className="fs20">{this.renderMessage()}</h2>
             </div>
-            {showFooter && <NavigationFooter
-              className="dotted-top-white"
-              theme="transparent"
-                           />}
+            {showFooter && (
+              <RelativeFooterContainer
+                className="dotted-top-white"
+                theme="transparent"
+              />
+            )}
           </div>
         )}
       </Transition>

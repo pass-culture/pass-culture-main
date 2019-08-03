@@ -6,6 +6,12 @@ import VersoHeader from '../VersoHeader'
 // given
 const props = {
   backgroundColor: '#ACE539',
+  history: { push: jest.fn() },
+  location: {
+    pathname: '',
+    search: '',
+  },
+  match: { params: {} },
   subtitle: 'Offer subtitle',
   title: 'Offer title',
 }
@@ -27,7 +33,7 @@ describe('src | components | verso | VersoHeader', () => {
 
     // then
     const expected = props.title
-    expect(element.text()).toStrictEqual(expected)
+    expect(element.text()).toContain(expected)
   })
 
   it('check if has subtitle', () => {

@@ -9,12 +9,9 @@ describe('src | components | verso | verso-controls | favorite | Favorite', () =
   beforeEach(() => {
     props = {
       handleFavorite: jest.fn(),
+      isFavorite: true,
       isFeatureDisabled: false,
-      recommendation: {
-        offer: {
-          favorites: [],
-        },
-      },
+      offerId: "AE"
     }
   })
 
@@ -28,9 +25,6 @@ describe('src | components | verso | verso-controls | favorite | Favorite', () =
 
   describe('render()', () => {
     it('should display icon to remove to favorite', () => {
-      // given
-      props.recommendation.offer.favorites = [{}]
-
       // when
       const wrapper = shallow(<Favorite {...props} />)
 
@@ -41,6 +35,9 @@ describe('src | components | verso | verso-controls | favorite | Favorite', () =
     })
 
     it('should display icon to add to favorites', () => {
+      // given
+      props.isFavorite = false
+
       // when
       const wrapper = shallow(<Favorite {...props} />)
 
@@ -48,22 +45,6 @@ describe('src | components | verso | verso-controls | favorite | Favorite', () =
       const icon = wrapper.find('i').props()
       expect(icon.title).toBe('Ajouter aux favoris')
       expect(icon.className).toBe('font-icon icon-ico-like')
-    })
-
-    it('should handle favorites when click on button', () => {
-      // given
-      const wrapper = shallow(<Favorite {...props} />)
-      const button = wrapper.find('button')
-
-      // when
-      button.simulate('click')
-
-      // then
-      expect(props.handleFavorite).toHaveBeenCalledWith(
-        false,
-        { offer: { favorites: [] } },
-        expect.anything(Function)
-      )
     })
   })
 })

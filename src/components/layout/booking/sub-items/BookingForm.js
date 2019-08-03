@@ -1,7 +1,7 @@
-import React, { Component, Fragment } from 'react'
 import moment from 'moment'
 import PropTypes from 'prop-types'
 import createDecorator from 'final-form-calculate'
+import React, { Component, Fragment } from 'react'
 import { Field, Form as FinalForm, FormSpy } from 'react-final-form'
 
 import {
@@ -9,8 +9,8 @@ import {
   parseHoursByStockId,
   onCalendarUpdates,
   onTimeUpdates,
-} from '../utils'
-import { DatePickerField, HiddenField, SelectField } from '../../forms/inputs'
+} from '../helpers'
+import { DatePickerField, HiddenField, SelectField } from '../../../forms/inputs'
 
 const spySubscriptions = {
   // complete list of subscriptions

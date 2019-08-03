@@ -1,32 +1,20 @@
-import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import VersoControl from './VersoControl'
+import VersoControls from './VersoControls'
+import selectBookingByMatch from '../../../../selectors/selectBookingByMatch'
 
-import { isRecommendationOfferFinished } from '../../../helpers'
-
-import { selectBookings } from '../../../selectors/selectBookings'
-import currentRecommendation from '../../../selectors/currentRecommendation/currentRecommendation'
-
-export const mapStateToProps = (state, { match }) => {
-  const { mediationId, offerId } = match.params
-  const recommendation = currentRecommendation(state, offerId, mediationId)
-  const stocks = get(recommendation, 'offer.stocks')
-  const stockIds = (stocks || []).map(o => o.id)
-  const bookings = selectBookings(state)
-  const booking = bookings.filter(b => !b.isCancelled).find(b => stockIds.includes(b.stockId))
-  const isFinished =
-    isRecommendationOfferFinished(recommendation, offerId) || get(booking, 'isUsed')
-
+const mapStateToProps = (state, ownProps) => {
+  const { match } = ownProps
+  const booking = selectBookingByMatch(state, match)
+  const showCancelView = booking && !booking.isCancelled
   return {
-    booking,
-    isFinished,
+    showCancelView
   }
 }
 
 export default compose(
   withRouter,
   connect(mapStateToProps)
-)(VersoControl)
+)(VersoControls)

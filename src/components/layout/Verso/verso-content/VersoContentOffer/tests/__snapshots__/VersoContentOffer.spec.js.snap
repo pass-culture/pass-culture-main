@@ -1,10 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | verso | verso-content | verso-info-offer | VersoContentOffer should match snapshot 1`] = `
+exports[`src | components | layout | Verso | verso-content | VersoContentOffer | VersoContentOffer should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <VersoContentOffer
     bookables={Array []}
+    booking={null}
+    distance="1"
     handleRequestMusicAndShowTypes={
       [MockFunction] {
         "calls": Array [
@@ -22,35 +24,29 @@ ShallowWrapper {
     maxShownDates={7}
     musicSubType={null}
     musicType={null}
-    onlineOfferUrl={null}
-    recommendation={
+    offer={
       Object {
-        "distance": 1,
-        "id": "AEAQ",
-        "offer": Object {
-          "description": "fake description",
-          "id": "X9",
-          "isEvent": true,
-          "isThing": false,
-          "product": Object {
-            "description": "fake description do not use",
-            "offerType": Object {
-              "appLabel": "Presse — Abonnements",
-            },
-          },
-          "productId": "QE",
-          "venue": Object {
-            "address": "72 rue Carnot",
-            "city": "ROMAINVILLE",
-            "id": "A9",
-            "latitude": 2.44072,
-            "longitude": 48.88381,
-            "name": "fake name",
-            "postalCode": "93230",
-            "publicName": "fake publicName",
+        "description": "fake description",
+        "id": "X9",
+        "isEvent": true,
+        "isThing": false,
+        "product": Object {
+          "description": "fake description do not use",
+          "offerType": Object {
+            "appLabel": "Presse — Abonnements",
           },
         },
-        "offerId": "X9",
+        "productId": "QE",
+        "venue": Object {
+          "address": "72 rue Carnot",
+          "city": "ROMAINVILLE",
+          "id": "A9",
+          "latitude": 2.44072,
+          "longitude": 48.88381,
+          "name": "fake name",
+          "postalCode": "93230",
+          "publicName": "fake publicName",
+        },
       }
     }
     showSubType={null}
@@ -71,7 +67,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
-        null,
+        undefined,
         <div>
           <h3>
             Quoi ?
@@ -158,7 +154,7 @@ ShallowWrapper {
     },
     "ref": null,
     "rendered": Array [
-      null,
+      undefined,
       Object {
         "instance": null,
         "key": undefined,
@@ -568,13 +564,13 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": Array [
-                        1,
+                        "1",
                         " ",
                       ],
                     },
                     "ref": null,
                     "rendered": Array [
-                      1,
+                      "1",
                       " ",
                     ],
                     "type": "span",
@@ -612,7 +608,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
-          null,
+          undefined,
           <div>
             <h3>
               Quoi ?
@@ -699,7 +695,7 @@ ShallowWrapper {
       },
       "ref": null,
       "rendered": Array [
-        null,
+        undefined,
         Object {
           "instance": null,
           "key": undefined,
@@ -1109,13 +1105,13 @@ ShallowWrapper {
                       "nodeType": "host",
                       "props": Object {
                         "children": Array [
-                          1,
+                          "1",
                           " ",
                         ],
                       },
                       "ref": null,
                       "rendered": Array [
-                        1,
+                        "1",
                         " ",
                       ],
                       "type": "span",

@@ -6,7 +6,9 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <Recto
     areDetailsVisible={true}
     extraClassName={null}
-    recommendation={null}
+    frontText={null}
+    thumbUrl={null}
+    withMediation={null}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -23,17 +25,15 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
-        undefined,
-        undefined,
-        false,
+        null,
+        null,
       ],
       "className": "recto",
     },
     "ref": null,
     "rendered": Array [
-      undefined,
-      undefined,
-      false,
+      null,
+      null,
     ],
     "type": "div",
   },
@@ -44,17 +44,15 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
-          undefined,
-          undefined,
-          false,
+          null,
+          null,
         ],
         "className": "recto",
       },
       "ref": null,
       "rendered": Array [
-        undefined,
-        undefined,
-        false,
+        null,
+        null,
       ],
       "type": "div",
     },

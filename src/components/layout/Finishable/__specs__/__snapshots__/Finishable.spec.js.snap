@@ -1,0 +1,237 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | layout | Finishable should match the snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <Finishable
+    isFinished={true}
+  >
+    <div
+      className="content"
+    >
+      cette offre n’est pas terminée
+    </div>
+  </Finishable>,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <div
+          className="content"
+        >
+          cette offre n’est pas terminée
+        </div>,
+        <span
+          className="finish-ribon"
+        >
+          <span
+            className="finish-ribon-background"
+          />
+          <Icon
+            alt="Terminé"
+            className="finish-ribon-img"
+            src={null}
+            svg="badge-termine"
+          />
+        </span>,
+      ],
+      "className": "finishable",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "cette offre n’est pas terminée",
+          "className": "content",
+        },
+        "ref": null,
+        "rendered": "cette offre n’est pas terminée",
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <span
+              className="finish-ribon-background"
+            />,
+            <Icon
+              alt="Terminé"
+              className="finish-ribon-img"
+              src={null}
+              svg="badge-termine"
+            />,
+          ],
+          "className": "finish-ribon",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "className": "finish-ribon-background",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": "span",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "alt": "Terminé",
+              "className": "finish-ribon-img",
+              "src": null,
+              "svg": "badge-termine",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+        ],
+        "type": "span",
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <div
+            className="content"
+          >
+            cette offre n’est pas terminée
+          </div>,
+          <span
+            className="finish-ribon"
+          >
+            <span
+              className="finish-ribon-background"
+            />
+            <Icon
+              alt="Terminé"
+              className="finish-ribon-img"
+              src={null}
+              svg="badge-termine"
+            />
+          </span>,
+        ],
+        "className": "finishable",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "cette offre n’est pas terminée",
+            "className": "content",
+          },
+          "ref": null,
+          "rendered": "cette offre n’est pas terminée",
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <span
+                className="finish-ribon-background"
+              />,
+              <Icon
+                alt="Terminé"
+                className="finish-ribon-img"
+                src={null}
+                svg="badge-termine"
+              />,
+            ],
+            "className": "finish-ribon",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "className": "finish-ribon-background",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": "span",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "alt": "Terminé",
+                "className": "finish-ribon-img",
+                "src": null,
+                "svg": "badge-termine",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+          ],
+          "type": "span",
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+}
+`;

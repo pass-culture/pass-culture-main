@@ -1,12 +1,7 @@
-import configureStore from 'redux-mock-store'
-import { Provider } from 'react-redux'
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import { SharePopin } from '../SharePopin'
-
-const middlewares = []
-const mockStore = configureStore(middlewares)
+import SharePopin from '../SharePopin'
 
 const dispatchMock = jest.fn()
 
@@ -14,23 +9,53 @@ describe('src | components | share | SharePopin', () => {
   describe('snapshot', () => {
     it('should match snapshot', () => {
       // given
-      const initialState = {}
-      const store = mockStore(initialState)
       const props = {
         dispatch: dispatchMock,
-        options: true,
+        options: {
+          text: 'Fake Test',
+          title: 'Fake Title',
+          url: 'fake@url.com',
+        },
         visible: true,
       }
+
       // when
-      const wrapper = shallow(
-        <Provider store={store}>
-          <SharePopin {...props} />
-        </Provider>
-      )
+      const wrapper = shallow(<SharePopin {...props} />)
 
       // then
       expect(wrapper).toBeDefined()
       expect(wrapper).toMatchSnapshot()
+    })
+  })
+
+  describe('functions', () => {
+    describe('closeHandler', () => {
+      describe('when options are true', () => {
+        it('should call dispatch with good action parameters', () => {
+          // given
+          const props = {
+            dispatch: dispatchMock,
+            email: 'fake@email.com',
+            options: {
+              text: 'Fake Test',
+              title: 'Fake Title',
+              url: 'fake@url.com',
+            },
+            visible: true,
+          }
+
+          // when
+          const wrapper = shallow(<SharePopin {...props} />).dive()
+          wrapper.find('button').simulate('click')
+          const expected = {
+            options: false,
+            type: 'TOGGLE_SHARE_POPIN',
+          }
+
+          // then
+          expect(dispatchMock).toHaveBeenCalledWith(expected)
+        })
+      })
     })
   })
 })

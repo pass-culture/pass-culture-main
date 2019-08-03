@@ -2,57 +2,53 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import VersoContentOffer from '../VersoContentOffer'
-import Icon from '../../../../layout/Icon'
-import { navigationLink } from '../../../../../utils/geolocation'
+import Icon from '../../../../Icon'
+import { navigationLink } from '../../../../../../utils/geolocation'
 
-jest.mock('../../../../../utils/geolocation', () => ({
+jest.mock('../../../../../../utils/geolocation', () => ({
   navigationLink: jest.fn(),
 }))
-describe('src | components | verso | verso-content | verso-info-offer | VersoContentOffer', () => {
-  let recommendation
+describe('src | components | layout | Verso | verso-content | VersoContentOffer | VersoContentOffer', () => {
+  let offer
 
   beforeEach(() => {
-    recommendation = {
-      distance: 1,
-      id: 'AEAQ',
-      offer: {
-        description: 'fake description',
-        id: 'X9',
-        isEvent: false,
-        isThing: true,
-        product: {
-          description: 'fake description do not use',
-          offerType: {
-            appLabel: 'Presse — Abonnements',
-          },
-        },
-        productId: 'QE',
-        venue: {
-          address: '72 rue Carnot',
-          city: 'ROMAINVILLE',
-          id: 'A9',
-          latitude: 2.44072,
-          longitude: 48.88381,
-          name: 'fake name',
-          postalCode: '93230',
-          publicName: 'fake publicName',
+    offer = {
+      description: 'fake description',
+      id: 'X9',
+      isEvent: false,
+      isThing: true,
+      product: {
+        description: 'fake description do not use',
+        offerType: {
+          appLabel: 'Presse — Abonnements',
         },
       },
-      offerId: 'X9',
+      productId: 'QE',
+      venue: {
+        address: '72 rue Carnot',
+        city: 'ROMAINVILLE',
+        id: 'A9',
+        latitude: 2.44072,
+        longitude: 48.88381,
+        name: 'fake name',
+        postalCode: '93230',
+        publicName: 'fake publicName',
+      },
     }
   })
 
   it('should match snapshot', () => {
     // given
-    recommendation.offer.isThing = false
-    recommendation.offer.isEvent = true
+    offer.isThing = false
+    offer.isEvent = true
 
     const props = {
       bookables: [],
+      distance: "1",
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: false,
       maxShownDates: 7,
-      recommendation,
+      offer
     }
 
     // when
@@ -67,10 +63,11 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
     // given
     const props = {
       bookables: [],
+      distance: "1",
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: false,
       maxShownDates: 7,
-      recommendation,
+      offer
     }
 
     // when
@@ -84,10 +81,11 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
     // given
     const props = {
       bookables: [],
+      distance: "1",
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: false,
       maxShownDates: 7,
-      recommendation,
+      offer
     }
 
     // when
@@ -99,15 +97,16 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
 
   it('should render event offer infos when offer is event, not finished and booking is available', () => {
     // given
-    recommendation.offer.isEvent = true
-    recommendation.offer.isThing = false
+    offer.isEvent = true
+    offer.isThing = false
 
     const props = {
       bookables: [{ id: 1 }, { id: 2 }, { id: 3 }],
+      distance: "1",
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: false,
       maxShownDates: 1,
-      recommendation,
+      offer
     }
 
     // when
@@ -125,10 +124,11 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
         { bookinglimitDatetime: '2019-04-01', id: 1 },
         { bookinglimitDatetime: '2019-04-01', id: 2 },
       ],
+      distance: "1",
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: false,
       maxShownDates: 1,
-      recommendation,
+      offer
     }
 
     // when
@@ -143,10 +143,11 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
     // given
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
+      distance: "1",
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: true,
       maxShownDates: 1,
-      recommendation,
+      offer
     }
 
     // when
@@ -161,10 +162,11 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
     // given
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
+      distance: "1",
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: true,
       maxShownDates: 1,
-      recommendation,
+      offer
     }
 
     // when
@@ -180,13 +182,14 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
 
   it('should render informations of the venue and venue name when venue public name is not given', () => {
     // given
-    recommendation.offer.venue.publicName = null
+    offer.venue.publicName = null
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
+      distance: "1",
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: true,
       maxShownDates: 1,
-      recommendation,
+      offer
     }
 
     // when
@@ -205,10 +208,11 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
     const nbsp = '\u00a0'
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
+      distance: "1",
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: true,
       maxShownDates: 1,
-      recommendation,
+      offer
     }
     navigationLink.mockReturnValue('this is a fake url')
 

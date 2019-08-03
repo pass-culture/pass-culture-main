@@ -1,0 +1,323 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | verso | Verso should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <Verso
+    areDetailsVisible={true}
+    backgroundColor="#ACE539"
+    contentInlineStyle={
+      Object {
+        "backgroundColor": "#ACE539",
+        "backgroundImage": "any/image",
+      }
+    }
+    extraClassName="extra-classname"
+    isTuto={false}
+    mediationId="AAA"
+    offerName="Offer title"
+    offerVenueNameOrPublicName="Offer subtitle"
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <div
+          className="verso-wrapper is-black-text scroll-y flex-rows is-relative text-left"
+        >
+          <withRouter(withSizes(VersoHeader))
+            backgroundColor="#ACE539"
+            subtitle="Offer subtitle"
+            title="Offer title"
+          />
+          <withRouter(Connect(VersoControls)) />
+          <div
+            className="verso-content"
+            style={
+              Object {
+                "backgroundColor": "#ACE539",
+                "backgroundImage": "any/image",
+              }
+            }
+          >
+            <withRouter(Connect(VersoContentOffer)) />
+          </div>
+        </div>,
+        <withRouter(AbsoluteFooter)
+          areDetailsVisible={true}
+          borderTop={true}
+          colored={true}
+          id="verso-footer"
+        />,
+      ],
+      "className": "verso is-overlay extra-classname flipped",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <withRouter(withSizes(VersoHeader))
+              backgroundColor="#ACE539"
+              subtitle="Offer subtitle"
+              title="Offer title"
+            />,
+            <withRouter(Connect(VersoControls)) />,
+            <div
+              className="verso-content"
+              style={
+                Object {
+                  "backgroundColor": "#ACE539",
+                  "backgroundImage": "any/image",
+                }
+              }
+            >
+              <withRouter(Connect(VersoContentOffer)) />
+            </div>,
+          ],
+          "className": "verso-wrapper is-black-text scroll-y flex-rows is-relative text-left",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "backgroundColor": "#ACE539",
+              "subtitle": "Offer subtitle",
+              "title": "Offer title",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {},
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <withRouter(Connect(VersoContentOffer)) />,
+              "className": "verso-content",
+              "style": Object {
+                "backgroundColor": "#ACE539",
+                "backgroundImage": "any/image",
+              },
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {},
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "type": "div",
+          },
+        ],
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "areDetailsVisible": true,
+          "borderTop": true,
+          "colored": true,
+          "id": "verso-footer",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <div
+            className="verso-wrapper is-black-text scroll-y flex-rows is-relative text-left"
+          >
+            <withRouter(withSizes(VersoHeader))
+              backgroundColor="#ACE539"
+              subtitle="Offer subtitle"
+              title="Offer title"
+            />
+            <withRouter(Connect(VersoControls)) />
+            <div
+              className="verso-content"
+              style={
+                Object {
+                  "backgroundColor": "#ACE539",
+                  "backgroundImage": "any/image",
+                }
+              }
+            >
+              <withRouter(Connect(VersoContentOffer)) />
+            </div>
+          </div>,
+          <withRouter(AbsoluteFooter)
+            areDetailsVisible={true}
+            borderTop={true}
+            colored={true}
+            id="verso-footer"
+          />,
+        ],
+        "className": "verso is-overlay extra-classname flipped",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <withRouter(withSizes(VersoHeader))
+                backgroundColor="#ACE539"
+                subtitle="Offer subtitle"
+                title="Offer title"
+              />,
+              <withRouter(Connect(VersoControls)) />,
+              <div
+                className="verso-content"
+                style={
+                  Object {
+                    "backgroundColor": "#ACE539",
+                    "backgroundImage": "any/image",
+                  }
+                }
+              >
+                <withRouter(Connect(VersoContentOffer)) />
+              </div>,
+            ],
+            "className": "verso-wrapper is-black-text scroll-y flex-rows is-relative text-left",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "backgroundColor": "#ACE539",
+                "subtitle": "Offer subtitle",
+                "title": "Offer title",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {},
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <withRouter(Connect(VersoContentOffer)) />,
+                "className": "verso-content",
+                "style": Object {
+                  "backgroundColor": "#ACE539",
+                  "backgroundImage": "any/image",
+                },
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {},
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              "type": "div",
+            },
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "areDetailsVisible": true,
+            "borderTop": true,
+            "colored": true,
+            "id": "verso-footer",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+}
+`;

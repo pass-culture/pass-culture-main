@@ -8,12 +8,9 @@ ShallowWrapper {
       [MockFunction] {
         "calls": Array [
           Array [
-            false,
-            Object {
-              "offer": Object {
-                "favorites": Array [],
-              },
-            },
+            "AE",
+            null,
+            true,
             [Function],
           ],
         ],
@@ -25,14 +22,10 @@ ShallowWrapper {
         ],
       }
     }
+    isFavorite={true}
     isFeatureDisabled={false}
-    recommendation={
-      Object {
-        "offer": Object {
-          "favorites": Array [],
-        },
-      }
-    }
+    mediationId={null}
+    offerId="AE"
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -50,8 +43,8 @@ ShallowWrapper {
     "props": Object {
       "children": <i
         aria-hidden="true"
-        className="font-icon icon-ico-like"
-        title="Ajouter aux favoris"
+        className="font-icon icon-ico-like-on"
+        title="Retirer des favoris"
       />,
       "className": "fav-button",
       "disabled": false,
@@ -65,8 +58,8 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "aria-hidden": "true",
-        "className": "font-icon icon-ico-like",
-        "title": "Ajouter aux favoris",
+        "className": "font-icon icon-ico-like-on",
+        "title": "Retirer des favoris",
       },
       "ref": null,
       "rendered": null,
@@ -82,8 +75,8 @@ ShallowWrapper {
       "props": Object {
         "children": <i
           aria-hidden="true"
-          className="font-icon icon-ico-like"
-          title="Ajouter aux favoris"
+          className="font-icon icon-ico-like-on"
+          title="Retirer des favoris"
         />,
         "className": "fav-button",
         "disabled": false,
@@ -97,8 +90,8 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "aria-hidden": "true",
-          "className": "font-icon icon-ico-like",
-          "title": "Ajouter aux favoris",
+          "className": "font-icon icon-ico-like-on",
+          "title": "Retirer des favoris",
         },
         "ref": null,
         "rendered": null,

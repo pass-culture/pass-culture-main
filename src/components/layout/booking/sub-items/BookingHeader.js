@@ -1,11 +1,9 @@
-import React from 'react'
-import get from 'lodash.get'
 import PropTypes from 'prop-types'
+import React from 'react'
 
-const BookingHeader = ({ recommendation }) => {
-  const { offer } = recommendation || {}
-  const title = get(offer, 'name')
-  const subtitle = get(offer, 'venue.name')
+const BookingHeader = ({ offer }) => {
+  const { name: title, venue } = offer || {}
+  const { name: subtitle } = venue || {}
   return (
     <header className="flex-0">
       <h1 className="title">
@@ -19,11 +17,16 @@ const BookingHeader = ({ recommendation }) => {
 }
 
 BookingHeader.defaultProps = {
-  recommendation: null,
+  offer: null,
 }
 
 BookingHeader.propTypes = {
-  recommendation: PropTypes.shape(),
+  offer: PropTypes.shape({
+    name: PropTypes.string,
+    venue: PropTypes.shape({
+      name: PropTypes.string
+    })
+  }),
 }
 
 export default BookingHeader

@@ -10,14 +10,19 @@ const showFailModal = () => {
   toast('La gestion des favoris ne fonctionne pas pour le moment, veuillez ré-essayer plus tard.')
 }
 
-const Favorite = ({ handleFavorite, isFeatureDisabled, recommendation }) => {
-  const isFavorite = recommendation.offer && recommendation.offer.favorites.length > 0
-
+const Favorite = props => {
+  const {
+    handleFavorite,
+    isFavorite,
+    isFeatureDisabled,
+    mediationId,
+    offerId,
+  } = props
   return (
     <button
       className="fav-button"
       disabled={isFeatureDisabled}
-      onClick={handleFavorite(isFavorite, recommendation, showFailModal)}
+      onClick={handleFavorite(offerId, mediationId, isFavorite, showFailModal)}
       type="button"
     >
       <i
@@ -29,10 +34,16 @@ const Favorite = ({ handleFavorite, isFeatureDisabled, recommendation }) => {
   )
 }
 
+Favorite.defaultProps = {
+  mediationId: null
+}
+
 Favorite.propTypes = {
   handleFavorite: PropTypes.func.isRequired,
+  isFavorite: PropTypes.bool.isRequired,
   isFeatureDisabled: PropTypes.bool.isRequired,
-  recommendation: PropTypes.shape().isRequired,
+  mediationId: PropTypes.string,
+  offerId: PropTypes.string.isRequired
 }
 
 export default Favorite

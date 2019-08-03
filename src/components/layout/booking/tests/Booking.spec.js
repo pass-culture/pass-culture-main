@@ -4,14 +4,16 @@ import { mount, shallow } from 'enzyme'
 import BookingCancel from '../sub-items/BookingCancel'
 import Booking from '../Booking'
 
-describe('src | components | booking', () => {
+describe('src | components | layout |Booking', () => {
   let props
   let dispatch
   let push
+  let replace
 
   beforeEach(() => {
     dispatch = jest.fn()
     push = jest.fn()
+    replace = jest.fn()
     props = {
       bookables: [],
       booking: {
@@ -22,21 +24,25 @@ describe('src | components | booking', () => {
       dispatch,
       history: {
         push,
+        replace,
       },
       isCancelled: false,
       isEvent: false,
       match: {
         params: {
+          bookings: 'reservations',
           offerId: 'AAA',
+        },
+        url: '/foo/reservations/AE',
+      },
+      offer: {
+        name: 'super offer',
+        venue: {
+          name: 'super venue',
         },
       },
       recommendation: {
-        offer: {
-          name: 'super offer',
-          venue: {
-            name: 'super venue',
-          },
-        },
+        id: "AE"
       },
     }
   })
@@ -51,9 +57,9 @@ describe('src | components | booking', () => {
   })
 
   describe('cancel view', () => {
-    it('should render Booking cancel view when a booking is cancelled', () => {
+    it('should render Booking cancel view when confirmation on match params', () => {
       // given
-      props.isCancelled = true
+      props.match.params.confirmation = 'confirmation'
 
       // when
       const wrapper = shallow(<Booking {...props} />)
@@ -64,9 +70,9 @@ describe('src | components | booking', () => {
     })
 
     describe('when clicking on OK button', () => {
-      it('should dispatch an action to show card view', () => {
+      it('should replace history with url without reservations', () => {
         // given
-        props.isCancelled = true
+        props.match.params.confirmation = 'confirmation'
         const wrapper = mount(<Booking {...props} />)
         const okButton = wrapper.find('#booking-cancellation-confirmation-button')
 
@@ -74,46 +80,13 @@ describe('src | components | booking', () => {
         okButton.simulate('click')
 
         // then
-        expect(dispatch.mock.calls[1][0]).toStrictEqual({ type: 'SHOW_DETAILS_VIEW' })
-      })
-
-      it('should dispatch an action to update current user information', () => {
-        // given
-        props.isCancelled = true
-        const wrapper = mount(<Booking {...props} />)
-        const okButton = wrapper.find('#booking-cancellation-confirmation-button')
-
-        // when
-        okButton.simulate('click')
-
-        // then
-        expect(dispatch.mock.calls[0][0]).toStrictEqual({
-          config: {
-            apiPath: '/users/current',
-            method: 'PATCH',
-            resolve: expect.any(Function),
-          },
-          type: 'REQUEST_DATA_PATCH_/USERS/CURRENT',
-        })
-      })
-
-      it('should redirect to offer details', () => {
-        // given
-        props.isCancelled = true
-        const wrapper = mount(<Booking {...props} />)
-        const okButton = wrapper.find('#booking-cancellation-confirmation-button')
-
-        // when
-        okButton.simulate('click')
-
-        // then
-        expect(push).toHaveBeenCalledWith('/decouverte/AAA')
+        expect(replace.mock.calls[0][0]).toStrictEqual('/foo')
       })
     })
 
     it('should not add className items-center to the div following the BookingHeader', () => {
       // given
-      props.isCancelled = true
+      props.match.params.confirmation = 'confirmation'
 
       // when
       const wrapper = mount(<Booking {...props} />)
@@ -125,7 +98,7 @@ describe('src | components | booking', () => {
 
     it('should not add classNames for padding to the div containing Booking sub-items components', () => {
       // given
-      props.isCancelled = true
+      props.match.params.confirmation = 'confirmation'
 
       // when
       const wrapper = mount(<Booking {...props} />)
@@ -138,9 +111,6 @@ describe('src | components | booking', () => {
 
   describe('when no cancel view', () => {
     it('should add className items-center to the div following the BookingHeader', () => {
-      // given
-      props.isCancelled = false
-
       // when
       const wrapper = mount(<Booking {...props} />)
 
@@ -150,9 +120,6 @@ describe('src | components | booking', () => {
     })
 
     it('should add classNames for padding to the div containing Booking sub-items components', () => {
-      // given
-      props.isCancelled = false
-
       // when
       const wrapper = mount(<Booking {...props} />)
 

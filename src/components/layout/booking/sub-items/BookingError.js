@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
-import { flattenErrors } from '../utils'
-import Icon from '../../layout/Icon'
+import { flattenErrors } from '../helpers'
+import Icon from '../../Icon'
 
 class BookingError extends Component {
   // NOTE: hack pour contourner le no-array-index-key

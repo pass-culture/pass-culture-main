@@ -1,5 +1,5 @@
 import { mapDispatchToProps, mapStateToProps } from '../MenuContainer'
-import { configureStore } from '../../../utils/store'
+import { configureStore } from '../../../../utils/store'
 
 describe('src | components | menu | MenuContainer', () => {
   describe('mapStateToProps()', () => {

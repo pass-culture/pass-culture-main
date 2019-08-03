@@ -1,26 +1,29 @@
-import get from 'lodash.get'
+import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { selectBookables } from '../../selectors/selectBookables'
-import { selectBookingById } from '../../selectors/selectBookings'
-import { currentRecommendationSelector } from '../../selectors'
+import { compose } from 'redux'
+
 import Booking from './Booking'
+import selectBookables from '../../../selectors/selectBookables'
+import selectBookingByMatch from '../../../selectors/selectBookingByMatch'
+import selectOfferByMatch from '../../../selectors/selectOfferByMatch'
+import selectRecommendationByMatch from '../../../selectors/selectRecommendationByMatch'
 
-export const mapStateToProps = (state, { match }) => {
-  const { offerId, mediationId, view, bookingId } = match.params
-  const recommendation = currentRecommendationSelector(state, offerId, mediationId)
+export const mapStateToProps = (state, ownProps) => {
+  const { match } = ownProps
 
-  const isEvent = get(recommendation, 'offer.isEvent')
-  const bookables = selectBookables(state, recommendation, match)
-  const booking = selectBookingById(state, bookingId)
-  const isCancelled = view === 'cancelled'
+  const offer = selectOfferByMatch(state, match)
+  const bookables = selectBookables(state, offer)
+  const booking = selectBookingByMatch(state, match)
+  const recommendation = selectRecommendationByMatch(state, match)
 
   return {
     bookables,
     booking,
-    isCancelled,
-    isEvent,
-    recommendation,
+    recommendation
   }
 }
 
-export default connect(mapStateToProps)(Booking)
+export default compose(
+  withRouter,
+  connect(mapStateToProps)
+)(Booking)

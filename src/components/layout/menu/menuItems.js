@@ -1,5 +1,5 @@
 import getMenuItems from './getMenuItems'
-import routes from '../router/routes'
+import routes from '../../router/routes'
 
 const menuItems = getMenuItems(routes)
 

@@ -1,42 +1,30 @@
-import get from 'lodash.get'
-import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
+import { compose } from 'redux'
 
 import Recto from './Recto'
-import currentRecommendationSelector from '../../selectors/currentRecommendation/currentRecommendation'
-import nextRecommendationSelector from '../../selectors/nextRecommendation'
-import previousRecommendationSelector from '../../selectors/previousRecommendation'
+import selectMediationById from '../../../selectors/selectMediationById'
+import selectMediationByMatch from '../../../selectors/selectMediationByMatch'
+import selectThumbUrlByMatch from '../../../selectors/selectThumbUrlByMatch'
 
-export const getSelectorByCardPosition = position => {
-  switch (position) {
-    case 'current':
-      return currentRecommendationSelector
-    case 'previous':
-      return previousRecommendationSelector
-    case 'next':
-      return nextRecommendationSelector
-    default:
-      return () => {}
-  }
-}
+const mapStateToProps = (state, ownProps) => {
+  const { match, recommendation } = ownProps
 
-const getRecommendationBySelectorUsingRouterParams = (state, ownProps) => {
-  const position = get(ownProps, 'position')
-  const { mediationId, offerId } = ownProps.match.params
-  const recoSelector = getSelectorByCardPosition(position)
-  return recoSelector(state, offerId, mediationId)
-}
+  let mediation = recommendation
+    ? selectMediationById(state, recommendation.mediationId)
+    : selectMediationByMatch(state, match) || {}
 
-export const mapStateToProps = (state, ownProps) => {
-  const areDetailsVisible = get(state, 'card.areDetailsVisible') || false
+  const { frontText } = mediation || {}
+  const withMediation = typeof mediation !== "undefined"
 
-  const recommendation =
-    get(ownProps, 'recommendation') || getRecommendationBySelectorUsingRouterParams(state, ownProps)
+  const thumbUrl = recommendation
+    ? recommendation.thumbUrl
+    : selectThumbUrlByMatch(state, match)
 
   return {
-    areDetailsVisible,
-    recommendation,
+    frontText,
+    thumbUrl,
+    withMediation
   }
 }
 

@@ -5,8 +5,26 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <VersoHeader
     backgroundColor="#ACE539"
+    height={0}
+    history={
+      Object {
+        "push": [MockFunction],
+      }
+    }
+    location={
+      Object {
+        "pathname": "",
+        "search": "",
+      }
+    }
+    match={
+      Object {
+        "params": Object {},
+      }
+    }
     subtitle="Offer subtitle"
     title="Offer title"
+    verticalSlideRatio={0.2}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -33,6 +51,49 @@ ShallowWrapper {
           }
         >
           Offer title
+          <Draggable
+            allowAnyClick={false}
+            axis="y"
+            bounds={
+              Object {
+                "bottom": 0,
+                "left": 0,
+                "right": 0,
+                "top": 0,
+              }
+            }
+            cancel={null}
+            defaultClassName="react-draggable"
+            defaultClassNameDragged="react-draggable-dragged"
+            defaultClassNameDragging="react-draggable-dragging"
+            defaultPosition={
+              Object {
+                "x": 0,
+                "y": 0,
+              }
+            }
+            disabled={false}
+            enableUserSelectHack={true}
+            grid={null}
+            handle={null}
+            offsetParent={null}
+            onDrag={[Function]}
+            onMouseDown={[Function]}
+            onStart={[Function]}
+            onStop={[Function]}
+            position={null}
+            speed={
+              Object {
+                "x": 1,
+                "y": 1,
+              }
+            }
+            transform={null}
+          >
+            <div
+              className="drag"
+            />
+          </Draggable>
         </h1>,
         <h2
           className="fs22 is-normal is-hyphens"
@@ -53,7 +114,52 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "Offer title",
+          "children": Array [
+            "Offer title",
+            <Draggable
+              allowAnyClick={false}
+              axis="y"
+              bounds={
+                Object {
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "top": 0,
+                }
+              }
+              cancel={null}
+              defaultClassName="react-draggable"
+              defaultClassNameDragged="react-draggable-dragged"
+              defaultClassNameDragging="react-draggable-dragging"
+              defaultPosition={
+                Object {
+                  "x": 0,
+                  "y": 0,
+                }
+              }
+              disabled={false}
+              enableUserSelectHack={true}
+              grid={null}
+              handle={null}
+              offsetParent={null}
+              onDrag={[Function]}
+              onMouseDown={[Function]}
+              onStart={[Function]}
+              onStop={[Function]}
+              position={null}
+              speed={
+                Object {
+                  "x": 1,
+                  "y": 1,
+                }
+              }
+              transform={null}
+            >
+              <div
+                className="drag"
+              />
+            </Draggable>,
+          ],
           "className": "fs40 is-medium is-hyphens",
           "id": "verso-offer-name",
           "style": Object {
@@ -61,7 +167,63 @@ ShallowWrapper {
           },
         },
         "ref": null,
-        "rendered": "Offer title",
+        "rendered": Array [
+          "Offer title",
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "allowAnyClick": false,
+              "axis": "y",
+              "bounds": Object {
+                "bottom": 0,
+                "left": 0,
+                "right": 0,
+                "top": 0,
+              },
+              "cancel": null,
+              "children": <div
+                className="drag"
+              />,
+              "defaultClassName": "react-draggable",
+              "defaultClassNameDragged": "react-draggable-dragged",
+              "defaultClassNameDragging": "react-draggable-dragging",
+              "defaultPosition": Object {
+                "x": 0,
+                "y": 0,
+              },
+              "disabled": false,
+              "enableUserSelectHack": true,
+              "grid": null,
+              "handle": null,
+              "offsetParent": null,
+              "onDrag": [Function],
+              "onMouseDown": [Function],
+              "onStart": [Function],
+              "onStop": [Function],
+              "position": null,
+              "speed": Object {
+                "x": 1,
+                "y": 1,
+              },
+              "transform": null,
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "className": "drag",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": "div",
+            },
+            "type": [Function],
+          },
+        ],
         "type": "h1",
       },
       Object {
@@ -97,6 +259,49 @@ ShallowWrapper {
             }
           >
             Offer title
+            <Draggable
+              allowAnyClick={false}
+              axis="y"
+              bounds={
+                Object {
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "top": 0,
+                }
+              }
+              cancel={null}
+              defaultClassName="react-draggable"
+              defaultClassNameDragged="react-draggable-dragged"
+              defaultClassNameDragging="react-draggable-dragging"
+              defaultPosition={
+                Object {
+                  "x": 0,
+                  "y": 0,
+                }
+              }
+              disabled={false}
+              enableUserSelectHack={true}
+              grid={null}
+              handle={null}
+              offsetParent={null}
+              onDrag={[Function]}
+              onMouseDown={[Function]}
+              onStart={[Function]}
+              onStop={[Function]}
+              position={null}
+              speed={
+                Object {
+                  "x": 1,
+                  "y": 1,
+                }
+              }
+              transform={null}
+            >
+              <div
+                className="drag"
+              />
+            </Draggable>
           </h1>,
           <h2
             className="fs22 is-normal is-hyphens"
@@ -117,7 +322,52 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Offer title",
+            "children": Array [
+              "Offer title",
+              <Draggable
+                allowAnyClick={false}
+                axis="y"
+                bounds={
+                  Object {
+                    "bottom": 0,
+                    "left": 0,
+                    "right": 0,
+                    "top": 0,
+                  }
+                }
+                cancel={null}
+                defaultClassName="react-draggable"
+                defaultClassNameDragged="react-draggable-dragged"
+                defaultClassNameDragging="react-draggable-dragging"
+                defaultPosition={
+                  Object {
+                    "x": 0,
+                    "y": 0,
+                  }
+                }
+                disabled={false}
+                enableUserSelectHack={true}
+                grid={null}
+                handle={null}
+                offsetParent={null}
+                onDrag={[Function]}
+                onMouseDown={[Function]}
+                onStart={[Function]}
+                onStop={[Function]}
+                position={null}
+                speed={
+                  Object {
+                    "x": 1,
+                    "y": 1,
+                  }
+                }
+                transform={null}
+              >
+                <div
+                  className="drag"
+                />
+              </Draggable>,
+            ],
             "className": "fs40 is-medium is-hyphens",
             "id": "verso-offer-name",
             "style": Object {
@@ -125,7 +375,63 @@ ShallowWrapper {
             },
           },
           "ref": null,
-          "rendered": "Offer title",
+          "rendered": Array [
+            "Offer title",
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "allowAnyClick": false,
+                "axis": "y",
+                "bounds": Object {
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "top": 0,
+                },
+                "cancel": null,
+                "children": <div
+                  className="drag"
+                />,
+                "defaultClassName": "react-draggable",
+                "defaultClassNameDragged": "react-draggable-dragged",
+                "defaultClassNameDragging": "react-draggable-dragging",
+                "defaultPosition": Object {
+                  "x": 0,
+                  "y": 0,
+                },
+                "disabled": false,
+                "enableUserSelectHack": true,
+                "grid": null,
+                "handle": null,
+                "offsetParent": null,
+                "onDrag": [Function],
+                "onMouseDown": [Function],
+                "onStart": [Function],
+                "onStop": [Function],
+                "position": null,
+                "speed": Object {
+                  "x": 1,
+                  "y": 1,
+                },
+                "transform": null,
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "className": "drag",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": "div",
+              },
+              "type": [Function],
+            },
+          ],
           "type": "h1",
         },
         Object {
@@ -171,5 +477,6 @@ ShallowWrapper {
     Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
 }
 `;

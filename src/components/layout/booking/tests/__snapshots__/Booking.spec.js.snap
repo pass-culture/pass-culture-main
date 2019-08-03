@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | booking should match snapshot 1`] = `
+exports[`src | components | layout |Booking should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Booking
@@ -17,6 +17,7 @@ ShallowWrapper {
     history={
       Object {
         "push": [MockFunction],
+        "replace": [MockFunction],
       }
     }
     isCancelled={false}
@@ -24,18 +25,23 @@ ShallowWrapper {
     match={
       Object {
         "params": Object {
+          "bookings": "reservations",
           "offerId": "AAA",
+        },
+        "url": "/foo/reservations/AE",
+      }
+    }
+    offer={
+      Object {
+        "name": "super offer",
+        "venue": Object {
+          "name": "super venue",
         },
       }
     }
     recommendation={
       Object {
-        "offer": Object {
-          "name": "super offer",
-          "venue": Object {
-            "name": "super venue",
-          },
-        },
+        "id": "AE",
       }
     }
   />,

@@ -5,10 +5,21 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookThisLink
     isFinished={false}
-    linkDestination="/path/to/page/"
-    priceValue={
+    location={
+      Object {
+        "search": "",
+      }
+    }
+    match={
+      Object {
+        "params": Object {},
+        "url": "/decouverte",
+      }
+    }
+    priceRange={
       Array [
-        0,
+        10,
+        30,
       ]
     }
   />,
@@ -33,7 +44,8 @@ ShallowWrapper {
           free="Gratuit"
           value={
             Array [
-              0,
+              10,
+              30,
             ]
           }
         />,
@@ -47,7 +59,7 @@ ShallowWrapper {
       "disabled": false,
       "id": "verso-booking-button",
       "replace": false,
-      "to": "/path/to/page/",
+      "to": "/decouverte/reservations",
     },
     "ref": null,
     "rendered": Array [
@@ -60,7 +72,8 @@ ShallowWrapper {
           "format": [Function],
           "free": "Gratuit",
           "value": Array [
-            0,
+            10,
+            30,
           ],
         },
         "ref": null,
@@ -95,7 +108,8 @@ ShallowWrapper {
             free="Gratuit"
             value={
               Array [
-                0,
+                10,
+                30,
               ]
             }
           />,
@@ -109,7 +123,7 @@ ShallowWrapper {
         "disabled": false,
         "id": "verso-booking-button",
         "replace": false,
-        "to": "/path/to/page/",
+        "to": "/decouverte/reservations",
       },
       "ref": null,
       "rendered": Array [
@@ -122,7 +136,8 @@ ShallowWrapper {
             "format": [Function],
             "free": "Gratuit",
             "value": Array [
-              0,
+              10,
+              30,
             ],
           },
           "ref": null,

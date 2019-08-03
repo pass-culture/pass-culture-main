@@ -4,7 +4,7 @@ import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
-import { getDisplayPrice } from '../../../helpers'
+import { getDisplayPrice } from '../../../../helpers'
 
 const BookingSuccess = ({ isEvent, data }) => {
   const token = get(data, 'token').toLowerCase()

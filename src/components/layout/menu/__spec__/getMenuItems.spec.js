@@ -1,10 +1,10 @@
 import getMenuItems from '../getMenuItems'
-import DiscoveryContainer from '../../pages/discovery/DiscoveryContainer'
-import MyFavoritesContainer from '../../pages/my-favorites/MyFavoritesContainer'
-import MyBookingsContainer from '../../pages/my-bookings/MyBookingsContainer'
-import ProfilePage from '../../pages/profile'
-import SearchContainer from '../../pages/search/SearchContainer'
-import routes from '../../router/routes'
+import DiscoveryContainer from '../../../pages/discovery/DiscoveryContainer'
+import MyFavoritesContainer from '../../../pages/my-favorites/MyFavoritesContainer'
+import MyBookingsContainer from '../../../pages/my-bookings/MyBookingsContainer'
+import ProfileContainer from '../../../pages/profile/ProfileContainer'
+import SearchContainer from '../../../pages/search/SearchContainer'
+import routes from '../../../router/routes'
 
 describe('getMenuItems', () => {
   it('should filter routes for menu from mock', () => {
@@ -58,7 +58,7 @@ describe('getMenuItems', () => {
         title: 'Mes favoris',
       },
       {
-        component: ProfilePage,
+        component: ProfileContainer,
         icon: 'user-w',
         path: '/profil',
         title: 'Mon compte',

@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { PureComponent } from 'react'
 
 import CopyToClipboardButton from '../CopyToClipboardButton'
-import MailToLink from '../../layout/MailToLink'
-import { openSharePopin, closeSharePopin } from '../../../reducers/share'
+import MailToLink from '../../MailToLink'
+import { openSharePopin, closeSharePopin } from '../../../../reducers/share'
 
-class ShareButton extends React.PureComponent {
+class ShareButton extends PureComponent {
   constructor(props) {
     super(props)
     this.state = { iscopied: false }

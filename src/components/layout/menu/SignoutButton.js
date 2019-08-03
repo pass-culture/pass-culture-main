@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Icon from '../layout/Icon'
+import Icon from '../Icon'
 
 const SignoutButton = ({ onSignoutClick, ...props }) => (
   <button

@@ -1,22 +1,22 @@
 import get from 'lodash.get'
 import PropTypes from 'prop-types'
-import React, { Fragment } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import { capitalize } from 'react-final-form-utils'
 
-import VersoActionsBar from '../VersoActionsBar'
-import { getDurationFromMinutes } from './utils'
-import Icon from '../../../layout/Icon'
-import { navigationLink } from '../../../../utils/geolocation'
+import getDurationFromMinutes from './getDurationFromMinutes'
+import VersoActionsBar from './VersoActionsBar'
+import Icon from '../../../Icon'
+import { navigationLink } from '../../../../../utils/geolocation'
 
-class VersoContentOffer extends React.PureComponent {
+class VersoContentOffer extends PureComponent {
   componentDidMount() {
     const { handleRequestMusicAndShowTypes } = this.props
     handleRequestMusicAndShowTypes()
   }
 
   renderOfferDetails() {
-    const { recommendation } = this.props
-    const description = get(recommendation, 'offer.description')
+    const { offer } = this.props
+    const { description } = offer || {}
 
     if (!description) return null
 
@@ -34,20 +34,13 @@ class VersoContentOffer extends React.PureComponent {
   }
 
   renderOfferWhat() {
-    const { musicSubType, musicType, recommendation, showSubType, showType } = this.props
-    const offer = get(recommendation, 'offer')
+    const { musicSubType, musicType, offer, showSubType, showType } = this.props
+    const { product } = offer || {}
+    const { durationMinutes, extraData, offerType } = product || {}
+    const { author, performer, speaker, stageDirector } = extraData || {}
+    const { appLabel } = offerType || {}
 
-    const product = get(offer, 'product')
-    const durationMinutes = get(product, 'durationMinutes')
     const duration = getDurationFromMinutes(durationMinutes)
-
-    const extraData = get(product, 'extraData')
-    const appLabel = get(product, 'offerType.appLabel')
-
-    const author = get(extraData, 'author')
-    const performer = get(extraData, 'performer')
-    const speaker = get(extraData, 'speaker')
-    const stageDirector = get(extraData, 'stageDirector')
     const type = get(musicType, 'label') || get(showType, 'label')
     const subType = get(musicSubType, 'label') || get(showSubType, 'label')
 
@@ -135,11 +128,10 @@ class VersoContentOffer extends React.PureComponent {
   }
 
   renderOfferWhen() {
-    const { isFinished } = this.props
-    const { recommendation } = this.props
-    const isOfferAThing = get(recommendation, 'offer.isThing')
+    const { isFinished, offer } = this.props
+    const { isThing } = offer || {}
 
-    const offerDateInfos = isOfferAThing
+    const offerDateInfos = isThing
       ? this.renderThingOfferDateInfos()
       : this.renderEventOfferDateInfos()
 
@@ -154,9 +146,8 @@ class VersoContentOffer extends React.PureComponent {
   }
 
   renderOfferWhere() {
-    const { recommendation } = this.props
-    const venue = get(recommendation, 'offer.venue')
-    const distance = get(recommendation, 'distance')
+    const { distance, offer } = this.props
+    const { venue } = offer || {}
     const { address, city, latitude, longitude, name, postalCode, publicName } = venue || {}
 
     return (
@@ -187,10 +178,11 @@ class VersoContentOffer extends React.PureComponent {
   }
 
   render() {
-    const { onlineOfferUrl } = this.props
+    const { booking } = this.props
+    const { completedUrl } = booking || {}
     return (
       <div className="verso-info">
-        {onlineOfferUrl && <VersoActionsBar url={onlineOfferUrl} />}
+        {completedUrl && <VersoActionsBar url={completedUrl} />}
         {this.renderOfferWhat()}
         {this.renderOfferDetails()}
         {this.renderOfferWhen()}
@@ -202,25 +194,28 @@ class VersoContentOffer extends React.PureComponent {
 
 VersoContentOffer.defaultProps = {
   bookables: null,
+  booking: null,
   isFinished: false,
   maxShownDates: 7,
   musicSubType: null,
   musicType: null,
-  onlineOfferUrl: null,
-  recommendation: null,
+  offer: null,
   showSubType: null,
   showType: null,
 }
 
 VersoContentOffer.propTypes = {
   bookables: PropTypes.arrayOf(PropTypes.shape()),
+  booking: PropTypes.shape(),
+  distance: PropTypes.string.isRequired,
   handleRequestMusicAndShowTypes: PropTypes.func.isRequired,
   isFinished: PropTypes.bool,
   maxShownDates: PropTypes.number,
   musicSubType: PropTypes.shape(),
   musicType: PropTypes.shape(),
-  onlineOfferUrl: PropTypes.string,
-  recommendation: PropTypes.shape(),
+  offer: PropTypes.shape({
+    product: PropTypes.shape()
+  }),
   showSubType: PropTypes.shape(),
   showType: PropTypes.shape(),
 }

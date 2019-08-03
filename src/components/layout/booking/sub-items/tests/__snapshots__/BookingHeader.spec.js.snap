@@ -4,6 +4,7 @@ exports[`src | components | booking | BookingHeader snapshot should match snapsh
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingHeader
+    offer={null}
     recommendation={
       Object {
         "offer": Object {
@@ -36,16 +37,12 @@ ShallowWrapper {
         <h1
           className="title"
         >
-          <span>
-            Titre de la recommendation
-          </span>
+          <span />
         </h1>,
         <h2
           className="subtitle"
         >
-          <span>
-            Titre de la venue 
-          </span>
+          <span />
         </h2>,
       ],
       "className": "flex-0",
@@ -57,9 +54,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": <span>
-            Titre de la recommendation
-          </span>,
+          "children": <span />,
           "className": "title",
         },
         "ref": null,
@@ -68,10 +63,10 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Titre de la recommendation",
+            "children": undefined,
           },
           "ref": null,
-          "rendered": "Titre de la recommendation",
+          "rendered": null,
           "type": "span",
         },
         "type": "h1",
@@ -81,9 +76,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": <span>
-            Titre de la venue 
-          </span>,
+          "children": <span />,
           "className": "subtitle",
         },
         "ref": null,
@@ -92,10 +85,10 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Titre de la venue ",
+            "children": undefined,
           },
           "ref": null,
-          "rendered": "Titre de la venue ",
+          "rendered": null,
           "type": "span",
         },
         "type": "h2",
@@ -113,16 +106,12 @@ ShallowWrapper {
           <h1
             className="title"
           >
-            <span>
-              Titre de la recommendation
-            </span>
+            <span />
           </h1>,
           <h2
             className="subtitle"
           >
-            <span>
-              Titre de la venue 
-            </span>
+            <span />
           </h2>,
         ],
         "className": "flex-0",
@@ -134,9 +123,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <span>
-              Titre de la recommendation
-            </span>,
+            "children": <span />,
             "className": "title",
           },
           "ref": null,
@@ -145,10 +132,10 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Titre de la recommendation",
+              "children": undefined,
             },
             "ref": null,
-            "rendered": "Titre de la recommendation",
+            "rendered": null,
             "type": "span",
           },
           "type": "h1",
@@ -158,9 +145,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": <span>
-              Titre de la venue 
-            </span>,
+            "children": <span />,
             "className": "subtitle",
           },
           "ref": null,
@@ -169,10 +154,10 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Titre de la venue ",
+              "children": undefined,
             },
             "ref": null,
-            "rendered": "Titre de la venue ",
+            "rendered": null,
             "type": "span",
           },
           "type": "h2",

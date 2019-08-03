@@ -1,7 +1,7 @@
 import { createBrowserHistory } from 'history'
 
 import { mapDispatchToProps } from '../SignoutButtonContainer'
-import { configureStore } from '../../../utils/store'
+import { configureStore } from '../../../../utils/store'
 
 jest.mock('redux-saga-data', () => ({
   ...jest.requireActual('redux-saga-data'),

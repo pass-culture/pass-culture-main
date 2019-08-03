@@ -1,160 +1,118 @@
-import currentRecommendationSelector from '../../../../../selectors/currentRecommendation/currentRecommendation'
-import { mergeDataWithStore, mapStateToProps, mapDispatchToProps } from '../FavoriteContainer'
+import { mapDispatchToProps, mapStateToProps } from '../FavoriteContainer'
 
-jest.mock('../../../../../selectors/currentRecommendation/currentRecommendation')
+import { favoriteNormalizer } from '../../../../../../utils/normalizers'
 
-describe('src | components | verso | verso-controls | favorite | FavoriteContainer', () => {
-  describe('mergeDataWithStore()', () => {
-    it('should merge data with the store when the offer is already in favorites', () => {
-      // given
-      const dispatch = jest.fn()
-      const isFavorite = true
-      const recommendation = {}
-      const state = { data: { features: [] } }
-      const action = {}
-
-      // when
-      mergeDataWithStore(dispatch, isFavorite, recommendation)(state, action)
-
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        config: {},
-        patch: {
-          recommendations: [
-            {
-              offer: {
-                favorites: [],
-              },
-            },
-          ],
-        },
-        type: 'MERGE_DATA',
-      })
-    })
-
-    it('should merge data with the store when the offer is not in favorites', () => {
-      // given
-      const dispatch = jest.fn()
-      const isFavorite = false
-      const recommendation = {}
-      const state = { data: { features: [] } }
-      const action = {
-        payload: {
-          datum: 'toto',
-        },
-      }
-
-      // when
-      mergeDataWithStore(dispatch, isFavorite, recommendation)(state, action)
-
-      // then
-      expect(dispatch).toHaveBeenCalledWith({
-        config: {},
-        patch: {
-          recommendations: [
-            {
-              offer: {
-                favorites: ['toto'],
-              },
-            },
-          ],
-        },
-        type: 'MERGE_DATA',
-      })
-    })
-  })
-
+describe('src | components | layout | Verso | VersoControls | Favorite | FavoriteContainer', () => {
   describe('mapStateToProps', () => {
     it('should return the right props', () => {
       // given
+      const mediationId = "AE"
+      const offerId = "BF"
+      const mediation = {
+        id: mediationId
+      }
+      const offer = {
+        id: offerId
+      }
+      const favorite = { id: "CG", offerId }
+      const state = { data: {
+        bookings: [],
+        favorites: [favorite],
+        features: [],
+        mediations: [mediation],
+        offers: [offer],
+        recommendations: []
+      } }
       const ownProps = {
         match: {
           params: {
-            mediationId: 'AHJQ',
-            offerId: 'A93Q',
-          },
-        },
+            mediationId,
+            offerId,
+          }
+        }
       }
-      const state = { data: { features: [] } }
-      currentRecommendationSelector.mockReturnValue({
-        offer: {
-          favorites: [],
-        },
-      })
 
       // when
       const props = mapStateToProps(state, ownProps)
 
       // then
       expect(props).toStrictEqual({
+        isFavorite: true,
         isFeatureDisabled: true,
-        recommendation: {
-          offer: {
-            favorites: [],
-          },
-        },
+        mediationId,
+        offerId
       })
     })
   })
 
-  describe('mapDispatchToProps', () => {
+  describe('mapDispatchToProps()', () => {
     it('should add to favorites', () => {
       // given
       const dispatch = jest.fn()
-      const isFavorite = false
-      const recommendation = {
-        mediationId: 'FA',
-        offerId: 'ME',
+      const mediationId = 'FA'
+      const offerId = 'ME'
+      const ownProps = {
+        history: {},
+        location: {
+          pathname: ''
+        },
       }
+      const isFavorite = false
       const showFailModal = jest.fn()
 
       // when
-      mapDispatchToProps(dispatch).handleFavorite(isFavorite, recommendation, showFailModal)()
+      mapDispatchToProps(dispatch, ownProps)
+        .handleFavorite(offerId, mediationId, isFavorite, showFailModal)()
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
         config: {
           apiPath: '/favorites',
           body: {
-            mediationId: recommendation.mediationId,
-            offerId: recommendation.offerId,
+            mediationId,
+            offerId,
           },
           handleFail: showFailModal,
           handleSuccess: expect.any(Function),
           method: 'POST',
-          stateKey: 'favorites',
+          normalizer: favoriteNormalizer
         },
-        type: 'REQUEST_DATA_POST_FAVORITES',
+        type: 'REQUEST_DATA_POST_/FAVORITES',
       })
     })
 
     it('should delete favorite', () => {
       // given
       const dispatch = jest.fn()
-      const isFavorite = true
-      const recommendation = {
-        mediationId: 'FA',
-        offerId: 'ME',
+      const mediationId = 'FA'
+      const offerId = 'ME'
+      const ownProps = {
+        history: {},
+        location: {
+          pathname: ''
+        }
       }
+      const isFavorite = true
       const showFailModal = jest.fn()
 
       // when
-      mapDispatchToProps(dispatch).handleFavorite(isFavorite, recommendation, showFailModal)()
+      mapDispatchToProps(dispatch, ownProps)
+        .handleFavorite(offerId, mediationId, isFavorite, showFailModal)()
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
         config: {
-          apiPath: `/favorites/${recommendation.offerId}/${recommendation.mediationId}`,
+          apiPath: `/favorites/${offerId}/${mediationId}`,
           body: {
-            mediationId: recommendation.mediationId,
-            offerId: recommendation.offerId,
+            mediationId,
+            offerId,
           },
           handleFail: showFailModal,
           handleSuccess: expect.any(Function),
           method: 'DELETE',
-          stateKey: 'favorites',
+          normalizer: favoriteNormalizer
         },
-        type: 'REQUEST_DATA_DELETE_FAVORITES',
+        type: `REQUEST_DATA_DELETE_/FAVORITES/${offerId.toUpperCase()}/${mediationId.toUpperCase()}`,
       })
     })
   })
