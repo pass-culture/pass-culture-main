@@ -149,20 +149,21 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "prebuild": "yarn fontello",
     "build": "node scripts/build.js && ./scripts/build_redirects.sh",
+    "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
     "fontello": "./scripts/fontello.sh",
+    "format:js": "prettier-eslint --write '{src,testcafe}/**/*.{js,jsx}'",
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
+    "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx}'",
+    "lint:js:fix": "yarn lint:js --fix",
     "ngrok": "ngrok start -config=./ngrok.yml --all",
     "pgbuild": "yarn build && node scripts/pgbuild.js",
     "pgbuild-prod": "yarn build && PG_ENV=production node scripts/pgbuild.js",
+    "prebuild": "yarn fontello",
     "start": "node scripts/start.js",
-    "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx}'",
-    "lint:js:fix": "yarn lint:js --fix",
-    "format:js": "prettier-eslint --write '{src,testcafe}/**/*.{js,jsx}'",
     "test:cafe": "testcafe --assertion-timeout 8000 --selector-timeout 20000 -S -s testcafe_screenshots 'chrome:headless' testcafe",
     "test:unit": "jest --env=jsdom",
-    "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls"
+    "test:visual": "./scripts/tests/visual.sh"
   },
   "husky": {
     "hooks": {
