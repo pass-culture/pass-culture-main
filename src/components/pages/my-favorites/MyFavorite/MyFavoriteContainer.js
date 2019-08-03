@@ -5,29 +5,9 @@ import { compose } from 'redux'
 import MyFavorite from './MyFavorite'
 
 import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
+import selectFirstMatchingBookingByStocks from '../../../../selectors/selectFirstMatchingBookingByStocks'
 import selectOfferById from '../../../../selectors/selectOfferById'
 import getHumanizeRelativeDate from '../../../../utils/date/getHumanizeRelativeDate'
-
-export const getHasBookings = offer => offer.stocks.some(stock => stock.bookings.length > 0)
-
-export const getIsBooked = offer => {
-  let flag = false
-
-  offer.stocks.forEach(stock => {
-    const { bookings } = stock
-    const hasAtLeastOneBooking = bookings.length > 0
-
-    if (hasAtLeastOneBooking) {
-      const lastBooking = bookings.slice(-1)[0]
-
-      if (!lastBooking.isCancelled) {
-        flag = true
-      }
-    }
-  })
-
-  return flag
-}
 
 export const reservationStatus = (
   isFinished,
@@ -79,9 +59,10 @@ export const mapStateToProps = (state, ownProps) => {
   const { favorite } = ownProps
   const { offerId } = favorite
   const offer = selectOfferById(state, offerId)
-  const { venue } = offer
-  const isBooked = getIsBooked(offer)
-  const hasBookings = getHasBookings(offer)
+  const { venue, stocks } = offer
+  const firstMatchingBooking = selectFirstMatchingBookingByStocks(state, stocks)
+  const isBooked = firstMatchingBooking ? !firstMatchingBooking.isCancelled : false
+  const hasBookings = typeof firstMatchingBooking !== 'undefined'
   const { dateRange = [], isFinished, isFullyBooked } = offer || {}
   const offerBeginningDate = dateRange[0] || null
   const humanizeRelativeDate = offerBeginningDate
