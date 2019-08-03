@@ -1,23 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | discovery | RawCard snapshot should match snapshot 1`] = `
+exports[`src | components | pages | discovery | Deck | Card snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawCard
-    areDetailsVisible={false}
+  Symbol(enzyme.__unrendered__): <Card
     handleClickRecommendation={[MockFunction]}
     handleReadRecommendation={[MockFunction]}
-    loadRecommendation={
-      [MockFunction] {
-        "calls": Array [
-          Array [],
-        ],
-        "results": Array [
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
-        ],
+    match={
+      Object {
+        "params": Object {},
       }
     }
     position="position"

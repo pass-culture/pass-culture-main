@@ -5,12 +5,14 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Discovery
     backLink={true}
+    currentRecommendation={null}
     dispatch={[MockFunction]}
     fromPassword={true}
     history={Object {}}
     loadRecommendations={[MockFunction]}
     location={
       Object {
+        "pathname": "",
         "search": "",
       }
     }
@@ -39,6 +41,7 @@ ShallowWrapper {
     }
     resetReadRecommendations={[MockFunction]}
     resetRecommendations={[MockFunction]}
+    resetRecommendationsAndBookings={[MockFunction]}
     saveLoadRecommendationsTimestamp={[MockFunction]}
     shouldReloadRecommendations={false}
     showPasswordChangedPopin={
@@ -77,15 +80,16 @@ ShallowWrapper {
         >
           <React.Fragment>
             <Route
-              path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:bookingId?/:view(cancelled)?/:menu(menu)?"
+              path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)?/:bookings(reservations)?/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:menu(menu)?"
               render={[Function]}
             />
             <Route
-              path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+|verso)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?"
+              path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:bookings(reservations)/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?/:menu(menu)?"
               render={[Function]}
             />
           </React.Fragment>
-          <withRouter(Connect(Footer))
+          <withRouter(AbsoluteFooter)
+            areDetailsVisible={false}
             borderTop={true}
             id="deck-footer"
           />
@@ -105,18 +109,18 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            false,
             <React.Fragment>
               <Route
-                path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:bookingId?/:view(cancelled)?/:menu(menu)?"
+                path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)?/:bookings(reservations)?/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:menu(menu)?"
                 render={[Function]}
               />
               <Route
-                path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+|verso)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?"
+                path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:bookings(reservations)/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?/:menu(menu)?"
                 render={[Function]}
               />
             </React.Fragment>,
-            <withRouter(Connect(Footer))
+            <withRouter(AbsoluteFooter)
+              areDetailsVisible={false}
               borderTop={true}
               id="deck-footer"
             />,
@@ -126,7 +130,6 @@ ShallowWrapper {
         },
         "ref": null,
         "rendered": Array [
-          false,
           Object {
             "instance": null,
             "key": undefined,
@@ -134,11 +137,11 @@ ShallowWrapper {
             "props": Object {
               "children": Array [
                 <Route
-                  path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:bookingId?/:view(cancelled)?/:menu(menu)?"
+                  path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)?/:bookings(reservations)?/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:menu(menu)?"
                   render={[Function]}
                 />,
                 <Route
-                  path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+|verso)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?"
+                  path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:bookings(reservations)/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?/:menu(menu)?"
                   render={[Function]}
                 />,
               ],
@@ -147,10 +150,10 @@ ShallowWrapper {
             "rendered": Array [
               Object {
                 "instance": null,
-                "key": "route-discovery-booking",
+                "key": "route-discovery-deck",
                 "nodeType": "class",
                 "props": Object {
-                  "path": "/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:bookingId?/:view(cancelled)?/:menu(menu)?",
+                  "path": "/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)?/:bookings(reservations)?/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:menu(menu)?",
                   "render": [Function],
                 },
                 "ref": null,
@@ -159,10 +162,10 @@ ShallowWrapper {
               },
               Object {
                 "instance": null,
-                "key": "route-discovery-deck",
+                "key": "route-discovery-booking",
                 "nodeType": "class",
                 "props": Object {
-                  "path": "/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+|verso)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?",
+                  "path": "/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:bookings(reservations)/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?/:menu(menu)?",
                   "render": [Function],
                 },
                 "ref": null,
@@ -177,6 +180,7 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "function",
             "props": Object {
+              "areDetailsVisible": false,
               "borderTop": true,
               "id": "deck-footer",
             },
@@ -216,15 +220,16 @@ ShallowWrapper {
           >
             <React.Fragment>
               <Route
-                path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:bookingId?/:view(cancelled)?/:menu(menu)?"
+                path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)?/:bookings(reservations)?/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:menu(menu)?"
                 render={[Function]}
               />
               <Route
-                path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+|verso)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?"
+                path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:bookings(reservations)/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?/:menu(menu)?"
                 render={[Function]}
               />
             </React.Fragment>
-            <withRouter(Connect(Footer))
+            <withRouter(AbsoluteFooter)
+              areDetailsVisible={false}
               borderTop={true}
               id="deck-footer"
             />
@@ -244,18 +249,18 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              false,
               <React.Fragment>
                 <Route
-                  path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:bookingId?/:view(cancelled)?/:menu(menu)?"
+                  path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)?/:bookings(reservations)?/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:menu(menu)?"
                   render={[Function]}
                 />
                 <Route
-                  path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+|verso)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?"
+                  path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:bookings(reservations)/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?/:menu(menu)?"
                   render={[Function]}
                 />
               </React.Fragment>,
-              <withRouter(Connect(Footer))
+              <withRouter(AbsoluteFooter)
+                areDetailsVisible={false}
                 borderTop={true}
                 id="deck-footer"
               />,
@@ -265,7 +270,6 @@ ShallowWrapper {
           },
           "ref": null,
           "rendered": Array [
-            false,
             Object {
               "instance": null,
               "key": undefined,
@@ -273,11 +277,11 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   <Route
-                    path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:bookingId?/:view(cancelled)?/:menu(menu)?"
+                    path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)?/:bookings(reservations)?/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:menu(menu)?"
                     render={[Function]}
                   />,
                   <Route
-                    path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+|verso)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?"
+                    path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:bookings(reservations)/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?/:menu(menu)?"
                     render={[Function]}
                   />,
                 ],
@@ -286,10 +290,10 @@ ShallowWrapper {
               "rendered": Array [
                 Object {
                   "instance": null,
-                  "key": "route-discovery-booking",
+                  "key": "route-discovery-deck",
                   "nodeType": "class",
                   "props": Object {
-                    "path": "/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:bookingId?/:view(cancelled)?/:menu(menu)?",
+                    "path": "/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)?/:bookings(reservations)?/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:menu(menu)?",
                     "render": [Function],
                   },
                   "ref": null,
@@ -298,10 +302,10 @@ ShallowWrapper {
                 },
                 Object {
                   "instance": null,
-                  "key": "route-discovery-deck",
+                  "key": "route-discovery-booking",
                   "nodeType": "class",
                   "props": Object {
-                    "path": "/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+|verso)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?",
+                    "path": "/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:bookings(reservations)/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?/:menu(menu)?",
                     "render": [Function],
                   },
                   "ref": null,
@@ -316,6 +320,7 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "function",
               "props": Object {
+                "areDetailsVisible": false,
                 "borderTop": true,
                 "id": "deck-footer",
               },

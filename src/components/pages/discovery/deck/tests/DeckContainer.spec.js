@@ -2,41 +2,45 @@ import { mapStateToProps, mapSizeToProps } from '../DeckContainer'
 
 describe('src | components | pages | discovery | deck | DeckContainer', () => {
   let initialState
+  let mediation
+  let mediationId
+  let offer
+  let offerId
+  let recommendation
 
   beforeEach(() => {
-    initialState = {
-      card: {
-        areDetailsVisible: false,
-        draggable: true,
-        isActive: false,
-        unFlippable: false,
+    mediationId = 1
+    mediation = {
+      firstThumbDominantColor: null,
+      frontText: null,
+      id: mediationId,
+      offerId,
+      thumbCount: 0,
+      tutoIndex: 'number',
+    }
+    offerId = 2
+    offer =  {
+      id: offerId,
+      isFinished: false,
+      stocks: [{}],
+      venue: {
+        latitude: 48.91683,
+        longitude: 2.4388,
       },
+    }
+    recommendation = {
+      discoveryIdentifier: 'product_0',
+      id: "AE",
+      mediationId,
+      offerId,
+      uniqId: 3,
+    }
+    initialState = {
       data: {
         bookings: [],
-        recommendations: [
-          {
-            mediation: {
-              firstThumbDominantColor: null,
-              frontText: null,
-              id: 1,
-              offerId: 2,
-              thumbCount: 0,
-              tutoIndex: 'number',
-            },
-            mediationId: 1,
-            offer: {
-              id: 2,
-              isFinished: false,
-              stocks: [{}],
-              venue: {
-                latitude: 48.91683,
-                longitude: 2.4388,
-              },
-            },
-            offerId: 2,
-            uniqId: 3,
-          },
-        ],
+        mediations: [mediation],
+        offers: [offer],
+        recommendations: [recommendation],
       },
       geolocation: {
         latitude: 41.1,
@@ -52,8 +56,8 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
         const props = {
           match: {
             params: {
-              mediationId: 1,
-              offerId: 2,
+              mediationId,
+              offerId,
             },
           },
         }
@@ -70,13 +74,13 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
         const props = {
           match: {
             params: {
-              mediationId: 1,
-              offerId: 2,
+              mediationId,
+              offerId,
             },
           },
         }
-        initialState.data.recommendations[0].mediation.thumbCount = 0
-        initialState.data.recommendations[0].mediation.tutoIndex = 1
+        initialState.data.mediations[0].thumbCount = 0
+        initialState.data.mediations[0].tutoIndex = 1
 
         // when
         const result = mapStateToProps(initialState, props)
@@ -90,13 +94,13 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
         const props = {
           match: {
             params: {
-              mediationId: 1,
-              offerId: 2,
+              mediationId,
+              offerId,
             },
           },
         }
-        initialState.data.recommendations[0].mediation.thumbCount = 0
-        initialState.data.recommendations[0].mediation.tutoIndex = null
+        initialState.data.mediations[0].thumbCount = 0
+        initialState.data.mediations[0].tutoIndex = null
 
         // when
         const result = mapStateToProps(initialState, props)
@@ -110,13 +114,13 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
         const props = {
           match: {
             params: {
-              mediationId: 1,
-              offerId: 2,
+              mediationId,
+              offerId,
             },
           },
         }
-        initialState.data.recommendations[0].mediation.thumbCount = 2
-        initialState.data.recommendations[0].mediation.tutoIndex = 1
+        initialState.data.mediations[0].thumbCount = 2
+        initialState.data.mediations[0].tutoIndex = 1
 
         // when
         const result = mapStateToProps(initialState, props)
@@ -127,24 +131,24 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
     })
 
     describe('nextLimit', () => {
-      it('should return 0 when number of recommendations minus 1 is inferior the number of remaining cards to trigger loading', () => {
+      it('should return 1 (because of the fake last reco) when number of recommendations minus 1 is inferior the number of remaining cards to trigger loading', () => {
         // given
         const props = {
           match: {
             params: {
-              mediationId: 1,
-              offerId: 2,
+              mediationId,
+              offerId,
             },
           },
         }
-        initialState.data.recommendations[0].mediation.thumbCount = 2
-        initialState.data.recommendations[0].mediation.tutoIndex = 1
+        initialState.data.mediations[0].thumbCount = 2
+        initialState.data.mediations[0].tutoIndex = 1
 
         // when
         const result = mapStateToProps(initialState, props)
 
         // then
-        expect(result.nextLimit).toBe(0)
+        expect(result.nextLimit).toBe(1)
       })
     })
   })

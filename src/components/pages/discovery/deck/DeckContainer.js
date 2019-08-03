@@ -3,20 +3,34 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import withSizes from 'react-sizes'
 import { compose } from 'redux'
-import { NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD } from '../../../../helpers/isRecommendationOfferFinished'
-import currentRecommendationSelector from '../../../../selectors/currentRecommendation/currentRecommendation'
-import nextRecommendationSelector from '../../../../selectors/nextRecommendation'
-import previousRecommendationSelector from '../../../../selectors/previousRecommendation'
-import selectRecommendationsForDiscovery from '../../../../selectors/recommendations'
+
 import Deck from './Deck'
+import selectCurrentRecommendation from '../selectors/selectCurrentRecommendation'
+import selectNextRecommendation from '../selectors/selectNextRecommendation'
+import selectPreviousRecommendation from '../selectors/selectPreviousRecommendation'
+import selectUniqAndIndexifiedRecommendations from '../selectors/selectUniqAndIndexifiedRecommendations'
+import selectMediationById from '../../../../selectors/selectMediationById'
+
+const NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD = 5
 
 export const mapStateToProps = (state, ownProps) => {
-  const { mediationId, offerId } = ownProps.match.params
-  const currentRecommendation = currentRecommendationSelector(state, offerId, mediationId)
-  const { mediation } = currentRecommendation || {}
-  const { thumbCount, tutoIndex } = mediation || {}
+  const { match } = ownProps
+  const { params } = match
+  const { mediationId, offerId } = params
 
-  const recommendations = selectRecommendationsForDiscovery(state)
+  const currentRecommendation = selectCurrentRecommendation(
+    state,
+    offerId,
+    mediationId
+  )
+  const { mediationId: currentMediationId } = currentRecommendation || {}
+  const currentMediation = selectMediationById(
+    state,
+    currentMediationId
+  )
+  const { thumbCount, tutoIndex } = currentMediation || {}
+
+  const recommendations = selectUniqAndIndexifiedRecommendations(state)
   const nbRecos = recommendations ? recommendations.length : 0
 
   const isFlipDisabled =
@@ -35,17 +49,14 @@ export const mapStateToProps = (state, ownProps) => {
       : 0)
 
   return {
-    areDetailsVisible: state.card.areDetailsVisible,
     currentRecommendation,
-    draggable: state.card.draggable,
     isEmpty: get(state, 'loading.config.isEmpty'),
     isFlipDisabled,
     nextLimit,
-    nextRecommendation: nextRecommendationSelector(state, offerId, mediationId),
+    nextRecommendation: selectNextRecommendation(state, offerId, mediationId),
     previousLimit,
-    previousRecommendation: previousRecommendationSelector(state, offerId, mediationId),
+    previousRecommendation: selectPreviousRecommendation(state, offerId, mediationId),
     recommendations,
-    unFlippable: state.card.unFlippable,
   }
 }
 

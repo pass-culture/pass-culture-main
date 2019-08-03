@@ -3,11 +3,11 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Draggable from 'react-draggable'
 
-import Card from '../card'
+import CardContainer from './Card/CardContainer'
+import NavigationContainer from './Navigation/NavigationContainer'
 import CloseLink from '../../../layout/Header/CloseLink'
-import DeckNavigation from '../DeckNavigation'
-import { shouldShowVerso } from '../../../../helpers'
-import { closeCardDetails, flipUnflippable, showCardDetails } from '../../../../reducers/card'
+import getAreDetailsVisible from '../../../../helpers/getAreDetailsVisible'
+import getRemovedDetailsUrl from '../../../../helpers/getRemovedDetailsUrl'
 
 class Deck extends Component {
   constructor(props) {
@@ -17,9 +17,10 @@ class Deck extends Component {
   }
 
   componentDidMount() {
-    const { currentRecommendation, recommendations } = this.props
-    this.handleUrlFlip()
-
+    const {
+      currentRecommendation,
+      recommendations
+    } = this.props
     const isStateWithoutRecommendationsOrCurrentRecommendation =
       !recommendations || recommendations.length === 0 || !currentRecommendation
 
@@ -27,17 +28,8 @@ class Deck extends Component {
     this.handleRefreshedDraggableKey()
   }
 
-  componentDidUpdate() {
-    const { match } = this.props
-    const isVersoView = shouldShowVerso(match)
-    // prevents to be called twice at Mount and at Update
-    if (isVersoView) return
-    this.handleUrlFlip()
-  }
-
   componentWillUnmount() {
-    const { dispatch, readTimeout, noDataTimeout } = this.props
-    dispatch(closeCardDetails())
+    const { readTimeout, noDataTimeout } = this.props
 
     if (readTimeout) clearTimeout(readTimeout)
     if (noDataTimeout) clearTimeout(noDataTimeout)
@@ -45,17 +37,16 @@ class Deck extends Component {
 
   handleOnStop = (event, data) => {
     const {
-      width,
-      height,
-      draggable,
-      verticalSlideRatio,
-      horizontalSlideRatio,
       currentRecommendation,
+      height,
+      horizontalSlideRatio,
+      verticalSlideRatio,
+      width,
     } = this.props
 
     const index = get(currentRecommendation, 'index', 0)
     const offset = (data.x + width * index) / width
-    if (draggable && data.y > height * verticalSlideRatio) {
+    if (data.y > height * verticalSlideRatio) {
       this.onHandleCloseCardDetails(event)
     } else if (data.y < -height * verticalSlideRatio) {
       this.handleShowCardDetails()
@@ -67,25 +58,29 @@ class Deck extends Component {
   }
 
   handleGoNext = () => {
-    const { history, areDetailsVisible, nextRecommendation } = this.props
+    const { history, match, nextRecommendation } = this.props
+    const areDetailsVisible = getAreDetailsVisible(match)
     if (!nextRecommendation || areDetailsVisible) return
     const { offerId, mediationId } = nextRecommendation
-    history.push(`/decouverte/${offerId || 'tuto'}${(mediationId && `/${mediationId}`) || ''}`)
+    const nextUrl = `/decouverte/${offerId || 'tuto'}${`/${mediationId || 'vide'}`}`
+    history.push(nextUrl)
     this.handleRefreshNext()
   }
 
   handleGoPrevious = () => {
-    const { history, areDetailsVisible, previousRecommendation } = this.props
+    const { history, match, previousRecommendation } = this.props
+    const areDetailsVisible = getAreDetailsVisible(match)
     if (!previousRecommendation || areDetailsVisible) return
     const { offerId, mediationId } = previousRecommendation
-    history.push(`/decouverte/${offerId || 'tuto'}${(mediationId && `/${mediationId}`) || ''}`)
+    const previousUrl = `/decouverte/${offerId || 'tuto'}${`/${mediationId || 'vide'}`}`
+    history.push(previousUrl)
   }
 
   handleRefreshNext = () => {
-    const { currentRecommendation, handleDataRequest, nextLimit } = this.props
+    const { currentRecommendation, handleRequestPutRecommendations, nextLimit } = this.props
     const shouldRequest = nextLimit && currentRecommendation.index === nextLimit
     if (!shouldRequest) return
-    handleDataRequest()
+    handleRequestPutRecommendations()
   }
 
   handleRefreshedDraggableKey = () => {
@@ -95,35 +90,34 @@ class Deck extends Component {
   }
 
   handleShowCardDetails = () => {
-    const { dispatch, isFlipDisabled } = this.props
-    if (isFlipDisabled) return
-    dispatch(showCardDetails())
+    const { isFlipDisabled, history, location, match } = this.props
+    const { pathname, search } = location
+    const areDetailsVisible = getAreDetailsVisible(match)
+    if (areDetailsVisible || isFlipDisabled) return
+    const detailsUrl = `${pathname}/details${search}`
+    history.push(detailsUrl)
   }
 
   onHandleCloseCardDetails = event => {
     event.preventDefault()
-    const { dispatch, unFlippable } = this.props
-    if (unFlippable) return
-    dispatch(closeCardDetails())
-  }
-
-  handleUrlFlip = () => {
-    const { dispatch, match } = this.props
-    const isVersoView = shouldShowVerso(match)
-    if (!isVersoView) return
-    dispatch(flipUnflippable())
+    const { history, location, match } = this.props
+    const removedDetailsUrl = getRemovedDetailsUrl(location, match)
+    if (removedDetailsUrl) {
+      history.push(removedDetailsUrl)
+    }
   }
 
   renderDraggableCards() {
     const {
-      areDetailsVisible,
       currentRecommendation,
+      match,
       nextRecommendation,
       previousRecommendation,
       width,
     } = this.props
     const { index } = currentRecommendation || {}
     const { refreshKey } = this.state
+    const areDetailsVisible = getAreDetailsVisible(match)
 
     const position = {
       x: -1 * width * index,
@@ -135,7 +129,6 @@ class Deck extends Component {
       right: position.x + width,
       top: -100,
     }
-
     return (
       <Draggable
         axis={areDetailsVisible ? 'none' : 'exclude'}
@@ -148,9 +141,9 @@ class Deck extends Component {
       >
         <div className="is-overlay">
           <div className="inner is-relative">
-            {previousRecommendation && <Card position="previous" />}
-            <Card position="current" />
-            {nextRecommendation && <Card position="next" />}
+            {previousRecommendation && <CardContainer position="previous" />}
+            <CardContainer position="current" />
+            {nextRecommendation && <CardContainer position="next" />}
           </div>
         </div>
       </Draggable>
@@ -161,24 +154,21 @@ class Deck extends Component {
     const {
       currentRecommendation,
       height,
-      nextRecommendation,
       isFlipDisabled,
-      areDetailsVisible,
+      match,
+      nextRecommendation,
       previousRecommendation,
       recommendations,
-      unFlippable,
     } = this.props
-
-    const showCloseButton = areDetailsVisible && !unFlippable
+    const areDetailsVisible = getAreDetailsVisible(match)
     const showNavigation = !areDetailsVisible || isFlipDisabled
-
     return (
       <div
         className="is-clipped is-relative"
         data-nb-recos={recommendations.length}
         id="deck"
       >
-        {showCloseButton && (
+        {areDetailsVisible && (
           <CloseLink
             actionOnClick={this.onHandleCloseCardDetails}
             closeTitle="Fermer"
@@ -186,12 +176,11 @@ class Deck extends Component {
         )}
         {this.renderDraggableCards()}
         {showNavigation && currentRecommendation && (
-          <DeckNavigation
+          <NavigationContainer
             flipHandler={(!isFlipDisabled && this.handleShowCardDetails) || null}
             handleGoNext={(nextRecommendation && this.handleGoNext) || null}
             handleGoPrevious={(previousRecommendation && this.handleGoPrevious) || null}
             height={height}
-            recommendation={currentRecommendation}
           />
         )}
       </div>
@@ -210,23 +199,29 @@ Deck.defaultProps = {
 }
 
 Deck.propTypes = {
-  areDetailsVisible: PropTypes.bool.isRequired,
   currentRecommendation: PropTypes.shape(),
-  dispatch: PropTypes.func.isRequired,
-  draggable: PropTypes.bool.isRequired,
-  handleDataRequest: PropTypes.func.isRequired,
+  handleRequestPutRecommendations: PropTypes.func.isRequired,
   height: PropTypes.number.isRequired,
-  history: PropTypes.shape().isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
   horizontalSlideRatio: PropTypes.number,
   isFlipDisabled: PropTypes.bool.isRequired,
-  match: PropTypes.shape().isRequired,
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired,
+    search: PropTypes.string.isRequired
+  }).isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      details: PropTypes.string
+    }).isRequired
+  }).isRequired,
   nextLimit: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]).isRequired,
   nextRecommendation: PropTypes.shape(),
   noDataTimeout: PropTypes.number,
   previousRecommendation: PropTypes.shape(),
   readTimeout: PropTypes.number,
   recommendations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  unFlippable: PropTypes.bool.isRequired,
   verticalSlideRatio: PropTypes.number,
   width: PropTypes.number.isRequired,
 }

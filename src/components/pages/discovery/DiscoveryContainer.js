@@ -4,23 +4,31 @@ import { toast } from 'react-toastify'
 import { assignData, requestData } from 'redux-saga-data'
 
 import Discovery from './Discovery'
-import { checkIfShouldReloadRecommendations, isDiscoveryStartupPathname } from './utils'
+import {
+  checkIfShouldReloadRecommendationsBecauseOfLongTime,
+  isDiscoveryStartupUrl,
+} from './helpers'
+import selectCurrentRecommendation from './selectors/selectCurrentRecommendation'
 import { withRequiredLogin } from '../../hocs'
-import { getQueryParams, getRouterQueryByKey, shouldShowVerso } from '../../../helpers'
+import { getOfferIdAndMediationIdApiPathQueryString } from '../../../helpers'
+import { resetPageData, saveLastRecommendationsRequestTimestamp } from '../../../reducers/data'
 import { recommendationNormalizer } from '../../../utils/normalizers'
-import { saveLastRecommendationsRequestTimestamp } from '../../../reducers/data'
 
-export const mapStateToProps = (state, props) => {
-  const { match } = props
-  const withBackButton = shouldShowVerso(match)
+export const mapStateToProps = (state, ownProps) => {
+  const { match } = ownProps
+  const { params } = match
+  const { mediationId, offerId } = params
+  const currentRecommendation = selectCurrentRecommendation(state, offerId, mediationId)
+
   const { readRecommendations, recommendations } = (state && state.data) || {}
   const shouldReloadRecommendations =
-    checkIfShouldReloadRecommendations(state) || (recommendations && recommendations.length <= 0)
+    checkIfShouldReloadRecommendationsBecauseOfLongTime(state) ||
+    (recommendations && recommendations.length <= 0)
   return {
+    currentRecommendation,
     readRecommendations,
     recommendations,
     shouldReloadRecommendations,
-    withBackButton,
   }
 }
 
@@ -28,12 +36,13 @@ export const mapDispatchToProps = (dispatch, props) => ({
   loadRecommendations: (
     handleRequestSuccess,
     handleRequestFail,
+    currentRecommendation,
     recommendations,
     readRecommendations,
     shouldReloadRecommendations
   ) => {
     const { match } = props
-    const queryString = getQueryParams(match, readRecommendations)
+    const queryString = getOfferIdAndMediationIdApiPathQueryString(match, currentRecommendation)
     const apiPath = `/recommendations?${queryString}`
     const seenRecommendationIds =
       (shouldReloadRecommendations && []) || (recommendations && recommendations.map(r => r.id))
@@ -56,16 +65,20 @@ export const mapDispatchToProps = (dispatch, props) => ({
   },
 
   redirectToFirstRecommendationIfNeeded: loadedRecommendations => {
-    const { history, location } = props
+    const { match, history } = props
 
-    const shouldReloadPage =
-      loadedRecommendations.length > 0 && isDiscoveryStartupPathname(location.pathname)
+    if (!loadedRecommendations) {
+      return
+    }
 
-    if (!shouldReloadPage) return
+    const shouldRedirectToFirstRecommendationUrl =
+      loadedRecommendations.length > 0 && isDiscoveryStartupUrl(match)
+
+    if (!shouldRedirectToFirstRecommendationUrl) return
 
     const firstRecommendation = loadedRecommendations[0] || false
     const firstOfferId = (firstRecommendation && firstRecommendation.offerId) || 'tuto'
-    const firstMediationId = (firstRecommendation && firstRecommendation.mediationId) || ''
+    const firstMediationId = (firstRecommendation && firstRecommendation.mediationId) || 'vide'
     // replace pluto qu'un push permet de recharger les données
     // quand on fait back dans le navigateur et qu'on revient
     // à l'URL /decouverte
@@ -76,17 +89,16 @@ export const mapDispatchToProps = (dispatch, props) => ({
     dispatch(assignData({ readRecommendations: [] }))
   },
 
-  resetRecommendations: () => {
-    dispatch(assignData({ recommendations: [] }))
-  },
+  resetPageData: () => dispatch(resetPageData()),
 
   saveLoadRecommendationsTimestamp: () => {
     dispatch(saveLastRecommendationsRequestTimestamp())
   },
 
   showPasswordChangedPopin: () => {
-    const { location } = props
-    const from = getRouterQueryByKey(location, 'from')
+    const { query } = props
+    const queryParams = query.parse()
+    const { from } = queryParams
     const fromPassword = from === 'password'
     if (!fromPassword) return
     const delay = 1000

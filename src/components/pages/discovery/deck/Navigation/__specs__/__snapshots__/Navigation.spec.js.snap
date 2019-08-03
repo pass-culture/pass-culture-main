@@ -1,213 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | discovery | RawDeckNavigation snapshot should match snapshot 1`] = `
+exports[`src | components | pages | discovery | Deck | Navigation snapshot should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawDeckNavigation
-    flipHandler={null}
-    handleGoNext={null}
-    handleGoPrevious={null}
-    height={500}
-    isFinished={false}
-    recommendation={Object {}}
-    transitionTimeout={250}
-    verticalSlideRatio={0.3}
-  />,
-  Symbol(enzyme.__renderer__): Object {
-    "batchedUpdates": [Function],
-    "checkPropTypes": [Function],
-    "getNode": [Function],
-    "render": [Function],
-    "simulateError": [Function],
-    "simulateEvent": [Function],
-    "unmount": [Function],
-  },
-  Symbol(enzyme.__node__): Object {
-    "instance": null,
-    "key": undefined,
-    "nodeType": "host",
-    "props": Object {
-      "children": <div
-        className="controls flex-columns items-end wrap-3"
-        style={
-          Object {
-            "backgroundImage": "url('http://localhost/mosaic-w@2x.png')",
-          }
-        }
-      >
-        <span />
-        <span />
-        <span />
-      </div>,
-      "id": "deck-navigation",
-      "style": Object {
-        "background": "linear-gradient(to bottom, rgba(0,0,0,0) 0%,black 30%,black 100%)",
-      },
-    },
-    "ref": null,
-    "rendered": Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "host",
-      "props": Object {
-        "children": Array [
-          <span />,
-          <span />,
-          <span />,
-        ],
-        "className": "controls flex-columns items-end wrap-3",
-        "style": Object {
-          "backgroundImage": "url('http://localhost/mosaic-w@2x.png')",
-        },
-      },
-      "ref": null,
-      "rendered": Array [
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {},
-          "ref": null,
-          "rendered": null,
-          "type": "span",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {},
-          "ref": null,
-          "rendered": null,
-          "type": "span",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {},
-          "ref": null,
-          "rendered": null,
-          "type": "span",
-        },
-      ],
-      "type": "div",
-    },
-    "type": "div",
-  },
-  Symbol(enzyme.__nodes__): Array [
-    Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "host",
-      "props": Object {
-        "children": <div
-          className="controls flex-columns items-end wrap-3"
-          style={
-            Object {
-              "backgroundImage": "url('http://localhost/mosaic-w@2x.png')",
-            }
-          }
-        >
-          <span />
-          <span />
-          <span />
-        </div>,
-        "id": "deck-navigation",
-        "style": Object {
-          "background": "linear-gradient(to bottom, rgba(0,0,0,0) 0%,black 30%,black 100%)",
-        },
-      },
-      "ref": null,
-      "rendered": Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": Array [
-            <span />,
-            <span />,
-            <span />,
-          ],
-          "className": "controls flex-columns items-end wrap-3",
-          "style": Object {
-            "backgroundImage": "url('http://localhost/mosaic-w@2x.png')",
-          },
-        },
-        "ref": null,
-        "rendered": Array [
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {},
-            "ref": null,
-            "rendered": null,
-            "type": "span",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {},
-            "ref": null,
-            "rendered": null,
-            "type": "span",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {},
-            "ref": null,
-            "rendered": null,
-            "type": "span",
-          },
-        ],
-        "type": "div",
-      },
-      "type": "div",
-    },
-  ],
-  Symbol(enzyme.__options__): Object {
-    "adapter": ReactSixteenAdapter {
-      "options": Object {
-        "enableComponentDidUpdateOnSetState": true,
-        "legacyContextMode": "parent",
-        "lifecycles": Object {
-          "componentDidUpdate": Object {
-            "onSetState": true,
-          },
-          "getChildContext": Object {
-            "calledByRenderer": false,
-          },
-          "getDerivedStateFromError": true,
-          "getDerivedStateFromProps": Object {
-            "hasShouldComponentUpdateBug": false,
-          },
-          "getSnapshotBeforeUpdate": true,
-          "setState": Object {
-            "skipsComponentDidUpdateOnNullish": true,
-          },
-        },
-      },
-    },
-    Symbol(enzyme.__providerValues__): undefined,
-  },
-  Symbol(enzyme.__providerValues__): Map {},
-  Symbol(enzyme.__childContext__): null,
-}
-`;
-
-exports[`src | components | pages | discovery | RawDeckNavigation snapshot should match snapshot with flipHandler 1`] = `
-ShallowWrapper {
-  Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <RawDeckNavigation
+  Symbol(enzyme.__unrendered__): <Navigation
+    backgroundGradient="black"
+    distanceClue=""
     flipHandler={[MockFunction]}
     handleGoNext={null}
     handleGoPrevious={null}
     height={500}
-    isFinished={false}
-    recommendation={Object {}}
+    priceRange={Array []}
+    separator="-"
     transitionTimeout={250}
     verticalSlideRatio={0.3}
   />,
@@ -301,9 +105,7 @@ ShallowWrapper {
                   }
                 }
               >
-                <Finishable
-                  finished={false}
-                >
+                <withRouter(Connect(Finishable))>
                   <Price
                     className=""
                     format={null}
@@ -314,12 +116,12 @@ ShallowWrapper {
                   <div
                     className="separator"
                   >
-                     
+                    -
                   </div>
                   <div>
-                     
+                    
                   </div>
-                </Finishable>
+                </withRouter(Connect(Finishable))>
               </div>
             </div>
           </Draggable>
@@ -328,7 +130,7 @@ ShallowWrapper {
       </div>,
       "id": "deck-navigation",
       "style": Object {
-        "background": "linear-gradient(to bottom, rgba(0,0,0,0) 0%,black 30%,black 100%)",
+        "background": "black",
       },
     },
     "ref": null,
@@ -406,9 +208,7 @@ ShallowWrapper {
                     }
                   }
                 >
-                  <Finishable
-                    finished={false}
-                  >
+                  <withRouter(Connect(Finishable))>
                     <Price
                       className=""
                       format={null}
@@ -419,12 +219,12 @@ ShallowWrapper {
                     <div
                       className="separator"
                     >
-                       
+                      -
                     </div>
                     <div>
-                       
+                      
                     </div>
-                  </Finishable>
+                  </withRouter(Connect(Finishable))>
                 </div>
               </div>
             </Draggable>
@@ -516,9 +316,7 @@ ShallowWrapper {
                     }
                   }
                 >
-                  <Finishable
-                    finished={false}
-                  >
+                  <withRouter(Connect(Finishable))>
                     <Price
                       className=""
                       format={null}
@@ -529,12 +327,12 @@ ShallowWrapper {
                     <div
                       className="separator"
                     >
-                       
+                      -
                     </div>
                     <div>
-                       
+                      
                     </div>
-                  </Finishable>
+                  </withRouter(Connect(Finishable))>
                 </div>
               </div>
             </Draggable>,
@@ -580,9 +378,7 @@ ShallowWrapper {
                     }
                   }
                 >
-                  <Finishable
-                    finished={false}
-                  >
+                  <withRouter(Connect(Finishable))>
                     <Price
                       className=""
                       format={null}
@@ -593,12 +389,12 @@ ShallowWrapper {
                     <div
                       className="separator"
                     >
-                       
+                      -
                     </div>
                     <div>
-                       
+                      
                     </div>
-                  </Finishable>
+                  </withRouter(Connect(Finishable))>
                 </div>
               </div>,
               "defaultClassName": "react-draggable",
@@ -653,9 +449,7 @@ ShallowWrapper {
                       }
                     }
                   >
-                    <Finishable
-                      finished={false}
-                    >
+                    <withRouter(Connect(Finishable))>
                       <Price
                         className=""
                         format={null}
@@ -666,12 +460,12 @@ ShallowWrapper {
                       <div
                         className="separator"
                       >
-                         
+                        -
                       </div>
                       <div>
-                         
+                        
                       </div>
-                    </Finishable>
+                    </withRouter(Connect(Finishable))>
                   </div>,
                 ],
                 "id": "dragButton",
@@ -717,9 +511,7 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": <Finishable
-                      finished={false}
-                    >
+                    "children": <withRouter(Connect(Finishable))>
                       <Price
                         className=""
                         format={null}
@@ -730,12 +522,12 @@ ShallowWrapper {
                       <div
                         className="separator"
                       >
-                         
+                        -
                       </div>
                       <div>
-                         
+                        
                       </div>
-                    </Finishable>,
+                    </withRouter(Connect(Finishable))>,
                     "className": "clue",
                     "style": Object {
                       "transition": "opacity 250ms",
@@ -758,13 +550,12 @@ ShallowWrapper {
                         <div
                           className="separator"
                         >
-                           
+                          -
                         </div>,
                         <div>
-                           
+                          
                         </div>,
                       ],
-                      "finished": false,
                     },
                     "ref": null,
                     "rendered": Array [
@@ -788,11 +579,11 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": " ",
+                          "children": "-",
                           "className": "separator",
                         },
                         "ref": null,
-                        "rendered": " ",
+                        "rendered": "-",
                         "type": "div",
                       },
                       Object {
@@ -800,10 +591,10 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": " ",
+                          "children": "",
                         },
                         "ref": null,
-                        "rendered": " ",
+                        "rendered": "",
                         "type": "div",
                       },
                     ],
@@ -914,9 +705,7 @@ ShallowWrapper {
                     }
                   }
                 >
-                  <Finishable
-                    finished={false}
-                  >
+                  <withRouter(Connect(Finishable))>
                     <Price
                       className=""
                       format={null}
@@ -927,12 +716,12 @@ ShallowWrapper {
                     <div
                       className="separator"
                     >
-                       
+                      -
                     </div>
                     <div>
-                       
+                      
                     </div>
-                  </Finishable>
+                  </withRouter(Connect(Finishable))>
                 </div>
               </div>
             </Draggable>
@@ -941,7 +730,7 @@ ShallowWrapper {
         </div>,
         "id": "deck-navigation",
         "style": Object {
-          "background": "linear-gradient(to bottom, rgba(0,0,0,0) 0%,black 30%,black 100%)",
+          "background": "black",
         },
       },
       "ref": null,
@@ -1019,9 +808,7 @@ ShallowWrapper {
                       }
                     }
                   >
-                    <Finishable
-                      finished={false}
-                    >
+                    <withRouter(Connect(Finishable))>
                       <Price
                         className=""
                         format={null}
@@ -1032,12 +819,12 @@ ShallowWrapper {
                       <div
                         className="separator"
                       >
-                         
+                        -
                       </div>
                       <div>
-                         
+                        
                       </div>
-                    </Finishable>
+                    </withRouter(Connect(Finishable))>
                   </div>
                 </div>
               </Draggable>
@@ -1129,9 +916,7 @@ ShallowWrapper {
                       }
                     }
                   >
-                    <Finishable
-                      finished={false}
-                    >
+                    <withRouter(Connect(Finishable))>
                       <Price
                         className=""
                         format={null}
@@ -1142,12 +927,12 @@ ShallowWrapper {
                       <div
                         className="separator"
                       >
-                         
+                        -
                       </div>
                       <div>
-                         
+                        
                       </div>
-                    </Finishable>
+                    </withRouter(Connect(Finishable))>
                   </div>
                 </div>
               </Draggable>,
@@ -1193,9 +978,7 @@ ShallowWrapper {
                       }
                     }
                   >
-                    <Finishable
-                      finished={false}
-                    >
+                    <withRouter(Connect(Finishable))>
                       <Price
                         className=""
                         format={null}
@@ -1206,12 +989,12 @@ ShallowWrapper {
                       <div
                         className="separator"
                       >
-                         
+                        -
                       </div>
                       <div>
-                         
+                        
                       </div>
-                    </Finishable>
+                    </withRouter(Connect(Finishable))>
                   </div>
                 </div>,
                 "defaultClassName": "react-draggable",
@@ -1266,9 +1049,7 @@ ShallowWrapper {
                         }
                       }
                     >
-                      <Finishable
-                        finished={false}
-                      >
+                      <withRouter(Connect(Finishable))>
                         <Price
                           className=""
                           format={null}
@@ -1279,12 +1060,12 @@ ShallowWrapper {
                         <div
                           className="separator"
                         >
-                           
+                          -
                         </div>
                         <div>
-                           
+                          
                         </div>
-                      </Finishable>
+                      </withRouter(Connect(Finishable))>
                     </div>,
                   ],
                   "id": "dragButton",
@@ -1330,9 +1111,7 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": <Finishable
-                        finished={false}
-                      >
+                      "children": <withRouter(Connect(Finishable))>
                         <Price
                           className=""
                           format={null}
@@ -1343,12 +1122,12 @@ ShallowWrapper {
                         <div
                           className="separator"
                         >
-                           
+                          -
                         </div>
                         <div>
-                           
+                          
                         </div>
-                      </Finishable>,
+                      </withRouter(Connect(Finishable))>,
                       "className": "clue",
                       "style": Object {
                         "transition": "opacity 250ms",
@@ -1371,13 +1150,12 @@ ShallowWrapper {
                           <div
                             className="separator"
                           >
-                             
+                            -
                           </div>,
                           <div>
-                             
+                            
                           </div>,
                         ],
-                        "finished": false,
                       },
                       "ref": null,
                       "rendered": Array [
@@ -1401,11 +1179,11 @@ ShallowWrapper {
                           "key": undefined,
                           "nodeType": "host",
                           "props": Object {
-                            "children": " ",
+                            "children": "-",
                             "className": "separator",
                           },
                           "ref": null,
-                          "rendered": " ",
+                          "rendered": "-",
                           "type": "div",
                         },
                         Object {
@@ -1413,10 +1191,1264 @@ ShallowWrapper {
                           "key": undefined,
                           "nodeType": "host",
                           "props": Object {
-                            "children": " ",
+                            "children": "",
                           },
                           "ref": null,
-                          "rendered": " ",
+                          "rendered": "",
+                          "type": "div",
+                        },
+                      ],
+                      "type": [Function],
+                    },
+                    "type": "div",
+                  },
+                ],
+                "type": "div",
+              },
+              "type": [Function],
+            },
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {},
+            "ref": null,
+            "rendered": null,
+            "type": "span",
+          },
+        ],
+        "type": "div",
+      },
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
+}
+`;
+
+exports[`src | components | pages | discovery | Deck | Navigation snapshot should match snapshot with flipHandler 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <Navigation
+    backgroundGradient="black"
+    distanceClue=""
+    flipHandler={[MockFunction]}
+    handleGoNext={null}
+    handleGoPrevious={null}
+    height={500}
+    priceRange={Array []}
+    separator="-"
+    transitionTimeout={250}
+    verticalSlideRatio={0.3}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": <div
+        className="controls flex-columns items-end wrap-3"
+        style={
+          Object {
+            "backgroundImage": "url('http://localhost/mosaic-w@2x.png')",
+          }
+        }
+      >
+        <span />
+        <div
+          className="flex-rows"
+        >
+          <Draggable
+            allowAnyClick={false}
+            axis="y"
+            bounds={
+              Object {
+                "bottom": 0,
+                "left": 0,
+                "right": 0,
+                "top": 0,
+              }
+            }
+            cancel={null}
+            defaultClassName="react-draggable"
+            defaultClassNameDragged="react-draggable-dragged"
+            defaultClassNameDragging="react-draggable-dragging"
+            defaultPosition={
+              Object {
+                "x": 0,
+                "y": 0,
+              }
+            }
+            disabled={false}
+            enableUserSelectHack={true}
+            grid={null}
+            handle={null}
+            offsetParent={null}
+            onDrag={[Function]}
+            onMouseDown={[Function]}
+            onStart={[Function]}
+            onStop={[Function]}
+            position={null}
+            speed={
+              Object {
+                "x": 1,
+                "y": 1,
+              }
+            }
+            transform={null}
+          >
+            <div
+              id="dragButton"
+            >
+              <button
+                className="button to-recto"
+                id="deck-open-verso-button"
+                onClick={[MockFunction]}
+                onDragLeave={[MockFunction]}
+                type="button"
+              >
+                <Icon
+                  alt="Plus d'infos"
+                  className=" "
+                  src={null}
+                  svg="ico-slideup-w"
+                />
+              </button>
+              <div
+                className="clue"
+                style={
+                  Object {
+                    "transition": "opacity 250ms",
+                  }
+                }
+              >
+                <withRouter(Connect(Finishable))>
+                  <Price
+                    className=""
+                    format={null}
+                    free="Gratuit"
+                    id="deck-navigation-offer-price"
+                    value={Array []}
+                  />
+                  <div
+                    className="separator"
+                  >
+                    -
+                  </div>
+                  <div>
+                    
+                  </div>
+                </withRouter(Connect(Finishable))>
+              </div>
+            </div>
+          </Draggable>
+        </div>
+        <span />
+      </div>,
+      "id": "deck-navigation",
+      "style": Object {
+        "background": "black",
+      },
+    },
+    "ref": null,
+    "rendered": Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <span />,
+          <div
+            className="flex-rows"
+          >
+            <Draggable
+              allowAnyClick={false}
+              axis="y"
+              bounds={
+                Object {
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "top": 0,
+                }
+              }
+              cancel={null}
+              defaultClassName="react-draggable"
+              defaultClassNameDragged="react-draggable-dragged"
+              defaultClassNameDragging="react-draggable-dragging"
+              defaultPosition={
+                Object {
+                  "x": 0,
+                  "y": 0,
+                }
+              }
+              disabled={false}
+              enableUserSelectHack={true}
+              grid={null}
+              handle={null}
+              offsetParent={null}
+              onDrag={[Function]}
+              onMouseDown={[Function]}
+              onStart={[Function]}
+              onStop={[Function]}
+              position={null}
+              speed={
+                Object {
+                  "x": 1,
+                  "y": 1,
+                }
+              }
+              transform={null}
+            >
+              <div
+                id="dragButton"
+              >
+                <button
+                  className="button to-recto"
+                  id="deck-open-verso-button"
+                  onClick={[MockFunction]}
+                  onDragLeave={[MockFunction]}
+                  type="button"
+                >
+                  <Icon
+                    alt="Plus d'infos"
+                    className=" "
+                    src={null}
+                    svg="ico-slideup-w"
+                  />
+                </button>
+                <div
+                  className="clue"
+                  style={
+                    Object {
+                      "transition": "opacity 250ms",
+                    }
+                  }
+                >
+                  <withRouter(Connect(Finishable))>
+                    <Price
+                      className=""
+                      format={null}
+                      free="Gratuit"
+                      id="deck-navigation-offer-price"
+                      value={Array []}
+                    />
+                    <div
+                      className="separator"
+                    >
+                      -
+                    </div>
+                    <div>
+                      
+                    </div>
+                  </withRouter(Connect(Finishable))>
+                </div>
+              </div>
+            </Draggable>
+          </div>,
+          <span />,
+        ],
+        "className": "controls flex-columns items-end wrap-3",
+        "style": Object {
+          "backgroundImage": "url('http://localhost/mosaic-w@2x.png')",
+        },
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {},
+          "ref": null,
+          "rendered": null,
+          "type": "span",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <Draggable
+              allowAnyClick={false}
+              axis="y"
+              bounds={
+                Object {
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "top": 0,
+                }
+              }
+              cancel={null}
+              defaultClassName="react-draggable"
+              defaultClassNameDragged="react-draggable-dragged"
+              defaultClassNameDragging="react-draggable-dragging"
+              defaultPosition={
+                Object {
+                  "x": 0,
+                  "y": 0,
+                }
+              }
+              disabled={false}
+              enableUserSelectHack={true}
+              grid={null}
+              handle={null}
+              offsetParent={null}
+              onDrag={[Function]}
+              onMouseDown={[Function]}
+              onStart={[Function]}
+              onStop={[Function]}
+              position={null}
+              speed={
+                Object {
+                  "x": 1,
+                  "y": 1,
+                }
+              }
+              transform={null}
+            >
+              <div
+                id="dragButton"
+              >
+                <button
+                  className="button to-recto"
+                  id="deck-open-verso-button"
+                  onClick={[MockFunction]}
+                  onDragLeave={[MockFunction]}
+                  type="button"
+                >
+                  <Icon
+                    alt="Plus d'infos"
+                    className=" "
+                    src={null}
+                    svg="ico-slideup-w"
+                  />
+                </button>
+                <div
+                  className="clue"
+                  style={
+                    Object {
+                      "transition": "opacity 250ms",
+                    }
+                  }
+                >
+                  <withRouter(Connect(Finishable))>
+                    <Price
+                      className=""
+                      format={null}
+                      free="Gratuit"
+                      id="deck-navigation-offer-price"
+                      value={Array []}
+                    />
+                    <div
+                      className="separator"
+                    >
+                      -
+                    </div>
+                    <div>
+                      
+                    </div>
+                  </withRouter(Connect(Finishable))>
+                </div>
+              </div>
+            </Draggable>,
+            "className": "flex-rows",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "allowAnyClick": false,
+              "axis": "y",
+              "bounds": Object {
+                "bottom": 0,
+                "left": 0,
+                "right": 0,
+                "top": 0,
+              },
+              "cancel": null,
+              "children": <div
+                id="dragButton"
+              >
+                <button
+                  className="button to-recto"
+                  id="deck-open-verso-button"
+                  onClick={[MockFunction]}
+                  onDragLeave={[MockFunction]}
+                  type="button"
+                >
+                  <Icon
+                    alt="Plus d'infos"
+                    className=" "
+                    src={null}
+                    svg="ico-slideup-w"
+                  />
+                </button>
+                <div
+                  className="clue"
+                  style={
+                    Object {
+                      "transition": "opacity 250ms",
+                    }
+                  }
+                >
+                  <withRouter(Connect(Finishable))>
+                    <Price
+                      className=""
+                      format={null}
+                      free="Gratuit"
+                      id="deck-navigation-offer-price"
+                      value={Array []}
+                    />
+                    <div
+                      className="separator"
+                    >
+                      -
+                    </div>
+                    <div>
+                      
+                    </div>
+                  </withRouter(Connect(Finishable))>
+                </div>
+              </div>,
+              "defaultClassName": "react-draggable",
+              "defaultClassNameDragged": "react-draggable-dragged",
+              "defaultClassNameDragging": "react-draggable-dragging",
+              "defaultPosition": Object {
+                "x": 0,
+                "y": 0,
+              },
+              "disabled": false,
+              "enableUserSelectHack": true,
+              "grid": null,
+              "handle": null,
+              "offsetParent": null,
+              "onDrag": [Function],
+              "onMouseDown": [Function],
+              "onStart": [Function],
+              "onStop": [Function],
+              "position": null,
+              "speed": Object {
+                "x": 1,
+                "y": 1,
+              },
+              "transform": null,
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <button
+                    className="button to-recto"
+                    id="deck-open-verso-button"
+                    onClick={[MockFunction]}
+                    onDragLeave={[MockFunction]}
+                    type="button"
+                  >
+                    <Icon
+                      alt="Plus d'infos"
+                      className=" "
+                      src={null}
+                      svg="ico-slideup-w"
+                    />
+                  </button>,
+                  <div
+                    className="clue"
+                    style={
+                      Object {
+                        "transition": "opacity 250ms",
+                      }
+                    }
+                  >
+                    <withRouter(Connect(Finishable))>
+                      <Price
+                        className=""
+                        format={null}
+                        free="Gratuit"
+                        id="deck-navigation-offer-price"
+                        value={Array []}
+                      />
+                      <div
+                        className="separator"
+                      >
+                        -
+                      </div>
+                      <div>
+                        
+                      </div>
+                    </withRouter(Connect(Finishable))>
+                  </div>,
+                ],
+                "id": "dragButton",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <Icon
+                      alt="Plus d'infos"
+                      className=" "
+                      src={null}
+                      svg="ico-slideup-w"
+                    />,
+                    "className": "button to-recto",
+                    "id": "deck-open-verso-button",
+                    "onClick": [MockFunction],
+                    "onDragLeave": [MockFunction],
+                    "type": "button",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "alt": "Plus d'infos",
+                      "className": " ",
+                      "src": null,
+                      "svg": "ico-slideup-w",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  "type": "button",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <withRouter(Connect(Finishable))>
+                      <Price
+                        className=""
+                        format={null}
+                        free="Gratuit"
+                        id="deck-navigation-offer-price"
+                        value={Array []}
+                      />
+                      <div
+                        className="separator"
+                      >
+                        -
+                      </div>
+                      <div>
+                        
+                      </div>
+                    </withRouter(Connect(Finishable))>,
+                    "className": "clue",
+                    "style": Object {
+                      "transition": "opacity 250ms",
+                    },
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "children": Array [
+                        <Price
+                          className=""
+                          format={null}
+                          free="Gratuit"
+                          id="deck-navigation-offer-price"
+                          value={Array []}
+                        />,
+                        <div
+                          className="separator"
+                        >
+                          -
+                        </div>,
+                        <div>
+                          
+                        </div>,
+                      ],
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "className": "",
+                          "format": null,
+                          "free": "Gratuit",
+                          "id": "deck-navigation-offer-price",
+                          "value": Array [],
+                        },
+                        "ref": null,
+                        "rendered": null,
+                        "type": [Function],
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "-",
+                          "className": "separator",
+                        },
+                        "ref": null,
+                        "rendered": "-",
+                        "type": "div",
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "",
+                        },
+                        "ref": null,
+                        "rendered": "",
+                        "type": "div",
+                      },
+                    ],
+                    "type": [Function],
+                  },
+                  "type": "div",
+                },
+              ],
+              "type": "div",
+            },
+            "type": [Function],
+          },
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {},
+          "ref": null,
+          "rendered": null,
+          "type": "span",
+        },
+      ],
+      "type": "div",
+    },
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <div
+          className="controls flex-columns items-end wrap-3"
+          style={
+            Object {
+              "backgroundImage": "url('http://localhost/mosaic-w@2x.png')",
+            }
+          }
+        >
+          <span />
+          <div
+            className="flex-rows"
+          >
+            <Draggable
+              allowAnyClick={false}
+              axis="y"
+              bounds={
+                Object {
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "top": 0,
+                }
+              }
+              cancel={null}
+              defaultClassName="react-draggable"
+              defaultClassNameDragged="react-draggable-dragged"
+              defaultClassNameDragging="react-draggable-dragging"
+              defaultPosition={
+                Object {
+                  "x": 0,
+                  "y": 0,
+                }
+              }
+              disabled={false}
+              enableUserSelectHack={true}
+              grid={null}
+              handle={null}
+              offsetParent={null}
+              onDrag={[Function]}
+              onMouseDown={[Function]}
+              onStart={[Function]}
+              onStop={[Function]}
+              position={null}
+              speed={
+                Object {
+                  "x": 1,
+                  "y": 1,
+                }
+              }
+              transform={null}
+            >
+              <div
+                id="dragButton"
+              >
+                <button
+                  className="button to-recto"
+                  id="deck-open-verso-button"
+                  onClick={[MockFunction]}
+                  onDragLeave={[MockFunction]}
+                  type="button"
+                >
+                  <Icon
+                    alt="Plus d'infos"
+                    className=" "
+                    src={null}
+                    svg="ico-slideup-w"
+                  />
+                </button>
+                <div
+                  className="clue"
+                  style={
+                    Object {
+                      "transition": "opacity 250ms",
+                    }
+                  }
+                >
+                  <withRouter(Connect(Finishable))>
+                    <Price
+                      className=""
+                      format={null}
+                      free="Gratuit"
+                      id="deck-navigation-offer-price"
+                      value={Array []}
+                    />
+                    <div
+                      className="separator"
+                    >
+                      -
+                    </div>
+                    <div>
+                      
+                    </div>
+                  </withRouter(Connect(Finishable))>
+                </div>
+              </div>
+            </Draggable>
+          </div>
+          <span />
+        </div>,
+        "id": "deck-navigation",
+        "style": Object {
+          "background": "black",
+        },
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <span />,
+            <div
+              className="flex-rows"
+            >
+              <Draggable
+                allowAnyClick={false}
+                axis="y"
+                bounds={
+                  Object {
+                    "bottom": 0,
+                    "left": 0,
+                    "right": 0,
+                    "top": 0,
+                  }
+                }
+                cancel={null}
+                defaultClassName="react-draggable"
+                defaultClassNameDragged="react-draggable-dragged"
+                defaultClassNameDragging="react-draggable-dragging"
+                defaultPosition={
+                  Object {
+                    "x": 0,
+                    "y": 0,
+                  }
+                }
+                disabled={false}
+                enableUserSelectHack={true}
+                grid={null}
+                handle={null}
+                offsetParent={null}
+                onDrag={[Function]}
+                onMouseDown={[Function]}
+                onStart={[Function]}
+                onStop={[Function]}
+                position={null}
+                speed={
+                  Object {
+                    "x": 1,
+                    "y": 1,
+                  }
+                }
+                transform={null}
+              >
+                <div
+                  id="dragButton"
+                >
+                  <button
+                    className="button to-recto"
+                    id="deck-open-verso-button"
+                    onClick={[MockFunction]}
+                    onDragLeave={[MockFunction]}
+                    type="button"
+                  >
+                    <Icon
+                      alt="Plus d'infos"
+                      className=" "
+                      src={null}
+                      svg="ico-slideup-w"
+                    />
+                  </button>
+                  <div
+                    className="clue"
+                    style={
+                      Object {
+                        "transition": "opacity 250ms",
+                      }
+                    }
+                  >
+                    <withRouter(Connect(Finishable))>
+                      <Price
+                        className=""
+                        format={null}
+                        free="Gratuit"
+                        id="deck-navigation-offer-price"
+                        value={Array []}
+                      />
+                      <div
+                        className="separator"
+                      >
+                        -
+                      </div>
+                      <div>
+                        
+                      </div>
+                    </withRouter(Connect(Finishable))>
+                  </div>
+                </div>
+              </Draggable>
+            </div>,
+            <span />,
+          ],
+          "className": "controls flex-columns items-end wrap-3",
+          "style": Object {
+            "backgroundImage": "url('http://localhost/mosaic-w@2x.png')",
+          },
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {},
+            "ref": null,
+            "rendered": null,
+            "type": "span",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <Draggable
+                allowAnyClick={false}
+                axis="y"
+                bounds={
+                  Object {
+                    "bottom": 0,
+                    "left": 0,
+                    "right": 0,
+                    "top": 0,
+                  }
+                }
+                cancel={null}
+                defaultClassName="react-draggable"
+                defaultClassNameDragged="react-draggable-dragged"
+                defaultClassNameDragging="react-draggable-dragging"
+                defaultPosition={
+                  Object {
+                    "x": 0,
+                    "y": 0,
+                  }
+                }
+                disabled={false}
+                enableUserSelectHack={true}
+                grid={null}
+                handle={null}
+                offsetParent={null}
+                onDrag={[Function]}
+                onMouseDown={[Function]}
+                onStart={[Function]}
+                onStop={[Function]}
+                position={null}
+                speed={
+                  Object {
+                    "x": 1,
+                    "y": 1,
+                  }
+                }
+                transform={null}
+              >
+                <div
+                  id="dragButton"
+                >
+                  <button
+                    className="button to-recto"
+                    id="deck-open-verso-button"
+                    onClick={[MockFunction]}
+                    onDragLeave={[MockFunction]}
+                    type="button"
+                  >
+                    <Icon
+                      alt="Plus d'infos"
+                      className=" "
+                      src={null}
+                      svg="ico-slideup-w"
+                    />
+                  </button>
+                  <div
+                    className="clue"
+                    style={
+                      Object {
+                        "transition": "opacity 250ms",
+                      }
+                    }
+                  >
+                    <withRouter(Connect(Finishable))>
+                      <Price
+                        className=""
+                        format={null}
+                        free="Gratuit"
+                        id="deck-navigation-offer-price"
+                        value={Array []}
+                      />
+                      <div
+                        className="separator"
+                      >
+                        -
+                      </div>
+                      <div>
+                        
+                      </div>
+                    </withRouter(Connect(Finishable))>
+                  </div>
+                </div>
+              </Draggable>,
+              "className": "flex-rows",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "allowAnyClick": false,
+                "axis": "y",
+                "bounds": Object {
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "top": 0,
+                },
+                "cancel": null,
+                "children": <div
+                  id="dragButton"
+                >
+                  <button
+                    className="button to-recto"
+                    id="deck-open-verso-button"
+                    onClick={[MockFunction]}
+                    onDragLeave={[MockFunction]}
+                    type="button"
+                  >
+                    <Icon
+                      alt="Plus d'infos"
+                      className=" "
+                      src={null}
+                      svg="ico-slideup-w"
+                    />
+                  </button>
+                  <div
+                    className="clue"
+                    style={
+                      Object {
+                        "transition": "opacity 250ms",
+                      }
+                    }
+                  >
+                    <withRouter(Connect(Finishable))>
+                      <Price
+                        className=""
+                        format={null}
+                        free="Gratuit"
+                        id="deck-navigation-offer-price"
+                        value={Array []}
+                      />
+                      <div
+                        className="separator"
+                      >
+                        -
+                      </div>
+                      <div>
+                        
+                      </div>
+                    </withRouter(Connect(Finishable))>
+                  </div>
+                </div>,
+                "defaultClassName": "react-draggable",
+                "defaultClassNameDragged": "react-draggable-dragged",
+                "defaultClassNameDragging": "react-draggable-dragging",
+                "defaultPosition": Object {
+                  "x": 0,
+                  "y": 0,
+                },
+                "disabled": false,
+                "enableUserSelectHack": true,
+                "grid": null,
+                "handle": null,
+                "offsetParent": null,
+                "onDrag": [Function],
+                "onMouseDown": [Function],
+                "onStart": [Function],
+                "onStop": [Function],
+                "position": null,
+                "speed": Object {
+                  "x": 1,
+                  "y": 1,
+                },
+                "transform": null,
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <button
+                      className="button to-recto"
+                      id="deck-open-verso-button"
+                      onClick={[MockFunction]}
+                      onDragLeave={[MockFunction]}
+                      type="button"
+                    >
+                      <Icon
+                        alt="Plus d'infos"
+                        className=" "
+                        src={null}
+                        svg="ico-slideup-w"
+                      />
+                    </button>,
+                    <div
+                      className="clue"
+                      style={
+                        Object {
+                          "transition": "opacity 250ms",
+                        }
+                      }
+                    >
+                      <withRouter(Connect(Finishable))>
+                        <Price
+                          className=""
+                          format={null}
+                          free="Gratuit"
+                          id="deck-navigation-offer-price"
+                          value={Array []}
+                        />
+                        <div
+                          className="separator"
+                        >
+                          -
+                        </div>
+                        <div>
+                          
+                        </div>
+                      </withRouter(Connect(Finishable))>
+                    </div>,
+                  ],
+                  "id": "dragButton",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <Icon
+                        alt="Plus d'infos"
+                        className=" "
+                        src={null}
+                        svg="ico-slideup-w"
+                      />,
+                      "className": "button to-recto",
+                      "id": "deck-open-verso-button",
+                      "onClick": [MockFunction],
+                      "onDragLeave": [MockFunction],
+                      "type": "button",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "alt": "Plus d'infos",
+                        "className": " ",
+                        "src": null,
+                        "svg": "ico-slideup-w",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    "type": "button",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <withRouter(Connect(Finishable))>
+                        <Price
+                          className=""
+                          format={null}
+                          free="Gratuit"
+                          id="deck-navigation-offer-price"
+                          value={Array []}
+                        />
+                        <div
+                          className="separator"
+                        >
+                          -
+                        </div>
+                        <div>
+                          
+                        </div>
+                      </withRouter(Connect(Finishable))>,
+                      "className": "clue",
+                      "style": Object {
+                        "transition": "opacity 250ms",
+                      },
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "children": Array [
+                          <Price
+                            className=""
+                            format={null}
+                            free="Gratuit"
+                            id="deck-navigation-offer-price"
+                            value={Array []}
+                          />,
+                          <div
+                            className="separator"
+                          >
+                            -
+                          </div>,
+                          <div>
+                            
+                          </div>,
+                        ],
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "className": "",
+                            "format": null,
+                            "free": "Gratuit",
+                            "id": "deck-navigation-offer-price",
+                            "value": Array [],
+                          },
+                          "ref": null,
+                          "rendered": null,
+                          "type": [Function],
+                        },
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": "-",
+                            "className": "separator",
+                          },
+                          "ref": null,
+                          "rendered": "-",
+                          "type": "div",
+                        },
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": "",
+                          },
+                          "ref": null,
+                          "rendered": "",
                           "type": "div",
                         },
                       ],

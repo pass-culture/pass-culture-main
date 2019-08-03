@@ -1,42 +1,32 @@
 import moment from 'moment'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
+import withSizes from 'react-sizes'
+import { compose } from 'redux'
 import { mergeData, requestData } from 'redux-saga-data'
 
-import currentRecommendationSelector from '../../../../selectors/currentRecommendation/currentRecommendation'
-import nextRecommendationSelector from '../../../../selectors/nextRecommendation'
-import previousRecommendationSelector from '../../../../selectors/previousRecommendation'
-
-const noop = () => {}
-
-const getSelectorByCardPosition = position => {
-  switch (position) {
-    case 'current':
-      return currentRecommendationSelector
-    case 'previous':
-      return previousRecommendationSelector
-    case 'next':
-      return nextRecommendationSelector
-    default:
-      return noop
-  }
-}
+import Card from './Card'
+import { getRecommendationSelectorByCardPosition } from '../../helpers'
+import { recommendationNormalizer } from '../../../../../utils/normalizers'
 
 export const mapStateToProps = (state, ownProps) => {
-  const { mediationId, offerId } = ownProps.match.params
-  const recommendationSelector = getSelectorByCardPosition(ownProps.position)
-  const recommendation = recommendationSelector(state, offerId, mediationId, ownProps.position)
+  const { match, position } = ownProps
+  const { params } = match
+  const { mediationId, offerId } = params
+  const recommendationSelector = getRecommendationSelectorByCardPosition(position)
+  const recommendation = recommendationSelector(state, offerId, mediationId)
   return {
-    areDetailsVisible: state.card.areDetailsVisible,
     recommendation,
   }
 }
 
-export const mapDispatchToProps = (dispatch, ownProps) => ({
+export const mapDispatchToProps = dispatch => ({
   handleClickRecommendation: recommendation => {
     const config = {
       apiPath: `recommendations/${recommendation.id}`,
       body: { isClicked: true },
       method: 'PATCH',
-      stateKey: 'recommendations',
+      normalizer: recommendationNormalizer,
     }
 
     dispatch(requestData(config))
@@ -53,17 +43,18 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
       })
     )
   },
-
-  loadRecommendation: () => {
-    const { match } = ownProps
-    const { params } = match
-    const { offerId } = params
-
-    dispatch(
-      requestData({
-        apiPath: `recommendations/offers/${offerId}`,
-        method: 'GET',
-      })
-    )
-  },
 })
+
+const mapSizeToProps = ({ width, height }) => ({
+  height,
+  width: Math.min(width, 500), // body{max-width: 500px;}
+})
+
+export default compose(
+  withSizes(mapSizeToProps),
+  withRouter,
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(Card)

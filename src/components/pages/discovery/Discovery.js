@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types'
-import React, { Fragment } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import { Route } from 'react-router-dom'
 
-import DeckContainer from './deck/DeckContainer'
-import BookingContainer from '../../booking/BookingContainer'
-import BackLink from '../../layout/Header/BackLink'
+import DeckContainer from './Deck/DeckContainer'
+import BookingContainer from '../../layout/Booking/BookingContainer'
+import AbsoluteFooterContainer from '../../layout/AbsoluteFooter/AbsoluteFooterContainer'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
-import Footer from '../../layout/Footer'
+import getAreDetailsVisible from '../../../helpers/getAreDetailsVisible'
 
-class Discovery extends React.PureComponent {
+class Discovery extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -29,7 +29,7 @@ class Discovery extends React.PureComponent {
     } = this.props
     showPasswordChangedPopin()
     if (shouldReloadRecommendations) {
-      this.onHandleDataRequest()
+      this.onRequestPutRecommendations()
       saveLoadRecommendationsTimestamp()
     } else {
       redirectToFirstRecommendationIfNeeded(recommendations)
@@ -42,6 +42,11 @@ class Discovery extends React.PureComponent {
     if (prevLocation.pathname !== location.pathname && location.pathname === '/decouverte') {
       redirectToFirstRecommendationIfNeeded(recommendations)
     }
+  }
+
+  componentWillUnmount() {
+    const { resetPageData } = this.props
+    resetPageData()
   }
 
   handleRequestFail = () => {
@@ -71,8 +76,9 @@ class Discovery extends React.PureComponent {
     })
   }
 
-  onHandleDataRequest = () => {
+  onRequestPutRecommendations = () => {
     const {
+      currentRecommendation,
       recommendations,
       readRecommendations,
       loadRecommendations,
@@ -88,6 +94,7 @@ class Discovery extends React.PureComponent {
       loadRecommendations(
         this.handleRequestSuccess,
         this.handleRequestFail,
+        currentRecommendation,
         recommendations,
         readRecommendations,
         shouldReloadRecommendations
@@ -95,18 +102,25 @@ class Discovery extends React.PureComponent {
     })
   }
 
-  rendeBookingRoute = route => <BookingContainer {...route} />
+  renderBooking = route => {
+    const { currentRecommendation } = this.props
+    return (<BookingContainer
+      {...route}
+      recommendation={currentRecommendation}
+            />)
+  }
 
-  renderDeckROute = route => (
+  renderDeck = route => (
     <DeckContainer
       {...route}
-      handleDataRequest={this.onHandleDataRequest}
+      handleRequestPutRecommendations={this.onRequestPutRecommendations}
     />
   )
 
   render() {
-    const { hasError, isEmpty, isLoading } = this.state
     const { match } = this.props
+    const { hasError, isEmpty, isLoading } = this.state
+    const areDetailsVisible = getAreDetailsVisible(match)
 
     return (
       <Fragment>
@@ -114,24 +128,22 @@ class Discovery extends React.PureComponent {
           className="discovery-page no-padding page with-footer"
           role="main"
         >
-          {(match.params.view === 'verso' || match.params.mediationId === 'verso') && (
-            <BackLink backTo="/reservations" />
-          )}
           {!isEmpty && (
             <Fragment>
               <Route
-                key="route-discovery-booking"
-                path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:view(booking)/:bookingId?/:view(cancelled)?/:menu(menu)?"
-                render={this.rendeBookingRoute}
+                key="route-discovery-deck"
+                path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)?/:bookings(reservations)?/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:menu(menu)?"
+                render={this.renderDeck}
               />
               <Route
-                key="route-discovery-deck"
-                path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+|verso)?/:view(verso|cancelled)?/:bookingId?/:menu(menu)?"
-                render={this.renderDeckROute}
+                key="route-discovery-booking"
+                path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:bookings(reservations)/:bookingId(creation|[A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?/:menu(menu)?"
+                render={this.renderBooking}
               />
             </Fragment>
           )}
-          <Footer
+          <AbsoluteFooterContainer
+            areDetailsVisible={areDetailsVisible}
             borderTop
             id="deck-footer"
           />
@@ -147,25 +159,31 @@ class Discovery extends React.PureComponent {
 }
 
 Discovery.defaultProps = {
+  currentRecommendation: null,
   readRecommendations: null,
   recommendations: null,
-  withBackButton: false,
 }
 
 Discovery.propTypes = {
+  currentRecommendation: PropTypes.shape(),
   loadRecommendations: PropTypes.func.isRequired,
-  location: PropTypes.shape().isRequired,
-  match: PropTypes.shape().isRequired,
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired,
+  }).isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      view: PropTypes.string,
+    }),
+  }).isRequired,
   onRequestFailRedirectToHome: PropTypes.func.isRequired,
   readRecommendations: PropTypes.arrayOf(PropTypes.shape()),
   recommendations: PropTypes.arrayOf(PropTypes.shape()),
   redirectToFirstRecommendationIfNeeded: PropTypes.func.isRequired,
+  resetPageData: PropTypes.func.isRequired,
   resetReadRecommendations: PropTypes.func.isRequired,
-  resetRecommendations: PropTypes.func.isRequired,
   saveLoadRecommendationsTimestamp: PropTypes.func.isRequired,
   shouldReloadRecommendations: PropTypes.bool.isRequired,
   showPasswordChangedPopin: PropTypes.func.isRequired,
-  withBackButton: PropTypes.bool,
 }
 
 export default Discovery

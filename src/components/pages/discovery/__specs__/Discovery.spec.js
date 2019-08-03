@@ -1,7 +1,6 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import BackLink from '../../../layout/Header/BackLink'
 import Discovery from '../Discovery'
 
 describe('src | components | pages | discovery | Discovery', () => {
@@ -15,6 +14,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       history: {},
       loadRecommendations: jest.fn(),
       location: {
+        pathname: '',
         search: '',
       },
       match: {
@@ -25,6 +25,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       redirectToFirstRecommendationIfNeeded: jest.fn(),
       resetReadRecommendations: jest.fn(),
       resetRecommendations: jest.fn(),
+      resetRecommendationsAndBookings: jest.fn(),
       saveLoadRecommendationsTimestamp: jest.fn(),
       shouldReloadRecommendations: false,
       showPasswordChangedPopin: jest.fn(),
@@ -54,49 +55,6 @@ describe('src | components | pages | discovery | Discovery', () => {
         isLoading: false,
       }
       expect(wrapper.state()).toStrictEqual(expected)
-    })
-  })
-
-  describe.skip('handleDataRequest', () => {
-    describe('one case', () => {
-      it('should update recommendation infos using API when Main component is rendered', () => {
-        // given
-        shallow(<Discovery {...props} />)
-
-        // then
-        const expectedRequestDataAction = {
-          config: {
-            apiPath: '/recommendations?',
-            body: {
-              readRecommendations: null,
-              seenRecommendationIds: null,
-            },
-            handleFail: expect.any(Function),
-            handleSuccess: expect.any(Function),
-            method: 'PUT',
-            normalizer: {
-              bookings: 'bookings',
-            },
-          },
-          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?',
-        }
-        expect(props.dispatch.mock.calls).toHaveLength(1)
-        expect(props.dispatch.mock.calls[0][0]).toStrictEqual(expectedRequestDataAction)
-      })
-    })
-  })
-
-  describe('render()', () => {
-    it('should display the back button when I am on the back of an offer', () => {
-      // given
-      props.match.params.view = 'verso'
-      const wrapper = shallow(<Discovery {...props} />)
-
-      // when
-      const backLink = wrapper.find(BackLink)
-
-      // then
-      expect(backLink).toHaveLength(1)
     })
   })
 })

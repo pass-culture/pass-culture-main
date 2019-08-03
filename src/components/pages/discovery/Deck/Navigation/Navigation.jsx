@@ -1,19 +1,12 @@
-import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
-import { compose } from 'redux'
 import Draggable from 'react-draggable'
 
-import Icon from '../../layout/Icon'
-import Price from '../../layout/Price'
-import Finishable from '../../layout/Finishable'
-import { getHeaderColor } from '../../../utils/colors'
-import { getPriceRangeFromStocks } from '../../../helpers'
-import { isRecommendationOfferFinished } from '../../../helpers/isRecommendationOfferFinished'
-import { ROOT_PATH } from '../../../utils/config'
-import { getPageY } from '../../../utils/getPageY'
+import Icon from '../../../../layout/Icon'
+import Price from '../../../../layout/Price'
+import FinishableContainer from '../../../../layout/Finishable/FinishableContainer'
+import { ROOT_PATH } from '../../../../../utils/config'
+import { getPageY } from '../../../../../utils/getPageY'
 
 const toRectoDraggableBounds = {
   bottom: 0,
@@ -22,8 +15,8 @@ const toRectoDraggableBounds = {
   top: 0,
 }
 
-export class RawDeckNavigation extends React.PureComponent {
-  handleOnStop = event => {
+export class Navigation extends React.PureComponent {
+  handleStopDrag = event => {
     const { flipHandler, height, verticalSlideRatio } = this.props
     const shiftedDistance = height - getPageY(event)
 
@@ -76,18 +69,14 @@ export class RawDeckNavigation extends React.PureComponent {
   }
 
   render() {
-    const { isFinished, recommendation, flipHandler, transitionTimeout } = this.props
-
-    const { distance, offer } = recommendation || {}
-    let distanceClue = ' '
-    if (offer && offer.venue) {
-      distanceClue = offer.venue.isVirtual ? 'offre en ligne' : distance
-    }
-    const firstThumbDominantColor = get(recommendation, 'firstThumbDominantColor')
-    const headerColor = getHeaderColor(firstThumbDominantColor)
-    const priceRange = getPriceRangeFromStocks(offer && offer.stocks)
-
-    const backgroundGradient = `linear-gradient(to bottom, rgba(0,0,0,0) 0%,${headerColor} 30%,${headerColor} 100%)`
+    const {
+      backgroundGradient,
+      distanceClue,
+      flipHandler,
+      priceRange,
+      separator,
+      transitionTimeout
+    } = this.props
     return (
       <div
         id="deck-navigation"
@@ -103,7 +92,7 @@ export class RawDeckNavigation extends React.PureComponent {
               <Draggable
                 axis="y"
                 bounds={toRectoDraggableBounds}
-                onStop={this.handleOnStop}
+                onStop={this.handleStopDrag}
               >
                 <div id="dragButton">
                   <button
@@ -123,15 +112,15 @@ export class RawDeckNavigation extends React.PureComponent {
                     className="clue"
                     style={{ transition: `opacity ${transitionTimeout}ms` }}
                   >
-                    <Finishable finished={isFinished}>
+                    <FinishableContainer>
                       <Price
                         free="Gratuit"
                         id="deck-navigation-offer-price"
                         value={priceRange}
                       />
-                      <div className="separator">{offer ? '\u00B7' : ' '}</div>
+                      <div className="separator">{separator}</div>
                       <div>{distanceClue}</div>
-                    </Finishable>
+                    </FinishableContainer>
                   </div>
                 </div>
               </Draggable>
@@ -144,40 +133,28 @@ export class RawDeckNavigation extends React.PureComponent {
   }
 }
 
-RawDeckNavigation.defaultProps = {
+Navigation.defaultProps = {
+  backgroundGradient: null,
+  distanceClue: null,
   flipHandler: null,
   handleGoNext: null,
   handleGoPrevious: null,
-  isFinished: false,
-  recommendation: null,
+  priceRange: null,
   transitionTimeout: 250,
   verticalSlideRatio: 0.3,
 }
 
-RawDeckNavigation.propTypes = {
+Navigation.propTypes = {
+  backgroundGradient: PropTypes.string,
+  distanceClue: PropTypes.string,
   flipHandler: PropTypes.func,
   handleGoNext: PropTypes.func,
   handleGoPrevious: PropTypes.func,
   height: PropTypes.number.isRequired,
-  isFinished: PropTypes.bool,
-  recommendation: PropTypes.shape(),
+  priceRange: PropTypes.arrayOf(PropTypes.number),
+  separator: PropTypes.string.isRequired,
   transitionTimeout: PropTypes.number,
   verticalSlideRatio: PropTypes.number,
 }
 
-const mapStateToProps = (state, ownProps) => {
-  const { recommendation } = ownProps
-  const { offerId } = recommendation
-  const isFinished = isRecommendationOfferFinished(recommendation, offerId)
-
-  return {
-    isFinished,
-  }
-}
-
-const DeckNavigation = compose(
-  withRouter,
-  connect(mapStateToProps)
-)(RawDeckNavigation)
-
-export default DeckNavigation
+export default Navigation
