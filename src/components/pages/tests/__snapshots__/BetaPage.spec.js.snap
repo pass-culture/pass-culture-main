@@ -10,7 +10,7 @@ initialize {
     "children": Array [
       Object {
         "attribs": Object {
-          "class": "pc-main padded flex-rows flex-center flex-0",
+          "class": "pc-main padded flex-rows flex-center",
           "role": "main",
         },
         "children": Array [
@@ -892,7 +892,7 @@ initialize {
         "parent": [Circular],
         "prev": Object {
           "attribs": Object {
-            "class": "pc-main padded flex-rows flex-center flex-0",
+            "class": "pc-main padded flex-rows flex-center",
             "role": "main",
           },
           "children": Array [
