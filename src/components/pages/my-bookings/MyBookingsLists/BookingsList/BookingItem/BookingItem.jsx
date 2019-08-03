@@ -1,65 +1,110 @@
+import moment from 'moment'
 import PropTypes from 'prop-types'
 import React from 'react'
+import { capitalize } from 'react-final-form-utils'
 import { Link } from 'react-router-dom'
 
-import Icon from '../../../layout/Icon'
-import Ribbon from '../../../layout/Ribbon'
+import Icon from '../../../../../layout/Icon'
+import Ribbon from '../../../../../layout/Ribbon'
+import { getTimezone } from '../../../../../../utils/timezone'
 
-const MyBooking = ({
-  name,
-  ribbon,
-  stringifyDate,
-  thumbUrl,
-  token,
-  versoUrl,
-}) => (
-  <li
-    className="mb-my-booking"
-    data-token={token}
-  >
-    <Link
-      className="teaser-link"
-      to={versoUrl}
+export const stringify = date => timeZone =>
+  capitalize(
+    moment(date)
+      .tz(timeZone)
+      .format('dddd DD/MM/YYYY à H:mm')
+  )
+
+const getDetailsUrl = (bookingId, location, match) => {
+  const { pathname, search } = location
+  const { params } = match
+  const { details } = params
+  if (details === 'details') {
+    return `${pathname}${search}`
+  }
+  return `${pathname}/details/${bookingId}${search}`
+}
+
+const BookingItem = ({ booking, location, match, offer, ribbon }) => {
+  const { id: bookingId, stock, token, thumbUrl } = booking
+  const { beginningDatetime } = stock
+  const { label, type } = ribbon || {}
+  const { product, venue } = offer
+  const { name: productName } = product
+  const { departementCode } = venue
+  const detailsUrl = getDetailsUrl(bookingId, location, match)
+  const timeZone = getTimezone(departementCode)
+  const stringifyDate = beginningDatetime && stringify(beginningDatetime)(timeZone)
+  return (
+    <li
+      className="my-bookings-my-booking"
+      data-token={token.toLowerCase()}
     >
-      <div className="teaser-thumb">{thumbUrl && <img
-        alt=""
-        src={thumbUrl}
-                                                 />}
-      </div>
-      <div className="teaser-wrapper">
-        <div className="mb-heading">
-          <div className="teaser-title">{name}</div>
-          <div className="teaser-sub-title">{stringifyDate}</div>
+      <Link
+        className="teaser-link"
+        to={detailsUrl}
+      >
+        <div className="teaser-thumb">{thumbUrl && <img
+          alt=""
+          src={thumbUrl}
+                                                   />}
         </div>
-        <div className="mb-token">{token}</div>
-      </div>
-      <div className="teaser-arrow">
-        {ribbon &&
-          <Ribbon
-            label={ribbon.label}
-            type={ribbon.type}
-          />}
-        <Icon
-          className="teaser-arrow-img"
-          svg="ico-next-S"
-        />
-      </div>
-    </Link>
-  </li>
-)
+        <div className="teaser-wrapper">
+          <div className="my-bookings-heading">
+            <div className="teaser-title">{productName}</div>
+            <div className="teaser-sub-title">{stringifyDate || 'Permanent'}</div>
+          </div>
+          <div className="my-bookings-token">{token}</div>
+        </div>
+        <div className="teaser-arrow">
+          {ribbon && <Ribbon
+            label={label}
+            type={type}
+                     />}
+          <Icon
+            className="teaser-arrow-img"
+            svg="ico-next-S"
+          />
+        </div>
+      </Link>
+    </li>
+  )
+}
 
-MyBooking.defaultProps = {
+BookingItem.defaultProps = {
   ribbon: null,
-  thumbUrl: null,
 }
 
-MyBooking.propTypes = {
-  name: PropTypes.string.isRequired,
-  ribbon: PropTypes.shape(),
-  stringifyDate: PropTypes.string.isRequired,
-  thumbUrl: PropTypes.string,
-  token: PropTypes.string.isRequired,
-  versoUrl: PropTypes.string.isRequired,
+BookingItem.propTypes = {
+  booking: PropTypes.shape({
+    id: PropTypes.string,
+    stock: PropTypes.shape({
+      beginningDatetime: PropTypes.string,
+    }),
+    thumbUrl: PropTypes.string,
+    token: PropTypes.string.isRequired,
+  }).isRequired,
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired,
+    search: PropTypes.string.isRequired,
+  }).isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      details: PropTypes.string,
+    }).isRequired,
+  }).isRequired,
+  offer: PropTypes.shape({
+    product: PropTypes.shape({
+      name: PropTypes.string,
+    }).isRequired,
+    venue: PropTypes.shape({
+      departementCode: PropTypes.string,
+    }).isRequired,
+  }).isRequired,
+  ribbon: PropTypes.shape({
+    label: PropTypes.string,
+    type: PropTypes.string,
+  }),
 }
 
-export default MyBooking
+export default BookingItem

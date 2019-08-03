@@ -2,26 +2,31 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import { withRequiredLogin } from '../../hocs'
 import MyBookings from './MyBookings'
-import { selectSoonBookings, selectMyBookings } from '../../../selectors'
+import selectValidBookings from './selectors/selectValidBookings'
+import { withRequiredLogin } from '../../hocs'
+import { resetPageData } from '../../../reducers/data'
+import { bookingNormalizer } from '../../../utils/normalizers'
 
-export const mapStateToProps = state => ({
-  myBookings: selectMyBookings(state),
-  soonBookings: selectSoonBookings(state),
-})
+export const mapStateToProps = state => {
+  const validBookings = selectValidBookings(state)
+  return {
+    validBookings,
+  }
+}
 
 export const mapDispatchToProps = dispatch => ({
-  getMyBookings: (handleFail, handleSuccess) => {
+  requestGetBookings: (handleFail, handleSuccess) => {
     dispatch(
       requestData({
         apiPath: '/bookings',
         handleFail,
         handleSuccess,
-        stateKey: 'bookings',
+        normalizer: bookingNormalizer,
       })
     )
   },
+  resetPageData: () => dispatch(resetPageData()),
 })
 
 export default compose(

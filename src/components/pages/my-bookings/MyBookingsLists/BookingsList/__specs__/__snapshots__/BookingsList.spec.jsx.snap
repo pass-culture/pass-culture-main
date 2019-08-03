@@ -1,51 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | my-bookings | MyBookings should match the snapshot 1`] = `
+exports[`src | components | pages | MyBookings | BookingsList should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <MyBookings
-    location={
-      Object {
-        "pathname": "/reservations",
-        "search": "",
-      }
-    }
-    match={
-      Object {
-        "params": Object {},
-      }
-    }
-    myBookings={
-      Array [
-        Object {
-          "id": 1,
-        },
-      ]
-    }
-    requestGetBookings={
-      [MockFunction] {
-        "calls": Array [
-          Array [
-            [Function],
-            [Function],
-          ],
-        ],
-        "results": Array [
-          Object {
-            "type": "return",
-            "value": undefined,
-          },
-        ],
-      }
-    }
-    resetPageData={[MockFunction]}
-    soonBookings={
-      Array [
-        Object {
-          "id": 2,
-        },
-      ]
-    }
+  Symbol(enzyme.__unrendered__): <Unknown
+    bookings={Array []}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -59,27 +18,25 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "function",
+    "nodeType": "host",
     "props": Object {
-      "hasError": false,
-      "isLoading": true,
+      "children": Array [],
     },
     "ref": null,
-    "rendered": null,
-    "type": [Function],
+    "rendered": Array [],
+    "type": "ul",
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "function",
+      "nodeType": "host",
       "props": Object {
-        "hasError": false,
-        "isLoading": true,
+        "children": Array [],
       },
       "ref": null,
-      "rendered": null,
-      "type": [Function],
+      "rendered": Array [],
+      "type": "ul",
     },
   ],
   Symbol(enzyme.__options__): Object {
@@ -108,6 +65,5 @@ ShallowWrapper {
     Symbol(enzyme.__providerValues__): undefined,
   },
   Symbol(enzyme.__providerValues__): Map {},
-  Symbol(enzyme.__childContext__): null,
 }
 `;

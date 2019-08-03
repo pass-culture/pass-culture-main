@@ -1,26 +1,7 @@
-import { mapStateToProps, mapDispatchToProps } from '../MyBookingsContainer'
+import { mapDispatchToProps } from '../MyBookingsContainer'
+import { bookingNormalizer } from '../../../../utils/normalizers'
 
 describe('src | components | pages | my-bookings | MyBookings', () => {
-  describe('mapStateToProps()', () => {
-    it('should return my bookings', () => {
-      // given
-      const state = {
-        data: {
-          bookings: [],
-        },
-      }
-
-      // when
-      const myBookings = mapStateToProps(state)
-
-      // then
-      expect(myBookings).toStrictEqual({
-        myBookings: [],
-        soonBookings: [],
-      })
-    })
-  })
-
   describe('mapDispatchToProps()', () => {
     it('should dispatch my bookings', () => {
       // given
@@ -29,7 +10,7 @@ describe('src | components | pages | my-bookings | MyBookings', () => {
       const handleSuccess = jest.fn()
 
       // when
-      mapDispatchToProps(dispatch).getMyBookings(handleFail, handleSuccess)
+      mapDispatchToProps(dispatch).requestGetBookings(handleFail, handleSuccess)
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
@@ -38,9 +19,9 @@ describe('src | components | pages | my-bookings | MyBookings', () => {
           handleFail: expect.any(Function),
           handleSuccess: expect.any(Function),
           method: 'GET',
-          stateKey: 'bookings',
+          normalizer: bookingNormalizer,
         },
-        type: 'REQUEST_DATA_GET_BOOKINGS',
+        type: 'REQUEST_DATA_GET_/BOOKINGS',
       })
     })
   })

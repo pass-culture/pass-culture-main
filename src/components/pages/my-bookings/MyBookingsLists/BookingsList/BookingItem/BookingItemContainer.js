@@ -1,34 +1,21 @@
-import moment from 'moment'
-import { capitalize } from 'react-final-form-utils'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
+import { compose } from 'redux'
 
-import MyBooking from './MyBooking'
-import { humanizeRelativeDate } from '../../../../utils/date/date'
-import { getTimezone } from '../../../../utils/timezone'
-import { versoUrl } from '../../../../utils/url/url'
+import BookingItem from './BookingItem'
+import getIsFinished from '../../../../../../helpers/getIsFinished'
+import selectMediationById from '../../../../../../selectors/selectMediationById'
+import selectOfferById from '../../../../../../selectors/selectOfferById'
+import selectRecommendationById from '../../../../../../selectors/selectRecommendationById'
+import getHumanizeRelativeDate from '../../../../../../utils/date/getHumanizeRelativeDate'
 
-export const stringify = date => timeZone =>
-  capitalize(
-    moment(date)
-      .tz(timeZone)
-      .format('dddd DD/MM/YYYY à H:mm')
-  )
-
-export const updatePropsWithDateElements = (beginningDateTime, departementCode) => {
-  const timeZone = getTimezone(departementCode)
-  let stringifyDate = 'Permanent'
-
-  if (beginningDateTime) {
-    stringifyDate = stringify(beginningDateTime)(timeZone)
+const ribbonLabelAndType = (isCancelled, isFinished, humanizeRelativeDate = '', isUsed) => {
+  if (isUsed) {
+    return {
+      label: 'Terminé',
+      type: 'finished',
+    }
   }
-
-  return stringifyDate
-}
-
-export const isFinished = endDateTime =>
-  endDateTime !== null && new Date(endDateTime).getTime() - Date.now() < 0
-
-export const ribbonLabelAndType = (isCancelled, isFinished, humanizeRelativeDate = '') => {
   if (!isCancelled && humanizeRelativeDate === 'Aujourd’hui') {
     return {
       label: 'Aujourd’hui',
@@ -56,32 +43,29 @@ export const ribbonLabelAndType = (isCancelled, isFinished, humanizeRelativeDate
 
 export const mapStateToProps = (state, ownProps) => {
   const { booking } = ownProps
-  const { isCancelled, stock } = booking
-  const { beginningDatetime: beginningDateTime, endDatetime: endDateTime } = stock
-  const {
-    resolvedOffer: {
-      id: offerId = '',
-      product: { name = '' },
-      venue: { departementCode = '' },
-    },
-  } = stock
-  const {
-    recommendation: { mediationId = '', thumbUrl = '' },
-    token = '',
-  } = booking
+  const { isCancelled, isUsed, recommendationId, stock } = booking
+  const { beginningDatetime } = stock
+  const humanizeRelativeBeginningDate =
+    beginningDatetime && getHumanizeRelativeDate(beginningDatetime)
+
+  const recommendation = selectRecommendationById(state, recommendationId) || {}
+  const mediation = selectMediationById(state, recommendation.mediationId)
+  const offer = selectOfferById(state, booking.stock.offerId)
+
+  const isFinished = getIsFinished(offer, mediation, booking)
+
+  const ribbon = ribbonLabelAndType(isCancelled, isFinished, humanizeRelativeBeginningDate, isUsed)
 
   return {
-    name,
-    versoUrl: versoUrl(offerId, mediationId),
-    thumbUrl,
-    token: token.toLowerCase(),
-    ribbon: ribbonLabelAndType(
-      isCancelled,
-      isFinished(endDateTime),
-      humanizeRelativeDate(beginningDateTime)
-    ),
-    stringifyDate: updatePropsWithDateElements(beginningDateTime, departementCode),
+    isFinished,
+    mediation,
+    offer,
+    recommendation,
+    ribbon,
   }
 }
 
-export default connect(mapStateToProps)(MyBooking)
+export default compose(
+  withRouter,
+  connect(mapStateToProps)
+)(BookingItem)
