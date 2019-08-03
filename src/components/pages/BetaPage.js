@@ -9,7 +9,7 @@ export const RawBetaPage = () => (
     id="beta-page"
   >
     <main
-      className="pc-main padded flex-rows flex-center flex-0"
+      className="pc-main padded flex-rows flex-center"
       role="main"
     >
       <h1 className="text-left fs32">
