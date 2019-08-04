@@ -19,7 +19,8 @@ export const mapStateToProps = (state, ownProps) => {
   return {
     bookables,
     booking,
-    recommendation
+    recommendation,
+    offer,
   }
 }
 

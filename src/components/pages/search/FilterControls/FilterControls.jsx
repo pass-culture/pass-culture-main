@@ -80,7 +80,7 @@ class FilterControls extends Component {
     })
 
     query.change(INITIAL_FILTER_PARAMS, {
-      pathname: '/recherche/resultats',
+      pathname: '/recherche/resultats/tout',
     })
   }
 
