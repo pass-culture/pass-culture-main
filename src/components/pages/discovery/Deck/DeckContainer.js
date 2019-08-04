@@ -18,16 +18,9 @@ export const mapStateToProps = (state, ownProps) => {
   const { params } = match
   const { mediationId, offerId } = params
 
-  const currentRecommendation = selectCurrentRecommendation(
-    state,
-    offerId,
-    mediationId
-  )
+  const currentRecommendation = selectCurrentRecommendation(state, offerId, mediationId)
   const { mediationId: currentMediationId } = currentRecommendation || {}
-  const currentMediation = selectMediationById(
-    state,
-    currentMediationId
-  )
+  const currentMediation = selectMediationById(state, currentMediationId)
   const { thumbCount, tutoIndex } = currentMediation || {}
 
   const recommendations = selectUniqAndIndexifiedRecommendations(state)

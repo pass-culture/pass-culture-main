@@ -29,7 +29,7 @@ const selectBookingByMatch = createCachedSelector(
     }
     if (favorite) {
       const offer = selectOfferById({ data: { offers } }, favorite.offerId)
-      const { stocks } = offer
+      const { stocks } = offer || {}
       const firstMatchingBooking = selectFirstMatchingBookingByStocks(
         { data: { bookings } },
         stocks
@@ -38,7 +38,7 @@ const selectBookingByMatch = createCachedSelector(
     }
     if (recommendation) {
       const offer = selectOfferById({ data: { offers } }, recommendation.offerId)
-      const { stocks } = offer
+      const { stocks } = offer || {}
       const firstMatchingBooking = selectFirstMatchingBookingByStocks(
         { data: { bookings } },
         stocks
