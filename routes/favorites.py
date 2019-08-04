@@ -34,11 +34,11 @@ def add_to_favorite():
 
     return jsonify(_serialize_favorite(favorite)), 201
 
-
+@app.route('/favorites/<offer_id>', methods=['DELETE'])
 @app.route('/favorites/<offer_id>/<mediation_id>', methods=['DELETE'])
 @feature_required(FeatureToggle.FAVORITE_OFFER)
 @login_required
-def delete_favorite(offer_id, mediation_id):
+def delete_favorite(offer_id, mediation_id=None):
     dehumanized_offer_id = dehumanize(offer_id)
     dehumanized_mediation_id = dehumanize(mediation_id)
 
@@ -46,10 +46,11 @@ def delete_favorite(offer_id, mediation_id):
                                                           dehumanized_offer_id,
                                                           current_user.id) \
         .first_or_404()
+    favorite_id = favorite.id
 
     PcObject.delete(favorite)
 
-    return jsonify(favorite.as_dict()), 200
+    return jsonify({ "id": favorite_id }), 200
 
 
 @app.route('/favorites', methods=['GET'])
