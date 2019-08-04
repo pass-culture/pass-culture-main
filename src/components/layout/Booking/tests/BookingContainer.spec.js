@@ -3,6 +3,8 @@ import { mapStateToProps } from '../BookingContainer'
 describe('src | components | layout | Booking', () => {
   let state
   let match
+  let offer
+  let offerId = 'AAA'
 
   beforeEach(() => {
     const booking = {
@@ -22,20 +24,20 @@ describe('src | components | layout | Booking', () => {
         isSoftDeleted: false,
         lastProviderId: null,
         modelName: 'Stock',
-        offerId: 'AAA',
+        offerId,
         price: 10,
       },
       stockId: 'AE',
     }
     const recommendation = {
       id: 'AAA',
-      offerId: 'AAA',
+      offerId,
     }
-    const offer = {
+    offer = {
       bookingEmail: null,
       dateCreated: '2018-10-29T09:44:38.216817Z',
       dateModifiedAtLastProvider: '2018-10-29T09:44:38.216792Z',
-      id: 'AE',
+      id: offerId,
       idAtProviders: null,
       isActive: true,
       isEvent: true,
@@ -105,7 +107,7 @@ describe('src | components | layout | Booking', () => {
       params: {
         bookingId: 'AAA',
         mediationId: 'AAA',
-        offerId: 'AAA',
+        offerId,
       },
     }
   })
@@ -116,7 +118,6 @@ describe('src | components | layout | Booking', () => {
         // given
         const ownProps = {
           match,
-          recommendation: state.data.recommendations[0],
         }
 
         // when
@@ -126,7 +127,8 @@ describe('src | components | layout | Booking', () => {
         const expected = {
           bookables: [],
           booking: state.data.bookings[0],
-          recommendation: state.data.recommendations[0]
+          offer: state.data.offers[0],
+          recommendation: state.data.recommendations[0],
         }
         expect(result).toStrictEqual(expected)
       })

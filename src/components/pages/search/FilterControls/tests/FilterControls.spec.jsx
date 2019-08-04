@@ -127,7 +127,7 @@ describe('src | components | pages | search | FilterControls', () => {
       expect(props.resetSearchStore).toHaveBeenCalledWith()
       expect(wrapper.state()).toStrictEqual(expected)
       expect(props.query.change).toHaveBeenCalledWith(INITIAL_FILTER_PARAMS, {
-        pathname: '/recherche/resultats',
+        pathname: '/recherche/resultats/tout',
       })
     })
   })
