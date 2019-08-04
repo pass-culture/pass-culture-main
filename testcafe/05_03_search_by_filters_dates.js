@@ -84,7 +84,7 @@ test('Je peux choisir entre 4 types de dates', async t => {
 
 test('Je ne sélectionne aucun filtre et je clique sur filtrer', async t => {
   await t.click(filterButton)
-  await t.expect(getPageUrl()).eql(`${ROOT_PATH}recherche/resultats/tout`)
+  await t.expect(getPageUrl()).contains(`${ROOT_PATH}recherche/resultats/tout`)
 })
 
 test('Quand on choisit un range de date après une date précise, le date picker est réinitialisé', async t => {
@@ -169,7 +169,7 @@ test('Je sélectionne plusieurs dates, je filtre puis je clique sur réinitialis
     .expect(checkboxDate3.checked)
     .notOk()
 
-  await t.expect(getPageUrl()).contains(`/recherche/resultats/tout`)
+  await t.expect(getPageUrl()).contains(`/recherche/resultats`)
 })
 
 test("Je sélectionne plusieurs dates puis j'utilise le date picker", async t => {
