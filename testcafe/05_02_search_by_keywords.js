@@ -26,7 +26,7 @@ fixture("O5_02_01 Recherche | J'effectue une recherche par mot-clé").beforeEach
 test("Je fais une recherche par mots-clés et je n'ai pas de résultats", async t => {
   // given
   const keyword = 'fake'
-  const resultUrl = `${baseUrl}/resultats?mots-cles=${keyword}`
+  const resultUrl = `${baseUrl}/resultats/tout?mots-cles=${keyword}`
 
   // when
   await t
