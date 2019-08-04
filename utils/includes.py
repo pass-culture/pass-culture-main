@@ -195,6 +195,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
     {
         "key": "recommendation",
         "sub_joins": [
+            "discoveryIdentifier",
             {
                 "key": "offer",
                 "sub_joins": [
@@ -226,6 +227,7 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
     {
         "key": "recommendation",
         "sub_joins": [
+            "discoveryIdentifier",
             {
                 "key": "offer",
                 "sub_joins": [
