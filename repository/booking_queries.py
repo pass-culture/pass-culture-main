@@ -170,6 +170,18 @@ def find_all_ongoing_bookings_by_stock(stock):
     return Booking.query.filter_by(stockId=stock.id, isCancelled=False, isUsed=False).all()
 
 
+def count_all_used_booking():
+    booking_on_event_finished_more_than_two_days_ago = (datetime.utcnow() > Stock.endDatetime + STOCK_DELETION_DELAY)
+    return Booking.query \
+        .join(Stock) \
+        .join(Offer) \
+        .join(Venue) \
+        .join(Offerer) \
+        .filter(Booking.isCancelled == False) \
+        .filter((Booking.isUsed == True) | booking_on_event_finished_more_than_two_days_ago) \
+        .count()
+
+
 def find_final_offerer_bookings(offerer_id):
     booking_on_event_finished_more_than_two_days_ago = (datetime.utcnow() > Stock.endDatetime + STOCK_DELETION_DELAY)
 

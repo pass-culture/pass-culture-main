@@ -21,9 +21,9 @@ Pass Culture : activation en ligne,Numérique,ThingType.ACTIVATION
 Pass Culture : activation évènementielle,Physique,EventType.ACTIVATION
 Pratique artistique — abonnements,Physique,ThingType.PRATIQUE_ARTISTIQUE_ABO
 Pratique — séances d’essai et stages ponctuels,Physique,EventType.PRATIQUE_ARTISTIQUE
-Presse — Abonnements,Numérique,ThingType.PRESSE_ABO
+Presse — abonnements,Numérique,ThingType.PRESSE_ABO
 Spectacle vivant,Physique,EventType.SPECTACLE_VIVANT
-Spectacle vivant — Abonnements,Physique,ThingType.SPECTACLE_VIVANT_ABO
+Spectacle vivant — abonnements,Physique,ThingType.SPECTACLE_VIVANT_ABO
 Vente d'œuvres d'art,Numérique,ThingType.OEUVRE_ART
 Vente d'œuvres d'art,Physique,ThingType.OEUVRE_ART
 Vente d’instruments de musique,Numérique,ThingType.INSTRUMENT

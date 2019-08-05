@@ -2,8 +2,8 @@ import pandas
 
 from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType
 from models.db import db
-from repository.booking_queries import query_final_bookings
-from repository.offer_queries import active_offer_ids_query
+from repository.booking_queries import count_all_used_booking
+from repository.offer_queries import get_active_offers_Ids_query
 
 
 def get_offerer_count() -> int:
@@ -25,7 +25,7 @@ def get_offerer_with_stock_count() -> int:
 
 
 def get_offerers_with_offer_available_on_discovery_count() -> int:
-    offer_ids_subquery = active_offer_ids_query()
+    offer_ids_subquery = get_active_offers_Ids_query()
     return Offerer.query \
         .join(Venue) \
         .join(Offer) \
@@ -56,7 +56,7 @@ def get_offers_with_user_offerer_and_stock_count() -> int:
 
 
 def get_offers_available_on_discovery_count() -> int:
-    offer_ids_subquery = active_offer_ids_query()
+    offer_ids_subquery = get_active_offers_Ids_query()
     return Offer.query.filter(Offer.id.in_(offer_ids_subquery)).count()
 
 
@@ -74,7 +74,7 @@ def get_all_bookings_count() -> int:
 
 
 def get_all_used_bookings_count() -> int:
-    return query_final_bookings().count()
+    return count_all_used_booking()
 
 
 def get_all_cancelled_bookings_count():

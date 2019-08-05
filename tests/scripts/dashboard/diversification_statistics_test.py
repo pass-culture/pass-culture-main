@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from pprint import pprint
 
 import pandas
 
@@ -965,7 +966,7 @@ class GetCountsByTypeAndDigitalCountsTest:
                                                                            'Nombre d\'offres')
 
         # Then
-        assert offers_by_type_and_digital_counts.equals(expected_dataframe)
+        assert offers_by_type_and_digital_counts.eq(expected_dataframe).all().all()
 
     @clean_database
     def test_returns_bookings_ordered_by_counts_then_type_name_then_support(self, app):

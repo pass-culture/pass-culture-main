@@ -79,39 +79,7 @@ def _order_by_occurs_soon_or_is_thing_then_randomize():
 
 def get_active_offers(departement_codes=None, offer_id=None, limit=None,
                       order_by=_order_by_occurs_soon_or_is_thing_then_randomize):
-    active_offers_query = Offer.query.distinct(Offer.id) \
-        .order_by(Offer.id)
-
-    if offer_id is not None:
-        active_offers_query = active_offers_query.filter(Offer.id == offer_id)
-
-    logger.debug(lambda: '(reco) all offers count {}'.format(active_offers_query.count()))
-
-    active_offers_query = active_offers_query.filter_by(isActive=True)
-    logger.debug(lambda: '(reco) active offers count {}'.format(active_offers_query.count()))
-
-    active_offers_query = _with_stock(active_offers_query)
-    logger.debug(lambda: '(reco) offers with stock count {}'.format(active_offers_query.count()))
-
-    active_offers_query = _with_validated_venue(active_offers_query)
-    logger.debug(lambda: '(reco) offers with venue count {}'.format(active_offers_query.count()))
-
-    active_offers_query = _with_image(active_offers_query)
-
-    logger.debug(lambda: '(reco) offers with image count {} '.format(active_offers_query.count()))
-
-    active_offers_query = department_or_national_offers(active_offers_query, departement_codes)
-    logger.debug(lambda:
-                 '(reco) department or national {} in {}'.format(str(departement_codes),
-                                                                 active_offers_query.count()))
-    active_offers_query = _bookable_offers(active_offers_query)
-    logger.debug(lambda: '(reco) bookable_offers {}'.format(active_offers_query.count()))
-    active_offers_query = _with_active_and_validated_offerer(active_offers_query)
-    logger.debug(lambda: '(reco) active and validated {}'.format(active_offers_query.count()))
-    active_offers_query = _not_activation_offers(active_offers_query)
-    logger.debug(lambda: '(reco) not_currently_recommended and not_activation {}'.format(active_offers_query.count()))
-
-    active_offer_ids = active_offers_query.with_entities(Offer.id).subquery()
+    active_offer_ids = get_active_offers_Ids_query(departement_codes, offer_id)
 
     query = Offer.query.filter(Offer.id.in_(active_offer_ids))
 
@@ -127,6 +95,33 @@ def get_active_offers(departement_codes=None, offer_id=None, limit=None,
 
     return query.all()
 
+
+def get_active_offers_Ids_query(departement_codes=['00'], offer_id=None):
+    active_offers_query = Offer.query.distinct(Offer.id) \
+        .order_by(Offer.id)
+    if offer_id is not None:
+        active_offers_query = active_offers_query.filter(Offer.id == offer_id)
+    logger.debug(lambda: '(reco) all offers count {}'.format(active_offers_query.count()))
+    active_offers_query = active_offers_query.filter_by(isActive=True)
+    logger.debug(lambda: '(reco) active offers count {}'.format(active_offers_query.count()))
+    active_offers_query = _with_stock(active_offers_query)
+    logger.debug(lambda: '(reco) offers with stock count {}'.format(active_offers_query.count()))
+    active_offers_query = _with_validated_venue(active_offers_query)
+    logger.debug(lambda: '(reco) offers with venue count {}'.format(active_offers_query.count()))
+    active_offers_query = _with_image(active_offers_query)
+    logger.debug(lambda: '(reco) offers with image count {} '.format(active_offers_query.count()))
+    active_offers_query = department_or_national_offers(active_offers_query, departement_codes)
+    logger.debug(lambda:
+                 '(reco) department or national {} in {}'.format(str(departement_codes),
+                                                                 active_offers_query.count()))
+    active_offers_query = _bookable_offers(active_offers_query)
+    logger.debug(lambda: '(reco) bookable_offers {}'.format(active_offers_query.count()))
+    active_offers_query = _with_active_and_validated_offerer(active_offers_query)
+    logger.debug(lambda: '(reco) active and validated {}'.format(active_offers_query.count()))
+    active_offers_query = _not_activation_offers(active_offers_query)
+    logger.debug(lambda: '(reco) not_currently_recommended and not_activation {}'.format(active_offers_query.count()))
+    active_offer_ids = active_offers_query.with_entities(Offer.id).subquery()
+    return active_offer_ids
 
 
 def _round_robin_by_type_onlineness_and_criteria(order_by: List):
