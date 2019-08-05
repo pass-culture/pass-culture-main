@@ -10,7 +10,7 @@ from flask_login import current_user, login_required
 
 from domain.favorites import find_first_matching_booking_from_favorite
 from repository.booking_queries import find_bookings_from_recommendation
-from validation.offers import check_offer_id_and_mediation_id_are_present_in_request
+from validation.offers import check_offer_id_is_present_in_request
 from utils.human_ids import dehumanize
 from utils.includes import FAVORITE_INCLUDES, \
                            RECOMMENDATION_INCLUDES, \
@@ -22,12 +22,14 @@ from utils.rest import load_or_404
 @feature_required(FeatureToggle.FAVORITE_OFFER)
 @login_required
 def add_to_favorite():
+    mediation = None
     offer_id = request.json.get('offerId')
     mediation_id = request.json.get('mediationId')
-    check_offer_id_and_mediation_id_are_present_in_request(offer_id, mediation_id)
+    check_offer_id_is_present_in_request(offer_id)
 
     offer = load_or_404(Offer, offer_id)
-    mediation = load_or_404(Mediation, mediation_id)
+    if mediation_id != None:
+        mediation = load_or_404(Mediation, mediation_id)
 
     favorite = create_favorite(mediation, offer, current_user)
     PcObject.save(favorite)

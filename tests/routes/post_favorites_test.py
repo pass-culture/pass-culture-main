@@ -24,26 +24,7 @@ class Post:
 
             # Then
             assert response.status_code == 400
-            assert response.json['global'] == ["Les paramères offerId et mediationId sont obligatoires"]
-
-        @clean_database
-        def when_mediation_id_is_not_received(self, app):
-            # Given
-            user = create_user(email='test@email.com')
-            PcObject.save(user)
-
-            json = {
-                'offerId': 'BA',
-            }
-
-            # When
-            response = TestClient(app.test_client()).with_auth(user.email).post(
-                f'{API_URL}/favorites',
-                json=json)
-
-            # Then
-            assert response.status_code == 400
-            assert response.json['global'] == ["Les paramères offerId et mediationId sont obligatoires"]
+            assert response.json['global'] == ["Le paramètre offerId est obligatoire"]
 
     class Returns404:
         @clean_database
@@ -94,7 +75,6 @@ class Post:
             # Then
             assert response.status_code == 404
 
-
     class Returns201:
         @clean_database
         def when_offer_is_added_as_favorite_for_current_user(self, app):
@@ -124,3 +104,25 @@ class Post:
             assert favorite.offerId == offer.id
             assert favorite.mediationId == mediation.id
             assert favorite.userId == user.id
+
+        @clean_database
+        def when_mediation_id_doest_not_exist(self, app):
+            # Given
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
+            offer = create_offer_with_thing_product(venue, thumb_count=0)
+            recommendation = create_recommendation(offer=offer, user=user, is_clicked=False)
+            PcObject.save(recommendation, user)
+
+            json = {
+                'offerId': humanize(offer.id),
+            }
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).post(
+                f'{API_URL}/favorites',
+                json=json)
+
+            # Then
+            assert response.status_code == 201

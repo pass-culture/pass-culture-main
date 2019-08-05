@@ -8,8 +8,8 @@ from utils.human_ids import humanize
 class Delete:
     class Returns204:
         @clean_database
-        def when_favorite_exists(self, app):
-            # given
+        def when_favorite_exists_with_offerId_and_mediationId(self, app):
+            # Given
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
@@ -29,10 +29,35 @@ class Delete:
             deleted_favorite = Favorite.query.first()
             assert deleted_favorite is None
 
+
+        @clean_database
+        def when_favorite_exists_with_offerId_only(self, app):
+            # Given
+            user = create_user(email='test@email.com')
+            offerer = create_offerer()
+            venue = create_venue(
+                offerer, postal_code='29100', siret='12345678912341')
+            offer = create_offer_with_thing_product(venue, thumb_count=0)
+            mediation = None
+            recommendation = create_recommendation(
+                offer=offer, user=user, mediation=mediation)
+            favorite = create_favorite(mediation, offer, user)
+            PcObject.save(recommendation, user, favorite)
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email).delete(
+                f'{API_URL}/favorites/{humanize(offer.id)}')
+
+            # Then
+            assert response.status_code == 200
+            assert 'id' in response.json
+            deleted_favorite = Favorite.query.first()
+            assert deleted_favorite is None
+
     class Returns404:
         @clean_database
         def when_expected_parameters_are_not_given(self, app):
-            # given
+            # Given
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer, postal_code='29100', siret='12345678912341')
@@ -51,7 +76,7 @@ class Delete:
 
         @clean_database
         def when_favorite_does_not_exist(self, app):
-            # given
+            # Given
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer, postal_code='29100', siret='12345678912341')

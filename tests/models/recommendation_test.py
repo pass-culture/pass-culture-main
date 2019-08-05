@@ -92,3 +92,22 @@ def test_model_should_return_true_if_favorite_exists_for_offer_mediation_and_use
 
     # then
     assert recommendation.isFavorite is True
+
+
+@clean_database
+def test_model_should_return_true_if_favorite_exists_for_offer_without_mediation_and_user(app):
+    # given
+    user = create_user(email='user@test.com')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_offer_with_event_product(venue)
+    mediation = None
+    favorite = create_favorite(mediation, offer, user)
+    PcObject.save(favorite)
+
+    # when
+    recommendation = create_recommendation(offer, user, mediation=mediation)
+    PcObject.save(recommendation)
+
+    # then
+    assert recommendation.isFavorite is True

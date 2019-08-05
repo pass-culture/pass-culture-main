@@ -52,12 +52,11 @@ def check_offer_type_is_valid(offer_type_name):
         raise api_error
 
 
-def check_offer_id_and_mediation_id_are_present_in_request(offer_id: str, mediation_id: str):
-    if offer_id is None \
-            or mediation_id is None:
+def check_offer_id_is_present_in_request(offer_id: str):
+    if offer_id is None:
         errors = ApiErrors()
         errors.status_code = 400
-        errors.add_error('global', "Les paramères offerId et mediationId sont obligatoires")
+        errors.add_error('global', 'Le paramètre offerId est obligatoire')
         errors.maybe_raise()
         raise errors
 
