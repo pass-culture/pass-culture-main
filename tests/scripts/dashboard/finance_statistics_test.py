@@ -187,7 +187,7 @@ class QueryGetTop20OffersByNumberOfBookingsTest:
     def test_returns_20_most_booked_offers_ordered_by_quantity_booked(self, app):
         # Given
         quantities = [14, 15, 16, 17, 18, 19, 20, 21, 22, 22, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-        bookings = create_bookings_with_quantities(quantities)
+        bookings = _create_bookings_with_quantities(quantities)
         PcObject.save(*bookings)
         expected_counts = [
             ('8', 22, 0), ('9', 22, 0), ('7', 21, 0), ('6', 20, 0), ('5', 19, 0), ('4', 18, 0),
@@ -246,7 +246,7 @@ class GetTop20OffersByNumberOfBookingsTest:
     def test_returns_20_most_booked_offers_ordered_by_quantity_booked_in_data_frame(self, app):
         # Given
         quantities = [14, 15, 16, 17, 18, 19, 20, 21, 22, 22, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-        bookings = create_bookings_with_quantities(quantities)
+        bookings = _create_bookings_with_quantities(quantities)
         PcObject.save(*bookings)
         expected_counts = [
             ('8', 22, 0), ('9', 22, 0), ('7', 21, 0), ('6', 20, 0), ('5', 19, 0), ('4', 18, 0),
@@ -269,7 +269,7 @@ class QueryGetTop20OfferersByNumberOfBookingsTest:
     def test_returns_20_most_booked_offers_ordered_by_quantity_booked(self, app):
         # Given
         quantities = [14, 15, 16, 17, 18, 19, 20, 21, 22, 22, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-        bookings = create_bookings_with_quantities(quantities)
+        bookings = _create_bookings_with_quantities(quantities)
         PcObject.save(*bookings)
         expected_counts = [
             ('Offerer 8', 22, 0), ('Offerer 9', 22, 0), ('Offerer 7', 21, 0), ('Offerer 6', 20, 0),
@@ -329,7 +329,7 @@ class GetTop20OfferersByNumberOfBookingsTest:
     def test_returns_20_most_booked_offers_ordered_by_quantity_booked_in_data_frame(self, app):
         # Given
         quantities = [14, 15, 16, 17, 18, 19, 20, 21, 22, 22, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-        bookings = create_bookings_with_quantities(quantities)
+        bookings = _create_bookings_with_quantities(quantities)
         PcObject.save(*bookings)
         expected_counts = [
             ('Offerer 8', 22, 0), ('Offerer 9', 22, 0), ('Offerer 7', 21, 0), ('Offerer 6', 20, 0),
@@ -371,7 +371,7 @@ class QueryGetTop20OfferersByAmountTest:
         # Given
         prices = [2, 115, 16, 18, 46, 145, 123, 12, 1, 35, 256, 25, 25, 252, 258, 156, 254, 13, 45, 145, 23]
 
-        bookings = create_bookings_with_prices(prices)
+        bookings = _create_bookings_with_prices(prices)
         PcObject.save(*bookings)
         expected_counts = [
             ('Offerer 14', 1, 258), ('Offerer 10', 1, 256), ('Offerer 16', 1, 254), ('Offerer 13', 1, 252), (
@@ -415,7 +415,7 @@ class GetTop20OfferersByAmountTable:
         # Given
         prices = [2, 115, 16, 18, 46, 145, 123, 12, 1, 35, 256, 25, 25, 252, 258, 156, 254, 13, 45, 145, 23]
 
-        bookings = create_bookings_with_prices(prices)
+        bookings = _create_bookings_with_prices(prices)
         PcObject.save(*bookings)
         expected_counts = [
             ('Offerer 14', 1, 258), ('Offerer 10', 1, 256), ('Offerer 16', 1, 254), ('Offerer 13', 1, 252), (
@@ -434,7 +434,7 @@ class GetTop20OfferersByAmountTable:
         assert top_20_offerers_by_amount.eq(expected_table).all().all()
 
 
-def create_bookings_with_prices(prices: List[int]):
+def _create_bookings_with_prices(prices: List[int]):
     siren = 111111111
     bookings = []
     for i, price in enumerate(prices):
@@ -449,7 +449,7 @@ def create_bookings_with_prices(prices: List[int]):
     return bookings
 
 
-def create_bookings_with_quantities(quantities: List[int]):
+def _create_bookings_with_quantities(quantities: List[int]):
     siren = 111111111
     bookings = []
     for i, quantity in enumerate(quantities):

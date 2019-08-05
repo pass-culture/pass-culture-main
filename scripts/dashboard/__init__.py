@@ -7,7 +7,8 @@ from scripts.dashboard.finance_statistics import get_total_deposits, get_total_a
     get_top_20_offers_table, get_top_20_offerers_table_by_number_of_bookings, get_top_20_offerers_by_amount_table, \
     get_not_cancelled_bookings_by_departement
 from scripts.dashboard.users_statistics import count_activated_users, count_users_having_booked, \
-    get_mean_number_of_bookings_per_user_having_booked, get_mean_amount_spent_by_user
+    get_mean_number_of_bookings_per_user_having_booked, get_mean_amount_spent_by_user, \
+    get_non_cancelled_bookings_by_user_departement
 
 __all__ = ('get_offerer_count',
            'get_offerer_with_stock_count',
@@ -26,6 +27,7 @@ __all__ = ('get_offerer_count',
            'get_top_20_offerers_table_by_number_of_bookings',
            'get_top_20_offerers_by_amount_table',
            'get_not_cancelled_bookings_by_departement',
+           'get_non_cancelled_bookings_by_user_departement',
            'count_activated_users',
            'count_users_having_booked',
            'get_mean_number_of_bookings_per_user_having_booked',
