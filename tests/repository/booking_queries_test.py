@@ -7,14 +7,14 @@ from models import PcObject, ThingType, Booking
 from models.api_errors import ResourceNotFound, ApiErrors
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_offerer_bookings_paginated, \
-    find_final_offerer_bookings,\
-    find_date_used,\
+    find_final_offerer_bookings, \
+    find_date_used, \
     find_user_activation_booking, \
     get_existing_tokens, \
     find_active_bookings_by_user_id, \
-    find_by,\
+    find_by, \
     find_all_offerer_bookings, \
-    find_all_digital_bookings_for_offerer
+    find_all_digital_bookings_for_offerer, count_non_cancelled_bookings
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -24,7 +24,7 @@ from tests.test_utils import create_booking, \
     create_user, \
     create_venue, create_stock_from_event_occurrence, create_event_occurrence, create_offer_with_thing_product, \
     create_offer_with_event_product, \
-    create_booking_activity, save_all_activities, create_stock_from_offer, create_payment
+    create_booking_activity, save_all_activities, create_stock_from_offer, create_payment, create_stock
 
 NOW = datetime.utcnow()
 two_days_ago = NOW - timedelta(days=2)
@@ -58,6 +58,7 @@ def test_find_all_by_offerer_with_event_and_things(app):
     assert booking1 in bookings
     assert booking2 in bookings
     assert booking3 not in bookings
+
 
 class FindAllOffererBookingsByVenueIdTest:
     @clean_database
@@ -181,6 +182,7 @@ class FindAllOffererBookingsByVenueIdTest:
         assert len(bookings) == 1
         assert target_booking in bookings
 
+
 class FindAllDigitalBookingsForOffererTest:
     @clean_database
     def test_returns_bookings_linked_to_digital_venue(self, app):
@@ -280,6 +282,7 @@ class FindAllDigitalBookingsForOffererTest:
         assert len(bookings) == 2
         assert bookings[0] == booking_for_offerer2
         assert bookings[1] == booking_for_offerer3
+
 
 @clean_database
 def test_find_all_ongoing_bookings(app):
@@ -765,3 +768,39 @@ class SaveBookingTest:
 
         # Then
         assert e.value.errors['global'] == ['la quantité disponible pour cette offre est atteinte']
+
+
+class CountNonCancelledBookingsTest:
+    @clean_database
+    def test_returns_1_if_one_user_has_one_non_cancelled_booking(self, app):
+        # Given
+        user_having_booked = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        booking = create_booking(user_having_booked, stock, is_cancelled=False)
+        PcObject.save(booking)
+
+        # When
+        count = count_non_cancelled_bookings()
+
+        # Then
+        assert count == 1
+
+    @clean_database
+    def test_returns_0_if_one_user_has_one_cancelled_booking(self, app):
+        # Given
+        user_having_booked = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        booking = create_booking(user_having_booked, stock, is_cancelled=True)
+        PcObject.save(booking)
+
+        # When
+        count = count_non_cancelled_bookings()
+
+        # Then
+        assert count == 0
