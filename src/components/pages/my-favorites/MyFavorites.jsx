@@ -14,7 +14,6 @@ class MyFavorites extends Component {
     super(props)
 
     this.state = {
-      isEmpty: false,
       isLoading: true,
       hasError: false,
     }
@@ -23,18 +22,6 @@ class MyFavorites extends Component {
   componentDidMount = () => {
     const { requestGetMyFavorites } = this.props
     requestGetMyFavorites(this.handleFail, this.handleSuccess)
-  }
-
-  componentDidUpdate = prevProps => {
-    const { myFavorites } = this.props
-    const { isEmpty } = this.state
-    if (myFavorites && myFavorites !== prevProps.myFavorites) {
-      if (myFavorites.length === 0) {
-        this.handleSetIsEmpty(true)
-      } else if (!isEmpty) {
-        this.handleSetIsEmpty(false)
-      }
-    }
   }
 
   componentWillUnmount() {
@@ -55,13 +42,9 @@ class MyFavorites extends Component {
     })
   }
 
-  handleSetIsEmpty = isEmpty => {
-    this.setState({ isEmpty })
-  }
-
   renderFavoritesList = () => {
     const { myFavorites } = this.props
-    const { isEmpty } = this.state
+    const isEmpty = myFavorites.length === 0
 
     return (
       <div

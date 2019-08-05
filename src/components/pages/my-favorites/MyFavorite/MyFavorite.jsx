@@ -5,12 +5,14 @@ import { Link } from 'react-router-dom'
 import Icon from '../../../layout/Icon'
 
 const MyFavorite = ({ favorite, humanizeRelativeDistance, location, offer, status }) => {
-  const { id: favoriteId, thumbUrl } = favorite
+  const { thumbUrl } = favorite
   const { name: offerName, product } = offer || {}
   const { offerType } = product || {}
   const { appLabel = '' } = offerType || {}
   const { pathname, search } = location
-  const detailsUrl = `${pathname}/details/${favoriteId}${search}`
+  const mediationId = favorite.mediationId ? `/${favorite.mediationId}` : ''
+  const detailsUrl = `${pathname}/details/${offer.id}${mediationId}${search}`
+
   return (
     <li className="mf-my-favorite">
       <Link
@@ -48,6 +50,7 @@ MyFavorite.defaultProps = {
 MyFavorite.propTypes = {
   favorite: PropTypes.shape({
     id: PropTypes.string.isRequired,
+    mediationId: PropTypes.string,
     thumbUrl: PropTypes.string.isRequired,
   }),
   humanizeRelativeDistance: PropTypes.string.isRequired,
@@ -57,6 +60,7 @@ MyFavorite.propTypes = {
   }).isRequired,
   offer: PropTypes.shape({
     dateRange: PropTypes.arrayOf(PropTypes.string),
+    id: PropTypes.string.isRequired,
     isFinished: PropTypes.bool,
     isFullyBooked: PropTypes.bool,
     name: PropTypes.string,
