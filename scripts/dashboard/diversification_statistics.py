@@ -81,7 +81,7 @@ def get_all_cancelled_bookings_count():
     return Booking.query.filter_by(isCancelled=True).count()
 
 
-def get_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_digital, counts_column_name):
+def _get_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_digital, counts_column_name):
     offers_by_type_and_digital_table = _get_offers_grouped_by_type_and_medium()
     offer_counts_per_type_and_digital = query_get_counts_per_type_and_digital()
 

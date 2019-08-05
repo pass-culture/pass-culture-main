@@ -9,7 +9,7 @@ from scripts.dashboard.diversification_statistics import get_offerer_count, get_
     get_offers_with_non_cancelled_bookings_count, get_all_bookings_count, get_all_used_bookings_count, \
     get_all_cancelled_bookings_count, _query_get_offer_counts_grouped_by_type_and_medium, \
     _get_offers_grouped_by_type_and_medium, \
-    get_counts_grouped_by_type_and_medium, _query_get_booking_counts_grouped_by_type_and_medium
+    _get_counts_grouped_by_type_and_medium, _query_get_booking_counts_grouped_by_type_and_medium
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_stock, \
     create_offer_with_thing_product, create_venue, create_mediation, create_offer_with_event_product, create_booking
@@ -961,7 +961,7 @@ class GetCountsByTypeAndDigitalCountsTest:
         expected_dataframe = pandas.read_csv('tests/scripts/dashboard/offers_by_type_and_digital_counts.csv')
 
         # When
-        offers_by_type_and_digital_counts = get_counts_grouped_by_type_and_medium(_query_get_offer_counts_grouped_by_type_and_medium,
+        offers_by_type_and_digital_counts = _get_counts_grouped_by_type_and_medium(_query_get_offer_counts_grouped_by_type_and_medium,
                                                                            'Nombre d\'offres')
 
         # Then
@@ -994,7 +994,7 @@ class GetCountsByTypeAndDigitalCountsTest:
         expected_dataframe = pandas.read_csv('tests/scripts/dashboard/bookings_by_type_and_medium_counts.csv')
 
         # When
-        bookings_by_type_and_digital_counts = get_counts_grouped_by_type_and_medium(_query_get_booking_counts_grouped_by_type_and_medium, 'Nombre de réservations')
+        bookings_by_type_and_digital_counts = _get_counts_grouped_by_type_and_medium(_query_get_booking_counts_grouped_by_type_and_medium, 'Nombre de réservations')
 
         # Then
         assert bookings_by_type_and_digital_counts.equals(expected_dataframe)
