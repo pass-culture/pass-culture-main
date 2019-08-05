@@ -991,7 +991,7 @@ class GetCountsByTypeAndDigitalCountsTest:
         PcObject.save(stock_cinema1, stock_cinema2, booking_musique_physical1, booking_musique_physical2,
                       booking_musique_digital, user_offerer)
 
-        expected_dataframe = pandas.read_csv('tests/scripts/dashboard/bookings_by_type_and_digital_counts.csv')
+        expected_dataframe = pandas.read_csv('tests/scripts/dashboard/bookings_by_type_and_medium_counts.csv')
 
         # When
         bookings_by_type_and_digital_counts = get_counts_grouped_by_type_and_medium(_query_get_booking_counts_grouped_by_type_and_medium, 'Nombre de réservations')

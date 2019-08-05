@@ -39,24 +39,26 @@ def get_total_amount_to_pay():
 
 def get_top_20_offers_table():
     top_20_offers_by_number_of_bookings = _query_get_top_20_offers_by_number_of_bookings()
-    return pandas.DataFrame(columns = ['Offre', 'Nombre de réservations', 'Montant dépensé'], data = top_20_offers_by_number_of_bookings)
+    return pandas.DataFrame(columns=['Offre', 'Nombre de réservations', 'Montant dépensé'],
+                            data=top_20_offers_by_number_of_bookings)
 
 
-# TODO: à tester et adapter - ordonner par montant dépensé
-def get_top_20_offerers_table():
-    top_20_offers_by_number_of_bookings = _query_get_top_20_offerers_by_number_of_bookings().fetchall()
-    return pandas.DataFrame(columns = ['Structure', 'Nombre de réservations', 'Montant dépensé'], data = top_20_offers_by_number_of_bookings)
+def get_top_20_offerers_table_by_number_of_bookings():
+    top_20_offers_by_number_of_bookings = _query_get_top_20_offerers_by_number_of_bookings()
+    return pandas.DataFrame(columns=['Structure', 'Nombre de réservations', 'Montant dépensé'],
+                            data=top_20_offers_by_number_of_bookings)
 
 
 def get_top_20_offerers_by_amount_table():
-    top_20_offers_by_number_of_bookings = _query_get_top_20_offerers_by_booking_amounts().fetchall()
-    return pandas.DataFrame(columns = ['Structure', 'Nombre de réservations', 'Montant dépensé'], data = top_20_offers_by_number_of_bookings)
+    top_20_offers_by_number_of_bookings = _query_get_top_20_offerers_by_booking_amounts()
+    return pandas.DataFrame(columns=['Structure', 'Nombre de réservations', 'Montant dépensé'],
+                            data=top_20_offers_by_number_of_bookings)
 
 
 def get_not_cancelled_bookings_by_departement():
-    data = _query_non_cancelled_bookings_by_departement()
+    non_cancelled_booking_by_department = _query_non_cancelled_bookings_by_departement()
     return pandas.DataFrame(columns=['Departement', 'Nombre de réservations'],
-                            data=data)
+                            data=non_cancelled_booking_by_department)
 
 
 def _query_non_cancelled_bookings_by_departement():
@@ -98,7 +100,7 @@ def _query_get_top_20_offerers_by_number_of_bookings():
         GROUP BY offerer.id, offerer.name
         ORDER BY quantity DESC, offerer.name ASC
         LIMIT 20;
-        """)
+        """).fetchall()
 
 
 def _query_get_top_20_offerers_by_booking_amounts():
@@ -114,4 +116,4 @@ def _query_get_top_20_offerers_by_booking_amounts():
         GROUP BY offerer.id, offerer.name
         ORDER BY booking_amount DESC, offerer.name ASC
         LIMIT 20;
-        """)
+        """).fetchall()
