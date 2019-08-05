@@ -2,7 +2,7 @@
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
-from domain.stocks import delete_stock_and_cancel_bookings, TooLateToDeleteError
+from domain.stocks import delete_stock_and_cancel_bookings
 from domain.user_emails import send_batch_cancellation_emails_to_users, send_batch_cancellation_email_to_offerer
 from models import Product
 from models.mediation import Mediation

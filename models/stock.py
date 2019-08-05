@@ -10,9 +10,13 @@ from sqlalchemy import BigInteger, \
     event, \
     ForeignKey, \
     Integer, \
-    Numeric
-from sqlalchemy.orm import relationship
+    Numeric, \
+    and_, \
+    or_
+from sqlalchemy.orm import column_property, relationship
+from sqlalchemy.sql import select, func
 
+from models import Booking
 from models.db import Model
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
@@ -26,6 +30,10 @@ class Stock(PcObject,
             ProvidableMixin,
             SoftDeletableMixin,
             VersionedMixin):
+    # We redefine this so we can reference it in the baseScore column_property
+    id = Column(BigInteger,
+                primary_key=True,
+                autoincrement=True)
 
     dateModified = Column(DateTime,
                           nullable=False,
@@ -49,7 +57,6 @@ class Stock(PcObject,
                          foreign_keys=[offerId],
                          backref='stocks')
 
-
     price = Column(Numeric(10, 2),
                    CheckConstraint('price >= 0', name='check_price_is_not_negative'),
                    nullable=False)
@@ -58,8 +65,23 @@ class Stock(PcObject,
                        index=True,
                        nullable=True)
 
+    remainingQuantity = column_property(
+        select([func.greatest(available - func.coalesce(func.sum(Booking.quantity), 0), 0)])
+            .where(
+                and_(
+                    Booking.stockId == id,
+                    or_(
+                        and_(Booking.isUsed == False,
+                             Booking.isCancelled == False),
+                        and_(Booking.isUsed == True,
+                             Booking.dateUsed > dateModified)
+                    )
+                )
+        )
+    )
+
     # TODO: add pmr
-    #pmrGroupSize = Column(db.Integer,
+    # pmrGroupSize = Column(db.Integer,
     #                         nullable=False,
     #                         default=1)
 
@@ -79,9 +101,10 @@ class Stock(PcObject,
             api_errors.add_error('available', 'Le stock doit être positif')
 
         if self.endDatetime \
-           and self.beginningDatetime \
-           and self.endDatetime <= self.beginningDatetime:
-            api_errors.add_error('endDatetime', 'La date de fin de l\'événement doit être postérieure à la date de début')
+                and self.beginningDatetime \
+                and self.endDatetime <= self.beginningDatetime:
+            api_errors.add_error('endDatetime',
+                                 'La date de fin de l\'événement doit être postérieure à la date de début')
 
         return api_errors
 
@@ -103,11 +126,11 @@ class Stock(PcObject,
         if 'check_stock' in str(ie.orig):
             if 'available_too_low' in str(ie.orig):
                 return ['available', 'la quantité pour cette offre'
-                                    + ' ne peut pas être inférieure'
-                                    + ' au nombre de réservations existantes.']
+                        + ' ne peut pas être inférieure'
+                        + ' au nombre de réservations existantes.']
             elif 'bookingLimitDatetime_too_late' in str(ie.orig):
                 return ['bookingLimitDatetime',
-                                    'La date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement']
+                        'La date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement']
             else:
                 logger.error("Unexpected error in patch stocks: " + pformat(ie))
         return PcObject.restize_internal_error(ie)
@@ -118,10 +141,9 @@ def page_defaults(mapper, configuration, target):
     # `bookingLimitDatetime` defaults to midnight before `beginningDatetime`
     # for eventOccurrences
     if target.beginningDatetime and not target.bookingLimitDatetime:
-        target.bookingLimitDatetime = target.beginningDatetime\
-                                            .replace(hour=23)\
-                                            .replace(minute=59) - timedelta(days=3)
-
+        target.bookingLimitDatetime = target.beginningDatetime \
+                                          .replace(hour=23) \
+                                          .replace(minute=59) - timedelta(days=3)
 
 
 Stock.trig_ddl = """

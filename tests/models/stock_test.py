@@ -148,3 +148,84 @@ def test_update_available_stocks_even_when_is_less_than_number_of_bookings(app):
 
     # Then
     assert Stock.query.get(stock.id).available == 1
+
+
+@clean_database
+def test_remaining_quantity_for_stock_is_2_when_there_is_no_booking(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_offer_with_thing_product(venue)
+    stock = create_stock_from_offer(offer, available=2, price=0)
+
+    # When
+    PcObject.save(stock)
+
+    # Then
+    assert Stock.query.get(stock.id).remainingQuantity == 2
+
+
+@clean_database
+def test_remaining_quantity_for_stock_is_0_when_there_is_2_bookings(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_offer_with_thing_product(venue)
+    stock = create_stock_from_offer(offer, available=2, price=0)
+    PcObject.save(stock)
+    user = create_user()
+    booking1 = create_booking(user, stock, quantity=1, is_cancelled=False)
+    booking2 = create_booking(user, stock, quantity=1, is_cancelled=False)
+
+    # When
+    PcObject.save(booking1, booking2)
+
+    # Then
+    assert Stock.query.get(stock.id).remainingQuantity == 0
+
+
+@clean_database
+def test_remaining_quantity_for_stock_is_0_when_there_are_2_bookings_not_used(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_offer_with_thing_product(venue)
+    stock = create_stock_from_offer(offer, available=2, price=0)
+    PcObject.save(stock)
+    user = create_user()
+    booking1 = create_booking(user, stock, quantity=1, is_cancelled=False, is_used=False)
+    booking2 = create_booking(user, stock, quantity=1, is_cancelled=False, is_used=False)
+    PcObject.save(booking1, booking2)
+    stock.available = 1
+
+    # When
+    PcObject.save(stock)
+
+    # Then
+    assert Stock.query.get(stock.id).remainingQuantity == 0
+
+
+@clean_database
+def test_remaining_quantity_for_stock_is_1_when_there_are_2_bookings_and_1_is_used_before_last_stock_update(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_offer_with_thing_product(venue)
+    stock = create_stock_from_offer(offer, available=2, price=0)
+    PcObject.save(stock)
+    user = create_user()
+    booking1 = create_booking(user, stock,
+                              quantity=1,
+                              is_cancelled=False,
+                              is_used=True,
+                              date_used=datetime.utcnow() - timedelta(days=1))
+    booking2 = create_booking(user, stock,
+                              quantity=1,
+                              is_cancelled=False,
+                              is_used=False)
+
+    # When
+    PcObject.save(booking1, booking2)
+
+    # Then
+    assert Stock.query.get(stock.id).remainingQuantity == 1
