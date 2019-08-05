@@ -90,7 +90,7 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
         label = field['type_de_champ']['libelle']
         value = field['value']
 
-        if label == 'Veuillez indiquer votre département':
+        if 'Veuillez indiquer votre département' in label:
             information['department'] = re.search('^[0-9]{2,3}|[2BbAa]{2}', value).group(0)
         if label == 'Date de naissance':
             information['birth_date'] = datetime.strptime(value, '%Y-%m-%d')

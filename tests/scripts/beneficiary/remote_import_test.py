@@ -415,36 +415,6 @@ class ParseBeneficiaryInformationTest:
         # then
         assert information['department'] == '67'
 
-    def test_handles_postal_codes_wrapped_with_spaces(self):
-        # given
-        application_detail = make_application_detail(1, 'closed', postal_code='  67200  ')
-
-        # when
-        information = parse_beneficiary_information(application_detail)
-
-        # then
-        assert information['postal_code'] == '67200'
-
-    def test_handles_postal_codes_containing_spaces(self):
-        # given
-        application_detail = make_application_detail(1, 'closed', postal_code='67 200')
-
-        # when
-        information = parse_beneficiary_information(application_detail)
-
-        # then
-        assert information['postal_code'] == '67200'
-
-    def test_handles_postal_codes_containing_city_name(self):
-        # given
-        application_detail = make_application_detail(1, 'closed', postal_code='67 200 Strasbourg ')
-
-        # when
-        information = parse_beneficiary_information(application_detail)
-
-        # then
-        assert information['postal_code'] == '67200'
-
     def test_handles_three_digits_department_code(self):
         # given
         application_detail = make_application_detail(1, 'closed', department_code='973 - Guyane')
@@ -474,3 +444,47 @@ class ParseBeneficiaryInformationTest:
 
         # then
         assert information['department'] == '2a'
+
+    def test_handles_department_code_with_another_label(self):
+        # given
+        application_detail = make_application_detail(1, 'closed', department_code='67 - Bas-Rhin')
+        for field in application_detail['dossier']['champs']:
+            label = field['type_de_champ']['libelle']
+            if label == 'Veuillez indiquer votre département':
+                field['type_de_champ']['libelle'] = "Veuillez indiquer votre département de résidence"
+
+        # when
+        information = parse_beneficiary_information(application_detail)
+
+        # then
+        assert information['department'] == '67'
+
+    def test_handles_postal_codes_wrapped_with_spaces(self):
+        # given
+        application_detail = make_application_detail(1, 'closed', postal_code='  67200  ')
+
+        # when
+        information = parse_beneficiary_information(application_detail)
+
+        # then
+        assert information['postal_code'] == '67200'
+
+    def test_handles_postal_codes_containing_spaces(self):
+        # given
+        application_detail = make_application_detail(1, 'closed', postal_code='67 200')
+
+        # when
+        information = parse_beneficiary_information(application_detail)
+
+        # then
+        assert information['postal_code'] == '67200'
+
+    def test_handles_postal_codes_containing_city_name(self):
+        # given
+        application_detail = make_application_detail(1, 'closed', postal_code='67 200 Strasbourg ')
+
+        # when
+        information = parse_beneficiary_information(application_detail)
+
+        # then
+        assert information['postal_code'] == '67200'
