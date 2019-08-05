@@ -17,6 +17,7 @@ depends_on = None
 
 
 def upgrade():
+    op.add_column('booking', sa.Column('dateUsed', sa.DateTime(), nullable=True))
     op.execute("""
         CREATE OR REPLACE FUNCTION check_booking()
         RETURNS TRIGGER AS $$
@@ -32,7 +33,7 @@ def upgrade():
                   WHERE "stockId"=NEW."stockId"
                   AND (
                     NOT "isCancelled" AND NOT "isUsed"
-                    OR ("isUsed" AND "dateCreated" > lastStockUpdate)
+                    OR ("isUsed" AND "dateUsed" > lastStockUpdate)
                   )
                 )
               ) THEN
@@ -57,6 +58,7 @@ def upgrade():
 
 
 def downgrade():
+    op.drop_column('booking', 'dateUsed')
     op.execute("""
         CREATE OR REPLACE FUNCTION check_booking()
         RETURNS TRIGGER AS $$

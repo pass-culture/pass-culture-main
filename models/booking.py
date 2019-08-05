@@ -30,6 +30,9 @@ class Booking(PcObject, Model, VersionedMixin):
                          nullable=False,
                          default=datetime.utcnow)
 
+    dateUsed = Column(DateTime,
+                      nullable=True)
+
     recommendationId = Column(BigInteger,
                               ForeignKey("recommendation.id"),
                               index=True)
@@ -229,7 +232,7 @@ Booking.trig_ddl = """
               WHERE "stockId"=NEW."stockId"
               AND (
                 NOT "isCancelled" AND NOT "isUsed"
-                OR ("isUsed" AND "dateCreated" > lastStockUpdate)
+                OR ("isUsed" AND "dateUsed" > lastStockUpdate)
               )
             )
           ) THEN

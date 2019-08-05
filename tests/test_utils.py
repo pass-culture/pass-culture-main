@@ -52,7 +52,7 @@ HASHED_DEFAULT_TESTING_PASSWORD = user.password
 
 
 def create_booking(user, stock=None, venue=None, recommendation=None, quantity=1, date_created=datetime.utcnow(),
-                   is_cancelled=False, is_used=False, token=None, idx=None, amount=None):
+                   date_used=None, is_cancelled=False, is_used=False, token=None, idx=None, amount=None):
     booking = Booking()
     if venue is None:
         offerer = create_offerer('987654321', 'Test address', 'Test city', '93000', 'Test name')
@@ -84,6 +84,7 @@ def create_booking(user, stock=None, venue=None, recommendation=None, quantity=1
         booking.recommendation = create_recommendation(stock.offer, user)
     booking.isCancelled = is_cancelled
     booking.isUsed = is_used
+    booking.dateUsed = date_used
     if idx:
         booking.id = idx
     return booking

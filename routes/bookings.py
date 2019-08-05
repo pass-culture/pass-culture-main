@@ -41,6 +41,7 @@ from validation.bookings import check_booking_is_usable, \
     check_booking_is_cancellable, check_stock_venue_is_validated, check_rights_for_activation_offer, \
     check_rights_to_get_bookings_csv
 from validation.users import check_user_can_validate_bookings
+from datetime import datetime
 
 
 @app.route('/bookings/csv', methods=['GET'])
@@ -241,6 +242,7 @@ def patch_booking_by_token(token):
 
     check_booking_is_usable(booking)
     booking.isUsed = True
+    booking.dateUsed = datetime.utcnow()
 
     if check_is_activation_booking(booking):
         activate_user(booking.user)

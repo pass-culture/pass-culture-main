@@ -77,6 +77,26 @@ class Patch:
             assert response.status_code == 200
             assert Stock.query.get(stock_id).price == 120
 
+        @clean_database
+        def when_available_below_number_of_already_existing_bookings(self, app):
+            # given
+            user = create_user()
+            user_admin = create_user(email='email@test.com', can_book_free_offers=False, is_admin=True)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue, price=0)
+            stock.available = 1
+            booking = create_booking(user, stock, venue, recommendation=None)
+            PcObject.save(booking, user_admin)
+
+            # when
+            response = TestClient(app.test_client()).with_auth('email@test.com') \
+                .patch('/stocks/' + humanize(stock.id), json={'available': 0})
+
+            # then
+            assert response.status_code == 200
+            assert 'available' in response.json
+
     class Returns400:
         @clean_database
         def when_wrong_type_for_available(self, app):
@@ -160,26 +180,6 @@ class Patch:
             assert response.json["bookingLimitDatetime"] == ['Ce paramètre est obligatoire']
 
         @clean_database
-        def when_available_below_number_of_already_existing_bookings(self, app):
-            # given
-            user = create_user()
-            user_admin = create_user(email='email@test.com', can_book_free_offers=False, is_admin=True)
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0)
-            stock.available = 1
-            booking = create_booking(user, stock, venue, recommendation=None)
-            PcObject.save(booking, user_admin)
-
-            # when
-            response = TestClient(app.test_client()).with_auth('email@test.com') \
-                .patch('/stocks/' + humanize(stock.id), json={'available': 0})
-
-            # then
-            assert response.status_code == 400
-            assert 'available' in response.json
-
-        @clean_database
         def when_offer_come_from_provider(self, app):
             # given
             tite_live_provider = Provider \
@@ -207,7 +207,6 @@ class Patch:
             assert request_after_update.json['available'] == 10
             assert request_update.json["global"] == ["Les offres importées ne sont pas modifiables"]
 
-
     class Returns403:
         @clean_database
         def when_user_has_no_rights(self, app):
@@ -224,4 +223,5 @@ class Patch:
 
             # then
             assert response.status_code == 403
-            assert "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information." in response.json['global']
+            assert "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information." in response.json[
+                'global']

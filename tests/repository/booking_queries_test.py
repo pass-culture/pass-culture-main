@@ -1,13 +1,10 @@
 """ repository booking queries test """
 from datetime import datetime, timedelta
-from os import wait
-from time import sleep
 
 import pytest
 
 from models import PcObject, ThingType, Booking
 from models.api_errors import ResourceNotFound, ApiErrors
-from models.db import db
 from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_offerer_bookings_paginated, \
     find_final_offerer_bookings, \
@@ -133,19 +130,25 @@ class FindAllOffererBookingsByVenueIdTest:
         target_stock = create_stock_from_offer(target_offer, available=100, price=20)
         other_stock = create_stock_from_offer(other_offer, available=150, price=16)
 
-        ohter_booking_1 = create_booking(user, target_stock, venue, recommendation=None, quantity=2, date_created=datetime(2020, 5, 30))
-        target_booking_1 = create_booking(user, target_stock, venue, recommendation=None, quantity=2, date_created=datetime(2020, 6, 1))
-        target_booking_2 = create_booking(user, target_stock, venue, recommendation=None, quantity=2, date_created=datetime(2020, 6, 30))
-        ohter_booking_2 = create_booking(user, target_stock, venue, recommendation=None, quantity=2, date_created=datetime(2020, 7, 1))
+        ohter_booking_1 = create_booking(user, target_stock, venue, recommendation=None, quantity=2,
+                                         date_created=datetime(2020, 5, 30))
+        target_booking_1 = create_booking(user, target_stock, venue, recommendation=None, quantity=2,
+                                          date_created=datetime(2020, 6, 1))
+        target_booking_2 = create_booking(user, target_stock, venue, recommendation=None, quantity=2,
+                                          date_created=datetime(2020, 6, 30))
+        ohter_booking_2 = create_booking(user, target_stock, venue, recommendation=None, quantity=2,
+                                         date_created=datetime(2020, 7, 1))
 
-        ohter_booking_3 = create_booking(user, other_stock, venue, recommendation=None, quantity=2, date_created=datetime(2020, 6, 1))
+        ohter_booking_3 = create_booking(user, other_stock, venue, recommendation=None, quantity=2,
+                                         date_created=datetime(2020, 6, 1))
 
         PcObject.save(ohter_booking_1, ohter_booking_2, ohter_booking_3, target_booking_1, target_booking_2)
 
         target_offer_id = target_offer.id
 
         # when
-        bookings = find_all_offerer_bookings(offerer.id, venue_id=venue.id, offer_id=target_offer_id, date_from=datetime(2020, 6, 1), date_to=datetime(2020, 6, 30))
+        bookings = find_all_offerer_bookings(offerer.id, venue_id=venue.id, offer_id=target_offer_id,
+                                             date_from=datetime(2020, 6, 1), date_to=datetime(2020, 6, 30))
 
         # then
         assert len(bookings) == 2
@@ -164,10 +167,18 @@ class FindAllOffererBookingsByVenueIdTest:
         target_offer = create_offer_with_event_product(venue)
         other_offer = create_offer_with_event_product(venue)
 
-        target_stock = create_stock_from_offer(target_offer, available=150, price=16, beginning_datetime=datetime.strptime("2020-06-01T20:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ"))
-        other_stock_1 = create_stock_from_offer(target_offer, available=100, price=20, beginning_datetime=datetime.strptime("2020-06-01T16:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ"))
-        other_stock_2 = create_stock_from_offer(other_offer, available=150, price=16, beginning_datetime=datetime.strptime("2020-06-01T18:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ"))
-        other_stock_3 = create_stock_from_offer(other_offer, available=150, price=16, beginning_datetime=datetime.strptime("2020-07-02T20:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ"))
+        target_stock = create_stock_from_offer(target_offer, available=150, price=16,
+                                               beginning_datetime=datetime.strptime("2020-06-01T20:00:00.000Z",
+                                                                                    "%Y-%m-%dT%H:%M:%S.%fZ"))
+        other_stock_1 = create_stock_from_offer(target_offer, available=100, price=20,
+                                                beginning_datetime=datetime.strptime("2020-06-01T16:00:00.000Z",
+                                                                                     "%Y-%m-%dT%H:%M:%S.%fZ"))
+        other_stock_2 = create_stock_from_offer(other_offer, available=150, price=16,
+                                                beginning_datetime=datetime.strptime("2020-06-01T18:00:00.000Z",
+                                                                                     "%Y-%m-%dT%H:%M:%S.%fZ"))
+        other_stock_3 = create_stock_from_offer(other_offer, available=150, price=16,
+                                                beginning_datetime=datetime.strptime("2020-07-02T20:00:00.000Z",
+                                                                                     "%Y-%m-%dT%H:%M:%S.%fZ"))
 
         target_booking = create_booking(user, target_stock, venue, recommendation=None, quantity=2)
         ohter_booking_1 = create_booking(user, other_stock_1, venue, recommendation=None, quantity=2)
@@ -179,7 +190,8 @@ class FindAllOffererBookingsByVenueIdTest:
         target_offer_id = target_offer.id
 
         # when
-        bookings = find_all_offerer_bookings(offerer.id, venue_id=venue.id, offer_id=target_offer_id, date_from='2020-06-01T20:00:00.000Z', date_to='2020-05-01T20:00:00.000Z')
+        bookings = find_all_offerer_bookings(offerer.id, venue_id=venue.id, offer_id=target_offer_id,
+                                             date_from='2020-06-01T20:00:00.000Z', date_to='2020-05-01T20:00:00.000Z')
 
         # then
         assert len(bookings) == 1
@@ -270,16 +282,23 @@ class FindAllDigitalBookingsForOffererTest:
         digital_venue_for_offerer1 = create_venue(offerer1, siret=None, is_virtual=True)
         stock1 = create_stock_with_event_offer(offerer1, digital_venue_for_offerer1, price=2, available=100)
         stock2 = create_stock_with_thing_offer(offerer1, digital_venue_for_offerer1, price=3, available=100)
-        booking_for_offerer1 = create_booking(user, stock2, digital_venue_for_offerer1, recommendation=None, quantity=2, date_created=datetime(2020, 5, 30))
-        booking_for_offerer2 = create_booking(user, stock2, digital_venue_for_offerer1, recommendation=None, quantity=2, date_created=datetime(2020, 6, 1))
-        booking_for_offerer3 = create_booking(user, stock2, digital_venue_for_offerer1, recommendation=None, quantity=2, date_created=datetime(2020, 6, 30))
-        booking_for_offerer4 = create_booking(user, stock2, digital_venue_for_offerer1, recommendation=None, quantity=2, date_created=datetime(2020, 7, 31))
-        booking_for_offerer5 = create_booking(user, stock1, digital_venue_for_offerer1, recommendation=None, quantity=2, date_created=datetime(2020, 6, 30))
+        booking_for_offerer1 = create_booking(user, stock2, digital_venue_for_offerer1, recommendation=None, quantity=2,
+                                              date_created=datetime(2020, 5, 30))
+        booking_for_offerer2 = create_booking(user, stock2, digital_venue_for_offerer1, recommendation=None, quantity=2,
+                                              date_created=datetime(2020, 6, 1))
+        booking_for_offerer3 = create_booking(user, stock2, digital_venue_for_offerer1, recommendation=None, quantity=2,
+                                              date_created=datetime(2020, 6, 30))
+        booking_for_offerer4 = create_booking(user, stock2, digital_venue_for_offerer1, recommendation=None, quantity=2,
+                                              date_created=datetime(2020, 7, 31))
+        booking_for_offerer5 = create_booking(user, stock1, digital_venue_for_offerer1, recommendation=None, quantity=2,
+                                              date_created=datetime(2020, 6, 30))
 
-        PcObject.save(booking_for_offerer1, booking_for_offerer2, booking_for_offerer3, booking_for_offerer4, booking_for_offerer5)
+        PcObject.save(booking_for_offerer1, booking_for_offerer2, booking_for_offerer3, booking_for_offerer4,
+                      booking_for_offerer5)
 
         # when
-        bookings = find_all_digital_bookings_for_offerer(offerer1.id, stock2.offer.id, date_from=datetime(2020, 6, 1), date_to=datetime(2020, 6, 30))
+        bookings = find_all_digital_bookings_for_offerer(offerer1.id, stock2.offer.id, date_from=datetime(2020, 6, 1),
+                                                         date_to=datetime(2020, 6, 30))
 
         # then
         assert len(bookings) == 2
@@ -881,7 +900,7 @@ class CountAllBookingsTest:
                                   stock,
                                   is_cancelled=False,
                                   is_used=True,
-                                  date_created=one_day_before_stock_last_update)
+                                  date_used=one_day_before_stock_last_update)
         PcObject.save(booking1)
         booking2 = create_booking(user2,
                                   stock,
@@ -893,7 +912,6 @@ class CountAllBookingsTest:
 
         # Then
         assert Booking.query.filter_by(stock=stock).count() == 2
-
 
     @clean_database
     def test_returns_2_when_bookings_cancelled_or_not(self, app):
@@ -925,14 +943,14 @@ class CountAllBookingsTest:
         date_after_stock_last_update = datetime.utcnow()
         booking1 = create_booking(user1,
                                   stock,
-                                  date_created=date_after_stock_last_update,
+                                  date_used=date_after_stock_last_update,
                                   is_cancelled=False,
                                   is_used=True)
         PcObject.save(booking1)
         date_after_last_booking = datetime.utcnow()
         booking2 = create_booking(user2,
                                   stock,
-                                  date_created=date_after_last_booking,
+                                  date_used=date_after_last_booking,
                                   is_cancelled=False,
                                   is_used=False)
 

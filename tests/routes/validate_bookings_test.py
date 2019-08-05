@@ -40,6 +40,7 @@ class Patch:
             # Then
             assert response.status_code == 204
             assert Booking.query.get(booking_id).isUsed
+            assert Booking.query.get(booking_id).dateUsed is not None
 
         @clean_database
         def when_header_is_not_standard_but_request_is_valid(self, app):
@@ -171,7 +172,8 @@ class Patch:
 
             # Then
             assert response.status_code == 403
-            assert response.json['global'] == ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
+            assert response.json['global'] == [
+                "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
             assert not Booking.query.get(booking_id).isUsed
 
         @clean_database
