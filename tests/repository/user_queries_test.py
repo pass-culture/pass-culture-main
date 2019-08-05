@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, MINYEAR
 from models import ImportStatus
 from models import PcObject
 from repository.user_queries import get_all_users_wallet_balances, find_by_civility, \
-    find_most_recent_beneficiary_creation_date
+    find_most_recent_beneficiary_creation_date, count_activated_users
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_deposit, \
     create_stock, create_booking, create_beneficiary_import
@@ -232,6 +232,34 @@ class FindMostRecentBeneficiaryCreationDateTest:
 
         # then
         assert most_recent_creation_date == datetime(MINYEAR, 1, 1)
+
+
+class CountActivatedUsersTest:
+    @clean_database
+    def test_returns_1_when_only_one_active_user(self, app):
+        # Given
+        user_activated = create_user(can_book_free_offers=True)
+        user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
+        PcObject.save(user_activated, user_not_activated)
+
+        # When
+        number_of_active_users = count_activated_users()
+
+        # Then
+        assert number_of_active_users == 1
+
+    @clean_database
+    def test_returns_0_when_no_active_user(self, app):
+        # Given
+        user_activated = create_user(can_book_free_offers=False)
+        user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
+        PcObject.save(user_activated, user_not_activated)
+
+        # When
+        number_of_active_users = count_activated_users()
+
+        # Then
+        assert number_of_active_users == 0
 
 
 def _create_balances_for_user2(stock3, user2, venue):

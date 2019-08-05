@@ -11,6 +11,10 @@ from models.db import db
 from models.user import WalletBalance
 
 
+def count_activated_users():
+    return User.query.filter_by(canBookFreeOffers=True).count()
+
+
 def find_user_by_email(email: str) -> User:
     return User.query \
         .filter(func.lower(User.email) == email.strip().lower()) \

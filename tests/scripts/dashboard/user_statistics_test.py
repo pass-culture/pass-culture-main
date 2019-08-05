@@ -12,34 +12,6 @@ from tests.test_utils import create_user, create_booking, create_stock, create_o
     create_offerer, create_deposit
 
 
-class CountActivatedUsersTest:
-    @clean_database
-    def test_returns_1_when_only_one_active_user(self, app):
-        # Given
-        user_activated = create_user(can_book_free_offers=True)
-        user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
-        PcObject.save(user_activated, user_not_activated)
-
-        # When
-        number_of_active_users = count_activated_users()
-
-        # Then
-        assert number_of_active_users == 1
-
-    @clean_database
-    def test_returns_0_when_no_active_user(self, app):
-        # Given
-        user_activated = create_user(can_book_free_offers=False)
-        user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
-        PcObject.save(user_activated, user_not_activated)
-
-        # When
-        number_of_active_users = count_activated_users()
-
-        # Then
-        assert number_of_active_users == 0
-
-
 class CountUsersHavingBookedTest:
     @clean_database
     def test_returns_one_when_user_with_one_cancelled_and_one_non_cancelled_bookings(self, app):

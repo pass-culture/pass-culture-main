@@ -4,10 +4,11 @@ from sqlalchemy import func
 
 from models import User, Booking
 from models.db import db
+import repository.user_queries as user_repository
 
 
 def count_activated_users():
-    return User.query.filter_by(canBookFreeOffers=True).count()
+    return user_repository.count_activated_users()
 
 
 def count_users_having_booked():
