@@ -1,10 +1,25 @@
 from models import Mediation, Offer, Stock, User, Product
+from models.recommendation import Recommendation
 from repository.user_queries import keep_only_webapp_users
-from sandboxes.scripts.utils.helpers import get_mediation_helper, get_offer_helper, get_user_helper
+from sandboxes.scripts.utils.helpers import get_mediation_helper, \
+                                            get_offer_helper, \
+                                            get_user_helper, \
+                                            get_recommendation_helper
 from sandboxes.scripts.utils.bookings import find_offer_compatible_with_bookings, \
                                              get_cancellable_bookings_for_user, \
                                              get_not_cancellable_bookings_for_user
 
+
+def get_existing_webapp_user_with_at_least_one_recommendation():
+   query = Recommendation.query.join(User)
+   query = keep_only_webapp_users(query)
+   query = query.reset_joinpoint().join(Offer)
+
+   recommendation = query.first()
+   return {
+       "user": get_user_helper(recommendation.user),
+       "recommendation": get_recommendation_helper(recommendation)
+   }
 
 def get_existing_webapp_hnmm_user(return_as_dict=False):
     query = keep_only_webapp_users(User.query)
