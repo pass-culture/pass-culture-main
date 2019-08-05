@@ -5,7 +5,7 @@ import React, { Component, Fragment } from 'react'
 import { createParseNumberValue } from 'react-final-form-utils'
 import ReactTooltip from 'react-tooltip'
 
-import { createFormatAvailable, formatPrice, getRemainingStocksCount } from '../../../utils'
+import { createFormatAvailable, formatPrice, getRemainingStocksCount } from '../../../utils/utils'
 import DateField from '../../../../../../../layout/form/fields/DateField'
 import HiddenField from '../../../../../../../layout/form/fields/HiddenField'
 import NumberField from '../../../../../../../layout/form/fields/NumberField'
@@ -114,8 +114,8 @@ class ProductFields extends Component {
 
   render() {
     const { beginningDatetime, isEvent, readOnly, stock, timezone, venue } = this.props
-    const { available, bookings } = stock || {}
-    const remainingStocksCount = getRemainingStocksCount(available, bookings || [])
+    const { available, remainingQuantity } = stock || {}
+    const remainingStocksCount = getRemainingStocksCount(available, remainingQuantity)
 
     return (
       <Fragment>

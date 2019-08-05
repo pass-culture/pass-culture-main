@@ -6,7 +6,7 @@ import { requestData } from 'redux-saga-data'
 import DeleteDialog from '../DeleteDialog/DeleteDialog'
 import withFrenchQueryRouter from '../../../../../../hocs/withFrenchQueryRouter'
 import Icon from '../../../../../../layout/Icon'
-import { errorKeyToFrenchKey } from '../../utils'
+import { errorKeyToFrenchKey } from '../../utils/utils'
 
 class EditAndDeleteControl extends Component {
   constructor(props) {

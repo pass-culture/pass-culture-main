@@ -92,9 +92,7 @@ ShallowWrapper {
         <td
           className="is-small remaining-stock"
           id="remaining-stock"
-        >
-          Illimité
-        </td>,
+        />,
       ],
     },
     "ref": null,
@@ -269,12 +267,12 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "Illimité",
+          "children": undefined,
           "className": "is-small remaining-stock",
           "id": "remaining-stock",
         },
         "ref": null,
-        "rendered": "Illimité",
+        "rendered": null,
         "type": "td",
       },
     ],
@@ -348,9 +346,7 @@ ShallowWrapper {
           <td
             className="is-small remaining-stock"
             id="remaining-stock"
-          >
-            Illimité
-          </td>,
+          />,
         ],
       },
       "ref": null,
@@ -525,12 +521,12 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Illimité",
+            "children": undefined,
             "className": "is-small remaining-stock",
             "id": "remaining-stock",
           },
           "ref": null,
-          "rendered": "Illimité",
+          "rendered": null,
           "type": "td",
         },
       ],

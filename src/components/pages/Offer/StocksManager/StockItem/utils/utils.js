@@ -1,13 +1,11 @@
 import moment from 'moment'
 
-export const getRemainingStocksCount = (available, bookings) => {
-  if (!available && available !== 0) {
+export const getRemainingStocksCount = (available, remainingQuantity) => {
+  if (!available && available === 0) {
     return 'Illimité'
   }
 
-  const validBookings = bookings.filter(booking => booking.isCancelled === false)
-
-  return available - validBookings.length
+  return remainingQuantity
 }
 
 export const BOOKING_LIMIT_DATETIME_HOURS = 23

@@ -10,7 +10,7 @@ import adaptBookingLimitDatetimeGivenBeginningDatetime from './decorators/adaptB
 import fillEndDatimeWhenUpdatingBeginningDatetime from './decorators/fillEndDatimeWhenUpdatingBeginningDatetime'
 import ProductFields from './sub-components/fields/ProductFields/ProductFields'
 import SubmitAndCancelControlContainer from './sub-components/SubmitAndCancelControl/SubmitAndCancelControlContainer'
-import { errorKeyToFrenchKey } from './utils'
+import { errorKeyToFrenchKey } from './utils/utils'
 
 class StockItem extends Component {
   constructor() {
@@ -22,7 +22,11 @@ class StockItem extends Component {
   }
 
   componentDidMount() {
-    this.setState({ tbodyElement: this.tbodyElement })
+    this.updateTBodyElement()
+  }
+
+  updateTBodyElement() {
+    this.setState({tbodyElement: this.tbodyElement})
   }
 
   handleRequestFail = () => (state, action) => {
@@ -156,6 +160,10 @@ class StockItem extends Component {
     )
   }
 
+  createRef = element => {
+    this.tbodyElement = element
+  }
+
   render() {
     const { isEvent, stockPatch, timezone } = this.props
 
@@ -189,9 +197,7 @@ class StockItem extends Component {
 
     return (
       <tbody
-        ref={_element => {
-          this.tbodyElement = _element
-        }}
+        ref={this.createRef()}
       >
         <Form
           decorators={decorators}

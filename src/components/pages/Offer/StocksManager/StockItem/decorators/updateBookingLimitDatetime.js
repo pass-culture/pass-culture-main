@@ -1,7 +1,7 @@
 import moment from 'moment'
 import 'moment-timezone'
 
-import { BOOKING_LIMIT_DATETIME_HOURS, BOOKING_LIMIT_DATETIME_MINUTES } from '../utils'
+import { BOOKING_LIMIT_DATETIME_HOURS, BOOKING_LIMIT_DATETIME_MINUTES } from '../utils/utils'
 
 const updateBookingLimitDatetime = ({
   beginningDatetime,

@@ -31,27 +31,31 @@ describe('src | components | pages | Offer | StocksManagerContainer | StockItem 
         changeToReadOnly: jest.fn(),
       }
       const stockId = 'AE'
+
+      const onSubmitMock = () => jest.fn()
+      const renderField = ({ input }) => (<input
+        name="foo"
+        {...input}
+      />);
+      const renderForm = ({ form, handleSubmit }) => (
+        <Fragment>
+          <Field
+            name="foo"
+            render={renderField}
+          />
+          <SubmitAndCancelControl
+            form={form}
+            handleSubmit={handleSubmit}
+            isRequestPending={false}
+            query={query}
+            stockId={stockId}
+          />
+        </Fragment>
+      )
       const wrapper = mount(
         <Form
-          onSubmit={() => jest.fn()}
-          render={({ form, handleSubmit }) => (
-            <Fragment>
-              <Field
-                name="foo"
-                render={({ input }) => (<input
-                  name="foo"
-                  {...input}
-                                        />)}
-              />
-              <SubmitAndCancelControl
-                form={form}
-                handleSubmit={handleSubmit}
-                isRequestPending={false}
-                query={query}
-                stockId={stockId}
-              />
-            </Fragment>
-          )}
+          onSubmit={onSubmitMock}
+          render={renderForm}
         />
       )
 

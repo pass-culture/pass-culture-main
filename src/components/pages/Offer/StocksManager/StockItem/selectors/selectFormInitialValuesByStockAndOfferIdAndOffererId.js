@@ -9,7 +9,7 @@ import {
   getDatetimeOneDayAfter,
   getDatetimeOneHourAfter,
   getDatetimeAtSpecificHoursAndMinutes,
-} from '../utils'
+} from '../utils/utils'
 
 function mapArgsToCacheKey(state, stock, offerId, offererId) {
   return `${(stock && stock.id) || ''}${offerId || ''}/${offererId || ''}`
