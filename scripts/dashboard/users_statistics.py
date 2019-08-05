@@ -2,7 +2,7 @@ import pandas
 
 from sqlalchemy import func
 
-from models import User, Booking
+from models import Booking
 from models.db import db
 import repository.user_queries as user_repository
 
@@ -12,7 +12,7 @@ def count_activated_users():
 
 
 def count_users_having_booked():
-    return User.query.join(Booking).distinct(User.id).count()
+    return user_repository.count_users_having_booked()
 
 
 def get_mean_number_of_bookings_per_user_having_booked():
