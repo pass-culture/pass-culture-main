@@ -17,6 +17,14 @@ def count_offerer() -> int:
     return _query_offerers_with_user_offerer().count()
 
 
+def count_offerer_with_stock() -> int:
+    return _query_offerers_with_user_offerer() \
+        .join(Venue, Venue.managingOffererId == Offerer.id) \
+        .join(Offer) \
+        .join(Stock) \
+        .count()
+
+
 def find_by_id(id):
     return Offerer.query.filter_by(id=id).first()
 
