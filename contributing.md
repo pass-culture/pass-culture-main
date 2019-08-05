@@ -73,7 +73,7 @@
 
 - Respecter tous les points du `contributing.md` ;
 
-- Nommer les messages de commit de la façon suivante `(PC-XXXX) Ton message explicite` ;
+- Nommer les messages de commit de la façon suivante `(PC-XXXX) : Ton message explicite` ;
 
 - Faire un nombre résonnable de commit ;
 
