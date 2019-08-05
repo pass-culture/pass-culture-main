@@ -12,6 +12,11 @@ get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_i
     Venue
 )
 
+
+def count_offerer() -> int:
+    return _query_offerers_with_user_offerer().count()
+
+
 def find_by_id(id):
     return Offerer.query.filter_by(id=id).first()
 
@@ -377,3 +382,9 @@ def keep_offerers_with_no_validated_users(query):
         .join(User) \
         .filter(~Offerer.UserOfferers.any(User.validationToken == None))
     return query
+
+
+def _query_offerers_with_user_offerer():
+    return Offerer.query \
+        .join(UserOfferer) \
+        .distinct(Offerer.id)

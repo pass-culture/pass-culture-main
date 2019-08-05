@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from pprint import pprint
 
 import pandas
 
@@ -14,42 +13,6 @@ from scripts.dashboard.diversification_statistics import get_offerer_count, get_
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_stock, \
     create_offer_with_thing_product, create_venue, create_mediation, create_offer_with_event_product, create_booking
-
-
-class GetOffererCountTest:
-    @clean_database
-    def test_return_zero_if_no_offerer(self, app):
-        # When
-        number_of_offerers = get_offerer_count()
-
-        # Then
-        assert number_of_offerers == 0
-
-    @clean_database
-    def test_return_1_if_offerer_with_user_offerer(self, app):
-        # Given
-        user = create_user()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        PcObject.save(user_offerer)
-
-        # When
-        number_of_offerers = get_offerer_count()
-
-        # Then
-        assert number_of_offerers == 1
-
-    @clean_database
-    def test_return_0_if_offerer_without_user_offerer(self, app):
-        # Given
-        offerer = create_offerer()
-        PcObject.save(offerer)
-
-        # When
-        number_of_offerers = get_offerer_count()
-
-        # Then
-        assert number_of_offerers == 0
 
 
 class GetOffererWithStockCountTest:

@@ -6,7 +6,7 @@ from repository.offerer_queries import find_all_offerers_with_managing_user_info
     find_all_offerers_with_managing_user_information_and_venue, \
     find_all_offerers_with_managing_user_information_and_not_virtual_venue, \
     find_all_offerers_with_venue, find_first_by_user_offerer_id, find_all_pending_validation, \
-    find_filtered_offerers, filter_offerers_with_keywords_string, find_by_id
+    find_filtered_offerers, filter_offerers_with_keywords_string, find_by_id, count_offerer
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_venue, \
@@ -28,6 +28,43 @@ class OffererQueriesTest:
 
         # Then
         assert offerer.name == "My sweet offerer"
+
+
+class CountOffererTest:
+    @clean_database
+    def test_return_zero_if_no_offerer(self, app):
+        # When
+        number_of_offerers = count_offerer()
+
+        # Then
+        assert number_of_offerers == 0
+
+    @clean_database
+    def test_return_1_if_offerer_with_user_offerer(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        PcObject.save(user_offerer)
+
+        # When
+        number_of_offerers = count_offerer()
+
+        # Then
+        assert number_of_offerers == 1
+
+    @clean_database
+    def test_return_0_if_offerer_without_user_offerer(self, app):
+        # Given
+        offerer = create_offerer()
+        PcObject.save(offerer)
+
+        # When
+        number_of_offerers = count_offerer()
+
+        # Then
+        assert number_of_offerers == 0
+
 
 
 @clean_database

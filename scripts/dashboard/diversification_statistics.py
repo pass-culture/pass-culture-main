@@ -4,10 +4,11 @@ from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType
 from models.db import db
 from repository.booking_queries import count_all_used_booking
 from repository.offer_queries import get_active_offers_Ids_query
+from repository.offerer_queries import count_offerer
 
 
 def get_offerer_count() -> int:
-    return _query_offerers_with_user_offerer().count()
+    return count_offerer()
 
 
 def _query_offerers_with_user_offerer():
