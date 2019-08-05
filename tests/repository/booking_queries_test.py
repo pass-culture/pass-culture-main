@@ -883,12 +883,12 @@ class CountAllBookingsTest:
                                   is_used=True,
                                   date_created=one_day_before_stock_last_update)
         PcObject.save(booking1)
-
-        # When
         booking2 = create_booking(user2,
                                   stock,
                                   is_cancelled=False,
                                   is_used=False)
+
+        # When
         PcObject.save(booking2)
 
         # Then
@@ -929,8 +929,6 @@ class CountAllBookingsTest:
                                   is_cancelled=False,
                                   is_used=True)
         PcObject.save(booking1)
-
-        # When
         date_after_last_booking = datetime.utcnow()
         booking2 = create_booking(user2,
                                   stock,
@@ -938,6 +936,7 @@ class CountAllBookingsTest:
                                   is_cancelled=False,
                                   is_used=False)
 
+        # When
         with pytest.raises(ApiErrors) as e:
             PcObject.save(booking2)
 

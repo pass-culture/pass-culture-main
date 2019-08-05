@@ -217,17 +217,19 @@ Booking.trig_ddl = """
 
     CREATE OR REPLACE FUNCTION check_booking()
     RETURNS TRIGGER AS $$
+    DECLARE
+        lastStockUpdate date := (SELECT "dateModified" FROM stock WHERE id=NEW."stockId");
     BEGIN
       IF EXISTS (SELECT "available" FROM stock WHERE id=NEW."stockId" AND "available" IS NOT NULL)
          AND (
-            (SELECT "available" FROM stock WHERE id=NEW."stockId") < 
+            (SELECT "available" FROM stock WHERE id=NEW."stockId") <
             (
-              SELECT SUM(quantity) 
-              FROM booking 
-              WHERE "stockId"=NEW."stockId" 
+              SELECT SUM(quantity)
+              FROM booking
+              WHERE "stockId"=NEW."stockId"
               AND (
                 NOT "isCancelled" AND NOT "isUsed"
-                OR ("isUsed" AND "dateCreated" > (SELECT "dateModified" FROM stock WHERE id=NEW."stockId"))
+                OR ("isUsed" AND "dateCreated" > lastStockUpdate)
               )
             )
           ) THEN

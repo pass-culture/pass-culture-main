@@ -52,12 +52,8 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
     venue_provider.isActive = True
     venue_provider.venueIdAtOfferProvider = '77567146400110'
     PcObject.save(venue_provider)
-    venue_provider = VenueProvider.query \
-        .filter_by(venueIdAtOfferProvider='77567146400110') \
-        .one_or_none()
 
     product = create_product_with_thing_type(id_at_providers='0002730757438')
-
     PcObject.save(product)
 
     # When / Then
@@ -113,14 +109,10 @@ def test_titelive_stock_provider_update_1_stock_and_1_offer(get_data, app):
     venue_provider.isActive = True
     venue_provider.venueIdAtOfferProvider = '77567146400110'
     PcObject.save(venue_provider)
-    venue_provider = VenueProvider.query \
-        .filter_by(venueIdAtOfferProvider='77567146400110') \
-        .one_or_none()
 
     product = create_product_with_thing_type(id_at_providers='0002730757438')
     offer = create_offer_with_thing_product(venue, product=product, id_at_providers='0002730757438@77567146400110')
     stock = create_stock(offer=offer, id_at_providers='0002730757438@77567146400110')
-
     PcObject.save(product, offer, stock)
 
     # When / Then
@@ -166,13 +158,9 @@ def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(get_
     venue_provider.isActive = True
     venue_provider.venueIdAtOfferProvider = '77567146400110'
     PcObject.save(venue_provider)
-    venue_provider = VenueProvider.query \
-        .filter_by(venueIdAtOfferProvider='77567146400110') \
-        .one_or_none()
 
     product = create_product_with_thing_type(id_at_providers='0002730757438')
     offer = create_offer_with_thing_product(venue, product=product, id_at_providers='0002730757438@77567146400110')
-
     PcObject.save(product, offer)
 
     # When / Then
@@ -225,14 +213,10 @@ def test_titelive_stock_provider_create_2_stock_and_2_offer_even_if_existing_off
     venue_provider.isActive = True
     venue_provider.venueIdAtOfferProvider = '77567146400110'
     PcObject.save(venue_provider)
-    venue_provider = VenueProvider.query \
-        .filter_by(venueIdAtOfferProvider='77567146400110') \
-        .one_or_none()
 
     thing_1 = create_product_with_thing_type(id_at_providers='0002730757438')
     thing_2 = create_product_with_thing_type(id_at_providers='0002736409898')
     offer = create_offer_with_thing_product(venue=venue, product=thing_1, id_at_providers="not_titelive")
-
     PcObject.save(thing_1, offer, thing_2)
 
     # When / Then
@@ -266,16 +250,10 @@ def test_titelive_stock_provider_create_nothing_if_siret_is_not_in_titelive_data
     venue_provider.provider = tite_live_things_provider
     venue_provider.isActive = True
     venue_provider.venueIdAtOfferProvider = '12345678912345'
-
     PcObject.save(venue_provider)
-
-    venue_provider = VenueProvider.query \
-        .filter_by(venueIdAtOfferProvider='12345678912345') \
-        .one_or_none()
 
     product = create_product_with_thing_type(id_at_providers='0002730757438')
     offer = create_offer_with_thing_product(venue=venue, product=product)
-
     PcObject.save(product, offer)
 
     # When / Then
