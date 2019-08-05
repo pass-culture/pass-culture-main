@@ -75,7 +75,7 @@
 
 - Nommer les messages de commit de la façon suivante `(PC-XXXX) : Ton message explicite` ;
 
-- Faire un nombre résonnable de commit ;
+- Faire un nombre raisonnable de commit ;
 
 - Faire un `rebase master` régulièrement ;
 
