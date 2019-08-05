@@ -25,7 +25,6 @@ def upgrade():
         ALTER TABLE offer ADD CONSTRAINT "offer_type_check" CHECK (type::text <> 'None'::text);
         ALTER TABLE product ADD CONSTRAINT "product_type_check" CHECK (type::text <> 'None'::text);
     """)
-    #TODO Mettre la contrainte aussi dans le MODEL
 
 
 def downgrade():
