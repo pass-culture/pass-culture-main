@@ -84,8 +84,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                 and uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if offer.isThing  \
-                            and offer.stocks:
+                    if offer.isThing and offer.stocks and offer.isEditable:
                         return {
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),
@@ -111,7 +110,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
                 and not uo.offerer.iban:
             for venue in uo.offerer.managedVenues:
                 for offer in venue.offers:
-                    if offer.isThing and len(offer.stocks) == 0:
+                    if offer.isThing and len(offer.stocks) == 0 and offer.isEditable:
                         return {
                             "offer": get_offer_helper(offer),
                             "offerer": get_offerer_helper(uo.offerer),
