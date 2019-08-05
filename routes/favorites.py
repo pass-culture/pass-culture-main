@@ -50,7 +50,7 @@ def delete_favorite(offer_id, mediation_id=None):
 
     PcObject.delete(favorite)
 
-    return jsonify({ "id": favorite_id }), 200
+    return jsonify(favorite.as_dict()), 200
 
 
 @app.route('/favorites', methods=['GET'])
