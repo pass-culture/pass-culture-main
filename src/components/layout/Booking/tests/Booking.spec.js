@@ -36,13 +36,14 @@ describe('src | components | layout |Booking', () => {
         url: '/foo/reservations/AE',
       },
       offer: {
+        isEvent: true,
         name: 'super offer',
         venue: {
           name: 'super venue',
         },
       },
       recommendation: {
-        id: "AE"
+        id: 'AE',
       },
     }
   })

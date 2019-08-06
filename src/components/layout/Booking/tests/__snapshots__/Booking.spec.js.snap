@@ -33,6 +33,7 @@ ShallowWrapper {
     }
     offer={
       Object {
+        "isEvent": true,
         "name": "super offer",
         "venue": Object {
           "name": "super venue",

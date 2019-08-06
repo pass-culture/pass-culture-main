@@ -66,7 +66,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     const link = wrapper.find(Link)
     const img = wrapper.find('img')
     const stringifyDate = wrapper.find('.teaser-sub-title').text()
-    const token = wrapper.find('.my-bookings-token').text()
+    const token = wrapper.find('.mb-token').text()
     const icon = wrapper.find(Icon)
     const ribbon = wrapper.find(Ribbon)
     expect(link).toHaveLength(1)

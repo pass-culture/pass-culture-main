@@ -8,23 +8,23 @@ import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFoot
 
 const MyBookingsLists = ({ isEmpty, otherBookings, soonBookings }) => (
   <Fragment>
-    <div className={classnames('page-content', { 'teaser-no-teasers': isEmpty })}>
+    <main className={classnames('teaser-main', { 'teaser-no-teasers': isEmpty })}>
       {isEmpty && <NoItems sentence="Dès que vous aurez réservé une offre," />}
 
       {!isEmpty && soonBookings.length > 0 && (
-        <section className="my-bookings-section">
-          <header className="my-bookings-header">{'C’est bientôt !'}</header>
+        <section className="mb-section">
+          <header className="mb-header">{'C’est bientôt !'}</header>
           <BookingsList bookings={soonBookings} />
         </section>
       )}
 
       {!isEmpty && otherBookings.length > 0 && (
-        <section className="my-bookings-section">
-          <header className="my-bookings-header">{'Réservations'}</header>
+        <section className="mb-section">
+          <header className="mb-header">{'Réservations'}</header>
           <BookingsList bookings={otherBookings} />
         </section>
       )}
-    </div>
+    </main>
     <RelativeFooterContainer
       className="dotted-top-white"
       theme="purple"

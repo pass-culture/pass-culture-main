@@ -46,8 +46,8 @@ class MyFavorites extends Component {
     const isEmpty = myFavorites.length === 0
 
     return (
-      <div
-        className={classnames('page-content', {
+      <main
+        className={classnames('teaser-main', {
           'teaser-no-teasers': isEmpty,
         })}
       >
@@ -70,7 +70,7 @@ class MyFavorites extends Component {
             </ul>
           </section>
         )}
-      </div>
+      </main>
     )
   }
 
@@ -86,10 +86,7 @@ class MyFavorites extends Component {
     }
 
     return (
-      <main
-        className="teaser-list page with-header with-footer"
-        role="main"
-      >
+      <div className="teaser-list">
         <HeaderContainer
           shouldBackFromDetails
           title="Mes favoris"
@@ -100,7 +97,7 @@ class MyFavorites extends Component {
           className="dotted-top-red"
           theme="purple"
         />
-      </main>
+      </div>
     )
   }
 }

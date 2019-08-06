@@ -101,6 +101,6 @@ describe('src | selectors | selectDistanceByMatch', () => {
     const result = selectDistanceByMatch(state, match)
 
     // then
-    expect(result).toStrictEqual(expectedDistance)
+    expect(result).toStrictEqual('-')
   })
 })

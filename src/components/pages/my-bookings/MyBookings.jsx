@@ -67,17 +67,14 @@ class MyBookings extends Component {
     }
 
     return (
-      <main
-        className="my-bookings-page page with-footer with-header"
-        role="main"
-      >
+      <div className="teaser-list">
         <HeaderContainer
           shouldBackFromDetails
           title="Mes réservations"
         />
         <MyBookingsListsContainer isEmpty={isEmpty} />
         <MyBookingDetailsContainer bookingPath="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:bookings(reservations)/:cancellation(annulation)?/:confirmation(confirmation)?" />
-      </main>
+      </div>
     )
   }
 }

@@ -37,7 +37,7 @@ const BookingItem = ({ booking, location, match, offer, ribbon }) => {
   const stringifyDate = beginningDatetime && stringify(beginningDatetime)(timeZone)
   return (
     <li
-      className="my-bookings-my-booking"
+      className="mb-my-booking"
       data-token={token.toLowerCase()}
     >
       <Link
@@ -50,11 +50,11 @@ const BookingItem = ({ booking, location, match, offer, ribbon }) => {
                                                    />}
         </div>
         <div className="teaser-wrapper">
-          <div className="my-bookings-heading">
+          <div className="mb-heading">
             <div className="teaser-title">{productName}</div>
             <div className="teaser-sub-title">{stringifyDate || 'Permanent'}</div>
           </div>
-          <div className="my-bookings-token">{token}</div>
+          <div className="mb-token">{token}</div>
         </div>
         <div className="teaser-arrow">
           {ribbon && <Ribbon
