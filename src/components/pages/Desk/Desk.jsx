@@ -88,7 +88,7 @@ class Desk extends React.PureComponent {
     this.setState({ status: CODE_REGISTERING_SUCCESS })
   }
 
-  handleFailWhenValidateBooking = () => (state, action) => {
+  handleFailWhenValidateBooking = (state, action) => {
     const {
       payload: { errors },
     } = action
