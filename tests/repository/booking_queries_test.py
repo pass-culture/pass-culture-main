@@ -14,7 +14,7 @@ from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_active_bookings_by_user_id, \
     find_by, \
     find_all_offerer_bookings, \
-    find_all_digital_bookings_for_offerer, count_non_cancelled_bookings
+    find_all_digital_bookings_for_offerer, count_non_cancelled_bookings, count_all_bookings
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -804,3 +804,31 @@ class CountNonCancelledBookingsTest:
 
         # Then
         assert count == 0
+
+
+class CountAllBookingsTest:
+    @clean_database
+    def test_returns_0_when_no_bookings(self, app):
+        # When
+        number_of_bookings = count_all_bookings()
+
+        # Then
+        assert number_of_bookings == 0
+
+    @clean_database
+    def test_returns_2_when_bookings_cancelled_or_not(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        user = create_user()
+        booking1 = create_booking(user, stock)
+        booking2 = create_booking(user, stock, is_cancelled=True)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_bookings = count_all_bookings()
+
+        # Then
+        assert number_of_bookings == 2

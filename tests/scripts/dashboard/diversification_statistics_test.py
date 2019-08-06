@@ -560,34 +560,6 @@ class GetOffersWithNonCancelledBookingsCountTest:
         assert number_of_offerers == 0
 
 
-class GetAllBookingsCountTest:
-    @clean_database
-    def test_returns_0_when_no_bookings(self, app):
-        # When
-        number_of_bookings = get_all_bookings_count()
-
-        # Then
-        assert number_of_bookings == 0
-
-    @clean_database
-    def test_returns_2_when_bookings_cancelled_or_not(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, price=0)
-        user = create_user()
-        booking1 = create_booking(user, stock)
-        booking2 = create_booking(user, stock, is_cancelled=True)
-        PcObject.save(booking1, booking2)
-
-        # When
-        number_of_bookings = get_all_bookings_count()
-
-        # Then
-        assert number_of_bookings == 2
-
-
 class GetAllUsedBookingsCountTest:
     @clean_database
     def test_return_1_if_used_booking(self, app):

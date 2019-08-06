@@ -2,7 +2,7 @@ import pandas
 
 from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType
 from models.db import db
-from repository.booking_queries import count_all_used_booking
+from repository.booking_queries import count_all_used_booking, count_all_bookings
 from repository.offer_queries import get_active_offers_Ids_query
 from repository.offerer_queries import count_offerer, count_offerer_with_stock
 
@@ -61,7 +61,7 @@ def get_offers_with_non_cancelled_bookings_count() -> int:
 
 
 def get_all_bookings_count() -> int:
-    return Booking.query.count()
+    return count_all_bookings()
 
 
 def get_all_used_bookings_count() -> int:

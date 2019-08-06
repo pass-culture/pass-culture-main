@@ -23,6 +23,10 @@ get_filter_matching_ts_query_for_booking = create_get_filter_matching_ts_query_i
 )
 
 
+def count_all_bookings() -> int:
+    return Booking.query.count()
+
+
 def count_non_cancelled_bookings():
     return Booking.query.filter_by(isCancelled=False).count()
 
