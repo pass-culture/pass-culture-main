@@ -96,7 +96,7 @@ class TiteLiveStocks(LocalProvider):
         if isinstance(obj, Stock):
             self.update_stock_object(obj, self.titelive_stock)
         elif isinstance(obj, Offer):
-            self.update_offer_object(obj)
+            self.update_offer_object(obj, self.titelive_stock)
 
     def updateObjects(self, limit=None):
         super().updateObjects(limit)
@@ -107,7 +107,7 @@ class TiteLiveStocks(LocalProvider):
         obj.bookingLimitDatetime = None
         obj.offerId = self.providables[0].id
 
-    def update_offer_object(self, obj):
+    def update_offer_object(self, obj, stock_information):
         obj.name = self.product.name
         obj.description = self.product.description
         obj.type = self.product.type
@@ -117,6 +117,9 @@ class TiteLiveStocks(LocalProvider):
         if obj.id is None:
             next_id = self.get_next_offer_id_from_sequence()
             obj.id = next_id
+
+        if int(stock_information['available']) == 0:
+            obj.isActive = False
 
     def get_next_offer_id_from_sequence(self):
         sequence = Sequence('offer_id_seq')

@@ -274,3 +274,55 @@ def test_titelive_stock_provider_create_nothing_if_siret_is_not_in_titelive_data
                   erroredThumbs=0,
                   Stock=0
                   )
+
+
+@clean_database
+@patch('local_providers.titelive_stocks.get_data')
+def test_titelive_stock_provider_deactivate_offer_if_stock_available_equals_0(get_data, app):
+    # given
+    get_data.return_value = {
+        'total': 'null',
+        'limit': 5000,
+        'stocks': [
+            {
+                "ref": "0002730757438",
+                "available": 0,
+                "price": 4500,
+                "validUntil": "2019-10-31T15:10:27Z"
+            }
+        ]
+    }
+
+    offerer = create_offerer(siren='775671464')
+    venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
+    PcObject.save(venue)
+
+    tite_live_things_provider = get_provider_by_local_class('TiteLiveThings')
+    venue_provider = VenueProvider()
+    venue_provider.venue = venue
+    venue_provider.provider = tite_live_things_provider
+    venue_provider.isActive = True
+    venue_provider.venueIdAtOfferProvider = '77567146400110'
+    PcObject.save(venue_provider)
+
+    product = create_product_with_thing_type(id_at_providers='0002730757438')
+    offer = create_offer_with_thing_product(venue, product=product, id_at_providers='0002730757438@77567146400110')
+    stock = create_stock(offer=offer, id_at_providers='0002730757438@77567146400110')
+    PcObject.save(product, offer, stock)
+
+    # When / Then
+    provider_test(app,
+                  TiteLiveStocks,
+                  venue_provider,
+                  checkedObjects=2,
+                  createdObjects=0,
+                  updatedObjects=2,
+                  erroredObjects=0,
+                  checkedThumbs=0,
+                  createdThumbs=0,
+                  updatedThumbs=0,
+                  erroredThumbs=0
+                  )
+
+    offer = Offer.query.one()
+    assert offer.isActive is False
