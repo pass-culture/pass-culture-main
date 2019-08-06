@@ -15,13 +15,6 @@ ShallowWrapper {
         "params": Object {},
       }
     }
-    myBookings={
-      Array [
-        Object {
-          "id": 1,
-        },
-      ]
-    }
     requestGetBookings={
       [MockFunction] {
         "calls": Array [
@@ -39,7 +32,7 @@ ShallowWrapper {
       }
     }
     resetPageData={[MockFunction]}
-    soonBookings={
+    validBookings={
       Array [
         Object {
           "id": 2,

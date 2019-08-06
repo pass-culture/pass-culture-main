@@ -42,7 +42,7 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
         },
       ],
       requestGetMyFavorites: jest.fn(),
-      resetPageData: jest.fn()
+      resetPageData: jest.fn(),
     }
   })
 
@@ -115,7 +115,6 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
         // when
         const wrapper = shallow(<MyFavorites {...props} />)
         wrapper.setState({
-          isEmpty: true,
           isLoading: false,
         })
 

@@ -8,12 +8,9 @@ import { withRequiredLogin } from '../../hocs'
 import { resetPageData } from '../../../reducers/data'
 import { bookingNormalizer } from '../../../utils/normalizers'
 
-export const mapStateToProps = state => {
-  const validBookings = selectValidBookings(state)
-  return {
-    validBookings,
-  }
-}
+export const mapStateToProps = state => ({
+  validBookings: selectValidBookings(state),
+})
 
 export const mapDispatchToProps = dispatch => ({
   requestGetBookings: (handleFail, handleSuccess) => {

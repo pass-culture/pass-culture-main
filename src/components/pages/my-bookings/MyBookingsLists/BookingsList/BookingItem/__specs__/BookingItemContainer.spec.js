@@ -1,6 +1,6 @@
-import { mapStateToProps } from '../BookingItemContainer'
+import { mapStateToProps, ribbonLabelAndType } from '../BookingItemContainer'
 
-describe('src | components | pages | my-bookings | BookingItemContainer', () => {
+describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList | BookingItem | BookingItemContainer', () => {
   describe('mapStateToProps()', () => {
     it('should return props with date elements', () => {
       // given
@@ -74,6 +74,115 @@ describe('src | components | pages | my-bookings | BookingItemContainer', () => 
         },
       }
       expect(props).toStrictEqual(expected)
+    })
+  })
+
+  describe('ribbonLabelAndType()', () => {
+    describe('when the reservation is today', () => {
+      it('should return an object with "Aujourd’hui" et "today"', () => {
+        // given
+        const isUsed = false
+        const isCancelled = false
+        const isFinished = false
+        const humanizeRelativeDate = 'Aujourd’hui'
+
+        // when
+        const ribbon = ribbonLabelAndType(isUsed, isCancelled, isFinished, humanizeRelativeDate)
+
+        // then
+        expect(ribbon).toStrictEqual({
+          label: 'Aujourd’hui',
+          type: 'today',
+        })
+      })
+    })
+
+    describe('when the reservation is tomorrow', () => {
+      it('should return an object with "Demain" and "tomorrow"', () => {
+        // given
+        const isUsed = false
+        const isCancelled = false
+        const isFinished = false
+        const humanizeRelativeDate = 'Demain'
+
+        // when
+        const ribbon = ribbonLabelAndType(isUsed, isCancelled, isFinished, humanizeRelativeDate)
+
+        // then
+        expect(ribbon).toStrictEqual({
+          label: 'Demain',
+          type: 'tomorrow',
+        })
+      })
+    })
+
+    describe('when the reservation is used', () => {
+      it('should return an object with "Terminé" et "finished"', () => {
+        // given
+        const isUsed = true
+        const isCancelled = false
+        const isFinished = false
+
+        // when
+        const ribbon = ribbonLabelAndType(isUsed, isCancelled, isFinished)
+
+        // then
+        expect(ribbon).toStrictEqual({
+          label: 'Terminé',
+          type: 'finished',
+        })
+      })
+    })
+
+    describe('when the reservation is finished', () => {
+      it('should return an object with "Terminé" et "finished"', () => {
+        // given
+        const isUsed = false
+        const isCancelled = false
+        const isFinished = true
+
+        // when
+        const ribbon = ribbonLabelAndType(isUsed, isCancelled, isFinished)
+
+        // then
+        expect(ribbon).toStrictEqual({
+          label: 'Terminé',
+          type: 'finished',
+        })
+      })
+    })
+
+    describe('when the reservation is cancelled', () => {
+      it('should return an object with "Annulé" et "cancelled"', () => {
+        // given
+        const isUsed = false
+        const isCancelled = true
+        const isFinished = false
+
+        // when
+        const ribbon = ribbonLabelAndType(isUsed, isCancelled, isFinished)
+
+        // then
+        expect(ribbon).toStrictEqual({
+          label: 'Annulé',
+          type: 'cancelled',
+        })
+      })
+    })
+
+    describe('when the reservation is in progress', () => {
+      it('should return null', () => {
+        // given
+        const isUsed = false
+        const isCancelled = false
+        const isFinished = false
+
+        // when
+        const ribbon = ribbonLabelAndType(isUsed, isCancelled, isFinished)
+
+        // then
+        expect(ribbon).toBeNull()
+      })
     })
   })
 })

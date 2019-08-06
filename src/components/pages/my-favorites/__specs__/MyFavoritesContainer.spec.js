@@ -22,7 +22,7 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
     })
   })
 
-  describe('mapDispatchToProps()', () => {
+  describe('requestGetMyFavorites()', () => {
     it('should dispatch my favorites', () => {
       // given
       const dispatch = jest.fn()

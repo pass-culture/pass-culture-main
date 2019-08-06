@@ -9,27 +9,29 @@ describe('src | components | pages | my-favorites | MyFavorite | MyFavorite', ()
 
   beforeEach(() => {
     props = {
+      detailsUrl: 'fake/url',
       favorite: {
-        id: "AE",
-        thumbUrl: ''
+        id: 'AE',
+        thumbUrl: '',
       },
       humanizeRelativeDistance: '10 km',
       location: {
         pathname: '',
-        search: ''
+        search: '',
       },
       offer: {
+        id: 'Fake id',
         name: 'Fake offer name',
         product: {
           offerType: {
-            appLabel: 'Fake offer type label'
-          }
-        }
+            appLabel: 'Fake offer type label',
+          },
+        },
       },
       status: {
         label: 'Réservé',
         class: 'booked',
-      }
+      },
     }
   })
 

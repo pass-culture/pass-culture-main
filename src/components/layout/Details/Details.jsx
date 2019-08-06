@@ -12,7 +12,7 @@ class Details extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      forceDetailsVisible: false
+      forceDetailsVisible: false,
     }
   }
 
@@ -31,30 +31,26 @@ class Details extends PureComponent {
     requestGetData(this.handleSetForceDetailsVisible)
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     const { hasReceivedData, match } = this.props
     const { forceDetailsVisible } = this.state
 
-    const hasJustReceivedData = !forceDetailsVisible &&
-      hasReceivedData &&
-      !prevProps.hasReceivedData
+    const hasJustReceivedData =
+      !forceDetailsVisible && hasReceivedData && !prevProps.hasReceivedData
     const areDetailsVisible = getAreDetailsVisible(match)
     const previousAreDetailsVisible = getAreDetailsVisible(prevProps.match)
-    const hasDetailsVisibleJustHappened = areDetailsVisible
-      && !previousAreDetailsVisible
+    const hasDetailsVisibleJustHappened = areDetailsVisible && !previousAreDetailsVisible
     if (hasJustReceivedData || hasDetailsVisibleJustHappened) {
       this.handleSetForceDetailsVisible(true)
       return
     }
 
-    const hasTransitionJustHappened = getIsTransitionDetailsUrl(match)
-      && !getIsTransitionDetailsUrl(prevProps.match)
-    const hasRemovedDetailsJustHappened = !areDetailsVisible
-      && previousAreDetailsVisible
+    const hasTransitionJustHappened =
+      getIsTransitionDetailsUrl(match) && !getIsTransitionDetailsUrl(prevProps.match)
+    const hasRemovedDetailsJustHappened = !areDetailsVisible && previousAreDetailsVisible
     if (hasTransitionJustHappened || hasRemovedDetailsJustHappened) {
       this.handleSetForceDetailsVisible(false)
     }
-
   }
 
   handleSetForceDetailsVisible = forceDetailsVisible => {
@@ -62,12 +58,10 @@ class Details extends PureComponent {
   }
 
   renderBooking = route => {
-    return (
-      <BookingContainer
-        extraClassName="with-header"
-        {...route}
-      />
-    )
+    return (<BookingContainer
+      extraClassName="with-header"
+      {...route}
+            />)
   }
 
   render() {
@@ -75,21 +69,18 @@ class Details extends PureComponent {
 
     return (
       <Fragment>
-        {forceDetailsVisible && (
-          <Route
-            path={bookingPath}
-            render={this.renderBooking}
-          />
-        )}
+        {forceDetailsVisible && <Route
+          path={bookingPath}
+          render={this.renderBooking}
+                                />}
         <VersoContainer
           areDetailsVisible={forceDetailsVisible}
           extraClassName="with-header"
         />
-        {forceDetailsVisible && (
-          <RectoContainer
-            areDetailsVisible
-            extraClassName="with-header"
-          />)}
+        {forceDetailsVisible && <RectoContainer
+          areDetailsVisible
+          extraClassName="with-header"
+                                />}
       </Fragment>
     )
   }
@@ -98,19 +89,19 @@ class Details extends PureComponent {
 Details.propTypes = {
   hasReceivedData: PropTypes.bool.isRequired,
   history: PropTypes.shape({
-    push: PropTypes.func.isRequired
+    push: PropTypes.func.isRequired,
   }).isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string,
-    search: PropTypes.string
+    search: PropTypes.string,
   }).isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
-      details: PropTypes.string
-    }).isRequired
+      details: PropTypes.string,
+    }).isRequired,
   }).isRequired,
   needsToRequestGetData: PropTypes.bool.isRequired,
-  requestGetData: PropTypes.func.isRequired
+  requestGetData: PropTypes.func.isRequired,
 }
 
 export default Details

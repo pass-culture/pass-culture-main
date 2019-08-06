@@ -9,13 +9,14 @@ import selectOfferById from '../../../../../../selectors/selectOfferById'
 import selectRecommendationById from '../../../../../../selectors/selectRecommendationById'
 import getHumanizeRelativeDate from '../../../../../../utils/date/getHumanizeRelativeDate'
 
-const ribbonLabelAndType = (isCancelled, isFinished, humanizeRelativeDate = '', isUsed) => {
+export const ribbonLabelAndType = (isUsed, isCancelled, isFinished, humanizeRelativeDate = '') => {
   if (isUsed) {
     return {
       label: 'Terminé',
       type: 'finished',
     }
   }
+
   if (!isCancelled && humanizeRelativeDate === 'Aujourd’hui') {
     return {
       label: 'Aujourd’hui',
@@ -54,7 +55,7 @@ export const mapStateToProps = (state, ownProps) => {
 
   const isFinished = getIsFinished(offer, mediation, booking)
 
-  const ribbon = ribbonLabelAndType(isCancelled, isFinished, humanizeRelativeBeginningDate, isUsed)
+  const ribbon = ribbonLabelAndType(isUsed, isCancelled, isFinished, humanizeRelativeBeginningDate)
 
   return {
     isFinished,

@@ -1,4 +1,4 @@
-import data, { lastRecommendationsRequestTimestamp } from '../data'
+import data, { lastRecommendationsRequestTimestamp, resetPageData } from '../data'
 
 describe('src | reducers | data', () => {
   describe('data()', () => {
@@ -53,6 +53,25 @@ describe('src | reducers | data', () => {
 
       // then
       expect(lastRecommendations).toBe(state)
+    })
+  })
+
+  describe('resetPageData()', () => {
+    it('should return an object with empty data', () => {
+      // when
+      const data = resetPageData()
+
+      // then
+      expect(data).toStrictEqual({
+        patch: {
+          bookings: [],
+          favorites: [],
+          mediations: [],
+          offers: [],
+          recommendations: [],
+        },
+        type: 'ASSIGN_DATA',
+      })
     })
   })
 })

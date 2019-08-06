@@ -4,6 +4,7 @@ exports[`src | components | pages | my-favorites | MyFavorite | MyFavorite shoul
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <MyFavorite
+    detailsUrl="fake/url"
     favorite={
       Object {
         "id": "AE",
@@ -19,6 +20,7 @@ ShallowWrapper {
     }
     offer={
       Object {
+        "id": "Fake id",
         "name": "Fake offer name",
         "product": Object {
           "offerType": Object {
@@ -51,7 +53,7 @@ ShallowWrapper {
       "children": <Link
         className="teaser-link"
         replace={false}
-        to="/details/AE"
+        to="fake/url"
       >
         <div
           className="teaser-thumb"
@@ -152,7 +154,7 @@ ShallowWrapper {
         ],
         "className": "teaser-link",
         "replace": false,
-        "to": "/details/AE",
+        "to": "fake/url",
       },
       "ref": null,
       "rendered": Array [
@@ -322,7 +324,7 @@ ShallowWrapper {
         "children": <Link
           className="teaser-link"
           replace={false}
-          to="/details/AE"
+          to="fake/url"
         >
           <div
             className="teaser-thumb"
@@ -423,7 +425,7 @@ ShallowWrapper {
           ],
           "className": "teaser-link",
           "replace": false,
-          "to": "/details/AE",
+          "to": "fake/url",
         },
         "ref": null,
         "rendered": Array [

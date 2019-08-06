@@ -3,7 +3,6 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import MyFavorite from './MyFavorite'
-
 import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
 import selectFirstMatchingBookingByStocks from '../../../../selectors/selectFirstMatchingBookingByStocks'
 import selectOfferById from '../../../../selectors/selectOfferById'
@@ -68,7 +67,6 @@ export const mapStateToProps = (state, ownProps) => {
   const humanizeRelativeDate = offerBeginningDate
     ? getHumanizeRelativeDate(offerBeginningDate)
     : null
-
   const status = reservationStatus(
     isFinished,
     isFullyBooked,
@@ -82,7 +80,12 @@ export const mapStateToProps = (state, ownProps) => {
     venue.latitude,
     venue.longitude
   )
+  const { pathname, search } = location
+  const mediationId = favorite.mediationId ? `/${favorite.mediationId}` : ''
+  const detailsUrl = `${pathname}/details/${offer.id}${mediationId}${search}`
+
   return {
+    detailsUrl,
     humanizeRelativeDistance,
     offer,
     status,

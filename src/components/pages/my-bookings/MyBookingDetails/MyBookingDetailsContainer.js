@@ -14,29 +14,28 @@ export const mapStateToProps = (state, ownProps) => {
   const needsToRequestGetData = typeof bookingId !== 'undefined'
   const booking = selectBookingById(state, bookingId)
   const hasReceivedData = typeof booking !== 'undefined'
+
   return {
     hasReceivedData,
     needsToRequestGetData,
   }
 }
 
-export const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    requestGetData: handleSuccess => {
-      const { match } = ownProps
-      const { params } = match
-      const { bookingId } = params
-      let apiPath = `/bookings/${bookingId}`
-      dispatch(
-        requestData({
-          apiPath,
-          handleSuccess,
-          normalizer: bookingNormalizer,
-        })
-      )
-    },
-  }
-}
+export const mapDispatchToProps = (dispatch, ownProps) => ({
+  requestGetData: handleSuccess => {
+    const { match } = ownProps
+    const { params } = match
+    const { bookingId } = params
+
+    dispatch(
+      requestData({
+        apiPath: `/bookings/${bookingId}`,
+        handleSuccess,
+        normalizer: bookingNormalizer,
+      })
+    )
+  },
+})
 
 export default compose(
   withRouter,

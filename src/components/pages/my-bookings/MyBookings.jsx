@@ -58,6 +58,7 @@ class MyBookings extends Component {
 
   render() {
     const { hasError, isEmpty, isLoading } = this.state
+
     if (isLoading) {
       return (<LoaderContainer
         hasError={hasError}

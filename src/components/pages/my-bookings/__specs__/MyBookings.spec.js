@@ -11,21 +11,16 @@ describe('src | components | pages | my-bookings | MyBookings', () => {
 
   beforeEach(() => {
     props = {
-      match: {
-        params: {},
-      },
       location: {
         pathname: '/reservations',
         search: '',
       },
-      myBookings: [
-        {
-          id: 1,
-        },
-      ],
+      match: {
+        params: {},
+      },
       requestGetBookings: jest.fn(),
       resetPageData: jest.fn(),
-      soonBookings: [
+      validBookings: [
         {
           id: 2,
         },

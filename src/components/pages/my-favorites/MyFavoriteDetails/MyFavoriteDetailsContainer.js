@@ -11,32 +11,31 @@ export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const { params } = match
   const { favoriteId } = params
-  const needsToRequestGetFavorite = typeof favoriteId !== 'undefined'
+  const needsToRequestGetData = typeof favoriteId !== 'undefined'
   const favorite = selectFavoriteById(state, favoriteId)
   const hasReceivedData = typeof favorite !== 'undefined'
+
   return {
     hasReceivedData,
-    needsToRequestGetFavorite,
+    needsToRequestGetData,
   }
 }
 
-export const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    requestGetData: handleSuccess => {
-      const { match } = ownProps
-      const { params } = match
-      const { favoriteId } = params
-      let apiPath = `/favorites/${favoriteId}`
-      dispatch(
-        requestData({
-          apiPath,
-          handleSuccess,
-          normalizer: favoriteNormalizer,
-        })
-      )
-    },
-  }
-}
+export const mapDispatchToProps = (dispatch, ownProps) => ({
+  requestGetData: handleSuccess => {
+    const { match } = ownProps
+    const { params } = match
+    const { favoriteId } = params
+
+    dispatch(
+      requestData({
+        apiPath: `/favorites/${favoriteId}`,
+        handleSuccess,
+        normalizer: favoriteNormalizer,
+      })
+    )
+  },
+})
 
 export default compose(
   withRouter,

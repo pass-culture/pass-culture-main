@@ -1,7 +1,7 @@
-import { getIsNotAnActivationOffer } from '../selectValidBookings'
+import { getIsNotAnActivationOffer, selectValidBookings } from '../selectValidBookings'
 
-describe('src | components | pages | my-bookings | helpers | getIsNotAnActivationOffer', () => {
-  describe('getIsNotAnActivationOffer', () => {
+describe('src | components | pages | my-bookings | selectors | selectValidBookings', () => {
+  describe('getIsNotAnActivationOffer()', () => {
     it('should be false when it is a offer without offer', () => {
       // given
       const offer = {}
@@ -54,6 +54,51 @@ describe('src | components | pages | my-bookings | helpers | getIsNotAnActivatio
       // then
       const expected = false
       expect(result).toStrictEqual(expected)
+    })
+  })
+
+  describe('selectValidBookings()', () => {
+    it('should return valid bookings', () => {
+      // given
+      const state = {
+        data: {
+          bookings: [
+            {
+              stock: {
+                offerId: 'MEFA',
+              },
+            },
+            {
+              stock: {
+                offerId: 'TATA',
+              },
+            },
+          ],
+          offers: [
+            {
+              id: 'MEFA',
+              type: 'ThingType.MUSIQUE',
+            },
+            {
+              id: 'TOTO',
+              type: 'ThingType.MUSIQUE',
+            },
+          ],
+        },
+      }
+
+      // when
+      const results = selectValidBookings(state)
+
+      // then
+      expect(results).toStrictEqual([
+        {
+          stock: {
+            offerId: 'MEFA',
+          },
+        },
+        undefined,
+      ])
     })
   })
 })

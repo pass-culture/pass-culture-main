@@ -52,31 +52,4 @@ describe('src | selectors | selectOfferByMatch', () => {
     // then
     expect(result).toStrictEqual(offer)
   })
-
-  it('should return offer when favoriteId in match resolves offer', () => {
-    // given
-    const offerId = 'AE'
-    const offer = { id: offerId }
-    const favoriteId = 'BF'
-    const favorite = { id: favoriteId, offerId }
-    const state = {
-      data: {
-        bookings: [],
-        favorites: [favorite],
-        offers: [offer],
-        recommendations: [],
-      },
-    }
-    const match = {
-      params: {
-        favoriteId,
-      },
-    }
-
-    // when
-    const result = selectOfferByMatch(state, match)
-
-    // then
-    expect(result).toStrictEqual(offer)
-  })
 })

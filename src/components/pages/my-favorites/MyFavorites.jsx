@@ -42,8 +42,7 @@ class MyFavorites extends Component {
     })
   }
 
-  renderFavoritesList = () => {
-    const { myFavorites } = this.props
+  renderFavoritesList = myFavorites => {
     const isEmpty = myFavorites.length === 0
 
     return (
@@ -76,6 +75,7 @@ class MyFavorites extends Component {
   }
 
   render() {
+    const { myFavorites } = this.props
     const { isLoading, hasError } = this.state
 
     if (isLoading) {
@@ -94,8 +94,8 @@ class MyFavorites extends Component {
           shouldBackFromDetails
           title="Mes favoris"
         />
-        {this.renderFavoritesList()}
-        <MyFavoriteDetailsContainer bookingPath="/favoris/:details(details)/:favoriteId([A-Z0-9]+)/:bookings(reservations)/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?" />
+        {this.renderFavoritesList(myFavorites)}
+        <MyFavoriteDetailsContainer bookingPath="/favoris/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:bookings(reservations)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?" />
         <RelativeFooterContainer
           className="dotted-top-red"
           theme="purple"

@@ -205,6 +205,7 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
 
       // then
       expect(props).toStrictEqual({
+        detailsUrl: '//details/ME',
         humanizeRelativeDistance: '10 km',
         offer,
         status: null,
