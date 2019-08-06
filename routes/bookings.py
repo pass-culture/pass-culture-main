@@ -241,14 +241,15 @@ def patch_booking_by_token(token):
         check_email_and_offer_id_for_anonymous_user(email, offer_id)
 
     check_booking_is_usable(booking)
-    booking.isUsed = True
-    booking.dateUsed = datetime.utcnow()
 
     if check_is_activation_booking(booking):
         activate_user(booking.user)
         send_activation_notification_email(booking.user, send_raw_email)
 
+    booking.isUsed = True
+    booking.dateUsed = datetime.utcnow()
     PcObject.save(booking)
+
     return '', 204
 
 
