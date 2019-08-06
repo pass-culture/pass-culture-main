@@ -2,7 +2,7 @@ import pandas
 
 from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType
 from models.db import db
-from repository.booking_queries import count_all_used_booking, count_all_bookings
+from repository.booking_queries import count_all_used_booking, count_all_bookings, count_all_cancelled_bookings
 from repository.offer_queries import get_active_offers_Ids_query
 from repository.offerer_queries import count_offerer, count_offerer_with_stock
 
@@ -69,7 +69,7 @@ def get_all_used_bookings_count() -> int:
 
 
 def get_all_cancelled_bookings_count():
-    return Booking.query.filter_by(isCancelled=True).count()
+    return count_all_cancelled_bookings()
 
 
 def _get_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_digital, counts_column_name):

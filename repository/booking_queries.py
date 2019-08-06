@@ -31,6 +31,10 @@ def count_non_cancelled_bookings():
     return Booking.query.filter_by(isCancelled=False).count()
 
 
+def count_all_cancelled_bookings():
+    return Booking.query.filter_by(isCancelled=True).count()
+
+
 def find_active_bookings_by_user_id(user_id):
     return Booking.query \
         .filter_by(userId=user_id) \

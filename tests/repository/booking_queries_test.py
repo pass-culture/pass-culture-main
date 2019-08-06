@@ -14,7 +14,8 @@ from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     find_active_bookings_by_user_id, \
     find_by, \
     find_all_offerer_bookings, \
-    find_all_digital_bookings_for_offerer, count_non_cancelled_bookings, count_all_bookings
+    find_all_digital_bookings_for_offerer, count_non_cancelled_bookings, count_all_bookings, \
+    count_all_cancelled_bookings
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -804,6 +805,56 @@ class CountNonCancelledBookingsTest:
 
         # Then
         assert count == 0
+
+
+class GetAllCancelledBookingsCountTest:
+    @clean_database
+    def test_returns_0_if_no_cancelled_bookings(self, app):
+        # Given
+        less_than_48_hours_ago = datetime.utcnow() - timedelta(hours=47)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        event_offer = create_offer_with_event_product(venue)
+        event_stock = create_stock(
+            offer=event_offer,
+            price=0,
+            beginning_datetime=less_than_48_hours_ago,
+            end_datetime=less_than_48_hours_ago + timedelta(hours=1),
+            booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
+        )
+        user = create_user()
+        booking = create_booking(user, event_stock, is_cancelled=False)
+        PcObject.save(booking)
+
+        # When
+        number_of_bookings = count_all_cancelled_bookings()
+
+        # Then
+        assert number_of_bookings == 0
+
+    @clean_database
+    def test_returns_0_if_no_cancelled_bookings(self, app):
+        # Given
+        less_than_48_hours_ago = datetime.utcnow() - timedelta(hours=47)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        event_offer = create_offer_with_event_product(venue)
+        event_stock = create_stock(
+            offer=event_offer,
+            price=0,
+            beginning_datetime=less_than_48_hours_ago,
+            end_datetime=less_than_48_hours_ago + timedelta(hours=1),
+            booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
+        )
+        user = create_user()
+        booking = create_booking(user, event_stock, is_cancelled=True)
+        PcObject.save(booking)
+
+        # When
+        number_of_bookings = count_all_cancelled_bookings()
+
+        # Then
+        assert number_of_bookings == 1
 
 
 class CountAllBookingsTest:

@@ -641,56 +641,6 @@ class GetAllUsedBookingsCountTest:
         assert number_of_bookings == 0
 
 
-class GetAllCancelledBookingsCountTest:
-    @clean_database
-    def test_returns_0_if_no_cancelled_bookings(self, app):
-        # Given
-        less_than_48_hours_ago = datetime.utcnow() - timedelta(hours=47)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        event_offer = create_offer_with_event_product(venue)
-        event_stock = create_stock(
-            offer=event_offer,
-            price=0,
-            beginning_datetime=less_than_48_hours_ago,
-            end_datetime=less_than_48_hours_ago + timedelta(hours=1),
-            booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
-        )
-        user = create_user()
-        booking = create_booking(user, event_stock, is_cancelled=False)
-        PcObject.save(booking)
-
-        # When
-        number_of_bookings = get_all_cancelled_bookings_count()
-
-        # Then
-        assert number_of_bookings == 0
-
-    @clean_database
-    def test_returns_0_if_no_cancelled_bookings(self, app):
-        # Given
-        less_than_48_hours_ago = datetime.utcnow() - timedelta(hours=47)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        event_offer = create_offer_with_event_product(venue)
-        event_stock = create_stock(
-            offer=event_offer,
-            price=0,
-            beginning_datetime=less_than_48_hours_ago,
-            end_datetime=less_than_48_hours_ago + timedelta(hours=1),
-            booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
-        )
-        user = create_user()
-        booking = create_booking(user, event_stock, is_cancelled=True)
-        PcObject.save(booking)
-
-        # When
-        number_of_bookings = get_all_cancelled_bookings_count()
-
-        # Then
-        assert number_of_bookings == 1
-
-
 class QueryGetOfferCountsPerTypeAndMediumTest:
     @clean_database
     def test_returns_2_cinema_physical_1_musique_physical_and_1_musique_digital_when_offers_with_stock_and_user_offerer(
