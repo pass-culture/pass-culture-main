@@ -5,7 +5,7 @@ import pytest
 import requests
 
 from local_providers import TiteLiveStocks
-from models import Offer
+from models import Offer, Stock
 from models.pc_object import PcObject
 from models.venue_provider import VenueProvider
 from repository.provider_queries import get_provider_by_local_class
@@ -72,13 +72,17 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer(get_data, app):
                   Offer=1
                   )
 
-    offer = Offer.query.first()
+    offer = Offer.query.one()
     assert offer.type == product.type
     assert offer.name == product.name
     assert offer.description == product.description
     assert offer.venue is not None
     assert offer.bookingEmail is None
     assert offer.extraData == product.extraData
+    stock = Stock.query.one()
+    assert stock.bookingLimitDatetime is None
+    assert stock.available == 10
+    assert stock.price == 45
 
 
 @clean_database

@@ -104,7 +104,7 @@ class TiteLiveStocks(LocalProvider):
     def update_stock_object(self, obj, stock_information):
         obj.price = int(stock_information['price']) / PRICE_DIVIDER_TO_EURO
         obj.available = int(stock_information['available'])
-        obj.bookingLimitDatetime = read_stock_datetime(stock_information['validUntil'])
+        obj.bookingLimitDatetime = None
         obj.offerId = self.providables[0].id
 
     def update_offer_object(self, obj):
