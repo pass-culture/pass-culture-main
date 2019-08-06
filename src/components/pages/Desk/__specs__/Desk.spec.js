@@ -7,13 +7,16 @@ describe('src | components | pages | Desk | Desk ', () => {
   const options = {
     disableLifecycleMethods: true,
   }
-  let dispatch
+  let getBookingFromCode
+  let validateBooking
   let props
 
   beforeEach(() => {
-    dispatch = jest.fn()
+    getBookingFromCode = jest.fn()
+    validateBooking = jest.fn()
     props = {
-      dispatch,
+      getBookingFromCode,
+      validateBooking
     }
   })
 
@@ -22,7 +25,6 @@ describe('src | components | pages | Desk | Desk ', () => {
     const wrapper = shallow(<Desk {...props} />, options)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 
@@ -209,29 +211,6 @@ describe('src | components | pages | Desk | Desk ', () => {
   })
 
   describe('functions', () => {
-    describe('getBookingFromCode', () => {
-      it('should dispatch an action to retrieve a booking informations', () => {
-        // given
-        const wrapper = shallow(<Desk {...props} />, options)
-        const code = 'ABC'
-
-        // when
-        wrapper.instance().getBookingFromCode(code)
-
-        // then
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: '/bookings/token/ABC',
-            handleFail: expect.any(Function),
-            handleSuccess: expect.any(Function),
-            method: 'GET',
-            stateKey: 'deskBookings',
-          },
-          type: 'REQUEST_DATA_GET_DESKBOOKINGS',
-        })
-      })
-    })
-
     describe('handleSuccessWhenGetBookingFromCode', () => {
       it('should update state status to code already used when a booking is retrieved and is validated', () => {
         // given
@@ -247,7 +226,7 @@ describe('src | components | pages | Desk | Desk ', () => {
         }
 
         // when
-        wrapper.instance().handleSuccessWhenGetBookingFromCode()(state, action)
+        wrapper.instance().handleSuccessWhenGetBookingFromCode(state, action)
 
         // then
         expect(wrapper.state('status')).toBe('CODE_ALREADY_USED')
@@ -268,7 +247,7 @@ describe('src | components | pages | Desk | Desk ', () => {
         }
 
         // when
-        wrapper.instance().handleSuccessWhenGetBookingFromCode()(state, action)
+        wrapper.instance().handleSuccessWhenGetBookingFromCode(state, action)
 
         // then
         expect(wrapper.state('status')).toBe('CODE_VERIFICATION_SUCCESS')
@@ -288,7 +267,7 @@ describe('src | components | pages | Desk | Desk ', () => {
         }
 
         // when
-        wrapper.instance().handleFailWhenGetBookingFromCode()(state, action)
+        wrapper.instance().handleFailWhenGetBookingFromCode(state, action)
 
         // then
         expect(wrapper.state('status')).toBe('CODE_VERIFICATION_FAILED')
@@ -300,21 +279,16 @@ describe('src | components | pages | Desk | Desk ', () => {
       it('should dispatch an action to validate booking using code', () => {
         // given
         const wrapper = shallow(<Desk {...props} />, options)
-        const code = 'ABC'
 
         // when
-        wrapper.instance().validateBooking(code)
+        wrapper.instance().handleCodeRegistration('ABCDEF')
 
         // then
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: '/bookings/token/ABC',
-            handleFail: expect.any(Function),
-            handleSuccess: expect.any(Function),
-            method: 'PATCH',
-          },
-          type: 'REQUEST_DATA_PATCH_/BOOKINGS/TOKEN/ABC',
-        })
+        expect(props.validateBooking).toHaveBeenCalledWith(
+          'ABCDEF',
+          expect.any(Function),
+          expect.any(Function)
+        )
       })
     })
 
@@ -343,7 +317,7 @@ describe('src | components | pages | Desk | Desk ', () => {
         }
 
         // when
-        wrapper.instance().handleFailWhenValidateBooking()(state, action)
+        wrapper.instance().handleFailWhenValidateBooking(state, action)
 
         // then
         expect(wrapper.state('status')).toBe('CODE_REGISTERING_FAILED')
@@ -400,7 +374,7 @@ describe('src | components | pages | Desk | Desk ', () => {
         expect(wrapper.state('status')).toBe('CODE_TYPING')
       })
 
-      it('should update status to code verification and dispatch an action to retrieve booking when code respects format and number of characters', () => {
+      it('should update status to code verification when code respects format and number of characters', () => {
         // given
         const wrapper = shallow(<Desk {...props} />, options)
         const event = {
@@ -414,16 +388,28 @@ describe('src | components | pages | Desk | Desk ', () => {
 
         // then
         expect(wrapper.state('status')).toBe('CODE_VERIFICATION_IN_PROGRESS')
-        expect(dispatch).toHaveBeenCalledWith({
-          config: {
-            apiPath: '/bookings/token/ABCDEF',
-            handleFail: expect.any(Function),
-            handleSuccess: expect.any(Function),
-            method: 'GET',
-            stateKey: 'deskBookings',
+      })
+
+      it('should retrieve a booking information using code from input', () => {
+        // given
+        const wrapper = shallow(<Desk {...props} />, options)
+        const event = {
+          target: {
+            value: 'ABCDEF',
           },
-          type: 'REQUEST_DATA_GET_DESKBOOKINGS',
-        })
+        }
+        const input = wrapper.find('input')
+
+        // when
+        input.simulate('change', event)
+
+        // then
+        expect(wrapper.state('status')).toBe('CODE_VERIFICATION_IN_PROGRESS')
+        expect(props.getBookingFromCode).toHaveBeenCalledWith(
+          'ABCDEF',
+          expect.any(Function),
+          expect.any(Function)
+        )
       })
     })
   })

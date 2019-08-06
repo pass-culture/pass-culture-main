@@ -3,19 +3,35 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 
 import { withRequiredLogin } from '../../hocs'
+import { requestData } from "redux-saga-data"
 
-export const mapDispatchToProps = (dispatch, ownProps) => {
+export const mapDispatchToProps = (dispatch) => {
   return {
-    validateBooking: (code) => {
-
+    getBookingFromCode: (code, handleSuccess, handleFail) => {
+        dispatch(
+          requestData({
+            apiPath: `/bookings/token/${code}`,
+            handleSuccess: handleSuccess,
+            handleFail: handleFail,
+            stateKey: 'deskBookings',
+            method: 'GET'
+          })
+        )
+      },
+    validateBooking: (code, handleSuccess, handleFail) => {
+      dispatch(
+        requestData({
+          apiPath: `/bookings/token/${code}`,
+          handleFail: handleFail,
+          handleSuccess: handleSuccess,
+          method: 'PATCH',
+        })
+      )
     }
   }
 }
 
 export default compose(
   withRequiredLogin,
-  connect(
-    null,
-    mapDispatchToProps
-  )
+  connect(null, mapDispatchToProps)
 )(Desk)

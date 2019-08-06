@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import {getRequestErrorStringFromErrors, Icon} from 'pass-culture-shared'
+import {getRequestErrorStringFromErrors} from 'pass-culture-shared'
 import { NavLink } from 'react-router-dom'
-import { requestData } from 'redux-saga-data'
 import DeskState from './DeskState/DeskState'
 import Main from '../../layout/Main'
-import HeroSection from "../../layout/HeroSection/HeroSection";
+import HeroSection from "../../layout/HeroSection/HeroSection"
 
 const CODE_MAX_LENGTH = 6
 const CODE_REGEX_VALIDATION = /[^a-z0-9]/i
@@ -38,21 +37,12 @@ class Desk extends React.PureComponent {
 
   getRef = () => element => (this.input = element)
 
-  handleOnClick = code => () => this.handleCodeRegistration(code)
-
-  getBookingFromCode = code => {
-    const { dispatch } = this.props
-    dispatch(
-      requestData({
-        apiPath: `/bookings/token/${code}`,
-        handleSuccess: this.handleSuccessWhenGetBookingFromCode(),
-        handleFail: this.handleFailWhenGetBookingFromCode(),
-        stateKey: 'deskBookings',
-      })
-    )
+  handleOnClick = code => () => {
+    this.handleCodeRegistration(code)
+    this.input.focus()
   }
 
-  handleSuccessWhenGetBookingFromCode = () => (state, action) => {
+  handleSuccessWhenGetBookingFromCode = (state, action) => {
     const { payload } = action
     const booking = payload.datum
 
@@ -61,7 +51,7 @@ class Desk extends React.PureComponent {
     this.setState({ booking, status })
   }
 
-  handleFailWhenGetBookingFromCode = () => (state, action) => {
+  handleFailWhenGetBookingFromCode = (state, action) => {
     const {
       payload: { errors },
     } = action
@@ -70,18 +60,6 @@ class Desk extends React.PureComponent {
       status: CODE_VERIFICATION_FAILED,
       message: getRequestErrorStringFromErrors(errors),
     })
-  }
-
-  validateBooking = code => {
-    const { dispatch } = this.props
-    dispatch(
-      requestData({
-        apiPath: `/bookings/token/${code}`,
-        handleFail: this.handleFailWhenValidateBooking,
-        handleSuccess: this.handleSuccessWhenValidateBooking,
-        method: 'PATCH',
-      })
-    )
   }
 
   handleSuccessWhenValidateBooking = () => {
@@ -100,12 +78,17 @@ class Desk extends React.PureComponent {
   }
 
   handleCodeChange = event => {
+    const { getBookingFromCode } = this.props
     const code = event.target.value.toUpperCase()
     const status = this.getStatusFromCode(code)
     this.setState({ code, status })
 
     if (status === CODE_VERIFICATION_IN_PROGRESS) {
-      return this.getBookingFromCode(code)
+      getBookingFromCode(
+        code,
+        this.handleSuccessWhenGetBookingFromCode,
+        this.handleFailWhenGetBookingFromCode
+      )
     }
   }
 
@@ -126,9 +109,13 @@ class Desk extends React.PureComponent {
   }
 
   handleCodeRegistration = code => {
+    const { validateBooking } = this.props
     this.setState({ status: CODE_REGISTERING_IN_PROGRESS, code: '' })
-    this.validateBooking(code)
-    this.input.focus()
+    validateBooking(
+      code,
+      this.handleSuccessWhenValidateBooking,
+      this.handleFailWhenValidateBooking
+    )
   }
 
   getValuesFromStatus = status => {
@@ -241,7 +228,8 @@ class Desk extends React.PureComponent {
 }
 
 Desk.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  getBookingFromCode: PropTypes.func.isRequired,
+  validateBooking: PropTypes.func.isRequired,
 }
 
 export default Desk
