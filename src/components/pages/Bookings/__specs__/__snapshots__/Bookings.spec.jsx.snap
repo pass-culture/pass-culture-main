@@ -36,7 +36,9 @@ ShallowWrapper {
             Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
           </p>
         </HeroSection>,
-        <hr />,
+        <hr
+          className="blackline"
+        />,
         <withRouter(_withQueryRouter) />,
         false,
         false,
@@ -106,7 +108,9 @@ ShallowWrapper {
         "instance": null,
         "key": undefined,
         "nodeType": "host",
-        "props": Object {},
+        "props": Object {
+          "className": "blackline",
+        },
         "ref": null,
         "rendered": null,
         "type": "hr",
@@ -145,7 +149,9 @@ ShallowWrapper {
               Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
             </p>
           </HeroSection>,
-          <hr />,
+          <hr
+            className="blackline"
+          />,
           <withRouter(_withQueryRouter) />,
           false,
           false,
@@ -215,7 +221,9 @@ ShallowWrapper {
           "instance": null,
           "key": undefined,
           "nodeType": "host",
-          "props": Object {},
+          "props": Object {
+            "className": "blackline",
+          },
           "ref": null,
           "rendered": null,
           "type": "hr",

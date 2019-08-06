@@ -119,7 +119,6 @@ class FilterByDate extends PureComponent {
               ))}
             </select>
           </div>
-          <hr />
         </Fragment>
       )
     }
@@ -152,7 +151,6 @@ class FilterByDate extends PureComponent {
               ))}
             </select>
           </div>
-          <hr />
         </Fragment>
       )
     }

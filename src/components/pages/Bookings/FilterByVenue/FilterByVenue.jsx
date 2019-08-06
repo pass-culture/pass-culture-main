@@ -23,7 +23,7 @@ class FilterByVenue extends PureComponent {
             className={labelClassName}
             htmlFor="venues"
           >
-            {'Sélectionnez un lieu :'}
+            {'Sélectionner le lieu qui accueille l’offre : '}
           </label>
           <select
             className="pc-selectbox"
@@ -35,7 +35,7 @@ class FilterByVenue extends PureComponent {
           >
             <option
               disabled
-              label=" - Choisissez un lieu - "
+              label=" - Choisissez un lieu dans la liste - "
               selected
             />
             {venuesOptions.map(({ name, id }) => (

@@ -19,13 +19,14 @@ const Bookings = ({ pathToCsvFile, showButtons, showOfferSection }) => (
         {'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'}
       </p>
     </HeroSection>
-    <hr />
+    <hr className="blackline" />
     <FilterByVenueContainer />
     {showOfferSection && (
     <FilterByOfferContainer />
     )}
     {showButtons && (
       <div id="buttons-container">
+        <hr />
         <div className="control flex-columns items-center flex-end">
           <DownloadButtonContainer
             filename="reservations_pass_culture"

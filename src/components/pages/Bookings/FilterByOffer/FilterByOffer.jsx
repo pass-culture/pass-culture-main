@@ -40,7 +40,7 @@ class FilterByOffer extends PureComponent {
           >
             <option
               disabled
-              label=" - Choisissez une offre - "
+              label=" - Choisissez une offre dans la liste - "
               selected
             />
             {offersOptions.map(({ name, id }) => (

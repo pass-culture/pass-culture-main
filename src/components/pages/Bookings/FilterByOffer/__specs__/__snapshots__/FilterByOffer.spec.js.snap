@@ -74,7 +74,7 @@ ShallowWrapper {
           >
             <option
               disabled={true}
-              label=" - Choisissez une offre - "
+              label=" - Choisissez une offre dans la liste - "
               selected={true}
             />
             <option
@@ -138,7 +138,7 @@ ShallowWrapper {
             >
               <option
                 disabled={true}
-                label=" - Choisissez une offre - "
+                label=" - Choisissez une offre dans la liste - "
                 selected={true}
               />
               <option
@@ -180,7 +180,7 @@ ShallowWrapper {
               "children": Array [
                 <option
                   disabled={true}
-                  label=" - Choisissez une offre - "
+                  label=" - Choisissez une offre dans la liste - "
                   selected={true}
                 />,
                 Array [
@@ -205,7 +205,7 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "disabled": true,
-                  "label": " - Choisissez une offre - ",
+                  "label": " - Choisissez une offre dans la liste - ",
                   "selected": true,
                 },
                 "ref": null,
@@ -269,7 +269,7 @@ ShallowWrapper {
             >
               <option
                 disabled={true}
-                label=" - Choisissez une offre - "
+                label=" - Choisissez une offre dans la liste - "
                 selected={true}
               />
               <option
@@ -333,7 +333,7 @@ ShallowWrapper {
               >
                 <option
                   disabled={true}
-                  label=" - Choisissez une offre - "
+                  label=" - Choisissez une offre dans la liste - "
                   selected={true}
                 />
                 <option
@@ -375,7 +375,7 @@ ShallowWrapper {
                 "children": Array [
                   <option
                     disabled={true}
-                    label=" - Choisissez une offre - "
+                    label=" - Choisissez une offre dans la liste - "
                     selected={true}
                   />,
                   Array [
@@ -400,7 +400,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "disabled": true,
-                    "label": " - Choisissez une offre - ",
+                    "label": " - Choisissez une offre dans la liste - ",
                     "selected": true,
                   },
                   "ref": null,
