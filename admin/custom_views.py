@@ -19,11 +19,10 @@ class OffererAdminView(BaseAdminView):
 class UserAdminView(BaseAdminView):
     can_edit = True
     column_list = ['id', 'canBookFreeOffers', 'email', 'firstName', 'lastName', 'publicName', 'dateOfBirth',
-                   'departementCode', 'postalCode', 'resetPasswordToken', 'validationToken']
+                   'departementCode', 'phoneNumber', 'postalCode', 'resetPasswordToken', 'validationToken']
     column_labels = dict(
         email='Email', canBookFreeOffers='Peut réserver', firstName='Prénom', lastName='Nom',
-        publicName="Nom d'utilisateur",
-        dateOfBirth='Date de naissance', departementCode='Département', postalCode='Code postal',
+        publicName="Nom d'utilisateur", dateOfBirth='Date de naissance', departementCode='Département', phoneNumber='Numéro de téléphone', postalCode='Code postal',
         resetPasswordToken='Jeton d\'activation et réinitialisation de mot de passe',
         validationToken='Jeton de validation d\'adresse email'
     )
