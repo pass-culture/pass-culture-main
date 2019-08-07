@@ -76,9 +76,7 @@ ShallowWrapper {
             <span
               className="is-bold"
               id="verso-offer-label"
-            >
-              Presse — Abonnements
-            </span>
+            />
           </div>
         </div>,
         <div>
@@ -168,9 +166,7 @@ ShallowWrapper {
               <span
                 className="is-bold"
                 id="verso-offer-label"
-              >
-                Presse — Abonnements
-              </span>
+              />
             </div>,
             undefined,
             undefined,
@@ -201,9 +197,7 @@ ShallowWrapper {
                 <span
                   className="is-bold"
                   id="verso-offer-label"
-                >
-                  Presse — Abonnements
-                </span>,
+                />,
                 undefined,
               ],
             },
@@ -214,12 +208,12 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "Presse — Abonnements",
+                  "children": undefined,
                   "className": "is-bold",
                   "id": "verso-offer-label",
                 },
                 "ref": null,
-                "rendered": "Presse — Abonnements",
+                "rendered": null,
                 "type": "span",
               },
               undefined,
@@ -617,9 +611,7 @@ ShallowWrapper {
               <span
                 className="is-bold"
                 id="verso-offer-label"
-              >
-                Presse — Abonnements
-              </span>
+              />
             </div>
           </div>,
           <div>
@@ -709,9 +701,7 @@ ShallowWrapper {
                 <span
                   className="is-bold"
                   id="verso-offer-label"
-                >
-                  Presse — Abonnements
-                </span>
+                />
               </div>,
               undefined,
               undefined,
@@ -742,9 +732,7 @@ ShallowWrapper {
                   <span
                     className="is-bold"
                     id="verso-offer-label"
-                  >
-                    Presse — Abonnements
-                  </span>,
+                  />,
                   undefined,
                 ],
               },
@@ -755,12 +743,12 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": "Presse — Abonnements",
+                    "children": undefined,
                     "className": "is-bold",
                     "id": "verso-offer-label",
                   },
                   "ref": null,
-                  "rendered": "Presse — Abonnements",
+                  "rendered": null,
                   "type": "span",
                 },
                 undefined,

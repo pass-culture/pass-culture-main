@@ -48,7 +48,7 @@ fixture("08_04_01 Réservation d'une offre type digitale").beforeEach(async t =>
 
   discoveryCardUrl = `${discoverUrl}/${offer.id}/${mediationId || 'vide'}`
   discoveryDetailsUrl = `${discoveryCardUrl}/details`
-  discoveryBookingUrl = `${discoveryDetailsUrl}/reservations`
+  discoveryBookingUrl = `${discoveryDetailsUrl}/reservation`
   await t.useRole(userRole).navigateTo(discoveryCardUrl)
 })
 

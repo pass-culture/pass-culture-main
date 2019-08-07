@@ -1,8 +1,8 @@
 const getIsCancelling = match => {
   const { params } = match
-  const { bookings, cancellation, confirmation } = params
+  const { booking, cancellation, confirmation } = params
   return (
-    typeof bookings !== 'undefined' &&
+    typeof booking !== 'undefined' &&
     typeof cancellation !== 'undefined' &&
     typeof confirmation === 'undefined'
   )

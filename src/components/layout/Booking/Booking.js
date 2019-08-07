@@ -114,7 +114,7 @@ class Booking extends PureComponent {
   handleReturnToDetails = () => {
     const { match, history } = this.props
     const { url } = match
-    const detailsUrl = url.split('/reservations')[0]
+    const detailsUrl = url.split(/\/reservation(\/|$|\/$)/)[0]
     history.replace(detailsUrl)
   }
 
@@ -175,14 +175,7 @@ class Booking extends PureComponent {
 
   render() {
     const userConnected = false
-    const {
-      bookables,
-      booking,
-      extraClassName,
-      match,
-      offer,
-      recommendation
-    } = this.props
+    const { bookables, booking, extraClassName, match, offer, recommendation } = this.props
 
     const isBooking = getIsBooking(match)
 
@@ -191,7 +184,7 @@ class Booking extends PureComponent {
     }
 
     const { bookedPayload, errors, isErrored, isSubmitting, mounted } = this.state
-    const { id: recommendationId  } = recommendation || {}
+    const { id: recommendationId } = recommendation || {}
     const { isEvent } = offer || {}
     const isConfirmingCancelling = getIsConfirmingCancelling(match)
     const showForm = !isSubmitting && !bookedPayload && !isErrored && !isConfirmingCancelling
@@ -293,10 +286,10 @@ Booking.propTypes = {
     url: PropTypes.string.isRequired,
   }).isRequired,
   offer: PropTypes.shape({
-    isEvent: PropTypes.bool
+    isEvent: PropTypes.bool,
   }),
   recommendation: PropTypes.shape({
-    id: PropTypes.string
+    id: PropTypes.string,
   }),
 }
 

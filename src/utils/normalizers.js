@@ -2,6 +2,11 @@ export const bookingNormalizer = {
   recommendation: {
     normalizer: {
       mediation: 'mediations',
+    },
+    stateKey: 'recommendations',
+  },
+  stock: {
+    normalizer: {
       offer: {
         normalizer: {
           favorites: 'favorites',
@@ -9,7 +14,7 @@ export const bookingNormalizer = {
         stateKey: 'offers',
       },
     },
-    stateKey: 'recommendations',
+    stateKey: 'stocks',
   },
   user: {
     isMergingDatum: true,
@@ -20,7 +25,12 @@ export const bookingNormalizer = {
 export const favoriteNormalizer = {
   firstMatchingBooking: 'bookings',
   mediation: 'mediations',
-  offer: 'offers',
+  offer: {
+    normalizer: {
+      stocks: 'stocks',
+    },
+    stateKey: 'offers',
+  },
 }
 
 export const recommendationNormalizer = {
@@ -29,6 +39,7 @@ export const recommendationNormalizer = {
   offer: {
     normalizer: {
       favorites: 'favorites',
+      stocks: 'stocks',
     },
     stateKey: 'offers',
   },

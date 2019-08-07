@@ -68,25 +68,12 @@
   margin-bottom: 0.75rem;
   padding: 0.4rem 1.5rem;
 
-  &.red {
-    border: 2px solid $red;
-    color: $red;
-
-    &:hover {
-      color: $red-dark;
-    }
-  }
-
   &:hover {
-    color: $red-dark;
+    color: $white;
   }
 }
 
 .teaser-text {
   color: $white;
   text-align: center;
-
-  &.red {
-    color: $red;
-  }
 }

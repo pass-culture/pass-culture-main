@@ -2,6 +2,7 @@ import createCachedSelector from 're-reselect'
 
 import selectBookingById from './selectBookingById'
 import selectOfferById from './selectOfferById'
+import selectStockById from './selectStockById'
 
 function mapArgsToCacheKey(state, match) {
   const { params } = match
@@ -11,14 +12,17 @@ function mapArgsToCacheKey(state, match) {
 
 const selectOfferByMatch = createCachedSelector(
   state => state.data.offers,
+  state => state.data.stocks,
   (state, match) => selectBookingById(state, match.params.bookingId),
   (state, match) => selectOfferById(state, match.params.offerId),
-  (offers, booking, offer) => {
+  (offers, stocks, booking, offer) => {
     if (offer) {
       return offer
     }
     if (booking) {
-      return selectOfferById({ data: { offers } }, booking.stock.offerId)
+      const stock = selectStockById({ data: { stocks } }, booking.stockId)
+
+      return selectOfferById({ data: { offers } }, stock.offerId)
     }
   }
 )(mapArgsToCacheKey)

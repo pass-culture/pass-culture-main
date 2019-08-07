@@ -2,7 +2,12 @@
   width: 100%;
   height: 84%;
   overflow: hidden;
-  position: relative;
+  position: absolute;
+  top: 44px;
+
+  .card & {
+    top: 0;
+  }
 
   &.with-header {
     height: 100%;

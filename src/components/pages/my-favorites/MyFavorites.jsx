@@ -51,12 +51,7 @@ class MyFavorites extends Component {
           'teaser-no-teasers': isEmpty,
         })}
       >
-        {isEmpty && (
-          <NoItems
-            sentence="Dès que vous aurez ajouté une offre en favori,"
-            withWhiteBackground
-          />
-        )}
+        {isEmpty && <NoItems sentence="Dès que vous aurez ajouté une offre en favori," />}
 
         {!isEmpty && (
           <section>
@@ -92,7 +87,7 @@ class MyFavorites extends Component {
           title="Mes favoris"
         />
         {this.renderFavoritesList(myFavorites)}
-        <MyFavoriteDetailsContainer bookingPath="/favoris/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:bookings(reservations)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?" />
+        <MyFavoriteDetailsContainer bookingPath="/favoris/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)?/:booking(reservation)?/:bookingId?/:cancellation(annulation)?/:confirmation(confirmation)?" />
         <RelativeFooterContainer
           className="dotted-top-red"
           theme="purple"

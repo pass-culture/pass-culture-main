@@ -5,7 +5,7 @@ import Price from '../../../../Price'
 import getIsCancelling from '../../../../../../helpers/getIsCancelling'
 
 class CancelThisLink extends PureComponent {
-  componentDidMount () {
+  componentDidMount() {
     const { booking, match, offer, openCancelPopin } = this.props
     const { id: bookingId } = booking || {}
     const { name: offerName } = offer || {}
@@ -15,7 +15,7 @@ class CancelThisLink extends PureComponent {
     }
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     const { booking, match, offer, openCancelPopin } = this.props
     const { id: bookingId } = booking || {}
     const { name: offerName } = offer || {}
@@ -41,7 +41,7 @@ class CancelThisLink extends PureComponent {
     }
     let bookingUrl = pathname
     if (!params.bookings) {
-      bookingUrl = `${bookingUrl}/reservations`
+      bookingUrl = `${bookingUrl}/reservation`
     }
     if (params.bookingId !== bookingId) {
       bookingUrl = `${bookingUrl}/${bookingId}`
@@ -81,28 +81,28 @@ class CancelThisLink extends PureComponent {
 }
 
 CancelThisLink.defaultProps = {
-  isFinished: false
+  isFinished: false,
 }
 
 CancelThisLink.propTypes = {
   booking: PropTypes.shape().isRequired,
   history: PropTypes.shape({
-    push: PropTypes.func.isRequired
+    push: PropTypes.func.isRequired,
   }).isRequired,
   isFinished: PropTypes.bool,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
-    search: PropTypes.string.isRequired
+    search: PropTypes.string.isRequired,
   }).isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
       bookings: PropTypes.string,
       bookingId: PropTypes.string,
-      cancellation: PropTypes.string
-    }).isRequired
+      cancellation: PropTypes.string,
+    }).isRequired,
   }).isRequired,
   offer: PropTypes.shape().isRequired,
-  openCancelPopin: PropTypes.func.isRequired
+  openCancelPopin: PropTypes.func.isRequired,
 }
 
 export default CancelThisLink

@@ -10,7 +10,7 @@ const mapStateToProps = (state, ownProps) => {
   const booking = selectBookingByMatch(state, match)
   const showCancelView = booking && !booking.isCancelled
   return {
-    showCancelView
+    showCancelView,
   }
 }
 

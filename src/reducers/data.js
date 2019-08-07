@@ -28,6 +28,7 @@ const dataReducer = createDataReducer({
   offers: [],
   readRecommendations: [],
   recommendations: [],
+  stocks: [],
   types: [],
   users: [],
 })
@@ -39,6 +40,7 @@ export const resetPageData = () =>
     mediations: [],
     offers: [],
     recommendations: [],
+    stocks: [],
   })
 
 const persistDataReducer = persistReducer(dataPersistConfig, dataReducer)

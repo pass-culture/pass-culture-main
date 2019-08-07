@@ -26,7 +26,7 @@ class BookThisLink extends Component {
       throw new Error('Invalid url parameter')
     }
     let formattedUrl = url
-    return `${formattedUrl}/reservations${search || ''}`
+    return `${formattedUrl}/reservation${search || ''}`
   }
 
   render() {
@@ -51,7 +51,7 @@ class BookThisLink extends Component {
 }
 
 BookThisLink.defaultProps = {
-  isFinished: false
+  isFinished: false,
 }
 
 BookThisLink.propTypes = {
@@ -61,11 +61,11 @@ BookThisLink.propTypes = {
   }).isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
-      bookings: PropTypes.string
+      bookings: PropTypes.string,
     }).isRequired,
     url: PropTypes.string.isRequired,
   }).isRequired,
-  priceRange: PropTypes.arrayOf(PropTypes.number.isRequired).isRequired
+  priceRange: PropTypes.arrayOf(PropTypes.number.isRequired).isRequired,
 }
 
 export default BookThisLink

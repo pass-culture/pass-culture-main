@@ -6,6 +6,7 @@ import MyFavorite from './MyFavorite'
 import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
 import selectFirstMatchingBookingByStocks from '../../../../selectors/selectFirstMatchingBookingByStocks'
 import selectOfferById from '../../../../selectors/selectOfferById'
+import selectStocksByOfferId from '../../../../selectors/selectStocksByOfferId'
 import getHumanizeRelativeDate from '../../../../utils/date/getHumanizeRelativeDate'
 
 export const reservationStatus = (
@@ -58,7 +59,8 @@ export const mapStateToProps = (state, ownProps) => {
   const { favorite } = ownProps
   const { offerId } = favorite
   const offer = selectOfferById(state, offerId)
-  const { venue, stocks } = offer
+  const { venue } = offer
+  const stocks = selectStocksByOfferId(state, offer.id)
   const firstMatchingBooking = selectFirstMatchingBookingByStocks(state, stocks)
   const isBooked = firstMatchingBooking ? !firstMatchingBooking.isCancelled : false
   const hasBookings = typeof firstMatchingBooking !== 'undefined'

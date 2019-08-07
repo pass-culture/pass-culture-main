@@ -12,7 +12,6 @@ class MyBookings extends Component {
 
     this.state = {
       hasError: false,
-      isEmpty: false,
       isLoading: true,
     }
   }
@@ -20,18 +19,6 @@ class MyBookings extends Component {
   componentDidMount = () => {
     const { requestGetBookings } = this.props
     requestGetBookings(this.handleFail, this.handleSuccess)
-  }
-
-  componentDidUpdate = prevProps => {
-    const { validBookings } = this.props
-    const { isEmpty } = this.state
-    if (validBookings && validBookings !== prevProps.validBookings) {
-      if (validBookings.length === 0) {
-        this.handleSetIsEmpty(true)
-      } else if (!isEmpty) {
-        this.handleSetIsEmpty(false)
-      }
-    }
   }
 
   componentWillUnmount() {
@@ -52,12 +39,10 @@ class MyBookings extends Component {
     })
   }
 
-  handleSetIsEmpty = isEmpty => {
-    this.setState({ isEmpty })
-  }
-
   render() {
-    const { hasError, isEmpty, isLoading } = this.state
+    const { validBookings } = this.props
+    const { hasError, isLoading } = this.state
+    const isEmpty = validBookings.length === 0
 
     if (isLoading) {
       return (<LoaderContainer
@@ -73,7 +58,7 @@ class MyBookings extends Component {
           title="Mes réservations"
         />
         <MyBookingsListsContainer isEmpty={isEmpty} />
-        <MyBookingDetailsContainer bookingPath="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:bookings(reservations)/:cancellation(annulation)?/:confirmation(confirmation)?" />
+        <MyBookingDetailsContainer bookingPath="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)/:cancellation(annulation)?/:confirmation(confirmation)?" />
       </div>
     )
   }

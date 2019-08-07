@@ -17,10 +17,7 @@ describe('src | components | verso | verso-controls | booking | BookThisLink', (
         params: {},
         url: '/decouverte',
       },
-      priceRange: [
-        10,
-        30
-      ]
+      priceRange: [10, 30],
     }
 
     // when
@@ -45,9 +42,7 @@ describe('src | components | verso | verso-controls | booking | BookThisLink', (
         params: {},
         url: '/decouverte',
       },
-      priceRange: [
-        0
-      ]
+      priceRange: [0],
     }
 
     // when
@@ -83,10 +78,7 @@ describe('src | components | verso | verso-controls | booking | BookThisLink', (
         params: {},
         url: '/decouverte',
       },
-      priceRange: [
-        minPrice,
-        maxPrice
-      ]
+      priceRange: [minPrice, maxPrice],
     }
 
     // when
@@ -124,9 +116,9 @@ describe('src | components | verso | verso-controls | booking | BookThisLink', (
           params: {},
           url: `/decouverte/${offerId}/${mediationId}`,
         },
-        priceRange: []
+        priceRange: [],
       }
-      const expected = `${pathname}/${offerId}/${mediationId}/reservations${search}`
+      const expected = `${pathname}/${offerId}/${mediationId}/reservation${search}`
 
       // when
       const wrapper = shallow(<BookThisLink {...props} />)
@@ -142,7 +134,7 @@ describe('src | components | verso | verso-controls | booking | BookThisLink', (
       const offerId = 'BF'
       const pathname = '/decouverte'
       const search = '?foo'
-      const url = `http://${pathname}/${offerId}/${mediationId}/reservations${search}`
+      const url = `http://${pathname}/${offerId}/${mediationId}/reservation${search}`
       const props = {
         isFinished: false,
         location: {
@@ -155,7 +147,7 @@ describe('src | components | verso | verso-controls | booking | BookThisLink', (
           },
           url,
         },
-        priceRange: []
+        priceRange: [],
       }
       const expected = url
 

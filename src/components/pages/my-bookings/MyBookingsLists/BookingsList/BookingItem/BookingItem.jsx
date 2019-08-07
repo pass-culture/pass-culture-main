@@ -15,24 +15,20 @@ export const stringify = date => timeZone =>
       .format('dddd DD/MM/YYYY à H:mm')
   )
 
-const getDetailsUrl = (bookingId, location, match) => {
-  const { pathname, search } = location
-  const { params } = match
-  const { details } = params
-  if (details === 'details') {
-    return `${pathname}${search}`
-  }
-  return `${pathname}/details/${bookingId}${search}`
+const getDetailsUrl = (bookingId, location) => {
+  const { search } = location
+
+  return `/reservations/details/${bookingId}${search}`
 }
 
-const BookingItem = ({ booking, location, match, offer, ribbon }) => {
-  const { id: bookingId, stock, token, thumbUrl } = booking
+const BookingItem = ({ booking, location, offer, ribbon, stock }) => {
+  const { id: bookingId, token, thumbUrl } = booking
   const { beginningDatetime } = stock
   const { label, type } = ribbon || {}
   const { product, venue } = offer
   const { name: productName } = product
   const { departementCode } = venue
-  const detailsUrl = getDetailsUrl(bookingId, location, match)
+  const detailsUrl = getDetailsUrl(bookingId, location)
   const timeZone = getTimezone(departementCode)
   const stringifyDate = beginningDatetime && stringify(beginningDatetime)(timeZone)
   return (
@@ -78,20 +74,12 @@ BookingItem.defaultProps = {
 BookingItem.propTypes = {
   booking: PropTypes.shape({
     id: PropTypes.string,
-    stock: PropTypes.shape({
-      beginningDatetime: PropTypes.string,
-    }),
     thumbUrl: PropTypes.string,
     token: PropTypes.string.isRequired,
   }).isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
     search: PropTypes.string.isRequired,
-  }).isRequired,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      details: PropTypes.string,
-    }).isRequired,
   }).isRequired,
   offer: PropTypes.shape({
     product: PropTypes.shape({
@@ -105,6 +93,9 @@ BookingItem.propTypes = {
     label: PropTypes.string,
     type: PropTypes.string,
   }),
+  stock: PropTypes.shape({
+    beginningDatetime: PropTypes.string,
+  }).isRequired,
 }
 
 export default BookingItem

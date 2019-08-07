@@ -1,10 +1,9 @@
 import createCachedSelector from 're-reselect'
 
 import selectBookingById from './selectBookingById'
-import selectFavoriteById from './selectFavoriteById'
 import selectFirstMatchingBookingByStocks from './selectFirstMatchingBookingByStocks'
 import selectOfferById from './selectOfferById'
-import selectRecommendationByOfferIdAndMediationId from './selectRecommendationByOfferIdAndMediationId'
+import selectStocksByOfferId from './selectStocksByOfferId'
 
 function mapArgsToCacheKey(state, match) {
   const { params } = match
@@ -14,31 +13,18 @@ function mapArgsToCacheKey(state, match) {
 
 const selectBookingByMatch = createCachedSelector(
   state => state.data.bookings,
-  state => state.data.offers,
+  state => state.data.stocks,
   (state, match) => selectBookingById(state, match.params.bookingId),
-  (state, match) => selectFavoriteById(state, match.params.favoriteId),
-  (state, match) =>
-    selectRecommendationByOfferIdAndMediationId(
-      state,
-      match.params.offerId,
-      match.params.mediationId
-    ),
-  (bookings, offers, booking, favorite, recommendation) => {
+  (state, match) => {
+    return selectOfferById(state, match.params.offerId)
+  },
+  (bookings, allStocks, booking, offer) => {
     if (booking) {
       return booking
     }
-    if (favorite) {
-      const offer = selectOfferById({ data: { offers } }, favorite.offerId)
-      const { stocks } = offer || {}
-      const firstMatchingBooking = selectFirstMatchingBookingByStocks(
-        { data: { bookings } },
-        stocks
-      )
-      return firstMatchingBooking
-    }
-    if (recommendation) {
-      const offer = selectOfferById({ data: { offers } }, recommendation.offerId)
-      const { stocks } = offer || {}
+
+    if (offer) {
+      const stocks = selectStocksByOfferId({ data: { stocks: allStocks } }, offer.id)
       const firstMatchingBooking = selectFirstMatchingBookingByStocks(
         { data: { bookings } },
         stocks

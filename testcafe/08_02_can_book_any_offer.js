@@ -40,7 +40,7 @@ fixture("08_02_01 L'user peut réserver n'importe quelle offre").beforeEach(asyn
     'get_non_free_thing_offer_with_active_mediation'
   )
   discoveryCardUrl = `${discoverUrl}/${offer.id}/${mediationId}`
-  discoveryBookingUrl = `${discoveryCardUrl}/details/reservations`
+  discoveryBookingUrl = `${discoveryCardUrl}/details/reservation`
   await t.useRole(userRole).navigateTo(discoveryCardUrl)
 })
 

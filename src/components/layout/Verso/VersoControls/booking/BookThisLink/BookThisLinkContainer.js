@@ -6,16 +6,18 @@ import BookThisLink from './BookThisLink'
 import getPriceRangeFromStocks from '../../../../../../helpers/getPriceRangeFromStocks'
 import selectIsFinishedByMatch from '../../../../../../selectors/selectIsFinishedByMatch'
 import selectOfferByMatch from '../../../../../../selectors/selectOfferByMatch'
+import selectStocksByOfferId from '../../../../../../selectors/selectStocksByOfferId'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const isFinished = selectIsFinishedByMatch(state, match)
   const offer = selectOfferByMatch(state, match) || {}
-  const { stocks } = offer
+  const stocks = selectStocksByOfferId(state, offer.id)
   const priceRange = getPriceRangeFromStocks(stocks)
+
   return {
     isFinished,
-    priceRange
+    priceRange,
   }
 }
 

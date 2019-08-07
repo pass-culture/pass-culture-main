@@ -35,8 +35,7 @@ class VersoContentOffer extends PureComponent {
 
   renderOfferWhat() {
     const { musicSubType, musicType, offer, showSubType, showType } = this.props
-    const { product } = offer || {}
-    const { durationMinutes, extraData, offerType } = product || {}
+    const { durationMinutes, extraData, offerType } = offer || {}
     const { author, performer, speaker, stageDirector } = extraData || {}
     const { appLabel } = offerType || {}
 
@@ -214,7 +213,7 @@ VersoContentOffer.propTypes = {
   musicSubType: PropTypes.shape(),
   musicType: PropTypes.shape(),
   offer: PropTypes.shape({
-    product: PropTypes.shape()
+    product: PropTypes.shape(),
   }),
   showSubType: PropTypes.shape(),
   showType: PropTypes.shape(),

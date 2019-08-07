@@ -47,7 +47,7 @@ fixture("08_05_01 Réservation d'une offre type event à dates multiple").before
   const { mediationId, offer } = await fetchSandbox('webapp_08_booking', 'get_non_free_event_offer')
   discoveryCardUrl = `${discoverUrl}/${offer.id}/${mediationId || 'vide'}`
   discoverDetailsUrl = `${discoveryCardUrl}/details`
-  discoveryBookingUrl = `${discoverDetailsUrl}/reservations`
+  discoveryBookingUrl = `${discoverDetailsUrl}/reservation`
   await t
     .useRole(userRole)
     .navigateTo(discoveryCardUrl)

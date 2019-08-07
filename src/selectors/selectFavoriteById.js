@@ -6,8 +6,10 @@ function mapArgsToCacheKey(state, favoriteId) {
 
 export const selectFavoriteById = createCachedSelector(
   state => state.data.favorites,
-  (state, favoriteId) => favoriteId,
-  (favorites, favoriteId) => favorites.find(favorite => favorite.id === favoriteId)
+  (state, offerId) => offerId,
+  (state, mediationId) => mediationId,
+  (favorites, offerId, mediationId) =>
+    favorites.find(favorite => favorite.offerId === offerId && favorite.mediationId === mediationId)
 )(mapArgsToCacheKey)
 
 export default selectFavoriteById

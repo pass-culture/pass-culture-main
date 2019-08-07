@@ -64,7 +64,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 
   const handleClosePopin = () => {
     dispatch(closeSharePopin())
-    const nextPathname = pathname.split('/annulation')[0]
+    const nextPathname = pathname.split(/\/reservation(\/|$|\/$)/)[0]
     const nextUrl = `${nextPathname}${search}`
     history.push(nextUrl)
   }

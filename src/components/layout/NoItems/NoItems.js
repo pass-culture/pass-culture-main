@@ -1,17 +1,16 @@
-import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
-const NoItems = ({ withWhiteBackground, sentence }) => (
+const NoItems = ({ sentence }) => (
   <Fragment>
     <Link
-      className={classnames("teaser-link-offers", { red: withWhiteBackground })}
+      className="teaser-link-offers"
       to="/decouverte"
     >
       {'Lancez-vous'}
     </Link>
-    <p className={classnames("teaser-text", { red: withWhiteBackground })}>
+    <p className="teaser-text">
       {sentence}
       <br />
       {'vous la retrouverez ici.'}
@@ -19,13 +18,8 @@ const NoItems = ({ withWhiteBackground, sentence }) => (
   </Fragment>
 )
 
-NoItems.defaultProps = {
-  withWhiteBackground: false
-}
-
 NoItems.propTypes = {
   sentence: PropTypes.string.isRequired,
-  withWhiteBackground: PropTypes.bool
 }
 
 export default NoItems

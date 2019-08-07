@@ -6,6 +6,7 @@ const Thumb = ({ withMediation, src, translated }) => {
   const backgroundStyle = (src && { backgroundImage: `url('${src}')` }) || {}
   const thumbStyle = Object.assign(backgroundStyle, {
     backgroundSize: withMediation ? 'cover' : null,
+    backgroundColor: 'white',
   })
   return (
     <div className="thumb">
