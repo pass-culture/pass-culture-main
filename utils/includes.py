@@ -136,6 +136,7 @@ FAVORITE_INCLUDES = [
             "isFinished",
             "isThing",
             "isFullyBooked",
+            "offerType",
             {
                 "key": "product",
                 "sub_joins": ["thumbUrl", "offerType"]
@@ -156,21 +157,22 @@ RECOMMENDATION_INCLUDES = [
     {
         "key": "offer",
         "sub_joins": [
+            "dateRange",
             'favorites',
+            "isEvent",
             'isFinished',
             'isFullyBooked',
-            "dateRange",
-            "isEvent",
             "isThing",
+            "offerType",
+            {
+                "key": "product",
+                "sub_joins": ["thumbUrl", "offerType"]
+            },
             "stocks",
             {
                 "key": "venue",
                 "sub_joins": ["managingOfferer"]
             },
-            {
-                "key": "product",
-                "sub_joins": ["thumbUrl", "offerType"]
-            }
         ]
     },
     "thumbUrl"
@@ -202,6 +204,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                     "favorites",
                     "isFinished",
                     "isFullyBooked",
+                    "offerType",
                     {
                         "key": "product",
                         "sub_joins": ["thumbUrl"]
@@ -235,9 +238,10 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
                     "favorites",
                     "isFinished",
                     "isFullyBooked",
+                    "offerType",
                     {
                         "key": "product",
-                        "sub_joins": ["offerType", "thumbUrl"]
+                        "sub_joins": ["thumbUrl"]
                     },
                     "stocks",
                     "venue",
