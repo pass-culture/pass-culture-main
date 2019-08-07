@@ -38,7 +38,7 @@ class BookingsCSVTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=12, available=5, offer=offer)
         booking = create_booking(user, stock, date_created=datetime(2010, 1, 1, 0, 0, 0, 0))
-        deposit1 = create_deposit(user, datetime.utcnow(), amount=100)
+        deposit1 = create_deposit(user, amount=100)
 
         PcObject.save(user, offerer, venue, offer, stock, booking, deposit1)
 

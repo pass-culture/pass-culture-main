@@ -14,7 +14,7 @@ class Get:
         def when_user_has_an_offerer_attached(self, app):
             # Given
             user = create_user(email='user+plus@email.fr')
-            deposit = create_deposit(user, datetime.utcnow(), amount=500, source='public')
+            deposit = create_deposit(user, amount=500, source='public')
             offerer1 = create_offerer()
             offerer2 = create_offerer(siren='123456788')
             user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)

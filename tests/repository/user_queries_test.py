@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, MINYEAR
 
-from models import ImportStatus
+from models import ImportStatus, ThingType
 from models import PcObject
 from repository.user_queries import get_all_users_wallet_balances, find_by_civility, \
     find_most_recent_beneficiary_creation_date, count_activated_users, count_users_having_booked
@@ -314,16 +314,33 @@ class CountUsersHavingBookedTest:
         # Then
         assert number_of_users_having_booked == 0
 
+    @clean_database
+    def test_returns_zero_when_user_with_only_activation_booking(self, app):
+        # Given
+        user_having_booked1 = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        stock = create_stock(offer=offer, price=0)
+        booking1 = create_booking(user_having_booked1, stock, is_cancelled=True)
+        PcObject.save(booking1)
+
+        # When
+        number_of_users_having_booked = count_users_having_booked()
+
+        # Then
+        assert number_of_users_having_booked == 0
+
 
 def _create_balances_for_user2(stock3, user2, venue):
-    deposit3 = create_deposit(user2, datetime.utcnow(), amount=200)
+    deposit3 = create_deposit(user2, amount=200)
     booking4 = create_booking(user2, venue=venue, stock=stock3, quantity=3, is_cancelled=False, is_used=False)
     PcObject.save(deposit3, booking4)
 
 
 def _create_balances_for_user1(stock1, stock2, stock3, user1, venue):
-    deposit1 = create_deposit(user1, datetime.utcnow(), amount=100)
-    deposit2 = create_deposit(user1, datetime.utcnow(), amount=50)
+    deposit1 = create_deposit(user1, amount=100)
+    deposit2 = create_deposit(user1, amount=50)
     booking1 = create_booking(user1, venue=venue, stock=stock1, quantity=1, is_cancelled=True, is_used=False)
     booking2 = create_booking(user1, venue=venue, stock=stock2, quantity=2, is_cancelled=False, is_used=True)
     booking3 = create_booking(user1, venue=venue, stock=stock3, quantity=1, is_cancelled=False, is_used=False)

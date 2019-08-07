@@ -17,7 +17,7 @@ class Patch:
             in_five_days = datetime.utcnow() + timedelta(days=5)
             user = create_user(email='test@email.com')
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(user, deposit_date, amount=500)
+            deposit = create_deposit(user, amount=500)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
@@ -42,7 +42,7 @@ class Patch:
             admin_user = create_user(email='test@email.com', can_book_free_offers=False, is_admin=True)
             other_user = create_user(email='test2@email.com')
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(other_user, deposit_date, amount=500)
+            deposit = create_deposit(other_user, amount=500)
             booking = create_booking(other_user)
             PcObject.save(admin_user, other_user, deposit, booking)
             booking_id = booking.id
@@ -61,7 +61,7 @@ class Patch:
             # Given
             user = create_user(email='test@email.com')
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(user, deposit_date, amount=500)
+            deposit = create_deposit(user, amount=500)
             booking = create_booking(user, is_used=True)
             PcObject.save(user, deposit, booking)
             booking_id = booking.id
@@ -80,7 +80,7 @@ class Patch:
             # Given
             user = create_user(email='test@email.com')
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(user, deposit_date, amount=500)
+            deposit = create_deposit(user, amount=500)
             booking = create_booking(user, quantity=1)
             PcObject.save(user, deposit, booking)
             booking_id = booking.id
@@ -98,7 +98,7 @@ class Patch:
             # Given
             user = create_user(email='test@email.com')
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(user, deposit_date, amount=500)
+            deposit = create_deposit(user, amount=500)
             booking = create_booking(user)
             booking.isCancelled = True
             PcObject.save(user, deposit, booking)
@@ -119,7 +119,7 @@ class Patch:
             in_one_days = datetime.utcnow() + timedelta(days=1)
             user = create_user(email='test@email.com')
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(user, deposit_date, amount=500)
+            deposit = create_deposit(user, amount=500)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
@@ -141,7 +141,7 @@ class Patch:
             # Given
             other_user = create_user(email='test2@email.com')
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(other_user, deposit_date, amount=500)
+            deposit = create_deposit(other_user, amount=500)
             booking = create_booking(other_user)
             user = create_user(email='test@email.com')
             PcObject.save(user, other_user, deposit, booking)

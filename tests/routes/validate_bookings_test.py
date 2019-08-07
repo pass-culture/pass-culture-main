@@ -309,7 +309,7 @@ class Patch:
             stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0,
                                                        booking_limit_date=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user, stock, venue=venue)
-            deposit = create_deposit(user, datetime.utcnow(), amount=500)
+            deposit = create_deposit(user, amount=500)
             PcObject.save(booking, user_offerer, deposit)
             user_id = user.id
             url = '/bookings/token/{}'.format(booking.token)

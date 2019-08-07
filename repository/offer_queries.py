@@ -79,7 +79,7 @@ def _order_by_occurs_soon_or_is_thing_then_randomize():
 
 def get_active_offers(departement_codes=None, offer_id=None, limit=None,
                       order_by=_order_by_occurs_soon_or_is_thing_then_randomize):
-    active_offer_ids = get_active_offers_Ids_query(departement_codes, offer_id)
+    active_offer_ids = get_active_offers_ids_query(departement_codes, offer_id)
 
     query = Offer.query.filter(Offer.id.in_(active_offer_ids))
 
@@ -96,7 +96,7 @@ def get_active_offers(departement_codes=None, offer_id=None, limit=None,
     return query.all()
 
 
-def get_active_offers_Ids_query(departement_codes=['00'], offer_id=None):
+def get_active_offers_ids_query(departement_codes=['00'], offer_id=None):
     active_offers_query = Offer.query.distinct(Offer.id) \
         .order_by(Offer.id)
     if offer_id is not None:

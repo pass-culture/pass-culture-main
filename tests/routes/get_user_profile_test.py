@@ -35,7 +35,7 @@ class Get:
             PcObject.save(user)
 
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(user, deposit_date, amount=10)
+            deposit = create_deposit(user, amount=10)
             PcObject.save(deposit)
 
             # when
@@ -54,9 +54,9 @@ class Get:
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=5)
             recommendation = create_recommendation(thing_offer, user)
             deposit_1_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit_1 = create_deposit(user, deposit_1_date, amount=10)
+            deposit_1 = create_deposit(user, amount=10)
             deposit_2_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit_2 = create_deposit(user, deposit_2_date, amount=10)
+            deposit_2 = create_deposit(user, amount=10)
             booking = create_booking(user, stock, venue, recommendation, quantity=1)
 
             PcObject.save(user, venue, deposit_1, deposit_2, booking)

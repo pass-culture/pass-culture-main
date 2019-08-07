@@ -39,7 +39,7 @@ def test_find_all_by_offerer_with_event_and_things(app):
     # given
     user = create_user()
     now = datetime.utcnow()
-    create_deposit(user, now, amount=1600)
+    create_deposit(user, amount=1600)
     offerer1 = create_offerer(siren='123456789')
     offerer2 = create_offerer(siren='987654321')
     venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
@@ -92,7 +92,7 @@ class FindAllOffererBookingsByVenueIdTest:
         # given
         user = create_user()
         now = datetime.utcnow()
-        create_deposit(user, now, amount=1600)
+        create_deposit(user, amount=1600)
         offerer1 = create_offerer(siren='123456789')
         offerer2 = create_offerer(siren='987654321')
         venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
@@ -121,7 +121,7 @@ class FindAllOffererBookingsByVenueIdTest:
         # given
         user = create_user()
         now = datetime.utcnow()
-        create_deposit(user, now, amount=1600)
+        create_deposit(user, amount=1600)
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret=offerer.siren + '12345')
 
@@ -155,7 +155,7 @@ class FindAllOffererBookingsByVenueIdTest:
         # given
         user = create_user()
         now = datetime.utcnow()
-        create_deposit(user, now, amount=1600)
+        create_deposit(user, amount=1600)
         offerer = create_offerer(siren='offerer')
         venue = create_venue(offerer, siret=offerer.siren + '12345')
 
@@ -190,7 +190,7 @@ class FindAllDigitalBookingsForOffererTest:
         # given
         user = create_user()
         now = datetime.utcnow()
-        create_deposit(user, now, amount=1600)
+        create_deposit(user, amount=1600)
         offerer1 = create_offerer(siren='123456789')
         digital_venue = create_venue(offerer1, siret=None, is_virtual=True)
         physical_venue = create_venue(offerer1, siret=offerer1.siren + '12345')
@@ -213,7 +213,7 @@ class FindAllDigitalBookingsForOffererTest:
         # given
         user = create_user()
         now = datetime.utcnow()
-        create_deposit(user, now, amount=1600)
+        create_deposit(user, amount=1600)
 
         target_offerer = create_offerer(siren='123456789')
         other_offerer = create_offerer(siren='567891234')
@@ -241,7 +241,7 @@ class FindAllDigitalBookingsForOffererTest:
         # given
         user = create_user()
         now = datetime.utcnow()
-        create_deposit(user, now, amount=1600)
+        create_deposit(user, amount=1600)
         offerer1 = create_offerer(siren='123456789')
         digital_venue_for_offerer1 = create_venue(offerer1, siret=None, is_virtual=True)
         stock1 = create_stock_with_event_offer(offerer1, digital_venue_for_offerer1, price=2, available=100)
@@ -263,7 +263,7 @@ class FindAllDigitalBookingsForOffererTest:
         # given
         user = create_user()
         now = datetime.utcnow()
-        create_deposit(user, now, amount=1600)
+        create_deposit(user, amount=1600)
         offerer1 = create_offerer(siren='123456789')
         digital_venue_for_offerer1 = create_venue(offerer1, siret=None, is_virtual=True)
         stock1 = create_stock_with_event_offer(offerer1, digital_venue_for_offerer1, price=2, available=100)
@@ -312,7 +312,7 @@ class FindFinalOffererBookingsTest:
     def test_returns_bookings_for_given_offerer(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user, datetime.utcnow(), amount=500)
+        deposit = create_deposit(user, amount=500)
 
         offerer1 = create_offerer(siren='123456789')
         venue = create_venue(offerer1, siret=offerer1.siren + '12345')
@@ -341,7 +341,7 @@ class FindFinalOffererBookingsTest:
     def test_returns_bookings_with_payment_first_ordered_by_date_created(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user, NOW, amount=500)
+        deposit = create_deposit(user, amount=500)
 
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret=offerer.siren + '12345')
@@ -369,7 +369,7 @@ class FindFinalOffererBookingsTest:
     def test_returns_not_cancelled_bookings_for_offerer(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user, datetime.utcnow(), amount=500)
+        deposit = create_deposit(user, amount=500)
 
         offerer1 = create_offerer(siren='123456789')
         venue = create_venue(offerer1)
@@ -391,7 +391,7 @@ class FindFinalOffererBookingsTest:
     def test_returns_only_used_bookings(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user, datetime.utcnow(), amount=500)
+        deposit = create_deposit(user, amount=500)
 
         offerer1 = create_offerer(siren='123456789')
         venue = create_venue(offerer1)
@@ -414,7 +414,7 @@ class FindFinalOffererBookingsTest:
         # Given
         user = create_user()
         now = datetime.utcnow()
-        deposit = create_deposit(user, now, amount=500)
+        deposit = create_deposit(user, amount=500)
 
         offerer1 = create_offerer(siren='123456789')
         venue = create_venue(offerer1)
@@ -449,7 +449,7 @@ class FindDateUsedTest:
     def test_returns_issued_date_of_matching_activity(self, app):
         # given
         user = create_user()
-        deposit = create_deposit(user, datetime.utcnow(), amount=500)
+        deposit = create_deposit(user, amount=500)
         booking = create_booking(user)
         PcObject.save(user, deposit, booking)
 
@@ -473,7 +473,7 @@ class FindDateUsedTest:
 def test_find_date_used_on_booking_returns_none_if_no_activity_with_is_used_changed_is_found(app):
     # given
     user = create_user()
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+    deposit = create_deposit(user, amount=500)
     booking = create_booking(user)
     PcObject.save(user, deposit, booking)
 

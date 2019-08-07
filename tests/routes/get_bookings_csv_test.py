@@ -15,7 +15,7 @@ class Get:
         def when_user_has_an_offerer_attached(self, app):
             # Given
             user = create_user(email='user+plus@email.fr')
-            deposit = create_deposit(user, datetime.utcnow(), amount=500, source='public')
+            deposit = create_deposit(user, amount=500, source='public')
             offerer1 = create_offerer()
             offerer2 = create_offerer(siren='123456788')
             user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
@@ -68,7 +68,7 @@ class Get:
         def when_user_has_an_offerer_attached_and_venue_id_argument_is_valid(self, app):
             # Given
             user = create_user(email='user+plus@email.fr')
-            deposit = create_deposit(user, datetime.utcnow(), amount=500, source='public')
+            deposit = create_deposit(user, amount=500, source='public')
             offerer1 = create_offerer()
             offerer2 = create_offerer(siren='123456788')
             user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
@@ -106,7 +106,7 @@ class Get:
         def when_user_is_filtering_on_digital_venues(self, app):
             # Given
             user = create_user(email='user+plus@email.fr')
-            deposit = create_deposit(user, datetime.utcnow(), amount=500, source='public')
+            deposit = create_deposit(user, amount=500, source='public')
 
             offerer1 = create_offerer()
             user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
@@ -140,7 +140,7 @@ class Get:
         def when_user_is_filtering_on_offer_and_date(self, app):
             # Given
             user = create_user(email='user+plus@email.fr')
-            deposit = create_deposit(user, datetime.utcnow(), amount=500, source='public')
+            deposit = create_deposit(user, amount=500, source='public')
 
             offerer1 = create_offerer()
             user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)

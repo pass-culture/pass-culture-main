@@ -92,8 +92,8 @@ class WalletBalanceTest:
     def test_wallet_balance_is_the_sum_of_deposits_if_no_bookings(self, app):
         # given
         user = create_user()
-        deposit1 = create_deposit(user, datetime.utcnow(), amount=100)
-        deposit2 = create_deposit(user, datetime.utcnow(), amount=50)
+        deposit1 = create_deposit(user, amount=100)
+        deposit2 = create_deposit(user, amount=50)
         PcObject.save(deposit1, deposit2)
 
         # when
@@ -110,8 +110,8 @@ class WalletBalanceTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
 
-        deposit1 = create_deposit(user, datetime.utcnow(), amount=100)
-        deposit2 = create_deposit(user, datetime.utcnow(), amount=50)
+        deposit1 = create_deposit(user, amount=100)
+        deposit2 = create_deposit(user, amount=50)
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
         booking1 = create_booking(user, venue=venue, stock=stock1, quantity=1)
@@ -133,8 +133,8 @@ class WalletBalanceTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
 
-        deposit1 = create_deposit(user, datetime.utcnow(), amount=100)
-        deposit2 = create_deposit(user, datetime.utcnow(), amount=50)
+        deposit1 = create_deposit(user, amount=100)
+        deposit2 = create_deposit(user, amount=50)
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
         booking1 = create_booking(user, venue=venue, stock=stock1, quantity=1, is_cancelled=False)
@@ -166,8 +166,8 @@ class RealWalletBalanceTest:
     def test_real_wallet_balance_is_the_sum_of_deposits_if_no_bookings(self, app):
         # given
         user = create_user()
-        deposit1 = create_deposit(user, datetime.utcnow(), amount=100)
-        deposit2 = create_deposit(user, datetime.utcnow(), amount=50)
+        deposit1 = create_deposit(user, amount=100)
+        deposit2 = create_deposit(user, amount=50)
         PcObject.save(deposit1, deposit2)
 
         # when
@@ -184,8 +184,8 @@ class RealWalletBalanceTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
 
-        deposit1 = create_deposit(user, datetime.utcnow(), amount=100)
-        deposit2 = create_deposit(user, datetime.utcnow(), amount=50)
+        deposit1 = create_deposit(user, amount=100)
+        deposit2 = create_deposit(user, amount=50)
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
         stock3 = create_stock(price=40, offer=offer)
@@ -209,8 +209,8 @@ class RealWalletBalanceTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
 
-        deposit1 = create_deposit(user, datetime.utcnow(), amount=100)
-        deposit2 = create_deposit(user, datetime.utcnow(), amount=50)
+        deposit1 = create_deposit(user, amount=100)
+        deposit2 = create_deposit(user, amount=50)
         stock1 = create_stock(price=20, offer=offer)
         stock2 = create_stock(price=30, offer=offer)
         stock3 = create_stock(price=40, offer=offer)

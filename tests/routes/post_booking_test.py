@@ -15,7 +15,7 @@ class Post:
         def when_non_validated_venue(self, app):
             # Given
             user = create_user(email='test@email.com')
-            deposit = create_deposit(user, datetime.utcnow())
+            deposit = create_deposit(user)
             offerer = create_offerer()
             venue = create_venue(offerer)
             venue.generate_validation_token()
@@ -86,8 +86,8 @@ class Post:
             user = create_user(email='test@email.com')
             user2 = create_user(email='test2@email.com')
 
-            deposit = create_deposit(user, datetime.utcnow(), amount=500)
-            deposit2 = create_deposit(user2, datetime.utcnow(), amount=500)
+            deposit = create_deposit(user, amount=500)
+            deposit2 = create_deposit(user2, amount=500)
 
             recommendation = create_recommendation(offer=too_many_bookings_stock.offer, user=user)
 
@@ -135,7 +135,7 @@ class Post:
             PcObject.save(recommendation)
 
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(user, deposit_date, amount=500)
+            deposit = create_deposit(user, amount=500)
             PcObject.save(deposit)
 
             booking_json = {
@@ -167,7 +167,7 @@ class Post:
             event_offer = stock.resolvedOffer
             recommendation = create_recommendation(event_offer, user)
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(user, deposit_date, amount=0)
+            deposit = create_deposit(user, amount=0)
 
             PcObject.save(recommendation)
             PcObject.save(stock)
@@ -213,7 +213,7 @@ class Post:
 
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
 
-            deposit = create_deposit(user, deposit_date, amount=500, source='public')
+            deposit = create_deposit(user, amount=500, source='public')
 
             PcObject.save(deposit)
 
@@ -441,7 +441,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(user, deposit_date, amount=200)
+            deposit = create_deposit(user, amount=200)
             offer = create_offer_with_event_product(venue, event_name='Event Name', event_type=EventType.CINEMA)
             event_occurrence = create_event_occurrence(offer, beginning_datetime=five_days_ago,
                                                        end_datetime=four_days_ago)
@@ -472,7 +472,7 @@ class Post:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(user, deposit_date, amount=200)
+            deposit = create_deposit(user, amount=200)
             venue = create_venue(offerer)
 
             stock = create_stock_with_thing_offer(offerer, venue, price=20, booking_limit_datetime=four_days_ago)
@@ -502,7 +502,7 @@ class Post:
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(user, deposit_date, amount=200)
+            deposit = create_deposit(user, amount=200)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
             booking = create_booking(user, stock, venue, is_cancelled=False)
             PcObject.save(stock, user, booking)
@@ -561,7 +561,7 @@ class Post:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(user, deposit_date, amount=200)
+            deposit = create_deposit(user, amount=200)
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=20, booking_limit_datetime=None)
@@ -598,7 +598,7 @@ class Post:
             recommendation = create_recommendation(thing_offer, user)
             PcObject.save(recommendation)
 
-            deposit = create_deposit(user, datetime.utcnow(), amount=50)
+            deposit = create_deposit(user, amount=50)
             PcObject.save(deposit)
 
             booking_json = {
@@ -632,7 +632,7 @@ class Post:
             recommendation = create_recommendation(thing_offer, user)
             PcObject.save(recommendation)
 
-            deposit = create_deposit(user, datetime.utcnow(), amount=500)
+            deposit = create_deposit(user, amount=500)
             PcObject.save(deposit)
 
             booking_json = {
@@ -655,7 +655,7 @@ class Post:
             user = create_user(email='test@email.com')
             PcObject.save(user)
 
-            deposit = create_deposit(user, datetime.utcnow(), amount=50)
+            deposit = create_deposit(user, amount=50)
             PcObject.save(deposit)
 
             offerer = create_offerer('819202819', '1 Fake Address', 'Fake city', '93000', 'Fake offerer')
@@ -709,7 +709,7 @@ class Post:
             PcObject.save(recommendation)
 
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(user, deposit_date, amount=500)
+            deposit = create_deposit(user, amount=500)
             PcObject.save(deposit)
 
             booking_json = {
@@ -737,7 +737,7 @@ class Post:
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue)
             deposit_date = datetime.utcnow() - timedelta(minutes=2)
-            deposit = create_deposit(user, deposit_date, amount=200)
+            deposit = create_deposit(user, amount=200)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=90)
             booking = create_booking(user, stock, venue, is_cancelled=True)
             PcObject.save(stock, user, booking)

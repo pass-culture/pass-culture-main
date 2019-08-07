@@ -49,7 +49,7 @@ class FindErrorPaymentsTest:
         # Given
         user = create_user()
         booking = create_booking(user)
-        deposit = create_deposit(user, datetime.utcnow())
+        deposit = create_deposit(user)
         error_payment1 = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
         error_payment2 = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
         pending_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
@@ -75,7 +75,7 @@ class FindErrorPaymentsTest:
         # Given
         user = create_user()
         booking = create_booking(user)
-        deposit = create_deposit(user, datetime.utcnow())
+        deposit = create_deposit(user)
         error_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
         pending_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
         error_status = PaymentStatus()
@@ -99,7 +99,7 @@ class FindRetryPaymentsTest:
         # Given
         user = create_user()
         booking = create_booking(user)
-        deposit = create_deposit(user, datetime.utcnow())
+        deposit = create_deposit(user)
         offerer = booking.stock.resolvedOffer.venue.managingOfferer
         retry_payment1 = create_payment(booking, offerer, 10)
         retry_payment2 = create_payment(booking, offerer, 10)
@@ -126,7 +126,7 @@ class FindRetryPaymentsTest:
         # Given
         user = create_user()
         booking = create_booking(user)
-        deposit = create_deposit(user, datetime.utcnow())
+        deposit = create_deposit(user)
         payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
         payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
         pending_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
@@ -151,7 +151,7 @@ class FindPaymentsByMessageTest:
         # given
         user = create_user()
         booking = create_booking(user)
-        deposit = create_deposit(user, datetime.utcnow())
+        deposit = create_deposit(user)
         offerer = booking.stock.resolvedOffer.venue.managingOfferer
 
         transaction1 = create_payment_message(name='XML1')
@@ -183,7 +183,7 @@ class FindPaymentsByMessageTest:
         # given
         user = create_user()
         booking = create_booking(user)
-        deposit = create_deposit(user, datetime.utcnow())
+        deposit = create_deposit(user)
         offerer = booking.stock.resolvedOffer.venue.managingOfferer
 
         message1 = create_payment_message(name='XML1')
@@ -325,7 +325,7 @@ class GeneratePayementsByMessageIdTest:
         paying_stock = create_stock_from_offer(offer)
         free_stock = create_stock_from_offer(offer, price=0)
         user = create_user()
-        deposit = create_deposit(user, datetime.utcnow(), amount=500)
+        deposit = create_deposit(user, amount=500)
         booking1 = create_booking(user, paying_stock, venue, is_used=True)
         booking2 = create_booking(user, paying_stock, venue, is_used=True)
         booking3 = create_booking(user, paying_stock, venue, is_used=True)

@@ -5,7 +5,7 @@ from sqlalchemy import func, Column
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
-from models import ImportStatus, BeneficiaryImportStatus, Booking
+from models import ImportStatus, BeneficiaryImportStatus, Booking, Stock, Offer, Product, ThingType
 from models import User, UserOfferer, Offerer, RightsType
 from models.db import db
 from models.user import WalletBalance
@@ -16,7 +16,13 @@ def count_activated_users():
 
 
 def count_users_having_booked():
-    return User.query.join(Booking).distinct(User.id).count()
+    return User.query\
+        .join(Booking) \
+        .join(Stock, Booking.stockId == Stock.id) \
+        .join(Offer) \
+        .join(Product) \
+        .filter(Product.type != str(ThingType.ACTIVATION)) \
+        .distinct(User.id).count()
 
 
 def find_user_by_email(email: str) -> User:

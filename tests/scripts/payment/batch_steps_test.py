@@ -27,7 +27,7 @@ class GenerateNewPaymentsTest:
         paying_stock = create_stock_from_offer(offer)
         free_stock = create_stock_from_offer(offer, price=0)
         user = create_user()
-        deposit = create_deposit(user, datetime.utcnow(), amount=500)
+        deposit = create_deposit(user, amount=500)
         booking1 = create_booking(user, paying_stock, venue, is_used=True)
         booking2 = create_booking(user, paying_stock, venue, is_used=True)
         booking3 = create_booking(user, paying_stock, venue, is_used=True)
@@ -61,7 +61,7 @@ class GenerateNewPaymentsTest:
         paying_stock2 = create_stock_from_offer(offer2)
         free_stock1 = create_stock_from_offer(offer1, price=0)
         user = create_user()
-        deposit = create_deposit(user, datetime.utcnow(), amount=500)
+        deposit = create_deposit(user, amount=500)
         booking1 = create_booking(user, paying_stock1, venue1, is_used=True)
         booking2 = create_booking(user, paying_stock1, venue1, is_used=True)
         booking3 = create_booking(user, paying_stock2, venue2, is_used=True)
@@ -82,7 +82,7 @@ class ConcatenatePaymentsWithErrorsAndRetriesTest:
         # Given
         user = create_user()
         booking = create_booking(user)
-        deposit = create_deposit(user, datetime.utcnow())
+        deposit = create_deposit(user)
         offerer = booking.stock.resolvedOffer.venue.managingOfferer
 
         error_payment = create_payment(booking, offerer, 10)
@@ -199,7 +199,7 @@ def test_send_transactions_should_send_an_email_with_xml_attachment(app):
     booking1 = create_booking(user, stock1)
     booking2 = create_booking(user, stock1)
     booking3 = create_booking(user, stock1)
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+    deposit = create_deposit(user, amount=500)
     PcObject.save(deposit)
     payments = [
         create_payment(booking1, offerer1, Decimal(10)),
@@ -230,7 +230,7 @@ def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_p
     booking1 = create_booking(user, stock1)
     booking2 = create_booking(user, stock1)
     booking3 = create_booking(user, stock1)
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+    deposit = create_deposit(user, amount=500)
     payments = [
         create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
         create_payment(booking2, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -262,7 +262,7 @@ def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
     booking1 = create_booking(user, stock1)
     booking2 = create_booking(user, stock1)
     booking3 = create_booking(user, stock1)
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+    deposit = create_deposit(user, amount=500)
     payments = [
         create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
         create_payment(booking2, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -296,7 +296,7 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
     booking1 = create_booking(user, stock1)
     booking2 = create_booking(user, stock1)
     booking3 = create_booking(user, stock1)
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+    deposit = create_deposit(user, amount=500)
     payments = [
         create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
         create_payment(booking2, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -329,7 +329,7 @@ def test_send_transactions_with_malformed_iban_on_payments_gives_them_an_error_s
     venue = create_venue(offerer)
     stock = create_stock_from_offer(create_offer_with_thing_product(venue))
     booking = create_booking(user, stock)
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+    deposit = create_deposit(user, amount=500)
     payments = [
         create_payment(booking, offerer, Decimal(10), iban='CF  13QSDFGH45 qbc //', bic='QSDFGH8Z555'),
     ]
@@ -362,7 +362,7 @@ def test_send_payment_details_sends_a_csv_attachment(app):
     booking1 = create_booking(user, stock1)
     booking2 = create_booking(user, stock1)
     booking3 = create_booking(user, stock1)
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+    deposit = create_deposit(user, amount=500)
     payments = [
         create_payment(booking1, offerer1, Decimal(10), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
         create_payment(booking2, offerer1, Decimal(20), iban='CF13QSDFGH456789', bic='QSDFGH8Z555'),
@@ -461,7 +461,7 @@ def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not
     booking1 = create_booking(user, stock1)
     booking2 = create_booking(user, stock1)
     booking3 = create_booking(user, stock1)
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+    deposit = create_deposit(user, amount=500)
     payments = [
         create_payment(booking1, offerer1, Decimal(10), status=TransactionStatus.SENT, iban='CF13QSDFGH456789',
                        bic='QSDFGH8Z555'),
@@ -498,7 +498,7 @@ def test_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_er
     booking1 = create_booking(user, stock1)
     booking2 = create_booking(user, stock1)
     booking3 = create_booking(user, stock1)
-    deposit = create_deposit(user, datetime.utcnow(), amount=500)
+    deposit = create_deposit(user, amount=500)
     payments = [
         create_payment(booking1, offerer1, Decimal(10), status=TransactionStatus.SENT, iban='CF13QSDFGH456789',
                        bic='QSDFGH8Z555'),

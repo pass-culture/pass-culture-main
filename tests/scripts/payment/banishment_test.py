@@ -36,7 +36,7 @@ class DoBanPaymentsTest:
         # given
         user = create_user()
         booking = create_booking(user)
-        deposit = create_deposit(user, datetime.utcnow())
+        deposit = create_deposit(user)
         offerer = booking.stock.resolvedOffer.venue.managingOfferer
 
         transaction1 = create_payment_message(name='XML1')
@@ -70,7 +70,7 @@ class DoBanPaymentsTest:
         # given
         user = create_user()
         booking = create_booking(user)
-        deposit = create_deposit(user, datetime.utcnow())
+        deposit = create_deposit(user)
         offerer = booking.stock.resolvedOffer.venue.managingOfferer
 
         transaction1 = create_payment_message(name='XML1')

@@ -14,7 +14,7 @@ class FindReimbursementDetailsTest:
     def test_find_all_offerer_reimbursement_details(self, app):
         # Given
         user = create_user(email='user+plus@email.fr')
-        deposit = create_deposit(user, datetime.utcnow(), amount=500, source='public')
+        deposit = create_deposit(user, amount=500, source='public')
         offerer1 = create_offerer()
         user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
         venue1 = create_venue(offerer1)

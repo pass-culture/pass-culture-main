@@ -2,8 +2,8 @@ import pandas
 
 from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType
 from models.db import db
-from repository.booking_queries import count_all_used_booking, count_all_bookings, count_all_cancelled_bookings
-from repository.offer_queries import get_active_offers_Ids_query
+from repository.booking_queries import count_all_used_or_non_canceled_bookings, count_all_bookings, count_all_cancelled_bookings
+from repository.offer_queries import get_active_offers_ids_query
 from repository.offerer_queries import count_offerer, count_offerer_with_stock
 
 
@@ -16,11 +16,11 @@ def get_offerer_with_stock_count() -> int:
 
 
 def get_offerers_with_offer_available_on_discovery_count() -> int:
-    offer_ids_subquery = get_active_offers_Ids_query()
+    active_offers_ids = get_active_offers_ids_query()
     return Offerer.query \
         .join(Venue) \
         .join(Offer) \
-        .filter(Offer.id.in_(offer_ids_subquery)) \
+        .filter(Offer.id.in_(active_offers_ids)) \
         .distinct(Offerer.id) \
         .count()
 
@@ -47,7 +47,7 @@ def get_offers_with_user_offerer_and_stock_count() -> int:
 
 
 def get_offers_available_on_discovery_count() -> int:
-    offer_ids_subquery = get_active_offers_Ids_query()
+    offer_ids_subquery = get_active_offers_ids_query()
     return Offer.query.filter(Offer.id.in_(offer_ids_subquery)).count()
 
 
@@ -64,15 +64,15 @@ def get_all_bookings_count() -> int:
     return count_all_bookings()
 
 
-def get_all_used_bookings_count() -> int:
-    return count_all_used_booking()
+def get_all_used_or_non_canceled_bookings() -> int:
+    return count_all_used_or_non_canceled_bookings()
 
 
 def get_all_cancelled_bookings_count():
     return count_all_cancelled_bookings()
 
 
-def _get_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_digital, counts_column_name):
+def _get_offer_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_digital, counts_column_name):
     offers_by_type_and_digital_table = _get_offers_grouped_by_type_and_medium()
     offer_counts_per_type_and_digital = query_get_counts_per_type_and_digital()
 
@@ -107,10 +107,12 @@ def _get_offers_grouped_by_type_and_medium():
         human_product_type = product_type.value['proLabel']
         can_be_online = not product_type.value['offlineOnly']
         can_be_offline = not product_type.value['onlineOnly']
+
         if can_be_online:
             human_types.append(human_product_type)
             types.append(str(product_type))
             digital_or_physical.append('Numérique')
+
         if can_be_offline:
             human_types.append(human_product_type)
             types.append(str(product_type))

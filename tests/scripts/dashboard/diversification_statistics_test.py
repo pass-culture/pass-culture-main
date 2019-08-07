@@ -1,13 +1,14 @@
 from datetime import datetime, timedelta
+from pprint import pprint
 
 import pandas
 
 from models import PcObject, EventType, ThingType
 from scripts.dashboard.diversification_statistics import get_offerers_with_offer_available_on_discovery_count, \
     get_offerers_with_non_cancelled_bookings_count, get_offers_with_user_offerer_and_stock_count, \
-    get_offers_available_on_discovery_count, get_offers_with_non_cancelled_bookings_count, get_all_used_bookings_count, \
+    get_offers_available_on_discovery_count, get_offers_with_non_cancelled_bookings_count, get_all_used_or_non_canceled_bookings, \
     _query_get_offer_counts_grouped_by_type_and_medium, _get_offers_grouped_by_type_and_medium, \
-    _get_counts_grouped_by_type_and_medium, _query_get_booking_counts_grouped_by_type_and_medium
+    _get_offer_counts_grouped_by_type_and_medium, _query_get_booking_counts_grouped_by_type_and_medium
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_stock, \
     create_offer_with_thing_product, create_venue, create_mediation, create_offer_with_event_product, create_booking
@@ -391,6 +392,21 @@ class GetOffersAvailableOnDiscoveryCountTest:
         assert number_of_offers == 1
 
     @clean_database
+    def test_returns_0_if_only_offerer_without_mediation_and_thumb_count(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, is_active=True, thumb_count=0)
+        stock = create_stock(offer=offer)
+        PcObject.save(stock)
+
+        # When
+        number_of_offers = get_offers_available_on_discovery_count()
+
+        # Then
+        assert number_of_offers == 0
+
+    @clean_database
     def test_returns_0_if_stock_passed(self, app):
         # Given
         yesterday = datetime.utcnow() - timedelta(days=1)
@@ -571,7 +587,7 @@ class GetAllUsedBookingsCountTest:
         PcObject.save(booking)
 
         # When
-        number_of_bookings = get_all_used_bookings_count()
+        number_of_bookings = get_all_used_or_non_canceled_bookings()
 
         # Then
         assert number_of_bookings == 1
@@ -588,7 +604,7 @@ class GetAllUsedBookingsCountTest:
         PcObject.save(thing_booking)
 
         # When
-        number_of_bookings = get_all_used_bookings_count()
+        number_of_bookings = get_all_used_or_non_canceled_bookings()
 
         # Then
         assert number_of_bookings == 0
@@ -609,7 +625,7 @@ class GetAllUsedBookingsCountTest:
         PcObject.save(event_booking)
 
         # When
-        number_of_bookings = get_all_used_bookings_count()
+        number_of_bookings = get_all_used_or_non_canceled_bookings()
 
         # Then
         assert number_of_bookings == 1
@@ -633,7 +649,7 @@ class GetAllUsedBookingsCountTest:
         PcObject.save(event_booking)
 
         # When
-        number_of_bookings = get_all_used_bookings_count()
+        number_of_bookings = get_all_used_or_non_canceled_bookings()
 
         # Then
         assert number_of_bookings == 0
@@ -724,7 +740,7 @@ class GetOffersByTypeAndDigitalTableTest:
         type_and_digital_dataframe = _get_offers_grouped_by_type_and_medium()
 
         # Then
-        print(expected_dataframe)
+        pprint(expected_dataframe)
         assert type_and_digital_dataframe.equals(expected_dataframe)
 
 
@@ -751,7 +767,7 @@ class GetCountsByTypeAndDigitalCountsTest:
         expected_dataframe = pandas.read_csv('tests/scripts/dashboard/offers_by_type_and_digital_counts.csv')
 
         # When
-        offers_by_type_and_digital_counts = _get_counts_grouped_by_type_and_medium(
+        offers_by_type_and_digital_counts = _get_offer_counts_grouped_by_type_and_medium(
             _query_get_offer_counts_grouped_by_type_and_medium,
             'Nombre d\'offres')
 
@@ -785,7 +801,7 @@ class GetCountsByTypeAndDigitalCountsTest:
         expected_dataframe = pandas.read_csv('tests/scripts/dashboard/bookings_by_type_and_medium_counts.csv')
 
         # When
-        bookings_by_type_and_digital_counts = _get_counts_grouped_by_type_and_medium(
+        bookings_by_type_and_digital_counts = _get_offer_counts_grouped_by_type_and_medium(
             _query_get_booking_counts_grouped_by_type_and_medium, 'Nombre de réservations')
 
         # Then
