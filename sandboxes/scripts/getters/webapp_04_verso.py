@@ -6,8 +6,7 @@ from sandboxes.scripts.utils.helpers import get_mediation_helper, \
                                             get_user_helper, \
                                             get_recommendation_helper
 from sandboxes.scripts.utils.bookings import find_offer_compatible_with_bookings, \
-                                             get_cancellable_bookings_for_user, \
-                                             get_not_cancellable_bookings_for_user
+                                             get_cancellable_bookings_for_user
 
 
 def get_existing_webapp_user_with_at_least_one_recommendation():
@@ -20,6 +19,7 @@ def get_existing_webapp_user_with_at_least_one_recommendation():
        "user": get_user_helper(recommendation.user),
        "recommendation": get_recommendation_helper(recommendation)
    }
+
 
 def get_existing_webapp_hnmm_user(return_as_dict=False):
     query = keep_only_webapp_users(User.query)
