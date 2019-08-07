@@ -146,7 +146,7 @@ describe('src | components | pages | FilterByDate | FilterByDate', () => {
         expect(options.at(0).prop('selected')).toBe(true)
         expect(options.at(1).key()).toBe('2019-07-28T21:59:00Z')
         expect(options.at(1).prop('value')).toBe('2019-07-28T21:59:00Z')
-        expect(options.at(1).key()).toBe('2019-07-28T21:59:00Z')
+        expect(options.at(2).key()).toBe('2019-08-16T21:59:00Z')
         expect(options.at(2).prop('value')).toBe('2019-08-16T21:59:00Z')
       })
     })

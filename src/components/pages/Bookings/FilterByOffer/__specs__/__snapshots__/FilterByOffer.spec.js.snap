@@ -26,6 +26,10 @@ ShallowWrapper {
           "id": "all",
           "name": "Toutes les offres",
         },
+        Object {
+          "id": "CY",
+          "name": "Spectacle de danse",
+        },
       ]
     }
     showDateSection={false}
@@ -81,6 +85,11 @@ ShallowWrapper {
               value="all"
             >
               Toutes les offres
+            </option>
+            <option
+              value="CY"
+            >
+              Spectacle de danse
             </option>
           </select>
         </div>,
@@ -146,6 +155,11 @@ ShallowWrapper {
               >
                 Toutes les offres
               </option>
+              <option
+                value="CY"
+              >
+                Spectacle de danse
+              </option>
             </select>,
           ],
           "id": "filter-by-offer",
@@ -189,6 +203,11 @@ ShallowWrapper {
                   >
                     Toutes les offres
                   </option>,
+                  <option
+                    value="CY"
+                  >
+                    Spectacle de danse
+                  </option>,
                 ],
               ],
               "className": "pc-selectbox",
@@ -222,6 +241,18 @@ ShallowWrapper {
                 },
                 "ref": null,
                 "rendered": "Toutes les offres",
+                "type": "option",
+              },
+              Object {
+                "instance": null,
+                "key": "CY",
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Spectacle de danse",
+                  "value": "CY",
+                },
+                "ref": null,
+                "rendered": "Spectacle de danse",
                 "type": "option",
               },
             ],
@@ -276,6 +307,11 @@ ShallowWrapper {
                 value="all"
               >
                 Toutes les offres
+              </option>
+              <option
+                value="CY"
+              >
+                Spectacle de danse
               </option>
             </select>
           </div>,
@@ -341,6 +377,11 @@ ShallowWrapper {
                 >
                   Toutes les offres
                 </option>
+                <option
+                  value="CY"
+                >
+                  Spectacle de danse
+                </option>
               </select>,
             ],
             "id": "filter-by-offer",
@@ -384,6 +425,11 @@ ShallowWrapper {
                     >
                       Toutes les offres
                     </option>,
+                    <option
+                      value="CY"
+                    >
+                      Spectacle de danse
+                    </option>,
                   ],
                 ],
                 "className": "pc-selectbox",
@@ -417,6 +463,18 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": "Toutes les offres",
+                  "type": "option",
+                },
+                Object {
+                  "instance": null,
+                  "key": "CY",
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Spectacle de danse",
+                    "value": "CY",
+                  },
+                  "ref": null,
+                  "rendered": "Spectacle de danse",
                   "type": "option",
                 },
               ],

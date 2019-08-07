@@ -24,6 +24,10 @@ ShallowWrapper {
     venuesOptions={
       Array [
         Object {
+          "id": "all",
+          "name": "Toutes les offres",
+        },
+        Object {
           "id": 1,
           "name": "Babar",
         },
@@ -71,6 +75,11 @@ ShallowWrapper {
               label=" - Choisissez un lieu dans la liste - "
               selected={true}
             />
+            <option
+              value="all"
+            >
+              Toutes les offres
+            </option>
             <option
               value={1}
             >
@@ -132,6 +141,11 @@ ShallowWrapper {
                 selected={true}
               />
               <option
+                value="all"
+              >
+                Toutes les offres
+              </option>
+              <option
                 value={1}
               >
                 Babar
@@ -173,6 +187,11 @@ ShallowWrapper {
                 />,
                 Array [
                   <option
+                    value="all"
+                  >
+                    Toutes les offres
+                  </option>,
+                  <option
                     value={1}
                   >
                     Babar
@@ -204,6 +223,18 @@ ShallowWrapper {
                 },
                 "ref": null,
                 "rendered": null,
+                "type": "option",
+              },
+              Object {
+                "instance": null,
+                "key": "all",
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Toutes les offres",
+                  "value": "all",
+                },
+                "ref": null,
+                "rendered": "Toutes les offres",
                 "type": "option",
               },
               Object {
@@ -336,6 +367,11 @@ ShallowWrapper {
                 selected={true}
               />
               <option
+                value="all"
+              >
+                Toutes les offres
+              </option>
+              <option
                 value={1}
               >
                 Babar
@@ -396,6 +432,11 @@ ShallowWrapper {
                   selected={true}
                 />
                 <option
+                  value="all"
+                >
+                  Toutes les offres
+                </option>
+                <option
                   value={1}
                 >
                   Babar
@@ -437,6 +478,11 @@ ShallowWrapper {
                   />,
                   Array [
                     <option
+                      value="all"
+                    >
+                      Toutes les offres
+                    </option>,
+                    <option
                       value={1}
                     >
                       Babar
@@ -468,6 +514,18 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": null,
+                  "type": "option",
+                },
+                Object {
+                  "instance": null,
+                  "key": "all",
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Toutes les offres",
+                    "value": "all",
+                  },
+                  "ref": null,
+                  "rendered": "Toutes les offres",
                   "type": "option",
                 },
                 Object {

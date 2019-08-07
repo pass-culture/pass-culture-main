@@ -17,6 +17,10 @@ describe('src | components | pages | FilterByOffer | FilterByOffer', () => {
           id: 'all',
           name: 'Toutes les offres',
         },
+        {
+          id: 'CY',
+          name: 'Spectacle de danse',
+        },
       ],
       updateOfferId: jest.fn(),
       showDateSection: false,
@@ -104,5 +108,29 @@ describe('src | components | pages | FilterByOffer | FilterByOffer', () => {
         expect(label.at(0).text()).toBe("Télécharger les réservations pour l'offre numérique :")
       })
     })
+
+    describe('selector', () => {
+      it('should render a select input for offer with 3 options', () => {
+        // when
+        const wrapper = shallow(<FilterByOffer {...props} />)
+
+        // then
+        const selectOffer = wrapper.find('#offers')
+        expect(selectOffer.prop('className')).toBe('pc-selectbox')
+        expect(selectOffer.prop('id')).toBe('offers')
+        expect(selectOffer.prop('onBlur')).toStrictEqual(expect.any(Function))
+        expect(selectOffer.prop('onChange')).toStrictEqual(expect.any(Function))
+        const options = selectOffer.find('option')
+        expect(options).toHaveLength(3)
+        expect(options.at(0).prop('disabled')).toBe(true)
+        expect(options.at(0).prop('label')).toBe(' - Choisissez une offre dans la liste - ')
+        expect(options.at(0).prop('selected')).toBe(true)
+        expect(options.at(1).key()).toBe('all')
+        expect(options.at(1).prop('value')).toBe('all')
+        expect(options.at(2).key()).toBe('CY')
+        expect(options.at(2).prop('value')).toBe('CY')
+      })
+    })
+    
   })
 })
