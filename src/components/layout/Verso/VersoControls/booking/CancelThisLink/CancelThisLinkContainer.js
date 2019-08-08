@@ -6,16 +6,16 @@ import { requestData } from 'redux-saga-data'
 import CancelThisLink from './CancelThisLink'
 import PopinButton from './PopinButton'
 import { closeSharePopin, openSharePopin } from '../../../../../../reducers/share'
-import selectBookingByMatch from '../../../../../../selectors/selectBookingByMatch'
+import selectBookingByRouterMatch from '../../../../../../selectors/selectBookingByRouterMatch'
 import selectOfferByMatch from '../../../../../../selectors/selectOfferByMatch'
-import selectIsFinishedByMatch from '../../../../../../selectors/selectIsFinishedByMatch'
+import selectIsFinishedByRouterMatch from '../../../../../../selectors/selectIsFinishedByRouterMatch'
 import { bookingNormalizer } from '../../../../../../utils/normalizers'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
-  const booking = selectBookingByMatch(state, match)
+  const booking = selectBookingByRouterMatch(state, match)
   const offer = selectOfferByMatch(state, match)
-  const isFinished = selectIsFinishedByMatch(state, match)
+  const isFinished = selectIsFinishedByRouterMatch(state, match)
   return { booking, isFinished, offer }
 }
 

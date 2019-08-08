@@ -11,7 +11,7 @@ function mapArgsToCacheKey(state, match) {
   return `${bookingId || ' '}${favoriteId || ' '}${mediationId || ' '}${offerId || ' '}`
 }
 
-const selectBookingByMatch = createCachedSelector(
+const selectBookingByRouterMatch = createCachedSelector(
   state => state.data.bookings,
   state => state.data.stocks,
   (state, match) => selectBookingById(state, match.params.bookingId),
@@ -34,4 +34,4 @@ const selectBookingByMatch = createCachedSelector(
   }
 )(mapArgsToCacheKey)
 
-export default selectBookingByMatch
+export default selectBookingByRouterMatch

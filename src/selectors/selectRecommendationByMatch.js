@@ -1,6 +1,6 @@
 import createCachedSelector from 're-reselect'
 
-import selectBookingByMatch from './selectBookingByMatch'
+import selectBookingByRouterMatch from './selectBookingByRouterMatch'
 import selectFavoriteById from './selectFavoriteById'
 import selectRecommendationById from './selectRecommendationById'
 import selectRecommendationByOfferIdAndMediationId from './selectRecommendationByOfferIdAndMediationId'
@@ -19,7 +19,7 @@ const selectOfferByMatch = createCachedSelector(
       match.params.offerId,
       match.params.mediationId
     ),
-  selectBookingByMatch,
+  selectBookingByRouterMatch,
   (state, match) => selectFavoriteById(state, match.params.favoriteId),
   (recommendations, recommendation, booking, favorite) => {
     if (recommendation) {

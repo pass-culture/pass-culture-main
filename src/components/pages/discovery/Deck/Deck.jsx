@@ -7,7 +7,7 @@ import CardContainer from './Card/CardContainer'
 import NavigationContainer from './Navigation/NavigationContainer'
 import CloseLink from '../../../layout/Header/CloseLink'
 import getAreDetailsVisible from '../../../../helpers/getAreDetailsVisible'
-import getRemovedDetailsUrl from '../../../../helpers/getRemovedDetailsUrl'
+import getUrlWithoutDetailsPart from '../../../../helpers/getUrlWithoutDetailsPart'
 
 class Deck extends Component {
   constructor(props) {
@@ -17,10 +17,7 @@ class Deck extends Component {
   }
 
   componentDidMount() {
-    const {
-      currentRecommendation,
-      recommendations
-    } = this.props
+    const { currentRecommendation, recommendations } = this.props
     const isStateWithoutRecommendationsOrCurrentRecommendation =
       !recommendations || recommendations.length === 0 || !currentRecommendation
 
@@ -101,7 +98,7 @@ class Deck extends Component {
   onHandleCloseCardDetails = event => {
     event.preventDefault()
     const { history, location, match } = this.props
-    const removedDetailsUrl = getRemovedDetailsUrl(location, match)
+    const removedDetailsUrl = getUrlWithoutDetailsPart(location, match)
     if (removedDetailsUrl) {
       history.push(removedDetailsUrl)
     }
@@ -209,12 +206,12 @@ Deck.propTypes = {
   isFlipDisabled: PropTypes.bool.isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
-    search: PropTypes.string.isRequired
+    search: PropTypes.string.isRequired,
   }).isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
-      details: PropTypes.string
-    }).isRequired
+      details: PropTypes.string,
+    }).isRequired,
   }).isRequired,
   nextLimit: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]).isRequired,
   nextRecommendation: PropTypes.shape(),

@@ -3,13 +3,13 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import Finishable from './Finishable'
-import selectIsFinishedByMatch from '../../../selectors/selectIsFinishedByMatch'
+import selectIsFinishedByRouterMatch from '../../../selectors/selectIsFinishedByRouterMatch'
 
 const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
-  const isFinished = selectIsFinishedByMatch(state, match)
+  const isFinished = selectIsFinishedByRouterMatch(state, match)
   return {
-    isFinished
+    isFinished,
   }
 }
 

@@ -9,7 +9,7 @@ function mapArgsToCacheKey(state, match) {
   return `${bookingId || ' '}${favoriteId || ' '}${offerId || ' '}`
 }
 
-const selectDistanceByMatch = createCachedSelector(
+const selectDistanceByRouterMatch = createCachedSelector(
   selectOfferByMatch,
   state => state.geolocation.latitude,
   state => state.geolocation.longitude,
@@ -20,4 +20,4 @@ const selectDistanceByMatch = createCachedSelector(
   }
 )(mapArgsToCacheKey)
 
-export default selectDistanceByMatch
+export default selectDistanceByRouterMatch

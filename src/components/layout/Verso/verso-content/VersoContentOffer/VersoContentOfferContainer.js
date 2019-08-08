@@ -9,16 +9,16 @@ import selectMusicSubTypeByCodeAndSubCode from './selectors/selectMusicSubTypeBy
 import selectShowTypeByCode from './selectors/selectShowTypeByCode'
 import selectShowSubTypeByCodeAndSubCode from './selectors/selectShowSubTypeByCodeAndSubCode'
 import selectBookables from '../../../../../selectors/selectBookables'
-import selectBookingByMatch from '../../../../../selectors/selectBookingByMatch'
-import selectDistanceByMatch from '../../../../../selectors/selectDistanceByMatch'
-import selectIsFinishedByMatch from '../../../../../selectors/selectIsFinishedByMatch'
+import selectBookingByRouterMatch from '../../../../../selectors/selectBookingByRouterMatch'
+import selectDistanceByRouterMatch from '../../../../../selectors/selectDistanceByRouterMatch'
+import selectIsFinishedByRouterMatch from '../../../../../selectors/selectIsFinishedByRouterMatch'
 import selectOfferByMatch from '../../../../../selectors/selectOfferByMatch'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const offer = selectOfferByMatch(state, match) || {}
   const bookables = selectBookables(state, offer)
-  const isFinished = selectIsFinishedByMatch(state, match)
+  const isFinished = selectIsFinishedByRouterMatch(state, match)
 
   const { product } = offer || {}
   const { extraData } = product || {}
@@ -26,26 +26,20 @@ export const mapStateToProps = (state, ownProps) => {
     musicSubType: musicSubCode,
     musicType: musicCode,
     showSubType: showSubCode,
-    showType: showCode
+    showType: showCode,
   } = extraData || {}
   const musicType = selectMusicTypeByCode(state, musicCode)
   const showType = selectShowTypeByCode(state, showCode)
-  const musicSubType = selectMusicSubTypeByCodeAndSubCode(
-    state,
-    musicCode,
-    musicSubCode
-  )
-  const showSubType = selectShowSubTypeByCodeAndSubCode(
-    state,
-    showCode,
-    showSubCode
-  )
+  const musicSubType = selectMusicSubTypeByCodeAndSubCode(state, musicCode, musicSubCode)
+  const showSubType = selectShowSubTypeByCodeAndSubCode(state, showCode, showSubCode)
 
-  const { data: { musicTypes, showTypes } } = state
+  const {
+    data: { musicTypes, showTypes },
+  } = state
 
-  const booking = selectBookingByMatch(state, match)
+  const booking = selectBookingByRouterMatch(state, match)
 
-  const distance = selectDistanceByMatch(state, match)
+  const distance = selectDistanceByRouterMatch(state, match)
 
   return {
     bookables,

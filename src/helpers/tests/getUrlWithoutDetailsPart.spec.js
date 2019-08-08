@@ -1,6 +1,6 @@
-import getRemovedDetailsUrl from '../getRemovedDetailsUrl'
+import getUrlWithoutDetailsPart from '../getUrlWithoutDetailsPart'
 
-describe('src | helpers | getRemovedDetailsUrl', () => {
+describe('src | helpers | getUrlWithoutDetailsPart', () => {
   describe('when we have no details url', () => {
     it('should return undefined', () => {
       // given
@@ -15,7 +15,7 @@ describe('src | helpers | getRemovedDetailsUrl', () => {
       }
 
       // when
-      const result = getRemovedDetailsUrl(location, match)
+      const result = getUrlWithoutDetailsPart(location, match)
 
       //then
       expect(result).toBeUndefined()
@@ -36,7 +36,7 @@ describe('src | helpers | getRemovedDetailsUrl', () => {
       }
 
       // when
-      const removedDetailsUrl = getRemovedDetailsUrl(location, match)
+      const removedDetailsUrl = getUrlWithoutDetailsPart(location, match)
 
       //then
       expect(removedDetailsUrl).toBe('/foo?fifi')

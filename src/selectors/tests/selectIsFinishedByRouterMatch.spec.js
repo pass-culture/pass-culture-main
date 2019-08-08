@@ -1,6 +1,6 @@
-import selectIsFinishedByMatch from '../selectIsFinishedByMatch'
+import selectIsFinishedByRouterMatch from '../selectIsFinishedByRouterMatch'
 
-describe('src | selectors | selectIsFinishedByMatch', () => {
+describe('src | selectors | selectIsFinishedByRouterMatch', () => {
   let offer
   let offerId
   let isFinished = false
@@ -31,7 +31,7 @@ describe('src | selectors | selectIsFinishedByMatch', () => {
     }
 
     // when
-    const result = selectIsFinishedByMatch(state, match)
+    const result = selectIsFinishedByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual(isFinished)
@@ -57,7 +57,7 @@ describe('src | selectors | selectIsFinishedByMatch', () => {
     }
 
     // when
-    const result = selectIsFinishedByMatch(state, match)
+    const result = selectIsFinishedByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual(isFinished)
@@ -83,7 +83,7 @@ describe('src | selectors | selectIsFinishedByMatch', () => {
     }
 
     // when
-    const result = selectIsFinishedByMatch(state, match)
+    const result = selectIsFinishedByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual(isFinished)

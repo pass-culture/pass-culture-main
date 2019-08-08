@@ -1,4 +1,5 @@
 import createCachedSelector from 're-reselect'
+import moment from 'moment'
 
 function mapArgsToCacheKey(state, stocks) {
   return (stocks || []).map(s => s.id).join(' ')
@@ -6,24 +7,31 @@ function mapArgsToCacheKey(state, stocks) {
 
 export const selectFirstMatchingBookingByStocks = createCachedSelector(
   state => state.data.bookings,
-  (state, stocks) => stocks && stocks.map(s => s.id),
-  (bookings, stockIds) => {
-    if (!stockIds) {
+  state => state.data.stocks,
+  (bookings, stocks) => {
+    if (!stocks) {
       return
     }
-    const matchingBookings = bookings.filter(b => stockIds.includes(b.stockId))
-    matchingBookings.sort((b1, b2) => {
-      if (!b1.isCancelled && b2.isCancelled) {
-        return -1
-      } else if (b1.isCancelled && !b2.isCancelled) {
-        return 1
-      } else if (!b1.isCancelled && !b2.isCancelled) {
-        return 0
-      }
-      return 0
+
+    stocks.sort((s1, s2) => {
+      return moment(s1.beginningDateTime).diff(moment(s2.beginningDateTime))
     })
-    const firstMatchingBooking = matchingBookings[0]
-    return firstMatchingBooking
+
+    for (let i in stocks) {
+      let stock = stocks[i]
+
+      if (moment(stock.beginningDateTime).isBefore(moment())) {
+        continue
+      }
+
+      for (let j in bookings) {
+        let booking = bookings[j]
+        if (booking.stockId === stock.id && !booking.isCancelled) {
+          return booking
+        }
+      }
+    }
+    return null
   }
 )(mapArgsToCacheKey)
 

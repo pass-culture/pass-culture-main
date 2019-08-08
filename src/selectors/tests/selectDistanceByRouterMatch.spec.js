@@ -1,6 +1,6 @@
-import selectDistanceByMatch from '../selectDistanceByMatch'
+import selectDistanceByRouterMatch from '../selectDistanceByRouterMatch'
 
-describe('src | selectors | selectDistanceByMatch', () => {
+describe('src | selectors | selectDistanceByRouterMatch', () => {
   let offer
   let offerId
   let expectedDistance = '56 km'
@@ -38,7 +38,7 @@ describe('src | selectors | selectDistanceByMatch', () => {
     }
 
     // when
-    const result = selectDistanceByMatch(state, match)
+    const result = selectDistanceByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual(expectedDistance)
@@ -68,7 +68,7 @@ describe('src | selectors | selectDistanceByMatch', () => {
     }
 
     // when
-    const result = selectDistanceByMatch(state, match)
+    const result = selectDistanceByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual(expectedDistance)
@@ -98,7 +98,7 @@ describe('src | selectors | selectDistanceByMatch', () => {
     }
 
     // when
-    const result = selectDistanceByMatch(state, match)
+    const result = selectDistanceByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual('-')

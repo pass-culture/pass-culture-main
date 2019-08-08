@@ -1,6 +1,6 @@
-import selectBookingByMatch from '../selectBookingByMatch'
+import selectBookingByRouterMatch from '../selectBookingByRouterMatch'
 
-describe('src | selectors | selectBookingByMatch', () => {
+describe('src | selectors | selectBookingByRouterMatch', () => {
   it('should return booking when bookingId in match', () => {
     // given
     const bookingId = 'AE'
@@ -20,7 +20,7 @@ describe('src | selectors | selectBookingByMatch', () => {
     }
 
     // when
-    const result = selectBookingByMatch(state, match)
+    const result = selectBookingByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual(booking)
@@ -51,7 +51,7 @@ describe('src | selectors | selectBookingByMatch', () => {
     }
 
     // when
-    const result = selectBookingByMatch(state, match)
+    const result = selectBookingByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual(booking)
@@ -82,7 +82,7 @@ describe('src | selectors | selectBookingByMatch', () => {
     }
 
     // when
-    const result = selectBookingByMatch(state, match)
+    const result = selectBookingByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual(booking)

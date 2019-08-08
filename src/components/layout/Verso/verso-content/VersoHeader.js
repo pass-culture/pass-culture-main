@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import Draggable from 'react-draggable'
 
-import getRemovedDetailsUrl from '../../../../helpers/getRemovedDetailsUrl'
+import getUrlWithoutDetailsPart from '../../../../helpers/getUrlWithoutDetailsPart'
 import { getPageY } from '../../../../utils/getPageY'
 
 const toRectoDraggableBounds = {
@@ -18,7 +18,7 @@ class VersoHeader extends Component {
     const shiftedDistance = -(height / 2) + getPageY(event)
     const thresholdDistance = height * verticalSlideRatio
     if (shiftedDistance > thresholdDistance) {
-      const nextUrl = getRemovedDetailsUrl(location, match)
+      const nextUrl = getUrlWithoutDetailsPart(location, match)
       if (nextUrl) {
         history.push(nextUrl)
       }

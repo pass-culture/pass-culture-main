@@ -1,6 +1,6 @@
 import getAreDetailsVisible from './getAreDetailsVisible'
 
-const getRemovedDetailsUrl = (location, match) => {
+const getUrlWithoutDetailsPart = (location, match) => {
   const areDetailsVisible = getAreDetailsVisible(match)
   const { pathname, search } = location
 
@@ -9,4 +9,4 @@ const getRemovedDetailsUrl = (location, match) => {
   }
 }
 
-export default getRemovedDetailsUrl
+export default getUrlWithoutDetailsPart
