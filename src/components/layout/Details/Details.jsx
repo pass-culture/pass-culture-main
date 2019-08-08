@@ -9,54 +9,6 @@ import getAreDetailsVisible from '../../../helpers/getAreDetailsVisible'
 import getIsTransitionDetailsUrl from '../../../helpers/getIsTransitionDetailsUrl'
 
 class Details extends PureComponent {
-  constructor(props) {
-    super(props)
-    this.state = {
-      forceDetailsVisible: false,
-    }
-  }
-
-  componentDidMount() {
-    const { hasReceivedData, needsToRequestGetData, requestGetData } = this.props
-
-    if (hasReceivedData) {
-      this.handleSetForceDetailsVisible(true)
-      return
-    }
-
-    if (!needsToRequestGetData) {
-      return
-    }
-
-    requestGetData(this.handleSetForceDetailsVisible)
-  }
-
-  componentDidUpdate(prevProps) {
-    const { hasReceivedData, match } = this.props
-    const { forceDetailsVisible } = this.state
-
-    const hasJustReceivedData =
-      !forceDetailsVisible && hasReceivedData && !prevProps.hasReceivedData
-    const areDetailsVisible = getAreDetailsVisible(match)
-    const previousAreDetailsVisible = getAreDetailsVisible(prevProps.match)
-    const hasDetailsVisibleJustHappened = areDetailsVisible && !previousAreDetailsVisible
-    if (hasJustReceivedData || hasDetailsVisibleJustHappened) {
-      this.handleSetForceDetailsVisible(true)
-      return
-    }
-
-    const hasTransitionJustHappened =
-      getIsTransitionDetailsUrl(match) && !getIsTransitionDetailsUrl(prevProps.match)
-    const hasRemovedDetailsJustHappened = !areDetailsVisible && previousAreDetailsVisible
-    if (hasTransitionJustHappened || hasRemovedDetailsJustHappened) {
-      this.handleSetForceDetailsVisible(false)
-    }
-  }
-
-  handleSetForceDetailsVisible = forceDetailsVisible => {
-    this.setState({ forceDetailsVisible })
-  }
-
   renderBooking = route => {
     return (<BookingContainer
       extraClassName="with-header"
@@ -65,28 +17,24 @@ class Details extends PureComponent {
   }
 
   render() {
-    const { bookingPath, forceDetailsVisible } = this.state
-
+    const { bookingPath, match } = this.props
+    const showDetails = getAreDetailsVisible(match)
     return (
       <Fragment>
-        {forceDetailsVisible && <Route
+       <Route
           path={bookingPath}
-          render={this.renderBooking}
-                                />}
+          render={this.renderBooking} />
         <VersoContainer
-          areDetailsVisible={forceDetailsVisible}
+          areDetailsVisible={showDetails}
           extraClassName="with-header"
         />
-        {forceDetailsVisible && <RectoContainer
-          areDetailsVisible
-          extraClassName="with-header"
-                                />}
       </Fragment>
     )
   }
 }
 
 Details.propTypes = {
+  bookingPath: PropTypes.string.isRequired,
   hasReceivedData: PropTypes.bool.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
