@@ -3,10 +3,8 @@ import React, { Fragment, PureComponent } from 'react'
 import { Route } from 'react-router-dom'
 
 import BookingContainer from '../Booking/BookingContainer'
-import RectoContainer from '../Recto/RectoContainer'
 import VersoContainer from '../Verso/VersoContainer'
 import getAreDetailsVisible from '../../../helpers/getAreDetailsVisible'
-import getIsTransitionDetailsUrl from '../../../helpers/getIsTransitionDetailsUrl'
 
 class Details extends PureComponent {
   renderBooking = route => {
@@ -21,9 +19,10 @@ class Details extends PureComponent {
     const showDetails = getAreDetailsVisible(match)
     return (
       <Fragment>
-       <Route
+        <Route
           path={bookingPath}
-          render={this.renderBooking} />
+          render={this.renderBooking}
+        />
         <VersoContainer
           areDetailsVisible={showDetails}
           extraClassName="with-header"

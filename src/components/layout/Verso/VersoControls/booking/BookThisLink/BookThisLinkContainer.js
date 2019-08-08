@@ -8,8 +8,18 @@ import selectIsFinishedByRouterMatch from '../../../../../../selectors/selectIsF
 import selectOfferByMatch from '../../../../../../selectors/selectOfferByMatch'
 import selectStocksByOfferId from '../../../../../../selectors/selectStocksByOfferId'
 
+const getDestinationLink = (params, url, search = '') => {
+  if (params.bookings) {
+    return url
+  }
+  return `${url}/reservations${search}`
+}
+
 export const mapStateToProps = (state, ownProps) => {
-  const { match } = ownProps
+  const { match, location } = ownProps
+  const { params, url } = match
+  const { search } = location
+
   const isFinished = selectIsFinishedByRouterMatch(state, match)
   const offer = selectOfferByMatch(state, match) || {}
   const stocks = selectStocksByOfferId(state, offer.id)
@@ -18,6 +28,7 @@ export const mapStateToProps = (state, ownProps) => {
   return {
     isFinished,
     priceRange,
+    destinationLink: getDestinationLink(params, url, search),
   }
 }
 

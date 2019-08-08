@@ -5,13 +5,9 @@ import { compose } from 'redux'
 import Finishable from './Finishable'
 import selectIsFinishedByRouterMatch from '../../../selectors/selectIsFinishedByRouterMatch'
 
-const mapStateToProps = (state, ownProps) => {
-  const { match } = ownProps
-  const isFinished = selectIsFinishedByRouterMatch(state, match)
-  return {
-    isFinished,
-  }
-}
+const mapStateToProps = (state, { match }) => ({
+  isFinished: selectIsFinishedByRouterMatch(state, match),
+})
 
 export default compose(
   withRouter,

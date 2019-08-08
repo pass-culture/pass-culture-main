@@ -14,29 +14,14 @@ class BookThisLink extends Component {
     />
   )
 
-  getLinkDestination = () => {
-    const { match, location } = this.props
-    const { search } = location
-    const { params, url } = match
-    if (params.bookings) {
-      return url
-    }
-    const isValid = url && typeof url === 'string'
-    if (!isValid) {
-      throw new Error('Invalid url parameter')
-    }
-    let formattedUrl = url
-    return `${formattedUrl}/reservation${search || ''}`
-  }
-
   render() {
-    const { isFinished, priceRange } = this.props
+    const { isFinished, priceRange, destinationLink } = this.props
     return (
       <Link
         className="flex-columns is-bold is-white-text fs18"
         disabled={isFinished}
         id="verso-booking-button"
-        to={this.getLinkDestination()}
+        to={destinationLink}
       >
         <Price
           className="pc-ticket-button-price flex-columns items-center"
@@ -55,16 +40,8 @@ BookThisLink.defaultProps = {
 }
 
 BookThisLink.propTypes = {
+  destinationLink: PropTypes.string.isRequired,
   isFinished: PropTypes.bool,
-  location: PropTypes.shape({
-    search: PropTypes.string.isRequired,
-  }).isRequired,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      bookings: PropTypes.string,
-    }).isRequired,
-    url: PropTypes.string.isRequired,
-  }).isRequired,
   priceRange: PropTypes.arrayOf(PropTypes.number.isRequired).isRequired,
 }
 
