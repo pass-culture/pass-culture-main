@@ -15,7 +15,7 @@ header.navbar {
   &:not(.is-small) {
     height: $header-display-height;
   }
-  align-items: start;
+  align-items: flex-start;
   z-index: initial;
 
   @include navbar-colors($primary);
