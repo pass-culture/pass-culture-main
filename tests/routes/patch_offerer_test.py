@@ -2,7 +2,7 @@
 from datetime import timedelta, datetime
 
 from models import PcObject, Recommendation, Offerer
-from models.pc_object import serialize
+from routes.serializer import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_offer_with_event_product, \
     create_offerer, \

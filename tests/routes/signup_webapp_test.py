@@ -4,9 +4,9 @@ from unittest.mock import patch
 from freezegun import freeze_time
 
 from models.feature import FeatureToggle, Feature
-from models.pc_object import serialize, PcObject
+from models.pc_object import PcObject
 from models.user import User
-from repository import feature_queries
+from routes.serializer import serialize
 from tests.conftest import clean_database, TestClient
 
 BASE_DATA = {

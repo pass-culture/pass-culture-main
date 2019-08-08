@@ -262,6 +262,7 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
     }
 ]
 
+
 PRO_BOOKING_INCLUDES = [
     {
         "key": "stock",
@@ -282,7 +283,7 @@ PRO_BOOKING_INCLUDES = [
     },
     {
         "key": 'user',
-        "resolve": (lambda element, filters: {
+        "resolve": (lambda element: {
             'email': element['email'],
             'firstName': element['firstName'],
             'lastName': element['lastName']
@@ -300,7 +301,7 @@ VENUE_INCLUDES = [
     },
     {
         "key": 'venueProviders',
-        "resolve": (lambda element, filters: element['provider']),
+        "resolve": (lambda element: element['provider']),
         "sub_joins": ["provider"]
     },
     {
@@ -323,7 +324,7 @@ OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
         "key": "UserOfferers",
         "sub_joins": [{
             "key": "user",
-            "resolve": (lambda element, filters: {
+            "resolve": (lambda element: {
                 'email': element['email'],
                 'publicName': element['publicName'],
                 'dateCreated': element['dateCreated'],
@@ -340,7 +341,7 @@ OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
     },
     {
         "key": "managedVenues",
-        "resolve": (lambda element, filters: {
+        "resolve": (lambda element: {
             'id': element['id'],
             'name': element['name'],
             'siret': element['siret'],

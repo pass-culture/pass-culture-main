@@ -2,7 +2,7 @@ from datetime import timedelta, datetime
 
 from domain.reimbursement import ReimbursementRules
 from models import PcObject, ThingType, EventType
-from models.pc_object import serialize
+from routes.serializer import serialize
 from tests.conftest import clean_database, TestClient
 from tests.routes.output import JSON_OUTPUT, remove_ids
 from tests.test_utils import create_booking, \

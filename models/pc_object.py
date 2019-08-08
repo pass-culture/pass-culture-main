@@ -1,35 +1,31 @@
-import enum
+import re
 import re
 import traceback
 import uuid
-from collections import OrderedDict
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from pprint import pprint
 from typing import List, Any, Iterable, Set
 
 import sqlalchemy
-from psycopg2.extras import DateTimeRange
 from sqlalchemy import CHAR, \
     BigInteger, \
-    Column, \
     Float, \
     Integer, \
     Numeric, \
     String, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.exc import DataError, IntegrityError, InternalError
-from sqlalchemy.orm.collections import InstrumentedList
 from sqlalchemy.sql.schema import Column
 
 from models.api_errors import ApiErrors, \
-                              DecimalCastError, \
-                              DateTimeCastError, \
-                              UuidCastError
+    DecimalCastError, \
+    DateTimeCastError, \
+    UuidCastError
 from models.db import db, Model
 from models.soft_deletable_mixin import SoftDeletableMixin
-from utils.date import match_format, DateTimes
-from utils.human_ids import dehumanize, humanize, NonDehumanizableId
+from utils.date import match_format
+from utils.human_ids import dehumanize, humanize
 from utils.logger import logger
 
 DUPLICATE_KEY_ERROR_CODE = '23505'
@@ -57,96 +53,6 @@ class PcObject:
             else str(self.id) + "/" + humanize(self.id)
         return '<%s #%s>' % (self.__class__.__name__,
                              id)
-
-    def as_dict(self, **options):
-        result = OrderedDict()
-        columns = self.__class__.__table__.columns._data
-        for key in self.__mapper__.c.keys():
-            value = getattr(self, key)
-
-            if options \
-                    and 'include' in options \
-                    and options.get('include') \
-                    and "-" + key in options['include']:
-                continue
-            column = columns.get(key)
-            is_human_id_column = column is not None and _is_human_id_column(column)
-            if options and options.get('cut'):
-                if isinstance(value, str):
-                    if len(value) > options['cut']:
-                        value = value[:options['cut']] + '...'
-            if is_human_id_column:
-                result[key] = humanize(value)
-                if options \
-                        and 'dehumanize' in options \
-                        and options['dehumanize']:
-                    result['dehumanized' + key[0].capitalize() + key[1:]] = value
-            elif key == 'firstThumbDominantColor' and value:
-                result[key] = list(value)
-            else:
-                result[key] = serialize(value)
-        # add the model name
-        result['modelName'] = self.__class__.__name__
-        if options \
-                and 'include' in options \
-                and options['include']:
-            for join in options['include']:
-                if isinstance(join, str) and \
-                        join.startswith('-'):
-                    continue
-                elif isinstance(join, dict):
-                    key = join['key']
-                    refine = join.get('refine')
-                    resolve = join.get('resolve')
-                    sub_joins = join.get('sub_joins')
-                else:
-                    key = join
-                    refine = None
-                    resolve = None
-                    sub_joins = None
-                try:
-                    value = getattr(self, key)
-                except AttributeError:
-                    continue
-                if callable(value):
-                    value = value()
-                if value is not None:
-                    if isinstance(value, InstrumentedList) \
-                            or value.__class__.__name__ == 'AppenderBaseQuery' \
-                            or isinstance(value, list):
-                        if refine is None:
-                            final_value = value
-                        else:
-                            final_value = refine(value, options.get('filters', {}))
-                        final_value = filter(lambda x: not x.is_soft_deleted(), final_value)
-                        result[key] = list(
-                            map(
-                                lambda attr: attr.as_dict(
-                                    cut=options and options.get('cut'),
-                                    include=sub_joins,
-                                ),
-                                final_value
-                            )
-                        )
-                        if resolve != None:
-                            result[key] = list(map(lambda v: resolve(v, options.get('filters', {})),
-                                                   result[key]))
-                    elif isinstance(value, PcObject):
-                        result[key] = value.as_dict(
-                            include=sub_joins,
-                            cut=options and options.get('cut'),
-                        )
-                        if resolve != None:
-                            result[key] = resolve(result[key], options.get('filters', {}))
-                    else:
-                        result[key] = serialize(value)
-
-        if options and \
-                'resolve' in options and \
-                options['resolve']:
-            return options['resolve'](result, options.get('filters', {}))
-        else:
-            return result
 
     def dump(self):
         pprint(vars(self))
@@ -200,7 +106,7 @@ class PcObject:
                     and column.type.length \
                     and len(value) > column.type.length:
                 api_errors.add_error(key,
-                                    'Vous devez saisir moins de '
+                                     'Vous devez saisir moins de '
                                      + str(column.type.length)
                                      + ' caractères')
             if isinstance(column.type, Integer) \
@@ -239,7 +145,7 @@ class PcObject:
         if hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == DUPLICATE_KEY_ERROR_CODE:
             field = re.search('Key \((.*?)\)=', str(e._message), re.IGNORECASE).group(1)
             if "," in field:
-                field = "global" 
+                field = "global"
             return [field, 'Une entrée avec cet identifiant existe déjà dans notre base de données']
         elif hasattr(e, 'orig') and hasattr(e.orig, 'pgcode') and e.orig.pgcode == NOT_FOUND_KEY_ERROR_CODE:
             field = re.search('Key \((.*?)\)=', str(e._message), re.IGNORECASE).group(1)
@@ -363,35 +269,6 @@ class PcObject:
             raise DeletedRecordException
 
 
-def serialize(value):
-    if isinstance(value, sqlalchemy.Enum):
-        return value.name
-    elif isinstance(value, enum.Enum):
-        return value.value
-    elif isinstance(value, datetime):
-        return _format_into_ISO_8601(value)
-    elif isinstance(value, DateTimeRange):
-        return {
-            'start': value.lower,
-            'end': value.upper
-        }
-    elif isinstance(value, list) \
-            and len(value) > 0 \
-            and isinstance(value[0], DateTimeRange):
-        return list(map(lambda d: {'start': d.lower,
-                                   'end': d.upper},
-                        value))
-    elif isinstance(value, DateTimes):
-        return [_format_into_ISO_8601(v) for v in value.datetimes]
-
-    else:
-        return value
-
-def _is_human_id_column(column: Column) -> bool:
-    key = column.key
-    return (key == 'id' or key.endswith('Id')) and \
-           (isinstance(column.type, BigInteger) or isinstance(column.type, Integer))
-
 def _dehumanize_if_needed(column, value: Any) -> Any:
     if _is_human_id_column(column):
         return dehumanize(value)
@@ -417,3 +294,9 @@ def _deserialize_datetime(key, value):
         raise TypeError('Invalid value for %s: %r' % (key, value), 'datetime', key)
 
     return datetime_value
+
+
+def _is_human_id_column(column: Column) -> bool:
+    key = column.key
+    return (key == 'id' or key.endswith('Id')) and \
+           (isinstance(column.type, BigInteger) or isinstance(column.type, Integer))

@@ -12,7 +12,7 @@ from domain.user_emails import send_booking_recap_emails, \
     send_activation_notification_email
 from models import ApiErrors, Booking, PcObject, Stock, RightsType, EventType, Offerer
 from models.offer_type import ProductType
-from models.pc_object import serialize
+from routes.serializer import serialize
 from repository import booking_queries
 from repository.booking_queries import find_active_bookings_by_user_id, \
     find_all_bookings_for_stock_and_user, \

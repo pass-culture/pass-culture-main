@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
 from models import PcObject, EventType
-from models.pc_object import serialize
+from routes.serializer import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_stock_with_thing_offer, \
     create_venue, create_offerer, \

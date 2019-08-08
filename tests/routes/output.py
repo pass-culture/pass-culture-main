@@ -4,12 +4,12 @@ def remove_ids(response) -> dict:
             _remove_ids_in_dict(data)
     if isinstance(response, dict):
         _remove_ids_in_dict(response)
-
+    return response
 
 def _remove_ids_in_dict(data):
     for k, v in data.items():
-        if k.endswith('Id') or k == 'id':
-            data[k] = 'someId'
+        if k.endswith('Id') or k == 'id' or k == 'thumbUrl' or 'date'.casefold() in k.casefold() or k == 'idAtProviders':
+            data[k] = 'dumb value'
         if isinstance(v, dict):
             remove_ids(v)
         if isinstance(v, list):

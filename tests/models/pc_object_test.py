@@ -10,7 +10,7 @@ from models import PcObject, Offer, User
 from models import ThingType
 from models.api_errors import DecimalCastError, DateTimeCastError, UuidCastError
 from models.db import Model
-from models.pc_object import serialize
+from routes.serializer import serialize
 from tests.test_utils import create_stock, create_user, create_payment, create_booking, create_offerer
 from utils.human_ids import dehumanize, NonDehumanizableId
 

@@ -3,14 +3,14 @@ from typing import List
 
 from models import PcObject
 from models.email import Email, EmailStatus
-from models.pc_object import serialize
+from models.pc_object import _format_into_ISO_8601
 
 
 def save(content: dict, status: EmailStatus):
     email = Email()
     email.content = content
     email.status = status
-    email.datetime = serialize(datetime.utcnow())
+    email.datetime = _format_into_ISO_8601(datetime.utcnow())
     PcObject.save(email)
 
 
