@@ -15,13 +15,12 @@ from models.pc_object import PcObject
 from repository import offerer_queries
 from repository.offerer_queries import find_filtered_offerers
 from repository.venue_queries import find_filtered_venues
-from validation.exports import check_user_is_admin , check_get_venues_params, \
+from routes.serializer import as_dict
+from validation.exports import check_user_is_admin, check_get_venues_params, \
     check_get_offerers_params
 
 from utils.includes import OFFERER_FOR_PENDING_VALIDATION_INCLUDES
 from utils.rest import expect_json_data
-
-
 
 Activity = versioning_manager.activity_cls
 
@@ -60,13 +59,13 @@ def export_table(model_name):
         return "", 200
 
     csvfile = StringIO()
-    header = _clean_dict_for_export(model_name, objects[0].as_dict()).keys()
+    header = _clean_dict_for_export(model_name, as_dict(objects[0])).keys()
     if model_name == 'User':
         header = list(filter(lambda h: h != 'id' and h != 'password', header))
     writer = csv.DictWriter(csvfile, header, extrasaction='ignore')
     writer.writeheader()
     for obj in objects:
-        dct = _clean_dict_for_export(model_name, obj.as_dict())
+        dct = _clean_dict_for_export(model_name, as_dict(obj))
         writer.writerow(dct)
     csvfile.seek(0)
     mem = BytesIO()
@@ -84,8 +83,8 @@ def get_all_offerers_with_managing_user_information():
 
     result = offerer_queries.find_all_offerers_with_managing_user_information()
     file_name = 'export_%s_offerer_siren.csv' % datetime.utcnow().strftime('%y_%m_%d')
-    headers = ['Offerer_id', 'Offerer_name', 'Offerer_siren','Offerer_postalCode',
-               'Offerer_city','User_firstName', 'User_lastName', 'User_email', 'User_phoneNumber',
+    headers = ['Offerer_id', 'Offerer_name', 'Offerer_siren', 'Offerer_postalCode',
+               'Offerer_city', 'User_firstName', 'User_lastName', 'User_email', 'User_phoneNumber',
                'User.postalCode']
     return _make_csv_response(file_name, headers, result)
 
@@ -110,7 +109,7 @@ def get_all_offerers_with_managing_user_information_and_not_virtual_venue():
     file_name = 'export_%s_offerers_siren_with_not_virtual_venue.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['Offerer_id', 'Offerer_name', 'Offerer_siren', 'Offerer_postalCode', 'Offerer_city',
                'Venue_name', 'Venue.bookingEmail', 'Venue_postalCode', 'User_firstName',
-               'User_lastName', 'User_email', 'User_phoneNumber', 'User.postalCode'] 
+               'User_lastName', 'User_email', 'User_phoneNumber', 'User.postalCode']
     return _make_csv_response(file_name, headers, result)
 
 
@@ -121,7 +120,7 @@ def get_all_offerers_with_venue():
     result = offerer_queries.find_all_offerers_with_venue()
     file_name = 'export_%s_offerers_with_venue_venue.csv' % datetime.utcnow().strftime('%y_%m_%d')
     headers = ['Offerer_id', 'Offerer_name', 'Venue_id', 'Venue_name', 'Venue_bookingEmail',
-               'Venue_postalCode', 'Venue_isVirtual'] 
+               'Venue_postalCode', 'Venue_isVirtual']
     return _make_csv_response(file_name, headers, result)
 
 
@@ -129,12 +128,14 @@ def get_all_offerers_with_venue():
 @login_required
 def get_pending_validation():
     check_user_is_admin(current_user)
-    result = []    
+    result = []
     offerers = offerer_queries.find_all_pending_validation()
+    print("TOTO: %s" % offerers)
 
-    for o in offerers:
-        result.append(o.as_dict(include=OFFERER_FOR_PENDING_VALIDATION_INCLUDES))
+    for offerer in offerers:
+        result.append(as_dict(offerer, include=OFFERER_FOR_PENDING_VALIDATION_INCLUDES))
 
+    print(result)
     return jsonify(result), 200
 
 
@@ -145,14 +146,15 @@ def get_export_venues():
     check_user_is_admin(current_user)
 
     params_keys = ['sirens', 'dpts', 'has_validated_offerer', 'zip_codes', 'from_date', 'to_date', 'has_siret',
-    'is_virtual', 'offer_status', 'is_validated',  "has_offerer_with_siren", "has_validated_user_offerer", "has_validated_user"]
+                   'is_virtual', 'offer_status', 'is_validated', "has_offerer_with_siren", "has_validated_user_offerer",
+                   "has_validated_user"]
     params = {}
 
     for key in params_keys:
         params[key] = request.json.get(key, None)
 
     check_get_venues_params(params)
-    venues = find_filtered_venues(sirens = params['sirens'],
+    venues = find_filtered_venues(sirens=params['sirens'],
                                   dpts=params['dpts'],
                                   zip_codes=params['zip_codes'],
                                   from_date=params['from_date'],
@@ -166,7 +168,7 @@ def get_export_venues():
                                   has_validated_user_offerer=params['has_validated_user_offerer'],
                                   has_validated_user=params['has_validated_user'])
 
-    return jsonify([v.as_dict() for v in venues]), 200
+    return jsonify([as_dict(venue) for venue in venues]), 200
 
 
 @app.route('/exports/offerers', methods=['POST'])
@@ -176,31 +178,31 @@ def get_export_offerers():
     check_user_is_admin(current_user)
 
     params_keys = ['sirens', 'dpts', 'zip_codes', 'from_date', 'to_date', 'has_siren', 'has_not_virtual_venue',
-     'has_validated_venue', 'has_venue_with_siret', 'offer_status', 'is_validated', 'has_validated_user',
-     'has_bank_information', 'is_active', 'has_validated_user_offerer']
+                   'has_validated_venue', 'has_venue_with_siret', 'offer_status', 'is_validated', 'has_validated_user',
+                   'has_bank_information', 'is_active', 'has_validated_user_offerer']
     params = {}
 
     for key in params_keys:
         params[key] = request.json.get(key, None)
 
     check_get_offerers_params(params)
-    offerers = find_filtered_offerers(sirens = params['sirens'],
-                                    dpts = params['dpts'],
-                                    zip_codes = params['zip_codes'],
-                                    from_date = params['from_date'],
-                                    to_date = params['to_date'],
-                                    has_siren = params['has_siren'],
-                                    has_not_virtual_venue = params['has_not_virtual_venue'],
-                                    has_validated_venue = params['has_validated_venue'],
-                                    has_venue_with_siret = params['has_venue_with_siret'],
-                                    offer_status = params['offer_status'],
-                                    is_validated = params['is_validated'],
-                                    has_validated_user = params['has_validated_user'],
-                                    has_bank_information = params['has_bank_information'],
-                                    is_active = params['is_active'],
-                                    has_validated_user_offerer = params['has_validated_user_offerer'])
+    offerers = find_filtered_offerers(sirens=params['sirens'],
+                                      dpts=params['dpts'],
+                                      zip_codes=params['zip_codes'],
+                                      from_date=params['from_date'],
+                                      to_date=params['to_date'],
+                                      has_siren=params['has_siren'],
+                                      has_not_virtual_venue=params['has_not_virtual_venue'],
+                                      has_validated_venue=params['has_validated_venue'],
+                                      has_venue_with_siret=params['has_venue_with_siret'],
+                                      offer_status=params['offer_status'],
+                                      is_validated=params['is_validated'],
+                                      has_validated_user=params['has_validated_user'],
+                                      has_bank_information=params['has_bank_information'],
+                                      is_active=params['is_active'],
+                                      has_validated_user_offerer=params['has_validated_user_offerer'])
 
-    return jsonify([o.as_dict() for o in offerers]), 200
+    return jsonify([as_dict(offerer) for offerer in offerers]), 200
 
 
 def _make_csv_response(file_name, headers, result):
@@ -255,4 +257,3 @@ def _check_int(checked_int):
         return checked_int
     except:
         return 0
-        

@@ -8,6 +8,7 @@ from models import ApiErrors, Deposit, Offerer, PcObject, User
 from models.feature import FeatureToggle
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
+from routes.serializer import as_dict
 from utils.config import IS_INTEGRATION
 from utils.feature import feature_required
 from utils.includes import USER_INCLUDES
@@ -49,7 +50,7 @@ def signup_webapp():
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 
-    return jsonify(new_user.as_dict(include=USER_INCLUDES)), 201
+    return jsonify(as_dict(new_user, include=USER_INCLUDES)), 201
 
 
 @app.route("/users/signup/pro", methods=["POST"])
@@ -86,7 +87,7 @@ def signup_pro():
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
-    return jsonify(new_user.as_dict(include=USER_INCLUDES)), 201
+    return jsonify(as_dict(new_user, include=USER_INCLUDES)), 201
 
 
 def _generate_user_offerer_when_existing_offerer(new_user, offerer):

@@ -13,6 +13,7 @@ from models.venue import Venue
 from repository import offerer_queries
 from repository.offer_queries import find_offer_by_id
 from repository.stock_queries import find_stocks_with_possible_filters
+from routes.serializer import as_dict
 from utils.human_ids import dehumanize
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
@@ -59,7 +60,7 @@ def get_stock(stock_id, mediation_id):
         return jsonify(stock)
     else:
         stock = query.first_or_404()
-        return jsonify(stock.as_dict())
+        return jsonify(as_dict(stock))
 
 
 @app.route('/stocks', methods=['POST'])
@@ -78,7 +79,7 @@ def create_stock():
     new_stock = Stock(from_dict=request_data)
     PcObject.save(new_stock)
 
-    return jsonify(new_stock.as_dict()), 201
+    return jsonify(as_dict(new_stock)), 201
 
 
 # TODO: Si changement d'horaires et qu'il y a des réservations il faut envoyer des mails !
@@ -98,7 +99,7 @@ def edit_stock(stock_id):
     stock.populate_from_dict(stock_data)
     PcObject.save(stock)
 
-    return jsonify(stock.as_dict()), 200
+    return jsonify(as_dict(stock)), 200
 
 
 @app.route('/stocks/<id>', methods=['DELETE'])
@@ -119,4 +120,4 @@ def delete_stock(id):
 
     PcObject.save(stock, *bookings)
 
-    return jsonify(stock.as_dict()), 200
+    return jsonify(as_dict(stock)), 200

@@ -2,16 +2,17 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.build_recommendations import move_requested_recommendation_first, \
-                                         move_tutorial_recommendations_first
-from models.api_errors import ResourceNotFound
+    move_tutorial_recommendations_first
 from models import PcObject, Recommendation
+from models.api_errors import ResourceNotFound
 from recommendations_engine import create_recommendations_for_discovery, \
-                                   create_recommendations_for_search, \
-                                   get_recommendation_search_params, \
-                                   give_requested_recommendation_to_user, \
-                                   OfferNotFoundException
+    create_recommendations_for_search, \
+    get_recommendation_search_params, \
+    give_requested_recommendation_to_user, \
+    OfferNotFoundException
 from repository.booking_queries import find_bookings_from_recommendation
 from repository.recommendation_queries import update_read_recommendations
+from routes.serializer import as_dict
 from utils.config import BLOB_SIZE
 from utils.human_ids import dehumanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, RECOMMENDATION_INCLUDES
@@ -63,7 +64,6 @@ def patch_recommendation(recommendation_id):
 @login_required
 @expect_json_data
 def put_read_recommendations():
-
     update_read_recommendations(request.json)
 
     read_recommendation_ids = [dehumanize(reco['id']) for reco in request.json]
@@ -73,11 +73,11 @@ def put_read_recommendations():
 
     return jsonify(_serialize_recommendations(read_recommendations)), 200
 
+
 @app.route('/recommendations', methods=['PUT'])
 @login_required
 @expect_json_data
 def put_recommendations():
-
     json_keys = request.json.keys()
 
     if 'readRecommendations' in json_keys:
@@ -127,13 +127,12 @@ def put_recommendations():
     return jsonify(_serialize_recommendations(recommendations)), 200
 
 
-
 def _serialize_recommendations(recos):
     return list(map(_serialize_recommendation, recos))
 
 
 def _serialize_recommendation(reco):
-    dict_reco = reco.as_dict(include=RECOMMENDATION_INCLUDES)
+    dict_reco = as_dict(reco, include=RECOMMENDATION_INCLUDES)
 
     if reco.offer:
         bookings = find_bookings_from_recommendation(reco, current_user)
@@ -147,4 +146,4 @@ def _serialize_bookings(bookings):
 
 
 def _serialize_booking(booking):
-    return booking.as_dict(include=WEBAPP_GET_BOOKING_INCLUDES)
+    return as_dict(booking, include=WEBAPP_GET_BOOKING_INCLUDES)

@@ -10,6 +10,7 @@ from repository import venue_queries, offer_queries
 from repository.offer_queries import find_activation_offers, \
     find_offers_with_filter_parameters
 from repository.recommendation_queries import invalidate_recommendations
+from routes.serializer import as_dict
 from utils.config import PRO_URL
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
@@ -52,7 +53,7 @@ def list_offers():
 @login_required
 def get_offer(id):
     offer = load_or_404(Offer, id)
-    return jsonify(offer.as_dict(include=OFFER_INCLUDES))
+    return jsonify(as_dict(offer, include=OFFER_INCLUDES))
 
 
 @app.route('/offers/activation', methods=['GET'])
@@ -66,6 +67,7 @@ def list_activation_offers():
         include=OFFER_INCLUDES,
         query=query
     )
+
 
 @app.route('/offers', methods=['POST'])
 @login_or_api_key_required
@@ -90,9 +92,7 @@ def post_offer():
     PcObject.save(offer)
     send_offer_creation_notification_to_administration(offer, current_user, PRO_URL, send_raw_email)
 
-    return jsonify(
-        offer.as_dict(include=OFFER_INCLUDES)
-    ), 201
+    return jsonify(as_dict(offer, include=OFFER_INCLUDES)), 201
 
 
 @app.route('/offers/<id>', methods=['PATCH'])
@@ -112,6 +112,4 @@ def patch_offer(id):
     if 'isActive' in request.json and not request.json['isActive']:
         invalidate_recommendations(offer)
 
-    return jsonify(
-        offer.as_dict(include=OFFER_INCLUDES)
-    ), 200
+    return jsonify(as_dict(offer, include=OFFER_INCLUDES)), 200

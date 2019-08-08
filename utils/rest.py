@@ -12,6 +12,8 @@ from models.api_errors import ApiErrors
 from models.db import db
 from models.soft_deletable_mixin import SoftDeletableMixin
 from sqlalchemy import text
+
+from routes.serializer import as_dict
 from utils.human_ids import dehumanize, humanize
 from utils.string_processing import dashify
 
@@ -150,7 +152,7 @@ def handle_rest_get_list(modelClass, query=None,
 
     # DICTIFY
     elements = [
-        o.as_dict(
+        as_dict(o,
             include=include,
             resolve=resolve,
         ) for o in query

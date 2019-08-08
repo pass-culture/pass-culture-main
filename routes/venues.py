@@ -8,6 +8,7 @@ from models import PcObject
 from models.user_offerer import RightsType
 from models.venue import Venue
 from repository.venue_queries import save_venue, find_by_managing_user
+from routes.serializer import as_dict
 from utils.includes import OFFER_INCLUDES, VENUE_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
@@ -21,14 +22,14 @@ from validation.venues import validate_coordinates, check_valid_edition
 def get_venue(venueId):
     venue = load_or_404(Venue, venueId)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
-    return jsonify(venue.as_dict(include=VENUE_INCLUDES)), 200
+    return jsonify(as_dict(venue, include=VENUE_INCLUDES)), 200
 
 
 @app.route('/venues', methods=['GET'])
 @login_required
 def get_venues():
     venues = find_by_managing_user(current_user)
-    return jsonify([venue.as_dict() for venue in venues]), 200
+    return jsonify([as_dict(venue) for venue in venues]), 200
 
 
 @app.route('/venues', methods=['POST'])
@@ -49,7 +50,7 @@ def create_venue():
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 
-    return jsonify(venue.as_dict(include=VENUE_INCLUDES)), 201
+    return jsonify(as_dict(venue, include=VENUE_INCLUDES)), 201
 
 
 @app.route('/venues/<venueId>', methods=['PATCH'])
@@ -62,7 +63,7 @@ def edit_venue(venueId):
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     venue.populate_from_dict(request.json)
     save_venue(venue)
-    return jsonify(venue.as_dict(include=VENUE_INCLUDES)), 200
+    return jsonify(as_dict(venue, include=VENUE_INCLUDES)), 200
 
 
 @app.route('/venues/<venueId>/offers/activate', methods=['PUT'])
@@ -76,7 +77,8 @@ def activate_venue_offers(venueId):
 
     activated_offers_with_stock_alert_message = [add_stock_alert_message_to_offer(offer) for offer in activated_offers]
 
-    return jsonify([b.as_dict(include=OFFER_INCLUDES) for b in activated_offers_with_stock_alert_message]), 200
+    return jsonify([as_dict(offer, include=OFFER_INCLUDES)
+                    for offer in activated_offers_with_stock_alert_message]), 200
 
 
 @app.route('/venues/<venueId>/offers/deactivate', methods=['PUT'])
@@ -88,6 +90,8 @@ def deactivate_venue_offers(venueId):
     deactivated_offers = update_is_active_status(offers, False)
     PcObject.save(*deactivated_offers)
 
-    deactivated_offers_with_stock_alert_message = [add_stock_alert_message_to_offer(offer) for offer in deactivated_offers]
+    deactivated_offers_with_stock_alert_message = [add_stock_alert_message_to_offer(offer) for offer in
+                                                   deactivated_offers]
 
-    return jsonify([b.as_dict(include=OFFER_INCLUDES) for b in deactivated_offers_with_stock_alert_message]), 200
+    return jsonify([as_dict(offer, include=OFFER_INCLUDES)
+                    for offer in deactivated_offers_with_stock_alert_message]), 200

@@ -7,6 +7,7 @@ from domain.mediations import create_new_mediation
 from models.mediation import Mediation
 from models.pc_object import PcObject
 from models.user_offerer import RightsType
+from routes.serializer import as_dict
 from utils.human_ids import dehumanize
 from utils.includes import MEDIATION_INCLUDES
 from utils.rest import ensure_current_user_has_rights, load_or_404, expect_json_data
@@ -26,14 +27,14 @@ def create_mediation():
     check_thumb_quality(thumb)
     PcObject.save(mediation)
     save_thumb(mediation, thumb, 0, crop=_get_crop(request.form))
-    return jsonify(mediation.as_dict()), 201
+    return jsonify(as_dict(mediation)), 201
 
 
 @app.route('/mediations/<mediation_id>', methods=['GET'])
 @login_required
 def get_mediation(mediation_id):
     mediation = load_or_404(Mediation, mediation_id)
-    return jsonify(mediation.as_dict())
+    return jsonify(as_dict(mediation))
 
 
 @app.route('/mediations/<mediation_id>', methods=['PATCH'])
@@ -47,7 +48,7 @@ def update_mediation(mediation_id):
     mediation.populate_from_dict(data)
     invalidate_recommendations_if_deactivating_object(data, mediation.recommendations)
     PcObject.save(mediation)
-    return jsonify(mediation.as_dict(include=MEDIATION_INCLUDES)), 200
+    return jsonify(as_dict(mediation, include=MEDIATION_INCLUDES)), 200
 
 
 def _get_crop(form):

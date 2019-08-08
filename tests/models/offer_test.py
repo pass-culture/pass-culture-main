@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import pytest
 
 from models import Offer, PcObject, ApiErrors, ThingType, EventType, Product
+from routes.serializer import as_dict
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, create_user, create_mediation
 from tests.test_utils import create_offer_with_event_product, \
@@ -60,7 +61,7 @@ class DateRangeTest:
         ]
 
         # When
-        offer_dict = offer.as_dict(include=["dateRange"])
+        offer_dict = as_dict(offer, include=["dateRange"])
 
         # Then
         assert offer_dict['dateRange'] == ['2018-10-22T10:10:10Z', '2018-10-22T13:10:10Z']

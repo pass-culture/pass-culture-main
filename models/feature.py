@@ -15,8 +15,3 @@ class FeatureToggle(enum.Enum):
 class Feature(PcObject, Model, DeactivableMixin):
     name = Column(Enum(FeatureToggle), unique=True, nullable=False)
     description = Column(String(300), nullable=False)
-
-    def as_dict(self, include=None):
-        dict_feature = PcObject.as_dict(self, include=include)
-        dict_feature['nameKey'] = str(self.name).replace('FeatureToggle.', '')
-        return dict_feature

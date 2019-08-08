@@ -1,20 +1,21 @@
+from routes.serializer import as_dict
 from tests.test_utils import PLAIN_DEFAULT_TESTING_PASSWORD
 from utils.includes import RECOMMENDATION_INCLUDES, USER_INCLUDES
 
 
 def get_booking_helper(booking):
-    return dict(booking.as_dict(), **{
+    return dict(as_dict(booking), **{
         "eventOrThingName": booking.recommendation.offer.product.name,
         "venueName": booking.recommendation.offer.venue.name
     })
 
 
 def get_mediation_helper(mediation):
-    return mediation.as_dict()
+    return as_dict(mediation)
 
 
 def get_offer_helper(offer):
-    return dict(offer.as_dict(), **{
+    return dict(as_dict(offer), **{
         "keywordsString": '{} {}'.format(
             offer.product.name,
             offer.venue.name
@@ -30,7 +31,7 @@ def get_offer_helper(offer):
 
 
 def get_offerer_helper(offerer):
-    return dict(offerer.as_dict(), **{
+    return dict(as_dict(offerer), **{
         "keywordsString": offerer.name,
         "latitude": '48.9281995',
         "longitude": '2.4579903',
@@ -38,11 +39,11 @@ def get_offerer_helper(offerer):
 
 
 def get_payment_helper(payment):
-    return payment.as_dict()
+    return as_dict(payment)
 
 
 def get_stock_helper(stock):
-    return stock.as_dict()
+    return as_dict(stock)
 
 
 def get_email(first_name, last_name, domain):
@@ -54,7 +55,7 @@ def get_email(first_name, last_name, domain):
 
 
 def get_user_helper(user):
-    return dict(user.as_dict(include=USER_INCLUDES), **{
+    return dict(as_dict(user, include=USER_INCLUDES), **{
         "resetPasswordToken": user.resetPasswordToken,
         "password": PLAIN_DEFAULT_TESTING_PASSWORD,
         "validationToken": user.validationToken
@@ -62,8 +63,8 @@ def get_user_helper(user):
 
 
 def get_venue_helper(venue):
-    return venue.as_dict()
+    return as_dict(venue)
 
 
 def get_recommendation_helper(recommendation):
-    return recommendation.as_dict(include=RECOMMENDATION_INCLUDES)
+    return as_dict(recommendation, include=RECOMMENDATION_INCLUDES)

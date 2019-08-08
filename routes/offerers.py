@@ -25,7 +25,7 @@ from validation.offerers import check_valid_edition, parse_boolean_param_validat
 
 
 def get_dict_offerer(offerer):
-    return offerer.as_dict(include=OFFERER_INCLUDES)
+    return as_dict(offerer, include=OFFERER_INCLUDES)
 
 
 @app.route('/offerers', methods=['GET'])

@@ -1,9 +1,9 @@
 from datetime import datetime
 
 from sqlalchemy import BigInteger, Column, DateTime, desc, ForeignKey, String
-from sqlalchemy import and_, ARRAY, Boolean, cast, CheckConstraint, false, Integer, Text, TEXT
+from sqlalchemy import and_, ARRAY, Boolean, CheckConstraint, false, Integer, Text, TEXT
 from sqlalchemy.orm import column_property, relationship
-from sqlalchemy.sql import expression, select, func
+from sqlalchemy.sql import select, func
 
 from domain.keywords import create_ts_vector_and_table_args
 from models import ExtraDataMixin

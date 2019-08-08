@@ -121,7 +121,7 @@ def test_pending_validation_return_200_and_validation_token(app):
     venue = create_venue(offerer, siret=None, comment="comment because no siret",
                          validation_token="venue_validation_token")
 
-    PcObject.save(user_offerer, user)
+    PcObject.save(user_offerer, user, venue)
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when

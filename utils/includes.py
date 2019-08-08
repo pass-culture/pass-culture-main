@@ -57,17 +57,6 @@ EVENT_INCLUDES = [
     "thumbUrl"
 ]
 
-THING_INCLUDES = [
-    {
-        "key": "mediations",
-        "sub_joins": ["thumbUrl"]
-    },
-    "offers",
-    "-type",
-    "offerType"
-    "thumbUrl"
-]
-
 OFFER_INCLUDES = [
     'isFinished',
     'isFullyBooked',
@@ -304,10 +293,6 @@ VENUE_INCLUDES = [
         "resolve": (lambda element: element['provider']),
         "sub_joins": ["provider"]
     },
-    {
-        "key": "stocks",
-        "sub_joins": ["thing"]
-    }
 ]
 
 VENUE_PROVIDER_INCLUDES = [

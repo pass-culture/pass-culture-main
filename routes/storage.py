@@ -7,6 +7,7 @@ from flask_login import login_required
 import models
 from connectors.thumb_storage import save_thumb
 from models import RightsType
+from routes.serializer import as_dict
 from utils.human_ids import dehumanize
 from utils.inflect_engine import inflect_engine
 from utils.object_storage import local_path
@@ -47,4 +48,4 @@ def post_storage_file(collectionName, id, index):
         ensure_current_user_has_rights(RightsType.editor, offerer_id)
 
     save_thumb(entity, request.files['file'].read(), int(index))
-    return jsonify(entity.as_dict()), 200
+    return jsonify(as_dict(entity)), 200

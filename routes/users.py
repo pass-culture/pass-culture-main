@@ -4,7 +4,8 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required, logout_user, login_user
 
 from models import PcObject
-from repository.user_queries import find_user_by_reset_password_token
+from repository.user_queries import find_user_by_reset_password_token, find_user_by_email
+from routes.serializer import as_dict
 from utils.credentials import get_user_with_credentials
 from utils.includes import USER_INCLUDES
 from utils.login_manager import stamp_session, discard_session
@@ -16,8 +17,8 @@ from validation.users import check_allowed_changes_for_user, check_valid_signin
 @app.route("/users/current", methods=["GET"])
 @login_required
 def get_profile():
-    user_dict = current_user.as_dict(include=USER_INCLUDES)
-    return jsonify(user_dict)
+    user = find_user_by_email(current_user.email)
+    return jsonify(as_dict(user, include=USER_INCLUDES)), 200
 
 
 @app.route("/users/token/<token>", methods=["GET"])
@@ -36,9 +37,10 @@ def check_activation_token_exists(token):
 def patch_profile():
     data = request.json.keys()
     check_allowed_changes_for_user(data)
-    current_user.populate_from_dict(request.json)
-    PcObject.save(current_user)
-    user = current_user.as_dict(include=USER_INCLUDES)
+    user = find_user_by_email(current_user.email)
+    user.populate_from_dict(request.json)
+    PcObject.save(user)
+    user = as_dict(user, include=USER_INCLUDES)
     return jsonify(user), 200
 
 
@@ -51,8 +53,7 @@ def signin():
     user = get_user_with_credentials(identifier, password)
     login_user(user, remember=True)
     stamp_session(user)
-    user_dict = user.as_dict(include=USER_INCLUDES)
-    return jsonify(user_dict), 200
+    return jsonify(user.as_dict(include=USER_INCLUDES)), 200
 
 
 @app.route("/users/signout", methods=["GET"])

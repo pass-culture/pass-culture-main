@@ -11,8 +11,9 @@ from models import ThingType
 from models.api_errors import DecimalCastError, DateTimeCastError, UuidCastError
 from models.db import Model
 from routes.serializer import serialize
-from tests.test_utils import create_stock, create_user, create_payment, create_booking, create_offerer
+from tests.test_utils import create_stock
 from utils.human_ids import dehumanize, NonDehumanizableId
+
 
 class TimeInterval(PcObject, Model):
     start = Column(DateTime)
@@ -169,7 +170,7 @@ class PopulateFromDictTest:
 
         # Then
         assert test_pc_object.uuid_attribute == uuid_attribute
-        
+
     def test_on_pc_object_for_valid_sql_uuid_value_with_key_finishing_by_Id(self):
         # Given
         test_pc_object = TestPcObject()
@@ -284,31 +285,3 @@ class PopulateFromDictTest:
         # When
         with pytest.raises(NonDehumanizableId):
             test_pc_object.populate_from_dict(data)
-
-class AsDictTest:
-    def test_on_payment_model_humanize_payment_id(self):
-        # Given
-        user = create_user(email='user@example.com')
-        booking = create_booking(user)
-        offerer = create_offerer()
-        payment = create_payment(booking, offerer, 500, idx=1)
-
-        # When
-        result = payment.as_dict()
-
-        # Then
-        assert result['id'] == 'AE'
-
-    def test_on_payment_model_does_not_humanize_transaction_end_to_end_id(self):
-        # Given
-        user = create_user(email='user@example.com')
-        booking = create_booking(user)
-        offerer = create_offerer()
-        transaction_end_to_end_id = uuid.uuid4()
-        payment = create_payment(booking, offerer, 500, idx=1, transaction_end_to_end_id=transaction_end_to_end_id)
-
-        # When
-        result = payment.as_dict()
-
-        # Then
-        assert result['transactionEndToEndId'] == transaction_end_to_end_id
