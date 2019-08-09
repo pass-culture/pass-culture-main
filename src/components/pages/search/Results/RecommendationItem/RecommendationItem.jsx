@@ -12,7 +12,8 @@ const RecommendationItem = ({
   recommendation,
 }) => {
   const { thumbUrl } = recommendation
-  const { name: offerName, product } = offer || {}
+  const { name: offerName, offerType } = offer || {}
+
   return (
     <li className="recommendation-list-item">
       <div
@@ -37,7 +38,7 @@ const RecommendationItem = ({
             >
               {offerName}
             </h5>
-            <div className="fs13">{product.offerType.appLabel}</div>
+            <div className="fs13">{offerType.appLabel}</div>
             <div
               className="fs13"
               id="recommendation-date"

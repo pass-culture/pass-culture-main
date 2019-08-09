@@ -1,3 +1,4 @@
-const getIsTransitionDetailsUrl = match => match.params.details === 'transition'
+const getIsTransitionDetailsUrl = (match = {}) =>
+  match.params && match.params.details === 'transition'
 
 export default getIsTransitionDetailsUrl

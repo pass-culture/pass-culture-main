@@ -10,10 +10,8 @@ ShallowWrapper {
       Object {
         "dateRange": Array [],
         "name": "sur la route des migrants ; rencontres à Calais",
-        "product": Object {
-          "offerType": Object {
-            "appLabel": "Livres, cartes bibliothèque ou médiathèque",
-          },
+        "offerType": Object {
+          "appLabel": "Livres, cartes bibliothèque ou médiathèque",
         },
       }
     }

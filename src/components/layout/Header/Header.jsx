@@ -6,9 +6,8 @@ import CloseLink from './CloseLink'
 import SubmitButton from './SubmitButton'
 import getIsTransitionDetailsUrl from '../../../helpers/getIsTransitionDetailsUrl'
 
-
 class Header extends Component {
-  componentDidMount () {
+  componentDidMount() {
     const { history, match } = this.props
 
     const isTransitionDetailsUrl = getIsTransitionDetailsUrl(match)
@@ -17,11 +16,11 @@ class Header extends Component {
     }
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     const { history, match } = this.props
 
-    const hasTransitionJustHappened = getIsTransitionDetailsUrl(match) &&
-      !getIsTransitionDetailsUrl(prevProps.match)
+    const hasTransitionJustHappened =
+      getIsTransitionDetailsUrl(match) && !getIsTransitionDetailsUrl(prevProps.match)
     if (hasTransitionJustHappened) {
       setTimeout(() => history.replace(this.getRemovedTransitionUrl()), 300)
     }
@@ -29,10 +28,10 @@ class Header extends Component {
 
   getBackTo = () => {
     const { match, shouldBackFromDetails } = this.props
-    const { params } = match
-    const { details } = params
+    const { params } = match || {}
+    const { details } = params || {}
     let { backTo } = this.props
-    if (!backTo && shouldBackFromDetails && details === "details") {
+    if (!backTo && shouldBackFromDetails && details === 'details') {
       backTo = this.getTransitionUrl()
     }
     return backTo
@@ -50,7 +49,7 @@ class Header extends Component {
     return `${pathname.replace('/details', '/transition')}${search}`
   }
 
-  render () {
+  render() {
     const {
       backActionOnClick,
       backTitle,
@@ -118,12 +117,12 @@ Header.propTypes = {
   }).isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
-    search: PropTypes.string.isRequired
+    search: PropTypes.string.isRequired,
   }).isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
-      details: PropTypes.string
-    }).isRequired
+      details: PropTypes.string,
+    }).isRequired,
   }).isRequired,
   shouldBackFromDetails: PropTypes.bool,
   submitDisabled: PropTypes.bool,

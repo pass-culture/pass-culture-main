@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | verso | verso-controls | booking | CancelThisLink snapshot with required props should match snapshot 1`] = `
+exports[`src | components | layout | Verso | VersoControls | booking | CancelThisLink | CancelThisLink should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <CancelThisLink
@@ -12,14 +12,12 @@ ShallowWrapper {
         },
       }
     }
-    dispatch={[MockFunction]}
     history={
       Object {
         "push": [MockFunction],
       }
     }
     isBookingFinished={false}
-    isFinished={false}
     location={
       Object {
         "pathname": "",
@@ -33,7 +31,7 @@ ShallowWrapper {
     }
     offer={Object {}}
     openCancelPopin={[MockFunction]}
-    priceValue={42}
+    stock={Array []}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

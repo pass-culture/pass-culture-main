@@ -4,14 +4,10 @@ import { shallow } from 'enzyme'
 import CancelThisLink from '../CancelThisLink'
 import Price from '../../../../../Price'
 
-describe('src | components | verso | verso-controls | booking | CancelThisLink', () => {
+describe('src | components | layout | Verso | VersoControls | booking | CancelThisLink | CancelThisLink', () => {
   let props
-  let dispatch
-  let push
 
   beforeEach(() => {
-    dispatch = jest.fn()
-    push = jest.fn()
     props = {
       booking: {
         id: 'AAA',
@@ -19,31 +15,26 @@ describe('src | components | verso | verso-controls | booking | CancelThisLink',
           offerId: 'BBB',
         },
       },
-      dispatch,
       history: {
-        push,
+        push: jest.fn(),
       },
-      isFinished: false,
       location: {
         pathname: '',
-        search: ''
+        search: '',
       },
       match: { params: {} },
       offer: {},
       openCancelPopin: jest.fn(),
-      priceValue: 42,
+      stock: [],
     }
   })
 
-  describe('snapshot with required props', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<CancelThisLink {...props} />)
+  it('should match the snapshot', () => {
+    // when
+    const wrapper = shallow(<CancelThisLink {...props} />)
 
-      // then
-      expect(wrapper).toBeDefined()
-      expect(wrapper).toMatchSnapshot()
-    })
+    // then
+    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

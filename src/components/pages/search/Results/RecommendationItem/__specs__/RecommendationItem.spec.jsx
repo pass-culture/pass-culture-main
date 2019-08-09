@@ -13,10 +13,8 @@ describe('src | components | pages | search | Result | RecommendationItem', () =
       offer: {
         dateRange: [],
         name: 'sur la route des migrants ; rencontres à Calais',
-        product: {
-          offerType: {
-            appLabel: 'Livres, cartes bibliothèque ou médiathèque',
-          },
+        offerType: {
+          appLabel: 'Livres, cartes bibliothèque ou médiathèque',
         },
       },
       recommendation: {

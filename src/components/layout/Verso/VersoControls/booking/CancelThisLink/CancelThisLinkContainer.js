@@ -8,6 +8,7 @@ import PopinButton from './PopinButton'
 import { closeSharePopin, openSharePopin } from '../../../../../../reducers/share'
 import selectBookingByRouterMatch from '../../../../../../selectors/selectBookingByRouterMatch'
 import selectOfferByMatch from '../../../../../../selectors/selectOfferByMatch'
+import selectStockById from '../../../../../../selectors/selectStockById'
 import selectIsFinishedByRouterMatch from '../../../../../../selectors/selectIsFinishedByRouterMatch'
 import { bookingNormalizer } from '../../../../../../utils/normalizers'
 
@@ -16,7 +17,9 @@ export const mapStateToProps = (state, ownProps) => {
   const booking = selectBookingByRouterMatch(state, match)
   const offer = selectOfferByMatch(state, match)
   const isBookingFinished = selectIsFinishedByRouterMatch(state, match)
-  return { booking, isBookingFinished, offer }
+  const stock = selectStockById(state, booking.stockId)
+
+  return { booking, isBookingFinished, offer, stock }
 }
 
 export const mapDispatchToProps = (dispatch, ownProps) => {

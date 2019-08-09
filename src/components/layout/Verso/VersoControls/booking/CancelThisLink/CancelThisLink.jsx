@@ -51,9 +51,10 @@ class CancelThisLink extends PureComponent {
   }
 
   render() {
-    const { booking, isBookingFinished } = this.props
-    const { isCancelled, stock } = booking || {}
+    const { booking, isBookingFinished, stock } = this.props
+    const { isCancelled } = booking || {}
     const { price } = stock || {}
+
     return (
       <button
         className="flex-columns no-border no-background"
@@ -103,6 +104,7 @@ CancelThisLink.propTypes = {
   }).isRequired,
   offer: PropTypes.shape().isRequired,
   openCancelPopin: PropTypes.func.isRequired,
+  stock: PropTypes.shape().isRequired,
 }
 
 export default CancelThisLink

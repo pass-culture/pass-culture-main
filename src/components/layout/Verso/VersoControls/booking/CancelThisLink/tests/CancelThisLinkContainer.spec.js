@@ -30,6 +30,7 @@ describe('src | components | layout | Verso | VersoControls | booking | CancelTh
         booking: { id: 'AE' },
         isBookingFinished: false,
         offer: { id: 'BF', isFinished: false },
+        stock: { offerId: 'BF' },
       })
     })
   })
