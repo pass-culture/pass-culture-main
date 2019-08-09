@@ -9,9 +9,7 @@ describe('src | components | booking | sub-items | BookingCancel', () => {
   beforeEach(() => {
     props = {
       data: {
-        stock: {
-          price: 12,
-        },
+        amount: 12,
       },
       isEvent: true,
     }

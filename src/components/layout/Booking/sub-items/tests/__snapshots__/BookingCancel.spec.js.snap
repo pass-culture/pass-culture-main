@@ -6,9 +6,7 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <BookingCancel
     data={
       Object {
-        "stock": Object {
-          "price": 12,
-        },
+        "amount": 12,
       }
     }
     isEvent={true}

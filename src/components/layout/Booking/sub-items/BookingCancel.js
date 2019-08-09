@@ -6,7 +6,7 @@ import Icon from '../../Icon'
 import { getDisplayPrice } from '../../../../helpers'
 
 const BookingCancel = ({ isEvent, data }) => {
-  const price = get(data, 'stock.price')
+  const price = get(data, 'amount')
   const formattedPrice = getDisplayPrice(price)
   const cssClass = isEvent ? 'event' : 'thing'
 

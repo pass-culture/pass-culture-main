@@ -30,7 +30,7 @@ fixture("08_03_01 Réservation d'une offre type thing").beforeEach(async t => {
   if (!userRole) {
     userRole = await createUserRoleFromUserSandbox(
       'webapp_08_booking',
-      'get_existing_webapp_user_can_book_thing_offer'
+      'get_existing_webapp_user_can_book_multidates'
     )
   }
   const { mediationId, offer } = await fetchSandbox(
@@ -82,7 +82,7 @@ test("Parcours complet de réservation d'une offre thing", async t => {
     .lt(previousWalletValue)
   previousWalletValue = await getMenuWalletValue()
 
-  const bookedOffer = Selector(`.my-bookings-my-booking[data-token="${currentBookedToken}"]`)
+  const bookedOffer = Selector(`.mb-my-booking[data-token="${currentBookedToken}"]`)
   await t
     .click(myBookingsMenuButton)
     .expect(bookedOffer.exists)
