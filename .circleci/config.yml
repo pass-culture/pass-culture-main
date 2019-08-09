@@ -104,10 +104,9 @@ workflows:
   version: 2
   commit:
     jobs:
-#      - build
+      - build
       - deploy-pro:
           filters:
             branches:
               only:
-                - PC-2207-deploy-testing-like-staging
-#                - master
+                - master
