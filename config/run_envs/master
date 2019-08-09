@@ -1,0 +1,4 @@
+API_URL='https://backend.passculture-testing.beta.gouv.fr'
+THUMBS_URL='https://storage.gra3.cloud.ovh.net/v1/AUTH_688df1e25bd84a48a3804e7fa8938085/storage-pc-dev/thumbs'
+NODE_ENV="production"
+TYPEFORM_URL_CULTURAL_PRACTICES_POLL="https://passculture.typeform.com/to/T8rurj"
