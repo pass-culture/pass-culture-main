@@ -3,6 +3,7 @@ import React, { Fragment, PureComponent } from 'react'
 import { Route } from 'react-router-dom'
 
 import BookingContainer from '../Booking/BookingContainer'
+import RectoContainer from '../Recto/RectoContainer'
 import VersoContainer from '../Verso/VersoContainer'
 import getAreDetailsVisible from '../../../helpers/getAreDetailsVisible'
 
@@ -27,6 +28,10 @@ class Details extends PureComponent {
           areDetailsVisible={showDetails}
           extraClassName="with-header"
         />
+        {showDetails && <RectoContainer
+          areDetailsVisible
+          extraClassName="with-header"
+                        />}
       </Fragment>
     )
   }
