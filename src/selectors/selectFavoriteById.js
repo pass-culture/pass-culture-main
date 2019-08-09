@@ -1,15 +1,11 @@
-import createCachedSelector from 're-reselect'
+import { compose } from 'redux'
 
-function mapArgsToCacheKey(state, favoriteId) {
-  return favoriteId || ''
-}
+import selectFavorites from './selectFavorites'
 
-export const selectFavoriteById = createCachedSelector(
-  state => state.data.favorites,
-  (state, offerId) => offerId,
-  (state, mediationId) => mediationId,
-  (favorites, offerId, mediationId) =>
-    favorites.find(favorite => favorite.offerId === offerId && favorite.mediationId === mediationId)
-)(mapArgsToCacheKey)
+const selectFavoriteById = favoriteId =>
+  compose(
+    favorites => favorites.find(favorite => favorite.id === favoriteId),
+    selectFavorites
+  )
 
 export default selectFavoriteById

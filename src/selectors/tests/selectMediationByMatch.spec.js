@@ -3,20 +3,18 @@ import selectMediationByMatch from '../selectMediationByMatch'
 describe('src | selectors | selectMediationByMatch', () => {
   it('should return mediation when mediationId in match', () => {
     // given
-    const mediationId = 'AE'
-    const mediation = { id: mediationId }
     const state = {
       data: {
         bookings: [],
         favorites: [],
-        mediations: [mediation],
+        mediations: [{ id: 'AE' }],
         offers: [],
         recommendations: [],
       },
     }
     const match = {
       params: {
-        mediationId,
+        mediationId: 'AE',
       },
     }
 
@@ -24,33 +22,23 @@ describe('src | selectors | selectMediationByMatch', () => {
     const result = selectMediationByMatch(state, match)
 
     // then
-    expect(result).toStrictEqual(mediation)
+    expect(result).toStrictEqual({ id: 'AE' })
   })
 
   it('should return mediation when bookingId in match resolves mediation via recommendation', () => {
     // given
-    const offerId = 'AE'
-    const offer = {
-      id: offerId,
-    }
-    const mediationId = 'AE'
-    const mediation = { id: mediationId }
-    const bookingId = 'BF'
-    const recommendationId = 'BF'
-    const recommendation = { id: recommendationId, mediationId, offerId }
-    const booking = { id: bookingId, recommendationId }
     const state = {
       data: {
-        bookings: [booking],
+        bookings: [{ id: 'BF', recommendationId: 'BF' }],
         favorites: [],
-        mediations: [mediation],
-        offers: [offer],
-        recommendations: [recommendation],
+        mediations: [{ id: 'AE' }],
+        offers: [{ id: 'AE' }],
+        recommendations: [{ id: 'BF', mediationId: 'AE', offerId: 'AE' }],
       },
     }
     const match = {
       params: {
-        bookingId,
+        bookingId: 'BF',
       },
     }
 
@@ -58,27 +46,25 @@ describe('src | selectors | selectMediationByMatch', () => {
     const result = selectMediationByMatch(state, match)
 
     // then
-    expect(result).toStrictEqual(mediation)
+    expect(result).toStrictEqual({ id: 'AE' })
   })
 
   it('should return mediation when favoriteId in match resolves mediation', () => {
     // given
-    const mediationId = 'AE'
-    const mediation = { id: mediationId }
-    const favoriteId = 'BF'
-    const favorite = { id: favoriteId, mediationId }
     const state = {
       data: {
         bookings: [],
-        favorites: [favorite],
-        mediations: [mediation],
+        favorites: [{ id: 'BF', mediationId: 'AE' }],
+        mediations: [{ id: 'AE' }],
         offers: [],
         recommendations: [],
       },
     }
     const match = {
       params: {
-        favoriteId,
+        bookingId: 'AA',
+        favoriteId: 'BF',
+        mediationId: 'AE',
       },
     }
 
@@ -86,6 +72,6 @@ describe('src | selectors | selectMediationByMatch', () => {
     const result = selectMediationByMatch(state, match)
 
     // then
-    expect(result).toStrictEqual(mediation)
+    expect(result).toStrictEqual({ id: 'AE' })
   })
 })

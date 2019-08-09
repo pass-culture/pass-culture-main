@@ -105,7 +105,8 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           favorites: [],
           mediations: [],
           offers: [],
-          recommendations: []
+          recommendations: [],
+          stocks: [],
         },
         type: 'ASSIGN_DATA',
       })

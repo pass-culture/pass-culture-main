@@ -4,6 +4,7 @@ exports[`src | components | verso | verso-controls | booking | BookThisLink shou
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookThisLink
+    destinationLink="fake/url"
     isFinished={false}
     location={
       Object {
@@ -59,7 +60,7 @@ ShallowWrapper {
       "disabled": false,
       "id": "verso-booking-button",
       "replace": false,
-      "to": "/decouverte/reservation",
+      "to": "fake/url",
     },
     "ref": null,
     "rendered": Array [
@@ -123,7 +124,7 @@ ShallowWrapper {
         "disabled": false,
         "id": "verso-booking-button",
         "replace": false,
-        "to": "/decouverte/reservation",
+        "to": "fake/url",
       },
       "ref": null,
       "rendered": Array [

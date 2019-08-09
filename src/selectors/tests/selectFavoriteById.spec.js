@@ -10,7 +10,7 @@ describe('src | selectors | selectFavoriteById', () => {
     }
 
     // when
-    const result = selectFavoriteById(state, 'wrong')
+    const result = selectFavoriteById('wrong')(state)
 
     // then
     expect(result).toBeUndefined()
@@ -25,11 +25,9 @@ describe('src | selectors | selectFavoriteById', () => {
     }
 
     // when
-    const result = selectFavoriteById(state, 'bar')
+    const result = selectFavoriteById('bar')(state)
 
     // then
-    expect(result).toBeDefined()
     expect(result).toStrictEqual({ id: 'bar' })
-    expect(result).toBe(state.data.favorites[1])
   })
 })

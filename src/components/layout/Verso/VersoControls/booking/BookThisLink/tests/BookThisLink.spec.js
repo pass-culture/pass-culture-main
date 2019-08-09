@@ -6,9 +6,11 @@ import Price from '../../../../../Price'
 import BookThisLink from '../BookThisLink'
 
 describe('src | components | verso | verso-controls | booking | BookThisLink', () => {
-  it('should match snapshot with required props', () => {
-    // given
-    const props = {
+  let props
+
+  beforeEach(() => {
+    props = {
+      destinationLink: 'fake/url',
       isFinished: false,
       location: {
         search: '',
@@ -19,7 +21,9 @@ describe('src | components | verso | verso-controls | booking | BookThisLink', (
       },
       priceRange: [10, 30],
     }
+  })
 
+  it('should match snapshot with required props', () => {
     // when
     const wrapper = shallow(<BookThisLink {...props} />)
 
@@ -33,17 +37,7 @@ describe('src | components | verso | verso-controls | booking | BookThisLink', (
 
   it('should render Gratuit label when price value is 0', () => {
     // given
-    const props = {
-      isFinished: false,
-      location: {
-        search: '',
-      },
-      match: {
-        params: {},
-        url: '/decouverte',
-      },
-      priceRange: [0],
-    }
+    props.priceRange = [0]
 
     // when
     const wrapper = mount(
@@ -64,23 +58,6 @@ describe('src | components | verso | verso-controls | booking | BookThisLink', (
   })
 
   it('should render a price range when multiples prices are given', () => {
-    // given
-    const nbsp = '\u00a0'
-    const arrow = '\u27A4'
-    const minPrice = 10
-    const maxPrice = 30
-    const props = {
-      isFinished: false,
-      location: {
-        search: '',
-      },
-      match: {
-        params: {},
-        url: '/decouverte',
-      },
-      priceRange: [minPrice, maxPrice],
-    }
-
     // when
     const wrapper = mount(
       <MemoryRouter>
@@ -91,72 +68,5 @@ describe('src | components | verso | verso-controls | booking | BookThisLink', (
     // then
     const priceComponent = wrapper.find(Price)
     expect(priceComponent).toHaveLength(1)
-    expect(priceComponent.hasClass('pc-ticket-button-price')).toBe(true)
-
-    // then
-    const price = wrapper.find('.price')
-    expect(price).toHaveLength(1)
-    expect(price.text()).toStrictEqual(`${minPrice}${nbsp}${arrow}${nbsp}${maxPrice}${nbsp}€`)
-  })
-
-  describe('getLinkDestination', () => {
-    it('should add reservations to current url without query to open booking card', () => {
-      // given
-      const mediationId = 'CG'
-      const offerId = 'BF'
-      const pathname = '/decouverte'
-      const search = '?foo'
-      const props = {
-        isFinished: false,
-        location: {
-          pathname,
-          search,
-        },
-        match: {
-          params: {},
-          url: `/decouverte/${offerId}/${mediationId}`,
-        },
-        priceRange: [],
-      }
-      const expected = `${pathname}/${offerId}/${mediationId}/reservation${search}`
-
-      // when
-      const wrapper = shallow(<BookThisLink {...props} />)
-      const result = wrapper.instance().getLinkDestination()
-
-      // then
-      expect(result).toStrictEqual(expected)
-    })
-
-    it('should not add reservations to current url if bookings already in match params', () => {
-      // given
-      const mediationId = 'CG'
-      const offerId = 'BF'
-      const pathname = '/decouverte'
-      const search = '?foo'
-      const url = `http://${pathname}/${offerId}/${mediationId}/reservation${search}`
-      const props = {
-        isFinished: false,
-        location: {
-          pathname,
-          search,
-        },
-        match: {
-          params: {
-            bookings: 'reservations',
-          },
-          url,
-        },
-        priceRange: [],
-      }
-      const expected = url
-
-      // when
-      const wrapper = shallow(<BookThisLink {...props} />)
-      const result = wrapper.instance().getLinkDestination()
-
-      // then
-      expect(result).toStrictEqual(expected)
-    })
   })
 })

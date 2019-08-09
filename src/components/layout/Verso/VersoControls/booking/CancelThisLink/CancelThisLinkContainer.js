@@ -15,8 +15,8 @@ export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const booking = selectBookingByRouterMatch(state, match)
   const offer = selectOfferByMatch(state, match)
-  const isFinished = selectIsFinishedByRouterMatch(state, match)
-  return { booking, isFinished, offer }
+  const isBookingFinished = selectIsFinishedByRouterMatch(state, match)
+  return { booking, isBookingFinished, offer }
 }
 
 export const mapDispatchToProps = (dispatch, ownProps) => {

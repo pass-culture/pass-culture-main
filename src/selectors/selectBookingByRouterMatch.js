@@ -7,28 +7,24 @@ import selectStocksByOfferId from './selectStocksByOfferId'
 
 function mapArgsToCacheKey(state, match) {
   const { params } = match
-  const { bookingId, favoriteId, mediationId, offerId } = params
-  return `${bookingId || ' '}${favoriteId || ' '}${mediationId || ' '}${offerId || ' '}`
+  const { bookingId, mediationId, offerId } = params
+  return `${bookingId || ' '}${mediationId || ' '}${offerId || ' '}`
 }
 
 const selectBookingByRouterMatch = createCachedSelector(
   state => state.data.bookings,
   state => state.data.stocks,
   (state, match) => selectBookingById(state, match.params.bookingId),
-  (state, match) => {
-    return selectOfferById(state, match.params.offerId)
-  },
+  (state, match) => selectOfferById(state, match.params.offerId),
   (bookings, allStocks, booking, offer) => {
-    if (booking) {
-      return booking
-    }
+    if (booking) return booking
 
     if (offer) {
       const stocks = selectStocksByOfferId({ data: { stocks: allStocks } }, offer.id)
-      const firstMatchingBooking = selectFirstMatchingBookingByStocks(
-        { data: { bookings } },
-        stocks
-      )
+      const firstMatchingBooking = selectFirstMatchingBookingByStocks({
+        data: { bookings, stocks },
+      })
+
       return firstMatchingBooking
     }
   }

@@ -30,10 +30,11 @@ describe('src | components | layout |Booking', () => {
       isEvent: false,
       match: {
         params: {
-          bookings: 'reservations',
+          booking: 'reservations',
           offerId: 'AAA',
+          confirmation: 'toto',
         },
-        url: '/foo/reservations/AE',
+        url: '/foo/reservation/AE',
       },
       offer: {
         isEvent: true,
@@ -112,6 +113,9 @@ describe('src | components | layout |Booking', () => {
 
   describe('when no cancel view', () => {
     it('should add className items-center to the div following the BookingHeader', () => {
+      // given
+      props.match.params.confirmation = undefined
+
       // when
       const wrapper = mount(<Booking {...props} />)
 
@@ -121,6 +125,9 @@ describe('src | components | layout |Booking', () => {
     })
 
     it('should add classNames for padding to the div containing Booking sub-items components', () => {
+      // given
+      props.match.params.confirmation = undefined
+
       // when
       const wrapper = mount(<Booking {...props} />)
 

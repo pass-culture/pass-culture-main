@@ -64,24 +64,32 @@ describe('src | components | pages | my-bookings | selectors | selectValidBookin
         data: {
           bookings: [
             {
-              stock: {
-                offerId: 'MEFA',
-              },
+              id: 'b1',
+              stockId: 's1',
             },
             {
-              stock: {
-                offerId: 'TATA',
-              },
+              id: 'b2',
+              stockId: 's2',
             },
           ],
           offers: [
             {
-              id: 'MEFA',
+              id: 'o1',
               type: 'ThingType.MUSIQUE',
             },
             {
-              id: 'TOTO',
+              id: 'o2',
               type: 'ThingType.MUSIQUE',
+            },
+          ],
+          stocks: [
+            {
+              id: 's1',
+              offerId: 'o1',
+            },
+            {
+              id: 's2',
+              offerId: 'o3',
             },
           ],
         },
@@ -91,14 +99,7 @@ describe('src | components | pages | my-bookings | selectors | selectValidBookin
       const results = selectValidBookings(state)
 
       // then
-      expect(results).toStrictEqual([
-        {
-          stock: {
-            offerId: 'MEFA',
-          },
-        },
-        undefined,
-      ])
+      expect(results).toStrictEqual([{ id: 'b1', stockId: 's1' }, undefined])
     })
   })
 })

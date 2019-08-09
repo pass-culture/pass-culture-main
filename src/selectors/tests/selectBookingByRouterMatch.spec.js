@@ -1,21 +1,20 @@
+import moment from 'moment'
+
 import selectBookingByRouterMatch from '../selectBookingByRouterMatch'
 
 describe('src | selectors | selectBookingByRouterMatch', () => {
   it('should return booking when bookingId in match', () => {
     // given
-    const bookingId = 'AE'
-    const booking = { id: bookingId }
     const state = {
       data: {
-        bookings: [booking],
-        favorites: [],
+        bookings: [{ id: 'AE' }],
         offers: [],
-        recommendations: [],
+        stocks: [],
       },
     }
     const match = {
       params: {
-        bookingId,
+        bookingId: 'AE',
       },
     }
 
@@ -23,30 +22,23 @@ describe('src | selectors | selectBookingByRouterMatch', () => {
     const result = selectBookingByRouterMatch(state, match)
 
     // then
-    expect(result).toStrictEqual(booking)
+    expect(result).toStrictEqual({ id: 'AE' })
   })
 
-  it('should return booking when favoriteId in match resolves first matching booking', () => {
+  it('should return booking when found offer in match resolves first matching booking', () => {
     // given
-    const stockId = 'CG'
-    const stock = { id: stockId }
-    const bookingId = 'AE'
-    const booking = { id: bookingId, stockId }
-    const offerId = 'BF'
-    const offer = { id: offerId, stocks: [stock] }
-    const favoriteId = 'BF'
-    const favorite = { id: favoriteId, offerId }
+    const now = moment()
+    const twoDaysAfterNow = now.add(2, 'days').format()
     const state = {
       data: {
-        bookings: [booking],
-        favorites: [favorite],
-        offers: [offer],
-        recommendations: [],
+        bookings: [{ id: 'AE', stockId: 'CG' }],
+        offers: [{ id: 'BF' }],
+        stocks: [{ id: 'CG', offerId: 'BF', beginningDateTime: twoDaysAfterNow }],
       },
     }
     const match = {
       params: {
-        favoriteId,
+        offerId: 'BF',
       },
     }
 
@@ -54,37 +46,6 @@ describe('src | selectors | selectBookingByRouterMatch', () => {
     const result = selectBookingByRouterMatch(state, match)
 
     // then
-    expect(result).toStrictEqual(booking)
-  })
-
-  it('should return booking when found recommendation in match resolves first matching booking', () => {
-    // given
-    const stockId = 'CG'
-    const stock = { id: stockId }
-    const bookingId = 'AE'
-    const booking = { id: bookingId, stockId }
-    const offerId = 'BF'
-    const offer = { id: offerId, stocks: [stock] }
-    const recommendationId = 'BF'
-    const recommendation = { id: recommendationId, offerId }
-    const state = {
-      data: {
-        bookings: [booking],
-        favorites: [],
-        offers: [offer],
-        recommendations: [recommendation],
-      },
-    }
-    const match = {
-      params: {
-        offerId,
-      },
-    }
-
-    // when
-    const result = selectBookingByRouterMatch(state, match)
-
-    // then
-    expect(result).toStrictEqual(booking)
+    expect(result).toStrictEqual({ id: 'AE', stockId: 'CG' })
   })
 })

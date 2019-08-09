@@ -25,10 +25,11 @@ ShallowWrapper {
     match={
       Object {
         "params": Object {
-          "bookings": "reservations",
+          "booking": "reservations",
+          "confirmation": "toto",
           "offerId": "AAA",
         },
-        "url": "/foo/reservations/AE",
+        "url": "/foo/reservation/AE",
       }
     }
     offer={
@@ -55,9 +56,55 @@ ShallowWrapper {
     "simulateEvent": [Function],
     "unmount": [Function],
   },
-  Symbol(enzyme.__node__): null,
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "class",
+    "props": Object {
+      "appear": false,
+      "children": [Function],
+      "enter": true,
+      "exit": true,
+      "in": true,
+      "mountOnEnter": false,
+      "onEnter": [Function],
+      "onEntered": [Function],
+      "onEntering": [Function],
+      "onExit": [Function],
+      "onExited": [Function],
+      "onExiting": [Function],
+      "timeout": 0,
+      "unmountOnExit": false,
+    },
+    "ref": null,
+    "rendered": [Function],
+    "type": [Function],
+  },
   Symbol(enzyme.__nodes__): Array [
-    null,
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "class",
+      "props": Object {
+        "appear": false,
+        "children": [Function],
+        "enter": true,
+        "exit": true,
+        "in": true,
+        "mountOnEnter": false,
+        "onEnter": [Function],
+        "onEntered": [Function],
+        "onEntering": [Function],
+        "onExit": [Function],
+        "onExited": [Function],
+        "onExiting": [Function],
+        "timeout": 0,
+        "unmountOnExit": false,
+      },
+      "ref": null,
+      "rendered": [Function],
+      "type": [Function],
+    },
   ],
   Symbol(enzyme.__options__): Object {
     "adapter": ReactSixteenAdapter {

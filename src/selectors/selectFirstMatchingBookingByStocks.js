@@ -9,8 +9,8 @@ export const selectFirstMatchingBookingByStocks = createCachedSelector(
   state => state.data.bookings,
   state => state.data.stocks,
   (bookings, stocks) => {
-    if (!stocks) {
-      return
+    if (stocks.length === 0) {
+      return null
     }
 
     stocks.sort((s1, s2) => {
@@ -31,6 +31,7 @@ export const selectFirstMatchingBookingByStocks = createCachedSelector(
         }
       }
     }
+
     return null
   }
 )(mapArgsToCacheKey)

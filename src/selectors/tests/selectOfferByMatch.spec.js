@@ -3,19 +3,17 @@ import selectOfferByMatch from '../selectOfferByMatch'
 describe('src | selectors | selectOfferByMatch', () => {
   it('should return offer when offerId in match', () => {
     // given
-    const offerId = 'AE'
-    const offer = { id: offerId }
     const state = {
       data: {
         bookings: [],
         favorites: [],
-        offers: [offer],
+        offers: [{ id: 'AE' }],
         recommendations: [],
       },
     }
     const match = {
       params: {
-        offerId,
+        offerId: 'AE',
       },
     }
 
@@ -23,26 +21,24 @@ describe('src | selectors | selectOfferByMatch', () => {
     const result = selectOfferByMatch(state, match)
 
     // then
-    expect(result).toStrictEqual(offer)
+    expect(result).toStrictEqual({ id: 'AE' })
   })
 
   it('should return offer when bookingId in match resolves booking', () => {
     // given
-    const offerId = 'AE'
-    const offer = { id: offerId }
-    const bookingId = 'BF'
-    const booking = { id: bookingId, stock: { offerId } }
     const state = {
       data: {
-        bookings: [booking],
+        bookings: [{ id: 'BF', stock: { offerId: 'AE' } }],
         favorites: [],
-        offers: [offer],
+        offers: [{ id: 'AE' }],
         recommendations: [],
+        stocks: [],
       },
     }
     const match = {
       params: {
-        bookingId,
+        bookingId: 'BF',
+        offerId: 'AE',
       },
     }
 
@@ -50,6 +46,6 @@ describe('src | selectors | selectOfferByMatch', () => {
     const result = selectOfferByMatch(state, match)
 
     // then
-    expect(result).toStrictEqual(offer)
+    expect(result).toStrictEqual({ id: 'AE' })
   })
 })

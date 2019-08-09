@@ -18,6 +18,7 @@ ShallowWrapper {
         "push": [MockFunction],
       }
     }
+    isBookingFinished={false}
     isFinished={false}
     location={
       Object {

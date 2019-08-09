@@ -17,7 +17,6 @@ describe('src | selectors | selectDistanceByRouterMatch', () => {
 
   it('should return distance when offerId in match', () => {
     // given
-
     const state = {
       data: {
         bookings: [],
@@ -55,6 +54,7 @@ describe('src | selectors | selectDistanceByRouterMatch', () => {
         mediations: [],
         offers: [offer],
         recommendations: [],
+        stocks: [{ offerId }],
       },
       geolocation: {
         latitude: 42.5,

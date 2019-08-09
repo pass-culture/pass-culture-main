@@ -1,46 +1,37 @@
 import React from 'react'
 
-import {
-  mapDispatchToProps,
-  mapStateToProps
-} from '../CancelThisLinkContainer'
+import { mapDispatchToProps, mapStateToProps } from '../CancelThisLinkContainer'
 
 describe('src | components | layout | Verso | VersoControls | booking | CancelThisLinkContainer', () => {
-
   describe('mapStateToProps', () => {
-    // given
-    const offerId = "BF"
-    const isFinished = false
-    const offer = { id: offerId, isFinished }
-    const bookingId = "AE"
-    const booking = { id: bookingId, stock: { offerId } }
-    const state = {
-      data: {
-        bookings: [booking],
-        favorites: [],
-        mediations: [],
-        offers: [offer],
-        recommendations: []
+    it('should map booking, isBookingFinished and offer', () => {
+      // given
+      const state = {
+        data: {
+          bookings: [{ id: 'AE' }],
+          mediations: [{ id: 'AE' }],
+          offers: [{ id: 'BF', isFinished: false }],
+          stocks: [{ offerId: 'BF' }],
+        },
       }
-    }
-    const ownProps = {
-      match: {
-        params: {
-          bookingId
-        }
+      const ownProps = {
+        match: {
+          params: {
+            bookingId: 'AE',
+          },
+        },
       }
-    }
 
-    // when
-    const props = mapStateToProps(state, ownProps)
+      // when
+      const props = mapStateToProps(state, ownProps)
 
-    // then
-    expect(props).toStrictEqual({
-      booking,
-      isFinished,
-      offer
+      // then
+      expect(props).toStrictEqual({
+        booking: { id: 'AE' },
+        isBookingFinished: false,
+        offer: { id: 'BF', isFinished: false },
+      })
     })
-
   })
 
   describe('mapDispatchToProps', () => {
@@ -73,15 +64,15 @@ describe('src | components | layout | Verso | VersoControls | booking | CancelTh
 
     it('should open cancel popin when click on cancel button', () => {
       // given
-      const bookingId = "AE"
-      const offerName = "foo"
+      const bookingId = 'AE'
+      const offerName = 'foo'
       ownProps = {
         location: {
-          pathname: ''
+          pathname: '',
         },
         match: {
-          params: {}
-        }
+          params: {},
+        },
       }
       const anyFunction = expect.any(Function)
       const expectedOptions = {
@@ -113,9 +104,7 @@ describe('src | components | layout | Verso | VersoControls | booking | CancelTh
       }
 
       // when
-      mapDispatchToProps(dispatch, ownProps).openCancelPopin(
-        bookingId, offerName
-      )
+      mapDispatchToProps(dispatch, ownProps).openCancelPopin(bookingId, offerName)
 
       // then
       expect(dispatch.mock.calls[0][0]).toStrictEqual(expectedOptions)

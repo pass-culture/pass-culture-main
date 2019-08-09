@@ -1,64 +1,38 @@
-import selectFirstMatchingBookingByStocks from '../selectFirstMatchingBookingByStocks'
 import moment from 'moment'
 
+import selectFirstMatchingBookingByStocks from '../selectFirstMatchingBookingByStocks'
+
 describe('src | selectors | selectFirstMatchingBookingByStocks', () => {
-  it('should return null when no found matching booking compared to its stock', () => {
+  it('should return null when no stock', () => {
     // given
-    const stockId = 'wrong id'
-    const bookings = [{ id: 'AE', stockId: 'AE' }]
-    const stocks = [{ id: stockId }]
     const state = {
       data: {
-        bookings,
+        bookings: [{ id: 'AE', stockId: 'AE' }],
+        stocks: [],
       },
     }
 
     // when
-    const firstMatchingBooking = selectFirstMatchingBookingByStocks(state, stocks)
+    const firstMatchingBooking = selectFirstMatchingBookingByStocks(state)
 
     // then
-    expect(firstMatchingBooking).toBeUndefined()
+    expect(firstMatchingBooking).toBeNull()
   })
 
-  it('should return the not cancelled booking matching the first found stockId in stocks', () => {
+  it('should return null when no bookings matching stock is found', () => {
     // given
-    const stockId = 'BF'
-    const matchingBooking = { id: 'AE', isCancelled: false, stockId }
-    const otherBooking = { id: 'ABF', isCancelled: true, stockId }
-    const oneotherBooking = { id: 'ABG', isCancelled: true, stockId }
-    const bookings = [oneotherBooking, matchingBooking, otherBooking]
-    const stocks = [{ id: stockId }]
     const state = {
       data: {
-        bookings,
+        bookings: [{ id: 'AA', stockId: 'AE', isCancelled: true }],
+        stocks: [{ id: 'wrong id' }, { id: 'AE' }],
       },
     }
 
     // when
-    const firstMatchingBooking = selectFirstMatchingBookingByStocks(state, stocks)
+    const firstMatchingBooking = selectFirstMatchingBookingByStocks(state)
 
     // then
-    expect(firstMatchingBooking).toStrictEqual(matchingBooking)
-  })
-
-  it('should return the cancelled booking matching the first found stockId in stocks if no isCancelled booking', () => {
-    // given
-    const stockId = 'BF'
-    const matchingBooking = { id: 'AE', isCancelled: true, stockId }
-    const otherBooking = { id: 'ABF', isCancelled: true, stockId }
-    const bookings = [matchingBooking, otherBooking]
-    const stocks = [{ id: stockId }]
-    const state = {
-      data: {
-        bookings,
-      },
-    }
-
-    // when
-    const firstMatchingBooking = selectFirstMatchingBookingByStocks(state, stocks)
-
-    // then
-    expect(firstMatchingBooking).toStrictEqual(matchingBooking)
+    expect(firstMatchingBooking).toBeNull()
   })
 
   it('should return first not cancelled booking in the future', () => {
@@ -86,7 +60,7 @@ describe('src | selectors | selectFirstMatchingBookingByStocks', () => {
     }
 
     // when
-    const firstMatchingBooking = selectFirstMatchingBookingByStocks(state, stocks)
+    const firstMatchingBooking = selectFirstMatchingBookingByStocks(state)
 
     // then
     expect(firstMatchingBooking).toStrictEqual(nextBooking)

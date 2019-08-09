@@ -7,6 +7,7 @@ import selectStockById from './selectStockById'
 function mapArgsToCacheKey(state, match) {
   const { params } = match
   const { bookingId, favoriteId, offerId } = params
+
   return `${bookingId || ' '}${favoriteId || ' '}${offerId || ' '}`
 }
 
@@ -16,9 +17,8 @@ const selectOfferByMatch = createCachedSelector(
   (state, match) => selectBookingById(state, match.params.bookingId),
   (state, match) => selectOfferById(state, match.params.offerId),
   (offers, stocks, booking, offer) => {
-    if (offer) {
-      return offer
-    }
+    if (offer) return offer
+
     if (booking) {
       const stock = selectStockById({ data: { stocks } }, booking.stockId)
 

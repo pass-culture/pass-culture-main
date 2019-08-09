@@ -4,19 +4,7 @@ exports[`src | components | layout | Details | Details should match the snapshot
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Details
-    hasReceivedData={false}
-    history={
-      Object {
-        "push": [MockFunction],
-        "replace": [MockFunction],
-      }
-    }
-    location={
-      Object {
-        "pathname": "",
-        "search": "",
-      }
-    }
+    bookingPath="fake/path"
     match={
       Object {
         "params": Object {
@@ -24,8 +12,6 @@ ShallowWrapper {
         },
       }
     }
-    needsToRequestGetData={false}
-    requestGetData={[MockFunction]}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -42,17 +28,30 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": Array [
-        false,
+        <Route
+          path="fake/path"
+          render={[Function]}
+        />,
         <withRouter(Connect(Verso))
           areDetailsVisible={false}
           extraClassName="with-header"
         />,
-        false,
       ],
     },
     "ref": null,
     "rendered": Array [
-      false,
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "class",
+        "props": Object {
+          "path": "fake/path",
+          "render": [Function],
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
       Object {
         "instance": null,
         "key": undefined,
@@ -65,7 +64,6 @@ ShallowWrapper {
         "rendered": null,
         "type": [Function],
       },
-      false,
     ],
     "type": Symbol(react.fragment),
   },
@@ -76,17 +74,30 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": Array [
-          false,
+          <Route
+            path="fake/path"
+            render={[Function]}
+          />,
           <withRouter(Connect(Verso))
             areDetailsVisible={false}
             extraClassName="with-header"
           />,
-          false,
         ],
       },
       "ref": null,
       "rendered": Array [
-        false,
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "class",
+          "props": Object {
+            "path": "fake/path",
+            "render": [Function],
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
         Object {
           "instance": null,
           "key": undefined,
@@ -99,7 +110,6 @@ ShallowWrapper {
           "rendered": null,
           "type": [Function],
         },
-        false,
       ],
       "type": Symbol(react.fragment),
     },

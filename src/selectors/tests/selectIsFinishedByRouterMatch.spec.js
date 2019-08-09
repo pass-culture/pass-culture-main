@@ -2,19 +2,16 @@ import selectIsFinishedByRouterMatch from '../selectIsFinishedByRouterMatch'
 
 describe('src | selectors | selectIsFinishedByRouterMatch', () => {
   let offer
-  let offerId
-  let isFinished = false
+
   beforeEach(() => {
-    offerId = 'AE'
     offer = {
-      id: offerId,
-      isFinished,
+      id: 'AE',
+      isFinished: false,
     }
   })
 
-  it('should return isFinished when offerId in match', () => {
+  it('should return false when offerId in match', () => {
     // given
-
     const state = {
       data: {
         bookings: [],
@@ -22,11 +19,12 @@ describe('src | selectors | selectIsFinishedByRouterMatch', () => {
         mediations: [],
         offers: [offer],
         recommendations: [],
+        stocks: [],
       },
     }
     const match = {
       params: {
-        offerId,
+        offerId: 'AE',
       },
     }
 
@@ -34,13 +32,17 @@ describe('src | selectors | selectIsFinishedByRouterMatch', () => {
     const result = selectIsFinishedByRouterMatch(state, match)
 
     // then
-    expect(result).toStrictEqual(isFinished)
+    expect(result).toBe(false)
   })
 
-  it('should return isFinished when bookingId in match resolves booking', () => {
+  it('should return false when bookingId in match resolves booking', () => {
     // given
     const bookingId = 'BF'
-    const booking = { id: bookingId, stock: { offerId } }
+    const booking = {
+      id: bookingId,
+      stock: { offerId: 'AE' },
+      stockId: 'AA',
+    }
     const state = {
       data: {
         bookings: [booking],
@@ -48,6 +50,7 @@ describe('src | selectors | selectIsFinishedByRouterMatch', () => {
         mediations: [],
         offers: [offer],
         recommendations: [],
+        stocks: [{ id: 'AA' }],
       },
     }
     const match = {
@@ -60,13 +63,13 @@ describe('src | selectors | selectIsFinishedByRouterMatch', () => {
     const result = selectIsFinishedByRouterMatch(state, match)
 
     // then
-    expect(result).toStrictEqual(isFinished)
+    expect(result).toBe(false)
   })
 
-  it('should return isFinished when favoriteId in match resolves offer', () => {
+  it('should return false when favoriteId in match resolves offer', () => {
     // given
     const favoriteId = 'BF'
-    const favorite = { id: favoriteId, offerId }
+    const favorite = { id: favoriteId, offerId: 'AE' }
     const state = {
       data: {
         bookings: [],
@@ -74,6 +77,7 @@ describe('src | selectors | selectIsFinishedByRouterMatch', () => {
         mediations: [],
         offers: [offer],
         recommendations: [],
+        stocks: [],
       },
     }
     const match = {
@@ -86,6 +90,6 @@ describe('src | selectors | selectIsFinishedByRouterMatch', () => {
     const result = selectIsFinishedByRouterMatch(state, match)
 
     // then
-    expect(result).toStrictEqual(isFinished)
+    expect(result).toBe(false)
   })
 })

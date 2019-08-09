@@ -40,6 +40,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
           mediations: [mediation],
           offers: [offer],
           recommendations: [recommendation],
+          stocks: [{ id: 'AA', offerId, beginningDatetime }],
         },
       }
       const ownProps = {
@@ -47,10 +48,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
           id: bookingId,
           isCancelled,
           recommendationId,
-          stock: {
-            beginningDatetime,
-            offerId,
-          },
+          stockId: 'AA',
           token,
         },
         location: {
@@ -63,7 +61,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
       const props = mapStateToProps(state, ownProps)
 
       // then
-      const expected = {
+      expect(props).toStrictEqual({
         isFinished,
         mediation,
         offer,
@@ -72,8 +70,8 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
           label: 'Annulé',
           type: 'cancelled',
         },
-      }
-      expect(props).toStrictEqual(expected)
+        stock: { beginningDatetime: '2019-05-15T20:00:00Z', id: 'AA', offerId: 'CCCC' },
+      })
     })
   })
 

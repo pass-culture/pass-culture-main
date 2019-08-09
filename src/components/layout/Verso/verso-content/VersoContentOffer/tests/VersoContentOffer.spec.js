@@ -17,11 +17,11 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       id: 'X9',
       isEvent: false,
       isThing: true,
+      offerType: {
+        appLabel: 'Presse — Abonnements',
+      },
       product: {
         description: 'fake description do not use',
-        offerType: {
-          appLabel: 'Presse — Abonnements',
-        },
       },
       productId: 'QE',
       venue: {
@@ -44,11 +44,11 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
 
     const props = {
       bookables: [],
-      distance: "1",
+      distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: false,
       maxShownDates: 7,
-      offer
+      offer,
     }
 
     // when
@@ -63,11 +63,11 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     // given
     const props = {
       bookables: [],
-      distance: "1",
+      distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: false,
       maxShownDates: 7,
-      offer
+      offer,
     }
 
     // when
@@ -81,11 +81,11 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     // given
     const props = {
       bookables: [],
-      distance: "1",
+      distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: false,
       maxShownDates: 7,
-      offer
+      offer,
     }
 
     // when
@@ -102,11 +102,11 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
 
     const props = {
       bookables: [{ id: 1 }, { id: 2 }, { id: 3 }],
-      distance: "1",
+      distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: false,
       maxShownDates: 1,
-      offer
+      offer,
     }
 
     // when
@@ -124,11 +124,11 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
         { bookinglimitDatetime: '2019-04-01', id: 1 },
         { bookinglimitDatetime: '2019-04-01', id: 2 },
       ],
-      distance: "1",
+      distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: false,
       maxShownDates: 1,
-      offer
+      offer,
     }
 
     // when
@@ -143,11 +143,11 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     // given
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
-      distance: "1",
+      distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: true,
       maxShownDates: 1,
-      offer
+      offer,
     }
 
     // when
@@ -162,11 +162,11 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     // given
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
-      distance: "1",
+      distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: true,
       maxShownDates: 1,
-      offer
+      offer,
     }
 
     // when
@@ -185,11 +185,11 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     offer.venue.publicName = null
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
-      distance: "1",
+      distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: true,
       maxShownDates: 1,
-      offer
+      offer,
     }
 
     // when
@@ -208,11 +208,11 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     const nbsp = '\u00a0'
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
-      distance: "1",
+      distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
       isFinished: true,
       maxShownDates: 1,
-      offer
+      offer,
     }
     navigationLink.mockReturnValue('this is a fake url')
 

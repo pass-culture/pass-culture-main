@@ -2,7 +2,6 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import Details from '../Details'
-import RectoContainer from '../../Recto/RectoContainer'
 import VersoContainer from '../../Verso/VersoContainer'
 
 describe('src | components | layout | Details | Details', () => {
@@ -10,22 +9,12 @@ describe('src | components | layout | Details | Details', () => {
 
   beforeEach(() => {
     props = {
-      hasReceivedData: false,
-      history: {
-        push: jest.fn(),
-        replace: jest.fn(),
-      },
-      location: {
-        pathname: '',
-        search: '',
-      },
+      bookingPath: 'fake/path',
       match: {
         params: {
           details: undefined,
         },
       },
-      needsToRequestGetData: false,
-      requestGetData: jest.fn(),
     }
   })
 
@@ -38,27 +27,13 @@ describe('src | components | layout | Details | Details', () => {
   })
 
   describe('render()', () => {
-    it('should render just VersoContainer', () => {
+    it('should render VersoContainer', () => {
       // when
       const wrapper = shallow(<Details {...props} />)
 
       // then
       const versoContainer = wrapper.find(VersoContainer)
       expect(versoContainer).toHaveLength(1)
-    })
-
-    it('should render VersoContainer and RectoContainer', () => {
-      // given
-
-      // when
-      const wrapper = shallow(<Details {...props} />)
-      wrapper.setState({ forceDetailsVisible: true })
-
-      // then
-      const versoContainer = wrapper.find(VersoContainer)
-      const rectoContainer = wrapper.find(RectoContainer)
-      expect(versoContainer).toHaveLength(1)
-      expect(rectoContainer).toHaveLength(1)
     })
   })
 })

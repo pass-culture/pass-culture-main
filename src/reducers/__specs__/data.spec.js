@@ -18,6 +18,7 @@ describe('src | reducers | data', () => {
         offers: [],
         readRecommendations: [],
         recommendations: [],
+        stocks: [],
         types: [],
         users: [],
       }
@@ -69,6 +70,7 @@ describe('src | reducers | data', () => {
           mediations: [],
           offers: [],
           recommendations: [],
+          stocks: [],
         },
         type: 'ASSIGN_DATA',
       })

@@ -5,7 +5,7 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
     it('should return an object containing bookables, current recommendation and information regarding the offer expiration', () => {
       // given
       const mediation = {
-        id: 2
+        id: 2,
       }
       const offer = {
         id: 1,
@@ -21,13 +21,14 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
         offerId: 1,
         uniqId: 3,
       }
-      const initialState = {
+      const state = {
         data: {
           bookings: [],
           favorites: [],
           mediations: [mediation],
           offers: [offer],
           recommendations: [recommendation],
+          stocks: [{ offerId: 1 }],
         },
         geolocation: {
           latitude: 41.1,
@@ -43,7 +44,7 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
       }
 
       // when
-      const result = mapStateToProps(initialState, props)
+      const result = mapStateToProps(state, props)
 
       // then
       expect(result.bookables).not.toBeNull()

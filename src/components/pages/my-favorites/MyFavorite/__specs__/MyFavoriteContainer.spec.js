@@ -193,6 +193,7 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
         data: {
           bookings: [],
           offers: [offer],
+          stocks: [],
         },
         geolocation: {
           latitude: 48.8636537,
@@ -208,7 +209,7 @@ describe('src | components | pages | my-favorite | MyFavorite | MyFavoriteContai
         detailsUrl: '//details/ME',
         humanizeRelativeDistance: '10 km',
         offer,
-        status: null,
+        status: { class: 'cancelled', label: 'Annulé' },
       })
     })
   })

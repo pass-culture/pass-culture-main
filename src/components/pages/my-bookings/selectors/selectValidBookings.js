@@ -1,10 +1,12 @@
 import { createSelector } from 'reselect'
 
 export const getIsNotAnActivationOffer = offer => {
-  const { type: offerType } = offer
-  if (!offerType) return false
-  const isActivationType =
-    offerType === 'EventType.ACTIVATION' || offerType === 'ThingType.ACTIVATION'
+  const { type } = offer
+
+  if (!type) return false
+
+  const isActivationType = type === 'EventType.ACTIVATION' || type === 'ThingType.ACTIVATION'
+
   return !isActivationType
 }
 
@@ -17,9 +19,7 @@ export const selectValidBookings = createSelector(
       bookings.find(booking => {
         const stock = stocks.find(stock => stock.id === booking.stockId)
 
-        if (!stock) {
-          return false
-        }
+        if (!stock) return false
 
         return stock.offerId === offer.id
       })

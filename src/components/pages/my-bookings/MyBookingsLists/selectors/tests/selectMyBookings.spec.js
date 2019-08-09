@@ -1,19 +1,20 @@
 import moment from 'moment'
 
-import { allBookingsDataset, inExactTwoDays } from './data/selectBookings'
+import { allBookingsDataset, allStocksDataset, inExactTwoDays } from './data/selectBookings'
 import { filterBookingsInMoreThanTwoDaysOrPast } from '../selectOtherBookings'
 
-describe('filterBookingsInMoreThanTwoDaysOrPast', () => {
+describe('filterBookingsInMoreThanTwoDaysOrPast()', () => {
   it('returns all bookings excepts >= today hh:mm:s', () => {
     // given
     const now = moment()
-    const allBookings = allBookingsDataset(now)
+    const allBookings = allBookingsDataset()
+    const stocks = allStocksDataset(now)
 
     // when
-    const results = filterBookingsInMoreThanTwoDaysOrPast(allBookings, now)
+    const results = filterBookingsInMoreThanTwoDaysOrPast(stocks, allBookings, now)
 
     // then
-    expect(results).toHaveLength(6)
+    expect(results).toHaveLength(4)
     expect(
       results
         .filter(booking => booking.stock && booking.stock.beginningDatetime)

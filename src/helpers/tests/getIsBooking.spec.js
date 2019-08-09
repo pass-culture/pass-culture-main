@@ -6,7 +6,7 @@ describe('src | helpers | getIsBooking', () => {
       // given
       const match = {
         params: {
-          bookings: 'reservations',
+          booking: 'reservations',
         },
       }
 
@@ -23,7 +23,7 @@ describe('src | helpers | getIsBooking', () => {
       // given
       const match = {
         params: {
-          bookings: 'reservations',
+          booking: 'reservations',
           cancellation: 'annulation',
         },
       }
@@ -41,7 +41,7 @@ describe('src | helpers | getIsBooking', () => {
       // given
       const match = {
         params: {
-          bookings: 'reservations',
+          booking: 'reservations',
           cancellation: 'annulation',
           confirmation: 'confirmation',
         },

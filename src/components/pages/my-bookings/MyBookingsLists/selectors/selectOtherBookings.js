@@ -13,8 +13,10 @@ export const filterBookingsInMoreThanTwoDaysOrPast = (stocks, bookings, now) => 
     const hasBeginningDatetime = Boolean(date)
     const isBeforeNow = moment(date).isBefore(nowMoment)
     const isAfterTwoDays = moment(date).isAfter(twoDaysFromNow)
+
     return !hasBeginningDatetime || isAfterTwoDays || isBeforeNow
   })
+
   return filteredBookings
 }
 

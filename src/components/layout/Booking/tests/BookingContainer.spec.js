@@ -96,6 +96,7 @@ describe('src | components | layout | Booking', () => {
         mediations: [],
         offers: [offer],
         recommendations: [recommendation],
+        stocks: [],
       },
       geolocation: {
         latitude: 48.8637404,
@@ -124,13 +125,12 @@ describe('src | components | layout | Booking', () => {
         const result = mapStateToProps(state, ownProps)
 
         // then
-        const expected = {
+        expect(result).toStrictEqual({
           bookables: [],
           booking: state.data.bookings[0],
           offer: state.data.offers[0],
           recommendation: state.data.recommendations[0],
-        }
-        expect(result).toStrictEqual(expected)
+        })
       })
     })
   })

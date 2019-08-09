@@ -16,6 +16,7 @@ describe('src | selectors | selectRecommendationByMatch', () => {
         mediations: [],
         offers: [offer],
         recommendations: [recommendation],
+        stocks: [{ offerId }],
       },
     }
     const match = {
@@ -50,6 +51,7 @@ describe('src | selectors | selectRecommendationByMatch', () => {
         mediations: [mediation],
         offers: [offer],
         recommendations: [recommendation],
+        stocks: [{ offerId }],
       },
     }
     const match = {

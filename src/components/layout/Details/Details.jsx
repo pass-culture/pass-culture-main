@@ -34,21 +34,11 @@ class Details extends PureComponent {
 
 Details.propTypes = {
   bookingPath: PropTypes.string.isRequired,
-  hasReceivedData: PropTypes.bool.isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-  location: PropTypes.shape({
-    pathname: PropTypes.string,
-    search: PropTypes.string,
-  }).isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
       details: PropTypes.string,
     }).isRequired,
   }).isRequired,
-  needsToRequestGetData: PropTypes.bool.isRequired,
-  requestGetData: PropTypes.func.isRequired,
 }
 
 export default Details

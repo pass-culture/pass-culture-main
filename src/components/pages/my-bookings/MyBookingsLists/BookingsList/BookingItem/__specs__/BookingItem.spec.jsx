@@ -1,4 +1,5 @@
 import { shallow } from 'enzyme'
+import moment from 'moment'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
@@ -24,6 +25,8 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
   let props
   let thumbUrl
   let token
+  const now = moment()
+  const twoDaysAfterNow = now.add(2, 'days').format()
 
   beforeEach(() => {
     token = 'g9g9g9'
@@ -55,6 +58,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
           departementCode: '93',
         },
       },
+      stock: { id: 'future stock 1', beginningDateTime: twoDaysAfterNow },
     }
   })
 
@@ -88,8 +92,8 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
 
   it('should render a booking with a date', () => {
     // given
-    props.booking.stock.beginningDatetime = '2019-07-08T20:00:00Z'
-    props.booking.stock.endDatetime = '2019-07-08T23:00:00Z'
+    props.stock.beginningDatetime = '2019-07-08T20:00:00Z'
+    props.stock.endDatetime = '2019-07-08T23:00:00Z'
 
     // when
     const wrapper = shallow(<BookingItem {...props} />)

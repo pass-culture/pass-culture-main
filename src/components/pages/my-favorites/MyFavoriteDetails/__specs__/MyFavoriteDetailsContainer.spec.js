@@ -8,7 +8,11 @@ describe('src | components | pages | my-favorite | MyFavoriteDetails | MyFavorit
       // given
       const state = {
         data: {
-          favorites: [],
+          favorites: [
+            {
+              id: 'GA',
+            },
+          ],
         },
       }
       const ownProps = {
@@ -24,8 +28,8 @@ describe('src | components | pages | my-favorite | MyFavoriteDetails | MyFavorit
 
       // then
       expect(props).toStrictEqual({
-        hasReceivedData: false,
-        needsToRequestGetData: true,
+        hasReceivedData: true,
+        needsToRequestGetData: false,
       })
     })
   })
