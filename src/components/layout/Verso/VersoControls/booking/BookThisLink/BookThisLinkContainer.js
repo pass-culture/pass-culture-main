@@ -12,7 +12,7 @@ const getDestinationLink = (params, url, search = '') => {
   if (params.bookings) {
     return url
   }
-  return `${url}/reservations${search}`
+  return `${url}/reservation${search}`
 }
 
 export const mapStateToProps = (state, ownProps) => {
