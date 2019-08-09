@@ -104,26 +104,39 @@ def _remove_excluded_keys(keys):
     return filter(lambda k: not isinstance(k, str) or (isinstance(k, str) and not k.startswith('-')), keys)
 
 
+@singledispatch
 def serialize(value):
-    if isinstance(value, sqlalchemy.Enum):
-        return value.name
-    elif isinstance(value, enum.Enum):
-        return value.value
-    elif isinstance(value, datetime):
-        return _format_into_ISO_8601(value)
-    elif isinstance(value, DateTimeRange):
-        return {
-            'start': value.lower,
-            'end': value.upper
-        }
-    elif isinstance(value, list) \
-            and len(value) > 0 \
-            and isinstance(value[0], DateTimeRange):
-        return list(map(lambda d: {'start': d.lower,
-                                   'end': d.upper},
-                        value))
-    elif isinstance(value, DateTimes):
-        return [_format_into_ISO_8601(v) for v in value.datetimes]
+    return value
 
-    else:
-        return value
+
+@serialize.register(sqlalchemy.Enum)
+def _(value):
+    return value.name
+
+
+@serialize.register(enum.Enum)
+def _(value):
+    return value.value
+
+
+@serialize.register(datetime)
+def _(value):
+    return _format_into_ISO_8601(value)
+
+
+@serialize.register(DateTimeRange)
+def _(value):
+    return {
+        'start': value.lower,
+        'end': value.upper
+    }
+
+
+@serialize.register(list)
+def _(value):
+    return list(map(lambda d: serialize(d), value))
+
+
+@serialize.register(DateTimes)
+def _(value):
+    return [_format_into_ISO_8601(v) for v in value.datetimes]
