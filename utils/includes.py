@@ -9,8 +9,6 @@ OFFERER_INCLUDES = [
     },
     "nOffers",
     "isValidated",
-    "bic",
-    "iban",
     "-validationToken"
 ]
 
@@ -251,7 +249,6 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
     }
 ]
 
-
 PRO_BOOKING_INCLUDES = [
     {
         "key": "stock",
@@ -272,11 +269,25 @@ PRO_BOOKING_INCLUDES = [
     },
     {
         "key": 'user',
-        "resolve": (lambda element: {
-            'email': element['email'],
-            'firstName': element['firstName'],
-            'lastName': element['lastName']
-        }),
+        "sub_joins": [
+            '-id',
+            '-canBookFreeOffers',
+            '-clearTextPassword',
+            '-culturalSurveyId',
+            '-dateCreated',
+            '-dateOfBirth',
+            '-departementCode',
+            '-isAdmin',
+            '-needsToFillCulturalSurvey',
+            '-offerers',
+            '-password',
+            '-phoneNumber',
+            '-postalCode',
+            '-publicName',
+            '-resetPasswordToken',
+            '-resetPasswordTokenValidityLimit',
+            '-validationToken'
+        ]
     }
 ]
 
@@ -290,7 +301,6 @@ VENUE_INCLUDES = [
     },
     {
         "key": 'venueProviders',
-        "resolve": (lambda element: element['provider']),
         "sub_joins": ["provider"]
     },
 ]
@@ -309,39 +319,36 @@ OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
         "key": "UserOfferers",
         "sub_joins": [{
             "key": "user",
-            "resolve": (lambda element: {
-                'email': element['email'],
-                'publicName': element['publicName'],
-                'dateCreated': element['dateCreated'],
-                'departementCode': element['departementCode'],
-                'canBookFreeOffers': element['canBookFreeOffers'],
-                'isAdmin': element['isAdmin'],
-                'firstName': element['firstName'],
-                'lastName': element['lastName'],
-                'postalCode': element['postalCode'],
-                'phoneNumber': element['phoneNumber'],
-                'validationToken': element['validationToken']
-            })
+            "sub_joins": [
+                '-resetPasswordTokenValidityLimit',
+                '-resetPasswordToken',
+                '-clearTextPassword',
+                '-password',
+                '-dateOfBirth',
+                '-id',
+            ]
         }]
     },
     {
         "key": "managedVenues",
-        "resolve": (lambda element: {
-            'id': element['id'],
-            'name': element['name'],
-            'siret': element['siret'],
-            'managingOffererId': element['managingOffererId'],
-            'bookingEmail': element['bookingEmail'],
-            'address': element['address'],
-            'postalCode': element['postalCode'],
-            'city': element['city'],
-            'departementCode': element['departementCode'],
-            'comment': element['comment'],
-            'validationToken': element['validationToken']
-        })
+        "sub_joins": [
+            '-publicName',
+            '-thumbCount',
+            '-idAtProviders',
+            '-isVirtual',
+            '-lastProviderId',
+            '-latitude',
+            '-longitude',
+            '-dateModifiedAtLastProvider',
+            '-firstThumbDominantColor'
+        ]
     }
 ]
 
 MEDIATION_INCLUDES = [
     "thumbUrl"
+]
+
+FEATURE_INCLUDES = [
+    'nameKey'
 ]

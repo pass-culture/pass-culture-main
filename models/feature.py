@@ -2,9 +2,9 @@ import enum
 
 from sqlalchemy import String, Column, Enum
 
-from models.pc_object import PcObject
-from models.deactivable_mixin import DeactivableMixin
 from models.db import Model
+from models.deactivable_mixin import DeactivableMixin
+from models.pc_object import PcObject
 
 
 class FeatureToggle(enum.Enum):
@@ -15,3 +15,7 @@ class FeatureToggle(enum.Enum):
 class Feature(PcObject, Model, DeactivableMixin):
     name = Column(Enum(FeatureToggle), unique=True, nullable=False)
     description = Column(String(300), nullable=False)
+
+    @property
+    def nameKey(self):
+        return str(self.name).replace('FeatureToggle.', '')

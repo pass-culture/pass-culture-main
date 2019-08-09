@@ -50,9 +50,13 @@ def list_offerers():
     if keywords is not None:
         query = filter_offerers_with_keywords_string(query.join(Venue), keywords)
 
+    if only_validated_offerers or current_user.isAdmin:
+        maybe_include = OFFERER_INCLUDES
+    else:
+        maybe_include = NOT_VALIDATED_OFFERER_INCLUDES
+
     return handle_rest_get_list(Offerer,
-                                include=OFFERER_INCLUDES if (
-                                        only_validated_offerers or current_user.isAdmin) else NOT_VALIDATED_OFFERER_INCLUDES,
+                                include=maybe_include,
                                 order_by=Offerer.name,
                                 page=request.args.get('page'),
                                 paginate=10,

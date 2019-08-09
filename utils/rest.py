@@ -118,7 +118,7 @@ def check_order_by(order_by):
 
 def handle_rest_get_list(modelClass, query=None,
                          refine=None, order_by=None, flask_request=None,
-                         include=None, resolve=None, print_elements=None,
+                         include=None, print_elements=None,
                          paginate=None, page=None, populate=None):
 
     if flask_request is None:
@@ -151,12 +151,7 @@ def handle_rest_get_list(modelClass, query=None,
         objects = list(map(populate, objects))
 
     # DICTIFY
-    elements = [
-        as_dict(o,
-            include=include,
-            resolve=resolve,
-        ) for o in query
-    ]
+    elements = [ as_dict(o, include=include) for o in query]
 
     # PRINT
     if print_elements:

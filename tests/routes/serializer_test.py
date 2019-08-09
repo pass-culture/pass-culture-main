@@ -11,7 +11,8 @@ from utils.includes import OFFERER_FOR_PENDING_VALIDATION_INCLUDES
 
 @clean_database
 def test_serializer_as_dict_do_not_return_excluded_keys(app):
-    user = create_user()
+    user = create_user(postal_code=None)
+
     offerer = create_offerer()
     user_offerer = create_user_offerer(user, offerer)
     PcObject.save(user_offerer)
@@ -30,8 +31,11 @@ def test_serializer_as_dict_do_not_return_excluded_keys(app):
 
     json_response = as_dict(user, include=USER_INCLUDES)
 
+    assert 'culturalSurveyId' not in json_response
+    assert 'resetPasswordToken' not in json_response
+    assert 'resetPasswordTokenValidityLimit' not in json_response
+    assert 'validationToken' not in json_response
     assert 'password' not in json_response
-
 
 @clean_database
 def test_serializer_as_dict_return_relationship(app):
@@ -47,6 +51,15 @@ def test_serializer_as_dict_return_relationship(app):
     json_response = as_dict(user, include=USER_INCLUDES)
 
     assert 'offerers' in json_response
+
+@clean_database
+def test_ftdc(app):
+    mediation = create_mediation(None)
+    mediation.firstThumbDominantColor = b'\x8900ff'
+
+    json_response = as_dict(mediation)
+
+    assert json_response['firstThumbDominantColor'] == [137, 48, 48, 102, 102]
 
 
 @clean_database
@@ -85,25 +98,18 @@ def test_serializer_as_dict_with_one_resolve_in_include(app):
 
     RESOLVE_INCLUDES = [{
         "key": "managedVenues",
-        "resolve": (lambda element: {
-            'id': element['id'],
-            'name': element['name'],
-            'siret': element['siret'],
-            'managingOffererId': element['managingOffererId'],
-            'bookingEmail': element['bookingEmail'],
-            'address': element['address'],
-            'postalCode': element['postalCode'],
-            'city': element['city'],
-            'departementCode': element['departementCode'],
-            'comment': element['comment'],
-            'validationToken': element['validationToken']
-        })
+        "sub_joins":
+            [
+                'id', 'name', 'siret', 'managingOffererId', 'bookingEmail',
+                'address', 'postalCode', 'city', 'departementCode', 'comment', 'validationToken'
+            ]
     }]
     offerers = find_all_pending_validation()
     json_response = []
     for offerer in offerers:
         json_response.append(as_dict(offerer, include=RESOLVE_INCLUDES))
 
+    assert isinstance(venue1, PcObject)
     assert 'managedVenues' in json_response[0]
     assert 'managedVenues' in json_response[1]
 
@@ -125,21 +131,12 @@ def test_serializer_as_dict_with_one_resolve_list_in_include(app):
         "key": "UserOfferers",
         "sub_joins": [{
             "key": "user",
-            "resolve": (lambda element: {
-                'email': element['email'],
-                'publicName': element['publicName'],
-                'dateCreated': element['dateCreated'],
-                'departementCode': element['departementCode'],
-                'canBookFreeOffers': element['canBookFreeOffers'],
-                'isAdmin': element['isAdmin'],
-                'firstName': element['firstName'],
-                'lastName': element['lastName'],
-                'postalCode': element['postalCode'],
-                'phoneNumber': element['phoneNumber'],
-                'validationToken': element['validationToken']
-            })
+            "sub_joins": [
+                'email', 'publicName', 'dateCreated', 'departementCode', 'canBookFreeOffers',
+                'isAdmin', 'firstName', 'lastName', 'postalCode', 'phoneNumber', 'validationToken'
+            ]
         }]
-    },]
+    }, ]
     offerers = find_all_pending_validation()
     json_response = []
     for offerer in offerers:

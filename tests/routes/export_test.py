@@ -175,7 +175,11 @@ def test_pending_validation_return_only_requested_data(app):
                    'phoneNumber': '0612345678',
                    'postalCode': '93100',
                    'publicName': 'John Doe',
-                   'validationToken': None}}],
+                   'validationToken': None,
+                   'modelName': 'User',
+                   'culturalSurveyId': None,
+                   'needsToFillCulturalSurvey' : False
+                   }}],
         'managedVenues':
             [{'address': '123 rue de Paris',
               'bookingEmail': 'john.doe@test.com',
@@ -187,7 +191,8 @@ def test_pending_validation_return_only_requested_data(app):
               'name': 'La petite librairie',
               'postalCode': '93100',
               'siret': None,
-              'validationToken': 'venue_validation_token'
+              'validationToken': 'venue_validation_token',
+              'modelName': 'Venue'
               }]
     }
 

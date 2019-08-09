@@ -297,6 +297,5 @@ def _deserialize_datetime(key, value):
 
 
 def _is_human_id_column(column: Column) -> bool:
-    key = column.key
-    return (key == 'id' or key.endswith('Id')) and \
-           (isinstance(column.type, BigInteger) or isinstance(column.type, Integer))
+    if column is not None:
+        return (column.key == 'id' or column.key.endswith('Id')) and (isinstance(column.type, BigInteger) or isinstance(column.type, Integer))

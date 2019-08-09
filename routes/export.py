@@ -130,12 +130,10 @@ def get_pending_validation():
     check_user_is_admin(current_user)
     result = []
     offerers = offerer_queries.find_all_pending_validation()
-    print("TOTO: %s" % offerers)
 
     for offerer in offerers:
         result.append(as_dict(offerer, include=OFFERER_FOR_PENDING_VALIDATION_INCLUDES))
 
-    print(result)
     return jsonify(result), 200
 
 

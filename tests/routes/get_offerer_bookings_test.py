@@ -115,7 +115,8 @@ class Get:
             assert response_first_booking_json['user'] == {
                 'firstName': user.firstName,
                 'email': user.email,
-                'lastName': user.lastName
+                'lastName': user.lastName,
+                'modelName': 'User'
             }
 
         @clean_database
@@ -145,7 +146,8 @@ class Get:
             assert response_first_booking_json['user'] == {
                 'firstName': user.firstName,
                 'email': user.email,
-                'lastName': user.lastName
+                'lastName': user.lastName,
+                'modelName': 'User'
             }
 
         @clean_database
