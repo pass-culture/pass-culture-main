@@ -1,17 +1,11 @@
 import { Selector } from 'testcafe'
 import { fetchSandbox } from './helpers/sandboxes'
-import { getVersoWallet, getVersoWalletValue } from './helpers/getVersoWallet'
 import { ROOT_PATH } from '../src/utils/config'
 import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 
-let offerTitle = null
-let offerSubTitle = null
 const discoverURL = `${ROOT_PATH}decouverte`
 const dragButton = Selector('#dragButton')
-const versoOfferName = Selector('#verso-offer-name')
-const versoOfferVenue = Selector('#verso-offer-venue')
 const bookOfferButton = Selector('#verso-booking-button')
-const closeVersoLink = Selector('#deck .close-link')
 const openVersoButton = Selector('#deck-open-verso-button')
 const alreadyBookedOfferButton = Selector('#verso-already-booked-button')
 
@@ -30,32 +24,9 @@ fixture("04_03_01 Verso | L'utilisateur peut réserver l'offre payante").beforeE
     'webapp_08_booking',
     'get_non_free_thing_offer_with_active_mediation'
   )
-  offerTitle = offer.thingName
-  offerSubTitle = offer.venueName
   const offerURL = `${discoverURL}/${offer.id}/${mediationId}`
   await t.useRole(userRole).navigateTo(offerURL)
   await dragButton.with({ visibilityCheck: true })()
-})
-
-test("L'utilisateur doit pouvoir cliquer sur les chevrons pour ouvrir le verso", async t => {
-  await t
-    .expect(openVersoButton.exists)
-    .ok()
-    .click(openVersoButton)
-    .expect(closeVersoLink.exists)
-    .ok()
-})
-
-test("L'utilisateur a de l'argent sur son compte", async t => {
-  await t.click(openVersoButton)
-
-  const versoWallet = await getVersoWallet()
-  const versoWalletValue = await getVersoWalletValue()
-  await t
-    .expect(versoWallet)
-    .contains('€')
-    .expect(versoWalletValue)
-    .gte(0)
 })
 
 test("L'utilisateur peut réserver l'Offre", async t => {
@@ -67,13 +38,4 @@ test("L'utilisateur peut réserver l'Offre", async t => {
     .ok()
     .expect(bookOfferButton.textContent)
     .match(/([0-9]*\s€J’y vais !)/g)
-})
-
-test('Le titre et le nom du lieu sont affichés', async t => {
-  await t
-    .click(openVersoButton)
-    .expect(versoOfferName.textContent)
-    .contains(offerTitle)
-    .expect(versoOfferVenue.textContent)
-    .eql(offerSubTitle)
 })

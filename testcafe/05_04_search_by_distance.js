@@ -32,61 +32,6 @@ fixture(
     .click(toogleFilterButton)
 })
 
-test('Je vois le titre de la recherche par distance', async t => {
-  const title = Selector('#filter-by-distance').find('h2')
-
-  await t.expect(title.innerText).eql('OÙ')
-})
-
-test('Par défaut, le sélecteur est Toutes distances', async t => {
-  await t.expect(distanceOption.withText(distanceOptions[0].label).hasAttribute('selected').ok)
-})
-
-test('Je ne sélectionne aucun filtre et je clique sur filtrer', async t => {
-  await t.click(filterButton)
-  await t.expect(getPageUrl()).contains(`${ROOT_PATH}recherche/resultats/tout`)
-})
-
-test('Je sélectionne toutes distances et je clique sur filtrer', async t => {
-  await t
-    .click(distanceInput)
-    .click(distanceOption.withText(distanceOptions[0].label))
-    .expect(distanceOption.withText(distanceOptions[0].label).value)
-    .eql('20000')
-    .click(filterButton)
-    .expect(getPageUrl())
-    .contains(`${ROOT_PATH}recherche/resultats/tout`)
-})
-
-test('Je sélectionne toutes distances et je clique sur filtrer (rééecrire)', async t => {
-  await t
-    .click(distanceInput)
-    .click(distanceOption.withText(distanceOptions[1].label))
-    .click(distanceInput)
-    .click(distanceOption.withText(distanceOptions[0].label))
-    .click(filterButton)
-    .expect(getPageUrl())
-    .contains(`${ROOT_PATH}recherche/resultats/tout?distance=20000`)
-})
-
-test("Je sélectionne moins d'un km et je clique sur filtrer", async t => {
-  await t
-    .click(distanceInput)
-    .click(distanceOption.withText(distanceOptions[1].label))
-    .click(filterButton)
-    .expect(getPageUrl())
-    .contains(`${ROOT_PATH}recherche/resultats/tout?distance=1`)
-})
-
-test('Je sélectionne moins de 10 kms et je clique sur filtrer', async t => {
-  await t
-    .click(distanceInput)
-    .click(distanceOption.withText(distanceOptions[2].label))
-    .click(filterButton)
-    .expect(getPageUrl())
-    .contains(`${ROOT_PATH}recherche/resultats/tout?distance=10`)
-})
-
 test('Je sélectionne moins de 50 kms et je clique sur filtrer', async t => {
   await t
     .click(distanceInput)
@@ -94,19 +39,4 @@ test('Je sélectionne moins de 50 kms et je clique sur filtrer', async t => {
     .click(filterButton)
     .expect(getPageUrl())
     .contains(`${ROOT_PATH}recherche/resultats/tout?distance=50`)
-})
-
-test('Je fais une recherche, je retourne sur la home, je réouvre la fenêtre de recherche, le filtre par distance est réinitialisé avec la valeur par défaut', async t => {
-  await t
-    .click(distanceInput)
-    .click(distanceOption.withText(distanceOptions[2].label))
-    .click(filterButton)
-    .expect(getPageUrl())
-    .contains(`${ROOT_PATH}recherche/resultats/tout?distance=10`)
-    .click(Selector('.back-link'))
-    .expect(getPageUrl())
-    .contains(`${ROOT_PATH}recherche`)
-    .click(toogleFilterButton)
-    .expect(distanceOption.innerText)
-    .eql('Toutes distances')
 })

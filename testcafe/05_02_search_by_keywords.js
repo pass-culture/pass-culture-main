@@ -1,6 +1,5 @@
 import { Selector } from 'testcafe'
 
-import getPageUrl from './helpers/getPageUrl'
 import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
 import { ROOT_PATH } from '../src/utils/config'
@@ -23,23 +22,6 @@ fixture("O5_02_01 Recherche | J'effectue une recherche par mot-clé").beforeEach
   await t.useRole(userRole).navigateTo(baseUrl)
 })
 
-test("Je fais une recherche par mots-clés et je n'ai pas de résultats", async t => {
-  // given
-  const keyword = 'fake'
-  const resultUrl = `${baseUrl}/resultats/tout?mots-cles=${keyword}&page=1`
-
-  // when
-  await t
-    .wait(500)
-    .typeText(searchInput, keyword)
-    .click(keywordsSearchButton)
-    .wait(500)
-
-  // then
-  await t.expect(getPageUrl()).eql(resultUrl)
-  await t.expect(resultsTitle.innerText).eql('"FAKE" : 0 RÉSULTAT')
-})
-
 test("Je fais une recherche par mots-clés et j'ai plusieurs résultats", async t => {
   // given
   const keyword = 'ravage'
@@ -54,20 +36,4 @@ test("Je fais une recherche par mots-clés et j'ai plusieurs résultats", async 
   // then
   const expected = new RegExp(`"${keywordUpper}" : [0-9] RÉSULTATS`)
   await t.expect(resultsTitle.innerText).match(expected)
-})
-
-test("Je fais une recherche par mots-clés et j'ai un seul résultat", async t => {
-  // given
-  const keyword = 'narval'
-  const keywordUpper = keyword.toLocaleUpperCase()
-
-  // when
-  await t
-    .typeText(searchInput, keyword)
-    .click(keywordsSearchButton)
-    .wait(500)
-
-  // then
-  const expected = `"${keywordUpper}" : 1 RÉSULTAT`
-  await t.expect(resultsTitle.innerText).eql(expected)
 })
