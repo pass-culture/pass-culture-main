@@ -93,7 +93,7 @@ jobs:
       - run:
           name: Deploy Pro
           command: |
-            netlify deploy -e "${CIRCLE_BRANCH}" -t ${NETLIFY_TOKEN_TMP}
+            netlify deploy -e "${CIRCLE_BRANCH}" -t ${NETLIFY_TOKEN}
       - run:
           name: Check deployed version
           command: |
