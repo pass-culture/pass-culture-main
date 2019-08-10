@@ -1,4 +1,4 @@
-# Charte des codeurs pass-culture
+# Charte des codeurs pass Culture
 
 ## Global
 
@@ -77,9 +77,11 @@
 
 - Faire un nombre raisonnable de commit ;
 
-- Faire un `rebase master` régulièrement ;
+- Faire un `rebase master` quotidiennement ;
 
-- Poser des tests unitaires sur tout nouveau code quand c'est pertinent ;
+- Poser des tests unitaires sur tout nouveau code ;
+
+- Poser des tests unitaires avant sur du code legacy ;
 
 - Poser des tests end to end quand c'est un chemin critique (défini par le développeur) ;
 
@@ -92,3 +94,41 @@
 - Supprimer les erreurs JavaScript dans la console du navigateur et sur les tests unitaires ;
 
 - Mettre le lien de la pull request dans le ticket Jira.
+
+## Les étapes pour une bonne code review
+
+- S'assigner le ticket Jira ;
+
+- Lire le ticket Jira pour comprendre le besoin ;
+
+- Chasser les bugs en lisant le code ;
+
+- Respecter nos standards ;
+
+- Se timeboxer ;
+
+- Résoudre les problèmes :
+
+  - en pair (fortement conseillé) ;
+
+    - Préparer sa review ;
+
+    - En discuter ;
+
+  - via Github ;
+
+    - Écrire un commentaire (relecteur) ;
+
+    - Mettre un pouce pour dire que l'on accepte la correction proposée (codeur) ;
+
+    - Cliquer sur le bouton `resolve conversation` pour valider la correction (relecteur) ;
+
+  - en MOB ;
+
+    - Quand c'est un changement de design ;
+
+- Poser des questions ;
+
+- Réassigner le ticket ;
+
+- Au moins **un** `Approve` avant de merger.
