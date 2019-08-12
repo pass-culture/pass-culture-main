@@ -68,22 +68,17 @@ class Stock(PcObject,
     remainingQuantity = column_property(
         select([func.greatest(available - func.coalesce(func.sum(Booking.quantity), 0), 0)])
             .where(
-                and_(
-                    Booking.stockId == id,
-                    or_(
-                        and_(Booking.isUsed == False,
-                             Booking.isCancelled == False),
-                        and_(Booking.isUsed == True,
-                             Booking.dateUsed > dateModified)
-                    )
+            and_(
+                Booking.stockId == id,
+                or_(
+                    and_(Booking.isUsed == False,
+                         Booking.isCancelled == False),
+                    and_(Booking.isUsed == True,
+                         Booking.dateUsed > dateModified)
                 )
+            )
         )
     )
-
-    # TODO: add pmr
-    # pmrGroupSize = Column(db.Integer,
-    #                         nullable=False,
-    #                         default=1)
 
     groupSize = Column(Integer,
                        nullable=False,

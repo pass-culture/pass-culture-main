@@ -230,7 +230,6 @@ class Patch:
 
                 # Then
                 assert response.status_code == 400
-                print(response.json)
                 assert response.json['global'] == ["la quantité disponible pour cette offre est atteinte"]
 
     class Returns403:

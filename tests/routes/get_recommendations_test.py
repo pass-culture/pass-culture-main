@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from pprint import pprint
 
 from models import PcObject, \
     EventType
@@ -14,7 +13,7 @@ from tests.test_utils import create_event_occurrence, \
     create_product_with_thing_type, \
     create_offer_with_thing_product, \
     create_user, \
-    create_venue, create_product_with_event_type
+    create_venue
 from utils.date import strftime
 
 TWENTY_DAYS_FROM_NOW = datetime.utcnow() + timedelta(days=20)
@@ -389,7 +388,6 @@ class Get:
             # Then
             recommendations = response.json
             assert response.status_code == 200
-            pprint(recommendations[0]['offer'])
             assert recommendations[0]['offer']['dateRange'] == [
                 strftime(self.three_days_from_now), strftime(self.three_days_and_one_hour_from_now)
             ]

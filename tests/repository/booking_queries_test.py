@@ -130,19 +130,19 @@ class FindAllOffererBookingsByVenueIdTest:
         target_stock = create_stock_from_offer(target_offer, available=100, price=20)
         other_stock = create_stock_from_offer(other_offer, available=150, price=16)
 
-        ohter_booking_1 = create_booking(user, target_stock, venue, recommendation=None, quantity=2,
+        other_booking_1 = create_booking(user, target_stock, venue, recommendation=None, quantity=2,
                                          date_created=datetime(2020, 5, 30))
         target_booking_1 = create_booking(user, target_stock, venue, recommendation=None, quantity=2,
                                           date_created=datetime(2020, 6, 1))
         target_booking_2 = create_booking(user, target_stock, venue, recommendation=None, quantity=2,
                                           date_created=datetime(2020, 6, 30))
-        ohter_booking_2 = create_booking(user, target_stock, venue, recommendation=None, quantity=2,
+        other_booking_2 = create_booking(user, target_stock, venue, recommendation=None, quantity=2,
                                          date_created=datetime(2020, 7, 1))
 
-        ohter_booking_3 = create_booking(user, other_stock, venue, recommendation=None, quantity=2,
+        other_booking_3 = create_booking(user, other_stock, venue, recommendation=None, quantity=2,
                                          date_created=datetime(2020, 6, 1))
 
-        PcObject.save(ohter_booking_1, ohter_booking_2, ohter_booking_3, target_booking_1, target_booking_2)
+        PcObject.save(other_booking_1, other_booking_2, other_booking_3, target_booking_1, target_booking_2)
 
         target_offer_id = target_offer.id
 
@@ -181,11 +181,11 @@ class FindAllOffererBookingsByVenueIdTest:
                                                                                      "%Y-%m-%dT%H:%M:%S.%fZ"))
 
         target_booking = create_booking(user, target_stock, venue, recommendation=None, quantity=2)
-        ohter_booking_1 = create_booking(user, other_stock_1, venue, recommendation=None, quantity=2)
-        ohter_booking_2 = create_booking(user, other_stock_2, venue, recommendation=None, quantity=2)
-        ohter_booking_3 = create_booking(user, other_stock_3, venue, recommendation=None, quantity=2)
+        other_booking_1 = create_booking(user, other_stock_1, venue, recommendation=None, quantity=2)
+        other_booking_2 = create_booking(user, other_stock_2, venue, recommendation=None, quantity=2)
+        other_booking_3 = create_booking(user, other_stock_3, venue, recommendation=None, quantity=2)
 
-        PcObject.save(ohter_booking_1, ohter_booking_2, target_booking, ohter_booking_3)
+        PcObject.save(other_booking_1, other_booking_2, target_booking, other_booking_3)
 
         target_offer_id = target_offer.id
 

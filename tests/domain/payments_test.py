@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime
 from decimal import Decimal
-from pprint import pprint
 from unittest.mock import Mock
 
 import pytest
@@ -40,7 +39,7 @@ def test_create_payment_for_booking_with_common_information(app):
     assert payment.amount == Decimal(10)
     assert payment.reimbursementRule == ReimbursementRules.PHYSICAL_OFFERS.value.description
     assert payment.reimbursementRate == ReimbursementRules.PHYSICAL_OFFERS.value.rate
-    assert payment.comment == None
+    assert payment.comment is None
     assert payment.author == 'batch'
     assert payment.transactionLabel == 'pass Culture Pro - remboursement 2nde quinzaine 10-2018'
 
@@ -494,7 +493,6 @@ class GroupPaymentsByStatusTest:
         groups = group_payments_by_status(payments)
 
         # then
-        pprint(groups)
         assert len(groups['SENT']) == 1
         assert len(groups['NOT_PROCESSABLE']) == 1
         assert len(groups['ERROR']) == 2

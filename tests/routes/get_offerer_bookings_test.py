@@ -532,5 +532,4 @@ class Get:
 
 
 def _get_offer_type(response_json):
-    print(response_json)
     return response_json['stock']['resolvedOffer']['product']['offerType']
