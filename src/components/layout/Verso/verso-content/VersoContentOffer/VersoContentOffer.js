@@ -163,6 +163,8 @@ class VersoContentOffer extends PureComponent {
             <a
               className="distance"
               href={navigationLink(latitude, longitude)}
+              rel="noopener noreferrer"
+              target="_blank"
             >
               <span>{distance}&nbsp;</span>
               <Icon

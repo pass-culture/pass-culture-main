@@ -37,6 +37,21 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     }
   })
 
+  it('should open link in new navigator tab', () => {
+    // given
+    const props = {
+      distance: '1',
+      handleRequestMusicAndShowTypes: jest.fn(),
+      offer,
+    }
+
+    // when
+    const wrapper = shallow(<VersoContentOffer {...props} />)
+
+    // then
+    expect(wrapper.find('.distance').props()).toHaveProperty('target', '_blank')
+  })
+
   it('should match snapshot', () => {
     // given
     offer.isThing = false
@@ -55,7 +70,6 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     const wrapper = shallow(<VersoContentOffer {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 
