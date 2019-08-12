@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 
 from models.pc_object import PcObject
 from models.user_offerer import UserOfferer
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from utils.human_ids import dehumanize
 
 

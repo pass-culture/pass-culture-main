@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from models import Stock, Provider
 from models.pc_object import PcObject
-from routes.serializer import serialize
+from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_booking, create_user, create_user_offerer, create_offerer, create_venue, \
     create_stock_with_event_offer, create_stock_with_thing_offer, create_stock, create_offer_with_thing_product

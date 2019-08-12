@@ -2,13 +2,12 @@ from flask import current_app as app, jsonify, request, redirect
 
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain.departments import ILE_DE_FRANCE_DEPT_CODES
-from domain.password import check_password_strength
 from domain.user_emails import send_user_validation_email
 from models import ApiErrors, Deposit, Offerer, PcObject, User
 from models.feature import FeatureToggle
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from utils.config import IS_INTEGRATION
 from utils.feature import feature_required
 from utils.includes import USER_INCLUDES

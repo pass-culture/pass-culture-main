@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import pytest
 
 from models import Offer, PcObject, ApiErrors, ThingType, EventType, Product
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, create_user, create_mediation, create_recommendation, \
     create_stock_from_offer, create_deposit

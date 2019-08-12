@@ -15,7 +15,7 @@ from models.pc_object import PcObject
 from repository import offerer_queries
 from repository.offerer_queries import find_filtered_offerers
 from repository.venue_queries import find_filtered_venues
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from validation.exports import check_user_is_admin, check_get_venues_params, \
     check_get_offerers_params
 

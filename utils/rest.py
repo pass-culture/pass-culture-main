@@ -13,7 +13,7 @@ from models.db import db
 from models.soft_deletable_mixin import SoftDeletableMixin
 from sqlalchemy import text
 
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from utils.human_ids import dehumanize, humanize
 from utils.string_processing import dashify
 

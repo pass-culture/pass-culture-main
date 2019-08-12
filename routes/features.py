@@ -1,7 +1,7 @@
 from flask import current_app as app, jsonify
 
 from repository import feature_queries
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from utils.includes import FEATURE_INCLUDES
 
 

@@ -2,7 +2,7 @@
 from flask import current_app as app, jsonify
 
 from models import Product
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from utils.includes import EVENT_INCLUDES
 from utils.rest import load_or_404, \
     login_or_api_key_required

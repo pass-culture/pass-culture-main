@@ -1,19 +1,12 @@
-import enum
 from collections import OrderedDict
-from datetime import datetime
 from functools import singledispatch
 from typing import Iterable, Set, List
 
-import sqlalchemy
-from psycopg2._range import DateTimeRange
-from sqlalchemy import Integer
 from sqlalchemy.orm.collections import InstrumentedList
 
 from domain.reimbursement import BookingReimbursement
 from models import PcObject
-from models.pc_object import _format_into_ISO_8601
-from utils.date import DateTimes
-from utils.human_ids import humanize
+from routes.serialization.serializer import serialize
 
 
 @singledispatch
@@ -77,51 +70,3 @@ def _excluded_keys(include):
     excluded_keys = filter(lambda a: a.startswith('-'), string_keys)
     cleaned_keys = map(lambda a: a[1:], excluded_keys)
     return set(cleaned_keys)
-
-
-@singledispatch
-def serialize(value, column=None):
-    return value
-
-
-@serialize.register(int)
-def _(value, column=None):
-    if column is not None and isinstance(column.type, Integer) and column.key.lower().endswith('id'):
-        return humanize(value)
-
-    return value
-
-
-@serialize.register(sqlalchemy.Enum)
-def _(value, column=None):
-    return value.name
-
-
-@serialize.register(enum.Enum)
-def _(value, column=None):
-    return value.value
-
-
-@serialize.register(datetime)
-def _(value, column=None):
-    return _format_into_ISO_8601(value)
-
-
-@serialize.register(DateTimeRange)
-def _(value, column=None):
-    return {'start': value.lower, 'end': value.upper}
-
-
-@serialize.register(bytes)
-def _(value, column=None):
-    return list(value)
-
-
-@serialize.register(list)
-def _(value, column=None):
-    return list(map(lambda d: serialize(d), value))
-
-
-@serialize.register(DateTimes)
-def _(value, column=None):
-    return [_format_into_ISO_8601(v) for v in value.datetimes]

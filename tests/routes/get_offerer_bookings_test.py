@@ -2,9 +2,8 @@ from datetime import timedelta, datetime
 
 from domain.reimbursement import ReimbursementRules
 from models import PcObject, ThingType, EventType
-from routes.serializer import serialize
+from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
-from tests.routes.output import JSON_OUTPUT, remove_ids
 from tests.test_utils import create_booking, \
     create_deposit, \
     create_offer_with_event_product, \
@@ -23,36 +22,6 @@ from utils.human_ids import dehumanize, humanize
 
 class Get:
     class Returns200:
-        @clean_database
-        def expect_json_output(self, app):
-            # given
-            user_pro = create_user(can_book_free_offers=False)
-            user = create_user(email='test@email.com')
-            deposit = create_deposit(user, amount=24000)
-            PcObject.save(deposit)
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user_pro, offerer)
-            PcObject.save(user_offerer)
-
-            venue = create_venue(offerer)
-            stock1 = create_stock_with_event_offer(offerer, venue, price=20)
-            stock2 = create_stock_with_thing_offer(offerer, venue, offer=None, price=40)
-            stock3 = create_stock_with_thing_offer(offerer, venue, offer=None, price=22950)
-            booking1 = create_booking(user, stock1, venue, recommendation=None, quantity=2)
-            booking2 = create_booking(user, stock2, venue, recommendation=None, quantity=2)
-            booking3 = create_booking(user, stock3, venue, recommendation=None, quantity=1)
-            PcObject.save(booking1, booking2, booking3)
-
-            # when
-            response = TestClient(app.test_client()) \
-                .with_auth(user_pro.email) \
-                .get(
-                '/offerers/%s/bookings?order_by_column=booking_id&order=desc' % humanize(offerer.id))
-
-            # then
-            assert response.status_code == 200
-            assert remove_ids(response.json) == remove_ids(JSON_OUTPUT)
-
         @clean_database
         def when_user_managing_offerer_and_returns_bookings_with_their_reimbursements_ordered_newest_to_oldest(self,
                                                                                                                app):

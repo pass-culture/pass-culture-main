@@ -17,7 +17,7 @@ from repository.booking_queries import find_active_bookings_by_user_id, \
     find_all_bookings_for_stock_and_user, \
     find_all_offerer_bookings, find_all_digital_bookings_for_offerer
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
-from routes.serializer import serialize, as_dict
+from routes.serialization import serialize, as_dict
 from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, \
     WEBAPP_PATCH_POST_BOOKING_INCLUDES

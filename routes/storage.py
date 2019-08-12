@@ -7,7 +7,7 @@ from flask_login import login_required
 import models
 from connectors.thumb_storage import save_thumb
 from models import RightsType
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from utils.human_ids import dehumanize
 from utils.inflect_engine import inflect_engine
 from utils.object_storage import local_path

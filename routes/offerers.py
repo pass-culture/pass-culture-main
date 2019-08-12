@@ -12,7 +12,7 @@ from repository.offerer_queries import find_all_recommendations_for_offerer,\
                                        find_by_siren
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_not_validated, \
                                             filter_query_where_user_is_user_offerer_and_is_validated
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from utils.human_ids import dehumanize
 from utils.includes import PRO_BOOKING_INCLUDES, OFFERER_INCLUDES, NOT_VALIDATED_OFFERER_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email

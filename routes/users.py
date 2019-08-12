@@ -5,7 +5,7 @@ from flask_login import current_user, login_required, logout_user, login_user
 
 from models import PcObject
 from repository.user_queries import find_user_by_reset_password_token, find_user_by_email
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from utils.credentials import get_user_with_credentials
 from utils.includes import USER_INCLUDES
 from utils.login_manager import stamp_session, discard_session

@@ -6,7 +6,7 @@ from freezegun import freeze_time
 from models.feature import FeatureToggle, Feature
 from models.pc_object import PcObject
 from models.user import User
-from routes.serializer import serialize
+from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
 
 BASE_DATA = {

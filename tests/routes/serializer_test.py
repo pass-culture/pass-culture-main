@@ -2,7 +2,7 @@ from pprint import pprint
 
 from models import PcObject
 from repository.offerer_queries import find_all_pending_validation
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_user_offerer, create_product_with_event_type, \
     create_mediation, create_offer_with_event_product, create_venue

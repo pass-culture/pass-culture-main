@@ -9,7 +9,7 @@ from repository import venue_queries, offer_queries
 from repository.offer_queries import find_activation_offers, \
     find_offers_with_filter_parameters
 from repository.recommendation_queries import invalidate_recommendations
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from utils.config import PRO_URL
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES

@@ -9,7 +9,7 @@ from models.provider import Provider
 from models.user_offerer import RightsType
 from models.venue_provider import VenueProvider
 from repository.venue_provider_queries import find_venue_provider
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from utils.config import API_ROOT_PATH
 from utils.human_ids import dehumanize
 from utils.includes import VENUE_PROVIDER_INCLUDES

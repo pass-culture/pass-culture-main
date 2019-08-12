@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import pytest
 
 from models import ApiErrors, Venue
-from routes.serializer import serialize
+from routes.serialization import serialize
 from tests.test_utils import create_offer_with_thing_product, create_offer_with_event_product
 from utils.human_ids import humanize
 from validation.stocks import check_dates_are_allowed_on_new_stock, check_dates_are_allowed_on_existing_stock

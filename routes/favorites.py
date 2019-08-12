@@ -8,7 +8,7 @@ from domain.favorites import find_first_matching_booking_from_favorite
 from models import Mediation, Offer, PcObject, Favorite
 from models.feature import FeatureToggle
 from repository.favorite_queries import find_favorite_for_offer_mediation_and_user, find_all_favorites_by_user_id
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from utils.feature import feature_required
 from utils.human_ids import dehumanize
 from utils.includes import FAVORITE_INCLUDES, \

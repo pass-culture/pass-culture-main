@@ -7,7 +7,7 @@ from domain.mediations import create_new_mediation
 from models.mediation import Mediation
 from models.pc_object import PcObject
 from models.user_offerer import RightsType
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from utils.human_ids import dehumanize
 from utils.includes import MEDIATION_INCLUDES
 from utils.rest import ensure_current_user_has_rights, load_or_404, expect_json_data

@@ -13,7 +13,7 @@ from models.venue import Venue
 from repository import offerer_queries
 from repository.offer_queries import find_offer_by_id
 from repository.stock_queries import find_stocks_with_possible_filters
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from utils.human_ids import dehumanize
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \

@@ -3,7 +3,7 @@ from flask import current_app as app, jsonify
 
 import local_providers
 from repository.provider_queries import get_enabled_providers_for_pro
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 
 
 @app.route('/providers', methods=['GET'])

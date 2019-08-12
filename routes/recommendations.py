@@ -12,7 +12,7 @@ from recommendations_engine import create_recommendations_for_discovery, \
     OfferNotFoundException
 from repository.booking_queries import find_bookings_from_recommendation
 from repository.recommendation_queries import update_read_recommendations
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from utils.config import BLOB_SIZE
 from utils.human_ids import dehumanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, RECOMMENDATION_INCLUDES

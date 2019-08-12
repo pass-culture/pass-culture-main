@@ -8,7 +8,7 @@ from models import PcObject
 from models.user_offerer import RightsType
 from models.venue import Venue
 from repository.venue_queries import save_venue, find_by_managing_user
-from routes.serializer import as_dict
+from routes.serialization import as_dict
 from utils.includes import OFFER_INCLUDES, VENUE_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \

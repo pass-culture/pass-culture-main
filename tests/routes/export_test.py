@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from models import PcObject, Venue, Offerer
-from routes.serializer import serialize
+from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
 from tests.test_utils import create_user, create_user_offerer, \
     create_offerer, create_venue, create_event_occurrence, create_offer_with_event_product, \
