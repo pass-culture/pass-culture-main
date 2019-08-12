@@ -105,7 +105,7 @@
 
 - Respecter nos standards ;
 
-- Se timeboxer ;
+- Se timeboxer (ex : ne pas passer 1 journée sur la CR) ;
 
 - Résoudre les problèmes :
 
