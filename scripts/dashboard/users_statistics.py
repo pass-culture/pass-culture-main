@@ -15,8 +15,11 @@ def count_activated_users(departement_code = None):
     return user_repository.count_all_activated_users_by_departement(departement_code)
 
 
-def count_users_having_booked():
-    return user_repository.count_users_having_booked()
+def count_users_having_booked(departement_code = None):
+    if departement_code is None:
+        return user_repository.count_users_having_booked()
+
+    return user_repository.count_users_having_booked_by_departement_code(departement_code)
 
 
 def get_mean_number_of_bookings_per_user_having_booked():

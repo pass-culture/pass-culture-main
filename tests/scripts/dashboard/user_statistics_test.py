@@ -41,6 +41,49 @@ class CountActivatedUsersTest:
         assert count == 1
 
 
+class CountUsersHavingBookedTest:
+    @clean_database
+    def test_count_all_users_by_default(self, app):
+        # Given
+        activated_user_from_74 = create_user(can_book_free_offers=True, departement_code='74')
+        activated_user_from_75 = create_user(can_book_free_offers=True, departement_code='75', email='email2@test.com')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue)
+        stock1 = create_stock(offer=offer1, price=0)
+        booking1 = create_booking(activated_user_from_74, stock1)
+        booking2 = create_booking(activated_user_from_75, stock1)
+        PcObject.save(booking1, booking2)
+        PcObject.save(activated_user_from_74, activated_user_from_75)
+
+        # When
+        count = count_users_having_booked()
+
+        # Then
+        assert count == 2
+
+
+    @clean_database
+    def test_count_users_by_departement_when_departement_code_given(self, app):
+        # Given
+        activated_user_from_74 = create_user(can_book_free_offers=True, departement_code='74')
+        activated_user_from_75 = create_user(can_book_free_offers=True, departement_code='75', email='email2@test.com')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue)
+        stock1 = create_stock(offer=offer1, price=0)
+        booking1 = create_booking(activated_user_from_74, stock1)
+        booking2 = create_booking(activated_user_from_75, stock1)
+        PcObject.save(booking1, booking2)
+        PcObject.save(activated_user_from_74, activated_user_from_75)
+
+        # When
+        count = count_users_having_booked('74')
+
+        # Then
+        assert count == 1
+
+
 class GetMeanNumberOfBookingsPerUserHavingBookedTest:
     @clean_database
     def test_returns_0_if_no_bookings(self, app):

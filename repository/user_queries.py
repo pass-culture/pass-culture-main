@@ -19,14 +19,24 @@ def count_all_activated_users_by_departement(department_code):
     return User.query.filter_by(canBookFreeOffers=True).filter_by(departementCode=department_code).count()
 
 
-def count_users_having_booked():
+def _query_user_having_booked():
     return User.query \
         .join(Booking) \
         .join(Stock, Booking.stockId == Stock.id) \
         .join(Offer) \
         .join(Product) \
         .filter(Product.type != str(ThingType.ACTIVATION)) \
-        .distinct(User.id).count()
+        .distinct(User.id)
+
+
+def count_users_having_booked():
+    return _query_user_having_booked().count()
+
+
+def count_users_having_booked_by_departement_code(departement_code):
+    return _query_user_having_booked() \
+        .filter(User.departementCode == departement_code) \
+        .count()
 
 
 def find_user_by_email(email: str) -> User:

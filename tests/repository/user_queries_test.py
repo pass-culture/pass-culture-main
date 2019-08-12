@@ -4,7 +4,7 @@ from models import ImportStatus, ThingType
 from models import PcObject
 from repository.user_queries import get_all_users_wallet_balances, find_by_civility, \
     find_most_recent_beneficiary_creation_date, count_all_activated_users, count_users_having_booked, \
-    count_all_activated_users_by_departement
+    count_all_activated_users_by_departement, count_users_having_booked_by_departement_code
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_deposit, \
     create_stock, create_booking, create_beneficiary_import
@@ -369,6 +369,95 @@ class CountUsersHavingBookedTest:
 
         # When
         number_of_users_having_booked = count_users_having_booked()
+
+        # Then
+        assert number_of_users_having_booked == 0
+
+
+class CountUsersHavingBookedByDepartementTest:
+    @clean_database
+    def test_counts_only_user_from_the_right_departement(self, app):
+        # Given
+        user_having_booked_from_73 = create_user(departement_code='73', email='email73@example.net')
+        user_having_booked_from_32 = create_user(departement_code='32', email='email32@example.net')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue)
+        stock1 = create_stock(offer=offer1, price=0)
+        booking1 = create_booking(user_having_booked_from_73, stock1)
+        booking2 = create_booking(user_having_booked_from_32, stock1)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_users_having_booked = count_users_having_booked_by_departement_code('73')
+
+        # Then
+        assert number_of_users_having_booked == 1
+
+    @clean_database
+    def test_returns_one_when_user_with_one_cancelled_and_one_non_cancelled_bookings(self, app):
+        # Given
+        user_having_booked = create_user(departement_code='73')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(venue)
+        offer2 = create_offer_with_thing_product(venue)
+        stock1 = create_stock(offer=offer1, price=0)
+        stock2 = create_stock(offer=offer2, price=0)
+        booking1 = create_booking(user_having_booked, stock1, is_cancelled=False)
+        booking2 = create_booking(user_having_booked, stock2, is_cancelled=True)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_users_having_booked = count_users_having_booked_by_departement_code('73')
+
+        # Then
+        assert number_of_users_having_booked == 1
+
+    @clean_database
+    def test_returns_two_when_two_users_with_cancelled_bookings(self, app):
+        # Given
+        user_having_booked1 = create_user(departement_code='87')
+        user_having_booked2 = create_user(email='test1@email.com', departement_code='87')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        booking1 = create_booking(user_having_booked1, stock, is_cancelled=True)
+        booking2 = create_booking(user_having_booked2, stock, is_cancelled=True)
+        PcObject.save(booking1, booking2)
+
+        # When
+        number_of_users_having_booked = count_users_having_booked_by_departement_code('87')
+
+        # Then
+        assert number_of_users_having_booked == 2
+
+    @clean_database
+    def test_returns_zero_when_no_user_with_booking(self, app):
+        # Given
+        user = create_user()
+        PcObject.save(user)
+
+        # When
+        number_of_users_having_booked = count_users_having_booked_by_departement_code('73')
+
+        # Then
+        assert number_of_users_having_booked == 0
+
+    @clean_database
+    def test_returns_zero_when_user_with_only_activation_booking(self, app):
+        # Given
+        user_having_booked1 = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
+        stock = create_stock(offer=offer, price=0)
+        booking1 = create_booking(user_having_booked1, stock, is_cancelled=True)
+        PcObject.save(booking1)
+
+        # When
+        number_of_users_having_booked = count_users_having_booked_by_departement_code('73')
 
         # Then
         assert number_of_users_having_booked == 0
