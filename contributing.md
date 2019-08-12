@@ -95,7 +95,7 @@
 
 - Mettre le lien de la pull request dans le ticket Jira.
 
-## Les étapes pour une bonne code review
+## Les étapes pour effectuer une code review
 
 - S'assigner le ticket Jira ;
 
