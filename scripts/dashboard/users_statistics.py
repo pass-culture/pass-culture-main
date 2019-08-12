@@ -5,7 +5,7 @@ from sqlalchemy import func
 from models import Booking
 from models.db import db
 import repository.user_queries as user_repository
-from repository.booking_queries import count_non_cancelled_bookings
+from repository.booking_queries import count_non_cancelled_bookings, count_non_cancelled_bookings_by_departement
 
 
 def count_activated_users(departement_code = None):
@@ -22,13 +22,15 @@ def count_users_having_booked(departement_code = None):
     return user_repository.count_users_having_booked_by_departement_code(departement_code)
 
 
-def get_mean_number_of_bookings_per_user_having_booked():
-    number_of_users_having_booked = count_users_having_booked()
+def get_mean_number_of_bookings_per_user_having_booked(departement_code=None):
+    number_of_users_having_booked = count_users_having_booked(departement_code)
 
     if not number_of_users_having_booked:
         return 0
 
-    number_of_non_cancelled_bookings = count_non_cancelled_bookings()
+    number_of_non_cancelled_bookings = count_non_cancelled_bookings() if (departement_code is None) \
+        else count_non_cancelled_bookings_by_departement(departement_code)
+
     return number_of_non_cancelled_bookings / number_of_users_having_booked
 
 

@@ -13,9 +13,12 @@ from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     get_existing_tokens, \
     find_active_bookings_by_user_id, \
     find_by, \
-    find_all_digital_bookings_for_offerer, count_non_cancelled_bookings, count_all_bookings, \
+    find_all_digital_bookings_for_offerer, \
+    count_all_bookings, \
     count_all_cancelled_bookings, \
-    find_all_offerer_bookings, find_eligible_bookings_for_venue
+    find_all_offerer_bookings, \
+    find_eligible_bookings_for_venue, \
+    count_non_cancelled_bookings_by_departement, count_non_cancelled_bookings
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -823,6 +826,7 @@ class SaveBookingTest:
         # Then
         assert e.value.errors['global'] == ['la quantité disponible pour cette offre est atteinte']
 
+
 class CountNonCancelledBookingsTest:
     @clean_database
     def test_returns_1_if_one_user_has_one_non_cancelled_booking(self, app):
@@ -854,6 +858,59 @@ class CountNonCancelledBookingsTest:
 
         # When
         count = count_non_cancelled_bookings()
+
+        # Then
+        assert count == 0
+
+
+class CountNonCancelledBookingsByDepartementTest:
+    @clean_database
+    def test_returns_1_if_one_user_has_one_non_cancelled_booking(self, app):
+        # Given
+        user_having_booked = create_user(departement_code='76')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        booking = create_booking(user_having_booked, stock, is_cancelled=False)
+        PcObject.save(booking)
+
+        # When
+        count = count_non_cancelled_bookings_by_departement('76')
+
+        # Then
+        assert count == 1
+
+    @clean_database
+    def test_returns_0_if_one_user_has_one_cancelled_booking(self, app):
+        # Given
+        user_having_booked = create_user(departement_code='76')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        booking = create_booking(user_having_booked, stock, is_cancelled=True)
+        PcObject.save(booking)
+
+        # When
+        count = count_non_cancelled_bookings_by_departement('76')
+
+        # Then
+        assert count == 0
+
+    @clean_database
+    def test_returns_0_if_user_comes_from_wrong_departement(self, app):
+        # Given
+        user_having_booked = create_user(departement_code='76')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        booking = create_booking(user_having_booked, stock, is_cancelled=False)
+        PcObject.save(booking)
+
+        # When
+        count = count_non_cancelled_bookings_by_departement('81')
 
         # Then
         assert count == 0
@@ -964,7 +1021,8 @@ class CountAllBookingsTest:
         assert number_of_bookings == 2
 
     @clean_database
-    def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_is_after_last_update_on_stock(self, app):
+    def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_is_after_last_update_on_stock(self,
+                                                                                                                  app):
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)

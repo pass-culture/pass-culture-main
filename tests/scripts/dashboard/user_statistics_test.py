@@ -146,6 +146,25 @@ class GetMeanNumberOfBookingsPerUserHavingBookedTest:
         # Then
         assert mean_bookings == 0.5
 
+    @clean_database
+    def test_returns_1_if_only_one_user_is_from_the_good_departement(self, app):
+        # Given
+        user_having_booked1 = create_user(departement_code='45')
+        user_having_booked2 = create_user(departement_code='91', email='test1@email.com')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        booking1 = create_booking(user_having_booked1, stock, is_cancelled=False)
+        booking2 = create_booking(user_having_booked2, stock, is_cancelled=False)
+        PcObject.save(booking1, booking2)
+
+        # When
+        mean_bookings = get_mean_number_of_bookings_per_user_having_booked('45')
+
+        # Then
+        assert mean_bookings == 1.0
+
 
 class GetMeanAmountSpentByUserTest:
     @clean_database
