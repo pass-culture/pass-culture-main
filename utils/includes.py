@@ -9,6 +9,8 @@ OFFERER_INCLUDES = [
     },
     "nOffers",
     "isValidated",
+    "bic",
+    "iban",
     "-validationToken"
 ]
 
@@ -71,6 +73,7 @@ OFFER_INCLUDES = [
     "isEvent",
     "isDigital",
     "isThing",
+    "stockAlertMessage",
     {
         "key": "product",
         "sub_joins": [

@@ -232,8 +232,8 @@ class Get:
             # then
             assert response.status_code == 200
             assert len(response.json) == 2
-            assert 'bic' not in response.json[0]
-            assert 'iban' not in response.json[0]
+            assert response.json[0]['bic'] is None
+            assert response.json[0]['iban'] is None
 
         @clean_database
         def when_user_offerer_is_not_validated_but_returns_no_offerer(self, app):

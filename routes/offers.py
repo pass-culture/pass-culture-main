@@ -3,7 +3,6 @@ from flask_login import current_user, login_required
 
 from domain.admin_emails import send_offer_creation_notification_to_administration
 from domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
-from domain.offers import add_stock_alert_message_to_offer
 from models import Offer, PcObject, Venue, RightsType
 from models.api_errors import ResourceNotFound
 from repository import venue_queries, offer_queries
@@ -41,7 +40,6 @@ def list_offers():
 
     return handle_rest_get_list(Offer,
                                 include=OFFER_INCLUDES,
-                                populate=add_stock_alert_message_to_offer,
                                 page=request.args.get('page'),
                                 paginate=10,
                                 order_by='offer.id desc',

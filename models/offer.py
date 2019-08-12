@@ -7,16 +7,17 @@ from sqlalchemy.sql import select, func
 
 from domain.keywords import create_ts_vector_and_table_args
 from models import ExtraDataMixin
+from models.criterion import Criterion
 from models.db import db, Model
 from models.deactivable_mixin import DeactivableMixin
+from models.offer_criterion import OfferCriterion
 from models.offer_type import ThingType, EventType, ProductType
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.stock import Stock
 from models.venue import Venue
-from models.offer_criterion import OfferCriterion
-from models.criterion import Criterion
 from utils.date import DateTimes
+from utils.inflect_engine import pluralize
 
 
 class Offer(PcObject,
@@ -24,7 +25,6 @@ class Offer(PcObject,
             ExtraDataMixin,
             DeactivableMixin,
             ProvidableMixin):
-
     # We redefine this so we can reference it in the baseScore column_property
     id = Column(BigInteger,
                 primary_key=True,
@@ -186,6 +186,33 @@ class Offer(PcObject,
         sorted_by_date_desc = reversed(sorted_by_date_asc)
         only_active = list(filter(lambda m: m.isActive, sorted_by_date_desc))
         return only_active[0] if only_active else None
+
+    @property
+    def stockAlertMessage(self) -> str:
+        non_deleted_stocks = [stock for stock in self.stocks if not stock.isSoftDeleted]
+        total_number_stocks = len(non_deleted_stocks)
+        number_of_empty_stocks = len(
+            list(filter(lambda s: s.available == 0 or s.remainingQuantity == 0, non_deleted_stocks)))
+        remaining_for_all_stocks = sum(
+            map(lambda s: s.remainingQuantity, filter(lambda s: s.available, non_deleted_stocks)))
+
+        if total_number_stocks == 0:
+            return 'pas encore de stock' if self.isThing else 'pas encore de places'
+
+        if all([s.available is None for s in non_deleted_stocks]):
+            return 'illimité'
+
+        if self.isFullyBooked:
+            return 'plus de stock' if self.isThing else 'plus de places pour toutes les dates'
+
+        if number_of_empty_stocks >= 1:
+            offer_word = pluralize(number_of_empty_stocks, 'offre')
+            stock_or_place = 'stock' if self.isThing else 'places'
+            return f'plus de {stock_or_place} pour {number_of_empty_stocks} {offer_word}'
+
+        if not self.isFullyBooked:
+            remaining_stock_word = 'en stock' if self.isThing else pluralize(remaining_for_all_stocks, 'place')
+            return f'encore {remaining_for_all_stocks} {remaining_stock_word}'
 
     def _has_unlimited_stock(self):
         return any(map(lambda s: s.available is None, self.stocks))

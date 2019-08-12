@@ -52,13 +52,12 @@ class Put:
             api_url = API_URL + humanize(venue.id) + '/offers/activate'
 
             # When
-            response = TestClient(app.test_client())\
-                .with_auth('user_with_no_rights@example.net')\
+            response = TestClient(app.test_client()) \
+                .with_auth('user_with_no_rights@example.net') \
                 .put(api_url)
 
             # Then
             assert response.status_code == 403
-
 
     class Returns404:
         @clean_database
@@ -81,11 +80,10 @@ class Put:
 
             # When
             response = TestClient(app.test_client()).with_auth('test@example.net') \
-            .put(api_url)
+                .put(api_url)
 
             # Then
             assert response.status_code == 404
-
 
     class Returns200:
         @clean_database
@@ -107,7 +105,7 @@ class Put:
             api_url = API_URL + humanize(venue.id) + '/offers/activate'
 
             # When
-            response = TestClient(app.test_client())\
+            response = TestClient(app.test_client()) \
                 .with_auth('test@example.net') \
                 .put(api_url)
 
@@ -137,15 +135,13 @@ class Put:
             api_url = API_URL + humanize(venue.id) + '/offers/activate'
 
             # When
-            response = TestClient(app.test_client())\
+            response = TestClient(app.test_client()) \
                 .with_auth('test@example.net') \
                 .put(api_url)
 
             # Then
             assert response.status_code == 200
-            # TODO: Problem
-            # assert response.json[0]['stockAlertMessage'] == 'encore 22 places'
-
+            assert response.json[0]['stockAlertMessage'] == 'encore 22 places'
 
         @clean_database
         def when_deactivating_all_venue_offers(self, app):
@@ -165,7 +161,7 @@ class Put:
 
             # When
             response = TestClient(app.test_client()).with_auth('test@example.net') \
-            .put(api_url)
+                .put(api_url)
 
             # Then
             assert response.status_code == 200
@@ -193,9 +189,8 @@ class Put:
 
             # When
             response = TestClient(app.test_client()).with_auth('test@example.net') \
-            .put(api_url)
+                .put(api_url)
 
             # Then
             assert response.status_code == 200
-            # TODO: Problem
-            # assert response.json[0]['stockAlertMessage'] == 'plus de places pour toutes les dates'
+            assert response.json[0]['stockAlertMessage'] == 'plus de places pour toutes les dates'
