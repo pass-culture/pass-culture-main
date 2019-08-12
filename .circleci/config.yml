@@ -34,7 +34,6 @@ jobs: # a collection of steps
             . venv/bin/activate
             python -m nltk.downloader punkt stopwords
             pytest tests --cov --cov-report html -x
-            coveralls
       - store_artifacts:
           path: htmlcov
 
