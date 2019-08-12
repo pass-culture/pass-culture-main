@@ -129,6 +129,6 @@
 
 - Poser des questions ;
 
-- Réassigner le ticket ;
+- Réassigner le ticket à la personne concernée ;
 
 - Au moins **un** `Approve` avant de merger.
