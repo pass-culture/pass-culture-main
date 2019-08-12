@@ -7,7 +7,7 @@ import FilterByDistanceContainer from './FilterByDistanceContainer'
 import FilterByOfferTypesContainer from './FilterByOfferTypesContainer'
 import { getFirstChangingKey, INITIAL_FILTER_PARAMS } from '../helpers'
 
-const filtersPanelHeight = 475
+const filtersPanelHeight = 500
 const transitionDelay = 0
 const transitionDuration = 500
 const defaultStyle = {

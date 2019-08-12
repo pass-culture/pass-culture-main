@@ -1,0 +1,20 @@
+.geoloc-warning {
+  @extend .fs14;
+  @extend .is-italic;
+  @extend .mb12;
+}
+
+.distance-filter-title {
+  @extend .fs15;
+  @extend .is-italic;
+  @extend .is-medium;
+  @extend .is-uppercase;
+  @extend .text-center;
+  @extend .mb12;
+}
+
+.distance-filter-options {
+  @extend .pt18;
+  @extend .text-center;
+  @extend .mb20
+}

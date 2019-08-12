@@ -40,7 +40,6 @@ describe('src | components | pages | search | FilterControls | FilterByDistance'
     const wrapper = shallow(<FilterByDistance {...props} />)
 
     // then
-    expect(wrapper).toBeDefined()
     expect(wrapper).toMatchSnapshot()
   })
 
@@ -144,6 +143,41 @@ describe('src | components | pages | search | FilterControls | FilterByDistance'
 
       // then
       expect(defaultValue).toBe(props.filterState.params.distance)
+    })
+
+    it('should display geolocation warning if no geolocation', () => {
+      // given
+
+      // when
+      const wrapper = shallow(<FilterByDistance {...props} />)
+
+      // then
+      const warningMessage = wrapper.find('.geoloc-warning').text()
+      const selectInput = wrapper.find('select').props()
+
+      expect(selectInput).toHaveProperty('disabled', true)
+      expect(warningMessage).toBe(
+        "Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser"
+      )
+    })
+
+    it('should not display geolocation warning if geolocation is active', () => {
+      // given
+      props.geolocation = {
+        latitude: 1.1,
+        longitude: 2.2,
+        watchId: 1,
+      }
+
+      // when
+      const wrapper = shallow(<FilterByDistance {...props} />)
+
+      // then
+      const warningMessage = wrapper.find('.geoloc-warning')
+      const selectInput = wrapper.find('select').props()
+
+      expect(selectInput).toHaveProperty('disabled', false)
+      expect(warningMessage).toHaveLength(0)
     })
   })
 })

@@ -135,6 +135,7 @@ ShallowWrapper {
             </p>
             <a
               className="distance"
+              rel="noopener noreferrer"
               target="_blank"
             >
               <span>
@@ -378,6 +379,7 @@ ShallowWrapper {
               </p>
               <a
                 className="distance"
+                rel="noopener noreferrer"
                 target="_blank"
               >
                 <span>
@@ -439,6 +441,7 @@ ShallowWrapper {
                 </p>,
                 <a
                   className="distance"
+                  rel="noopener noreferrer"
                   target="_blank"
                 >
                   <span>
@@ -558,6 +561,7 @@ ShallowWrapper {
                   ],
                   "className": "distance",
                   "href": undefined,
+                  "rel": "noopener noreferrer",
                   "target": "_blank",
                 },
                 "ref": null,
@@ -680,6 +684,7 @@ ShallowWrapper {
               </p>
               <a
                 className="distance"
+                rel="noopener noreferrer"
                 target="_blank"
               >
                 <span>
@@ -923,6 +928,7 @@ ShallowWrapper {
                 </p>
                 <a
                   className="distance"
+                  rel="noopener noreferrer"
                   target="_blank"
                 >
                   <span>
@@ -984,6 +990,7 @@ ShallowWrapper {
                   </p>,
                   <a
                     className="distance"
+                    rel="noopener noreferrer"
                     target="_blank"
                   >
                     <span>
@@ -1103,6 +1110,7 @@ ShallowWrapper {
                     ],
                     "className": "distance",
                     "href": undefined,
+                    "rel": "noopener noreferrer",
                     "target": "_blank",
                   },
                   "ref": null,

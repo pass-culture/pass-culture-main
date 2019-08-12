@@ -18,19 +18,32 @@ class FilterByDistance extends PureComponent {
   }
 
   render() {
-    const { filterState } = this.props
+    const { filterState, geolocation } = this.props
+    let geolocationActive = false
+    if (geolocation.latitude != null && geolocation.longitude != null) {
+      geolocationActive = true
+    }
+
     const distanceValue = filterState.params.distance || INFINITE_DISTANCE
 
     return (
       <Fragment>
         <div
-          className="pt18 text-center mb20"
+          className="distance-filter-options"
           id="filter-by-distance"
         >
-          <h2 className="fs15 is-italic is-medium is-uppercase text-center mb12">{'Où'}</h2>
+          <h2 className="distance-filter-title">{'Où'}</h2>
+          {!geolocationActive && (
+            <div className="geoloc-warning">
+              {
+                "Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser"
+              }
+            </div>
+          )}
           <select
             className="pc-selectbox pl24 py5 fs19"
             defaultValue={distanceValue}
+            disabled={!geolocationActive}
             name="distance"
             onBlur={this.handleOnChangeDistance}
           >

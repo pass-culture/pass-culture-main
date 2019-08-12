@@ -50,17 +50,23 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <div
-          className="pt18 text-center mb20"
+          className="distance-filter-options"
           id="filter-by-distance"
         >
           <h2
-            className="fs15 is-italic is-medium is-uppercase text-center mb12"
+            className="distance-filter-title"
           >
             Où
           </h2>
+          <div
+            className="geoloc-warning"
+          >
+            Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser
+          </div>
           <select
             className="pc-selectbox pl24 py5 fs19"
             defaultValue={20000}
+            disabled={true}
             name="distance"
             onBlur={[Function]}
           >
@@ -100,13 +106,19 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <h2
-              className="fs15 is-italic is-medium is-uppercase text-center mb12"
+              className="distance-filter-title"
             >
               Où
             </h2>,
+            <div
+              className="geoloc-warning"
+            >
+              Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser
+            </div>,
             <select
               className="pc-selectbox pl24 py5 fs19"
               defaultValue={20000}
+              disabled={true}
               name="distance"
               onBlur={[Function]}
             >
@@ -132,7 +144,7 @@ ShallowWrapper {
               </option>
             </select>,
           ],
-          "className": "pt18 text-center mb20",
+          "className": "distance-filter-options",
           "id": "filter-by-distance",
         },
         "ref": null,
@@ -143,11 +155,23 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": "Où",
-              "className": "fs15 is-italic is-medium is-uppercase text-center mb12",
+              "className": "distance-filter-title",
             },
             "ref": null,
             "rendered": "Où",
             "type": "h2",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser",
+              "className": "geoloc-warning",
+            },
+            "ref": null,
+            "rendered": "Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser",
+            "type": "div",
           },
           Object {
             "instance": null,
@@ -178,6 +202,7 @@ ShallowWrapper {
               ],
               "className": "pc-selectbox pl24 py5 fs19",
               "defaultValue": 20000,
+              "disabled": true,
               "name": "distance",
               "onBlur": [Function],
             },
@@ -259,17 +284,23 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <div
-            className="pt18 text-center mb20"
+            className="distance-filter-options"
             id="filter-by-distance"
           >
             <h2
-              className="fs15 is-italic is-medium is-uppercase text-center mb12"
+              className="distance-filter-title"
             >
               Où
             </h2>
+            <div
+              className="geoloc-warning"
+            >
+              Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser
+            </div>
             <select
               className="pc-selectbox pl24 py5 fs19"
               defaultValue={20000}
+              disabled={true}
               name="distance"
               onBlur={[Function]}
             >
@@ -309,13 +340,19 @@ ShallowWrapper {
           "props": Object {
             "children": Array [
               <h2
-                className="fs15 is-italic is-medium is-uppercase text-center mb12"
+                className="distance-filter-title"
               >
                 Où
               </h2>,
+              <div
+                className="geoloc-warning"
+              >
+                Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser
+              </div>,
               <select
                 className="pc-selectbox pl24 py5 fs19"
                 defaultValue={20000}
+                disabled={true}
                 name="distance"
                 onBlur={[Function]}
               >
@@ -341,7 +378,7 @@ ShallowWrapper {
                 </option>
               </select>,
             ],
-            "className": "pt18 text-center mb20",
+            "className": "distance-filter-options",
             "id": "filter-by-distance",
           },
           "ref": null,
@@ -352,11 +389,23 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": "Où",
-                "className": "fs15 is-italic is-medium is-uppercase text-center mb12",
+                "className": "distance-filter-title",
               },
               "ref": null,
               "rendered": "Où",
               "type": "h2",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser",
+                "className": "geoloc-warning",
+              },
+              "ref": null,
+              "rendered": "Ce filtre est temporairement désactivé. Activez votre géolocalisation pour l'utiliser",
+              "type": "div",
             },
             Object {
               "instance": null,
@@ -387,6 +436,7 @@ ShallowWrapper {
                 ],
                 "className": "pc-selectbox pl24 py5 fs19",
                 "defaultValue": 20000,
+                "disabled": true,
                 "name": "distance",
                 "onBlur": [Function],
               },
