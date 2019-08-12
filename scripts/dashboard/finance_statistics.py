@@ -15,14 +15,14 @@ def get_total_deposits(departement_code=None):
     return query.scalar()
 
 
-def get_total_amount_spent():
-    return db.session.query(
-        func.coalesce(
-            func.sum(Booking.amount * Booking.quantity),
-            0
-        )
-    ) \
-        .filter_by(isCancelled=False) \
+def get_total_amount_spent(departement_code=None):
+    query = db.session.query(func.coalesce(func.sum(Booking.amount * Booking.quantity), 0))
+
+    if departement_code:
+        query = query.join(User).filter(User.departementCode == departement_code)
+
+    return query \
+        .filter(Booking.isCancelled == False) \
         .scalar()
 
 

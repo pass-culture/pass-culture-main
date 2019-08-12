@@ -124,6 +124,28 @@ class GetTotalAmountSpentTest:
         # Then
         assert total_amount_spent == 20
 
+    @clean_database
+    def test_returns_20_if_two_bookings_but_only_one_the_filtered_departement(self, app):
+        # Given
+        user67 = create_user(email='email67@test.com', departement_code='67')
+        create_deposit(user67, amount=500)
+        user89 = create_user(email='email89@test.com', departement_code='89')
+        create_deposit(user89, amount=500)
+
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(price=15, offer=offer)
+        booking_in_67 = create_booking(user67, stock, venue=venue)
+        booking_in_89 = create_booking(user89, stock, venue=venue)
+        PcObject.save(booking_in_67, booking_in_89, user67, user89)
+
+        # When
+        total_amount_spent = get_total_amount_spent('67')
+
+        # Then
+        assert total_amount_spent == 15
+
 
 class GetTotalAmountToPayTest:
     @clean_database
