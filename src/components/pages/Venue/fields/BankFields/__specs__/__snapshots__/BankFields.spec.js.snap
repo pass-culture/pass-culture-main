@@ -5,6 +5,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BankFields
     adminUserOfferer={true}
+    areBankInformationProvided={false}
     readOnly={true}
   />,
   Symbol(enzyme.__renderer__): Object {
@@ -30,6 +31,11 @@ ShallowWrapper {
             className="is-pulled-right is-size-7 has-text-grey"
           />
         </h2>,
+        <p
+          className="bank-instructions-label"
+        >
+          Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.
+        </p>,
         <div
           className="field-group"
         >
@@ -103,6 +109,18 @@ ShallowWrapper {
           },
         ],
         "type": "h2",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.",
+          "className": "bank-instructions-label",
+        },
+        "ref": null,
+        "rendered": "Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.",
+        "type": "p",
       },
       Object {
         "instance": null,
@@ -220,6 +238,11 @@ ShallowWrapper {
               className="is-pulled-right is-size-7 has-text-grey"
             />
           </h2>,
+          <p
+            className="bank-instructions-label"
+          >
+            Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.
+          </p>,
           <div
             className="field-group"
           >
@@ -293,6 +316,18 @@ ShallowWrapper {
             },
           ],
           "type": "h2",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.",
+            "className": "bank-instructions-label",
+          },
+          "ref": null,
+          "rendered": "Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.",
+          "type": "p",
         },
         Object {
           "instance": null,

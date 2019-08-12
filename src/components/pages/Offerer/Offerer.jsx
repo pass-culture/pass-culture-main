@@ -1,15 +1,14 @@
 import classnames from 'classnames'
 import get from 'lodash.get'
-import { Field, Form, showNotification } from 'pass-culture-shared'
+import { Field, Form } from 'pass-culture-shared'
 import React, { Component } from 'react'
-import { requestData } from 'redux-saga-data'
 
 import CreationControl from './CreationControl/CreationControl'
 import ModificationControl from './ModificationControl/ModificationControl'
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import Main from '../../layout/Main'
-import { offererNormalizer } from '../../../utils/normalizers'
 import { formatPatch } from '../../../utils/formatPatch'
+import PropTypes from 'prop-types'
 
 const OFFERER_CREATION_PATCH_KEYS = ['address', 'city', 'name', 'siren', 'postalCode']
 const OFFERER_MODIFICATION_PATCH_KEYS = ['bic', 'iban', 'rib']
@@ -17,7 +16,8 @@ const OFFERER_MODIFICATION_PATCH_KEYS = ['bic', 'iban', 'rib']
 class Offerer extends Component {
   onHandleDataRequest = (handleSuccess, handleFail) => {
     const {
-      dispatch,
+      getOfferer,
+      getUserOfferers,
       match: {
         params: { offererId },
       },
@@ -26,36 +26,21 @@ class Offerer extends Component {
     const { isCreatedEntity } = query.context()
 
     if (!isCreatedEntity) {
-      dispatch(
-        requestData({
-          apiPath: `/offerers/${offererId}`,
-          handleSuccess,
-          handleFail,
-          normalizer: offererNormalizer,
-        })
-      )
-
-      dispatch(requestData({ apiPath: `/userOfferers/${offererId}` }))
-
+      getOfferer(offererId, handleFail, handleSuccess)
+      getUserOfferers(offererId)
       return
     }
-
     handleSuccess()
   }
 
   onHandleFail = () => {
-    const { dispatch } = this.props
-    dispatch(
-      showNotification({
-        text: 'Vous étes déjà rattaché à cette structure.',
-        type: 'danger',
-      })
-    )
+    const { showNotification } = this.props
+    showNotification('Vous étes déjà rattaché à cette structure.', 'danger')
   }
 
   onHandleSuccess = () => {
-    const { dispatch, history } = this.props
-    const { isCreatedEntity } = this.props
+    const { history, query, showNotification } = this.props
+    const { isCreatedEntity } = query.context()
 
     history.push('/structures')
 
@@ -63,12 +48,7 @@ class Offerer extends Component {
       ? 'Votre structure a bien été enregistrée, elle est en cours de validation.'
       : 'Les modifications sur votre structure ont bien été prises en compte.'
 
-    dispatch(
-      showNotification({
-        text,
-        type: 'success',
-      })
-    )
+    showNotification(text, 'success')
   }
 
   handleDisabling = offererName => () => !offererName
@@ -77,10 +57,12 @@ class Offerer extends Component {
     formatPatch(patch, patchConfig, OFFERER_CREATION_PATCH_KEYS, OFFERER_MODIFICATION_PATCH_KEYS)
 
   render() {
-    const { adminUserOfferer, offerer, query, offererName } = this.props
+    const { adminUserOfferer, offerer, offererName, query } = this.props
     const { isCreatedEntity, isModifiedEntity, readOnly } = query.context()
     const areSirenFieldsVisible = get(offerer, 'id') || offererName
     const areBankInfosReadOnly = readOnly || !adminUserOfferer
+
+    const areBankInformationProvided = offerer && (offerer.bic && offerer.iban)
 
     const patchConfig = { isCreatedEntity, isModifiedEntity }
 
@@ -149,6 +131,11 @@ class Offerer extends Component {
                   "Vous avez besoin d'être administrateur de la structure pour modifier ces informations."}
               </span>
             </h2>
+            {offererName && !areBankInformationProvided && (
+              <p className='bank-instructions-label'>
+                {'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'}
+              </p>
+            )}
             <div className="field-group">
               <Field
                 className={classnames({
@@ -177,6 +164,18 @@ class Offerer extends Component {
       </Main>
     )
   }
+}
+
+Offerer.propTypes = {
+  adminUserOfferer: PropTypes.bool.isRequired,
+  getOfferer: PropTypes.func.isRequired,
+  getUserOfferers: PropTypes.func.isRequired,
+  history: PropTypes.shape().isRequired,
+  match: PropTypes.shape().isRequired,
+  offerer: PropTypes.shape().isRequired,
+  offererName: PropTypes.string.isRequired,
+  query: PropTypes.shape().isRequired,
+  showNotification: PropTypes.func.isRequired,
 }
 
 export default Offerer

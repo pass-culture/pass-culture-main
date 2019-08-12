@@ -8,6 +8,9 @@ import selectUserOffererByOffererIdAndUserIdAndRightsType from '../../../selecto
 import selectOffererById from '../../../selectors/selectOffererById'
 import selectPhysicalVenuesByOffererId from '../../../selectors/selectPhysicalVenuesByOffererId'
 import get from 'lodash.get'
+import { requestData } from 'redux-saga-data'
+import { offererNormalizer } from '../../../utils/normalizers'
+import { showNotification } from 'pass-culture-shared'
 
 export const mapStateToProps = (state, ownProps) => {
   const { currentUser, match } = ownProps
@@ -29,7 +32,40 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
+export const mapDispatchToProps = (dispatch) => {
+  return {
+    getOfferer: (offererId, handleFail, handleSuccess) => {
+      dispatch(
+        requestData({
+          apiPath: `/offerers/${offererId}`,
+          handleSuccess,
+          handleFail,
+          normalizer: offererNormalizer,
+        })
+      )
+    },
+    getUserOfferers: (offererId) => {
+      dispatch(
+        requestData({
+          apiPath: `/userOfferers/${offererId}`
+        })
+      )
+    },
+    showNotification: (message, type) => {
+      dispatch(
+        showNotification({
+          text: message,
+          type: type,
+        })
+      )
+    }
+  }
+}
+
 export default compose(
   withRequiredLogin,
-  connect(mapStateToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(Offerer)

@@ -3,53 +3,47 @@ import React from 'react'
 import { Form } from 'react-final-form'
 
 import Venue from '../Venue'
-import { mapDispatchToProps } from '../VenueContainer'
 import VenueProvidersManagerContainer from '../VenueProvidersManager/VenueProvidersManagerContainer'
 import HeroSection from '../../../../components/layout/HeroSection/HeroSection'
 
 describe('src | components | pages | Venue', () => {
-  let dispatch
   let push
   let props
 
   beforeEach(() => {
-    dispatch = jest.fn()
     push = jest.fn()
-
-    const ownProps = {
-      dispatch: dispatch,
+    props = {
+      formInitialValues: {
+        id: 'CM',
+      },
       history: {
         location: {
           pathname: '/fake',
         },
         push: push,
       },
-      location: {
-        search: '',
-      },
+      handleInitialRequest: jest.fn(),
+      handleSubmitRequest: jest.fn(),
+      handleSubmitRequestSuccess: jest.fn(),
+      handleSubmitRequestFail: jest.fn(),
       match: {
         params: {
           offererId: 'APEQ',
           venueId: 'AQYQ',
         },
       },
-      query: {
-        changeToReadOnly: jest.fn(),
-        context: () => ({}),
-      },
-    }
-
-    props = {
-      currentUser: {},
-      formInitialValues: {
-        id: 'CM',
-      },
       offerer: {
         id: 'BQ',
         name: 'Maison du chocolat',
       },
-      ...ownProps,
-      ...mapDispatchToProps(dispatch, ownProps),
+      query: {
+        changeToReadOnly: jest.fn(),
+        context: jest.fn().mockReturnValue({
+          isCreatedEntity: true,
+          isModifiedEntity: false,
+          readOnly: false
+        }),
+      }
     }
   })
 
@@ -222,7 +216,7 @@ describe('src | components | pages | Venue', () => {
           expect(push).toHaveBeenCalledWith('/structures/APEQ')
         })
 
-        it('should dispatch a success message with valid message when venue is created', () => {
+        it('should call handleSubmitRequestSuccess with the right parameters when venue is created', () => {
           // given
           const wrapper = shallow(<Venue {...props} />)
           const state = wrapper.state()
@@ -231,58 +225,77 @@ describe('src | components | pages | Venue', () => {
           wrapper.instance().handleFormSuccess(jest.fn())(state, action)
 
           // then
-          expect(dispatch).toHaveBeenCalled()
+          expect(props.handleSubmitRequestSuccess).toHaveBeenCalledWith(
+            { isRequestPending: false },
+            {
+              config: {
+                apiPath: '/venues/CM',
+                method: 'POST'
+              },
+              payload: {
+                datum: {
+                  id: 'CM'
+                }
+              }
+            })
         })
-      })
 
-      describe('when editing a venue', () => {
-        beforeEach(() => {
-          props.query.context = () => ({
-            isCreatedEntity: false,
-            isModifiedEntity: true,
-            readOnly: false,
+        describe('when editing a venue', () => {
+          beforeEach(() => {
+            props.query.context = () => ({
+              isCreatedEntity: false,
+              isModifiedEntity: true,
+              readOnly: false,
+            })
           })
-        })
 
-        const action = {
-          config: {
-            apiPath: '/venues/CM',
-            method: 'PATCH',
-          },
-          payload: {
-            datum: {
-              id: 'CM',
+          const action = {
+            config: {
+              apiPath: '/venues/CM',
+              method: 'PATCH',
             },
-          },
-        }
-
-        it('should redirect to venue details', () => {
-          // given
-          const wrapper = shallow(<Venue {...props} />)
-          const state = wrapper.state()
-
-          // when
-          wrapper.instance().handleFormSuccess(jest.fn())(state, action)
-
-          // then
-          expect(props.query.changeToReadOnly).toHaveBeenCalledWith(null)
-        })
-
-        it('should dispatch a success message with valid message when venue is modified', () => {
-          // given
-          const wrapper = shallow(<Venue {...props} />)
-          const state = wrapper.state()
-
-          // when
-          wrapper.instance().handleFormSuccess(jest.fn())(state, action)
-
-          // then
-          expect(dispatch).toHaveBeenCalledWith({
-            patch: {
-              text: 'Lieu modifié avec succès !',
-              type: 'success',
+            payload: {
+              datum: {
+                id: 'CM',
+              },
             },
-            type: 'SHOW_NOTIFICATION',
+          }
+
+          it('should redirect to venue details', () => {
+            // given
+            const wrapper = shallow(<Venue {...props} />)
+            const state = wrapper.state()
+
+            // when
+            wrapper.instance().handleFormSuccess(jest.fn())(state, action)
+
+            // then
+            expect(props.query.changeToReadOnly).toHaveBeenCalledWith(null)
+          })
+
+          it('should call handleSubmitRequestSuccess with the right parameters when venue is modified', () => {
+            // given
+            const wrapper = shallow(<Venue {...props} />)
+            const state = wrapper.state()
+
+            // when
+            wrapper.instance().handleFormSuccess(jest.fn())(state, action)
+
+            // then
+            expect(props.handleSubmitRequestSuccess).toHaveBeenCalledWith(
+              { isRequestPending: false },
+              {
+                config: {
+                  apiPath: '/venues/CM',
+                  method: 'PATCH'
+                },
+                payload: {
+                  datum: {
+                    id: 'CM'
+                  }
+                }
+              }
+            )
           })
         })
       })

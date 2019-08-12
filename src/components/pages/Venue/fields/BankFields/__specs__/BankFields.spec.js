@@ -10,6 +10,7 @@ describe('src | components | pages | Venue | fields | BankFields', () => {
   beforeEach(() => {
     props = {
       adminUserOfferer: true,
+      areBankInformationProvided: false,
       readOnly: true,
     }
   })
@@ -65,6 +66,31 @@ describe('src | components | pages | Venue | fields | BankFields', () => {
       expect(textFields.at(1).prop('label')).toBe('IBAN : ')
       expect(textFields.at(1).prop('name')).toBe('iban')
       expect(textFields.at(1).prop('readOnly')).toBe(true)
+    })
+
+    it('should render a label element with text containing instructions for offerer when bic/iban are missing', () => {
+      // given
+      props.areBankInformationProvided = false
+
+      // when
+      const wrapper = shallow(<BankFields {...props} />)
+
+      // then
+      const labelElement = wrapper.find('p')
+      expect(labelElement.prop('className')).toBe('bank-instructions-label')
+      expect(labelElement.text()).toBe('Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.')
+    })
+
+    it('should not render a label element with text containing instructions for offerer when bic/iban are provided', () => {
+      // given
+      props.areBankInformationProvided = true
+
+      // when
+      const wrapper = shallow(<BankFields {...props} />)
+
+      // then
+      const labelElement = wrapper.find('p')
+      expect(labelElement).toHaveLength(0)
     })
   })
 })

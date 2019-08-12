@@ -3,7 +3,7 @@ import React from 'react'
 
 import TextField from '../../../../layout/form/fields/TextField'
 
-const BankFields = ({ adminUserOfferer, readOnly }) => {
+const BankFields = ({ adminUserOfferer, areBankInformationProvided, readOnly }) => {
   const areBankInfosReadOnly = readOnly || !adminUserOfferer
 
   return (
@@ -15,6 +15,11 @@ const BankFields = ({ adminUserOfferer, readOnly }) => {
             "Vous avez besoin d'être administrateur de la structure pour éditer ces informations."}
         </span>
       </h2>
+      {!areBankInformationProvided && (
+        <p className='bank-instructions-label'>
+          {'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'}
+        </p>
+      )}
       <div className="field-group">
         <TextField
           label="BIC : "
@@ -33,11 +38,13 @@ const BankFields = ({ adminUserOfferer, readOnly }) => {
 
 BankFields.defaultProps = {
   adminUserOfferer: false,
+  areBankInformationProvided: false,
   readOnly: true,
 }
 
 BankFields.propTypes = {
   adminUserOfferer: PropTypes.bool,
+  areBankInformationProvided: PropTypes.bool,
   readOnly: PropTypes.bool,
 }
 

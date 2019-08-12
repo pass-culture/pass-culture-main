@@ -74,7 +74,6 @@ class Venue extends Component {
       } else {
         query.changeToReadOnly(null)
       }
-
       formResolver()
     })
   }
@@ -93,7 +92,7 @@ class Venue extends Component {
     })
   }
 
-  onHandleRender = formProps => {
+  onHandleRender = (formProps) => {
     const {
       formInitialValues,
       history,
@@ -106,7 +105,7 @@ class Venue extends Component {
     const { isCreatedEntity, isModifiedEntity, readOnly } = query.context({
       id: venueId,
     })
-    const { siret: initialSiret } = formInitialValues || {}
+    const { bic, iban, siret: initialSiret } = formInitialValues || {}
 
     const canSubmit = getCanSubmit(formProps)
     const { form, handleSubmit, values } = formProps
@@ -117,9 +116,7 @@ class Venue extends Component {
       siret: formSiret,
     } = values
 
-    const siretValidOnReadOnly = formSiret && removeWhitespaces(formSiret).length === 14
-
-    const siretValidOnCreation = siretValidOnReadOnly
+    const siretValidOnCreation = formSiret && removeWhitespaces(formSiret).length === 14
     const fieldReadOnlyBecauseFrozenFormSiretOnCreation = isCreatedEntity && siretValidOnCreation
 
     const siretValidOnModification = typeof initialSiret !== 'undefined'
@@ -129,6 +126,8 @@ class Venue extends Component {
     const fieldReadOnlyBecauseFrozenFormSiret =
       fieldReadOnlyBecauseFrozenFormSiretOnCreation ||
       fieldReadOnlyBecauseFrozenFormSiretOnModification
+
+    const areBankInformationProvided = bic && iban
 
     return (
       <form
@@ -143,7 +142,10 @@ class Venue extends Component {
           isModifiedEntity={isModifiedEntity}
           readOnly={readOnly}
         />
-        <BankFieldsContainer readOnly={readOnly} />
+        <BankFieldsContainer
+          areBankInformationProvided={areBankInformationProvided}
+          readOnly={readOnly}
+        />
         <LocationFields
           fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}
           form={form}
