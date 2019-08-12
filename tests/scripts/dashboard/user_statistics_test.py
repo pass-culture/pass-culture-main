@@ -12,6 +12,35 @@ from tests.test_utils import create_user, create_booking, create_stock, create_o
     create_offerer, create_deposit
 
 
+class CountActivatedUsersTest:
+    @clean_database
+    def test_count_all_users_by_default(self, app):
+        # Given
+        activated_user_from_74 = create_user(can_book_free_offers=True, departement_code='74')
+        activated_user_from_75 = create_user(can_book_free_offers=True, departement_code='75', email='email2@test.com')
+        PcObject.save(activated_user_from_74, activated_user_from_75)
+
+        # When
+        count = count_activated_users()
+
+        # Then
+        assert count == 2
+
+
+    @clean_database
+    def test_count_users_by_departement_when_departement_code_given(self, app):
+        # Given
+        activated_user_from_74 = create_user(can_book_free_offers=True, departement_code='74')
+        activated_user_from_75 = create_user(can_book_free_offers=True, departement_code='75', email='email2@test.com')
+        PcObject.save(activated_user_from_74, activated_user_from_75)
+
+        # When
+        count = count_activated_users('74')
+
+        # Then
+        assert count == 1
+
+
 class GetMeanNumberOfBookingsPerUserHavingBookedTest:
     @clean_database
     def test_returns_0_if_no_bookings(self, app):

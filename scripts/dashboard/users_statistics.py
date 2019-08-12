@@ -8,8 +8,11 @@ import repository.user_queries as user_repository
 from repository.booking_queries import count_non_cancelled_bookings
 
 
-def count_activated_users():
-    return user_repository.count_activated_users()
+def count_activated_users(departement_code = None):
+    if departement_code is None:
+        return user_repository.count_all_activated_users()
+
+    return user_repository.count_all_activated_users_by_departement(departement_code)
 
 
 def count_users_having_booked():

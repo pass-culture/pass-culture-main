@@ -3,7 +3,8 @@ from datetime import datetime, timedelta, MINYEAR
 from models import ImportStatus, ThingType
 from models import PcObject
 from repository.user_queries import get_all_users_wallet_balances, find_by_civility, \
-    find_most_recent_beneficiary_creation_date, count_activated_users, count_users_having_booked
+    find_most_recent_beneficiary_creation_date, count_all_activated_users, count_users_having_booked, \
+    count_all_activated_users_by_departement
 from tests.conftest import clean_database
 from tests.test_utils import create_user, create_offerer, create_venue, create_offer_with_thing_product, create_deposit, \
     create_stock, create_booking, create_beneficiary_import
@@ -234,7 +235,7 @@ class FindMostRecentBeneficiaryCreationDateTest:
         assert most_recent_creation_date == datetime(MINYEAR, 1, 1)
 
 
-class CountActivatedUsersTest:
+class CountAllActivatedUsersTest:
     @clean_database
     def test_returns_1_when_only_one_active_user(self, app):
         # Given
@@ -243,7 +244,7 @@ class CountActivatedUsersTest:
         PcObject.save(user_activated, user_not_activated)
 
         # When
-        number_of_active_users = count_activated_users()
+        number_of_active_users = count_all_activated_users()
 
         # Then
         assert number_of_active_users == 1
@@ -256,7 +257,48 @@ class CountActivatedUsersTest:
         PcObject.save(user_activated, user_not_activated)
 
         # When
-        number_of_active_users = count_activated_users()
+        number_of_active_users = count_all_activated_users()
+
+        # Then
+        assert number_of_active_users == 0
+
+
+class CountActivatedUsersByDepartementTest:
+    @clean_database
+    def test_returns_1_when_only_one_active_user_in_departement(self, app):
+        # Given
+        user_activated = create_user(can_book_free_offers=True, departement_code='74')
+        user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
+        PcObject.save(user_activated, user_not_activated)
+
+        # When
+        number_of_active_users = count_all_activated_users_by_departement('74')
+
+        # Then
+        assert number_of_active_users == 1
+
+    @clean_database
+    def test_returns_0_when_no_active_user(self, app):
+        # Given
+        user_activated = create_user(can_book_free_offers=False, departement_code='74')
+        user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
+        PcObject.save(user_activated, user_not_activated)
+
+        # When
+        number_of_active_users = count_all_activated_users_by_departement('74')
+
+        # Then
+        assert number_of_active_users == 0
+
+    @clean_database
+    def test_returns_0_when_no_active_user(self, app):
+        # Given
+        user_activated = create_user(can_book_free_offers=True, departement_code='76')
+        user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
+        PcObject.save(user_activated, user_not_activated)
+
+        # When
+        number_of_active_users = count_all_activated_users_by_departement('74')
 
         # Then
         assert number_of_active_users == 0

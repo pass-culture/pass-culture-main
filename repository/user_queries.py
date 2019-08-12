@@ -11,12 +11,16 @@ from models.db import db
 from models.user import WalletBalance
 
 
-def count_activated_users():
+def count_all_activated_users():
     return User.query.filter_by(canBookFreeOffers=True).count()
 
 
+def count_all_activated_users_by_departement(department_code):
+    return User.query.filter_by(canBookFreeOffers=True).filter_by(departementCode=department_code).count()
+
+
 def count_users_having_booked():
-    return User.query\
+    return User.query \
         .join(Booking) \
         .join(Stock, Booking.stockId == Stock.id) \
         .join(Offer) \
