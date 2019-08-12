@@ -206,7 +206,7 @@ def find_all_ongoing_bookings_by_stock(stock) -> List[Booking]:
     return Booking.query.filter_by(stockId=stock.id, isCancelled=False, isUsed=False).all()
 
 
-def _query_get_used_or_non_cancelled_bookings():
+def _query_get_used_or_finished_bookings():
     booking_on_event_finished_more_than_two_days_ago = (datetime.utcnow() > Stock.endDatetime + STOCK_DELETION_DELAY)
 
     return Booking.query \
@@ -219,14 +219,14 @@ def _query_get_used_or_non_cancelled_bookings():
 
 
 def count_all_used_or_non_cancelled_bookings() -> int:
-    query = _query_get_used_or_non_cancelled_bookings()
+    query = _query_get_used_or_finished_bookings()
 
     return query \
         .count()
 
 
-def count_all_used_or_non_cancelled_bookings_by_departement(departement_code: str) -> int:
-    query = _query_get_used_or_non_cancelled_bookings() \
+def count_all_used_or_finished_bookings_by_departement(departement_code: str) -> int:
+    query = _query_get_used_or_finished_bookings() \
         .join(User).filter(User.departementCode == departement_code)
 
     return query \
@@ -234,7 +234,7 @@ def count_all_used_or_non_cancelled_bookings_by_departement(departement_code: st
 
 
 def find_final_offerer_bookings(offerer_id) -> List[Booking]:
-    return _query_get_used_or_non_cancelled_bookings() \
+    return _query_get_used_or_finished_bookings() \
         .filter(Offerer.id == offerer_id) \
         .reset_joinpoint() \
         .outerjoin(Payment) \
@@ -242,7 +242,7 @@ def find_final_offerer_bookings(offerer_id) -> List[Booking]:
 
 
 def find_eligible_bookings_for_offerer(offerer_id: int) -> List[Booking]:
-    query = _query_get_used_or_non_cancelled_bookings()
+    query = _query_get_used_or_finished_bookings()
     query = query \
         .filter(Offerer.id == offerer_id) \
         .reset_joinpoint() \
@@ -253,7 +253,7 @@ def find_eligible_bookings_for_offerer(offerer_id: int) -> List[Booking]:
 
 
 def find_eligible_bookings_for_venue(venue_id: int) -> List[Booking]:
-    query = _query_get_used_or_non_cancelled_bookings()
+    query = _query_get_used_or_finished_bookings()
     query = query.filter(Venue.id == venue_id)
     return query.all()
 

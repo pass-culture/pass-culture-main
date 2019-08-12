@@ -2,7 +2,7 @@ import pandas
 
 from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType
 from models.db import db
-from repository.booking_queries import count_all_used_or_non_cancelled_bookings_by_departement, count_all_bookings, \
+from repository.booking_queries import count_all_used_or_finished_bookings_by_departement, count_all_bookings, \
     count_all_cancelled_bookings as query_count_all_cancelled_bookings, count_bookings_by_departement, \
     count_all_cancelled_bookings_by_departement
 from repository.offer_queries import get_active_offers_ids_query
@@ -86,8 +86,8 @@ def get_all_bookings_count(departement_code: str = None) -> int:
     return count_bookings_by_departement(departement_code) if departement_code else count_all_bookings()
 
 
-def get_all_used_or_non_canceled_bookings(departement_code: str = None) -> int:
-    return count_all_used_or_non_cancelled_bookings_by_departement(departement_code)
+def get_all_used_or_finished_bookings(departement_code: str = None) -> int:
+    return count_all_used_or_finished_bookings_by_departement(departement_code)
 
 
 def count_all_cancelled_bookings(departement_code: str = None):
@@ -95,7 +95,7 @@ def count_all_cancelled_bookings(departement_code: str = None):
         departement_code) if departement_code else query_count_all_cancelled_bookings()
 
 
-def _get_offer_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_digital, counts_column_name):
+def get_offer_counts_grouped_by_type_and_medium(query_get_counts_per_type_and_digital, counts_column_name):
     offers_by_type_and_digital_table = _get_offers_grouped_by_type_and_medium()
     offer_counts_per_type_and_digital = query_get_counts_per_type_and_digital()
 
@@ -151,7 +151,7 @@ def _get_offers_grouped_by_type_and_medium():
     return type_and_digital_dataframe
 
 
-def _query_get_offer_counts_grouped_by_type_and_medium():
+def query_get_offer_counts_grouped_by_type_and_medium():
     return db.engine.execute(
         """
         SELECT type, url IS NOT NULL AS is_digital, count(offer.id) 
@@ -164,7 +164,7 @@ def _query_get_offer_counts_grouped_by_type_and_medium():
         """)
 
 
-def _query_get_booking_counts_grouped_by_type_and_medium():
+def query_get_booking_counts_grouped_by_type_and_medium():
     return db.engine.execute(
         """
         SELECT type, url IS NOT NULL AS is_digital, SUM(booking.quantity)

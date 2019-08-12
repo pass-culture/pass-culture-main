@@ -1,4 +1,7 @@
-alembic==1.0.3 
+google-api-python-client==1.7.9
+google-auth-httplib2==0.0.3
+google-auth-oauthlib==0.4.0
+alembic==1.0.3
 apscheduler==3.5.3
 babel==2.6.0
 bcrypt==3.1.4
@@ -30,6 +33,7 @@ pillow==6.1.0
 pip-licenses==1.10.0
 PostgreSQL-Audit==0.10.0
 psycopg2-binary==2.7.6.1
+pygsheets
 pytest==4.0.0
 pytest-cov==2.6.1
 pytest-flask==0.14.0

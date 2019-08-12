@@ -12,7 +12,7 @@ def get_total_deposits(departement_code: str = None) -> int:
     if departement_code:
         query = query.join(User).filter(User.departementCode == departement_code)
 
-    return query.scalar()
+    return int(query.scalar())
 
 
 def get_total_amount_spent(departement_code: str = None) -> int:
@@ -21,9 +21,9 @@ def get_total_amount_spent(departement_code: str = None) -> int:
     if departement_code:
         query = query.join(User).filter(User.departementCode == departement_code)
 
-    return query \
+    return int(query \
         .filter(Booking.isCancelled == False) \
-        .scalar()
+        .scalar())
 
 
 def get_total_amount_to_pay(departement_code: str = None) -> int:
@@ -37,8 +37,8 @@ def get_total_amount_to_pay(departement_code: str = None) -> int:
             .join(Venue) \
             .filter(Venue.departementCode == departement_code)
 
-    return query \
-        .scalar()
+    return int(query \
+        .scalar())
 
 
 def get_top_20_offers_table(departement_code: str = None) -> pandas.DataFrame:

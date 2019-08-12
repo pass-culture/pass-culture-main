@@ -1,5 +1,3 @@
-from pprint import pprint
-
 import pandas
 
 from models import PcObject
@@ -406,7 +404,6 @@ class GetNonCancelledBookingsFilteredByUserDepartementTest:
         bookings_by_departement = get_non_cancelled_bookings_by_user_departement()
 
         # Then
-        pprint(bookings_by_departement)
         assert bookings_by_departement.eq(expected_table).all().all()
 
 

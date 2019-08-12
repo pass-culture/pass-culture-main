@@ -23,9 +23,9 @@ from repository.booking_queries import find_all_ongoing_bookings_by_stock, \
     count_all_cancelled_bookings_by_departement, \
     count_bookings_by_departement, \
     count_non_cancelled_bookings_by_departement, count_non_cancelled_bookings, count_bookings_by_departement, \
-    count_all_cancelled_bookings_by_departement, count_all_used_or_non_cancelled_bookings_by_departement, \
+    count_all_cancelled_bookings_by_departement, count_all_used_or_finished_bookings_by_departement, \
     count_all_used_or_non_cancelled_bookings
-from scripts.dashboard import get_all_used_or_non_canceled_bookings
+from scripts.dashboard import get_all_used_or_finished_bookings
 from tests.conftest import clean_database
 from tests.test_utils import create_booking, \
     create_deposit, \
@@ -1244,7 +1244,7 @@ class CountAllUsedOrNonCancelledBookingsByDepartementTest:
         PcObject.save(booking)
 
         # When
-        number_of_bookings = count_all_used_or_non_cancelled_bookings_by_departement('76')
+        number_of_bookings = count_all_used_or_finished_bookings_by_departement('76')
 
         # Then
         assert number_of_bookings == 1
@@ -1261,7 +1261,7 @@ class CountAllUsedOrNonCancelledBookingsByDepartementTest:
         PcObject.save(booking)
 
         # When
-        number_of_bookings = count_all_used_or_non_cancelled_bookings_by_departement('76')
+        number_of_bookings = count_all_used_or_finished_bookings_by_departement('76')
 
         # Then
         assert number_of_bookings == 0
@@ -1278,7 +1278,7 @@ class CountAllUsedOrNonCancelledBookingsByDepartementTest:
         PcObject.save(thing_booking)
 
         # When
-        number_of_bookings = count_all_used_or_non_cancelled_bookings_by_departement('76')
+        number_of_bookings = count_all_used_or_finished_bookings_by_departement('76')
 
         # Then
         assert number_of_bookings == 0
@@ -1299,7 +1299,7 @@ class CountAllUsedOrNonCancelledBookingsByDepartementTest:
         PcObject.save(event_booking)
 
         # When
-        number_of_bookings = count_all_used_or_non_cancelled_bookings_by_departement('76')
+        number_of_bookings = count_all_used_or_finished_bookings_by_departement('76')
 
         # Then
         assert number_of_bookings == 1
@@ -1323,7 +1323,7 @@ class CountAllUsedOrNonCancelledBookingsByDepartementTest:
         PcObject.save(event_booking)
 
         # When
-        number_of_bookings = count_all_used_or_non_cancelled_bookings_by_departement('76')
+        number_of_bookings = count_all_used_or_finished_bookings_by_departement('76')
 
         # Then
         assert number_of_bookings == 0
@@ -1349,7 +1349,7 @@ class CountAllUsedOrNonCancelledBookingsByDepartementTest:
         PcObject.save(booking1, booking2, booking3)
 
         # When
-        number_of_bookings = count_all_used_or_non_cancelled_bookings_by_departement('41')
+        number_of_bookings = count_all_used_or_finished_bookings_by_departement('41')
 
         # Then
         assert number_of_bookings == 2

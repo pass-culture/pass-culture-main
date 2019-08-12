@@ -1,10 +1,9 @@
 import pandas
-
 from sqlalchemy import func
 
+import repository.user_queries as user_repository
 from models import Booking, User
 from models.db import db
-import repository.user_queries as user_repository
 from repository.booking_queries import count_non_cancelled_bookings, count_non_cancelled_bookings_by_departement
 
 
@@ -21,26 +20,17 @@ def count_users_having_booked(departement_code: str = None):
 
     return user_repository.count_users_having_booked_by_departement_code(departement_code)
 
+    if not number_of_users_having_booked:
+        return 0
 
 def get_mean_number_of_bookings_per_user_having_booked(departement_code: str = None):
     number_of_users_having_booked = count_users_having_booked(departement_code)
 
-    if not number_of_users_having_booked:
-        return 0
 
     number_of_non_cancelled_bookings = count_non_cancelled_bookings() if (departement_code is None) \
         else count_non_cancelled_bookings_by_departement(departement_code)
 
     return number_of_non_cancelled_bookings / number_of_users_having_booked
-
-
-def _query_amount_spent_by_departement(departement_code: str):
-    query = db.session.query(func.sum(Booking.amount * Booking.quantity))
-
-    if departement_code:
-        query = query.join(User).filter(User.departementCode == departement_code)
-
-    return query.filter(Booking.isCancelled == False)
 
 
 def get_mean_amount_spent_by_user(departement_code: str = None):
@@ -59,6 +49,15 @@ def get_non_cancelled_bookings_by_user_departement():
                             data=non_cancelled_bookings_by_user_departement)
 
 
+def _query_amount_spent_by_departement(departement_code: str):
+    query = db.session.query(func.sum(Booking.amount * Booking.quantity))
+
+    if departement_code:
+        query = query.join(User).filter(User.departementCode == departement_code)
+
+    return query.filter(Booking.isCancelled == False)
+
+
 def _query_get_non_cancelled_bookings_by_user_departement():
     return db.engine.execute(
         """
@@ -69,3 +68,5 @@ def _query_get_non_cancelled_bookings_by_user_departement():
         GROUP BY "user"."departementCode"
         ORDER BY "user"."departementCode";
         """).fetchall()
+
+
