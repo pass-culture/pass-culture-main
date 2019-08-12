@@ -77,8 +77,42 @@ jobs:
       - store_artifacts:
           path: ~/pass-culture-main/webapp/testcafe_screenshots
 
+  deploy-webapp:
+    machine:
+      image: circleci/classic:latest
+    working_directory: ~/pass-culture-main/webapp
+    steps:
+      - checkout:
+          path: ~/pass-culture-main/webapp
+      - run: ./scripts/install_lib_ci_webapp.sh
+      - run:
+          name: Install netlify CLI
+          command: npm install -g netlify-cli@1.2.3
+      - run:
+          name: Build WEBAPP
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use "$NODE_VERSION"
+            yarn install
+            ./scripts/build_with_fontello.sh "${CIRCLE_BRANCH}"
+      - run:
+          name: Deploy Webapp
+          command: |
+            netlify deploy -e "${CIRCLE_BRANCH}" -t ${NETLIFY_TOKEN}
+      - run:
+          name: Check deployed version
+          command: |
+            export COMPONENT_URL="https://app.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
+            ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
+
 workflows:
   version: 2
   commit:
     jobs:
       - build
+      - deploy-webapp:
+          filters:
+            branches:
+              only:
+                - master
