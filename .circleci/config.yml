@@ -77,7 +77,6 @@ jobs:
     steps:
       - checkout:
           path: ~/pass-culture-main/pro
-      - run: pwd
       - run: ./scripts/install_lib_ci_pro.sh
       - run:
           name: Install netlify CLI
@@ -94,11 +93,6 @@ jobs:
           name: Deploy Pro
           command: |
             netlify deploy -e "${CIRCLE_BRANCH}" -t ${NETLIFY_TOKEN}
-      - run:
-          name: Check deployed version
-          command: |
-            export COMPONENT_URL="https://pro.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
-            ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
 
 workflows:
   version: 2
@@ -110,3 +104,5 @@ workflows:
             branches:
               only:
                 - master
+          requires:
+            - build
