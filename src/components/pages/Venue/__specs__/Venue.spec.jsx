@@ -261,7 +261,7 @@ describe('src | components | pages | Venue', () => {
             },
           }
 
-          it('should redirect to venue details', () => {
+          it('should change query to read only null', () => {
             // given
             const wrapper = shallow(<Venue {...props} />)
             const state = wrapper.state()

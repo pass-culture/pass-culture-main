@@ -25,7 +25,6 @@ jobs:
             cd ~/pass-culture-main/pro
             yarn install
             yarn test:unit --coverage
-            yarn coveralls
       - store_artifacts:
           path: ~/pass-culture-main/pro/coverage
       - run:
