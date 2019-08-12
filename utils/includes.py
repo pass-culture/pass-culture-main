@@ -77,14 +77,7 @@ OFFER_INCLUDES = [
     {
         "key": "product",
         "sub_joins": [
-            {
-                "key": "mediations",
-                "sub_joins": ["thumbUrl"]
-            },
             'offerType',
-            {
-                "key": "stock"
-            },
             '-type'
         ]
     },

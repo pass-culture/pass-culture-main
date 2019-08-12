@@ -1,18 +1,18 @@
 """ rest """
 import re
 from functools import wraps
+
 from flask import jsonify, request
 from flask_login import current_user
+from sqlalchemy import text
 from sqlalchemy.exc import ProgrammingError
-from sqlalchemy.sql.elements import UnaryExpression
 from sqlalchemy.orm.attributes import InstrumentedAttribute
-from sqlalchemy.sql.functions import random 
+from sqlalchemy.sql.elements import UnaryExpression
+from sqlalchemy.sql.functions import random
 
 from models.api_errors import ApiErrors
 from models.db import db
 from models.soft_deletable_mixin import SoftDeletableMixin
-from sqlalchemy import text
-
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize, humanize
 from utils.string_processing import dashify
@@ -21,9 +21,9 @@ from utils.string_processing import dashify
 def get_provider_from_api_key():
     if 'apikey' in request.headers:
         Provider = Provider
-        return Provider.query\
-                       .filter_by(apiKey=request.headers['apikey'])\
-                       .first()
+        return Provider.query \
+            .filter_by(apiKey=request.headers['apikey']) \
+            .first()
 
 
 def api_key_required(f):
@@ -33,6 +33,7 @@ def api_key_required(f):
         if request.provider is None:
             return "API key required", 403
         return f(*args, **kwds)
+
     return wrapper
 
 
@@ -44,6 +45,7 @@ def login_or_api_key_required(f):
             if not current_user.is_authenticated:
                 return "API key or login required", 403
         return f(*args, **kwds)
+
     return wrapper
 
 
@@ -53,12 +55,13 @@ def expect_json_data(f):
         if request.json is None:
             return "JSON data expected", 400
         return f(*args, **kwds)
+
     return wrapper
 
 
 def add_table_if_missing(sql_identifier, modelClass):
     if sql_identifier.find('.') == -1:
-        return '"'+dashify(modelClass.__name__)+'".'+sql_identifier
+        return '"' + dashify(modelClass.__name__) + '".' + sql_identifier
     return sql_identifier
 
 
@@ -67,8 +70,8 @@ def query_with_order_by(query, order_by):
         if type(order_by) == str:
             order_by = text(order_by)
         try:
-            order_by = [order_by] if not isinstance(order_by, list)\
-                       else order_by
+            order_by = [order_by] if not isinstance(order_by, list) \
+                else order_by
             query = query.order_by(*order_by)
         except ProgrammingError as e:
             field = re.search('column "?(.*?)"? does not exist', e._message, re.IGNORECASE)
@@ -91,7 +94,7 @@ def check_single_order_by_string(order_by_string):
                     re.IGNORECASE):
         api_errors = ApiErrors()
         api_errors.add_error('order_by',
-                            'Invalid order_by field : "%s"' % order_by_string)
+                             'Invalid order_by field : "%s"' % order_by_string)
         raise api_errors
 
 
@@ -118,9 +121,8 @@ def check_order_by(order_by):
 
 def handle_rest_get_list(modelClass, query=None,
                          refine=None, order_by=None, flask_request=None,
-                         include=None, print_elements=None,
+                         include=(), print_elements=None,
                          paginate=None, page=None, populate=None):
-
     if flask_request is None:
         flask_request = request
 
@@ -143,15 +145,15 @@ def handle_rest_get_list(modelClass, query=None,
     if paginate:
         if page is not None:
             page = int(page)
-        query = query.paginate(page, per_page=paginate, error_out=False)\
-                     .items
+        query = query.paginate(page, per_page=paginate, error_out=False) \
+            .items
 
     objects = [o for o in query]
     if populate:
         objects = list(map(populate, objects))
 
     # DICTIFY
-    elements = [ as_dict(o, include=include) for o in query]
+    elements = [as_dict(o, include=include) for o in query]
 
     # PRINT
     if print_elements:
@@ -162,8 +164,8 @@ def handle_rest_get_list(modelClass, query=None,
 
 
 def ensure_provider_can_update(obj):
-    if request.provider\
-       and obj.lastProvider != request.provider:
+    if request.provider \
+            and obj.lastProvider != request.provider:
         return "API key or login required", 403
 
 
@@ -191,8 +193,8 @@ def delete(entity):
 
 
 def load_or_404(obj_class, human_id):
-    return obj_class.query.filter_by(id=dehumanize(human_id))\
-                          .first_or_404()
+    return obj_class.query.filter_by(id=dehumanize(human_id)) \
+        .first_or_404()
 
 
 def load_or_raise_error(obj_class, human_id):
