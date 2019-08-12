@@ -12,11 +12,11 @@ import selectBookables from '../../../../../selectors/selectBookables'
 import selectBookingByRouterMatch from '../../../../../selectors/selectBookingByRouterMatch'
 import selectDistanceByRouterMatch from '../../../../../selectors/selectDistanceByRouterMatch'
 import selectIsFinishedByRouterMatch from '../../../../../selectors/selectIsFinishedByRouterMatch'
-import selectOfferByMatch from '../../../../../selectors/selectOfferByMatch'
+import selectOfferByRouterMatch from '../../../../../selectors/selectOfferByRouterMatch'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
-  const offer = selectOfferByMatch(state, match) || {}
+  const offer = selectOfferByRouterMatch(state, match) || {}
   const bookables = selectBookables(state, offer)
   const isFinished = selectIsFinishedByRouterMatch(state, match)
 

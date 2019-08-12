@@ -4,8 +4,8 @@ import { compose } from 'redux'
 
 import Recto from './Recto'
 import selectMediationById from '../../../selectors/selectMediationById'
-import selectMediationByMatch from '../../../selectors/selectMediationByMatch'
-import selectThumbUrlByMatch from '../../../selectors/selectThumbUrlByMatch'
+import selectMediationByRouterMatch from '../../../selectors/selectMediationByRouterMatch'
+import selectThumbUrlByRouterMatch from '../../../selectors/selectThumbUrlByRouterMatch'
 
 const mapStateToProps = (state, ownProps) => {
   const { match, recommendation } = ownProps
@@ -16,13 +16,15 @@ const mapStateToProps = (state, ownProps) => {
   } else if (recommendation) {
     mediation = selectMediationById(state, recommendation.mediationId)
   } else {
-    mediation = selectMediationByMatch(state, match) || {}
+    mediation = selectMediationByRouterMatch(state, match) || {}
   }
 
   const { frontText } = mediation || {}
   const withMediation = typeof mediation !== 'undefined'
 
-  const thumbUrl = recommendation ? recommendation.thumbUrl : selectThumbUrlByMatch(state, match)
+  const thumbUrl = recommendation
+    ? recommendation.thumbUrl
+    : selectThumbUrlByRouterMatch(state, match)
 
   return {
     frontText,

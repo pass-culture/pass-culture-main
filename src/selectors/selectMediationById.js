@@ -4,10 +4,10 @@ function mapArgsToCacheKey(state, mediationId) {
   return mediationId || ''
 }
 
-export const selectOfferById = createCachedSelector(
+export const selectMediationById = createCachedSelector(
   state => state.data.mediations,
   (state, mediationId) => mediationId,
   (mediations, mediationId) => mediations.find(mediation => mediation.id === mediationId)
 )(mapArgsToCacheKey)
 
-export default selectOfferById
+export default selectMediationById

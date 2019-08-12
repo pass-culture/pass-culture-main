@@ -5,16 +5,16 @@ import { compose } from 'redux'
 import Booking from './Booking'
 import selectBookables from '../../../selectors/selectBookables'
 import selectBookingByRouterMatch from '../../../selectors/selectBookingByRouterMatch'
-import selectOfferByMatch from '../../../selectors/selectOfferByMatch'
-import selectRecommendationByMatch from '../../../selectors/selectRecommendationByMatch'
+import selectOfferByRouterMatch from '../../../selectors/selectOfferByRouterMatch'
+import selectRecommendationByRouterMatch from '../../../selectors/selectRecommendationByRouterMatch'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
 
-  const offer = selectOfferByMatch(state, match)
+  const offer = selectOfferByRouterMatch(state, match)
   const bookables = selectBookables(state, offer)
   const booking = selectBookingByRouterMatch(state, match)
-  const recommendation = selectRecommendationByMatch(state, match)
+  const recommendation = selectRecommendationByRouterMatch(state, match)
 
   return {
     bookables,

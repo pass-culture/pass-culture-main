@@ -3,13 +3,13 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import VersoContentTuto from './VersoContentTuto'
-import selectThumbUrlByMatch from '../../../../../selectors/selectThumbUrlByMatch'
+import selectThumbUrlByRouterMatch from '../../../../../selectors/selectThumbUrlByRouterMatch'
 
 const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
-  const thumbUrl = selectThumbUrlByMatch(state, match)
+  const thumbUrl = selectThumbUrlByRouterMatch(state, match)
   return {
-    imageURL: thumbUrl
+    imageURL: thumbUrl,
   }
 }
 

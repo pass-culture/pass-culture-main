@@ -5,7 +5,7 @@ import { compose } from 'redux'
 import BookThisLink from './BookThisLink'
 import getPriceRangeFromStocks from '../../../../../../helpers/getPriceRangeFromStocks'
 import selectIsFinishedByRouterMatch from '../../../../../../selectors/selectIsFinishedByRouterMatch'
-import selectOfferByMatch from '../../../../../../selectors/selectOfferByMatch'
+import selectOfferByRouterMatch from '../../../../../../selectors/selectOfferByRouterMatch'
 import selectStocksByOfferId from '../../../../../../selectors/selectStocksByOfferId'
 
 const getDestinationLink = (params, url, search = '') => {
@@ -21,7 +21,7 @@ export const mapStateToProps = (state, ownProps) => {
   const { search } = location
 
   const isFinished = selectIsFinishedByRouterMatch(state, match)
-  const offer = selectOfferByMatch(state, match) || {}
+  const offer = selectOfferByRouterMatch(state, match) || {}
   const stocks = selectStocksByOfferId(state, offer.id)
   const priceRange = getPriceRangeFromStocks(stocks)
 

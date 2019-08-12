@@ -1,6 +1,6 @@
-import selectOfferByMatch from '../selectOfferByMatch'
+import selectOfferByRouterMatch from '../selectOfferByRouterMatch'
 
-describe('src | selectors | selectOfferByMatch', () => {
+describe('src | selectors | selectOfferByRouterMatch', () => {
   it('should return offer when offerId in match', () => {
     // given
     const state = {
@@ -18,7 +18,7 @@ describe('src | selectors | selectOfferByMatch', () => {
     }
 
     // when
-    const result = selectOfferByMatch(state, match)
+    const result = selectOfferByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual({ id: 'AE' })
@@ -43,7 +43,7 @@ describe('src | selectors | selectOfferByMatch', () => {
     }
 
     // when
-    const result = selectOfferByMatch(state, match)
+    const result = selectOfferByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual({ id: 'AE' })

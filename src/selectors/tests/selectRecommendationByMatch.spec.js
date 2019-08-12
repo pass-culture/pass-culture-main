@@ -1,6 +1,6 @@
-import selectRecommendationByMatch from '../selectRecommendationByMatch'
+import selectRecommendationByRouterMatch from '../selectRecommendationByRouterMatch'
 
-describe('src | selectors | selectRecommendationByMatch', () => {
+describe('src | selectors | selectRecommendationByRouterMatch', () => {
   it('should return recommendation when offerId in match', () => {
     // given
     const offerId = 'AE'
@@ -27,7 +27,7 @@ describe('src | selectors | selectRecommendationByMatch', () => {
     }
 
     // when
-    const result = selectRecommendationByMatch(state, match)
+    const result = selectRecommendationByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual(recommendation)
@@ -62,7 +62,7 @@ describe('src | selectors | selectRecommendationByMatch', () => {
     }
 
     // when
-    const result = selectRecommendationByMatch(state, match)
+    const result = selectRecommendationByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual(recommendation)

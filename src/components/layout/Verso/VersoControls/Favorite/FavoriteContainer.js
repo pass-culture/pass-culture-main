@@ -5,8 +5,8 @@ import { compose } from 'redux'
 
 import Favorite from './Favorite'
 import selectFavoritesByOfferId from '../../../../../selectors/selectFavoritesByOfferId'
-import selectMediationByMatch from '../../../../../selectors/selectMediationByMatch'
-import selectOfferByMatch from '../../../../../selectors/selectOfferByMatch'
+import selectMediationByRouterMatch from '../../../../../selectors/selectMediationByRouterMatch'
+import selectOfferByRouterMatch from '../../../../../selectors/selectOfferByRouterMatch'
 import selectIsFeatureDisabled from '../../../../router/selectors/selectIsFeatureDisabled'
 import { favoriteNormalizer } from '../../../../../utils/normalizers'
 
@@ -27,9 +27,9 @@ export const apiPath = (isFavorite, offerId, mediationId) => {
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const isFeatureDisabled = selectIsFeatureDisabled(state, 'FAVORITE_OFFER')
-  const mediation = selectMediationByMatch(state, match) || {}
+  const mediation = selectMediationByRouterMatch(state, match) || {}
   const { id: mediationId = null } = mediation
-  const offer = selectOfferByMatch(state, match) || {}
+  const offer = selectOfferByRouterMatch(state, match) || {}
   const { id: offerId } = offer
   const favorites = selectFavoritesByOfferId(state, offerId) || {}
   const isFavorite = favorites.length > 0

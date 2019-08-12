@@ -1,7 +1,7 @@
 import createCachedSelector from 're-reselect'
 
-import selectMediationByMatch from './selectMediationByMatch'
-import selectOfferByMatch from './selectOfferByMatch'
+import selectMediationByRouterMatch from './selectMediationByRouterMatch'
+import selectOfferByRouterMatch from './selectOfferByRouterMatch'
 
 function mapArgsToCacheKey(state, match) {
   const { params } = match
@@ -9,9 +9,9 @@ function mapArgsToCacheKey(state, match) {
   return `${bookingId || ' '}${favoriteId || ' '}${mediationId || ' '}${offerId || ' '}`
 }
 
-const selectThumbUrlByMatch = createCachedSelector(
-  selectMediationByMatch,
-  selectOfferByMatch,
+const selectThumbUrlByRouterMatch = createCachedSelector(
+  selectMediationByRouterMatch,
+  selectOfferByRouterMatch,
   (mediation, offer) => {
     if (mediation) {
       return mediation.thumbUrl
@@ -22,4 +22,4 @@ const selectThumbUrlByMatch = createCachedSelector(
   }
 )(mapArgsToCacheKey)
 
-export default selectThumbUrlByMatch
+export default selectThumbUrlByRouterMatch

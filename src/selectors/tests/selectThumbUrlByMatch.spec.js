@@ -1,6 +1,6 @@
-import selectThumbUrlByMatch from '../selectThumbUrlByMatch'
+import selectThumbUrlByRouterMatch from '../selectThumbUrlByRouterMatch'
 
-describe('src | selectors | selectThumbUrlByMatch', () => {
+describe('src | selectors | selectThumbUrlByRouterMatch', () => {
   let mediation
   let mediationId
   let offer
@@ -46,7 +46,7 @@ describe('src | selectors | selectThumbUrlByMatch', () => {
     }
 
     // when
-    const result = selectThumbUrlByMatch(state, match)
+    const result = selectThumbUrlByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual(productThumbUrl)
@@ -71,7 +71,7 @@ describe('src | selectors | selectThumbUrlByMatch', () => {
     }
 
     // when
-    const result = selectThumbUrlByMatch(state, match)
+    const result = selectThumbUrlByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual(mediationThumbUrl)

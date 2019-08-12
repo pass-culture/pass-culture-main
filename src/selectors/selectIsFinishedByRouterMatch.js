@@ -1,8 +1,8 @@
 import createCachedSelector from 're-reselect'
 
 import selectBookingByRouterMatch from './selectBookingByRouterMatch'
-import selectMediationByMatch from './selectMediationByMatch'
-import selectOfferByMatch from './selectOfferByMatch'
+import selectMediationByRouterMatch from './selectMediationByRouterMatch'
+import selectOfferByRouterMatch from './selectOfferByRouterMatch'
 import getIsFinished from '../helpers/getIsFinished'
 
 function mapArgsToCacheKey(state, match) {
@@ -12,8 +12,8 @@ function mapArgsToCacheKey(state, match) {
 }
 
 const selectIsFinishedByRouterMatch = createCachedSelector(
-  selectOfferByMatch,
-  selectMediationByMatch,
+  selectOfferByRouterMatch,
+  selectMediationByRouterMatch,
   selectBookingByRouterMatch,
   getIsFinished
 )(mapArgsToCacheKey)

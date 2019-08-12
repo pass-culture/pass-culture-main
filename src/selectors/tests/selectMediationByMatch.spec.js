@@ -1,6 +1,6 @@
-import selectMediationByMatch from '../selectMediationByMatch'
+import selectMediationByRouterMatch from '../selectMediationByRouterMatch'
 
-describe('src | selectors | selectMediationByMatch', () => {
+describe('src | selectors | selectMediationByRouterMatch', () => {
   it('should return mediation when mediationId in match', () => {
     // given
     const state = {
@@ -19,7 +19,7 @@ describe('src | selectors | selectMediationByMatch', () => {
     }
 
     // when
-    const result = selectMediationByMatch(state, match)
+    const result = selectMediationByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual({ id: 'AE' })
@@ -43,7 +43,7 @@ describe('src | selectors | selectMediationByMatch', () => {
     }
 
     // when
-    const result = selectMediationByMatch(state, match)
+    const result = selectMediationByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual({ id: 'AE' })
@@ -69,7 +69,7 @@ describe('src | selectors | selectMediationByMatch', () => {
     }
 
     // when
-    const result = selectMediationByMatch(state, match)
+    const result = selectMediationByRouterMatch(state, match)
 
     // then
     expect(result).toStrictEqual({ id: 'AE' })
