@@ -104,10 +104,10 @@ def find_all_offerer_bookings(offerer_id, venue_id=None, offer_id=None, date_fro
 
         offer = Offer.query.filter(Offer.id == offer_id).first()
 
-        if (offer and offer.isEvent and date_from):
+        if offer and offer.isEvent and date_from:
             query = query.filter(Stock.beginningDatetime == date_from)
 
-        if (offer and offer.isThing):
+        if offer and offer.isThing:
             if date_from:
                 query = query.filter(Booking.dateCreated >= date_from)
             if date_to:

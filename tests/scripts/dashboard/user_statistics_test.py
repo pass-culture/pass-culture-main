@@ -26,7 +26,6 @@ class CountActivatedUsersTest:
         # Then
         assert count == 2
 
-
     @clean_database
     def test_count_users_by_departement_when_departement_code_given(self, app):
         # Given
@@ -61,7 +60,6 @@ class CountUsersHavingBookedTest:
 
         # Then
         assert count == 2
-
 
     @clean_database
     def test_count_users_by_departement_when_departement_code_given(self, app):
@@ -251,14 +249,37 @@ class GetMeanAmountSpentByUserTest:
         # Then
         assert mean_amount_spent == 5
 
+    @clean_database
+    def test_returns_average_amount_based_on_user_location(self, app):
+        # Given
+        user_having_booked_from_25 = create_user(departement_code='25', email='email75@example.net')
+        user_having_booked_from_63 = create_user(departement_code='63', email='email63@example.net')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=10)
+        expensive_stock = create_stock(offer=offer, price=200)
+        booking_for_user_one = create_booking(user_having_booked_from_25, stock, is_cancelled=False)
+        booking_for_user_two = create_booking(user_having_booked_from_63, expensive_stock, is_cancelled=False)
+        firstDeposit = create_deposit(user=user_having_booked_from_25)
+        secondDeposit = create_deposit(user=user_having_booked_from_63)
+        PcObject.save(booking_for_user_one, booking_for_user_two)
+
+        # When
+        mean_amount_spent = get_mean_amount_spent_by_user('25')
+
+        # Then
+        assert mean_amount_spent == 10
+
 
 class GetNotCancelledBookingsByDepartementTest:
     @clean_database
     def test_return_number_of_booking_by_departement(self, app):
         # Given
-        _create_departement_booking_for_users(departement_code='08', user_email='test1@email.com', booking_count=2, siren='111111111')
-        _create_departement_booking_for_users(departement_code='34', user_email='test2@email.com', booking_count=10, siren='222222222')
-
+        _create_departement_booking_for_users(departement_code='08', user_email='test1@email.com', booking_count=2,
+                                              siren='111111111')
+        _create_departement_booking_for_users(departement_code='34', user_email='test2@email.com', booking_count=10,
+                                              siren='222222222')
 
         expected_counts = [('08', 2), ('34', 10)]
         expected_table = pandas.DataFrame(columns=['Departement', 'Nombre de réservations'],
@@ -336,7 +357,6 @@ class QueryGetNonCancelledBookingsByDepartementTest:
         # Then
         assert len(bookings_by_departement) == 1
         assert bookings_by_departement == [('76', 7)]
-
 
     @clean_database
     def test_should_return_multiple_departements_and_order_by_departementCode(self, app):
