@@ -192,7 +192,7 @@ ShallowWrapper {
       ],
       "className": "stocks-manager",
     },
-    "ref": [Function],
+    "ref": null,
     "rendered": Array [
       Object {
         "instance": null,
@@ -1028,7 +1028,7 @@ ShallowWrapper {
         ],
         "className": "stocks-manager",
       },
-      "ref": [Function],
+      "ref": null,
       "rendered": Array [
         Object {
           "instance": null,

@@ -160,10 +160,6 @@ class StockItem extends Component {
     )
   }
 
-  createRef = element => {
-    this.tbodyElement = element
-  }
-
   render() {
     const { isEvent, stockPatch, timezone } = this.props
 
@@ -196,9 +192,7 @@ class StockItem extends Component {
     }
 
     return (
-      <tbody
-        ref={this.createRef()}
-      >
+      <tbody>
         <Form
           decorators={decorators}
           initialValues={stockPatch}

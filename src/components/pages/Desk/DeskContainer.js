@@ -24,6 +24,7 @@ export const mapDispatchToProps = (dispatch) => {
           apiPath: `/bookings/token/${code}`,
           handleFail: handleFail,
           handleSuccess: handleSuccess,
+          stateKey: 'deskBookings',
           method: 'PATCH',
         })
       )

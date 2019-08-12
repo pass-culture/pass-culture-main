@@ -174,7 +174,9 @@ ShallowWrapper {
               "type": "text",
               "value": "",
             },
-            "ref": [Function],
+            "ref": Object {
+              "current": null,
+            },
             "rendered": null,
             "type": "input",
           },
@@ -387,7 +389,9 @@ ShallowWrapper {
                 "type": "text",
                 "value": "",
               },
-              "ref": [Function],
+              "ref": Object {
+                "current": null,
+              },
               "rendered": null,
               "type": "input",
             },

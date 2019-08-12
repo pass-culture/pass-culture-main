@@ -38,7 +38,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
   })
 
   describe('getDatetimeOneDayAfter', () => {
-    it('should getDatetimeOneDayAfter', () => {
+    it('should add one day to stringify date', () => {
       // given
       const datetime = '2019-04-27T19:00:00Z'
 
@@ -48,7 +48,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
       // then
       expect(nextDatetime).toStrictEqual('2019-04-28T19:00:00.000Z')
     })
-    it('should getDatetimeOneHourAfter', () => {
+    it('should add one hour to stringify date', () => {
       // given
       const datetime = '2019-04-27T19:00:00Z'
 
@@ -58,7 +58,7 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
       // then
       expect(nextDatetime).toStrictEqual('2019-04-27T20:00:00.000Z')
     })
-    it('should getDatetimeAtSpecificHoursAndMinutes', () => {
+    it('should get stringify datetime regarding specified timezone', () => {
       // given
       const datetime = moment('2019-04-27T19:00:00Z').tz('Europe/Paris')
 

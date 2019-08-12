@@ -155,8 +155,6 @@ class StocksManager extends Component {
     })
   }
 
-  getRef = elem => (this.elem = elem)
-
   render() {
     const {
       isEvent,
@@ -173,7 +171,6 @@ class StocksManager extends Component {
     return (
       <div
         className="stocks-manager"
-        ref={this.getRef}
       >
         <div className={classnames('info', { 'is-invisible': !info })}>
           <div className="content">

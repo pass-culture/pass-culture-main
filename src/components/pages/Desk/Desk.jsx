@@ -29,17 +29,16 @@ class Desk extends React.PureComponent {
       code: '',
       status: CODE_ENTER,
     }
+    this.textInput = React.createRef()
   }
 
   componentDidMount() {
-    this.input.focus()
+    this.textInput.current.focus()
   }
-
-  getRef = () => element => (this.input = element)
 
   handleOnClick = code => () => {
     this.handleCodeRegistration(code)
-    this.input.focus()
+    this.textInput.current.focus()
   }
 
   handleSuccessWhenGetBookingFromCode = (state, action) => {
@@ -198,7 +197,7 @@ class Desk extends React.PureComponent {
             maxLength={CODE_MAX_LENGTH}
             name="code"
             onChange={this.handleCodeChange}
-            ref={this.getRef()}
+            ref={this.textInput}
             type="text"
             value={code}
           />

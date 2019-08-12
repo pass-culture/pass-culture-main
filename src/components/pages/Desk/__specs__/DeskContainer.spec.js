@@ -71,8 +71,9 @@ describe('src | components | pages | Desk | DeskContainer ', () => {
                 handleFail: expect.any(Function),
                 handleSuccess: expect.any(Function),
                 method: 'PATCH',
+                stateKey: 'deskBookings'
               },
-            type: 'REQUEST_DATA_PATCH_/BOOKINGS/TOKEN/ABCDEF'
+            type: 'REQUEST_DATA_PATCH_DESKBOOKINGS'
           }
         )
       })
