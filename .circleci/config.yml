@@ -100,11 +100,6 @@ jobs:
           name: Deploy Webapp
           command: |
             netlify deploy -e "${CIRCLE_BRANCH}" -t ${NETLIFY_TOKEN}
-      - run:
-          name: Check deployed version
-          command: |
-            export COMPONENT_URL="https://app.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
-            ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
 
 workflows:
   version: 2
