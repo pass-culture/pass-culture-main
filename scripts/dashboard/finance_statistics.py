@@ -1,18 +1,18 @@
 import pandas
 from sqlalchemy import func
 
-from models import Deposit, Booking, Payment
+from models import Deposit, Booking, Payment, User
 from models.db import db
 from models.payment_status import TransactionStatus
 
 
-def get_total_deposits():
-    return db.session.query(
-        func.coalesce(
-            func.sum(Deposit.amount),
-            0
-        )
-    ).scalar()
+def get_total_deposits(departement_code=None):
+    query = db.session.query(func.coalesce(func.sum(Deposit.amount), 0))
+
+    if departement_code:
+        query = query.join(User).filter(User.departementCode == departement_code)
+
+    return query.scalar()
 
 
 def get_total_amount_spent():

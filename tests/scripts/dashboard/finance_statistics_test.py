@@ -38,6 +38,22 @@ class GetTotalDepositsTest:
         # Then
         assert total_deposits == 1000
 
+    @clean_database
+    def test_returns_500_if_two_deposits_but_filtered_by_departement(self, app):
+        # Given
+        user1 = create_user(email='test1@email.com', departement_code='42')
+        deposit1 = create_deposit(user1, amount=500)
+        user2 = create_user(email='test2@email.com', departement_code='95')
+        deposit2 = create_deposit(user2, amount=500)
+
+        PcObject.save(deposit1, deposit2)
+
+        # When
+        total_deposits = get_total_deposits('95')
+
+        # Then
+        assert total_deposits == 500
+
 
 class GetTotalAmountSpentTest:
     @clean_database
