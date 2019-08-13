@@ -24,7 +24,6 @@ from models import *
 from repository.offer_queries import *
 from sandboxes import *
 from sqlalchemy import *
-from utils.content import *
 from utils.config import *
 from utils.credentials import *
 from utils.distance import *
