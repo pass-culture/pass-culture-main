@@ -23,13 +23,6 @@
     "jsx-a11y/label-has-for": "off",
     "no-var": "error",
     "react/forbid-component-props": "off",
-    "react/jsx-curly-brace-presence": [
-      1,
-      {
-        "props": "never",
-        "children": "always"
-      }
-    ],
     "react/jsx-filename-extension": [
       1,
       {
@@ -49,12 +42,6 @@
       2
     ],
     "react/jsx-max-depth": "off",
-    "react/jsx-one-expression-per-line": [
-      1,
-      {
-        "allow": "literal"
-      }
-    ],
     "react/jsx-props-no-spreading": "off",
     "react/no-set-state": "off",
     "react/prop-types": "off",
