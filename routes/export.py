@@ -132,7 +132,7 @@ def get_pending_validation():
     offerers = offerer_queries.find_all_pending_validation()
 
     for offerer in offerers:
-        result.append(as_dict(offerer, include=OFFERER_FOR_PENDING_VALIDATION_INCLUDES))
+        result.append(as_dict(offerer, includes=OFFERER_FOR_PENDING_VALIDATION_INCLUDES))
 
     return jsonify(result), 200
 

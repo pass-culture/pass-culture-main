@@ -49,7 +49,7 @@ def signup_webapp():
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 
-    return jsonify(as_dict(new_user, include=USER_INCLUDES)), 201
+    return jsonify(as_dict(new_user, includes=USER_INCLUDES)), 201
 
 
 @app.route("/users/signup/pro", methods=["POST"])
@@ -86,7 +86,7 @@ def signup_pro():
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
-    return jsonify(as_dict(new_user, include=USER_INCLUDES)), 201
+    return jsonify(as_dict(new_user, includes=USER_INCLUDES)), 201
 
 
 def _generate_user_offerer_when_existing_offerer(new_user, offerer):

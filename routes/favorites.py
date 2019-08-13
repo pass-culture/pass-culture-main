@@ -76,11 +76,11 @@ def _serialize_favorites(favorites: List[Favorite]) -> List:
 
 
 def _serialize_favorite(favorite: Favorite) -> dict:
-    dict_favorite = as_dict(favorite, include=FAVORITE_INCLUDES)
+    dict_favorite = as_dict(favorite, includes=FAVORITE_INCLUDES)
 
     booking = find_first_matching_booking_from_favorite(favorite, current_user)
     if booking:
-        dict_favorite['firstMatchingBooking'] = as_dict(booking, include=WEBAPP_GET_BOOKING_INCLUDES)
+        dict_favorite['firstMatchingBooking'] = as_dict(booking, includes=WEBAPP_GET_BOOKING_INCLUDES)
 
     return dict_favorite
 

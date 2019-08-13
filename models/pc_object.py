@@ -1,5 +1,4 @@
 import re
-import re
 import traceback
 import uuid
 from datetime import datetime
@@ -273,10 +272,6 @@ def _dehumanize_if_needed(column, value: Any) -> Any:
     if _is_human_id_column(column):
         return dehumanize(value)
     return value
-
-
-def _format_into_ISO_8601(value):
-    return value.isoformat() + "Z"
 
 
 def _deserialize_datetime(key, value):

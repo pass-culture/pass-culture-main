@@ -18,7 +18,7 @@ from validation.users import check_allowed_changes_for_user, check_valid_signin
 @login_required
 def get_profile():
     user = find_user_by_email(current_user.email)
-    return jsonify(as_dict(user, include=USER_INCLUDES)), 200
+    return jsonify(as_dict(user, includes=USER_INCLUDES)), 200
 
 
 @app.route("/users/token/<token>", methods=["GET"])
@@ -40,7 +40,7 @@ def patch_profile():
     user = find_user_by_email(current_user.email)
     user.populate_from_dict(request.json)
     PcObject.save(user)
-    user = as_dict(user, include=USER_INCLUDES)
+    user = as_dict(user, includes=USER_INCLUDES)
     return jsonify(user), 200
 
 
@@ -53,7 +53,7 @@ def signin():
     user = get_user_with_credentials(identifier, password)
     login_user(user, remember=True)
     stamp_session(user)
-    return jsonify(as_dict(user, include=USER_INCLUDES)), 200
+    return jsonify(as_dict(user, includes=USER_INCLUDES)), 200
 
 
 @app.route("/users/signout", methods=["GET"])

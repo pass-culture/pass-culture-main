@@ -48,7 +48,7 @@ def update_mediation(mediation_id):
     mediation.populate_from_dict(data)
     invalidate_recommendations_if_deactivating_object(data, mediation.recommendations)
     PcObject.save(mediation)
-    return jsonify(as_dict(mediation, include=MEDIATION_INCLUDES)), 200
+    return jsonify(as_dict(mediation, includes=MEDIATION_INCLUDES)), 200
 
 
 def _get_crop(form):

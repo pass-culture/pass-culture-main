@@ -38,20 +38,15 @@ def list_offers():
         keywords_string=request.args.get('keywords')
     )
 
-    return handle_rest_get_list(Offer,
-                                include=OFFER_INCLUDES,
-                                page=request.args.get('page'),
-                                paginate=10,
-                                order_by='offer.id desc',
-                                query=query
-                                )
+    return handle_rest_get_list(Offer, query=query, order_by='offer.id desc', includes=OFFER_INCLUDES, paginate=10,
+                                page=request.args.get('page'))
 
 
 @app.route('/offers/<id>', methods=['GET'])
 @login_required
 def get_offer(id):
     offer = load_or_404(Offer, id)
-    return jsonify(as_dict(offer, include=OFFER_INCLUDES))
+    return jsonify(as_dict(offer, includes=OFFER_INCLUDES))
 
 
 @app.route('/offers/activation', methods=['GET'])
@@ -60,11 +55,7 @@ def list_activation_offers():
     departement_code = current_user.departementCode
     query = find_activation_offers(departement_code)
 
-    return handle_rest_get_list(
-        Offer,
-        include=OFFER_INCLUDES,
-        query=query
-    )
+    return handle_rest_get_list(Offer, query=query, includes=OFFER_INCLUDES)
 
 
 @app.route('/offers', methods=['POST'])
@@ -90,7 +81,7 @@ def post_offer():
     PcObject.save(offer)
     send_offer_creation_notification_to_administration(offer, current_user, PRO_URL, send_raw_email)
 
-    return jsonify(as_dict(offer, include=OFFER_INCLUDES)), 201
+    return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 201
 
 
 @app.route('/offers/<id>', methods=['PATCH'])
@@ -110,4 +101,4 @@ def patch_offer(id):
     if 'isActive' in request.json and not request.json['isActive']:
         invalidate_recommendations(offer)
 
-    return jsonify(as_dict(offer, include=OFFER_INCLUDES)), 200
+    return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 200

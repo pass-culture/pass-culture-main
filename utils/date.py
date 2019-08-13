@@ -83,3 +83,7 @@ def dept_timezone_datetime_to_utc(datetimeObj, departementCode):
     to_zone = tz.gettz('UTC')
     dept_datetime = datetimeObj.replace(tzinfo=from_zone)
     return dept_datetime.astimezone(to_zone)
+
+
+def format_into_ISO_8601(value):
+    return value.isoformat() + "Z"

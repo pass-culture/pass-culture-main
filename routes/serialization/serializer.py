@@ -6,8 +6,7 @@ import sqlalchemy
 from psycopg2._range import DateTimeRange
 from sqlalchemy import Integer
 
-from models.pc_object import _format_into_ISO_8601
-from utils.date import DateTimes
+from utils.date import DateTimes, format_into_ISO_8601
 from utils.human_ids import humanize
 
 
@@ -36,7 +35,7 @@ def _(value, column=None):
 
 @serialize.register(datetime)
 def _(value, column=None):
-    return _format_into_ISO_8601(value)
+    return format_into_ISO_8601(value)
 
 
 @serialize.register(DateTimeRange)
@@ -56,4 +55,4 @@ def _(value, column=None):
 
 @serialize.register(DateTimes)
 def _(value, column=None):
-    return [_format_into_ISO_8601(v) for v in value.datetimes]
+    return [format_into_ISO_8601(v) for v in value.datetimes]

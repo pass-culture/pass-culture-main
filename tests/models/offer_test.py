@@ -432,7 +432,7 @@ class DateRangeTest:
         ]
 
         # When
-        offer_dict = as_dict(offer, include=["dateRange"])
+        offer_dict = as_dict(offer, includes=["dateRange"])
 
         # Then
         assert offer_dict['dateRange'] == ['2018-10-22T10:10:10Z', '2018-10-22T13:10:10Z']

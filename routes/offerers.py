@@ -25,7 +25,7 @@ from validation.offerers import check_valid_edition, parse_boolean_param_validat
 
 
 def get_dict_offerer(offerer):
-    return as_dict(offerer, include=OFFERER_INCLUDES)
+    return as_dict(offerer, includes=OFFERER_INCLUDES)
 
 
 @app.route('/offerers', methods=['GET'])
@@ -55,12 +55,8 @@ def list_offerers():
     else:
         maybe_include = NOT_VALIDATED_OFFERER_INCLUDES
 
-    return handle_rest_get_list(Offerer,
-                                include=maybe_include,
-                                order_by=Offerer.name,
-                                page=request.args.get('page'),
-                                paginate=10,
-                                query=query)
+    return handle_rest_get_list(Offerer, query=query, order_by=Offerer.name, includes=maybe_include, paginate=10,
+                                page=request.args.get('page'))
 
 
 @app.route('/offerers/<id>', methods=['GET'])
@@ -87,7 +83,7 @@ def get_offerer_bookings(id):
 
     bookings_reimbursements = find_all_booking_reimbursements(bookings)
 
-    return jsonify([as_dict(b, include=PRO_BOOKING_INCLUDES) for b in bookings_reimbursements]), 200
+    return jsonify([as_dict(b, includes=PRO_BOOKING_INCLUDES) for b in bookings_reimbursements]), 200
 
 
 @app.route('/offerers', methods=['POST'])

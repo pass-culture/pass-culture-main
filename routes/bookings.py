@@ -103,14 +103,14 @@ def get_bookings_csv():
 @login_required
 def get_bookings():
     bookings = Booking.query.filter_by(userId=current_user.id).all()
-    return jsonify([as_dict(b, include=WEBAPP_GET_BOOKING_INCLUDES) for b in bookings]), 200
+    return jsonify([as_dict(b, includes=WEBAPP_GET_BOOKING_INCLUDES) for b in bookings]), 200
 
 
 @app.route('/bookings/<booking_id>', methods=['GET'])
 @login_required
 def get_booking(booking_id):
     booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
-    return jsonify(as_dict(booking, include=WEBAPP_GET_BOOKING_INCLUDES)), 200
+    return jsonify(as_dict(booking, includes=WEBAPP_GET_BOOKING_INCLUDES)), 200
 
 
 @app.route('/bookings', methods=['POST'])
@@ -163,7 +163,7 @@ def create_booking():
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
-    return jsonify(as_dict(new_booking, include=WEBAPP_PATCH_POST_BOOKING_INCLUDES)), 201
+    return jsonify(as_dict(new_booking, includes=WEBAPP_PATCH_POST_BOOKING_INCLUDES)), 201
 
 
 @app.route('/bookings/<booking_id>', methods=['PATCH'])
@@ -198,7 +198,7 @@ def patch_booking(booking_id):
     except MailServiceException as e:
         app.logger.error('Mail service failure', e)
 
-    return jsonify(as_dict(booking, include=WEBAPP_PATCH_POST_BOOKING_INCLUDES)), 200
+    return jsonify(as_dict(booking, includes=WEBAPP_PATCH_POST_BOOKING_INCLUDES)), 200
 
 
 @app.route('/bookings/token/<token>', methods=["GET"])

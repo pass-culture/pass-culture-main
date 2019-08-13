@@ -55,7 +55,7 @@ def get_email(first_name, last_name, domain):
 
 
 def get_user_helper(user):
-    return dict(as_dict(user, include=USER_INCLUDES), **{
+    return dict(as_dict(user, includes=USER_INCLUDES), **{
         "resetPasswordToken": user.resetPasswordToken,
         "password": PLAIN_DEFAULT_TESTING_PASSWORD,
         "validationToken": user.validationToken
@@ -67,4 +67,4 @@ def get_venue_helper(venue):
 
 
 def get_recommendation_helper(recommendation):
-    return as_dict(recommendation, include=RECOMMENDATION_INCLUDES)
+    return as_dict(recommendation, includes=RECOMMENDATION_INCLUDES)

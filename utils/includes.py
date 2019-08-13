@@ -1,7 +1,7 @@
 OFFERER_INCLUDES = [
     {
         "key": "managedVenues",
-        "sub_joins": [
+        "includes": [
             "nOffers",
             "iban",
             "bic"
@@ -34,13 +34,13 @@ NOT_VALIDATED_OFFERER_INCLUDES = [
 EVENT_INCLUDES = [
     {
         "key": "occurrences",
-        "sub_joins": [
+        "includes": [
             {
                 "key": "stock",
-                "sub_joins": [
+                "includes": [
                     {
                         "key": "offerer",
-                        "sub_joins": OFFERER_INCLUDES
+                        "includes": OFFERER_INCLUDES
                     }
                 ]
             },
@@ -49,7 +49,7 @@ EVENT_INCLUDES = [
     },
     {
         "key": "mediations",
-        "sub_joins": ["thumbUrl"]
+        "includes": ["thumbUrl"]
     },
     "offers",
     "-type",
@@ -62,11 +62,11 @@ OFFER_INCLUDES = [
     'isFullyBooked',
     {
         "key": "activeMediation",
-        "sub_joins": ["thumbUrl"]
+        "includes": ["thumbUrl"]
     },
     {
         "key": "mediations",
-        "sub_joins": ["thumbUrl"]
+        "includes": ["thumbUrl"]
     },
     "stockAlertMessage",
     "isEditable",
@@ -76,21 +76,21 @@ OFFER_INCLUDES = [
     "stockAlertMessage",
     {
         "key": "product",
-        "sub_joins": [
+        "includes": [
             'offerType',
             '-type'
         ]
     },
     {
         "key": "stocks",
-        "sub_joins": ['bookings']
+        "includes": ['bookings']
     },
     {
         "key": "venue",
-        "sub_joins": [
+        "includes": [
             {
                 "key": "managingOfferer",
-                "sub_joins": [
+                "includes": [
                     "nOffers",
                     "isValidated",
                     "bic",
@@ -108,11 +108,11 @@ FAVORITE_INCLUDES = [
     "-userId",
     {
         "key": "mediation",
-        "sub_joins": ["thumbUrl"]
+        "includes": ["thumbUrl"]
     },
     {
         "key": "offer",
-        "sub_joins": [
+        "includes": [
             "dateRange",
             "favorites",
             "isEvent",
@@ -122,7 +122,7 @@ FAVORITE_INCLUDES = [
             "offerType",
             {
                 "key": "product",
-                "sub_joins": ["thumbUrl", "offerType"]
+                "includes": ["thumbUrl", "offerType"]
             },
             "stocks",
             "venue",
@@ -135,11 +135,11 @@ RECOMMENDATION_INCLUDES = [
     "discoveryIdentifier",
     {
         "key": "mediation",
-        "sub_joins": ["thumbUrl"]
+        "includes": ["thumbUrl"]
     },
     {
         "key": "offer",
-        "sub_joins": [
+        "includes": [
             "dateRange",
             'favorites',
             "isEvent",
@@ -149,12 +149,12 @@ RECOMMENDATION_INCLUDES = [
             "offerType",
             {
                 "key": "product",
-                "sub_joins": ["thumbUrl", "offerType"]
+                "includes": ["thumbUrl", "offerType"]
             },
             "stocks",
             {
                 "key": "venue",
-                "sub_joins": ["managingOfferer"]
+                "includes": ["managingOfferer"]
             },
         ]
     },
@@ -179,18 +179,18 @@ WEBAPP_GET_BOOKING_INCLUDES = [
     "isUserCancellable",
     {
         "key": "recommendation",
-        "sub_joins": [
+        "includes": [
             "discoveryIdentifier",
             {
                 "key": "offer",
-                "sub_joins": [
+                "includes": [
                     "favorites",
                     "isFinished",
                     "isFullyBooked",
                     "offerType",
                     {
                         "key": "product",
-                        "sub_joins": ["thumbUrl"]
+                        "includes": ["thumbUrl"]
                     },
                     "stocks",
                     "venue",
@@ -198,7 +198,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
             },
             {
                 "key": "mediation",
-                "sub_joins": ["thumbUrl"]
+                "includes": ["thumbUrl"]
             },
             "thumbUrl"
         ]
@@ -212,11 +212,11 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
     "isUserCancellable",
     {
         "key": "recommendation",
-        "sub_joins": [
+        "includes": [
             "discoveryIdentifier",
             {
                 "key": "offer",
-                "sub_joins": [
+                "includes": [
                     "dateRange",
                     "favorites",
                     "isFinished",
@@ -224,7 +224,7 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
                     "offerType",
                     {
                         "key": "product",
-                        "sub_joins": ["thumbUrl"]
+                        "includes": ["thumbUrl"]
                     },
                     "stocks",
                     "venue",
@@ -232,7 +232,7 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
             },
             {
                 "key": "mediation",
-                "sub_joins": ["thumbUrl"]
+                "includes": ["thumbUrl"]
             },
             "thumbUrl"
         ]
@@ -241,23 +241,23 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
     "thumbUrl",
     {
         "key": "user",
-        "sub_joins": USER_INCLUDES
+        "includes": USER_INCLUDES
     }
 ]
 
 PRO_BOOKING_INCLUDES = [
     {
         "key": "stock",
-        "sub_joins":
+        "includes":
             [
                 {
                     "key": "resolvedOffer",
-                    "sub_joins": [
+                    "includes": [
                         'isFinished',
                         'isFullyBooked',
                         {
                             "key": "product",
-                            "sub_joins": ["offerType", "thumbUrl"]
+                            "includes": ["offerType", "thumbUrl"]
                         },
                     ]
                 }
@@ -265,7 +265,7 @@ PRO_BOOKING_INCLUDES = [
     },
     {
         "key": 'user',
-        "sub_joins": [
+        "includes": [
             '-id',
             '-canBookFreeOffers',
             '-clearTextPassword',
@@ -297,7 +297,7 @@ VENUE_INCLUDES = [
     },
     {
         "key": 'venueProviders',
-        "sub_joins": ["provider"]
+        "includes": ["provider"]
     },
 ]
 
@@ -313,9 +313,9 @@ OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
     "-idAtProviders",
     {
         "key": "UserOfferers",
-        "sub_joins": [{
+        "includes": [{
             "key": "user",
-            "sub_joins": [
+            "includes": [
                 '-resetPasswordTokenValidityLimit',
                 '-resetPasswordToken',
                 '-clearTextPassword',
@@ -327,7 +327,7 @@ OFFERER_FOR_PENDING_VALIDATION_INCLUDES = [
     },
     {
         "key": "managedVenues",
-        "sub_joins": [
+        "includes": [
             '-publicName',
             '-thumbCount',
             '-idAtProviders',

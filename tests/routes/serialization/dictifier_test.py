@@ -16,7 +16,7 @@ class AsDictTest:
         USER_INCLUDES = []
 
         # when
-        dict_result = as_dict(user, include=USER_INCLUDES)
+        dict_result = as_dict(user, includes=USER_INCLUDES)
 
         # then
         assert 'publicName' in dict_result
@@ -33,7 +33,7 @@ class AsDictTest:
         USER_INCLUDES = ['-password', '-resetPasswordToken']
 
         # when
-        dict_result = as_dict(user, include=USER_INCLUDES)
+        dict_result = as_dict(user, includes=USER_INCLUDES)
 
         # then
         assert 'password' not in dict_result
@@ -49,7 +49,7 @@ class AsDictTest:
         USER_INCLUDES = []
 
         # when
-        dict_result = as_dict(user, include=USER_INCLUDES)
+        dict_result = as_dict(user, includes=USER_INCLUDES)
 
         # then
         assert 'hasPhysicalVenues' not in dict_result
@@ -65,7 +65,7 @@ class AsDictTest:
         USER_INCLUDES = ['hasPhysicalVenues', 'hasOffers']
 
         # when
-        dict_result = as_dict(user, include=USER_INCLUDES)
+        dict_result = as_dict(user, includes=USER_INCLUDES)
 
         # then
         assert 'hasPhysicalVenues' in dict_result
@@ -81,7 +81,7 @@ class AsDictTest:
         USER_INCLUDES = ['offerers']
 
         # when
-        dict_result = as_dict(user, include=USER_INCLUDES)
+        dict_result = as_dict(user, includes=USER_INCLUDES)
 
         # then
         assert 'offerers' in dict_result
@@ -100,12 +100,12 @@ class AsDictTest:
         EVENT_INCLUDES = [
             {
                 "key": "mediations",
-                "sub_joins": ["thumbUrl"]
+                "includes": ["thumbUrl"]
             }
         ]
 
         # when
-        dict_result = as_dict(offer, include=EVENT_INCLUDES)
+        dict_result = as_dict(offer, includes=EVENT_INCLUDES)
 
         # then
         assert 'thumbUrl' in dict_result['mediations'][0]
@@ -122,12 +122,12 @@ class AsDictTest:
         EVENT_INCLUDES = [
             {
                 "key": "mediations",
-                "sub_joins": ["-backText"]
+                "includes": ["-backText"]
             }
         ]
 
         # when
-        dict_result = as_dict(offer, include=EVENT_INCLUDES)
+        dict_result = as_dict(offer, includes=EVENT_INCLUDES)
 
         # then
         assert 'backText' not in dict_result['mediations'][0]
@@ -138,7 +138,7 @@ class AsDictTest:
         user = create_user(postal_code=None, idx=12)
 
         # when
-        dict_result = as_dict(user, include=[])
+        dict_result = as_dict(user, includes=[])
 
         # then
         assert dict_result['id'] == 'BQ'
@@ -151,7 +151,7 @@ class AsDictTest:
         booking.userId = user.id
 
         # when
-        dict_result = as_dict(booking, include=[])
+        dict_result = as_dict(booking, includes=[])
 
         # then
         assert dict_result['userId'] == 'BQ'

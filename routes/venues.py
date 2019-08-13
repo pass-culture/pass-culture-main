@@ -22,7 +22,7 @@ from validation.venues import validate_coordinates, check_valid_edition
 def get_venue(venueId):
     venue = load_or_404(Venue, venueId)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
-    return jsonify(as_dict(venue, include=VENUE_INCLUDES)), 200
+    return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 200
 
 
 @app.route('/venues', methods=['GET'])
@@ -50,7 +50,7 @@ def create_venue():
         except MailServiceException as e:
             app.logger.error('Mail service failure', e)
 
-    return jsonify(as_dict(venue, include=VENUE_INCLUDES)), 201
+    return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 201
 
 
 @app.route('/venues/<venueId>', methods=['PATCH'])
@@ -63,7 +63,7 @@ def edit_venue(venueId):
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     venue.populate_from_dict(request.json)
     save_venue(venue)
-    return jsonify(as_dict(venue, include=VENUE_INCLUDES)), 200
+    return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 200
 
 
 @app.route('/venues/<venueId>/offers/activate', methods=['PUT'])
@@ -74,7 +74,7 @@ def activate_venue_offers(venueId):
     offers = venue.offers
     activated_offers = update_is_active_status(offers, True)
     PcObject.save(*activated_offers)
-    return jsonify([as_dict(offer, include=OFFER_INCLUDES) for offer in activated_offers]), 200
+    return jsonify([as_dict(offer, includes=OFFER_INCLUDES) for offer in activated_offers]), 200
 
 
 @app.route('/venues/<venueId>/offers/deactivate', methods=['PUT'])
@@ -85,4 +85,4 @@ def deactivate_venue_offers(venueId):
     offers = venue.offers
     deactivated_offers = update_is_active_status(offers, False)
     PcObject.save(*deactivated_offers)
-    return jsonify([as_dict(offer, include=OFFER_INCLUDES) for offer in deactivated_offers]), 200
+    return jsonify([as_dict(offer, includes=OFFER_INCLUDES) for offer in deactivated_offers]), 200
