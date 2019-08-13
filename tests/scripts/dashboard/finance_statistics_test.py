@@ -305,8 +305,52 @@ class QueryGetTop20OffersByNumberOfBookingsTest:
         # Then
         assert bookings_counts == [('Offer Name', 3, 50)]
 
+    @clean_database
+    def test_returns_offers_filterd_by_departement(self, app):
+        # Given
+        offerer = create_offerer(siren='111111111')
+        venue_in_78 = create_venue(offerer, postal_code='78490', siret='11111111100002')
+        venue_in_35 = create_venue(offerer, postal_code='35238', siret='11111111100001')
+        offer_in_78 = create_offer_with_thing_product(venue_in_78, thing_name='First offer')
+        offer_in_35 = create_offer_with_thing_product(venue_in_35, thing_name='Second offer')
+        stock1 = create_stock(offer=offer_in_78, price=10)
+        stock2 = create_stock(offer=offer_in_35, price=20)
+        user = create_user()
+        create_deposit(user, amount=500)
+        booking1 = create_booking(user, stock1, quantity=1)
+        booking2 = create_booking(user, stock2, quantity=2)
+        booking3 = create_booking(user, stock2, quantity=1)
+        PcObject.save(booking1, booking2, booking3, venue_in_35, venue_in_78)
+
+        # When
+        bookings_counts = _query_get_top_20_offers_by_number_of_bookings('35')
+
+        # Then
+        assert bookings_counts == [('Second offer', 3, 60)]
+
 
 class GetTop20OffersByNumberOfBookingsTest:
+    @clean_database
+    def test_returns_20_most_booked_offers_ordered_by_quantity_booked_in_data_frame(self, app):
+        # Given
+        quantities = [14, 15, 16, 17, 18, 19, 20, 21, 22, 22, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+        bookings = _create_bookings_with_quantities(quantities)
+        PcObject.save(*bookings)
+        expected_counts = [
+            ('8', 22, 0), ('9', 22, 0), ('7', 21, 0), ('6', 20, 0), ('5', 19, 0), ('4', 18, 0),
+            ('3', 17, 0), ('2', 16, 0), ('1', 15, 0), ('0', 14, 0), ('23', 14, 0), ('22', 13, 0),
+            ('21', 12, 0), ('20', 11, 0), ('19', 10, 0), ('18', 9, 0), ('17', 8, 0), ('16', 7, 0),
+            ('15', 6, 0), ('14', 5, 0)
+        ]
+        expected_table = pandas.DataFrame(columns=['Offre', 'Nombre de réservations', 'Montant dépensé'],
+                                          data=expected_counts)
+
+        # When
+        bookings_counts = get_top_20_offers_table()
+
+        # Then
+        assert bookings_counts.eq(expected_table).all().all()
+
     @clean_database
     def test_returns_20_most_booked_offers_ordered_by_quantity_booked_in_data_frame(self, app):
         # Given
@@ -479,7 +523,6 @@ class GetTop20OfferersByAmountTable:
     def test_returns_20_top_offerers_by_booking_amount_in_a_data_table(self, app):
         # Given
         prices = [2, 115, 16, 18, 46, 145, 123, 12, 1, 35, 256, 25, 25, 252, 258, 156, 254, 13, 45, 145, 23]
-
         bookings = _create_bookings_with_prices(prices)
         PcObject.save(*bookings)
         expected_counts = [

@@ -1,5 +1,7 @@
+from pprint import pprint
+
 import pandas
-from sqlalchemy import func
+from sqlalchemy import func, text
 
 from models import Deposit, Booking, Payment, User, Stock, Offer, Venue
 from models.db import db
@@ -41,8 +43,8 @@ def get_total_amount_to_pay(departement_code=None):
         .scalar()
 
 
-def get_top_20_offers_table():
-    top_20_offers_by_number_of_bookings = _query_get_top_20_offers_by_number_of_bookings()
+def get_top_20_offers_table(departement_code=None):
+    top_20_offers_by_number_of_bookings = _query_get_top_20_offers_by_number_of_bookings(departement_code)
     return pandas.DataFrame(columns=['Offre', 'Nombre de réservations', 'Montant dépensé'],
                             data=top_20_offers_by_number_of_bookings)
 
@@ -65,18 +67,33 @@ def get_not_cancelled_bookings_by_departement():
                             data=non_cancelled_booking_by_department)
 
 
-def _query_get_top_20_offers_by_number_of_bookings():
-    return db.engine.execute(
-        """
-        SELECT offer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount)
-        FROM offer
-        JOIN stock ON stock."offerId" = offer.id
-        JOIN booking ON booking."stockId" = stock.id
-        WHERE booking."isCancelled" IS FALSE
-        GROUP BY offer.id, offer.name
-        ORDER BY quantity DESC, offer.name ASC
-        LIMIT 20;
-        """).fetchall()
+def _query_get_top_20_offers_by_number_of_bookings(departement_code=None):
+    if departement_code:
+        query = text("""
+            SELECT offer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount)
+            FROM offer
+            JOIN stock ON stock."offerId" = offer.id
+            JOIN booking ON booking."stockId" = stock.id
+            JOIN venue ON offer."venueId" = venue.id
+            WHERE booking."isCancelled" IS FALSE
+            AND venue."departementCode" = :departementCode
+            GROUP BY offer.id, offer.name
+            ORDER BY quantity DESC, offer.name ASC
+            LIMIT 20;
+            """).bindparams(departementCode=departement_code)
+    else:
+        query = text("""
+            SELECT offer.name, SUM(booking.quantity) AS quantity, SUM(booking.quantity * booking.amount)
+            FROM offer
+            JOIN stock ON stock."offerId" = offer.id
+            JOIN booking ON booking."stockId" = stock.id
+            WHERE booking."isCancelled" IS FALSE
+            GROUP BY offer.id, offer.name
+            ORDER BY quantity DESC, offer.name ASC
+            LIMIT 20;
+            """)
+
+    return db.engine.execute(query).fetchall()
 
 
 def _query_non_cancelled_bookings_by_departement():
