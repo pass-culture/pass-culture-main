@@ -78,6 +78,10 @@ class User(PcObject,
 
     resetPasswordTokenValidityLimit = Column(DateTime)
 
+    civility = Column(String(20), nullable=True)
+
+    activity = Column(String(128), nullable=True)
+
     def checkPassword(self, passwordToCheck):
         return bcrypt.hashpw(passwordToCheck.encode('utf-8'), self.password) == self.password
 
