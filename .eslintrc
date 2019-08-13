@@ -24,7 +24,7 @@
     "no-var": "error",
     "react/forbid-component-props": "off",
     "react/jsx-curly-brace-presence": [
-      true,
+      1,
       {
         "props": "never",
         "children": "always"
@@ -50,7 +50,7 @@
     ],
     "react/jsx-max-depth": "off",
     "react/jsx-one-expression-per-line": [
-      true,
+      1,
       {
         "allow": "literal"
       }

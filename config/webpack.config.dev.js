@@ -21,6 +21,7 @@ module.exports = {
     require.resolve('react-dev-utils/webpackHotDevClient'),
     paths.appIndexJs,
   ],
+  mode: 'development',
   output: {
     pathinfo: true,
     filename: 'static/js/[name].bundle.js',
