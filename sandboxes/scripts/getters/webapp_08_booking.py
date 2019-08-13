@@ -2,6 +2,7 @@ from models import Offer, Stock, EventType, ThingType, Mediation, Product
 from models.user import User
 from repository.offer_queries import _filter_bookable_offers_for_discovery
 from repository.user_queries import keep_only_webapp_users
+from repository.recommendation_queries import find_recommendations_for_user_matching_offers_and_search
 from sandboxes.scripts.utils.helpers import get_user_helper, get_offer_helper
 from utils.human_ids import humanize
 
@@ -68,7 +69,7 @@ def get_existing_webapp_user_has_no_more_money():
 
 def get_existing_webapp_user_can_book_thing_offer():
     query = keep_only_webapp_users(User.query)
-    query = query.filter(User.email.contains('93.has-booked-some'))
+    query = query.filter(User.email.contains('93.has-confirmed-activation'))
     user = query.first()
     return {
         "user": get_user_helper(user)
