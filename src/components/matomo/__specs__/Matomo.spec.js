@@ -1,54 +1,104 @@
 import { mount } from 'enzyme'
-import React from 'react'
 import { createBrowserHistory } from 'history'
+import React from 'react'
 import { Router } from 'react-router'
-import Matomo from '../Matomo'
 
-describe('src | components | Matomo', () => {
+import MatomoContainer from '../MatomoContainer'
+
+describe('src | components | matomo | Matomo', () => {
+  let fakeMatomo
   let history
+
   beforeEach(() => {
     history = createBrowserHistory()
     history.push('/router/path')
-  })
 
-  it('should dispatch a new page displayed event', () => {
-    // given
-    const fakeMatomo = {
+    fakeMatomo = {
       push: jest.fn(),
     }
     window._paq = fakeMatomo
+  })
 
+  it('should push a new page displayed event', () => {
     // when
     mount(
       <Router history={history}>
-        <Matomo />
+        <MatomoContainer />
       </Router>
     )
 
     // then
     expect(fakeMatomo.push).toHaveBeenNthCalledWith(1, ['setCustomUrl', '/router/path'])
-    expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['trackPageView'])
   })
 
-  it('should dispatch the page title', () => {
+  it('should push the page title', () => {
     // given
-    const fakeMatomo = {
-      push: jest.fn(),
-    }
-    window._paq = fakeMatomo
-    document.title = 'PassCulture Page Name'
+    document.title = 'pass Culture page title'
 
     // when
     mount(
       <Router history={history}>
-        <Matomo />
+        <MatomoContainer />
       </Router>
     )
 
     // then
     expect(fakeMatomo.push).toHaveBeenNthCalledWith(2, [
       'setDocumentTitle',
-      'PassCulture Page Name',
+      'pass Culture page title',
     ])
+  })
+
+  describe('when have no location.search', () => {
+    it('should not track site search', () => {
+      // when
+      mount(
+        <Router history={history}>
+          <MatomoContainer />
+        </Router>
+      )
+
+      // then
+      expect(fakeMatomo.push).not.toHaveBeenNthCalledWith(3, ['trackSiteSearch'])
+    })
+  })
+
+  describe('when have location.search and no categories', () => {
+    it('should track site search', () => {
+      // given
+      history.location.search = '?mots-cles=MEFA'
+
+      // when
+      mount(
+        <Router history={history}>
+          <MatomoContainer />
+        </Router>
+      )
+
+      // then
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['trackSiteSearch', 'MEFA', false, false])
+    })
+  })
+
+  describe('when have location.search and categories', () => {
+    it('should track site search', () => {
+      // given
+      history.location.search = '?categories=Applaudir&mots-cles=MEFA'
+
+      // when
+      mount(
+        <Router history={history}>
+          <MatomoContainer />
+        </Router>
+      )
+
+      // then
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, [
+        'trackSiteSearch',
+        'MEFA',
+        'Applaudir',
+        false,
+      ])
+    })
   })
 })
